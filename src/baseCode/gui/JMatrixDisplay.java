@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.File;
+import java.io.IOException;
 
 // vertical text
 import baseCode.graphics.text.Util;
@@ -41,16 +42,28 @@ public class JMatrixDisplay extends JPanel {
 
   protected Dimension m_cellSize = new Dimension( 10, 10 ); // in pixels
 
+  public JMatrixDisplay( String filename ) throws IOException {
+     
+     ColorMatrix matrix = new ColorMatrix( filename );
+     init( matrix );
+  }
+  
   public JMatrixDisplay( ColorMatrix matrix ) {
 
+     init( matrix );
+  }
+
+  public void init( ColorMatrix matrix ) {
+     
      m_matrix = matrix;
      initSize();
      
      // create a standardized copy of the matrix
      m_standardizedMatrix = (ColorMatrix) matrix.clone();
      m_standardizedMatrix.standardize();     
-  }
 
+  }
+  
   /**
    * Sets the display size
    */
@@ -321,5 +334,15 @@ public class JMatrixDisplay extends JPanel {
      else
         return m_matrix.getColor( row, column );
   } // end getColor
+  
+  public int getRowCount() {
+     
+     return m_matrix.getRowCount();
+  }
+  
+  public int getColumnCount() {
+     
+     return m_matrix.getColumnCount();
+  }
   
 } // end class JMatrixDisplay
