@@ -10,24 +10,38 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import baseCode.dataStructure.matrix.NamedMatrix;
+import baseCode.dataStructure.matrix.RCDoubleMatrix1D;
 import baseCode.dataStructure.matrix.SparseRaggedDoubleMatrix2DNamed;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
+import cern.colt.matrix.DoubleMatrix1D;
 
 /**
  * Best data structure for reading really big, really sparse matrices when a matrix represetation is needed. *
- * 
- * <p>The standard format looks like this:
+ * <p>
+ * The standard format looks like this:
  * 
  * <pre>
- *           
- *                2          &lt;--- number of items - the first line of the file only. NOTE - this line is often blank or not present.
- *                1 2        &lt;--- items 1 has 2 edges
- *                1 2        &lt;--- edge indices are to items 1 &amp; 2
- *                0.1 100    &lt;--- with the following weights
- *                2 2        &lt;--- items 2 also has 2 edges
- *                1 2        &lt;--- edge indices are also to items 1 &amp; 2 (fully connected)
- *                100 0.1    &lt;--- with the following weights
+ * 
+ *  
+ *   
+ *    
+ *     
+ *      
+ *                 
+ *                      2          &lt;--- number of items - the first line of the file only. NOTE - this line is often blank or not present.
+ *                      1 2        &lt;--- items 1 has 2 edges
+ *                      1 2        &lt;--- edge indices are to items 1 &amp; 2
+ *                      0.1 100    &lt;--- with the following weights
+ *                      2 2        &lt;--- items 2 also has 2 edges
+ *                      1 2        &lt;--- edge indices are also to items 1 &amp; 2 (fully connected)
+ *                      100 0.1    &lt;--- with the following weights
+ *        
+ *       
+ *      
+ *     
+ *    
+ *   
  *  
  * </pre>
  * 
@@ -74,11 +88,9 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
       int amount = ( new Integer( Integer.parseInt( tok.nextToken() ) ) )
             .intValue();
 
-      IntArrayList rowind = readOneIndexRow( dis, amount );
-      DoubleArrayList values = readOneValueRow( dis, amount );
       String rowName = new Integer( index ).toString();
 
-      returnVal.addRow( rowName, values, rowind );
+      returnVal.addRow( rowName, readOneRow( dis, amount ) );
       return returnVal;
    }
 
@@ -97,16 +109,16 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
 
       while ( ( row = dis.readLine() ) != null ) {
 
-         if ( row.equals( "" )   ) {  // incase there is a blank line.
+         if ( row.equals( "" ) ) { // incase there is a blank line.
             continue;
          }
 
          StringTokenizer tok = new StringTokenizer( row, " \t" );
 
-         if (tok.countTokens() != 2 ) { // in case the row count is there.
+         if ( tok.countTokens() != 2 ) { // in case the row count is there.
             continue;
          }
-         
+
          int index = ( new Integer( Integer.parseInt( tok.nextToken() ) ) )
                .intValue();
 
@@ -117,10 +129,11 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
             log.warn( new String( "loading  " + index + "th entry" ) );
          }
 
-         IntArrayList rowind = readOneIndexRow( dis, amount );
-         DoubleArrayList values = readOneValueRow( dis, amount );
-
-         returnVal.addRow( new Integer( k ).toString(), values, rowind ); // todo - this doesn't make it symmetric.
+         //         IntArrayList rowind = readOneIndexRow( dis, amount );
+         //         DoubleArrayList values = readOneValueRow( dis, amount );
+         returnVal.addRow( new Integer( k ).toString(),
+               readOneRow( dis, amount ) );
+         //         returnVal.addRow( new Integer( k ).toString(), values, rowind ); // todo - this doesn't make it symmetric.
          k++;
       }
 
@@ -139,6 +152,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
       DoubleArrayList values = new DoubleArrayList( amount );
       String row = dis.readLine(); // row with weights.
       StringTokenizer tokb = new StringTokenizer( row, " \t" );
+
       while ( tokb.hasMoreTokens() ) {
          double eval = ( new Double( Double.parseDouble( tokb.nextToken() ) ) )
                .doubleValue();
@@ -165,6 +179,12 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
       while ( tokb.hasMoreTokens() ) {
          int ind = ( new Integer( Integer.parseInt( tokb.nextToken() ) ) )
                .intValue();
+
+         if ( rowind.size() > 0 && ind > rowind.getQuick( rowind.size() - 1 ) ) {
+            throw new IllegalStateException(
+                  "Indices must be given in ascending order." );
+         }
+
          rowind.add( ind );
          if ( rowind.size() > amount ) {
             throw new IllegalStateException( "Too many tokens ("
@@ -172,6 +192,43 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
          }
       }
       return rowind;
+   }
+
+   private DoubleMatrix1D readOneRow( BufferedReader dis, int amount )
+         throws IOException {
+
+      String rowInd = dis.readLine(); // row with indices.
+      String rowWei = dis.readLine(); // row with weights.
+
+      StringTokenizer tokw = new StringTokenizer( rowWei, " \t" );
+      StringTokenizer toki = new StringTokenizer( rowInd, " \t" );
+      IntArrayList indicies = new IntArrayList( amount );
+      DoubleArrayList values = new DoubleArrayList( amount );
+      while ( toki.hasMoreTokens() ) {
+         double eval = ( new Double( Double.parseDouble( tokw.nextToken() ) ) )
+               .doubleValue();
+
+         int ind = ( new Integer( Integer.parseInt( toki.nextToken() ) ) )
+               .intValue() - 1; // this is a JW thing - the indexes start at 1.
+
+         int k = indicies.binarySearch( ind );
+         if ( k >= 0 ) { // found
+            values.setQuick( k, eval );
+         }
+
+         if ( eval != 0 ) {
+            k = -k - 1;
+            indicies.beforeInsert( k, ind );
+            values.beforeInsert( k, eval );
+         }
+
+         if ( values.size() > amount ) {
+            throw new IllegalStateException( "Too many tokens ("
+                  + values.size() + ", expected " + amount + ")" );
+         }
+      }
+      return new RCDoubleMatrix1D( values, indicies );
+
    }
 
 }

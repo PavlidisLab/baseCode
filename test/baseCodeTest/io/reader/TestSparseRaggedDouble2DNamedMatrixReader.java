@@ -3,12 +3,10 @@ package baseCodeTest.io.reader;
 import java.io.IOException;
 import java.io.InputStream;
 
-import baseCode.dataStructure.matrix.SparseDoubleMatrix2DNamed;
+import junit.framework.TestCase;
 import baseCode.dataStructure.matrix.SparseRaggedDoubleMatrix2DNamed;
-import baseCode.io.reader.SparseDoubleMatrixReader;
 import baseCode.io.reader.SparseRaggedDouble2DNamedMatrixReader;
 import baseCode.util.RegressionTesting;
-import junit.framework.TestCase;
 
 /**
  * 

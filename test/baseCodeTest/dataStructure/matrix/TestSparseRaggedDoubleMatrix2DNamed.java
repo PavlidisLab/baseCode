@@ -3,6 +3,7 @@ package baseCodeTest.dataStructure.matrix;
 import java.io.InputStream;
 
 import junit.framework.TestCase;
+import baseCode.dataStructure.matrix.RCDoubleMatrix1D;
 import baseCode.dataStructure.matrix.SparseRaggedDoubleMatrix2DNamed;
 import baseCode.io.reader.SparseRaggedDouble2DNamedMatrixReader;
 import baseCodeTest.io.reader.TestSparseDoubleMatrixReader;
@@ -67,7 +68,7 @@ public class TestSparseRaggedDoubleMatrix2DNamed extends TestCase {
    public void testGetRowMatrix1D() {
 
       DoubleMatrix1D actualReturn = matrix.getRowMatrix1D( 2 );
-      DoubleMatrix1D expectedReturn = new SparseDoubleMatrix1D( new double[] {
+      DoubleMatrix1D expectedReturn = new RCDoubleMatrix1D( new double[] {
             0.3, 0.0, 0.8
       } );
       assertEquals( "return value", expectedReturn, actualReturn );

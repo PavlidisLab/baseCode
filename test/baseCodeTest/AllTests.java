@@ -29,7 +29,7 @@ public class AllTests extends TestCase {
 
       
       suite.addTestSuite(baseCodeTest.dataStructure.matrix.TestSparseRaggedDoubleMatrix2DNamed.class);
-      
+      suite.addTestSuite( baseCodeTest.dataStructure.matrix.TestRCDoubleMatrix1D.class );
       suite.addTestSuite( baseCodeTest.dataStructure.TestQueue.class );
       suite.addTestSuite( baseCodeTest.dataStructure.TestStack.class );
 
