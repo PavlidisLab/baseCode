@@ -6,6 +6,14 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.File;
 
+/**
+ * <p>Title: JMatrixDisplay</p>
+ * <p>Description: a visual component for displaying a color matrix</p>
+ * <p>Copyright: Copyright (c) 2004</p>
+ * <p>Institution:: Columbia University</p>
+ * @author Will Braynen
+ * @version $Id$
+ */
 public class JMatrixDisplay extends JPanel {
 
   // data fields
