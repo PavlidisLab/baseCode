@@ -50,6 +50,11 @@ public class FileTools {
    } // end getExtension
 
 
+   /**
+    * 
+    * @param filename
+    * @return
+    */
    public static String getWithoutExtension( String filename ) {
    
       String[] s = filename.split( "." );

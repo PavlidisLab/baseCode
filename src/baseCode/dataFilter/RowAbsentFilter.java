@@ -11,14 +11,14 @@ import baseCode.dataStructure.matrix.StringMatrix2DNamed;
  * The flags can be 'A', 'P' or 'M', for absent, present and marginal, following
  * the Affymetrix convention. By default, Marginal flags are counted as
  * "absent", but this can be changed by the user.
- * 
+ *
  * <p>
  * Copyright (c) 2004
  * </p>
  * <p>
  * Institution:: Columbia University
  * </p>
- * 
+ *
  * @author Paul Pavlidis
  * @version $Id$
  */
@@ -34,7 +34,7 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
    private boolean flagsSet = false;
 
    /**
-    * 
+    *
     * @param f the matrix containing the flags.
     */
    public void setFlagMatrix( StringMatrix2DNamed f ) {
@@ -46,7 +46,7 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
    }
 
    /**
-    * 
+    *
     * @param k the minimum fraction of present values that there must be, in
     *        order to keep the row.
     */
@@ -59,7 +59,7 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
    }
 
    /**
-    * 
+    *
     * @param k the minimum number of present values there must be in order to
     *        keep the row.
     */
@@ -73,7 +73,7 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
    }
 
    /**
-    * 
+    *
     * @param k whether to count 'marginal' as 'present'. Default is false.
     */
    public void setKeepMarginal( boolean k ) {
@@ -83,7 +83,7 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
    /**
     * The data is going to be filtered in accordance to strings in 'flags'.
     * These are either 'A', 'P' or 'M' for absent, present and marginal.
-    * 
+    *
     * @param data The input matrix
     * @return Matrix after filtering.
     */
@@ -195,10 +195,10 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
    }
 
    /**
-    * 
-    * @param data
+    *
+    * @param data NamedMatrix
     * @todo this should check more carefully - actually test that the rows are
-    *       all the same.
+    *   all the same.
     */
    private void validateFlags( NamedMatrix data ) {
       if ( flags == null || flags.rows() < data.rows()

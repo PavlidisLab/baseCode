@@ -5,21 +5,22 @@ import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.matrix.SparseDoubleMatrix2DNamed;
 
 /**
- * 
- * 
+ *
+ *
  * <hr>
  * <p>
  * Copyright (c) 2004 Columbia University
- * 
+ *
  * @author pavlidis
  * @version $Id$
  */
 public class MatrixStats {
 
    /**
+    *
     * @todo this is pretty inefficient - calls new
-    * @param data
-    * @return @throws OutOfMemoryError
+    * @param data DenseDoubleMatrix2DNamed
+    * @return DenseDoubleMatrix2DNamed
     */
    public static DenseDoubleMatrix2DNamed correlationMatrix(
          DenseDoubleMatrix2DNamed data ) {
@@ -42,16 +43,14 @@ public class MatrixStats {
    }
 
    /**
-    * 
-    * @param data
+    *
+    * @param data DenseDoubleMatrix2DNamed
     * @param threshold only correlations with absolute values above this level
-    *        are stored.
+    *   are stored.
     * @return SparseDoubleMatrix2DNamed
-    * @throws OutOfMemoryError
     */
    public static SparseDoubleMatrix2DNamed correlationMatrix(
-         DenseDoubleMatrix2DNamed data, double threshold )
-         throws OutOfMemoryError {
+         DenseDoubleMatrix2DNamed data, double threshold ) {
       SparseDoubleMatrix2DNamed result = new SparseDoubleMatrix2DNamed( data
             .rows(), data.rows() );
 
@@ -74,7 +73,7 @@ public class MatrixStats {
 
    /**
     * Find the minimum of the entire matrix.
-    * 
+    *
     * @param matrix DenseDoubleMatrix2DNamed
     * @return the smallest value in the matrix
     */
@@ -107,7 +106,7 @@ public class MatrixStats {
 
    /**
     * Compute the maximum value in the matrix.
-    * 
+    *
     * @param matrix DenseDoubleMatrix2DNamed
     * @return the largest value in the matrix
     */
