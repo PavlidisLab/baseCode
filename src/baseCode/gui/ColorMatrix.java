@@ -29,6 +29,7 @@ public class ColorMatrix {
     int m_totalRows, m_totalColumns;
 
     // colors and color maps
+    Color m_missingColor = Color.lightGray;
     final Color DARK_RED = new Color( 128, 0, 0 );
     Color m_minColor = Color.green; // default
     Color m_maxColor = Color.red;   // default
@@ -40,7 +41,7 @@ public class ColorMatrix {
 
     public ColorMatrix() {
 
-        this( "C:\\2_not-normalized.txt", true );
+        this( "C:\\3_missing-values.txt", false );
     }
 
     /**
@@ -166,16 +167,24 @@ public class ColorMatrix {
             for (int column = 0;  column < m_totalColumns;  column++)
             {
                 double value = m_matrix.get( row, column );
-
-                // if values can be less than zero, shift them up
-                // to the range [0, maxValue + minValue]
-                if (m_minValue < 0)
+                
+                if (Double.isNaN (value))
                 {
-                    value += Math.abs( m_minValue );
+                    // the value is missing
+                    m_colors[row][column] = m_missingColor;
                 }
-                // normalize the values to the range [0, totalColors]
-                int i = (int)(( (m_colorPalette.length-1) / range ) * value );
-                m_colors[row][column] = m_colorPalette[i];
+                else
+                {
+                    // if values can be less than zero, shift them up
+                    // to the range [0, maxValue + minValue]
+                    if (m_minValue < 0)
+                    {
+                        value += Math.abs( m_minValue );
+                    }
+                    // normalize the values to the range [0, totalColors]
+                    int i = (int)(( (m_colorPalette.length-1) / range ) * value );
+                    m_colors[row][column] = m_colorPalette[i];
+                }
             }
         }
     } // end initColors
@@ -233,19 +242,26 @@ public class ColorMatrix {
                 double[] rowValues = matrix.getRow( r );
                 cern.colt.list.DoubleArrayList doubleArrayList = new cern.colt.list.DoubleArrayList( rowValues );
                 doubleArrayList = baseCode.Math.Stats.standardize( doubleArrayList );
-                setRow( r, doubleArrayList.elements() );
+                rowValues = doubleArrayList.elements();
+                setRow( r, rowValues );
             }
-        }
             
-        // compute min and max values in the matrix
-        m_minValue = m_maxValue = m_matrix.get( 0, 0 );
-        for (int r = 0;  r < m_totalRows;  r++)
+            // ??? - we normalized to variance one, mean zero, so shouldn't this be true:
+            m_minValue = -1;
+            m_maxValue = 1;
+        }
+        //else
         {
-            for (int c = 0;  c < m_totalColumns;  c++)
+            // compute min and max values in the matrix
+            m_minValue = m_maxValue = m_matrix.get( 0, 0 );
+            for (int r = 0;  r < m_totalRows;  r++)
             {
-                double value = m_matrix.get( r, c );
-                m_minValue = (m_minValue > value ? value : m_minValue);
-                m_maxValue = (m_maxValue < value ? value : m_maxValue);
+                for (int c = 0;  c < m_totalColumns;  c++)
+                {
+                    double value = m_matrix.get( r, c );
+                    m_minValue = (m_minValue > value ? value : m_minValue);
+                    m_maxValue = (m_maxValue < value ? value : m_maxValue);
+                }
             }
         }
 
