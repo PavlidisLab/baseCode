@@ -14,18 +14,18 @@ import javax.swing.*;
  * @version $Id$
  */
 
-abstract class Wizard extends JDialog {
+public abstract class Wizard extends JDialog {
    JPanel mainPanel;
    BorderLayout borderLayout1 = new BorderLayout();
    JPanel BottomPanel = new JPanel();
-   JButton nextButton = new JButton();
-   JButton backButton = new JButton();
-   JButton cancelButton = new JButton();
-   JButton finishButton = new JButton();
-   int step;
+   protected JButton nextButton = new JButton();
+   protected JButton backButton = new JButton();
+   protected JButton cancelButton = new JButton();
+   protected JButton finishButton = new JButton();
+   protected int step;
    Vector steps=new Vector();
    Vector texts=new Vector();
-   JFrame callingframe;
+   protected JFrame callingframe;
 
    public Wizard(JFrame callingframe, int width, int height)
    {
@@ -66,14 +66,14 @@ abstract class Wizard extends JDialog {
       mainPanel.add(BottomPanel, BorderLayout.SOUTH);
    }
 
-   void addStep(int step, WizardStep panel)
+   protected void addStep(int step, WizardStep panel)
    {
       steps.add(step-1,panel);
       if(step==1)
          mainPanel.add((JPanel)steps.get(0),BorderLayout.CENTER);
    }
 
-   void addStepText(int step, JPanel panel)
+   protected void addStepText(int step, JPanel panel)
    {
       texts.add(step-1,panel);
       if(step==1)
@@ -92,10 +92,10 @@ abstract class Wizard extends JDialog {
       show();
    }
 
-   abstract void nextButton_actionPerformed(ActionEvent e);
-   abstract void backButton_actionPerformed(ActionEvent e);
-   abstract void cancelButton_actionPerformed(ActionEvent e);
-   abstract void finishButton_actionPerformed(ActionEvent e);
+   protected abstract void nextButton_actionPerformed(ActionEvent e);
+   protected abstract void backButton_actionPerformed(ActionEvent e);
+   protected abstract void cancelButton_actionPerformed(ActionEvent e);
+   protected abstract void finishButton_actionPerformed(ActionEvent e);
 }
 
 class Wizard_nextButton_actionAdapter implements java.awt.event.

@@ -12,7 +12,7 @@ import javax.swing.*;
  * @version $Id$
  */
 
-abstract class WizardStep extends JPanel{
+public abstract class WizardStep extends JPanel{
    public WizardStep(Wizard wiz) {
       super();
       try {
@@ -23,11 +23,11 @@ abstract class WizardStep extends JPanel{
    }
 
    //Component initialization
-   abstract void jbInit() throws Exception;
+   protected abstract void jbInit() throws Exception;
 
    abstract public boolean isReady();
 
-   private boolean testfile(String filename) {
+   protected  boolean testfile(String filename) {
       if (filename != null && filename.length() > 0) {
          File f = new File(filename);
          if (f.exists()) {
