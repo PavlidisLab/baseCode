@@ -1,23 +1,19 @@
 <?xml version="1.0"?>
 <project>
 	<pomVersion>3</pomVersion>
-	<name>Functional class scoring</name>
-	<groupId>classScore</groupId>
-	<artifactId>classScore</artifactId>
-	<currentVersion>1.1</currentVersion>
+	<name>basic code utilities</name>
+	<groupId>baseCode</groupId>
+	<artifactId>baseCode</artifactId>
+	<currentVersion>0.1</currentVersion>
 	<versions>
 		<version>
-			<id>1.1</id>
-			<name>1.1</name>
+			<id>0.1</id>
+			<name>0.1</name>
 		</version>
 	</versions>
 	<repository>
-		<connection>scm:cvs:ext:${maven.username}@adgate.cu-genome.org:/fsnode/projects/cvs/pavlab:ermineJ</connection>
+		<connection>scm:cvs:ext:${maven.username}@adgate.cu-genome.org:/fsnode/projects/cvs/pavlab:baseCode</connection>
 	</repository>
-
-	<siteAddress>microarray</siteAddress>
-	<siteDirectory>/proj/pavlidis/protected/baseCode</siteDirectory>
-
 	<developers>
 		<developer>
 			<name>Paul Pavlidis</name>
@@ -27,13 +23,13 @@
 		</developer>
 		<developer>
 			<name>William Braynen</name>
-			<id>wbraynen</id>
+			<id>braynen</id>
 			<email>wbraynen@ic.sunysb.edu</email>
 			<organization>Columbia University</organization>
 		</developer>
 		<developer>
 			<name>Homin Lee</name>
-			<id>hkl7</id>
+			<id>hlk7</id>
 			<email>hlk7@cs.columbia.edu</email>
 			<organization>Columbia University</organization>
 		</developer>
@@ -48,22 +44,15 @@
 			<url>http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/download</url>
 			<jar>colt.jar</jar>
 		</dependency>
+		<dependency>
+			<id>mysql</id>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>3.0.8-stable-bin</version>
+		</dependency>
                 		<dependency>
 			<id>commons-logging</id>
 			<artifactId>commons-logging</artifactId>
 			<version>1.0.3</version>
 		</dependency>
 	</dependencies>
-  <reports>
-    <report>maven-jdepend-plugin</report>
-    <report>maven-checkstyle-plugin</report>
-    <report>maven-pmd-plugin</report>
-    <report>maven-changelog-plugin</report>
-    <report>maven-file-activity-plugin</report>
-    <report>maven-developer-activity-plugin</report>
-    <report>maven-javadoc-plugin</report>
-    <report>maven-jxr-plugin</report>
-    <report>maven-junit-report-plugin</report>
-    <report>maven-tasklist-plugin</report>
-  </reports>  
 </project>
