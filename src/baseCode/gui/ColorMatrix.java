@@ -49,15 +49,15 @@ public class ColorMatrix {
      *                   be relative to the java interpreter, not the class
      *                   (not my fault -- that's how java treats relative paths)
      */
-    public ColorMatrix( String filename, boolean normalize ) {
+    public ColorMatrix( String filename ) {
 
         DenseDoubleMatrix2DNamed matrix = loadFile( filename );
-        loadMatrix( matrix, normalize );
+        loadMatrix( matrix );
     }
 
-    public ColorMatrix( DenseDoubleMatrix2DNamed matrix, boolean normalize ) {
+    public ColorMatrix( DenseDoubleMatrix2DNamed matrix ) {
 
-        loadMatrix( matrix, normalize );
+        loadMatrix( matrix );
     }
 
     /**
@@ -177,11 +177,11 @@ public class ColorMatrix {
                     m_colors[row][column] = m_missingColor;
                 }
                 else
-                {                    
+                {
                     // clip extreme values (this makes sense for normalized
                     // values because then for a standard deviation of one and
                     // mean zero, we set m_minValue = -2 and m_maxValue = 2,
-                    // even though there could be a few extreme values 
+                    // even though there could be a few extreme values
                     // outside this range (right?)
                     if (value > m_maxValue)
                     {
@@ -197,9 +197,9 @@ public class ColorMatrix {
                     {
                         // shift the minimum value to zero
                         // to the range [0, maxValue + minValue]
-                        value -= m_minValue;                        
+                        value -= m_minValue;
                     }
-                    
+
                     // stretch or shrink the range to [0, totalColors]
                     double valueNew = value * zoomFactor;
                     int i = (int)valueNew;
@@ -284,7 +284,7 @@ public class ColorMatrix {
         return m_rowKeys;
     }
 
-    public void loadMatrix( DenseDoubleMatrix2DNamed matrix, boolean normalize ) {
+    public void loadMatrix( DenseDoubleMatrix2DNamed matrix ) {
 
         m_matrix = matrix; // by reference, or should we clone?
         m_totalRows = m_matrix.rows();
@@ -292,15 +292,8 @@ public class ColorMatrix {
         m_colors = new Color[m_totalRows][m_totalColumns];
         createRowKeys();
 
-        if (normalize)
-        {
-            standardize();
-        }
-        else
-        {
-            m_minValue = MatrixStats.min( m_matrix );
-            m_maxValue = MatrixStats.max( m_matrix );
-        }
+        m_minValue = MatrixStats.min(m_matrix);
+        m_maxValue = MatrixStats.max(m_matrix);
 
         // map values to colors
         mapValuesToColors();
@@ -334,7 +327,7 @@ public class ColorMatrix {
        m_minValue = -2;
        m_maxValue = 2;
 
-       //mapValuesToColors();
+       mapValuesToColors();
 
     } // end standardize
 

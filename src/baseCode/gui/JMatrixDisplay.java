@@ -11,7 +11,7 @@ public class JMatrixDisplay extends JPanel {
   // data fields
   ColorMatrix m_matrix;
 
-  protected boolean m_isPrintRowNames = false;
+  protected boolean m_isShowRowNames = false;
   protected boolean m_isPrintColumnNames = true; // TO DO: implement
   protected BufferedImage m_image = null;
 
@@ -30,9 +30,6 @@ public class JMatrixDisplay extends JPanel {
   /** Cell width in pixels; if printing column names, minimum recommended width is 10 pixels */
   protected static int m_cellWidth = 10; // in pixels
 
-  private boolean picOnceSaved = false;  // TO DO: delete this
-
-
 
   public JMatrixDisplay( ColorMatrix matrix ) {
 
@@ -50,7 +47,7 @@ public class JMatrixDisplay extends JPanel {
       int height = m_cellHeight * m_matrix.getRowCount();
       int width  = m_cellWidth  * m_matrix.getColumnCount();
 
-      if (m_isPrintRowNames)
+      if (m_isShowRowNames)
       {
           width += m_rowNameWidth;
       }
@@ -71,17 +68,6 @@ public class JMatrixDisplay extends JPanel {
     super.paintComponent(g);
     drawDisplay( g, m_matrix );
 
-    if (!picOnceSaved) {
-       picOnceSaved = true;
-       // save screenshot to file
-       String filename = "C:\\matrix.png";
-       try {
-          saveToFile(filename);
-       }
-       catch (java.io.IOException e) {
-          System.err.println("IOException: unable to save screenshot to " + filename);
-       }
-    }
   } // end paintComponent
 
   /**
@@ -104,7 +90,7 @@ public class JMatrixDisplay extends JPanel {
            int y = i * m_cellHeight;
 
            // draw an entire row, one cell at a time
-           for (int j = 0; j < columnCount; j++) 
+           for (int j = 0; j < columnCount; j++)
            {
               int x = (j * m_cellWidth);
               int width = ( (j + 1) * m_cellWidth) - x;
@@ -115,7 +101,7 @@ public class JMatrixDisplay extends JPanel {
            }
 
            // print row names
-           if (m_isPrintRowNames && columnCount > 0) 
+           if (m_isShowRowNames && columnCount > 0)
            {
               g.setColor(Color.black);
               setFont();
@@ -156,9 +142,9 @@ public class JMatrixDisplay extends JPanel {
   }
 
   /**
-   * Saves to file
+   * Saves screenshot to file
    */
-  public void saveToFile( String outFileName ) throws java.io.IOException {
+  public void saveScreenshotToFile( String outPngFilename ) throws java.io.IOException {
 
      Graphics2D g = null;
      m_image = new BufferedImage(this.getWidth(),
@@ -168,6 +154,28 @@ public class JMatrixDisplay extends JPanel {
 
      drawDisplay( g, m_matrix );
 
-      ImageIO.write( m_image, "png", new File( outFileName ));
+      ImageIO.write( m_image, "png", new File( outPngFilename ));
+  }
+
+  /**
+   * If this display component has already been added to the GUI,
+   * it will be resized to fit or exclude the row names
+   */
+  public void showRowNames( boolean isShowRowNames ) {
+     m_isShowRowNames = isShowRowNames;
+     initSize();
+  }
+
+  public ColorMatrix getMatrix() {
+     return m_matrix;
+  }
+
+  /**
+   * @param  matrix  the new matrix to use;  will resize
+   *                 this display component as necessary
+   */
+  public void setMatrix( ColorMatrix matrix ) {
+     m_matrix = matrix;
+     initSize();
   }
 }

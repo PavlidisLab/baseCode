@@ -4,15 +4,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-/**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2004</p>
- * <p>Institution:: Columbia University</p>
- * @author not attributable
- * @version 1.0
- */
-
 public class TestFrame extends JFrame {
   JPanel contentPane;
   BorderLayout borderLayout1 = new BorderLayout();
