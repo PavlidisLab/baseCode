@@ -1,4 +1,4 @@
-package baseCode.Gui;
+package baseCode.gui;
 
 import java.awt.Color;
 import java.io.IOException;
