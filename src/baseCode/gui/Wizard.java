@@ -24,7 +24,7 @@ import javax.swing.JPanel;
  * <p>
  * Company:
  * </p>
- * 
+ *
  * @author not attributable
  * @version $Id$
  */
@@ -39,7 +39,6 @@ public abstract class Wizard extends JDialog {
    protected JButton finishButton = new JButton();
    protected int step;
    Vector steps = new Vector();
-   Vector texts = new Vector();
    protected JFrame callingframe;
 
    public Wizard( JFrame callingframe, int width, int height ) {
@@ -86,12 +85,6 @@ public abstract class Wizard extends JDialog {
       steps.add( step - 1, panel );
       if ( step == 1 )
          mainPanel.add( ( JPanel ) steps.get( 0 ), BorderLayout.CENTER );
-   }
-
-   protected void addStepText( int step, JPanel panel ) {
-      texts.add( step - 1, panel );
-      if ( step == 1 )
-         mainPanel.add( ( JPanel ) texts.get( 0 ), BorderLayout.NORTH );
    }
 
    public void showWizard() {
