@@ -21,10 +21,21 @@ import java.util.StringTokenizer;
 public class MapReader {
 
    /**
+    *
+    * @param filename String
+    * @throws IOException
+    * @return Map
+    */
+   public Map read( String filename ) throws IOException {
+     return this.read(filename, false);
+  }
+
+
+   /**
     * @param filename name of the tab-delimited file
     * @return Map from the file.
     */
-   public Map read( String filename ) throws IOException {
+   public Map read( String filename, boolean hasHeader ) throws IOException {
       Map result = new HashMap();
 
       File infile = new File( filename );
@@ -34,8 +45,12 @@ public class MapReader {
       }
 
       BufferedReader dis = new BufferedReader( new FileReader( filename ) );
-      String row;
 
+      if (hasHeader) {
+         dis.readLine();
+      }
+
+      String row;
       while ( ( row = dis.readLine() ) != null ) {
          StringTokenizer st = new StringTokenizer( row, "\t" );
          String key = st.nextToken();

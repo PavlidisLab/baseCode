@@ -8,11 +8,9 @@ import java.util.Vector;
 import cern.colt.matrix.impl.DenseObjectMatrix2D;
 
 /**
- *
- * <p>Title: </p>
- * <p>Description: </p>
+* A NamedMatrix containing String objects.
  * <p> Copyright (c) 2004</p>
- * <p>Institution:: Columbia University</p>
+ * <p>Institution: Columbia University</p>
  * @author Paul Pavlidis
  * @version $Id$
  */

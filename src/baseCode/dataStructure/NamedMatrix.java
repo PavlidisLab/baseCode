@@ -75,6 +75,10 @@ public interface NamedMatrix {
     */
    public void setColumnNames( Vector v );
 
+   /**
+    *
+    * @return Vector
+    */
    public Vector getColNames();
 
    /**
@@ -92,20 +96,36 @@ public interface NamedMatrix {
 
    /**
     *
-    * @return
+    * @return int
     */
    public int rows();
 
    /**
     *
-    * @return
+    * @return int
     */
    public int columns();
 
+   /**
+    *
+    * @param i int
+    * @param j int
+    * @param val Object
+    */
    public void set( int i, int j, Object val );
 
+   /**
+    *
+    * @param i int
+    * @return Object[]
+    */
    public Object[] getRowObj( int i );
 
+   /**
+    *
+    * @param i int
+    * @return Object[]
+    */
    public Object[] getColObj( int i );
 
 }
