@@ -48,27 +48,25 @@ public class ROC {
       for ( int i = 0; i < totalSize; i++ ) {
          if ( ranks.contains( new Integer( i ) ) ) {
             numPosSeen++;
-            //         System.err.print( "+" );
+            System.err.print( "+" );
          } else {
-            //         System.err.print( "-" );
+            System.err.print( "-" );
             result += numPosSeen;
             numNegSeen++;
-            if ( maxFP > 0 && numNegSeen >= maxFP ) {
-               System.err.println( numNegSeen + " " + numPosSeen );
+            if ( maxFP > 0 && numNegSeen >= maxFP ) {  
                break;
             }
-
          }
 
-         if ( numPosSeen == targetSize ) { // we've seen all the positives, we can stop.
-            result += numPosSeen * ( totalSize - i - 1 );
-            break;
-         }
+//         if ( numPosSeen == targetSize ) { // we've seen all the positives, we can stop.
+//            result += numPosSeen * ( totalSize - i - 1 );
+//            break;
+ //        }
       }
-      //  System.err.println("\n");
+      System.err.println( numNegSeen + " negs, " + numPosSeen + " pos seen out of " + targetSize + " positives" ); 
 
       if ( maxFP > 0 ) {
-         return result / ( ranks.size() * numNegSeen );
+         return result / ( targetSize * numNegSeen );
       }
       return result / ( numPosSeen * ( totalSize - targetSize ) );
 
