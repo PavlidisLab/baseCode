@@ -15,6 +15,7 @@ import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
 import cern.colt.map.AbstractIntDoubleMap;
 import cern.colt.map.OpenIntDoubleHashMap;
+import cern.colt.map.OpenIntIntHashMap;
 import cern.colt.matrix.DoubleMatrix1D;
 
 /**
@@ -126,7 +127,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
          int amount = Integer.parseInt( tok.nextToken() );
 
          if ( ( index % 500 ) == 0 ) {
-            log.warn( new String( "loading  " + index + "th entry" ) );
+            log.info( new String( "loading  " + index + "th entry" ) );
          }
 
          //         IntArrayList rowind = readOneIndexRow( dis, amount );
@@ -195,69 +196,33 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
 
    private DoubleMatrix1D readOneRow( BufferedReader dis, int amount )
          throws IOException {
-      
-      
+        
       String rowInd = dis.readLine(); // row with indices.
       String rowWei = dis.readLine(); // row with weights.
 
       StringTokenizer tokw = new StringTokenizer( rowWei, " \t" );
       StringTokenizer toki = new StringTokenizer( rowInd, " \t" );
-
-//      IntArrayList indexes = new IntArrayList( amount );
-//      DoubleArrayList values = new DoubleArrayList( amount );
-
-      OpenIntDoubleHashMap map = new OpenIntDoubleHashMap(amount , 0.8, 0.9);
+ 
+      OpenIntIntHashMap map = new OpenIntIntHashMap(amount , 0.8, 0.9);
+      DoubleArrayList values = new DoubleArrayList(amount);
       
       int maxind = 0;
+      int i = 0;
       while ( toki.hasMoreTokens() ) {
+         
          double eval = Double.parseDouble( tokw.nextToken() );
          int ind = Integer.parseInt( toki.nextToken() ) - 1; // this is a JW thing - the indexes start at 1.
-         map.put(ind, eval);
 
+         map.put(ind, i);
+         values.add(eval);
+         i++;
+         
          if (ind > maxind) {
             maxind = ind;
          }
-         
-//         if (ind < 0) {
-//            continue; // assume this is garbage.
-//         }
-//         
-//         
-//         /* the only reason we add things in order is to support setQuick and getQuick. An alternative
-//          * implemenation would use a Map to associate values with indices. */
-//         
-//         
-//         /*
-//          * index of the search key, if it is contained in the receiver; otherwise, (-(insertion point) - 1). The
-//          * insertion point is defined as the the point at which the value would be inserted into the receiver: the
-//          * index of the first element greater than the key, or receiver.size(), if all elements in the receiver are
-//          * less than the specified key. Note that this guarantees that the return value will be >= 0 if and only if the
-//          * key is found.
-//          */
-//         int k = indexes.binarySearch( ind );
-//         if ( k >= 0 ) { // found. This shouldn't happen - if it does it means there is a duplicate.
-//            values.setQuick( k, eval );
-//         }
-//
-//         if ( eval != 0.0 ) {
-//            k = -k - 1;
-//            
-//            if (k < -1) {
-//               throw new IllegalStateException("k was less than zero...");
-//            }
-//            
-//            indexes.beforeInsert( k, ind ); // this is slow.
-//            values.beforeInsert( k, eval ); // this is slow.
-//         }
-//
-//         if ( values.size() > amount ) {
-//            throw new IllegalStateException( "Too many tokens ("
-//                  + values.size() + ", expected " + amount + ")" );
-//         }
-      }
-   //   return new RCDoubleMatrix1D( values, indexes );
-      return new RCDoubleMatrix1D(map, maxind + 1);
 
+      } 
+      return new RCDoubleMatrix1D(map, values, maxind + 1);
    }
 
 }

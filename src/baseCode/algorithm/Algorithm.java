@@ -1,5 +1,17 @@
 package baseCode.algorithm;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.braju.beta.format.Format;
+
+import baseCode.dataFilter.AbstractFilter;
+
+
+
 /**
  * 
  *
@@ -8,11 +20,9 @@ package baseCode.algorithm;
  * @author pavlidis
  * @version $Id$
  */
-public interface Algorithm {
+public abstract class Algorithm {
 
-   /**
-    * 
-    */
-   public void run();
-   
+   protected static final Log log = LogFactory.getLog( Algorithm.class );
+  
+  
 }

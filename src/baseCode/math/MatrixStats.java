@@ -3,7 +3,6 @@ package baseCode.math;
 import baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix;
 import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.matrix.SparseDoubleMatrix2DNamed;
-import cern.colt.function.DoubleDoubleFunction;
 import cern.colt.function.DoubleFunction;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
@@ -153,6 +152,7 @@ public class MatrixStats {
          AbstractNamedDoubleMatrix matrixToNormalize, final double sigma ) {
       System.err.print( "Normalizing ..." );
 
+      // define the function we will use.
       DoubleFunction f = new DoubleFunction() {
          public double apply( double value ) {
             return Math.exp( -value / sigma );

@@ -25,7 +25,7 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
  * @author pavlidis
  * @version $Id$
  */
-public class HierarchicalClusterer implements ClusteringAlgorithm {
+public class HierarchicalClusterer extends ClusteringAlgorithm {
 
    /**
     * How many values we cache

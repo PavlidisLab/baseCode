@@ -3,13 +3,17 @@ package baseCode.dataStructure.matrix;
 import cern.colt.function.DoubleFunction;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
-import cern.colt.map.OpenIntDoubleHashMap;
+import cern.colt.map.OpenIntIntHashMap;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
+
 import cern.colt.matrix.impl.RCDoubleMatrix2D;
-import cern.colt.matrix.impl.SparseDoubleMatrix1D;
 
 /**
+ * A row-compressed 1D matrix. The only deviation from the contract of DoubleMatrix1D is in apply(), which only operates
+ * on the non-empty elements. This implementation has a highly optimized dot product computer. If you need to compute
+ * the dot product of a RCDoubleMatrix1D with another DoubleMatrix1D, call zDotProduct on this, not on the other. This
+ * is because getQuick() and setQuick() are not very fast for this.
  * <hr>
  * <p>
  * Copyright (c) 2004 Columbia University
@@ -19,10 +23,9 @@ import cern.colt.matrix.impl.SparseDoubleMatrix1D;
  */
 public class RCDoubleMatrix1D extends DoubleMatrix1D {
 
-   //   protected IntArrayList indexes;
-   //   protected DoubleArrayList values;
-
-   protected OpenIntDoubleHashMap map;
+   protected OpenIntIntHashMap map; // todo may need to find a more efficient way to store all this.
+   protected IntArrayList indexes;
+   protected DoubleArrayList values;
 
    public RCDoubleMatrix1D( double[] values ) {
       this( values.length );
@@ -34,31 +37,20 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
     */
    public RCDoubleMatrix1D( int length ) {
       setUp( length );
-      //      this.indexes = new IntArrayList(length);
-      //      this.values = new DoubleArrayList(length);
-      this.map = new OpenIntDoubleHashMap( length );
+      this.indexes = new IntArrayList( length );
+      this.map = new OpenIntIntHashMap( length );
+      this.values = new DoubleArrayList( length );
    }
 
    /**
-    * @param values
-    * @param ind
-    */
-   //   public RCDoubleMatrix1D( DoubleArrayList values, IntArrayList ind ) {
-   //      setUp( ind.size() );
-   //      this.indexes = ind;
-   //      this.values = values;
-   //
-   //      if ( size > 0 ) {
-   //         this.size = ind.get( ind.size() - 1 ) + 1;
-   //      }
-   //
-   //   }
-   /**
     * @param map
     */
-   public RCDoubleMatrix1D( OpenIntDoubleHashMap map, int size ) {
+   public RCDoubleMatrix1D( OpenIntIntHashMap map, DoubleArrayList values,
+         int size ) {
       setUp( size );
       this.map = map;
+      this.values = values;
+      this.indexes = map.keys();
    }
 
    /*
@@ -67,11 +59,10 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
     * @see cern.colt.matrix.DoubleMatrix1D#getQuick(int)
     */
    public double getQuick( int index ) {
-      //      int k = indexes.binarySearch( index );
-      //      double v = 0;
-      //      if ( k >= 0 ) v = values.getQuick( k );
-      //      return v;
-      return map.get( index );
+      if ( map.containsKey( index ) ) {
+         return values.get( map.get( index ) );
+      }
+      return 0.0;
    }
 
    /*
@@ -79,8 +70,8 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
     * 
     * @see cern.colt.matrix.DoubleMatrix1D#like(int)
     */
-   public DoubleMatrix1D like( int size ) {
-      return new RCDoubleMatrix1D( size );
+   public DoubleMatrix1D like( int s ) {
+      return new RCDoubleMatrix1D( s );
    }
 
    /*
@@ -98,20 +89,13 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
     * @see cern.colt.matrix.DoubleMatrix1D#setQuick(int, double)
     */
    public void setQuick( int column, double value ) {
-      //      int k = indexes.binarySearch( column );
-      //      if ( k >= 0 ) { // found
-      //         if ( value == 0 )
-      //            remove( k );
-      //         else
-      //            values.setQuick( k, value );
-      //         return;
-      //      }
-      //
-      //      if ( value != 0 ) {
-      //         k = -k - 1;
-      //         insert( column, k, value );
-      //      }
-      map.put( column, value );
+      if ( map.containsKey( column ) ) {
+         values.set( map.get( column ), value );
+      } else {
+         map.put( column, values.size() );
+         values.add( value );
+         indexes.add( column );
+      }
    }
 
    /*
@@ -123,16 +107,6 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
       throw new UnsupportedOperationException(); // should never be called
    }
 
-   //   protected void remove( int index ) {
-   //      indexes.remove( index );
-   //      values.remove( index );
-   //   }
-   //
-   //   protected void insert( int column, int index, double value ) {
-   //      indexes.beforeInsert( index, column );
-   //      values.beforeInsert( index, value );
-   //   }
-
    /**
     * Apply the given function to each element non-zero element in the matrix.
     * 
@@ -140,83 +114,61 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
     * @return
     */
    public DoubleMatrix1D forEachNonZero(
-         final cern.colt.function.IntDoubleFunction function ) {
-      //      int[] idx = indexes.elements();
-      //      double[] vals = values.elements();
-      //
-      //      for ( int i = idx.length; --i >= 0; ) {
-      //         double value = vals[i];
-      //         double r = function.apply( i, value );
-      //         if ( r != value ) vals[i] = r;
-      //      }
+         final cern.colt.function.DoubleFunction function ) {
 
-      int[] idx = map.keys().elements();
-      for ( int i = idx.length; --i >= 0; ) {
-         int ti = idx[i];
-         double value = map.get( ti );
-         double r = function.apply( ti, value );
-         if ( r != value ) map.put( ti, r );
+      double[] elements = values.elements();
+      for ( int i = elements.length; --i >= 0; ) {
+         elements[i] = function.apply( elements[i] );
       }
-
       return this;
+
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see cern.colt.matrix.DoubleMatrix1D#zDotProduct(cern.colt.matrix.DoubleMatrix1D)
+    */
    public double zDotProduct( DoubleMatrix1D y ) {
-      //      int[] idx = indexes.elements();
-      //      double[] vals = values.elements();
-      //      int otherSize = y.size();
-      //      double returnVal = 0.0;
-      //      for ( int i = idx.length; --i >= 0; ) {
-      //         int index = idx[i];
-      //         if ( index >= otherSize ) continue; // in case our arrays are ragged.
-      //         returnVal += vals[i] * y.getQuick( index );
-      //      }
 
-      int[] idx = map.keys().elements();
+      int[] idx = indexes.elements();
+      double[] el = values.elements();
+      double[] other = y.toArray();
       double returnVal = 0.0;
       int otherSize = y.size();
       for ( int i = idx.length; --i >= 0; ) {
          int index = idx[i];
          if ( index >= otherSize ) continue; // in case our arrays are ragged.
-         returnVal += map.get( index ) * y.getQuick( index );
+         returnVal += el[i] * other[index];
       }
       return returnVal;
    }
 
    /**
-    * todo This isn't really right - assign should operate on 0 values too, I think.
+    * WARNING this only even assigns to the non-empty values, for performanc reasons. If you need to assign to any
+    * index, you have to use another way.
+    * 
+    * @see cern.colt.matrix.DoubleMatrix1D#assign(cern.colt.function.DoubleFunction)
     */
    public DoubleMatrix1D assign( DoubleFunction function ) {
-      //      int[] idx = indexes.elements();
-      //      double[] vals = values.elements();
-      //
-      //      for ( int i = idx.length; --i >= 0; ) {
-      //         double value = vals[i];
-      //         double r = function.apply( value );
-      //         if ( r != value ) vals[i] = r;
-      //      }
 
-      int[] idx = map.keys().elements();
-      for ( int i = idx.length; --i >= 0; ) {
-         double value = map.get( idx[i] );
-         double r = function.apply( value );
-         if ( r != value ) map.put( idx[i], r );
+      double[] elements = values.elements();
+      for ( int i = elements.length; --i >= 0; ) {
+         elements[i] = function.apply( elements[i] );
       }
       return this;
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see cern.colt.matrix.DoubleMatrix1D#zSum()
+    */
    public double zSum() {
-      //      double[] vals = values.elements();
-      //      double sum = 0.0;
-      //      for ( int i = 0; i < vals.length; i++ ) {
-      //         sum += vals[i];
-      //
-      //      }
-      //      return sum;
       double sum = 0.0;
-      int[] idx = map.keys().elements();
-      for ( int i = idx.length; --i >= 0; ) {
-         sum += map.get( idx[i] );
+      double[] elements = values.elements();
+      for ( int i = elements.length; --i >= 0; ) {
+         sum += elements[i];
       }
       return sum;
    }

@@ -10,6 +10,6 @@ import baseCode.algorithm.Algorithm;
  * @author pavlidis
  * @version $Id$
  */
-public interface ClusteringAlgorithm extends Algorithm {
+public abstract class ClusteringAlgorithm extends Algorithm {
 
 }

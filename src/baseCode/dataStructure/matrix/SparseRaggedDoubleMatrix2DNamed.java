@@ -7,6 +7,7 @@ import java.util.Vector;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
 import cern.colt.map.OpenIntDoubleHashMap;
+import cern.colt.map.OpenIntIntHashMap;
 import cern.colt.matrix.DoubleMatrix1D;
 
 /**
@@ -149,7 +150,6 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
             if ( value == 0.0 ) {
                result = result + "\t";
             } else {
-
                result = result + "\t" + nf.format( value );
             }
          }
@@ -218,8 +218,8 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
 //   }
    
    
-   public void addRow(String name, OpenIntDoubleHashMap map, int size) {
-      DoubleMatrix1D rowToAdd = new RCDoubleMatrix1D(map , size);
+   public void addRow(String name, OpenIntIntHashMap map, DoubleArrayList values, int size) {
+      DoubleMatrix1D rowToAdd = new RCDoubleMatrix1D(map , values, size);
       
      matrix.add( rowToAdd );
      this.addColumnName( name, matrix.size() - 1 );

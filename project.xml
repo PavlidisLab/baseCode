@@ -80,7 +80,15 @@ xmlns:jnlp="http://www.w3.org/2001/XMLSchema-instance">
             <type>jar</type>
             <properties/>
         </dependency>
-        
+           <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.8</version>
+            <type>jar</type>
+            <properties>
+                <jnlp.jar>true</jnlp.jar>
+            </properties>
+        </dependency>
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
