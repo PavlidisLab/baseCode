@@ -9,7 +9,6 @@ import baseCode.io.reader.SparseRaggedDouble2DNamedMatrixReader;
 import baseCodeTest.io.reader.TestSparseDoubleMatrixReader;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
-import cern.colt.matrix.impl.SparseDoubleMatrix1D;
 
 /**
  * <hr>
@@ -35,7 +34,7 @@ public class TestSparseRaggedDoubleMatrix2DNamed extends TestCase {
             .getResourceAsStream( "/data/JW-testmatrix.txt" );
       isa = TestSparseDoubleMatrixReader.class
             .getResourceAsStream( "/data/adjacencylist-testmatrix.txt" );
-      matrix = ( SparseRaggedDoubleMatrix2DNamed ) reader.read( is );
+      matrix = ( SparseRaggedDoubleMatrix2DNamed ) reader.read( is , 1);
    }
 
    public void testRows() {

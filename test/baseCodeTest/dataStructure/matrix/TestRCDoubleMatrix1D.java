@@ -38,37 +38,27 @@ public class TestRCDoubleMatrix1D extends TestCase {
       DoubleArrayList va = new DoubleArrayList( new double[] {
             1, 2, 5
       } );
-//      IntArrayList ina = new IntArrayList( new int[] {
-//            1, 2, 4
-//      } );
-//
+       IntArrayList ina = new IntArrayList( new int[] {
+             1, 2, 4
+      } );
+ 
       DoubleArrayList vb = new DoubleArrayList( new double[] {
             5, 3, 2, 1
       } );
-//      IntArrayList inb = new IntArrayList( new int[] {
-//            0, 1, 2, 3
-//      } );
-//      
-//      DoubleArrayList vc = new DoubleArrayList( new double[] {
-//            5, 3, 2, 1
-//      } );
-//      IntArrayList inc = new IntArrayList( new int[] {
-//            0, 1, 2, 3
-//      } );
+      IntArrayList inb = new IntArrayList( new int[] {
+            0, 1, 2, 3
+      } );
       
-      OpenIntIntHashMap ma = new OpenIntIntHashMap(3);
-      ma.put(1,0); // index -> location pairs.
-      ma.put(2,1);
-      ma.put(4,2);
+      DoubleArrayList vc = new DoubleArrayList( new double[] {
+            5, 3, 2, 1
+      } );
+      IntArrayList inc = new IntArrayList( new int[] {
+            0, 1, 2, 3
+      } );
+      
 
-      OpenIntIntHashMap mb = new OpenIntIntHashMap(4);
-      mb.put(0,0);
-      mb.put(1,1);
-      mb.put(2,2);
-      mb.put(3,3);
-
-      a = new RCDoubleMatrix1D(ma, va, 5);
-      b = new RCDoubleMatrix1D(mb, vb, 4);
+      a = new RCDoubleMatrix1D(ina, va );
+      b = new RCDoubleMatrix1D(inb, vb );
       
       c = new DenseDoubleMatrix1D( new double[] {5,3,2,1});
       super.setUp();

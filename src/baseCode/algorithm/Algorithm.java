@@ -1,16 +1,7 @@
 package baseCode.algorithm;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import com.braju.beta.format.Format;
-
-import baseCode.dataFilter.AbstractFilter;
-
-
 
 /**
  * 

@@ -6,8 +6,6 @@ import java.util.Vector;
 
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
-import cern.colt.map.OpenIntDoubleHashMap;
-import cern.colt.map.OpenIntIntHashMap;
 import cern.colt.matrix.DoubleMatrix1D;
 
 /**
@@ -201,25 +199,15 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
       // return getRowMatrix1D( i ).toArray();
       return ( ( DoubleMatrix1D ) matrix.get( i ) ).toArray();
    }
-
-   /**
-    * @param name
-    * @param values
-    * @param indexes
-    */
-//   public void addRow( String name, DoubleArrayList values, IntArrayList ind ) {
-//
-//      DoubleMatrix1D rowToAdd = new RCDoubleMatrix1D( values, ind );
-//       
-//      matrix.add( rowToAdd );
-//      this.addColumnName( name, matrix.size() - 1 );
-//      this.addRowName( name, matrix.size() - 1 );
-//      isDirty = true;
-//   }
    
-   
-   public void addRow(String name, OpenIntIntHashMap map, DoubleArrayList values, int size) {
-      DoubleMatrix1D rowToAdd = new RCDoubleMatrix1D(map , values, size);
+ /**
+  * 
+  * @param name
+  * @param indexes
+  * @param values
+  */
+   public void addRow(String name, IntArrayList indexes, DoubleArrayList values) {
+      DoubleMatrix1D rowToAdd = new RCDoubleMatrix1D(indexes , values);
       
      matrix.add( rowToAdd );
      this.addColumnName( name, matrix.size() - 1 );

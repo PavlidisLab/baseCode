@@ -3,10 +3,8 @@ package baseCode.dataStructure.matrix;
 import cern.colt.function.DoubleFunction;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
-import cern.colt.map.OpenIntIntHashMap;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
-
 import cern.colt.matrix.impl.RCDoubleMatrix2D;
 
 /**
@@ -23,35 +21,37 @@ import cern.colt.matrix.impl.RCDoubleMatrix2D;
  */
 public class RCDoubleMatrix1D extends DoubleMatrix1D {
 
-   protected OpenIntIntHashMap map; // todo may need to find a more efficient way to store all this.
    protected IntArrayList indexes;
    protected DoubleArrayList values;
 
+   /**
+    * 
+    * @param values
+    */
    public RCDoubleMatrix1D( double[] values ) {
       this( values.length );
       assign( values );
    }
 
+
    /**
+    * 
     * @param length
     */
    public RCDoubleMatrix1D( int length ) {
       setUp( length );
       this.indexes = new IntArrayList( length );
-      this.map = new OpenIntIntHashMap( length );
       this.values = new DoubleArrayList( length );
    }
 
    /**
-    * @param map
+    * @param indexes These MUST be in sorted order.
+    * @param values These MuST be in the same order as the indexes, meaning that indexes[0] is the column for values[0].
     */
-   public RCDoubleMatrix1D( OpenIntIntHashMap map, DoubleArrayList values,
-         int size ) {
-      setUp( size );
-      this.map = map;
+   public RCDoubleMatrix1D( IntArrayList indexes, DoubleArrayList values ) {
+      setUp( indexes.get( indexes.size() - 1 ) );
+      this.indexes = indexes;
       this.values = values;
-      this.indexes = map.keys();
-      indexes.sort();
    }
 
    /*
@@ -60,8 +60,11 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
     * @see cern.colt.matrix.DoubleMatrix1D#getQuick(int)
     */
    public double getQuick( int index ) {
-      if ( map.containsKey( index ) ) {
-         return values.get( map.get( index ) );
+
+      int location = indexes.binarySearch( index );
+
+      if ( location >= 0 ) {
+         return values.get( location );
       }
       return 0.0;
    }
@@ -90,12 +93,14 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
     * @see cern.colt.matrix.DoubleMatrix1D#setQuick(int, double)
     */
    public void setQuick( int column, double value ) {
-      if ( map.containsKey( column ) ) {
-         values.set( map.get( column ), value );
+      int location = indexes.binarySearch( column );
+
+      if ( location >= 0 ) {
+         values.set( location, value ); // just change the value
       } else {
-         map.put( column, values.size() );
-         values.add( value );
-         indexes.add( column );
+         location = -location - 1; // e.g., -1 means to insert just before 0.
+         indexes.beforeInsert( location, column ); // add this column, so the order is still right.
+         values.beforeInsert( location, value ); // keep this in the same order.
       }
    }
 
@@ -146,7 +151,7 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
    }
 
    /**
-    * WARNING this only even assigns to the non-empty values, for performanc reasons. If you need to assign to any
+    * WARNING this only even assigns to the non-empty values, for performance reasons. If you need to assign to any
     * index, you have to use another way.
     * 
     * @see cern.colt.matrix.DoubleMatrix1D#assign(cern.colt.function.DoubleFunction)
