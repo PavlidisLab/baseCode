@@ -29,9 +29,9 @@ public class OntologyEntry {
     * @param def
     */
    public OntologyEntry( String id, String name, String def ) {
-      this.id = id;
-      this.name = name;
-      this.definition = def;
+      this.id = id.intern();
+      this.name = name.intern();
+      this.definition = def.intern();
    }
 
    /**
@@ -39,7 +39,7 @@ public class OntologyEntry {
     * @return
     */
    public String getName() {
-      return name;
+      return name.intern();
    }
 
    /**

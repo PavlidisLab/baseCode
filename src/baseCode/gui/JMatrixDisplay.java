@@ -428,9 +428,9 @@ public class JMatrixDisplay extends JPanel {
 
    /**
     * @return the current color map
+    * @todo PP commented out assertion here.
     */
    public Color[] getColorMap() {
-    //  assert( m_matrix.m_colorMap == m_standardizedMatrix.m_colorMap );
       return m_matrix.m_colorMap;
    }
 

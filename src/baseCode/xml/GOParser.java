@@ -50,7 +50,7 @@ public class GOParser {
       for (Iterator it = nodes.keySet().iterator(); it.hasNext();) {
          DirectedGraphNode node = ( DirectedGraphNode)nodes.get(it.next());
          OntologyEntry e = (OntologyEntry)node.getItem();
-         result.put(e.getId(), e.getName());
+         result.put(e.getId().intern(), e.getName().intern());
       }
       return result;
    }
@@ -152,7 +152,7 @@ class GOHandler extends DefaultHandler {
       } else if ( name.equals( "definition" ) ) {
          String currentTerm = accBuf.toString();
          ( ( OntologyEntry ) m.getNodeContents( currentTerm ) )
-               .setDefinition( defBuf.toString() );
+               .setDefinition( defBuf.toString().intern() );
          inDef = false;
       } else if ( name.equals( "is_a" ) ) {
          inIsa = false;
@@ -164,7 +164,7 @@ class GOHandler extends DefaultHandler {
          inName = false;
          String currentTerm = accBuf.toString();
          ( ( OntologyEntry ) m.getNodeContents( currentTerm ) )
-               .setName( nameBuf.toString() );
+               .setName( nameBuf.toString().intern() );
       }
    }
 

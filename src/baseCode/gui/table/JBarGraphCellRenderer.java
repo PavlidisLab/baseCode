@@ -124,7 +124,7 @@ public class JBarGraphCellRenderer extends JLabel implements TableCellRenderer {
          {
             // map from [0,1] range to [0,width] range
            // int x = ( int ) ( value * width );
-            int x = (int)( (double)width * value / maxPval ) ;
+            int x = (int)( width * value / maxPval ) ;
 
             // what color to use?
             if ( i < COLORS.length ) {
