@@ -8,7 +8,7 @@ import java.io.Writer;
 import corejava.Format;
 
 /**
- * Print an IHistogram1D object to a text file.
+ * Print an {@link hep.aidia.IHistogram1D} object to a text file.
  * <p>
  * Copyright (c) 2004
  * </p>
@@ -29,6 +29,7 @@ public class HistogramWriter {
     * 
     * @param h IHistogram1D to be printed.
     * @param s PrintStream to be printed to.
+    * @throws IOException
     */
    public void write( IHistogram1D h, Writer s ) throws IOException {
       Format k = new Format( "%1.5g" );
