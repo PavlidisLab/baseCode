@@ -150,7 +150,6 @@ public class MatrixStats {
     */
    public static void rbfNormalize(
          AbstractNamedDoubleMatrix matrixToNormalize, final double sigma ) {
-      System.err.print( "Normalizing ..." );
 
       // define the function we will use.
       DoubleFunction f = new DoubleFunction() {
@@ -162,15 +161,12 @@ public class MatrixStats {
       for ( int j = 0; j < matrixToNormalize.rows(); j++ ) { // do each row in turn ...
 
          DoubleMatrix1D row = matrixToNormalize.viewRow( j );
-
          row.assign( f );
-
          double sum = row.zSum();
-                  
          row.assign( Functions.div( sum ) );
 
       }
-      System.err.println( "  ...done. " );
+
    }
 
 }
