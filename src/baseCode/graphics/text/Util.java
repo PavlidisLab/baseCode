@@ -15,6 +15,8 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 
+import java.io.File;
+
 /**
  *
  * @author  Will Braynen
@@ -80,4 +82,89 @@ public class Util {
       tstring.draw( g2, x, y );
 
    } // end drawVerticalString
+   
+
+   
+   ///////////////////////////////////////////////////////////////////////
+   //
+   // Does the following really belong here?
+   //   
+   protected final static String PNG_EXTENSION = "png";
+   protected final static String GIF_EXTENSION = "gif";
+   protected final static String TXT_EXTENSION = "txt";
+   protected final static String[] IMAGE_EXTENSIONS = { PNG_EXTENSION, GIF_EXTENSION };
+   protected final static String[] DATA_EXTENSIONS  = { TXT_EXTENSION };
+   
+   // default values
+   public final static String DEFAULT_DATA_EXTENSION  = TXT_EXTENSION;
+   public final static String DEFAULT_IMAGE_EXTENSION = PNG_EXTENSION;
+   
+   
+   /**
+    * Returns the extension of a file.
+    */
+   public static String getExtension( String filename ) {
+      
+      String extension = null;
+      int i = filename.lastIndexOf( '.' );
+      
+      if (i > 0 &&  i < filename.length() - 1) {
+         extension = filename.substring( i + 1 ).toLowerCase();
+      }
+      return extension;
+   } // end getExtension
+   
+   
+   public static String getWithoutExtension( String filename ) {
+      
+      String[] s = filename.split( "." );
+      String extension = s[s.length - 1];
+      String filenameWithoutExtension = filename.substring(
+         filename.length() -
+         extension.length() -
+         1, filename.length() - 1 );
+      
+      return filenameWithoutExtension;
+   } // end getFilenameWithoutExtension
+   
+   /**
+    * @return  the new filename with the changed extension, but does not
+    *          modify the <code>filename</code> parameter.
+    */
+   public static String changeExtension( String filename, String newExtension ) {
+      
+      String filenameWithoutExtension = getWithoutExtension( filename );
+      return (filenameWithoutExtension + newExtension);
+   } // end getWithChangedExtension
+   
+   
+   public static boolean hasImageExtension( String filename ) {
+      
+      String extension = getExtension( filename );
+      if (extension != null) {
+         for (int i = 0;  i < IMAGE_EXTENSIONS.length;  i++) {
+            if ( IMAGE_EXTENSIONS[i].equals( extension ) ) {
+               return true;
+            }
+         }
+      }
+      return false;
+   } // end hasImageExtension
+   
+   
+   /**
+    * @return  the new filename with the added extension, but does not
+    *          modify the <code>filename</code> parameter.
+    */
+   public static String addImageExtension( String filename ) {
+      return ( filename + "." + DEFAULT_IMAGE_EXTENSION );
+   }
+   
+   /**
+    * @return  the new filename with the added extension, but does not
+    *          modify the <code>filename</code> parameter.
+    */
+   public static String addDataExtension( String filename ) {
+      return ( filename + "." + DEFAULT_DATA_EXTENSION );
+   }   
 }
