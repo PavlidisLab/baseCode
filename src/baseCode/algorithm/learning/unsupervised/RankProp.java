@@ -33,7 +33,8 @@ public class RankProp extends Algorithm {
       int dim = query.columns();
       DoubleMatrix1D y = new DenseDoubleMatrix1D( dim ); // we use own implementation for performance.s
       DoubleMatrix1D yold = new DenseDoubleMatrix1D( dim );
-      DoubleMatrix1D yorig = new DenseDoubleMatrix1D( query.viewRow(0).toArray() );
+      DoubleMatrix1D yorig = new DenseDoubleMatrix1D( query.viewRow( 0 )
+            .toArray() );
 
       y.assign( 0.0 ); // set all to zero.
       y.set( k, 1.0 ); // query point
@@ -46,11 +47,11 @@ public class RankProp extends Algorithm {
 
          yold.assign( y ); // initially all zero except for 1 at the query point.
 
-         int lim = Math.min(yorig.size(), matrix.rows());
-         
+         int lim = Math.min( yorig.size(), matrix.rows() );
+
          for ( int j = 0; j < lim; j++ ) {
             if ( j == k ) continue; // don't update query
-            
+
             double dotProduct = matrix.viewRow( j ).zDotProduct( yold );
 
             // new y is old y +
@@ -58,8 +59,10 @@ public class RankProp extends Algorithm {
             y.set( j, ( alpha * dotProduct ) + yorig.getQuick( j ) );
          }
 
-         log.info( " iteration " + loops + " :  y[0]="
-               + Format.sprintf( "%g", new Parameters( y.getQuick( 0 ) ) ) );
+         if ( loops % 5 == 0 ) {
+            log.info( " iteration " + loops + " y[0]="
+                  + Format.sprintf( "%g", new Parameters( y.getQuick( 0 ) ) ) );
+         }
 
       }
 

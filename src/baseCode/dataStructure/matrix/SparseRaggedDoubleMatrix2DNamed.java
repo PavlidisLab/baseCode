@@ -61,7 +61,6 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
       }
 
       columns = max ;
-      System.err.println( "Computed columns: " + columns );
       isDirty = false;
       return columns;
    }

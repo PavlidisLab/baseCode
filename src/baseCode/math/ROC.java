@@ -54,9 +54,9 @@ public class ROC {
       for ( int i = 0; i < totalSize; i++ ) {
          if ( ranks.contains( new Integer( i ) ) ) { // if the ith item in the ranked list is a positive.
             numPosSeen++;
-            System.err.print(i + "+ " );
+         //   System.err.print(i + "+ " );
          } else { 
-            System.err.print(i +  "- " );
+         //   System.err.print(i +  "- " );
             result += numPosSeen;
             numNegSeen++;
             if ( maxFP > 0 && numNegSeen >= maxFP ) {
@@ -69,8 +69,8 @@ public class ROC {
          //            break;
          //        }
       }
-      System.err.println( numNegSeen + " negs, " + numPosSeen
-            + " pos seen out of " + targetSize + " positives" );
+//      System.err.println( numNegSeen + " negs, " + numPosSeen
+//            + " pos seen out of " + targetSize + " positives" );
 
       if (numPosSeen == 0 ) return 0.0;
       
