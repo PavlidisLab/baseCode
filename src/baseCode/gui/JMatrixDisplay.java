@@ -143,7 +143,7 @@ public class JMatrixDisplay extends JPanel {
    }
 
    /**
-    * Gets called from #paintComponent and #saveToFile
+    * Gets called from #paintComponent and #saveImage
     */
    protected void drawMatrix( Graphics g, boolean leaveRoomForLabels ) {
 
@@ -256,18 +256,18 @@ public class JMatrixDisplay extends JPanel {
    /**
     * Saves the image to a png file.
     */
-   public void saveToFile( String outPngFilename ) throws java.io.IOException {
-      saveToFile( outPngFilename, m_isShowLabels, m_isShowingStandardizedMatrix );
+   public void saveImage( String outPngFilename ) throws java.io.IOException {
+      saveImage( outPngFilename, m_isShowLabels, m_isShowingStandardizedMatrix );
    }
 
-   public void saveToFile( String outPngFilename, boolean showLabels ) throws java.io.IOException {
-      saveToFile( outPngFilename, showLabels, m_isShowingStandardizedMatrix );
+   public void saveImage( String outPngFilename, boolean showLabels ) throws java.io.IOException {
+      saveImage( outPngFilename, showLabels, m_isShowingStandardizedMatrix );
    }
 
    /**
     * @param  standardize  normalize to deviation 1, mean 0.
     */
-   public void saveToFile( String outPngFilename, boolean showLabels, boolean standardize ) throws java.io.IOException {
+   public void saveImage( String outPngFilename, boolean showLabels, boolean standardize ) throws java.io.IOException {
 
       Graphics2D g = null;
 
@@ -298,7 +298,7 @@ public class JMatrixDisplay extends JPanel {
          setLabelsVisible( false );
          initSize();
       }
-   } // end saveToFile
+   } // end saveImage
 
    /**
     * If this display component has already been added to the GUI,
@@ -381,6 +381,18 @@ public class JMatrixDisplay extends JPanel {
    public String[] getRowNames() {
       return m_matrix.getRowNames();
    }
+
+   public int getRowIndexByName( String rowName ) {
+      return m_matrix.getRowIndexByName( rowName );
+   }
+   
+   public void setRowKeys( int[] rowKeys ) {
+      m_matrix.setRowKeys( rowKeys );
+   }
+   
+   public void resetRowKeys() {
+      m_matrix.resetRowKeys();
+   }
    
    /**
     * @param  colorMap  an array of colors which define the midpoints in the
@@ -453,5 +465,51 @@ public class JMatrixDisplay extends JPanel {
       }
    }
 
+   /**
+    * @param  args[0]  path to the matrix data file
+    * @param  args[1]  "true" iff you want to see the matrix normalized
+    * @param  args[2]  "true" iff you want to see the row and column labels
+    */
+   public static void main( String[] args ) {
+
+      // Make sure the filename was passed in
+      if (args.length < 1) {
+         System.err.println( "Please specify the name of the data file as a program argument" );
+         return;
+      }
+       
+      // Create the matrix display         
+      String inDataFilename = args[0];
+      JMatrixDisplay matrixDisplay = null;
+      try {
+         matrixDisplay = new JMatrixDisplay( inDataFilename );
+      }
+      catch ( java.io.IOException e ) {
+         System.err.println( "Unable to open file " + inDataFilename );
+         return;
+      }
+      
+      // Normalize?
+      boolean normalize = true;
+      if (args.length > 1) {
+         normalize = Boolean.getBoolean( args[1] );
+      }
+      matrixDisplay.setStandardizedEnabled( normalize );      
+      
+      // Show labels?
+      boolean showLabels = true;
+      if (args.length > 2) {
+         showLabels = Boolean.getBoolean( args[2] );
+      }
+      matrixDisplay.setLabelsVisible( showLabels );
+
+      // Create the frame
+      JFrame frame = new JFrame();
+      frame.setSize( matrixDisplay.getSize( showLabels ));
+      frame.getContentPane().add( matrixDisplay );
+      frame.show();
+   }
 
 } // end class JMatrixDisplay
+
+

@@ -24,15 +24,13 @@ public class ColorMatrix
    // data fields
 
    /**
-    * DO NOT SET THESE VALUES.
-    *
     * Min and max values to display, which might not be the actual min
     * and max values in the matrix.  For instance, we might want to clip
     * values, or show a bigger color range for equal comparison with other
     * rows or matrices.
     */
-   protected double m_displayMin; // DO NOT SET THIS
-   protected double m_displayMax; // DO NOT SET THIS
+   protected double m_displayMin;
+   protected double m_displayMax;
 
    protected double m_min;
    protected double m_max;
@@ -101,86 +99,63 @@ public class ColorMatrix
       return m_totalColumns;
    }
 
-   public void setRowKeys( int[] rowKeys ) {
-      m_rowKeys = rowKeys;
+   protected int getTrueRowIndex( int row ) {
+      return m_rowKeys[ row ];
    }
-
+   
    public double getValue( int row, int column ) {
+      row = getTrueRowIndex( row );
       return m_matrix.get( row, column );
    }
 
    public double[] getRow( int row ) {
+      row = getTrueRowIndex( row );
       return m_matrix.getRow( row );
    }
 
    public double[] getRowByName( String rowName ) {
-      boolean hasRows = m_matrix.hasRowNames();
       return m_matrix.getRowByName( rowName );
    }
 
-   public double[] getColumn( int column ) {
-      return m_matrix.getCol( column );
-   }
-
-   public double[] getColumnByName( String columnName ) {
-      int col = m_matrix.getColIndexByName( columnName );
-      return m_matrix.getCol( col );
-   }
-
    public Color getColor( int row, int column ) {
-      return getColor( row, column, true );
-   }
-
-   /**
-    *
-    * @see #setRowKeys
-    * @param row int
-    * @param column int
-    * @param isRowKey boolean
-    * @return Color
-    */
-   public Color getColor( int row, int column, boolean isRowKey ) {
-
-      if ( isRowKey ) {
-         row = m_rowKeys[row];
-      }
+      
+      int r = m_colors[row][column].getRed();
+      int g = m_colors[row][column].getGreen();
+      int b = m_colors[row][column].getBlue();
+      
+      row = getTrueRowIndex( row );
+      
+      r = m_colors[row][column].getRed();
+      g = m_colors[row][column].getGreen();
+      b = m_colors[row][column].getBlue();
+      
       return m_colors[row][column];
-
-   } // end getColor
+   }
 
    public void setColor( int row, int column, Color newColor ) {
-      setColor( row, column, true, newColor );
-   }
-
-   public void setColor( int row, int column, boolean isRowKey, Color newColor ) {
-
-      if ( isRowKey ) {
-         row = m_rowKeys[row];
-      }
+      row = getTrueRowIndex( row );
       m_colors[row][column] = newColor;
    }
 
    public String getRowName( int row ) {
-
+      row = getTrueRowIndex( row );
       return m_matrix.getRowName( row );
    }
 
    public String getColumnName( int column ) {
-
       return m_matrix.getColName( column );
    }
 
    public String[] getRowNames() {
-
       String[] rowNames = new String[m_totalRows];
       for ( int i = 0; i < m_totalRows; i++ ) {
-         rowNames[i] = getRowName( i );
+         int row = getTrueRowIndex( i );
+         rowNames[i] = getRowName( row );
       }
       return rowNames;
    }
 
    public String[] getColumnNames() {
-
       String[] columnNames = new String[m_totalColumns];
       for ( int i = 0; i < m_totalColumns; i++ ) {
          columnNames[i] = getColumnName( i );
@@ -188,6 +163,10 @@ public class ColorMatrix
       return columnNames;
    }
 
+   public int getRowIndexByName( String rowName ) {
+      return m_matrix.getRowIndexByName( rowName );
+   }
+   
    /**
     * Changes values in a row, clipping if there are more values than columns.
     *
@@ -196,6 +175,8 @@ public class ColorMatrix
     */
    protected void setRow( int row, double values[] ) {
 
+      row = getTrueRowIndex( row );
+      
       // clip if we have more values than columns
       int totalValues = Math.min( values.length, m_totalColumns );
 
@@ -214,14 +195,21 @@ public class ColorMatrix
     * @return int[]
     */
    protected int[] createRowKeys() {
-
       m_rowKeys = new int[m_totalRows];
-
       for ( int i = 0; i < m_totalRows; i++ ) {
          m_rowKeys[i] = i;
-
       }
       return m_rowKeys;
+   }
+   
+   public void setRowKeys( int[] rowKeys ) {
+      m_rowKeys = rowKeys;
+   }
+   
+   public void resetRowKeys() {
+      for ( int i = 0; i < m_totalRows; i++ ) {
+         m_rowKeys[i] = i;
+      }      
    }
 
    public void init( DenseDoubleMatrix2DNamed matrix ) {
@@ -260,7 +248,7 @@ public class ColorMatrix
 
       // normalize the data in each row
       for ( int r = 0; r < m_totalRows; r++ ) {
-         double[] rowValues = m_matrix.getRow( r );
+         double[] rowValues = getRow( r );
          DoubleArrayList doubleArrayList = new cern.colt.list.DoubleArrayList( rowValues );
          DescriptiveWithMissing.standardize( doubleArrayList );
          rowValues = doubleArrayList.elements();
@@ -334,7 +322,7 @@ public class ColorMatrix
       // map values to colors
       for ( int row = 0; row < m_totalRows; row++ ) {
          for ( int column = 0; column < m_totalColumns; column++ ) {
-            double value = m_matrix.get( row, column );
+            double value = getValue( row, column );
 
             if ( Double.isNaN( value ) ) {
                // the value is missing
@@ -388,12 +376,15 @@ public class ColorMatrix
       for ( int r = 0; r < m_totalRows; r++ ) {
          for ( int c = 0; c < m_totalColumns; c++ ) {
             m.set( r, c, m_matrix.get( r, c ) );
-            //colors[r][c] = new Color( m_colors[r][c].getRGB() );
          }
       }
 
       // create another copy of a color matrix (this class)
       ColorMatrix clonedColorMatrix = new ColorMatrix( m );
+      
+      int[] rowKeys = (int[]) m_rowKeys.clone();
+      clonedColorMatrix.setRowKeys( rowKeys );
+      
       return clonedColorMatrix;
 
    } // end clone
