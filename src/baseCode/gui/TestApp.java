@@ -18,7 +18,8 @@ public class TestApp {
     TestFrame frame = new TestFrame();
 
     //
-    // Here is an example of how you'd display a microarray
+    // Here is an example of how you'd display a matrix of doubles
+    // visually with colors
     //
     ColorMatrix matrix = null;
     try {
@@ -31,10 +32,11 @@ public class TestApp {
     
     JMatrixDisplay matrixDisplay = new JMatrixDisplay( matrix );
     matrixDisplay.getMatrix().standardize();
-    matrixDisplay.showLabels( true ); // can be called any time: after the component has already been added for instance.
+    matrixDisplay.setLabelsVisible( true );
     
     try {
-       matrixDisplay.saveScreenshotToFile( outPngFilename );
+       boolean showLabels = true;
+       matrixDisplay.saveToFile( outPngFilename, showLabels );
     }
     catch (java.io.IOException e) {
        System.err.println("Unable to save screenshot to file " + outPngFilename);
