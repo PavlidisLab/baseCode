@@ -27,14 +27,20 @@ import cern.colt.matrix.DoubleMatrix1D;
  *    
  *     
  *      
- *                 
- *                      2          &lt;--- number of items - the first line of the file only. NOTE - this line is often blank or not present.
- *                      1 2        &lt;--- items 1 has 2 edges
- *                      1 2        &lt;--- edge indices are to items 1 &amp; 2
- *                      0.1 100    &lt;--- with the following weights
- *                      2 2        &lt;--- items 2 also has 2 edges
- *                      1 2        &lt;--- edge indices are also to items 1 &amp; 2 (fully connected)
- *                      100 0.1    &lt;--- with the following weights
+ *       
+ *        
+ *         
+ *                    
+ *                         2          &lt;--- number of items - the first line of the file only. NOTE - this line is often blank or not present.
+ *                         1 2        &lt;--- items 1 has 2 edges
+ *                         1 2        &lt;--- edge indices are to items 1 &amp; 2
+ *                         0.1 100    &lt;--- with the following weights
+ *                         2 2        &lt;--- items 2 also has 2 edges
+ *                         1 2        &lt;--- edge indices are also to items 1 &amp; 2 (fully connected)
+ *                         100 0.1    &lt;--- with the following weights
+ *           
+ *          
+ *         
  *        
  *       
  *      
@@ -53,6 +59,10 @@ import cern.colt.matrix.DoubleMatrix1D;
  */
 public class SparseRaggedDouble2DNamedMatrixReader extends
       AbstractNamedMatrixReader {
+
+   private static final int INITIAL_SIZE = 10000;
+   IntArrayList indexes = new IntArrayList( INITIAL_SIZE );
+   DoubleArrayList values = new DoubleArrayList( INITIAL_SIZE );
 
    /*
     * (non-Javadoc)
@@ -81,14 +91,9 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
       String row = dis.readLine(); // line containing the id and the number of edges.
       StringTokenizer tok = new StringTokenizer( row, " \t" );
 
-      int index = ( new Integer( Integer.parseInt( tok.nextToken() ) ) )
-            .intValue();
-
-      int amount = ( new Integer( Integer.parseInt( tok.nextToken() ) ) )
-            .intValue();
-
+      int index = Integer.parseInt( tok.nextToken() );
+      int amount = Integer.parseInt( tok.nextToken() );
       String rowName = new Integer( index ).toString();
-
       returnVal.addRow( rowName, readOneRow( dis, amount ) );
       return returnVal;
    }
@@ -118,11 +123,9 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
             continue;
          }
 
-         int index = ( new Integer( Integer.parseInt( tok.nextToken() ) ) )
-               .intValue();
+         int index = Integer.parseInt( tok.nextToken() );
 
-         int amount = ( new Integer( Integer.parseInt( tok.nextToken() ) ) )
-               .intValue();
+         int amount = Integer.parseInt( tok.nextToken() );
 
          if ( ( index % 500 ) == 0 ) {
             log.warn( new String( "loading  " + index + "th entry" ) );
@@ -176,8 +179,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
       String row = dis.readLine(); // row with indices.
       StringTokenizer tokb = new StringTokenizer( row, " \t" );
       while ( tokb.hasMoreTokens() ) {
-         int ind = ( new Integer( Integer.parseInt( tokb.nextToken() ) ) )
-               .intValue();
+         int ind = Integer.parseInt( tokb.nextToken() );
 
          if ( rowind.size() > 0 && ind > rowind.getQuick( rowind.size() - 1 ) ) {
             throw new IllegalStateException(
@@ -201,23 +203,29 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
 
       StringTokenizer tokw = new StringTokenizer( rowWei, " \t" );
       StringTokenizer toki = new StringTokenizer( rowInd, " \t" );
-      IntArrayList indicies = new IntArrayList( amount );
-      DoubleArrayList values = new DoubleArrayList( amount );
+
+      indexes.clear();
+      values.clear();
+
       while ( toki.hasMoreTokens() ) {
-         double eval = ( new Double( Double.parseDouble( tokw.nextToken() ) ) )
-               .doubleValue();
+         double eval = Double.parseDouble( tokw.nextToken() );
+         int ind = Integer.parseInt( toki.nextToken() ) - 1; // this is a JW thing - the indexes start at 1.
 
-         int ind = ( new Integer( Integer.parseInt( toki.nextToken() ) ) )
-               .intValue() - 1; // this is a JW thing - the indexes start at 1.
-
-         int k = indicies.binarySearch( ind );
-         if ( k >= 0 ) { // found
+         /*
+          * index of the search key, if it is contained in the receiver; otherwise, (-(insertion point) - 1). The
+          * insertion point is defined as the the point at which the value would be inserted into the receiver: the
+          * index of the first element greater than the key, or receiver.size(), if all elements in the receiver are
+          * less than the specified key. Note that this guarantees that the return value will be >= 0 if and only if the
+          * key is found.
+          */
+         int k = indexes.binarySearch( ind );
+         if ( k >= 0 ) { // found. This shouldn't happen - if it does it means there is a duplicate.
             values.setQuick( k, eval );
          }
 
          if ( eval != 0 ) {
             k = -k - 1;
-            indicies.beforeInsert( k, ind );
+            indexes.beforeInsert( k, ind );
             values.beforeInsert( k, eval );
          }
 
@@ -226,7 +234,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
                   + values.size() + ", expected " + amount + ")" );
          }
       }
-      return new RCDoubleMatrix1D( values, indicies );
+      return new RCDoubleMatrix1D( values, indexes );
 
    }
 

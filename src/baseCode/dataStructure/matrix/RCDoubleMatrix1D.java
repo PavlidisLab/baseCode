@@ -146,10 +146,9 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
       int otherSize = y.size();
       double returnVal = 0.0;
       for ( int i = idx.length; --i >= 0; ) {
-         double value = vals[i];
          int index = idx[i];
          if ( index >= otherSize ) continue; // in case our arrays are ragged.
-         returnVal += value * y.getQuick( index );
+         returnVal +=  vals[i] * y.getQuick( index );
       }
       return returnVal;
    }
