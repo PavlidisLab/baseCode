@@ -1,10 +1,17 @@
 package baseCode.Gui;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
 import java.io.File;
+
+import javax.imageio.ImageIO;
+import javax.swing.JPanel;
 
 // vertical text
 import java.awt.geom.AffineTransform;
@@ -47,7 +54,7 @@ public class JMatrixDisplay extends JPanel {
 
   public JMatrixDisplay( ColorMatrix matrix ) {
 
-     m_matrix = matrix;     
+     m_matrix = matrix;
      initSize();
   }
 
@@ -63,7 +70,7 @@ public class JMatrixDisplay extends JPanel {
       m_rowLabelWidth = m_labelGutter + maxStringPixelWidth( m_matrix.getRowNames(), m_labelFont, this );
       //m_rowLabelWidth += m_labelGutter; // this is optional (leaves some space on the right)
       m_columnLabelHeight = m_labelGutter + maxStringPixelWidth( m_matrix.getColumnNames(), m_labelFont, this );
- 
+
       // height and width of this display component
       int height = m_cellHeight * m_matrix.getRowCount();
       int width  = m_cellWidth  * m_matrix.getColumnCount();
@@ -72,7 +79,7 @@ public class JMatrixDisplay extends JPanel {
       if (m_isShowLabels)
       {
           width  += m_rowLabelWidth;
-          height += m_columnLabelHeight; 
+          height += m_columnLabelHeight;
       }
 
       // set the sizes
@@ -92,7 +99,7 @@ public class JMatrixDisplay extends JPanel {
 
     super.paintComponent(g);
     drawDisplay( g, m_matrix );
-        
+
   } // end paintComponent
 
   /**
@@ -108,11 +115,12 @@ public class JMatrixDisplay extends JPanel {
         int rowCount = matrix.getRowCount();
         int columnCount = matrix.getColumnCount();
 
+
         if (m_isShowLabels && columnCount > 0)
         {
            drawColumnNames( g );
         }
-        
+
         // loop through the matrix, one row at a time
         for (int i = 0;  i < rowCount;  i++)
         {
@@ -128,7 +136,7 @@ public class JMatrixDisplay extends JPanel {
               g.setColor(color);
               g.fillRect(x, y, width, m_cellHeight);
            }
-           
+
            // print row names
            if (m_isShowLabels && columnCount > 0)
            {
@@ -158,7 +166,7 @@ public class JMatrixDisplay extends JPanel {
         // compute the coordinates
         int x = m_cellWidth + (j * m_cellWidth) - m_fontGutter;
         int y = m_columnLabelHeight;
-        
+
         // get column name
         String columnName = m_matrix.getColumnName( j );
         if (null == columnName) {
@@ -168,7 +176,7 @@ public class JMatrixDisplay extends JPanel {
         // set font and color
         g.setColor( Color.black );
         g.setFont( m_labelFont );
-        
+
         // print the text vertically
         Graphics2D g2 = (Graphics2D)g;
         AffineTransform fontAT = new AffineTransform();
@@ -181,24 +189,24 @@ public class JMatrixDisplay extends JPanel {
         tstring.draw( g2, x, y );
      } // end for column
   } // end drawColumnNames
-  
+
   /**
    * ----------- SHOULD PROBABLY NOT BE IN THIS CLASS -----------
    *
    * @return  the pixel width of the string for the specified font.
    */
   public static int stringPixelWidth( String s, Font font, Component c ) {
-     
+
      FontMetrics fontMetrics = c.getFontMetrics( font );
      return fontMetrics.charsWidth( s.toCharArray(), 0, s.length() );
-     
+
   } // end stringPixelWidth
-  
+
   /**
    * ----------- SHOULD PROBABLY NOT BE IN THIS CLASS -----------
    */
   public static int maxStringPixelWidth( String[] strings, Font font, Component c ) {
-     
+
      // the number of chars in the longest string
      int maxWidth = 0;
      int width;
@@ -211,12 +219,12 @@ public class JMatrixDisplay extends JPanel {
         if (maxWidth < width)
            maxWidth = width;
      }
-     
+
      return maxWidth;
-     
+
   } // end getMaxPixelWidth
-  
-  
+
+
   /**
    * Sets the font used for drawing text
    */

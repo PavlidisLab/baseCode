@@ -6,7 +6,7 @@ import baseCode.dataStructure.reader.DoubleMatrixReader;
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 import baseCode.Math.MatrixStats;
 import cern.colt.list.DoubleArrayList;
-
+import baseCode.Math.DescriptiveWithMissing;
 /**
  * <p>Title: ColorMatrix</p>
  * <p>Description: Creates a color matrix from a matrix of doubles</p>
@@ -123,14 +123,14 @@ public class ColorMatrix {
 
         return m_matrix.getRowName( row );
     }
-    
+
     public String getColumnName( int column ) {
-       
+
        return m_matrix.getColName( column );
     }
-    
+
     public String[] getRowNames() {
-       
+
        String[] rowNames = new String[m_totalRows];
        for (int i = 0;  i < m_totalRows;  i++) {
           rowNames[i] = getRowName( i );
@@ -139,7 +139,7 @@ public class ColorMatrix {
     }
 
     public String[] getColumnNames() {
-       
+
        String[] columnNames = new String[m_totalColumns];
        for (int i = 0;  i < m_totalColumns;  i++) {
           columnNames[i] = getColumnName( i );
@@ -217,7 +217,7 @@ public class ColorMatrix {
        {
           double[] rowValues = m_matrix.getRow(r);
           DoubleArrayList doubleArrayList = new cern.colt.list.DoubleArrayList( rowValues );
-          doubleArrayList = baseCode.Math.Stats.standardize(doubleArrayList);
+         DescriptiveWithMissing.standardize(doubleArrayList);
           rowValues = doubleArrayList.elements();
           setRow(r, rowValues);
        }
