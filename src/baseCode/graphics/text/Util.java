@@ -15,8 +15,6 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 
-import java.io.File;
-
 /**
  *
  * @author  Will Braynen

@@ -1,6 +1,5 @@
 package baseCode.dataFilter;
 
-import java.text.DecimalFormat;
 import java.util.Vector;
 
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
@@ -14,9 +13,14 @@ import cern.colt.list.DoubleArrayList;
  * There are a number of decisions/caveats to consider:
  * <h2>Cutpoint determination</h2>
  * <p>
- * There are multiple ways of determining cutpoints. Considering the case of
- * low-cuts, the obvious possibilities are the maximum value, the minimum value,
- * the mean value, or the median value.
+ * There are multiple ways of determining cutpoints. The obvious possibilities
+ * are the maximum value, the minimum value, the mean value, or the median
+ * value.
+ * <p>
+ * Note that if you want to use different methods for high-level filtering than
+ * for low-level filtering (e.g., using max for the low-level, and min for the
+ * high-level, you have to filter twice. This could cause problems if you are
+ * using fractional filtering and there are negative values (see below).
  * <h2>Filtering ratiometric data</h2>
  * <p>
  * For data that are normalized or ratios, it does not make sense to use this
@@ -37,37 +41,30 @@ import cern.colt.list.DoubleArrayList;
  * 
  * @author Paul Pavlidis
  * @version $Id$
- * @todo implement high level filtering.
- * @todo implement using mean instead of max
- * @todo implement using median instead of max.
- * @todo implement using min instead of max.
  */
 public class LevelFilter extends AbstractFilter implements Filter {
 
-   private double lowCut;
-   private double highCut;
-   private boolean lowSet = false;
-   private boolean highSet = false;
-   private boolean useAsFraction = true;
+   private double lowCut = Double.MIN_VALUE;
+   private double highCut = Double.MAX_VALUE;
+   private boolean useLowAsFraction = false;
+   private boolean useHighAsFraction = false;
    private boolean removeAllNegative = false;
 
-   public static final String MIN = "min";
-   public static final String MAX = "max";
-   public static final String MEDIAN = "median";
-   public static final String MEAN = "mean";
-   private String method = MAX;
+   public static final int MIN = 1;
+   public static final int MAX = 2;
+   public static final int MEDIAN = 3;
+   public static final int MEAN = 4;
+   private int method = MAX;
 
    /**
     * Choose the method that will be used for filtering. Default is 'MAX'. Those
     * rows with the lowest values are removed during 'low' filtering.
     * 
-    * @param method
-    *           one of LevelFilter.MIN, LevelFilter.MAX, LevelFilter.MEDIAN, or
-    *           LevelFilter.MEAN.
+    * @param method one of LevelFilter.MIN, LevelFilter.MAX, LevelFilter.MEDIAN,
+    *        or LevelFilter.MEAN.
     */
-   public void setMethod( String method ) {
-      if ( method.compareTo( MIN ) != 0 && method.compareTo( MAX ) != 0
-            && method.compareTo( MEDIAN ) != 0 && method.compareTo( MEAN ) != 0 ) {
+   public void setMethod( int method ) {
+      if ( method != MIN && method != MAX && method != MEDIAN && method != MEAN ) {
          throw new IllegalArgumentException(
                "Unknown filtering method requested" );
       }
@@ -75,14 +72,12 @@ public class LevelFilter extends AbstractFilter implements Filter {
    }
 
    /**
-    * Set the low threshold for removal. If not set, no filtering will occur.
+    * Set the low threshold for removal.
     * 
-    * @param lowCut
-    *           the threshold
+    * @param lowCut the threshold
     */
    private void setLowCut( double lowCut ) {
       this.lowCut = lowCut;
-      lowSet = true;
    }
 
    /**
@@ -91,27 +86,24 @@ public class LevelFilter extends AbstractFilter implements Filter {
     * @param isFraction
     */
    public void setLowCut( double lowCut, boolean isFraction ) {
-      if ( isFraction == true && ( lowCut < 0.0 || lowCut > 1.0 ) ) {
+      if ( isFraction && ( lowCut < 0.0 || lowCut > 1.0 ) ) {
          throw new IllegalArgumentException(
                "Value "
                      + lowCut
-                     + " for cut is invalid for using as fractions, must be >0.0 and <1.0," );
+                     + " for low cut is invalid for using as fractions, must be >0.0 and <1.0," );
       }
       setLowCut( lowCut );
-      useAsFraction = isFraction;
+      useLowAsFraction = isFraction;
    }
 
    /**
     * Set the high threshold for removal. If not set, no filtering will occur.
     * 
-    * @param h
-    *           the threshold
+    * @todo make this a separate filtering step?
+    * @param h the threshold
     */
    private void setHighCut( double h ) {
       highCut = h;
-      highSet = true;
-      throw new UnsupportedOperationException(
-            "High-level filtering not supported yet." );
    }
 
    /**
@@ -119,27 +111,28 @@ public class LevelFilter extends AbstractFilter implements Filter {
     * @param h
     * @param isFraction
     */
-   public void setHighCut( double h, boolean isFraction ) {
-      if ( isFraction == true && ( highCut > 1.0 || highCut < 0.0 ) ) {
+   public void setHighCut( double highCut, boolean isFraction ) {
+      if ( isFraction && ( highCut > 1.0 || highCut < 0.0 ) ) {
          throw new IllegalArgumentException(
-               "Value for cut is invalid for using as fractions, must be >0.0 and <1.0," );
+               "Value "
+                     + highCut
+                     + "  for high cut is invalid for using as fractions, must be >0.0 and <1.0," );
       }
-      setHighCut( h );
-      useAsFraction = isFraction;
+      setHighCut( highCut );
+      useHighAsFraction = isFraction;
    }
 
    /**
     * Set the filter to remove all rows that have only negative values. This is
-    * applied BEFORE applying other criteria. In other words, if you request
-    * filtering 0.5 of the values, and 0.5 have all negative values, you will
-    * get 0.25 of the data back. Default = false.
+    * applied BEFORE applying fraction-based criteria. In other words, if you
+    * request filtering 0.5 of the values, and 0.5 have all negative values, you
+    * will get 0.25 of the data back. Default = false.
     * 
-    * @param t
-    *           boolean
+    * @param t boolean
     */
    public void setRemoveAllNegative( boolean t ) {
-      log
-            .info( "Rows with all negative values will be removed PRIOR TO applying the level filter." );
+      log.info( "Rows with all negative values will be "
+            + "removed PRIOR TO applying fraction-based criteria." );
       removeAllNegative = t;
    }
 
@@ -148,25 +141,22 @@ public class LevelFilter extends AbstractFilter implements Filter {
     * if true, lowcut 0.1 means remove 0.1 of the rows with the lowest values.
     * Otherwise the cuts are interpeted as actual values. Default = false.
     * 
-    * @param t
-    *           boolean
+    * @param t boolean
     */
    public void setUseAsFraction( boolean t ) {
       if ( t == true
             && ( lowCut < 0.0 || highCut > 1.0 || highCut < 0.0 || lowCut > 1.0 ) ) {
          throw new IllegalArgumentException(
-               "Value for cut(s) are invalid for using as fractions, must be >0.0 and <1.0," );
+               "Value for cut(s) are invalid for using "
+                     + "as fractions, must be >0.0 and <1.0," );
       }
-      useAsFraction = t;
+      useLowAsFraction = t;
    }
 
    /**
     * 
-    * 
     * @param data
-    *           DenseDoubleMatrix2DNamed
-    * @return baseCode.dataStructure.DenseDoubleMatrix2DNamed
-    * @todo implement high level filtering.
+    * @return
     */
    public NamedMatrix filter( NamedMatrix data ) {
 
@@ -175,115 +165,121 @@ public class LevelFilter extends AbstractFilter implements Filter {
                "Only valid for DenseDoubleMatrix2DNamed" );
       }
 
-      if ( highSet ) {
-         throw new UnsupportedOperationException(
-               "High-level filtering not implemented" );
-      }
-
-      if ( !lowSet ) {
+      if ( lowCut == Double.MIN_VALUE && highCut == Double.MAX_VALUE ) {
          log.info( "No filtering requested" );
          return data;
       }
 
-      DecimalFormat fo = new DecimalFormat();
-
-      double realLowCut;
-      double realHighCut;
-
       int numRows = data.rows();
       int numCols = data.columns();
-      DoubleArrayList minLevel = new DoubleArrayList( numRows );
-      DoubleArrayList maxLevel = new DoubleArrayList( numRows );
-      DoubleArrayList meanLevel = new DoubleArrayList( numRows );
-      DoubleArrayList medianLevel = new DoubleArrayList( numRows );
-      DoubleArrayList numNegative = new DoubleArrayList( numRows );
+
+      DoubleArrayList criteria = new DoubleArrayList();
 
       /*
        * compute criteria.
        */
-      DoubleArrayList rowList = new DoubleArrayList( new double[numCols] );
+      DoubleArrayList rowAsList = new DoubleArrayList( new double[numCols] );
       int numAllNeg = 0;
       for ( int i = 0; i < numRows; i++ ) {
          Double[] row = ( Double[] ) data.getRowObj( i );
          int numNeg = 0;
-         /* stupid, copy into a DoubleArrayList */
+         /* stupid, copy into a DoubleArrayList so we can do stats */
          for ( int j = 0; j < numCols; j++ ) {
             double item = row[j].doubleValue();
-            rowList.set( j, item );
+            rowAsList.set( j, item );
             if ( item < 0.0 || Double.isNaN( item ) ) {
                numNeg++;
             }
          }
-         if ( numNeg == numRows ) {
+         if ( numNeg == numCols ) {
             numAllNeg++;
          }
 
-         /**
-          * @todo make this select among the needed values instead of computing
-          *       them all
-          */
-         meanLevel.add( DescriptiveWithMissing.mean( rowList ) );
-         medianLevel.add( DescriptiveWithMissing.median( rowList ) );
-         maxLevel.add( DescriptiveWithMissing.max( rowList ) );
-         minLevel.add( DescriptiveWithMissing.min( rowList ) );
-         numNegative.add( numNeg );
+         switch ( method ) {
+            case MIN: {
+               criteria.add( DescriptiveWithMissing.min( rowAsList ) );
+               break;
+            }
+            case MAX: {
+               criteria.add( DescriptiveWithMissing.max( rowAsList ) );
+               break;
+            }
+            case MEAN: {
+               criteria.add( DescriptiveWithMissing.mean( rowAsList ) );
+               break;
+            }
+            case MEDIAN: {
+               criteria.add( DescriptiveWithMissing.median( rowAsList ) );
+               break;
+            }
+            default: {
+               break;
+            }
+         }
       }
 
-      DoubleArrayList sortedCriterion;
+      DoubleArrayList sortedCriteria = criteria.copy();
+      sortedCriteria.sort();
 
-      if ( method.compareTo( MEAN ) == 0 ) {
-         sortedCriterion = meanLevel.copy(); // remove those with lowest mean
-      } else if ( method.compareTo( MEDIAN ) == 0 ) {
-         sortedCriterion = medianLevel.copy(); // remove those with lowest
-         // median
-      } else if ( method.compareTo( MAX ) == 0 ) {
-         sortedCriterion = maxLevel.copy(); // remove those with lowest max
-      } else if ( method.compareTo( MIN ) == 0 ) {
-         sortedCriterion = minLevel.copy(); // remoe those with lowest min
-      } else {
-         throw new IllegalStateException( "Invalid method selected" );
+      double realLowCut;
+      double realHighCut;
+
+      if ( useHighAsFraction ) {
+         if ( highCut > 1.0 || highCut < 0.0 ) {
+            throw new IllegalStateException(
+                  "High level cut must be a fraction between 0 and 1" );
+         }
+         /* Note that 'ceil' is used to determine the cut */
+         if ( removeAllNegative ) {
+            realHighCut = sortedCriteria
+                  .get( numRows - ( int ) Math
+                        .ceil(  ( double ) ( ( numAllNeg ) * highCut + numAllNeg ) ) );
+         } else {
+            realHighCut = sortedCriteria.get( numRows
+                  - ( int ) Math.ceil( ( ( double ) numRows * highCut ) ) );
+         }
+         realHighCut = highCut;
       }
 
-      sortedCriterion.sort();
-
-      if ( useAsFraction ) {
+      if ( useLowAsFraction ) {
          if ( lowCut > 1.0 || lowCut < 0.0 ) {
-            throw new IllegalArgumentException(
-                  "Illegal value for level cut, must be a fraction between 0 and 1" );
+            throw new IllegalStateException(
+                  "Low level cut must be a fraction between 0 and 1" );
          }
 
          /* Note that 'ceil' is used to determine the cut */
          if ( removeAllNegative ) {
-
-            realLowCut = sortedCriterion
+            realLowCut = sortedCriteria
                   .get( ( int ) Math.ceil( ( double ) ( ( numRows - numAllNeg )
                         * lowCut + numAllNeg ) ) );
+
          } else {
-            realLowCut = sortedCriterion.get( ( int ) Math
+            realLowCut = sortedCriteria.get( ( int ) Math
                   .ceil( ( ( double ) numRows * lowCut ) ) );
          }
       } else {
          realLowCut = lowCut;
       }
 
-      // go back over the data now using the cutpoint.
+      // go back over the data now using the cutpoints. This is not optimally
+      // efficient.
       int kept = 0;
-      Vector MTemp = new Vector();
+      Vector rowsToKeep = new Vector();
       Vector rowNames = new Vector();
 
       for ( int i = 0; i < numRows; i++ ) {
-         if ( maxLevel.get( i ) > realLowCut ) {
+         if ( criteria.get( i ) > realLowCut && criteria.get( i ) < realHighCut ) {
             kept++;
-            MTemp.add( data.getRowObj( i ) );
+            rowsToKeep.add( data.getRowObj( i ) );
             rowNames.add( data.getRowName( i ) );
          }
       }
 
-      DenseDoubleMatrix2DNamed returnval = new DenseDoubleMatrix2DNamed( MTemp
-            .size(), numCols );
-      for ( int i = 0; i < MTemp.size(); i++ ) {
+      DenseDoubleMatrix2DNamed returnval = new DenseDoubleMatrix2DNamed(
+            rowsToKeep.size(), numCols );
+      for ( int i = 0; i < rowsToKeep.size(); i++ ) {
          for ( int j = 0; j < numCols; j++ ) {
-            returnval.set( i, j, ( ( ( Double[] ) MTemp.get( i ) )[j] )
+            returnval.set( i, j, ( ( ( Double[] ) rowsToKeep.get( i ) )[j] )
                   .doubleValue() );
          }
       }

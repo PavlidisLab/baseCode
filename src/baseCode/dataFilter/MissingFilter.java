@@ -1,11 +1,9 @@
 package baseCode.dataFilter;
 
-import java.lang.reflect.InvocationTargetException;
-import java.text.DecimalFormat;
 import java.util.Vector;
 
 import baseCode.dataStructure.NamedMatrix;
-import cern.colt.list.DoubleArrayList;
+import cern.colt.list.IntArrayList;
 
 /**
  * Remove rows from a matrix that are missing too many points.
@@ -94,7 +92,7 @@ public class MissingFilter extends AbstractFilter implements Filter {
       Vector rowNames = new Vector();
       int numRows = data.rows();
       int numCols = data.columns();
-      DoubleArrayList present = new DoubleArrayList( numRows );
+      IntArrayList present = new IntArrayList( numRows );
 
       int kept = 0;
 
@@ -132,16 +130,16 @@ public class MissingFilter extends AbstractFilter implements Filter {
       /* decide whether we need to invoke the 'too many removed' clause */
       if ( kept < ( double ) numRows * ( 1.0 - maxFractionRemoved )
             && maxFractionRemoved != 0.0 ) {
-         DoubleArrayList sortedPresent = new DoubleArrayList( numRows );
+         IntArrayList sortedPresent = new IntArrayList( numRows );
          sortedPresent = present.copy();
          sortedPresent.sort();
          sortedPresent.reverse();
-         DecimalFormat fo = new DecimalFormat();
+ 
          log
                .info( "There are "
-                     + fo.format( kept )
+                     + kept
                      + " rows that meet criterion of at least "
-                     + fo.format( minPresentCount )
+                     + minPresentCount
                      + " non-missing values, but that's too many given the max fraction of "
                      + maxFractionRemoved
                      + "; minpresent adjusted to "
