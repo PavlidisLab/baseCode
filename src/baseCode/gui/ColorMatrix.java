@@ -46,13 +46,11 @@ public class ColorMatrix implements Cloneable {
      *                   (not my fault -- that's how java treats relative paths)
      */
     public ColorMatrix( String filename ) throws IOException {
-
-        loadMatrixFromFile( filename );
+	loadMatrixFromFile( filename );
     }
 
     public ColorMatrix( DenseDoubleMatrix2DNamed matrix ) {
-
-        init( matrix );
+	init( matrix );
     }
 
     /**
@@ -62,9 +60,9 @@ public class ColorMatrix implements Cloneable {
      */
     public ColorMatrix( String filename, Color[] colorMap, Color missingColor ) throws IOException {
 
-       m_missingColor = missingColor;
-       m_colorMap = colorMap;
-       loadMatrixFromFile( filename );
+	m_missingColor = missingColor;
+	m_colorMap = colorMap;
+	loadMatrixFromFile( filename );
     }
 
     /**
@@ -74,28 +72,29 @@ public class ColorMatrix implements Cloneable {
      */
     public ColorMatrix( DenseDoubleMatrix2DNamed matrix, Color[] colorMap, Color missingColor ) {
 
-       m_missingColor = missingColor;
-       m_colorMap = colorMap;
-       init( matrix );
+	m_missingColor = missingColor;
+	m_colorMap = colorMap;
+	init( matrix );
     }
 
     public int getRowCount() {
-
-        return m_totalRows;
+	return m_totalRows;
     }
 
     public int getColumnCount() {
-
-        return m_totalColumns;
+	return m_totalColumns;
     }
 
     public void setRowKeys( int[] rowKeys ) {
+	m_rowKeys = rowKeys;
+    }
 
-        m_rowKeys = rowKeys;
+    public double getValue( int row, int column ) {
+	return m_matrix.get( row, column );
     }
 
     public Color getColor( int row, int column ) {
-        return getColor( row, column, true );
+	return getColor( row, column, true );
     }
 
     /**
@@ -105,18 +104,18 @@ public class ColorMatrix implements Cloneable {
 
         if (isRowKey)
             row = m_rowKeys[row];
-         return m_colors[row][column];
+	return m_colors[row][column];
 
     } // end getColor
 
     public void setColor( int row, int column, Color newColor ) {
-       setColor( row, column, true, newColor );
+	setColor( row, column, true, newColor );
     }
 
     public void setColor( int row, int column, boolean isRowKey, Color newColor ) {
 
-       if (isRowKey)
-           row = m_rowKeys[row];
+	if (isRowKey)
+	    row = m_rowKeys[row];
         m_colors[row][column] = newColor;
     }
 
@@ -127,25 +126,25 @@ public class ColorMatrix implements Cloneable {
 
     public String getColumnName( int column ) {
 
-       return m_matrix.getColName( column );
+	return m_matrix.getColName( column );
     }
 
     public String[] getRowNames() {
 
-       String[] rowNames = new String[m_totalRows];
-       for (int i = 0;  i < m_totalRows;  i++) {
-          rowNames[i] = getRowName( i );
-       }
-       return rowNames;
+	String[] rowNames = new String[m_totalRows];
+	for (int i = 0;  i < m_totalRows;  i++) {
+	    rowNames[i] = getRowName( i );
+	}
+	return rowNames;
     }
 
     public String[] getColumnNames() {
 
-       String[] columnNames = new String[m_totalColumns];
-       for (int i = 0;  i < m_totalColumns;  i++) {
-          columnNames[i] = getColumnName( i );
-       }
-       return columnNames;
+	String[] columnNames = new String[m_totalColumns];
+	for (int i = 0;  i < m_totalColumns;  i++) {
+	    columnNames[i] = getColumnName( i );
+	}
+	return columnNames;
     }
 
     /**
@@ -213,22 +212,22 @@ public class ColorMatrix implements Cloneable {
      */
     public void standardize() {
 
-       // normalize the data in each row
-       for (int r = 0;  r < m_totalRows;  r++)
-       {
-          double[] rowValues = m_matrix.getRow(r);
-          DoubleArrayList doubleArrayList = new cern.colt.list.DoubleArrayList( rowValues );
-          DescriptiveWithMissing.standardize(doubleArrayList);
-          rowValues = doubleArrayList.elements();
-          setRow(r, rowValues);
-       }
+	// normalize the data in each row
+	for (int r = 0;  r < m_totalRows;  r++)
+	    {
+		double[] rowValues = m_matrix.getRow(r);
+		DoubleArrayList doubleArrayList = new cern.colt.list.DoubleArrayList( rowValues );
+		DescriptiveWithMissing.standardize(doubleArrayList);
+		rowValues = doubleArrayList.elements();
+		setRow(r, rowValues);
+	    }
 
-       // we normalized to variance one and mean zero,
-       // so no value should fall outside the range [-2,2]
-       m_minDisplayValue = -2;
-       m_maxDisplayValue = 2;
+	// we normalized to variance one and mean zero,
+	// so no value should fall outside the range [-2,2]
+	m_minDisplayValue = -2;
+	m_maxDisplayValue = 2;
 
-       mapValuesToColors();
+	mapValuesToColors();
 
     } // end standardize
 
@@ -236,99 +235,99 @@ public class ColorMatrix implements Cloneable {
      * @return  a DenseDoubleMatrix2DNamed object
      */
     public DenseDoubleMatrix2DNamed getMatrix() {
-       return m_matrix;
+	return m_matrix;
     }
 
     public void mapValuesToColors()
     {
-      ColorMap colorMap = new ColorMap( m_colorMap );
-      double range = m_maxDisplayValue - m_minDisplayValue;
+	ColorMap colorMap = new ColorMap( m_colorMap );
+	double range = m_maxDisplayValue - m_minDisplayValue;
 
-      if (0.0 == range)
-      {
-         // This is not an exception, just a warning, so no exception to throw
-         System.err.println( "Warning: range of values in data is zero." );
-         range = 1.0; // This avoids getting a step size of zero
-                      // in case all values in the matrix are equal.
-      }
+	if (0.0 == range)
+	    {
+		// This is not an exception, just a warning, so no exception to throw
+		System.err.println( "Warning: range of values in data is zero." );
+		range = 1.0; // This avoids getting a step size of zero
+		// in case all values in the matrix are equal.
+	    }
 
-      // zoom factor for stretching or shrinking the range
-      double zoomFactor = (colorMap.getPaletteSize() - 1) / range;
+	// zoom factor for stretching or shrinking the range
+	double zoomFactor = (colorMap.getPaletteSize() - 1) / range;
 
-      // map values to colors
-      for (int row = 0;  row < m_totalRows;  row++)
-      {
-         for (int column = 0;  column < m_totalColumns;  column++)
-         {
-            double value = m_matrix.get( row, column );
+	// map values to colors
+	for (int row = 0;  row < m_totalRows;  row++)
+	    {
+		for (int column = 0;  column < m_totalColumns;  column++)
+		    {
+			double value = m_matrix.get( row, column );
 
-            if (Double.isNaN (value))
-            {
-               // the value is missing
-               m_colors[row][column] = m_missingColor;
-            }
-            else
-            {
-              // clip extreme values (this makes sense for normalized
-              // values because then for a standard deviation of one and
-              // mean zero, we set m_minValue = -2 and m_maxValue = 2,
-              // even though there could be a few extreme values
-              // outside this range (right?)
-              if (value > m_maxDisplayValue)
-              {
-                 // clip extremely large values
-                 value = m_maxDisplayValue;
-              }
-              else if (value < m_minDisplayValue)
-              {
-                 // clip extremely small values
-                 value = 0;
-              }
-              else
-              {
-                 // shift the minimum value to zero
-                 // to the range [0, maxValue + minValue]
-                 value -= m_minDisplayValue;
-              }
+			if (Double.isNaN (value))
+			    {
+				// the value is missing
+				m_colors[row][column] = m_missingColor;
+			    }
+			else
+			    {
+				// clip extreme values (this makes sense for normalized
+				// values because then for a standard deviation of one and
+				// mean zero, we set m_minValue = -2 and m_maxValue = 2,
+				// even though there could be a few extreme values
+				// outside this range (right?)
+				if (value > m_maxDisplayValue)
+				    {
+					// clip extremely large values
+					value = m_maxDisplayValue;
+				    }
+				else if (value < m_minDisplayValue)
+				    {
+					// clip extremely small values
+					value = 0;
+				    }
+				else
+				    {
+					// shift the minimum value to zero
+					// to the range [0, maxValue + minValue]
+					value -= m_minDisplayValue;
+				    }
 
-              // stretch or shrink the range to [0, totalColors]
-              double valueNew = value * zoomFactor;
-              int i = (int)valueNew;
-              m_colors[row][column] = colorMap.getColor( i );
-            }
-         }
-      }
-   } // end mapValuesToColors
+				// stretch or shrink the range to [0, totalColors]
+				double valueNew = value * zoomFactor;
+				int i = (int)valueNew;
+				m_colors[row][column] = colorMap.getColor( i );
+			    }
+		    }
+	    }
+    } // end mapValuesToColors
     
     
-   public Object clone() {
+    public Object clone() {
       
-//      try {
-//         
-//         cloneColorMatrix = (ColorMatrix) super.clone();
-//      }
-//      catch ()
+	//      try {
+	//         
+	//         cloneColorMatrix = (ColorMatrix) super.clone();
+	//      }
+	//      catch ()
       
-      // create another double matrix
-      Color[][] colors = new Color[ m_totalRows ][ m_totalColumns ];
-      DenseDoubleMatrix2DNamed m = new DenseDoubleMatrix2DNamed( m_totalRows, m_totalColumns );
-      // copy the row and column names
-      for (int i = 0;  i < m_totalRows;  i++)
-         m.addRowName( m_matrix.getRowName( i ));
-      for (int i = 0;  i < m_totalColumns;  i++)
-         m.addColumnName( m_matrix.getColName( i ));
-      // copy the data
-      for (int r = 0;  r < m_totalRows;  r++)
-         for (int c = 0;  c < m_totalColumns;  c++)
-         {
-            m.set( r, c, m_matrix.get( r, c ));
-            //colors[r][c] = new Color( m_colors[r][c].getRGB() );
-         }
+	// create another double matrix
+	Color[][] colors = new Color[ m_totalRows ][ m_totalColumns ];
+	DenseDoubleMatrix2DNamed m = new DenseDoubleMatrix2DNamed( m_totalRows, m_totalColumns );
+	// copy the row and column names
+	for (int i = 0;  i < m_totalRows;  i++)
+	    m.addRowName( m_matrix.getRowName( i ));
+	for (int i = 0;  i < m_totalColumns;  i++)
+	    m.addColumnName( m_matrix.getColName( i ));
+	// copy the data
+	for (int r = 0;  r < m_totalRows;  r++)
+	    for (int c = 0;  c < m_totalColumns;  c++)
+		{
+		    m.set( r, c, m_matrix.get( r, c ));
+		    //colors[r][c] = new Color( m_colors[r][c].getRGB() );
+		}
 
-      // create another copy of a color matrix (this class)
-      ColorMatrix clonedColorMatrix = new ColorMatrix( m );            
-      return clonedColorMatrix;
+	// create another copy of a color matrix (this class)
+	ColorMatrix clonedColorMatrix = new ColorMatrix( m );            
+	return clonedColorMatrix;
       
-   } // end clone
-    
+    } // end clone
+       
 } // end class ColorMatrix
