@@ -7,23 +7,19 @@ import cern.jet.stat.Descriptive;
 
 /**
  * Mathematical functions for statistics that allow missing values without scotching the calculations.
- * 
  * <p>
  * Be careful because some methods from cern.jet.stat.Descriptive have not been overridden and will yield a
  * UnsupportedOperationException if used.
  * </p>
- * 
  * <p>
  * Some functions that come with DoubleArrayLists will not work in an entirely compatible way with missing values. For
  * examples, size() reports the total number of elements, including missing values. To get a count of non-missing
  * values, use this.sizeWithoutMissingValues(). The right one to use may vary.
  * </p>
- * 
  * <p>
  * Not all methods need to be overridden. However, all methods that take a "size" parameter should be passed the results
  * of sizeWithoutMissingValues(data), instead of data.size().
  * </p>
- * 
  * <p>
  * Copyright © 2004 Columbia University
  * <p>
@@ -57,11 +53,10 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
 
    /**
     * Returns the correlation of two data sequences. That is
-    * <tt>covariance(data1,data2)/(standardDev1*standardDev2)</tt>. Missing values are ignored.
-    * 
-    * This method is overridden to stop users from using the method in the superclass when missing values are present.
-    * The problem is that the standard deviation cannot be computed without knowning which values are not missing in
-    * both vectors to be compared. Thus the standardDev parameters are thrown away by this method.
+    * <tt>covariance(data1,data2)/(standardDev1*standardDev2)</tt>. Missing values are ignored. This method is
+    * overridden to stop users from using the method in the superclass when missing values are present. The problem is
+    * that the standard deviation cannot be computed without knowning which values are not missing in both vectors to be
+    * compared. Thus the standardDev parameters are thrown away by this method.
     * 
     * @param data1 DoubleArrayList
     * @param standardDev1 double - not used
@@ -115,9 +110,9 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
          ax = sx / numused;
          return ( sxy - sx * ay )
                / Math.sqrt( ( sxx - sx * ax ) * ( syy - sy * ay ) );
-      } else {
-         return -2.0; // signifies that it could not be calculated.
       }
+      return -2.0; // signifies that it could not be calculated.
+
    }
 
    /**

@@ -51,13 +51,14 @@ public class GuiUtil {
          File f = new File( filename );
          if ( f.exists() ) {
             return true;
-         } else {
-            error( "File " + filename + " doesn't exist.  " );
-            return false;
          }
-      } else {
-         error( "A required file field is blank." );
+         error( "File " + filename + " doesn't exist.  " );
          return false;
+
       }
+      error( "A required file field is blank." );
+      return false;
+
    }
+
 }

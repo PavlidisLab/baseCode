@@ -253,11 +253,11 @@ public class JMatrixDisplay extends JPanel {
    private void setFont() {
       int fontSize = Math
             .min( getFontSize(), ( int ) ( ( double ) m_maxFontSize
-                  / ( double ) m_defaultResolution * ( double ) m_resolution ) );
+                  / ( double ) m_defaultResolution * m_resolution ) );
       if ( ( fontSize != m_fontSize ) || ( m_labelFont == null ) ) {
          m_fontSize = fontSize;
          m_labelFont = new Font( "Ariel", Font.PLAIN, m_fontSize );
-         m_fontGutter = ( int ) ( ( double ) m_cellSize.height * .22 );
+         m_fontGutter = ( int ) ( m_cellSize.height * .22 );
       }
    }
 

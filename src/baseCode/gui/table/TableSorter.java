@@ -60,7 +60,9 @@ import baseCode.gui.JMatrixDisplay;
  * @author Brendon McLean
  * @author Dan van Enckevort
  * @author Parwinder Sekhon
+ * @author Paul Pavlidis
  * @version 2.0 02/27/04
+ * @version $Id$
  */
 
 public class TableSorter
@@ -350,6 +352,9 @@ public class TableSorter
                   // can be asked for both the color and the value.  We are here only
                   // interested in the value.
 
+                  /**
+                   * @todo we shouldn't include a dependency on JMatrixDisplay here. Find a workaround.
+                   */
                   if ( m_matrixDisplay != null ) {
 
                      Point p1 = ( Point ) o1;
@@ -393,6 +398,18 @@ public class TableSorter
                         o1 = a;
                         o2 = b;
                      }
+                  } else if ( ( ( Vector ) o1 ).get( 0 ).getClass().equals( Double.class ) ) {
+                     
+                     //only comparing the first member of the list
+                     Double a = ( Double ) ( ( ArrayList ) o1 ).get( 0 );
+                     Double b = ( Double ) ( ( ArrayList ) o2 ).get( 0 );
+                     comparator = getComparator( Double.class );
+                     
+                     // yes, we did get a Vector, but we want to
+                     // compare the Double values the Vectors contain,
+                     // not the Vectors themselves
+                     o1 = a;
+                     o2 = b;
                   }
                }
                else{
