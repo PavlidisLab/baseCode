@@ -14,8 +14,8 @@ import java.util.Collection;
 import java.util.Vector;
 
 import baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix;
-import baseCode.dataStructure.matrix.SparseDoubleMatrix2DNamed;
 import cern.colt.list.DoubleArrayList;
+import cern.colt.matrix.DoubleMatrix2D;
 
 /**
  * Tools to help make regression testing easier.
@@ -33,11 +33,9 @@ public class RegressionTesting {
 
    //  private String resourcePath = "";
 
-   public static void writeTestResult( String result, String fileName )
-         throws IOException {
+   public static void writeTestResult( String result, String fileName ) throws IOException {
 
-      BufferedWriter buf = new BufferedWriter( new OutputStreamWriter(
-            new FileOutputStream( new File( fileName ) ) ) );
+      BufferedWriter buf = new BufferedWriter( new OutputStreamWriter( new FileOutputStream( new File( fileName ) ) ) );
       BufferedReader resultBuf = new BufferedReader( new StringReader( result ) );
 
       String line = null;
@@ -53,8 +51,7 @@ public class RegressionTesting {
     * @return
     * @throws IOException
     */
-   public static String readTestResult( InputStream istream )
-         throws IOException {
+   public static String readTestResult( InputStream istream ) throws IOException {
       if ( istream == null ) {
          throw new IllegalStateException( "Null stream" );
       }
@@ -74,10 +71,8 @@ public class RegressionTesting {
     * @return the contents of the resource as a String
     * @throws IOException
     */
-   public static String readTestResult( String resourceName )
-         throws IOException {
-      InputStream istream = RegressionTesting.class
-            .getResourceAsStream( resourceName );
+   public static String readTestResult( String resourceName ) throws IOException {
+      InputStream istream = RegressionTesting.class.getResourceAsStream( resourceName );
 
       if ( istream == null ) return null;
 
@@ -92,8 +87,7 @@ public class RegressionTesting {
     * @param fileName - the full path of the file to be read.
     * @return
     */
-   public static String readTestResultFromFile( String fileName )
-         throws IOException {
+   public static String readTestResultFromFile( String fileName ) throws IOException {
       InputStream is = new FileInputStream( fileName );
       return readTestResult( is );
    }
@@ -106,54 +100,40 @@ public class RegressionTesting {
     * @param tolerance
     * @return
     */
-   public static boolean closeEnough( DoubleArrayList a, DoubleArrayList b,
-         double tolerance ) {
+   public static boolean closeEnough( DoubleArrayList a, DoubleArrayList b, double tolerance ) {
       if ( a.size() != b.size() ) return false;
 
       for ( int i = 0; i < a.size(); i++ ) {
-         if ( Math.abs( a.getQuick( i ) - b.getQuick( i ) ) > tolerance )
-               return false;
+         if ( Math.abs( a.getQuick( i ) - b.getQuick( i ) ) > tolerance ) return false;
       }
       return true;
    }
 
    /**
-    * Test whether two DenseDoubleMatrix2DNamed's are 'close enough' to call equal.
+    * Test whether two AbstractNamedDoubleMatrix are 'close enough' to call equal.
     * 
     * @param a
     * @param b
     * @param tolerance
     * @return try if all the values in both matrices are within 'tolerance' of each other.
     */
-   public static boolean closeEnough( AbstractNamedDoubleMatrix a,
-         AbstractNamedDoubleMatrix b, double tolerance ) {
+   public static boolean closeEnough( AbstractNamedDoubleMatrix a, AbstractNamedDoubleMatrix b, double tolerance ) {
       if ( a.rows() != b.rows() || a.columns() != b.columns() ) return false;
 
       for ( int i = 0; i < a.rows(); i++ ) {
          for ( int j = 0; j < a.columns(); j++ ) {
-            if ( Math.abs( a.getQuick( i, j ) - b.getQuick( i, j ) ) > tolerance )
-                  return false;
+            if ( Math.abs( a.getQuick( i, j ) - b.getQuick( i, j ) ) > tolerance ) return false;
          }
       }
       return true;
    }
 
-   /**
-    * Test whether two SparseDoubleMatrix2DNamed are 'close enough' to call equal.
-    * 
-    * @param a
-    * @param b
-    * @param tolerance
-    * @return
-    */
-   public static boolean closeEnough( SparseDoubleMatrix2DNamed a,
-         SparseDoubleMatrix2DNamed b, double tolerance ) {
+   public static boolean closeEnough( DoubleMatrix2D a, DoubleMatrix2D b, double tolerance ) {
       if ( a.rows() != b.rows() || a.columns() != b.columns() ) return false;
 
       for ( int i = 0; i < a.rows(); i++ ) {
          for ( int j = 0; j < a.columns(); j++ ) {
-            if ( Math.abs( a.getQuick( i, j ) - b.getQuick( i, j ) ) > tolerance )
-                  return false;
+            if ( Math.abs( a.getQuick( i, j ) - b.getQuick( i, j ) ) > tolerance ) return false;
          }
       }
       return true;
