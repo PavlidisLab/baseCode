@@ -375,27 +375,31 @@ public class TableSorter
                } else if ( o1.getClass().equals( Vector.class ) ) {
                   if ( ( ( Vector ) o1 ).get( 0 ).getClass().equals( String.class ) )
                   {
-                     favor=true;
-                     comparator = getComparator( String.class );
-                     String a = ( String ) ( ( Vector ) o1 ).get( 0 );
-                     String b = ( String ) ( ( Vector ) o2 ).get( 0 );
-                     o1 = a;
-                     o2 = b;
+                     if ( ( ( Vector ) o1 ).size() == 2 )
+                     {
+                        comparison = -1;
+                        favor=true;
+                     }
+                     else if ( ( ( Vector ) o2 ).size() == 2)
+                     {
+                        comparison = 1;
+                        favor=true;
+                     }
+                     else  //compare normally
+                     {
+                        comparator = getComparator( String.class );
+                        String a = ( String ) ( ( Vector ) o1 ).get( 0 );
+                        String b = ( String ) ( ( Vector ) o2 ).get( 0 );
+                        o1 = a;
+                        o2 = b;
+                     }
                   }
                }
                else{
                   comparator = getComparator( column );
                }
-               comparison = comparator.compare( o1, o2 );
-
-               if ( favor == true ) { //this means we're favoring some to be on top...
-                  if ( o1.getClass().equals( Vector.class ) ) {
-                     if ( ( ( Vector ) o1 ).get( 0 ).getClass().equals( String.class ) ) {
-                        //if marked by second member of list, always favor
-                        if ( ( ( Vector ) o1 ).size() == 2 || ( ( Vector ) o2 ).size() == 2)
-                           comparison = 1;
-                     }
-                  }
+               if ( favor != true ) { //we're not favoring anyone
+                  comparison = comparator.compare( o1, o2 );
                }
             }
 

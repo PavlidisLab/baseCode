@@ -22,7 +22,7 @@ import javax.swing.JLabel;
  * <p>
  * Company:
  * </p>
- * 
+ *
  * @author not attributable
  * @version $Id$
  */
@@ -80,22 +80,5 @@ public abstract class WizardStep extends JPanel {
        owner.showStatus( a );
     }
    
-
-   /** @todo this probably sould be elsewhere */
-   protected boolean testfile( String filename ) {
-      if ( filename != null && filename.length() > 0 ) {
-         File f = new File( filename );
-         if ( f.exists() ) {
-            return true;
-         }
-         JOptionPane.showMessageDialog( null, "File " + filename
-               + " doesn't exist.  " );
-
-         return false;
-      }
-      JOptionPane.showMessageDialog( null, "A required file field is blank." );
-      return false;
-
-   }
 
 }
