@@ -165,10 +165,10 @@ public class GeneAnnotations {
     * Make a new GeneAnnotations that only includes the probes in the parameter 'probes'.
     * 
     * @param stream
-    * @param probe Only probes in this set are left.
+    * @param activeGenes Only genes in this set are left.
     * @throws IOException todo some refactoring is needed here to simplify all these constructors.
     */
-   public GeneAnnotations( InputStream stream, Set probes,
+   public GeneAnnotations( InputStream stream, Set activeGenes,
          StatusViewer messenger ) throws IOException {
 
       probeToClassMap = new LinkedHashMap();
@@ -178,7 +178,7 @@ public class GeneAnnotations {
       geneToProbeList = new HashMap();
       geneToClassMap = new HashMap();
       classesToRedundantMap = new HashMap();
-      this.read( stream );
+      this.read( stream, activeGenes );
       classToGeneMap = makeClassToGeneMap();
       GeneSetMapTools.collapseClasses( this, messenger );
       prune( 2, 1000 );
@@ -186,6 +186,8 @@ public class GeneAnnotations {
       resetSelectedSets();
       sortGeneSets();
    }
+
+  
 
    /**
     * Remove a gene set (class) from all the maps that reference it.
@@ -653,7 +655,11 @@ public class GeneAnnotations {
       return map;
    }
 
-   private void read( InputStream bis ) throws IOException {
+   private void read(InputStream bis) throws IOException {
+      this.read(bis, null);
+   }
+   
+   private void read( InputStream bis, Set activeGenes ) throws IOException {
       if ( bis == null ) {
          throw new IOException( "Inputstream was null" );
       }
@@ -673,6 +679,11 @@ public class GeneAnnotations {
 
          /* read gene name */
          String group = st.nextToken().intern();
+         
+         if (activeGenes != null && ! activeGenes.contains(group)) {
+            continue;
+         }
+         
          probeToGeneName.put( probe.intern(), group.intern() );
 
          // create the list if need be.

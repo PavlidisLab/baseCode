@@ -103,10 +103,10 @@ public class RankProp extends Algorithm {
             y.set( j, ( alpha * dotProduct ) + query.getQuick( j ) );
          }
 
-         if ( loops % 5 == 0 ) {
-            log.info( " iteration " + loops + " y[0]="
-                  + Format.sprintf( "%g", new Parameters( y.getQuick( 0 ) ) ) );
-         }
+//         if ( loops % 5 == 0 ) {
+//            log.info( " iteration " + loops + " y[0]="
+//                  + Format.sprintf( "%g", new Parameters( y.getQuick( 0 ) ) ) );
+//         }
       }
       return y;
    }
