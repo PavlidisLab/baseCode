@@ -88,6 +88,7 @@ protected JButton helpButton = new JButton();
             this ) );
       
       helpButton.addActionListener( new AppDialog_helpButton_actionAdapter( this ));
+      helpButton.setText("Help");
       
       bottomPanel.add( helpButton, null );
       bottomPanel.add( cancelButton, null );

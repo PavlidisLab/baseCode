@@ -272,8 +272,9 @@ public class ColorMatrix implements Cloneable {
    }
 
    /**
-    * Normalizes the elements of an array to variance one and mean zero,
+    * Normalizes the elements of a matrix to variance one and mean zero,
     * ignoring missing values
+    * todo move this to matrixstats or something.
     */
    public void standardize() {
 

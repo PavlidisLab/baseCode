@@ -1,14 +1,13 @@
 package baseCode.gui;
 
+import java.awt.Cursor;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.IOException;
+
 import javax.swing.JLabel;
 
 import baseCode.util.BrowserLauncher;
-
-import java.awt.Cursor;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseEvent;
-import baseCode.util.BrowserLauncher;
-import java.io.IOException;
 
 /**
  * A clickable link label that contains a URL.
