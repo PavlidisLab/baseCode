@@ -1,6 +1,7 @@
 package baseCode.dataFilter;
 
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.NamedMatrix;
 
 /**
  * Remove matrix rows that have a low variance.
@@ -14,11 +15,18 @@ public class VarianceFilter
     extends AbstractFilter
     implements Filter {
 
-   public DenseDoubleMatrix2DNamed filter( DenseDoubleMatrix2DNamed data ) {
+   public NamedMatrix filter( NamedMatrix data ) {
 
+      if (!(data instanceof DenseDoubleMatrix2DNamed)) {
+         throw new IllegalArgumentException("Only valid for DenseDoubleMatrix2DNamed");
+      }
+      
+      
       int numRows = data.rows();
       int numCols = data.columns();
+      for ( int i = 0; i < numRows; i++ ) {
 
+      }
       //    DoubleArrayList stdevs = MatrixRowStats.
 
       return null;

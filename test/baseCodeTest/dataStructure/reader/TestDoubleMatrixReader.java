@@ -5,7 +5,6 @@ import java.io.InputStream;
 
 import junit.framework.TestCase;
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
-import baseCode.dataStructure.StringMatrix2DNamed;
 import baseCode.dataStructure.reader.DoubleMatrixReader;
 
 /**

@@ -153,7 +153,7 @@ public class AbsentFilter extends AbstractFilter implements Filter {
             // count missing values in the data as "absent", whatever the
             // flag really is.
             if ( data.isMissing( i, j ) ) {
-               log.debug( "Found missing data, counting as absent." );
+        //       log.debug( "Found missing data, counting as absent." );
                continue;
             }
 

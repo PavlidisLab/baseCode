@@ -1,5 +1,6 @@
 package baseCode.dataFilter;
 
+import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.util.Vector;
 
@@ -81,6 +82,12 @@ public class MissingFilter extends AbstractFilter implements Filter {
     * @param data
     *           DenseDoubleMatrix2DNamed
     * @return A new matrix that has been filtered.
+    * @throws InvocationTargetException
+    * @throws IllegalAccessException
+    * @throws InstantiationException
+    * @throws NoSuchMethodException
+    * @throws IllegalArgumentException
+    * @throws SecurityException
     */
    public NamedMatrix filter( NamedMatrix data ) {
       Vector MTemp = new Vector();

@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import baseCode.dataFilter.Filter;
-import baseCode.dataStructure.NamedMatrix;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import baseCode.dataStructure.NamedMatrix;
 
 /**
  * Abstract class representing an object that can read in a {@link NamedMatrix} from a file.
@@ -21,7 +21,7 @@ public abstract class AbstractNamedMatrixReader {
 
    public abstract NamedMatrix read( String filename ) throws IOException;
 
-   protected static Log log = LogFactory.getLog(AbstractNamedMatrixReader.class);
+   protected static final Log log = LogFactory.getLog(AbstractNamedMatrixReader.class);
    
    protected Vector readHeader( BufferedReader dis ) throws IOException {
       Vector headerVec = new Vector();

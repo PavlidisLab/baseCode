@@ -8,6 +8,8 @@ import org.apache.commons.logging.LogFactory;
 import baseCode.dataStructure.NamedMatrix;
 
 /**
+ * Base implementation of the filter class. Subclasses must implement the filter() method.
+ * 
  * Copyright (c) 2004
  * </p>
  * <p>
@@ -20,23 +22,22 @@ import baseCode.dataStructure.NamedMatrix;
 
 public abstract class AbstractFilter implements Filter {
 
-    protected static Log log = LogFactory.getLog(Filter.class);
-
-    public NamedMatrix filter(NamedMatrix data) {
-        return null;
-    }
-
+   protected static final Log log = LogFactory.getLog(AbstractFilter.class);
+   
     protected NamedMatrix getOutputMatrix(NamedMatrix data, int numRows,
-            int numCols) {
+            int numCols)  {
         NamedMatrix returnval = null;
-        try {
-            Constructor cr = data.getClass().getConstructor(
-                    new Class[] { int.class, int.class });
-            returnval = (NamedMatrix) cr.newInstance(new Object[] {
-                    new Integer(numRows), new Integer(numCols) });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+     
+            Constructor cr;
+            try {
+               cr = data.getClass().getConstructor(
+                       new Class[] { int.class, int.class });
+               returnval = (NamedMatrix) cr.newInstance(new Object[] {
+                     new Integer(numRows), new Integer(numCols) });
+            } catch ( Exception e) {
+               e.printStackTrace();
+            }         
+     
         return returnval;
     }
 
