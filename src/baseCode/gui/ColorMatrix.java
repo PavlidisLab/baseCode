@@ -31,6 +31,7 @@ public class ColorMatrix {
     DenseDoubleMatrix2DNamed m_matrix;
     DoubleMatrixReader m_matrixReader;
 
+    int m_totalRows, m_totalColumns;
 
     /** to be able to sort the rows by an arbitrary key */
     int m_rowKeys[];
@@ -49,7 +50,7 @@ public class ColorMatrix {
 
     public ColorMatrix( DenseDoubleMatrix2DNamed matrix ) {
 
-        loadMatrix( matrix );
+        init( matrix );
     }
 
     /**
@@ -73,17 +74,17 @@ public class ColorMatrix {
 
        m_missingColor = missingColor;
        m_colorMap = colorMap;
-       loadMatrix( matrix );
+       init( matrix );
     }
 
     public int getRowCount() {
 
-        return m_matrix.rows();
+        return m_totalRows;
     }
 
     public int getColumnCount() {
 
-        return m_matrix.columns();
+        return m_totalColumns;
     }
 
     public void setRowKeys( int[] rowKeys ) {
@@ -117,9 +118,14 @@ public class ColorMatrix {
         m_colors[row][column] = newColor;
     }
 
-    public String getRowName( int i ) {
+    public String getRowName( int row ) {
 
-        return m_matrix.getRowName( i );
+        return m_matrix.getRowName( row );
+    }
+    
+    public String getColumnName( int column ) {
+       
+       return m_matrix.getColName( column );
     }
 
     /**
@@ -131,7 +137,7 @@ public class ColorMatrix {
     protected void setRow( int row, double values[] ) {
 
         // clip if we have more values than columns
-        int totalValues = Math.min( values.length, m_matrix.columns() );
+        int totalValues = Math.min( values.length, m_totalColumns );
 
         for (int column = 0;  column < totalValues;  column++)
             m_matrix.set( row, column, values[column] );
@@ -147,18 +153,20 @@ public class ColorMatrix {
      */
     protected int[] createRowKeys() {
 
-        m_rowKeys = new int[ m_matrix.rows() ];
+        m_rowKeys = new int[ m_totalRows ];
 
-        for (int i = 0;  i < m_matrix.rows();  i++)
+        for (int i = 0;  i < m_totalRows;  i++)
             m_rowKeys[i] = i;
 
         return m_rowKeys;
     }
 
-    public void loadMatrix( DenseDoubleMatrix2DNamed matrix ) {
+    public void init( DenseDoubleMatrix2DNamed matrix ) {
 
         m_matrix = matrix; // by reference, or should we clone?
-        m_colors = new Color[ m_matrix.rows() ][ m_matrix.columns() ];
+        m_totalRows = m_matrix.rows();
+        m_totalColumns = m_matrix.columns();
+        m_colors = new Color[ m_totalRows ][ m_totalColumns ];
         createRowKeys();
 
         m_minDisplayValue = MatrixStats.min( m_matrix );
@@ -176,7 +184,7 @@ public class ColorMatrix {
 
         m_matrixReader = new DoubleMatrixReader();
         DenseDoubleMatrix2DNamed matrix = (DenseDoubleMatrix2DNamed) m_matrixReader.read( filename );
-        loadMatrix( matrix );
+        init( matrix );
     }
 
     /**
@@ -186,8 +194,7 @@ public class ColorMatrix {
     public void standardize() {
 
        // normalize the data in each row
-       int totalRows = m_matrix.rows();
-       for (int r = 0;  r < totalRows;  r++)
+       for (int r = 0;  r < m_totalRows;  r++)
        {
           double[] rowValues = m_matrix.getRow(r);
           DoubleArrayList doubleArrayList = new cern.colt.list.DoubleArrayList( rowValues );
@@ -228,11 +235,9 @@ public class ColorMatrix {
         double zoomFactor = (colorMap.getPaletteSize() - 1) / range;
 
         // map values to colors
-        int totalRows = m_matrix.rows();
-        int totalColumns = m_matrix.columns();
-        for (int row = 0;  row < totalRows;  row++)
+        for (int row = 0;  row < m_totalRows;  row++)
         {
-            for (int column = 0;  column < totalColumns;  column++)
+            for (int column = 0;  column < m_totalColumns;  column++)
             {
                 double value = m_matrix.get( row, column );
 
