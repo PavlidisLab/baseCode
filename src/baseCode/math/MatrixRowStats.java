@@ -60,6 +60,7 @@ public class MatrixRowStats {
     *
     * @param M DenseDoubleMatrix2DNamed
     * @return DoubleArrayList
+    * @todo calls new a lot.
     */
    public static DoubleArrayList sums( DenseDoubleMatrix2DNamed M ) {
       int i;

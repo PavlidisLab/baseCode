@@ -9,7 +9,6 @@ import java.io.StringReader;
 import java.io.FileOutputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.io.StringWriter;
 
 public class RegressionTesting {
 

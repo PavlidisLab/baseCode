@@ -30,12 +30,7 @@ public class SparseDoubleMatrix2DNamed extends AbstractNamedMatrix implements
 
    /**
     * 
-    * @param rows
-    *           int
-    * @param cols
-    *           int
-    * @param T
-    *           double[][]
+    * @param T double[][]
     */
    public SparseDoubleMatrix2DNamed( double T[][] ) {
       super();
@@ -44,10 +39,8 @@ public class SparseDoubleMatrix2DNamed extends AbstractNamedMatrix implements
 
    /**
     * 
-    * @param rows
-    *           int
-    * @param cols
-    *           int
+    * @param rows int
+    * @param cols int
     */
    public SparseDoubleMatrix2DNamed( int rows, int cols ) {
       super();
@@ -61,8 +54,7 @@ public class SparseDoubleMatrix2DNamed extends AbstractNamedMatrix implements
    /**
     * Return a reference to a specific row.
     * 
-    * @param row
-    *           int
+    * @param row int
     * @return double[]
     */
    public double[] getRow( int row ) {
@@ -72,8 +64,7 @@ public class SparseDoubleMatrix2DNamed extends AbstractNamedMatrix implements
    /**
     * Return a copy of a given column.
     * 
-    * @param col
-    *           int
+    * @param col int
     * @return double[]
     */
    public double[] getCol( int col ) {
@@ -132,8 +123,7 @@ public class SparseDoubleMatrix2DNamed extends AbstractNamedMatrix implements
 
    /**
     * 
-    * @param s
-    *           String
+    * @param s String
     * @return double[]
     */
    public double[] getRowByName( String s ) {
@@ -210,5 +200,4 @@ public class SparseDoubleMatrix2DNamed extends AbstractNamedMatrix implements
       return matrix.viewRow( row );
    }
 
- 
 }

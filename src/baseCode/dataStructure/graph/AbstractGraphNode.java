@@ -60,19 +60,12 @@ public abstract class AbstractGraphNode implements Comparable, GraphNode {
       this.graph = graph;
    }
 
-   /**
-    * Set the contents of the node
-    * @param j
-    */
+   
    public void setValue(Object key, Object value) {
       this.item = value;
       this.key = key;
    }
 
-   /**
-    * Set the item this node holds
-    * @param value
-    */
    public void setItem(Object value) {
       this.item = value;
    }
@@ -81,33 +74,18 @@ public abstract class AbstractGraphNode implements Comparable, GraphNode {
       return item.toString();
    }
 
-   /**
-    * Return the graph that contains this node instance.
-    * @return
-    */
    public Graph getGraph() {
       return graph;
    }
 
-   /**
-    * Mark this node as visited.
-    */
    public void mark() {
       visited = true;
    }
 
-   /**
-    * Unmark this node so it is 'unvisited'.
-    *
-    */
    public void unMark() {
       visited = false;
    }
 
-   /**
-    * Return true if the node has been visited.
-    * @return
-    */
    public boolean isVisited() {
       return visited;
    }

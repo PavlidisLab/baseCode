@@ -161,8 +161,6 @@ public class DirectedGraphNode
 
    /**
     * Get all the children of this node, recursively.
-    * @param list Set
-    * @return Set
     */
    public Set getAllChildNodes() {
       return this.getAllChildNodes( null );
@@ -170,10 +168,7 @@ public class DirectedGraphNode
 
    /**
     * Get all the parents of this node, recursively.
-    * @param list Set
-    * @return Set
     */
-
    public Set getAllParentNodes() {
       return this.getAllParentNodes( null );
    }

@@ -28,7 +28,6 @@ public class TreePanelApp {
 
    /**
     * Constructor for TestTreePanel.
-    * @param arg0
     */
    public TreePanelApp() throws IOException, SAXException, ParserConfigurationException,
        IOException {

@@ -1,16 +1,14 @@
 package baseCodeTest.dataStructure.writer;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import hep.aida.ref.Histogram1D;
+
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import junit.framework.TestCase;
 import baseCode.dataStructure.writer.HistogramWriter;
 import baseCode.util.RegressionTesting;
-import junit.framework.TestCase;
-import hep.aida.ref.Histogram1D;
 
 /**
  * 

@@ -1,19 +1,22 @@
 package baseCode.dataStructure;
 
 import cern.colt.matrix.DoubleMatrix1D;
+import cern.colt.matrix.DoubleMatrix2D;
+import cern.colt.matrix.impl.AbstractMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import corejava.Format;
 
 /**
- *  A matrix that knows about row and column names.</p>
+ * A matrix of doubles that knows about row and column names.</p>
  * <p>Copyright (c) 2004</p>
- * <p>Institution: Columbia University</p>
+ * <p>Columbia University</p>
   @author Paul Pavlidis
   @version $Id$
  */
 public class DenseDoubleMatrix2DNamed
-    extends AbstractNamedMatrix implements NamedMatrix {
+    extends AbstractNamedMatrix {
 
+ 
    private DenseDoubleMatrix2D matrix;
 
 
@@ -185,6 +188,15 @@ public class DenseDoubleMatrix2DNamed
    public void setQuick( int row, int column, double value ) {
       matrix.setQuick( row, column, value );
    }
+   
+   /**
+    * @param column
+    * @return
+    */
+   public DoubleMatrix1D viewColumn( int column ) {
+      return matrix.viewColumn( column );
+   }
+   
    /**
     * @param row
     * @return DoubleMatrix1D
@@ -210,5 +222,11 @@ public class DenseDoubleMatrix2DNamed
 
    public int size() {
       return matrix.size();
+   }
+   /**
+    * @return
+    */
+   public double[][] toArray() {
+      return matrix.toArray();
    }
 }

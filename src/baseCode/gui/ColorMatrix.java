@@ -284,12 +284,12 @@ public class ColorMatrix
     *                   in the ColorMap class, like ColorMap.REDGREEN_COLORMAP
     *                   and ColorMap.BLACKBODY_COLORMAP
     *
-    * @throws an exception if the colorMap array argument contains less than
+    * @throws IllegalArgumentException if the colorMap array argument contains less than
     *                      two colors.
     */
-   public void setColorMap( Color[] colorMap ) throws Exception {
+   public void setColorMap( Color[] colorMap ) throws IllegalArgumentException {
 
-      if (colorMap.length < 2) throw new Exception();
+      if (colorMap.length < 2) throw new IllegalArgumentException();
 
       m_colorMap = colorMap;
       mapValuesToColors();

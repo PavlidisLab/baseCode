@@ -50,7 +50,7 @@ public abstract class AbstractGraph implements Graph {
     * getNodeContents(key)
     *
     * @param key Object
-    * @see getNodeContents
+    * @see #getNodeContents(Object)
     * @return AbstractGraphNode referenced by the key.
     */
    public GraphNode get(Object key) {
@@ -69,7 +69,7 @@ public abstract class AbstractGraph implements Graph {
    /**
     * Retrieve the contents of a node by key.
     *
-    * @see get
+    * @see #get
     * @param key Object
     * @return The object contained by a node, not the node itself.
     */
