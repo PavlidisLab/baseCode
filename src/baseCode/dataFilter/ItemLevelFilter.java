@@ -11,7 +11,7 @@ import baseCode.dataStructure.NamedMatrix;
  * @author Pavlidis
  * @version $Id$
  */
-public class ItemLevelFilter extends LevelFilter {
+public class ItemLevelFilter extends AbstractLevelFilter {
 
    public NamedMatrix filter( NamedMatrix data ) {
       if ( !( data instanceof DenseDoubleMatrix2DNamed ) ) {

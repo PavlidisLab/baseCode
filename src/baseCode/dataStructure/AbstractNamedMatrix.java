@@ -138,4 +138,24 @@ public abstract class AbstractNamedMatrix implements NamedMatrix {
    public final boolean containsColumnName( String columnName ) {
       return colNames.contains( columnName );
    }
+   
+
+   /* (non-Javadoc)
+    * @see baseCode.dataStructure.NamedMatrix#numMissing()
+    */
+   public int numMissing() {
+     int count = 0;
+     int n = this.rows();
+     int m = this.columns();
+     for (int i = 0; i < n; i++) {
+        for (int j = 0;   j < m; j++) {
+           if (isMissing(i,j)) {
+              count++;
+           }
+        }
+     }
+     return count;
+   }
+
+   
 }

@@ -10,7 +10,7 @@ import baseCode.math.Stats;
  * @author Owner
  * @version $Id$
  */
-public abstract class LevelFilter extends AbstractFilter {
+public abstract class AbstractLevelFilter extends AbstractFilter {
 
    protected double lowCut = -Double.MAX_VALUE;
    protected double highCut = Double.MAX_VALUE;

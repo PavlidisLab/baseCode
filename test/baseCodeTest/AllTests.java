@@ -16,6 +16,8 @@ public class AllTests
       suite.addTestSuite(baseCodeTest.dataStructure.reader.TestStringMatrixReader.class);
       suite.addTestSuite(baseCodeTest.dataStructure.reader.TestDoubleMatrixReader.class);
       
+      suite.addTestSuite(baseCodeTest.dataStructure.writer.TestHistogramWriter.class);
+      
       suite.addTestSuite( baseCodeTest.dataStructure.TestQueue.class );
       suite.addTestSuite( baseCodeTest.dataStructure.TestStack.class );
       
@@ -24,7 +26,7 @@ public class AllTests
       suite.addTestSuite(baseCodeTest.dataFilter.TestRowAbsentFilter.class);
       suite.addTestSuite(baseCodeTest.dataFilter.TestRowMissingFilter.class);
       suite.addTestSuite(baseCodeTest.dataFilter.TestRowLevelFilter.class);
-      
+      suite.addTestSuite(baseCodeTest.dataFilter.TestItemLevelFilter.class);
       suite.addTestSuite( baseCodeTest.math.TestDescriptiveWithMissing.class );
       suite.addTestSuite( baseCodeTest.math.TestRank.class );
       

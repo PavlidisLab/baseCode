@@ -209,4 +209,6 @@ public class SparseDoubleMatrix2DNamed extends AbstractNamedMatrix implements
    public DoubleMatrix1D viewRow( int row ) {
       return matrix.viewRow( row );
    }
+
+ 
 }

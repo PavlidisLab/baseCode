@@ -163,6 +163,13 @@ public interface NamedMatrix {
    public boolean isMissing( int i, int j );
 
    /**
+    * Return the number of missing values in the matrix.
+    * @return
+    */
+   public int numMissing();
+   
+   
+   /**
     * 
     * @param rowName
     * @return

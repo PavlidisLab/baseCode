@@ -5,6 +5,7 @@ import baseCode.dataStructure.NamedMatrix;
 /**
  * An interface representing the functionality of a class that can 
  * filter 2-d matrix-based data by row-oriented criteria.
+ * <p>
  * Copyright (c) 2004 Columbia University
  * @author Pavlidis
  * @version $Id$

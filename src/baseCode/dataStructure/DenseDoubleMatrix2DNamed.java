@@ -207,4 +207,8 @@ public class DenseDoubleMatrix2DNamed
    public int rows() {
       return matrix.rows();
    }
+
+   public int size() {
+      return matrix.size();
+   }
 }

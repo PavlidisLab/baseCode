@@ -51,7 +51,7 @@ import cern.colt.list.DoubleArrayList;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class RowLevelFilter extends LevelFilter {
+public class RowLevelFilter extends AbstractLevelFilter {
 
    private boolean removeAllNegative = false;
 
