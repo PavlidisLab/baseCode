@@ -1,4 +1,4 @@
-package baseCode.Gui;
+package baseCode.gui;
 
 import java.awt.*;
 import java.awt.event.*;
