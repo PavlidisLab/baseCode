@@ -630,6 +630,7 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
 
       return sum / ( effsize - 1 );
    }
+   
 
    /**
     * Modifies a data sequence to be standardized. Mising values are ignored.

@@ -22,9 +22,9 @@ public class MatrixRowStats {
    private MatrixRowStats() {
    }
 
-   public static DoubleArrayList sumOfSquaredDeviations(
+   public static DoubleArrayList sumOfSquares(
          DenseDoubleMatrix2DNamed M ) {
-      return sumOfSquaredDeviations( M, means( M ) );
+      return sumOfSquares( M, means( M ) );
    }
 
    /**
@@ -34,13 +34,13 @@ public class MatrixRowStats {
     * @param means DoubleArrayList
     * @return DoubleArrayList
     */
-   public static DoubleArrayList sumOfSquaredDeviations(
+   public static DoubleArrayList sumOfSquares(
          DenseDoubleMatrix2DNamed M, DoubleArrayList means ) {
       DoubleArrayList r = new DoubleArrayList();
 
       for ( int i = 0; i < M.rows(); i++ ) {
          DoubleArrayList row = new DoubleArrayList( M.getRow( i ) );
-         r.add( DescriptiveWithMissing.sumOfSquaredDeviations( row ) );
+         r.add( DescriptiveWithMissing.sumOfSquares( row ) );
       }
 
       return r;
@@ -78,20 +78,18 @@ public class MatrixRowStats {
    }
 
    /**
-    * Calculates the standard deviation of each row of a matrix
+    * Calculates the sample standard deviation of each row of a matrix
     * 
     * @param M DenseDoubleMatrix2DNamed
     * @return DoubleArrayList
     */
-   public static DoubleArrayList standardDeviations( DenseDoubleMatrix2DNamed M ) {
+   public static DoubleArrayList sampleStandardDeviations( DenseDoubleMatrix2DNamed M ) {
       DoubleArrayList r = new DoubleArrayList();
       for ( int i = 0; i < M.rows(); i++ ) {
          DoubleArrayList row = new DoubleArrayList( M.getRow( i ) );
-         r.add( DescriptiveWithMissing
-               .standardDeviation( DescriptiveWithMissing.variance(
-                     DescriptiveWithMissing.sizeWithoutMissingValues( row ),
-                     DescriptiveWithMissing.mean( row ), DescriptiveWithMissing
-                           .sumOfSquares( row ) ) ) );
+        double mean = DescriptiveWithMissing.mean(row);
+         r.add( Math.sqrt(DescriptiveWithMissing
+                     .sampleVariance( row,mean ) ) );
       }
       return r;
    }

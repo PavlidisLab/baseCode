@@ -46,7 +46,7 @@ public class TestMatrixRowStats extends TestCase {
     * sumOfSquares(DenseDoubleMatrix2DNamed)
     */
    public final void testSumOfSquaresDenseDoubleMatrix2DNamed() {
-      DoubleArrayList actualReturn = MatrixRowStats.sumOfSquaredDeviations( testdata );
+      DoubleArrayList actualReturn = MatrixRowStats.sumOfSquares( testdata );
       DoubleArrayList expectedReturn = new DoubleArrayList( new double[] {
             293847.67, 500060.93, 11146426060.47, 17712065.42, 18082011688.08,
             723701.66, 286139.3, 11612833039.53, 2918638887.99, 20682978339.68,
@@ -54,7 +54,8 @@ public class TestMatrixRowStats extends TestCase {
             1238996.89, 8761486.94, 10293417.38, 8606490.67, 84399.81,
             25917.75, 10492284.77, 2110962.48, 195657.72, 14831407.56,
             2248759.62, 66003411.25, 159539.01, 19204218029.07, 1413519.59 } );
-      assertEquals(true, RegressionTesting.closeEnough(expectedReturn, actualReturn, 0.0001));
+      assertEquals( true, RegressionTesting.closeEnough( expectedReturn,
+            actualReturn, 0.0001 ) );
    }
 
    /*
@@ -62,8 +63,8 @@ public class TestMatrixRowStats extends TestCase {
     * sumOfSquares(DenseDoubleMatrix2DNamed, DoubleArrayList)
     */
    public final void testSumOfSquaresDenseDoubleMatrix2DNamedDoubleArrayList() {
-      //TODO Implement sumOfSquares().
-      DoubleArrayList actualReturn = MatrixRowStats.sumOfSquaredDeviations( testdata, MatrixRowStats.means(testdata) );
+      DoubleArrayList actualReturn = MatrixRowStats.sumOfSquares( testdata,
+            MatrixRowStats.means( testdata ) );
       DoubleArrayList expectedReturn = new DoubleArrayList( new double[] {
             293847.67, 500060.93, 11146426060.47, 17712065.42, 18082011688.08,
             723701.66, 286139.3, 11612833039.53, 2918638887.99, 20682978339.68,
@@ -72,7 +73,8 @@ public class TestMatrixRowStats extends TestCase {
             25917.75, 10492284.77, 2110962.48, 195657.72, 14831407.56,
             2248759.62, 66003411.25, 159539.01, 19204218029.07, 1413519.59 } );
 
-      assertEquals(true, RegressionTesting.closeEnough(expectedReturn, actualReturn, 0.0001));
+      assertEquals( true, RegressionTesting.closeEnough( expectedReturn,
+            actualReturn, 0.0001 ) );
    }
 
    public final void testMeans() {
@@ -87,11 +89,12 @@ public class TestMatrixRowStats extends TestCase {
             927.058333333333, 396.6, 107.933333333333, 1080.13333333333,
             416.183333333333, 2265.75833333333, 12.3916666666667,
             39963.4916666667, -333.291666666667 } );
-      assertEquals(true, RegressionTesting.closeEnough(expectedReturn, actualReturn, 0.0001));
+      assertEquals( true, RegressionTesting.closeEnough( expectedReturn,
+            actualReturn, 0.0001 ) );
    }
 
    public final void testSums() {
-      //TODO Implement sums().
+
       DoubleArrayList actualReturn = MatrixRowStats.sums( testdata );
       DoubleArrayList expectedReturn = new DoubleArrayList(
             new double[] { 1616.5, 2023.7, 364906.5, 12507.4, 465346.6, 2392.2,
@@ -99,13 +102,14 @@ public class TestMatrixRowStats extends TestCase {
                   11216.5, -2001.5, -2065.9, 9739.6, 11044.4, 9904.5, -134.3,
                   261.5, 11124.7, 4759.2, 1295.2, 12961.6, 4994.2, 27189.1,
                   148.7, 479561.9, -3999.5 } );
-      assertEquals(true, RegressionTesting.closeEnough(expectedReturn, actualReturn, 0.0001));
+      assertEquals( true, RegressionTesting.closeEnough( expectedReturn,
+            actualReturn, 0.0001 ) );
    }
 
    public final void testStandardDeviations() {
-      //TODO Implement standardDeviations().
+
       DoubleArrayList actualReturn = MatrixRowStats
-            .standardDeviations( testdata );
+            .sampleStandardDeviations( testdata );
       DoubleArrayList expectedReturn = new DoubleArrayList( new double[] {
             83.1710445498621, 120.144151738525, 2132.64486415128,
             651.97677431211, 1818.84521598115, 149.792762903225,
@@ -116,8 +120,9 @@ public class TestMatrixRowStats extends TestCase {
             198.073444252838, 86.8105403982859, 42.8732054134542,
             127.578471098688, 142.53030299809, 71.2629360930776,
             274.880361854632, 124.410178137653, 632.418255527338,
-            119.733176524329, 1888.96399621998, 85.5567696522802 } );
-      assertEquals(true, RegressionTesting.closeEnough(expectedReturn, actualReturn, 0.001));
+            119.733176524329, 1888.96399621998, 85.5567696522802, } );
+      assertEquals( true, RegressionTesting.closeEnough( expectedReturn,
+            actualReturn, 0.00001 ) );
    }
 
    public final void testMin() {

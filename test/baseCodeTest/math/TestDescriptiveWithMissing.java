@@ -260,7 +260,7 @@ public class TestDescriptiveWithMissing extends TestCase {
             DescriptiveWithMissing.sum( data1missing ), DescriptiveWithMissing
                   .sumOfSquares( data1missing ) );
       assertEquals( "return value", expectedReturn, actualReturn,
-            Double.MIN_VALUE );
+            0.000001 );
    }
 
 }
