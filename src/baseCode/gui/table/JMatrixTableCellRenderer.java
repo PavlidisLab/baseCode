@@ -35,7 +35,7 @@ public class JMatrixTableCellRenderer
    // using this renderer needs to be rendered.
    public Component getTableCellRendererComponent(
        JTable table,
-       Object tableCellValue,
+       Object value,
        boolean isSelected,
        boolean hasFocus,
        int displayedRow,
@@ -43,15 +43,7 @@ public class JMatrixTableCellRenderer
       // 'value' is value contained in the cell located at
       // (rowIndex, vColIndex)
 
-      if ( isSelected ) {
-         // cell (and perhaps other cells) are selected
-      }
-
-      if ( hasFocus ) {
-         // this cell is the anchor and the table has the focus
-      }
-
-      Point coords = ( Point ) tableCellValue;
+      Point coords = ( Point ) value;
       int row = coords.x;
       int column = coords.y;
 
@@ -68,16 +60,6 @@ public class JMatrixTableCellRenderer
 
       // Since the renderer is a component, return itself
       return this;
-   }
-
-   static public double format( double value, int precision ) {
-
-      int integerPart = ( int ) value;
-      int fractionalPart = ( int ) ( ( value - integerPart ) *
-                                     Math.pow( 10, precision ) );
-
-      double fraction = fractionalPart / Math.pow( 10, precision );
-      return integerPart + fraction;
    }
 
    // The following methods override the defaults for performance reasons
