@@ -7,17 +7,23 @@ import java.util.Vector;
 import baseCode.dataStructure.NamedMatrix;
 
 /**
- * Remove probes that have names meeting certain rules indicating they may have low reliability. This is targeted
- * at cases like "AFFX", "_st", "_f_at" and so forth.
- * <p> Copyright (c) 2004</p>
- * <p>Institution:: Columbia University</p>
+ * Remove probes that have names meeting certain rules indicating they may have
+ * low reliability. This is targeted at cases like "AFFX", "_st", "_f_at" and so
+ * forth.
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution:: Columbia University
+ * </p>
+ * 
  * @author Paul Pavlidis
- * @version $Id$
+ * @version $Id: AffymetrixProbeNameFilter.java,v 1.5 2004/06/23 15:11:39
+ *          pavlidis Exp $
+ * @todo make the filtering criteria configurable.
  */
 
-public class AffymetrixProbeNameFilter
-    extends AbstractFilter
-    implements Filter {
+public class AffymetrixProbeNameFilter extends AbstractFilter implements Filter {
 
    public NamedMatrix filter( NamedMatrix data ) {
       Vector MTemp = new Vector();
@@ -51,8 +57,7 @@ public class AffymetrixProbeNameFilter
          kept++;
       }
 
-      NamedMatrix returnval = getOutputMatrix(data, MTemp, numCols);
-
+      NamedMatrix returnval = getOutputMatrix( data, MTemp.size(), numCols );
 
       for ( int i = 0; i < MTemp.size(); i++ ) {
          for ( int j = 0; j < numCols; j++ ) {
@@ -61,8 +66,7 @@ public class AffymetrixProbeNameFilter
       }
       returnval.setColumnNames( data.getColNames() );
       returnval.setRowNames( rowNames );
-      log.info(
-          "There are " + kept + " rows left after filtering." );
+      log.info( "There are " + kept + " rows left after filtering." );
 
       return ( returnval );
 

@@ -361,10 +361,10 @@ public class ColorMatrix
       DenseDoubleMatrix2DNamed m = new DenseDoubleMatrix2DNamed( m_totalRows, m_totalColumns );
       // copy the row and column names
       for ( int i = 0; i < m_totalRows; i++ ) {
-         m.addRowName( m_matrix.getRowName( i ) );
+         m.addRowName( m_matrix.getRowName( i ) , i);
       }
       for ( int i = 0; i < m_totalColumns; i++ ) {
-         m.addColumnName( m_matrix.getColName( i ) );
+         m.addColumnName( m_matrix.getColName( i ) , i);
          // copy the data
       }
       for ( int r = 0; r < m_totalRows; r++ ) {

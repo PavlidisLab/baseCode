@@ -10,7 +10,7 @@ gene8_at	A	A	A	M	A	A	A	A	A	A	M	A
 gene9_at	P	P	P	P	P	P	P	P	P	P	P	P
 gene10_at	P	P	P	P	P	P	P	P	P	P	P	P
 gene11_at	P	P	P	P	P	P	P	P	P	P	P	P
-gene12_f_at	P	P	P	P	P	P	P	P	P	P	P	P
+gene12_f_at	P	P	P	P	P	P	P		P	P	P	P
 gene13_s_at	P	P	P	P	P	P	P	P	P	P	P	P
 gene14_at	A	A	A	A	A	A	A	P	P	P	A	A
 gene15_at	P	P	P	P	P	P	P	P	P	P	P	P
@@ -18,9 +18,9 @@ gene16_at	P	P	P	P	P	P	P	P	P	P	P	P
 gene17_at	P	P	P	P	P	P	P	P	P	P	P	P
 gene18_at	A	A	P	P	P	A	A	A	A	A	A	A
 gene19_at	P	P	P	P	P	P	P	P	P	P	P	P
-gene20_at	P	A	P	M	P	P	P	P	P	M	P	P
+gene20_at	P	P	P	M	P	P	P	P	P	M	P	P
 gene21_at	P	P	P	P	P	P	P	P	P	P	P	P
-gene22_f_at	P	P	P	P	P	P	P	P	P	P	P	P
+gene22_f_at	P	P	P	P	P	P	P	P	P	Q	P	P
 gene23_x_at	P	P	P	P	P	P	P	P	P	P	P	P
 gene24_r_at	A	A	A	A	A	A	P	P	P	A	A	A
 gene25_i_at	P	P	P	P	P	P	P	P	P	P	P	P
@@ -28,4 +28,4 @@ gene26_g_at	P	P	P	P	P	P	P	P	P	P	P	P
 gene27_at	P	P	P	P	P	P	P	P	P	P	P	P
 gene28_at	P	P	P	P	P	P	P	P	P	P	P	P
 gene29_at	P	P	P	P	P	P	P	P	P	P	P	P
-gene30_at	P	P	P	P	P	P	P	P	P	P	P	P
+AFFXgene30_at	P	P	P	P	P	P	P	P	P	P	P	P

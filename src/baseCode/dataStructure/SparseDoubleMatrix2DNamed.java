@@ -1,66 +1,70 @@
 package baseCode.dataStructure;
 
 import java.text.NumberFormat;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Vector;
 
+import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 
 /**
- * <p>Title: SparseDoubleMatrix2DNamed</p>
- * <p>Description: A sparse matrix that knows about row and column names.</p>
- * <p> Copyright (c) 2004</p>
- * <p>Institution:: Columbia University</p>
-
-  @author Paul Pavlidis
-  @version $Id$
+ * <p>
+ * Title: SparseDoubleMatrix2DNamed
+ * </p>
+ * <p>
+ * Description: A sparse matrix that knows about row and column names.
+ * </p>
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution:: Columbia University
+ * </p>
+ * 
+ * @author Paul Pavlidis
+ * @version $Id: SparseDoubleMatrix2DNamed.java,v 1.5 2004/06/23 14:56:46
+ *          pavlidis Exp $
+ * @todo make an AbstractNamedMatrix that has reference implementations of
+ *       common interface methods.
  */
-public class SparseDoubleMatrix2DNamed
-    extends SparseDoubleMatrix2D
-    implements NamedMatrix {
+public class SparseDoubleMatrix2DNamed extends AbstractNamedMatrix implements
+      NamedMatrix {
 
-   private Vector rowNames;
-   private Vector colNames;
-   private Map rowMap; //contains a map of each row and elements in the row
-   private Map colMap;
+   private SparseDoubleMatrix2D matrix;
+
    /**
-    *
-    * @param rows int
-    * @param cols int
-    * @param T double[][]
+    * 
+    * @param rows
+    *           int
+    * @param cols
+    *           int
+    * @param T
+    *           double[][]
     */
-   public SparseDoubleMatrix2DNamed( int rows, int cols, double T[][] ) {
-      super( T );
-      rowMap = new HashMap(); //contains a map of each row name to index of the row.
-      colMap = new HashMap();
-      rowNames = new Vector();
-      colNames = new Vector();
+   public SparseDoubleMatrix2DNamed( double T[][] ) {
+      super();
+      matrix = new SparseDoubleMatrix2D( T );
    }
 
    /**
-    *
-    * @param rows int
-    * @param cols int
+    * 
+    * @param rows
+    *           int
+    * @param cols
+    *           int
     */
    public SparseDoubleMatrix2DNamed( int rows, int cols ) {
-      super( rows, cols );
-      rowMap = new LinkedHashMap(); //contains a map of each row name to index of the row.
-      rowNames = new Vector();
-      colNames = new Vector();
-
+      super();
+      matrix = new SparseDoubleMatrix2D( rows, cols );
    }
 
    public void set( int row, int col, Object value ) {
-      super.set( row, col, ( ( Double ) value ).doubleValue() );
+      set( row, col, ( ( Double ) value ).doubleValue() );
    }
 
    /**
     * Return a reference to a specific row.
-    *
-    * @param row int
+    * 
+    * @param row
+    *           int
     * @return double[]
     */
    public double[] getRow( int row ) {
@@ -68,17 +72,10 @@ public class SparseDoubleMatrix2DNamed
    }
 
    /**
-    *
-    * @return java.util.Iterator
-    */
-   public Iterator getRowNameMapIterator() {
-      return this.rowMap.keySet().iterator();
-   }
-
-   /**
     * Return a copy of a given column.
-    *
-    * @param col int
+    * 
+    * @param col
+    *           int
     * @return double[]
     */
    public double[] getCol( int col ) {
@@ -106,16 +103,7 @@ public class SparseDoubleMatrix2DNamed
    }
 
    /**
-    *
-    * @param r String
-    * @return boolean
-    */
-   public boolean hasRow( String r ) {
-      return this.rowMap.containsKey( r );
-   }
-
-   /**
-    *
+    * 
     * @return java.lang.String
     */
    public String toString() {
@@ -145,112 +133,82 @@ public class SparseDoubleMatrix2DNamed
    }
 
    /**
-    *
-    * @param s String
-    */
-   public void addColumnName( String s ) {
-      this.colNames.add( s );
-      this.colMap.put( s, new Integer( columns() ) );
-   }
-
-   /**
-    *
-    * @param s String
-    */
-   public void addRowName( String s ) {
-      this.rowNames.add( s );
-      this.rowMap.put( s, new Integer( rows() ) );
-   }
-
-   /**
-    *
-    * @param s String
-    * @return int
-    */
-   public int getRowIndexByName( String s ) {
-      return ( ( Integer ) rowMap.get( s ) ).intValue();
-   }
-
-   /**
-    *
-    * @param r String
-    * @return int
-    */
-   public int getColIndexByName( String r ) {
-      return ( ( Integer )this.colMap.get( r ) ).intValue();
-   }
-
-   /**
-    *
-    * @param s String
+    * 
+    * @param s
+    *           String
     * @return double[]
     */
    public double[] getRowByName( String s ) {
       return getRow( getRowIndexByName( s ) );
    }
 
-   /**
-    *
-    * @param i int
-    * @return java.lang.String
-    */
-   public String getRowName( int i ) {
-      return ( String ) rowNames.get( i );
+   public boolean isMissing( int i, int j ) {
+      return Double.isNaN( get( i, j ) );
    }
 
    /**
-    *
-    * @param i int
-    * @return java.lang.String
+    * @return
     */
-   public String getColName( int i ) {
-      return ( String ) colNames.get( i );
+   public int columns() {
+      return matrix.columns();
    }
 
    /**
-    *
-    * @return boolean
+    * @param row
+    * @param column
+    * @return
     */
-   public boolean hasRowNames() {
-      return rowNames.size() == rows();
+   public double get( int row, int column ) {
+      return matrix.get( row, column );
    }
 
    /**
-    *
-    * @return boolean
+    * @param row
+    * @param column
+    * @return
     */
-   public boolean hasColNames() {
-      return colNames.size() == columns();
+   public double getQuick( int row, int column ) {
+      return matrix.getQuick( row, column );
    }
 
    /**
-    *
-    * @param v Vector
+    * @return
     */
-   public void setRowNames( Vector v ) {
-      for ( int i = 0; i < v.size(); i++ ) {
-         addRowName( ( String ) v.get( i ) );
-      }
+   public int rows() {
+      return matrix.rows();
    }
 
    /**
-    *
-    * @param v Vector
+    * @param row
+    * @param column
+    * @param value
     */
-   public void setColumnNames( Vector v ) {
-      this.colNames = v;
+   public void set( int row, int column, double value ) {
+      matrix.set( row, column, value );
    }
 
    /**
-    *
-    * @return java.util.Vector
+    * @param row
+    * @param column
+    * @param value
     */
-   public Vector getColNames() {
-      return colNames;
+   public void setQuick( int row, int column, double value ) {
+      matrix.setQuick( row, column, value );
    }
-   
-   
-   public boolean isMissing(int i, int j) {
-       return Double.isNaN(get(i,j));
+
+   /**
+    * @param column
+    * @return
+    */
+   public DoubleMatrix1D viewColumn( int column ) {
+      return matrix.viewColumn( column );
+   }
+
+   /**
+    * @param row
+    * @return
+    */
+   public DoubleMatrix1D viewRow( int row ) {
+      return matrix.viewRow( row );
    }
 }

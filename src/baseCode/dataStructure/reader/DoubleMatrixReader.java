@@ -20,7 +20,7 @@ import baseCode.dataStructure.NamedMatrix;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class DoubleMatrixReader extends MatrixReader {
+public class DoubleMatrixReader extends AbstractNamedMatrixReader {
 
    /**
     * @param   filename     data file to read from
@@ -44,6 +44,7 @@ public class DoubleMatrixReader extends MatrixReader {
     * @param wantedRowNames
     * @return
     * @throws IOException
+    * @todo should take a set, not an array.
     */
    public NamedMatrix read(InputStream stream, String[] wantedRowNames)
       throws IOException {

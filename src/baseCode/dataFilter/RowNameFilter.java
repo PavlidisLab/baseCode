@@ -9,8 +9,9 @@ import java.util.Vector;
 import baseCode.dataStructure.NamedMatrix;
 
 /**
- * @author Owner
- *
+ * Remove or retain rows that are on a list.
+ * @author Paul Pavlidis
+ * @version $Id$
  */
 public class RowNameFilter
     extends AbstractFilter
@@ -18,8 +19,6 @@ public class RowNameFilter
 
    private boolean exclude = false;
    private Set filterNames;
-
-   private RowNameFilter() {} // so we are forced to use the other constructors.
 
    /**
     *
@@ -67,7 +66,7 @@ public class RowNameFilter
          }
       }
 
-      NamedMatrix returnval = getOutputMatrix(data, MTemp, numCols);
+      NamedMatrix returnval = getOutputMatrix(data, MTemp.size(), numCols);
 
       for ( int i = 0; i < MTemp.size(); i++ ) {
          for ( int j = 0; j < numCols; j++ ) {

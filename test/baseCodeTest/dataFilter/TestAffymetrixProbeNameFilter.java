@@ -23,7 +23,7 @@ public class TestAffymetrixProbeNameFilter extends AbstractTestFilter {
       AffymetrixProbeNameFilter fi = new AffymetrixProbeNameFilter();
       DenseDoubleMatrix2DNamed filtered =
          (DenseDoubleMatrix2DNamed)fi.filter(testdata);
-      int expectedReturn = filtered.rows();
+      int expectedReturn =  teststringdata.rows() - 3; // file contains on AFFX, and two _f_ tags.
       int actualReturn = filtered.rows();
       assertEquals("return value", expectedReturn, actualReturn);
    }
@@ -32,7 +32,7 @@ public class TestAffymetrixProbeNameFilter extends AbstractTestFilter {
       AffymetrixProbeNameFilter fi = new AffymetrixProbeNameFilter();
       StringMatrix2DNamed filtered =
          (StringMatrix2DNamed)fi.filter(teststringdata);
-      int expectedReturn = filtered.rows();
+      int expectedReturn = teststringdata.rows() - 3; // file contains on AFFX, and two _f_ tags.
       int actualReturn = filtered.rows();
       assertEquals("return value", expectedReturn, actualReturn);
    }

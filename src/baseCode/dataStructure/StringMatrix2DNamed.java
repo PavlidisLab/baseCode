@@ -1,38 +1,38 @@
 package baseCode.dataStructure;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import cern.colt.matrix.ObjectMatrix1D;
 import cern.colt.matrix.impl.DenseObjectMatrix2D;
 
 /**
-* A NamedMatrix containing String objects.
- * <p> Copyright (c) 2004</p>
- * <p>Institution: Columbia University</p>
+ * A NamedMatrix containing String objects.
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution: Columbia University
+ * </p>
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class StringMatrix2DNamed
-    extends DenseObjectMatrix2D
-    implements NamedMatrix {
+public class StringMatrix2DNamed extends AbstractNamedMatrix  {
 
+   private DenseObjectMatrix2D matrix;
    private Vector rowNames;
    private Vector colNames;
    private Map rowMap; //contains a map of each row and elements in the row
    private Map colMap;
 
    public StringMatrix2DNamed( int x, int y ) {
-      super( x, y );
-      rowNames = new Vector();
-      colNames = new Vector();
-      rowMap = new HashMap();
-      colMap = new HashMap();
+      super();
+      matrix = new DenseObjectMatrix2D(x,y);
    }
 
    /**
-    *
+    * 
     * @return java.lang.String
     */
    public String toString() {
@@ -51,54 +51,7 @@ public class StringMatrix2DNamed
       }
       return result;
    }
-
-   public void addColumnName( String s ) {
-      this.colNames.add( s );
-      this.colMap.put( s, new Integer( columns() ) );
-   }
-
-   public void addRowName( String s ) {
-      this.rowNames.add( s );
-      this.rowMap.put( s, new Integer( rows() ) );
-   }
-
-   public int getRowIndexByName( String s ) {
-      return ( ( Integer ) rowMap.get( s ) ).intValue();
-   }
-
-   public int getColIndexByName( String r ) {
-      return ( ( Integer )this.colMap.get( r ) ).intValue();
-   }
-
-   public String getRowName( int i ) {
-      return ( String ) rowNames.get( i );
-   }
-
-   public String getColName( int i ) {
-      return ( String ) colNames.get( i );
-   }
-
-   public boolean hasRowNames() {
-      return rowNames.size() == rows();
-   }
-
-   public boolean hasColNames() {
-      return colNames.size() == columns();
-   }
-
-   public void setRowNames( Vector v ) {
-      for ( int i = 0; i < v.size(); i++ ) {
-         addRowName( ( String ) v.get( i ) );
-      }
-   }
-
-   /**
-    *
-    * @return java.util.Vector
-    */
-   public Vector getColNames() {
-      return colNames;
-   }
+   
 
    public Object[] getRow( int row ) {
       return viewRow( row ).toArray();
@@ -128,31 +81,74 @@ public class StringMatrix2DNamed
       return result;
    }
 
-   /**
-    *
-    * @return java.util.Iterator
-    */
-   public Iterator getRowNameMapIterator() {
-      return this.rowMap.keySet().iterator();
+
+   public boolean isMissing( int i, int j ) {
+      return get( i, j ) == "";
    }
+
 
    /**
-    *
-    * @param r String
-    * @return boolean
+    * @return
     */
-   public boolean hasRow( String r ) {
-      return this.rowMap.get( r ) == null;
+   public int columns() {
+      return matrix.columns();
    }
-
-   public void setColumnNames( Vector v ) {
-      this.colNames = v;
+   /**
+    * @param row
+    * @param column
+    * @return
+    */
+   public Object get( int row, int column ) {
+      return matrix.get( row, column );
    }
-   
-   public boolean isMissing(int i, int j) {
-       return get(i,j) == "";
+   /**
+    * @param row
+    * @param column
+    * @return
+    */
+   public Object getQuick( int row, int column ) {
+      return matrix.getQuick( row, column );
    }
-   
-   
-
+   /**
+    * @return
+    */
+   public int rows() {
+      return matrix.rows();
+   }
+   /**
+    * @return
+    */
+   public int size() {
+      return matrix.size();
+   }
+   /**
+    * @param column
+    * @return
+    */
+   public ObjectMatrix1D viewColumn( int column ) {
+      return matrix.viewColumn( column );
+   }
+   /**
+    * @param row
+    * @return
+    */
+   public ObjectMatrix1D viewRow( int row ) {
+      return matrix.viewRow( row );
+   }
+   /**
+    * @param row
+    * @param column
+    * @param value
+    */
+   public void set( int row, int column, Object value ) {
+      matrix.set( row, column, value );
+   }
+   /**
+    * @param row
+    * @param column
+    * @param value
+    */
+   public void setQuick( int row, int column, Object value ) {
+      matrix.setQuick( row, column, value );
+   }
 }

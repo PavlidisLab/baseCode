@@ -64,7 +64,9 @@
   <property category="team" name="ignorePath.8" value="testdatamissing-badrows.txt"/>
   <property category="team" name="ignorePath.9" value="testdatamissing.txt"/>
   <node name="base" type="Archive">
+    <property category="archiving" name="buildWithProject" value="0"/>
     <property category="archiving" name="contentRules.1" value="I:**/*.*"/>
+    <property category="archiving" name="targetCompressed" value="1"/>
     <property category="archiving" name="targetPath" value="baseCode.jar"/>
     <property category="archiving" name="usingRules" value="1"/>
   </node>

@@ -18,7 +18,7 @@ import baseCode.dataStructure.NamedMatrix;
  * @version $Id$
  */
 
-public class AbstractFilter implements Filter {
+public abstract class AbstractFilter implements Filter {
 
     protected static Log log = LogFactory.getLog(Filter.class);
 
@@ -26,14 +26,14 @@ public class AbstractFilter implements Filter {
         return null;
     }
 
-    protected NamedMatrix getOutputMatrix(NamedMatrix data, Vector filterList,
+    protected NamedMatrix getOutputMatrix(NamedMatrix data, int numRows,
             int numCols) {
         NamedMatrix returnval = null;
         try {
             Constructor cr = data.getClass().getConstructor(
                     new Class[] { int.class, int.class });
             returnval = (NamedMatrix) cr.newInstance(new Object[] {
-                    new Integer(filterList.size()), new Integer(numCols) });
+                    new Integer(numRows), new Integer(numCols) });
         } catch (Exception e) {
             e.printStackTrace();
         }

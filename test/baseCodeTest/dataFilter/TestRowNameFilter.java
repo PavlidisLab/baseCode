@@ -25,7 +25,7 @@ public class TestRowNameFilter
       testfilterlist.add( "gene1_at" );
       testfilterlist.add( "gene4_at" );
       testfilterlist.add( "gene13_s_at" );
-      testfilterlist.add( "gene30_at" );
+      testfilterlist.add( "AFFXgene30_at" );
       testfilterlist.add( "fooblydoobly" ); // shouldn't care.
    }
 

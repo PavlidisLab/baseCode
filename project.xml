@@ -1,112 +1,112 @@
-<?xml version="1.0"?>
 <project>
-	<pomVersion>3</pomVersion>
-	<name>baseCode</name>
-	<groupId>baseCode</groupId>
-	<artifactId>baseCode</artifactId>
-	<currentVersion>0.1</currentVersion>
-
-
-<organization>
-<name>Columbia University</name>
-<url>http://www.columbia.edu</url>
-</organization>
-
-<description>Data structures, math and statistics tools, and utilities that are often needed across projects.</description>
-
-	<versions>
-		<version>
-			<id>0.1</id>
-			<name>0.1</name>
-		</version>
-	</versions>
-	<repository>
-		<connection>scm:cvs:ext:${maven.username}@adgate.cu-genome.org:/fsnode/projects/cvs/pavlab:baseCode</connection>
-	</repository>
-
-	<siteAddress>microarray</siteAddress>
-	<siteDirectory>/proj/pavlidis/protected/baseCode</siteDirectory>
-
-
-	<developers>
-		<developer>
-			<name>Paul Pavlidis</name>
-			<id>pavlidis</id>
-			<email>pavlidis@dbmi.columbia.edu</email>
-			<organization>Columbia University</organization>
-		</developer>
-		<developer>
-			<name>William Braynen</name>
-			<id>wbraynen</id>
-			<email>wbraynen@ic.sunysb.edu</email>
-			<organization>Columbia University</organization>
-		</developer>
-		<developer>
-			<name>Homin Lee</name>
-			<id>hkl7</id>
-			<email>hkl7@cs.columbia.edu</email>
-			<organization>Columbia University</organization>
-		</developer>
-	</developers>
-
-	<dependencies>
-		<dependency>
-			<id>colt</id>
-			<artifactId>colt</artifactId>
-			<url>http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/download</url>
-			<jar>colt.jar</jar>
-		</dependency>
-		<dependency>
-			<id>mysql</id>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>3.0.8-stable-bin</version>
-		</dependency>
-                		<dependency>
-			<id>commons-logging</id>
-			<artifactId>commons-logging</artifactId>
-			<version>1.0.3</version>
-		</dependency>
-
-<dependency>
-<id>jfcunit</id>
-<artifactId>jfcunit</artifactId>
-<jar>jfcunit.jar</jar>
-<version>2.0.6</version>
-</dependency>
-	</dependencies>
-
-<build>
-		<sourceDirectory>src</sourceDirectory>
-	<unitTestSourceDirectory>test</unitTestSourceDirectory>
-     <unitTest>
-       <includes>
-         <include>**/Test*.java </include>
-       </includes>
-<excludes><exclude>**/gui/Test*.java </exclude></excludes>
-<resources>
-<resource>
-<directory>${basedir}/test</directory>
-<includes>
-<include>**/data/*.txt</include>
-<include>**/data/*.xml</include>
-</includes>
-</resource>
-</resources>
-     </unitTest>
-</build>
-
-      <reports>
-    <report>maven-jdepend-plugin</report>
-    <report>maven-checkstyle-plugin</report>
-    <report>maven-pmd-plugin</report>
-    <report>maven-changelog-plugin</report>
-    <report>maven-file-activity-plugin</report>
-    <report>maven-developer-activity-plugin</report>
-    <report>maven-javadoc-plugin</report>
-    <report>maven-jxr-plugin</report>
-    <report>maven-junit-report-plugin</report>
-    <report>maven-tasklist-plugin</report>
-    <report>maven-clover-plugin</report>
-    
-  </reports>
+    <pomVersion>3</pomVersion>
+    <name>baseCode</name>
+    <groupId>baseCode</groupId>
+    <artifactId>baseCode</artifactId>
+    <currentVersion>0.2</currentVersion>
+    <organization>
+        <name>Columbia University</name>
+        <url>http://www.columbia.edu</url>
+    </organization>
+    <inceptionYear>2003</inceptionYear>
+    <description>Data structures, math and statistics tools, and utilities that are often needed across projects.</description>
+    <shortDescription>General-purpose code</shortDescription>
+    <siteAddress>microarray</siteAddress>
+    <siteDirectory>/proj/pavlidis/protected/baseCode</siteDirectory>
+    <repository>
+        <connection>scm:cvs:ext:${maven.username}@adgate.cu-genome.org:/fsnode/projects/cvs/pavlab:baseCode</connection>
+    </repository>
+    <versions>
+        <version>
+            <id>0.1</id>
+            <name>0.1</name>
+        </version>
+    </versions>
+    <branches/>
+    <mailingLists/>
+    <developers>
+        <developer>
+            <name>Paul Pavlidis</name>
+            <id>pavlidis</id>
+            <email>pavlidis@dbmi.columbia.edu</email>
+            <organization>Columbia University</organization>
+            <roles/>
+        </developer>
+        <developer>
+            <name>William Braynen</name>
+            <id>wbraynen</id>
+            <email>wbraynen@ic.sunysb.edu</email>
+            <organization>Columbia University</organization>
+            <roles/>
+        </developer>
+        <developer>
+            <name>Homin Lee</name>
+            <id>hkl7</id>
+            <email>hkl7@cs.columbia.edu</email>
+            <organization>Columbia University</organization>
+            <roles/>
+        </developer>
+    </developers>
+    <licenses>
+        <license/>
+    </licenses>
+    <dependencies>
+        <dependency>
+            <groupId>colt</groupId>
+            <artifactId>colt</artifactId>
+            <jar>colt.jar</jar>
+            <type>jar</type>
+            <url>http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/download</url>
+            <properties/>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>3.0.8-stable-bin</version>
+            <type>jar</type>
+            <properties/>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.0.3</version>
+            <type>jar</type>
+            <properties/>
+        </dependency>
+    </dependencies>
+    <build>
+        <sourceDirectory>src</sourceDirectory>
+        <unitTestSourceDirectory>test</unitTestSourceDirectory>
+        <unitTest>
+            <includes>
+                <include>**/Test*.java</include>
+            </includes>
+            <excludes>
+                <exclude>**/gui/Test*.java</exclude>
+            </excludes>
+            <resources>
+                <resource>
+                    <directory>${basedir}/test</directory>
+                    <includes>
+                        <include>**/data/*.txt</include>
+                        <include>**/data/*.xml</include>
+                    </includes>
+                    <filtering>false</filtering>
+                </resource>
+            </resources>
+        </unitTest>
+    </build>
+    <reports>
+        <report>maven-jdepend-plugin</report>
+        <report>maven-pmd-plugin</report>
+        <report>maven-changelog-plugin</report>
+        <report>maven-file-activity-plugin</report>
+        <report>maven-developer-activity-plugin</report>
+        <report>maven-javadoc-plugin</report>
+        <report>maven-jxr-plugin</report>
+        <report>maven-junit-report-plugin</report>
+        <report>maven-tasklist-plugin</report>
+        <report>maven-clover-plugin</report>
+    </reports>
+    <properties/>
 </project>
