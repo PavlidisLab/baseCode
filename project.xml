@@ -1,10 +1,19 @@
 <?xml version="1.0"?>
 <project>
 	<pomVersion>3</pomVersion>
-	<name>basic code utilities</name>
+	<name>baseCode</name>
 	<groupId>baseCode</groupId>
 	<artifactId>baseCode</artifactId>
 	<currentVersion>0.1</currentVersion>
+
+
+<organization>
+<name>Columbia University</name>
+<url>http://www.columbia.edu</url>
+</organization>
+
+<description>A set of useful data structures, math and statistics tools, and utilities that are often needed across projects.</description>
+
 	<versions>
 		<version>
 			<id>0.1</id>
@@ -14,6 +23,13 @@
 	<repository>
 		<connection>scm:cvs:ext:${maven.username}@adgate.cu-genome.org:/fsnode/projects/cvs/pavlab:baseCode</connection>
 	</repository>
+
+	<siteAddress>microarray</siteAddress>
+	<siteDirectory>/proj/pavlidis/protected/baseCode</siteDirectory>
+
+
+
+
 	<developers>
 		<developer>
 			<name>Paul Pavlidis</name>
@@ -55,4 +71,32 @@
 			<version>1.0.3</version>
 		</dependency>
 	</dependencies>
+
+<build>
+	<unitTestSourceDirectory>test</unitTestSourceDirectory>
+     <unitTest>
+       <includes>
+         <include>**/*/Test*.java </include>
+         <include>**/*/*/Test*.java </include>
+         <include>**/*/*/*/Test*.java </include>
+       </includes>
+<excludes></excludes>
+     </unitTest>
+</build>
+
+      <reports>
+    <report>maven-jdepend-plugin</report>
+    <report>maven-checkstyle-plugin</report>
+    <report>maven-pmd-plugin</report>
+    <report>maven-changelog-plugin</report>
+    <report>maven-file-activity-plugin</report>
+    <report>maven-developer-activity-plugin</report>
+    <report>maven-javadoc-plugin</report>
+    <report>maven-jxr-plugin</report>
+    <report>maven-junit-report-plugin</report>
+    <report>maven-tasklist-plugin</report>
+  </reports>
+
+
+
 </project>
