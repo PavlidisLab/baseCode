@@ -413,9 +413,7 @@ public class JMatrixDisplay extends JPanel {
     * @return the current color map
     */
    public Color[] getColorMap() {
-      return m_isShowingStandardizedMatrix ?
-          m_standardizedMatrix.m_colorMap :
-          m_matrix.m_colorMap;
+      return m_matrix.m_colorMap;
    }
 
    /**
@@ -425,44 +423,30 @@ public class JMatrixDisplay extends JPanel {
     * @return the smallest value in the matrix
     */
    public double getMin() {
-      return m_isShowingStandardizedMatrix ?
-          m_standardizedMatrix.m_min :
-          m_matrix.m_min;
+      return m_matrix.m_min;
    }
 
    /**
     * @return the largest value in the matrix
     */
    public double getMax() {
-      return m_isShowingStandardizedMatrix ?
-          m_standardizedMatrix.m_min :
-          m_matrix.m_min;
+      return m_matrix.m_max;
    }
 
    public double getDisplayMin() {
-      return m_isShowingStandardizedMatrix ?
-          m_standardizedMatrix.m_displayMin :
-          m_matrix.m_displayMin;
+      return m_matrix.m_displayMin;
    }
 
    public double getDisplayMax() {
-      return m_isShowingStandardizedMatrix ?
-          m_standardizedMatrix.m_displayMax :
-          m_matrix.m_displayMax;
+      return m_matrix.m_displayMax;
    }
 
    public double getDisplayRange() {
-      return m_isShowingStandardizedMatrix ?
-          m_standardizedMatrix.m_displayMax - m_standardizedMatrix.m_displayMin :
-          m_matrix.m_displayMax - m_matrix.m_displayMin;
+      return m_matrix.m_displayMax - m_matrix.m_displayMin;
    }
 
    public void setDisplayRange( double min, double max ) {
-      if (m_isShowingStandardizedMatrix) {
-         m_standardizedMatrix.setDisplayRange( min, max );
-      } else {
-         m_matrix.setDisplayRange( min, max );
-      }
+      m_matrix.setDisplayRange( min, max );
    }
 
    /**
