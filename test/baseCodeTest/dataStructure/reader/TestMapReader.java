@@ -1,10 +1,10 @@
 package baseCodeTest.dataStructure.reader;
 
-import junit.framework.*;
-import baseCode.dataStructure.reader.*;
-import java.io.*;
-import java.util.*;
 import java.io.IOException;
+import java.io.InputStream;
+
+import junit.framework.TestCase;
+import baseCode.dataStructure.reader.MapReader;
 
 /**
  * <p>Title: </p>
@@ -29,11 +29,19 @@ public class TestMapReader extends TestCase {
    }
 
    public void testRead() throws IOException {
-      String filename = TestMapReader.class.getResource("/data/testmap.txt").getFile();
+      InputStream m =
+         TestMapReader.class.getResourceAsStream("/data/testmap.txt");
       int expectedReturn = 100;
-      int actualReturn = mapReader.read(filename).size();
+      int actualReturn = mapReader.read(m, true).size(); // file has header
       assertEquals("return value", expectedReturn, actualReturn);
-      /**@todo fill in the test code*/
+   }
+
+   public void testReadNoHeader() throws IOException {
+      InputStream m =
+         TestMapReader.class.getResourceAsStream("/data/testmap.txt");
+      int expectedReturn = 101;
+      int actualReturn = mapReader.read(m).size(); // file has header
+      assertEquals("return value", expectedReturn, actualReturn);
    }
 
 }

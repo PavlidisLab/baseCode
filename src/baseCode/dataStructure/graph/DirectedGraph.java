@@ -2,137 +2,161 @@ package baseCode.dataStructure.graph;
 
 import java.util.*;
 
-public class DirectedGraph {
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+/**
+ * A graph that contains DirectedGraphNodes. It can be cyclic. Small unconnected parts of the graph will
+ * be ignored for many operation. 
+ * Tree traversals start from the root node, which is defined as the node with the most children.
+ * 
+ * <p>Copyright (c) Columbia University
+ * @author Paul Pavlidis
+ * @version $Id$
+ */
+public class DirectedGraph extends AbstractGraph {
 
-   protected Set items;
-   protected Map members;
-   protected String id;
-
-   public DirectedGraph( String id ) {
-      items = new HashSet();
-      members = new HashMap();
-      this.id = id;
+   public void addNode(Object key, Object item) {
+      addNode(key, item, this);
    }
 
-   public void addChildTo( Object item, Object newChild ) {
-
-   }
-
-   public void addParentTo( Object item, Object newParent ) {
-
-   }
-
-   public Set getChildrenOf( Object j ) {
-      return null;
-   };
-
-   public Set getParentsOf( Object j ) {
-      return null;
-   }
-
-   public Set getAllChildren( Set list ) {
-      if ( list == null ) {
-         list = new HashSet();
-
+   protected void addNode(Object key, Object item, AbstractGraph graph) {
+      if (!items.containsKey(key)) {
+         items.put(key, new DirectedGraphNode(key, item, this));
       }
-      DirectedGraph j = null;
-      for ( Iterator it = this.getChildIterator(); it.hasNext(); j = ( DirectedGraph ) it.next() ) {
-         list.add( j );
-         j.getAllChildren( list );
+   }
+
+   public void addChildTo(Object key, Object newChildKey, Object newChild) {
+      if (!items.containsKey(newChild)) {
+         this.addNode(newChildKey, newChild);
       }
-      return list;
+
+      this.addChildTo(key, newChildKey);
+      this.addParentTo(newChildKey, key);
    }
 
-   public Iterator getChildIterator() {
-      return items.iterator();
-   }
-
-   public String getId() {
-      return id;
-   }
-
-   public void addChild( Object j ) {
-      items.add( j );
-   }
-
-   public void addMember( Object key, Object value ) {
-      members.put( key, value );
-   }
-
-   public Set getChildren() {
-      return items;
-   }
-
-   public Map getMembers() {
-      return members;
-   }
-
-   public Object getMember( Object j ) {
-      return members.get( j );
-   }
-
-   public boolean hasChild( Object j ) {
-      Set k = this.getAllChildren( null );
-      return k.contains( j );
-   }
-
-   public boolean hasImmediateChild( Object j ) {
-      return items.contains( j );
-   }
-
-   public boolean hasMember( Object j ) {
-      Set k = this.getAllChildren( null );
-      DirectedGraph o = null;
-      for ( Iterator it = k.iterator(); it.hasNext(); o = ( DirectedGraph ) it.next() ) {
-         if ( o.hasDirectMember( j ) ) {
-            return true;
-         }
+   public void addChildTo(Object key, Object newChildKey) {
+      if (!items.containsKey(newChildKey)) {
+         throw new IllegalStateException(
+            "You must add the item to the graph"
+               + " before you can add it as a child of another node");
       }
-      return false;
+
+      if (items.containsKey(key)) {
+         ((DirectedGraphNode)items.get(key)).addChild(newChildKey);
+         ((DirectedGraphNode)items.get(newChildKey)).addParent(key);
+      }
+
    }
 
-   public int depth() {
-      int d = 0;
-      return d;
+   public void addParentTo(Object key, Object newParentKey, Object newParent) {
+      if (!items.containsKey(newParent)) {
+         this.addNode(newParentKey, newParent);
+      }
+
+      this.addChildTo(key, newParentKey);
+      this.addParentTo(newParentKey, key);
    }
 
-   public boolean hasDirectMember( Object j ) {
-      return members.containsKey( j );
+   public void addParentTo(Object key, Object newParentKey) {
+      if (!items.containsKey(newParentKey)) {
+         throw new IllegalStateException(
+            "You must add the item to the graph"
+               + " before you can add it as a child of another node");
+      }
+
+      if (items.containsKey(key)) {
+         ((DirectedGraphNode)items.get(key)).addParent(newParentKey);
+         ((DirectedGraphNode)items.get(newParentKey)).addChild(key);
+      }
+
    }
 
+   /**
+    * Shows the tree as a tabbed list. Items that have no parents are shown at the 'highest' level.
+    * @return String
+    */
    public String toString() {
-      return this.makeString( new StringBuffer() );
+
+      List nodes = new ArrayList(items.values());
+      Collections.sort(nodes);
+      Collections.reverse(nodes);
+      Iterator it = nodes.iterator();
+      DirectedGraphNode root = (DirectedGraphNode)it.next();
+      StringBuffer buf = new StringBuffer();
+      int tablevel = 0;
+      //    for (Iterator it = nodes.iterator(); it.hasNext();) {
+      makeString(root, buf, tablevel);
+      //     }
+      return (buf.toString());
    }
 
-   private String indent() {
-      StringBuffer k = new StringBuffer();
-      for ( int i = 0; i < depth(); i++ ) {
-         k.append( "\t" );
-      }
-      return k.toString();
-   }
+   /* Helper for toString. Together with toString, 
+    * demonstrates how to iterate over the tree */
+   private String makeString(
+      DirectedGraphNode startNode,
+      StringBuffer buf,
+      int tabLevel) {
 
-   private String makeString( StringBuffer buf ) {
-      Object k = null;
-      if ( buf == null ) {
+      if (buf == null) {
          buf = new StringBuffer();
       }
 
-      /* First add the members */
-      for ( Iterator it = members.keySet().iterator(); it.hasNext(); k = it.next() ) {
-         Object m = members.get( k );
-         if ( m != null ) {
-            buf.append( indent() + m.toString() + "\n" );
+      Set children = startNode.getChildNodes();
+
+      if (!startNode.isVisited()) {
+         buf.append(startNode);
+         startNode.mark();
+      }
+      tabLevel++;
+      for (Iterator it = children.iterator(); it.hasNext();) {
+         DirectedGraphNode f = (DirectedGraphNode)it.next();
+         if (!f.isVisited()) {
+            for (int i = 0; i < tabLevel; i++) {
+               buf.append("\t");
+            }
+            buf.append(f + "\n");
+            f.mark();
+            this.makeString(f, buf, tabLevel);
          }
       }
 
-      /* now traverse the children */
-      DirectedGraph j = null;
-      for ( Iterator it = this.getChildIterator(); it.hasNext(); j = ( DirectedGraph ) it.next() ) {
-         j.makeString( buf );
+      return buf.toString();
+   }
+
+   /**
+    * Generate a JTree corresponding to this graph.
+    * @todo note that nodes are only allowed to have one parent in DefaultMutableTreeNodes
+    * @return
+    */
+   public JTree treeView() {
+      List nodes = new ArrayList(items.values());
+      Collections.sort(nodes);
+      Collections.reverse(nodes);
+      Iterator it = nodes.iterator();
+      DirectedGraphNode root = (DirectedGraphNode)it.next();
+      DefaultMutableTreeNode top = new DefaultMutableTreeNode(root);
+      root.mark();
+      addJTreeNode(top, root);
+      JTree tree = new JTree(top);
+      return tree;
+   }
+
+   private void addJTreeNode(
+      DefaultMutableTreeNode startJTreeNode,
+      DirectedGraphNode startNode) {
+      Set children = startNode.getChildNodes();
+
+      for (Iterator it = children.iterator(); it.hasNext();) {
+         DirectedGraphNode nextNode = (DirectedGraphNode)it.next();
+         if (!nextNode.isVisited()) {
+            DefaultMutableTreeNode newJTreeNode =
+               new DefaultMutableTreeNode(nextNode);
+            startJTreeNode.add(newJTreeNode);
+            nextNode.mark();
+            this.addJTreeNode(newJTreeNode, nextNode);
+         }
       }
 
-      return buf.toString();
    }
 
 }

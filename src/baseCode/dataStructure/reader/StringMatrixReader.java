@@ -1,8 +1,11 @@
 package baseCode.dataStructure.reader;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -16,39 +19,47 @@ import baseCode.dataStructure.StringMatrix2DNamed;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class StringMatrixReader
-    extends MatrixReader {
+public class StringMatrixReader extends MatrixReader {
 
-   public NamedMatrix read( String filename ) throws IOException {
+   public NamedMatrix read(String filename) throws IOException {
+      File infile = new File(filename);
+      if (!infile.exists() || !infile.canRead()) {
+         throw new IllegalArgumentException("Could not read from " + filename);
+      }
+      FileInputStream stream = new FileInputStream(infile);
+      return read(stream);
+   }
+
+   public NamedMatrix read(InputStream stream) throws IOException {
       StringMatrix2DNamed matrix = null;
       Vector MTemp = new Vector();
       Vector rowNames = new Vector();
       Vector columnNames;
-
-      BufferedReader dis = new BufferedReader( new FileReader( filename ) );
+      BufferedReader dis = new BufferedReader(new InputStreamReader(stream));
+      //    BufferedReader dis = new BufferedReader( new FileReader( filename ) );
       int columnNumber = 0;
       int rowNumber = 0;
       String row;
 
-      columnNames = readHeader( dis );
+      columnNames = readHeader(dis);
       int numHeadings = columnNames.size();
 
-      while ( ( row = dis.readLine() ) != null ) {
-         StringTokenizer st = new StringTokenizer( row, "\t", true );
+      while ((row = dis.readLine()) != null) {
+         StringTokenizer st = new StringTokenizer(row, "\t", true);
          Vector rowTemp = new Vector();
          columnNumber = 0;
          String previousToken = "";
 
-         while ( st.hasMoreTokens() ) {
+         while (st.hasMoreTokens()) {
             String s = st.nextToken();
 
             boolean missing = false;
 
-            if ( s.compareTo( "\t" ) == 0 ) {
+            if (s.compareTo("\t") == 0) {
                /* two tabs in a row */
-               if ( previousToken.compareTo( "\t" ) == 0 ) {
+               if (previousToken.compareTo("\t") == 0) {
                   missing = true;
-               } else if ( !st.hasMoreTokens() ) { // at end of line.
+               } else if (!st.hasMoreTokens()) { // at end of line.
                   missing = true;
                } else {
                   previousToken = s;
@@ -56,48 +67,50 @@ public class StringMatrixReader
                }
             }
 
-            if ( columnNumber > 0 ) {
-               if ( missing ) {
-                  rowTemp.add( Double.toString( Double.NaN ) );
+            if (columnNumber > 0) {
+               if (missing) {
+                  rowTemp.add(Double.toString(Double.NaN));
                } else {
-                  rowTemp.add( s );
+                  rowTemp.add(s);
                }
             } else {
-               if ( missing ) {
-                  throw new IOException(
-                      "Missing values not allow for row labels" );
+               if (missing) {
+                  throw new IOException("Missing values not allow for row labels");
                   // bad, no missing values allowed for row labels.
                } else {
-                  rowNames.add( s );
+                  rowNames.add(s);
                }
             }
 
             columnNumber++;
             previousToken = s;
          }
-         MTemp.add( rowTemp );
-         if ( rowTemp.size() > numHeadings ) {
-            throw new IOException( "Warning: too many values (" + rowTemp.size() +
-                                   ") in row " +
-                                   rowNumber + " (based on headings count of " +
-                                   numHeadings +
-                                   ")" );
+         MTemp.add(rowTemp);
+         if (rowTemp.size() > numHeadings) {
+            throw new IOException(
+               "Warning: too many values ("
+                  + rowTemp.size()
+                  + ") in row "
+                  + rowNumber
+                  + " (based on headings count of "
+                  + numHeadings
+                  + ")");
          }
          rowNumber++;
       }
 
-      matrix = new StringMatrix2DNamed( rowNumber, numHeadings );
-      matrix.setColumnNames( columnNames );
+      matrix = new StringMatrix2DNamed(rowNumber, numHeadings);
+      matrix.setColumnNames(columnNames);
 
-      matrix.setRowNames( rowNames );
+      matrix.setRowNames(rowNames);
 
-      for ( int i = 0; i < matrix.rows(); i++ ) {
-         for ( int j = 0; j < matrix.columns(); j++ ) {
-            if ( ( ( Vector ) MTemp.get( i ) ).size() < j + 1 ) {
-               matrix.set( i, j, "" ); // this allows the input file to have ragged ends.
+      for (int i = 0; i < matrix.rows(); i++) {
+         for (int j = 0; j < matrix.columns(); j++) {
+            if (((Vector)MTemp.get(i)).size() < j + 1) {
+               matrix.set(i, j, "");
+               // this allows the input file to have ragged ends.
             } else {
-               matrix.set( i, j,
-                           ( String ) ( ( Vector ) MTemp.get( i ) ).get( j ) );
+               matrix.set(i, j, (String) ((Vector)MTemp.get(i)).get(j));
             }
          }
       }

@@ -9,9 +9,7 @@ import baseCode.dataStructure.StringMatrix2DNamed;
  * @version $Id$
  *
  */
-public class TestAffymetrixProbeNameFilter
-    extends AbstractTestFilter {
-
+public class TestAffymetrixProbeNameFilter extends AbstractTestFilter {
 
    protected void setUp() throws Exception {
       super.setUp();
@@ -23,20 +21,20 @@ public class TestAffymetrixProbeNameFilter
 
    public void testFilter() {
       AffymetrixProbeNameFilter fi = new AffymetrixProbeNameFilter();
-      DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) fi.filter( testdata );
+      DenseDoubleMatrix2DNamed filtered =
+         (DenseDoubleMatrix2DNamed)fi.filter(testdata);
       int expectedReturn = filtered.rows();
-    int actualReturn =filtered.rows();
-    assertEquals("return value", expectedReturn, actualReturn);
+      int actualReturn = filtered.rows();
+      assertEquals("return value", expectedReturn, actualReturn);
    }
 
-
    public void testStringFilter() {
-   AffymetrixProbeNameFilter fi = new AffymetrixProbeNameFilter();
-   StringMatrix2DNamed filtered = ( StringMatrix2DNamed ) fi.filter( teststringdata );
-   int expectedReturn = filtered.rows();
- int actualReturn =filtered.rows();
- assertEquals("return value", expectedReturn, actualReturn);
-}
-
+      AffymetrixProbeNameFilter fi = new AffymetrixProbeNameFilter();
+      StringMatrix2DNamed filtered =
+         (StringMatrix2DNamed)fi.filter(teststringdata);
+      int expectedReturn = filtered.rows();
+      int actualReturn = filtered.rows();
+      assertEquals("return value", expectedReturn, actualReturn);
+   }
 
 }

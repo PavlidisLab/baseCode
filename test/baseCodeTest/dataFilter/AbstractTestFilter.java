@@ -10,8 +10,7 @@ import baseCode.dataStructure.StringMatrix2DNamed;
  * @version $Id$
  *
  */
-public abstract class AbstractTestFilter
-    extends TestCase {
+public abstract class AbstractTestFilter extends TestCase {
 
    protected DenseDoubleMatrix2DNamed testdata;
    protected StringMatrix2DNamed teststringdata;
@@ -20,24 +19,28 @@ public abstract class AbstractTestFilter
       super();
    }
 
-   public AbstractTestFilter( String name ) {
-      super( name );
+   public AbstractTestFilter(String name) {
+      super(name);
    }
 
    protected void setUp() throws Exception {
-     super.setUp();
-     DoubleMatrixReader f = new DoubleMatrixReader();
-     StringMatrixReader s = new StringMatrixReader();
-      testdata = ( DenseDoubleMatrix2DNamed ) f.read(AbstractTestFilter.class.getResource("/data/testreallybig.txt").getFile());
-      teststringdata = ( StringMatrix2DNamed ) s.read(AbstractTestFilter.class.getResource("/data/testreallybig.txt").getFile());
-  }
+      super.setUp();
+      DoubleMatrixReader f = new DoubleMatrixReader();
+      StringMatrixReader s = new StringMatrixReader();
+      testdata =
+         (DenseDoubleMatrix2DNamed)f.read(
+            AbstractTestFilter.class.getResourceAsStream(
+               "/data/testreallybig.txt"));
+      teststringdata =
+         (StringMatrix2DNamed)s.read(
+            AbstractTestFilter.class.getResourceAsStream(
+               "/data/testreallybig.txt"));
+   }
 
-  protected void tearDown() throws Exception {
+   protected void tearDown() throws Exception {
       super.tearDown();
       testdata = null;
       teststringdata = null;
    }
-
-
 
 }

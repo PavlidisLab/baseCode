@@ -2,8 +2,10 @@ package baseCode.dataStructure.reader;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -26,47 +28,67 @@ public class MapReader {
     * @throws IOException
     * @return Map
     */
-   public Map read( String filename ) throws IOException {
-     return this.read(filename, false);
-  }
+   public Map read(String filename) throws IOException {
+      return this.read(filename, false);
+   }
 
+   /**
+    * 
+    * @param stream
+    * @return
+    * @throws IOException
+    */
+   public Map read(InputStream stream) throws IOException {
+      return this.read(stream, false);
+   }
 
    /**
     * @param filename name of the tab-delimited file
     * @return Map from the file.
+    * @throws IOException
     */
-   public Map read( String filename, boolean hasHeader ) throws IOException {
+   public Map read(String filename, boolean hasHeader) throws IOException {
+      File infile = new File(filename);
+      if (!infile.exists() || !infile.canRead()) {
+         throw new IllegalArgumentException("Could not read from " + filename);
+      }
+      FileInputStream stream = new FileInputStream(infile);
+      return read(stream, hasHeader);
+
+   }
+
+   /**
+    * 
+    * @param stream
+    * @param hasHeader
+    * @return
+    * @throws IOException
+    */
+   public Map read(InputStream stream, boolean hasHeader) throws IOException {
       Map result = new HashMap();
 
-      File infile = new File( filename );
-      if ( !infile.exists() || !infile.canRead() ) {
-         throw new IllegalArgumentException( "Could not read from " +
-                                             filename );
-      }
-
-      BufferedReader dis = new BufferedReader( new FileReader( filename ) );
-
+      BufferedReader dis = new BufferedReader(new InputStreamReader(stream));
       if (hasHeader) {
          dis.readLine();
       }
 
       String row;
-      while ( ( row = dis.readLine() ) != null ) {
-         StringTokenizer st = new StringTokenizer( row, "\t" );
+      while ((row = dis.readLine()) != null) {
+         StringTokenizer st = new StringTokenizer(row, "\t");
          String key = st.nextToken();
 
          String value = st.nextToken();
 
-         if ( st.hasMoreTokens() ) {
+         if (st.hasMoreTokens()) {
             Set innerList = new HashSet();
-            innerList.add( value );
-            while ( st.hasMoreTokens() ) {
+            innerList.add(value);
+            while (st.hasMoreTokens()) {
                value = st.nextToken();
             }
-            innerList.add( value );
-            result.put( key, innerList );
+            innerList.add(value);
+            result.put(key, innerList);
          } else {
-            result.put( key, value );
+            result.put(key, value);
          }
       }
       dis.close();
