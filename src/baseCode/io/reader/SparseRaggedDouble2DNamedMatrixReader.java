@@ -169,7 +169,8 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
       IntArrayList indexes = map.keys();
       indexes.sort();
       int[] ix = indexes.elements();
-      for ( int j = ix.length - 1; j >= 0; j-- ) {
+      int size =  ix.length;
+      for ( int j = 0; j < size; j++ ) {
          finalValues.add( values.get( map.get( ix[j] ) ) );
       }
 

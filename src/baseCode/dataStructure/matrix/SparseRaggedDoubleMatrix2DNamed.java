@@ -9,7 +9,7 @@ import cern.colt.list.IntArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 
 /**
- * A sparse matrix class where the rows are ragged.
+ * A sparse matrix class where the rows are ragged and compressed.
  * <hr>
  * <p>
  * Copyright (c) 2004 Columbia University
@@ -174,7 +174,6 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
     * @return
     */
    public DoubleArrayList getRowArrayList( int row ) {
-      //return ( DoubleArrayList ) matrix.get( row );
       DoubleArrayList returnVal = new DoubleArrayList();
       ( ( DoubleMatrix1D ) matrix.get( row ) ).getNonZeros( new IntArrayList(),
             returnVal );
