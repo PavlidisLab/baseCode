@@ -36,11 +36,11 @@ public class ColorMatrix {
     final Color[] GREENRED_COLORMAP  = { Color.green, Color.black, Color.red   };
     final Color[] REDGREEN_COLORMAP  = { Color.red,   Color.black, Color.green };
     final Color[] BLACKBODY_COLORMAP = { Color.black, DARK_RED, Color.orange, Color.yellow, Color.white };
-    Color[] m_currentColorMap = BLACKBODY_COLORMAP; // reference to a color map
+    Color[] m_currentColorMap = GREENRED_COLORMAP; // reference to a color map
 
     public ColorMatrix() {
 
-        this( "C:\\1_normalized.txt" );
+        this( "C:\\2_not-normalized.txt", true );
     }
 
     /**
@@ -49,15 +49,15 @@ public class ColorMatrix {
      *                   be relative to the java interpreter, not the class
      *                   (not my fault -- that's how java treats relative paths)
      */
-    public ColorMatrix( String filename ) {
+    public ColorMatrix( String filename, boolean normalize ) {
 
         DenseDoubleMatrix2DNamed matrix = loadFile( filename );
-        loadMatrix( matrix );
+        loadMatrix( matrix, normalize );
     }
+    
+    public ColorMatrix( DenseDoubleMatrix2DNamed matrix, boolean normalize ) {
 
-    public ColorMatrix( DenseDoubleMatrix2DNamed matrix ) {
-
-        loadMatrix( matrix );
+        loadMatrix( matrix, normalize );
     }
 
     /**
@@ -201,25 +201,55 @@ public class ColorMatrix {
         return m_matrix.getRowName( i );
     }
 
-    public void loadMatrix( DenseDoubleMatrix2DNamed matrix ) {
+    /**
+     * Changes values in a row, clipping if there are more values than columns.
+     *
+     * @param  row     row whose values we want to change
+     * @param  values  new row values
+     */
+    protected void setRow( int row, double values[] ) {
+        
+        // clip if we have more values than columns
+        int totalValues = Math.min( values.length, m_totalColumns );
+                 
+        for (int column = 0;  column < totalValues;  column++)
+            m_matrix.set( row, column, values[column] );
+        
+    } // end setRow
+    
+    public void loadMatrix( DenseDoubleMatrix2DNamed matrix, boolean normalize ) {
 
         m_matrix = matrix;
         m_totalRows = m_matrix.rows();
         m_totalColumns = m_matrix.columns();
         m_colors = new Color[m_totalRows][m_totalColumns];
 
+        // normalize the data
+        if (normalize)
+        {
+            // normalize the data in each row
+            for (int r = 0;  r < m_totalRows;  r++)
+            {
+                double[] rowValues = matrix.getRow( r );
+                cern.colt.list.DoubleArrayList doubleArrayList = new cern.colt.list.DoubleArrayList( rowValues );
+                doubleArrayList = baseCode.Math.Stats.standardize( doubleArrayList );
+                setRow( r, doubleArrayList.elements() );
+            }
+        }
+            
         // compute min and max values in the matrix
         m_minValue = m_maxValue = m_matrix.get( 0, 0 );
-        for (int row = 0;  row < m_totalRows;  row++)
+        for (int r = 0;  r < m_totalRows;  r++)
         {
-            for (int column = 0;  column < m_totalColumns;  column++)
+            for (int c = 0;  c < m_totalColumns;  c++)
             {
-                double value = m_matrix.get( row, column );
+                double value = m_matrix.get( r, c );
                 m_minValue = (m_minValue > value ? value : m_minValue);
                 m_maxValue = (m_maxValue < value ? value : m_maxValue);
             }
         }
 
+        // map values to colors
         initColors();
     }
 
