@@ -113,12 +113,22 @@ public class ColorMatrix implements Cloneable {
       return m_rowKeys[row];
    }
 
-   public double getValue( int row, int column ) {
+   public double getValue( int row, int column ) throws ArrayIndexOutOfBoundsException {
+      
+      if ( row >= m_totalRows ) throw new ArrayIndexOutOfBoundsException( 
+        "The matrix has only " + m_totalRows + " rows, so the maximum possible row index is " + ( m_totalRows - 1 )  + ". Row index " + row + " is too high." );
+      if ( column >= m_totalColumns ) throw new ArrayIndexOutOfBoundsException( 
+        "The matrix has only " + m_totalColumns + " columns, so the maximum possible column index is " + ( m_totalColumns - 1 ) + ". Column index " + column + " is too high." );
+      
       row = getTrueRowIndex( row );
       return m_matrix.get( row, column );
    }
 
-   public double[] getRow( int row ) {
+   public double[] getRow( int row ) throws ArrayIndexOutOfBoundsException {
+      
+      if ( row >= m_totalRows ) throw new ArrayIndexOutOfBoundsException( 
+        "The matrix has only " + m_totalRows + " rows, so the maximum possible row index is " + ( m_totalRows - 1 ) + ". Row index " + row + " is too high." );
+      
       row = getTrueRowIndex( row );
       return m_matrix.getRow( row );
    }
@@ -127,22 +137,42 @@ public class ColorMatrix implements Cloneable {
       return m_matrix.getRowByName( rowName );
    }
 
-   public Color getColor( int row, int column ) {
+   public Color getColor( int row, int column ) throws ArrayIndexOutOfBoundsException {
+      
+      if ( row >= m_totalRows ) throw new ArrayIndexOutOfBoundsException( 
+        "The matrix has only " + m_totalRows + " rows, so the maximum possible row index is " + ( m_totalRows - 1 ) + ". Row index " + row + " is too high." );
+      if ( column >= m_totalColumns ) throw new ArrayIndexOutOfBoundsException( 
+        "The matrix has only " + m_totalColumns + " columns, so the maximum possible column index is " + ( m_totalColumns - 1 ) + ". Column index " + column + " is too high." );
+      
       row = getTrueRowIndex( row );
       return m_colors[row][column];
    }
 
-   public void setColor( int row, int column, Color newColor ) {
+   public void setColor( int row, int column, Color newColor ) throws ArrayIndexOutOfBoundsException {
+      
+      if ( row >= m_totalRows ) throw new ArrayIndexOutOfBoundsException( 
+        "The matrix has only " + m_totalRows + " rows, so the maximum possible row index is " + ( m_totalRows - 1 ) + ". Row index " + row + " is too high." );
+      if ( column >= m_totalColumns ) throw new ArrayIndexOutOfBoundsException( 
+        "The matrix has only " + m_totalColumns + " columns, so the maximum possible column index is " + ( m_totalColumns - 1 ) + ". Column index " + column + " is too high." );
+ 
       row = getTrueRowIndex( row );
       m_colors[row][column] = newColor;
    }
 
-   public String getRowName( int row ) {
+   public String getRowName( int row ) throws ArrayIndexOutOfBoundsException {
+      
+      if ( row >= m_totalRows ) throw new ArrayIndexOutOfBoundsException( 
+        "The matrix has only " + m_totalRows + " rows, so the maximum possible row index is " + ( m_totalRows - 1 ) + ". Row index " + row + " is too high." );
+
       row = getTrueRowIndex( row );
       return m_matrix.getRowName( row );
    }
 
-   public String getColumnName( int column ) {
+   public String getColumnName( int column ) throws ArrayIndexOutOfBoundsException {
+      
+      if ( column >= m_totalColumns ) throw new ArrayIndexOutOfBoundsException( 
+        "The matrix has only " + m_totalColumns + " columns, so the maximum possible column index is " + ( m_totalColumns - 1 ) + ". Column index " + column + " is too high." );
+      
       return m_matrix.getColName( column );
    }
 
