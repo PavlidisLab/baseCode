@@ -30,27 +30,39 @@ LevelFilter f = null;
    /*
     * Class under test for NamedMatrix filter(NamedMatrix)
     */
-   public final void testFilterNamedMatrixMax() {
+   public final void testFilterMax() {
       f.setLowCut(100.0, false);
       f.setRemoveAllNegative(true); // irrelevant.
       f.setMethod(LevelFilter.MAX); // this is the default.
-      DenseDoubleMatrix2DNamed filtered = (DenseDoubleMatrix2DNamed)f.filter(testdata);
-      int actualReturn = filtered.rows();
-      int expectedReturn = 16;
-      assertEquals( "return value", expectedReturn, actualReturn );
-   }
-   
-   public final void testFilterNamedMatrixMin() {
-      f.setLowCut(100.0, false);
-      f.setRemoveAllNegative(true);
-      f.setMethod(LevelFilter.MIN);
       DenseDoubleMatrix2DNamed filtered = (DenseDoubleMatrix2DNamed)f.filter(testdata);
       int actualReturn = filtered.rows();
       int expectedReturn = 26;
       assertEquals( "return value", expectedReturn, actualReturn );
    }
    
-   public final void testFilterNamedMatrixMean() {
+   
+   public final void testFilterMaxTooHigh() {
+      f.setLowCut(100000000.0, false);
+      f.setRemoveAllNegative(true); // irrelevant.
+      f.setMethod(LevelFilter.MAX); // this is the default.
+      DenseDoubleMatrix2DNamed filtered = (DenseDoubleMatrix2DNamed)f.filter(testdata);
+      int actualReturn = filtered.rows();
+      int expectedReturn = 0;
+      assertEquals( "return value", expectedReturn, actualReturn );
+   }
+   
+   
+   public final void testFilterMin() {
+      f.setLowCut(100.0, false);
+      f.setRemoveAllNegative(true);
+      f.setMethod(LevelFilter.MIN);
+      DenseDoubleMatrix2DNamed filtered = (DenseDoubleMatrix2DNamed)f.filter(testdata);
+      int actualReturn = filtered.rows();
+      int expectedReturn = 16;
+      assertEquals( "return value", expectedReturn, actualReturn );
+   }
+   
+   public final void testFilterMean() {
       f.setLowCut(100.0, false);
       f.setRemoveAllNegative(true);
       f.setMethod(LevelFilter.MEAN);
@@ -60,7 +72,7 @@ LevelFilter f = null;
       assertEquals( "return value", expectedReturn, actualReturn );
    }
    
-   public final void testFilterNamedMatrixMedian() {
+   public final void testFilterMedian() {
       f.setLowCut(100.0, false);
       f.setRemoveAllNegative(true); // irrelevant
       f.setMethod(LevelFilter.MEDIAN);
@@ -71,26 +83,53 @@ LevelFilter f = null;
    }
    
    
-   public final void testFilterNamedMatrixMaxFraction() {
+   public final void testFilterMaxFraction() {
       f.setLowCut(0.3, true);
       f.setRemoveAllNegative(false);
       DenseDoubleMatrix2DNamed filtered = (DenseDoubleMatrix2DNamed)f.filter(testdata);
       int actualReturn = filtered.rows();
-      int expectedReturn = 20;
+      int expectedReturn = 21;
+      assertEquals( "return value", expectedReturn, actualReturn );
+   }
+   
+   public final void testFilterMaxFractionAll() {
+      f.setLowCut(1.0, true);
+      f.setRemoveAllNegative(false);
+      DenseDoubleMatrix2DNamed filtered = (DenseDoubleMatrix2DNamed)f.filter(testdata);
+      int actualReturn = filtered.rows();
+      int expectedReturn = 0;
+      assertEquals( "return value", expectedReturn, actualReturn );
+   }
+   
+   public final void testFilterMaxFractionNone() {
+      f.setLowCut(0.0, true);
+      f.setRemoveAllNegative(false);
+      DenseDoubleMatrix2DNamed filtered = (DenseDoubleMatrix2DNamed)f.filter(testdata);
+      int actualReturn = filtered.rows();
+      int expectedReturn = 30;
+      assertEquals( "return value", expectedReturn, actualReturn );
+   }
+   
+   public final void testFilterMaxFractionNoneRemoveNeg() {
+      f.setLowCut(0.0, true);
+      f.setRemoveAllNegative(true);
+      DenseDoubleMatrix2DNamed filtered = (DenseDoubleMatrix2DNamed)f.filter(testdata);
+      int actualReturn = filtered.rows();
+      int expectedReturn = 27;
       assertEquals( "return value", expectedReturn, actualReturn );
    }
    
    
-   public final void testFilterNamedMatrixFractionMaxRemoveNeg() {
+   public final void testFilterFractionMaxRemoveNeg() {
       f.setLowCut(0.6, true);
-      f.setRemoveAllNegative(true); // removes 3 of 30 rows. 27 * 0.6 =16.2, ceil 17, + 3 = 20.
+      f.setRemoveAllNegative(true); // removes 3 of 30 rows. 27 * 0.6 =16.2, ceil 17, + 3 = 20
       DenseDoubleMatrix2DNamed filtered = (DenseDoubleMatrix2DNamed)f.filter(testdata);
       int actualReturn = filtered.rows();
       int expectedReturn = 10;
       assertEquals( "return value", expectedReturn, actualReturn );
    }
    
-   public final void testFilterNamedMatrixBadFraction() {
+   public final void testFilterBadFraction() {
       try {
          f.setLowCut(110.3, true);
          DenseDoubleMatrix2DNamed filtered = (DenseDoubleMatrix2DNamed)f.filter(testdata);
@@ -99,23 +138,23 @@ LevelFilter f = null;
       }
    }
    
-   public final void testFilterNamedMatrixNoFilter() {
+   public final void testFilterNoFilter() {
          DenseDoubleMatrix2DNamed filtered = (DenseDoubleMatrix2DNamed)f.filter(testdata);
          assertEquals( "return value", testdata, filtered );
    }
    
    
-   public final void testFilterNamedMatrixMaxHigh() {
+   public final void testFilterMaxHigh() {
       f.setHighCut(1000.0, false);
       f.setRemoveAllNegative(true); // irrelevant.
       f.setMethod(LevelFilter.MAX); // this is the default.
       DenseDoubleMatrix2DNamed filtered = (DenseDoubleMatrix2DNamed)f.filter(testdata);
       int actualReturn = filtered.rows();
-      int expectedReturn = 16;
+      int expectedReturn = 27;
       assertEquals( "return value", expectedReturn, actualReturn );
    }
    
-   public final void testFilterNamedMatrixMinHigh() {
+   public final void testFilterMinHigh() {
       f.setHighCut(1000.0, false);
       f.setRemoveAllNegative(true);
       f.setMethod(LevelFilter.MIN);
@@ -125,7 +164,7 @@ LevelFilter f = null;
       assertEquals( "return value", expectedReturn, actualReturn );
    }
    
-   public final void testFilterNamedMatrixMeanHigh() {
+   public final void testFilterMeanHigh() {
       f.setHighCut(1000.0, false);
       f.setRemoveAllNegative(true);
       f.setMethod(LevelFilter.MEAN);
@@ -135,7 +174,7 @@ LevelFilter f = null;
       assertEquals( "return value", expectedReturn, actualReturn );
    }
    
-   public final void testFilterNamedMatrixMedianHigh() {
+   public final void testFilterMedianHigh() {
       f.setHighCut(1000.0, false);
       f.setRemoveAllNegative(true); // irrelevant
       f.setMethod(LevelFilter.MEDIAN);
@@ -146,7 +185,7 @@ LevelFilter f = null;
    }
    
    
-   public final void testFilterNamedMatrixMaxFractionHigh() {
+   public final void testFilterMaxFractionHigh() {
       f.setHighCut(0.3, true);
       f.setRemoveAllNegative(false);
       DenseDoubleMatrix2DNamed filtered = (DenseDoubleMatrix2DNamed)f.filter(testdata);
@@ -156,7 +195,7 @@ LevelFilter f = null;
    }
    
    
-   public final void testFilterNamedMatrixFractionMaxRemoveNegHigh() {
+   public final void testFilterFractionMaxRemoveNegHigh() {
       f.setHighCut(0.3, true);
       f.setRemoveAllNegative(true); 
       DenseDoubleMatrix2DNamed filtered = (DenseDoubleMatrix2DNamed)f.filter(testdata);
@@ -165,7 +204,7 @@ LevelFilter f = null;
       assertEquals( "return value", expectedReturn, actualReturn );
    }
 
-   public final void testFilterNamedMatrixFractionMaxRemoveHighAndLow() {
+   public final void testFilterFractionMaxRemoveHighAndLow() {
       f.setHighCut(0.3, true);
       f.setLowCut(100, false);
       f.setRemoveAllNegative(true); 
@@ -175,6 +214,35 @@ LevelFilter f = null;
       assertEquals( "return value", expectedReturn, actualReturn );
    }
    
+   public final void testFilterFractionMaxRemoveHighAndLowBothFraction() {
+      f.setHighCut(0.3, true);
+      f.setLowCut(0.1, true);
+      f.setRemoveAllNegative(true); 
+      DenseDoubleMatrix2DNamed filtered = (DenseDoubleMatrix2DNamed)f.filter(testdata);
+      int actualReturn = filtered.rows();
+      int expectedReturn = 10;
+      assertEquals( "return value", expectedReturn, actualReturn );
+   }
+   
+   public final void testFilterFractionMaxRemoveHighAndLowBothLevels() {
+      f.setHighCut(100, false);
+      f.setLowCut(1000, false);
+      f.setRemoveAllNegative(true); 
+      DenseDoubleMatrix2DNamed filtered = (DenseDoubleMatrix2DNamed)f.filter(testdata);
+      int actualReturn = filtered.rows();
+      int expectedReturn = 10;
+      assertEquals( "return value", expectedReturn, actualReturn );
+   }
+   
+   public final void testFilterFractionMaxRemoveHighAndLowBothLevelsNoNegRemove() {
+      f.setHighCut(100, false);
+      f.setLowCut(1000, false);
+      f.setRemoveAllNegative(false); 
+      DenseDoubleMatrix2DNamed filtered = (DenseDoubleMatrix2DNamed)f.filter(testdata);
+      int actualReturn = filtered.rows();
+      int expectedReturn = 10;
+      assertEquals( "return value", expectedReturn, actualReturn );
+   }
 
 
 }

@@ -173,7 +173,7 @@ public class LevelFilter extends AbstractFilter implements Filter {
       int numRows = data.rows();
       int numCols = data.columns();
 
-      DoubleArrayList criteria = new DoubleArrayList();
+      DoubleArrayList criteria = new DoubleArrayList(new double[numRows]);
 
       /*
        * compute criteria.
@@ -197,19 +197,19 @@ public class LevelFilter extends AbstractFilter implements Filter {
 
          switch ( method ) {
             case MIN: {
-               criteria.add( DescriptiveWithMissing.min( rowAsList ) );
+               criteria.set(i, DescriptiveWithMissing.min( rowAsList ) );
                break;
             }
             case MAX: {
-               criteria.add( DescriptiveWithMissing.max( rowAsList ) );
+               criteria.set(i, DescriptiveWithMissing.max( rowAsList ) );
                break;
             }
             case MEAN: {
-               criteria.add( DescriptiveWithMissing.mean( rowAsList ) );
+               criteria.set(i, DescriptiveWithMissing.mean( rowAsList ) );
                break;
             }
             case MEDIAN: {
-               criteria.add( DescriptiveWithMissing.median( rowAsList ) );
+               criteria.set(i, DescriptiveWithMissing.median( rowAsList ) );
                break;
             }
             default: {
@@ -221,8 +221,8 @@ public class LevelFilter extends AbstractFilter implements Filter {
       DoubleArrayList sortedCriteria = criteria.copy();
       sortedCriteria.sort();
 
-      double realLowCut;
-      double realHighCut;
+      double realLowCut = Double.MIN_VALUE; 
+      double realHighCut = Double.MAX_VALUE;
 
       if ( useHighAsFraction ) {
          if ( highCut > 1.0 || highCut < 0.0 ) {
@@ -268,7 +268,7 @@ public class LevelFilter extends AbstractFilter implements Filter {
       Vector rowNames = new Vector();
 
       for ( int i = 0; i < numRows; i++ ) {
-         if ( criteria.get( i ) > realLowCut && criteria.get( i ) < realHighCut ) {
+         if ( criteria.get( i ) >= realLowCut && criteria.get( i ) <= realHighCut ) {
             kept++;
             rowsToKeep.add( data.getRowObj( i ) );
             rowNames.add( data.getRowName( i ) );

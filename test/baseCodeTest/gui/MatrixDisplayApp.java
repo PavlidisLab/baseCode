@@ -44,7 +44,8 @@ public class MatrixDisplayApp {
 
       try {
          boolean showLabels = true;
-         matrixDisplay.saveToFile( outPngFilename, showLabels );
+
+         matrixDisplay.saveImage( outPngFilename, showLabels );
       }
       catch ( java.io.IOException e ) {
          System.err.println( "Unable to save screenshot to file " + outPngFilename );
