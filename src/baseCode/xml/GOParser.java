@@ -20,9 +20,9 @@ public class GOParser {
 
    private DirectedGraph m;
 
-	public DirectedGraph getGraph() {
-		return m;
-	}
+   public DirectedGraph getGraph() {
+      return m;
+   }
 
    public GOParser(InputStream i)
       throws
@@ -77,7 +77,7 @@ class GOHandler extends DefaultHandler {
       String qName,
       Attributes atts) {
 
-    if (name.equals("term")) {
+      if (name.equals("term")) {
          inTerm = true;
       } else if (name.equals("accession")) {
          accBuf = new StringBuffer();
@@ -124,7 +124,9 @@ class GOHandler extends DefaultHandler {
       } else if (name.equals("accession")) {
          inAcc = false;
          String currentTerm = accBuf.toString();
-         m.addNode(currentTerm, new OntologyEntry(currentTerm, "no name yet", "no definition yet"));
+         m.addNode(
+            currentTerm,
+            new OntologyEntry(currentTerm, "no name yet", "no definition yet"));
       } else if (name.equals("definition")) {
          String currentTerm = accBuf.toString();
          ((OntologyEntry)m.getNodeContents(currentTerm)).setDefinition(
