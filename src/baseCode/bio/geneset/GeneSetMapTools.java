@@ -1,6 +1,10 @@
 package baseCode.bio.geneset;
 
+import hep.aida.IHistogram1D;
+import hep.aida.ref.Histogram1D;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,9 +27,10 @@ public class GeneSetMapTools {
 
    /**
     * @param ga
-    * @return
+    * @param countEmpty if false, gene sets that have no members are not counted in the total.
+    * @return The average size of the gene sets.
     */
-   public static double meanGeneSetSize( GeneAnnotations ga ) {
+   public static double meanGeneSetSize( GeneAnnotations ga, boolean countEmpty ) {
       double sum = 0.0;
       int n = 0;
 
@@ -35,16 +40,74 @@ public class GeneSetMapTools {
             .hasNext(); ) {
          String geneSet = ( String ) iter.next();
 
-         Set element;
-         if ( geneSetToGeneMap.containsKey( geneSet ) ) {
-            element = ( Set ) geneSetToGeneMap.get( geneSet );
-            sum += element.size();
-            n++;
+         Collection element;
+
+         element = ( Collection ) geneSetToGeneMap.get( geneSet );
+
+         if ( !countEmpty && element.size() == 0 ) {
+            continue;
          }
+
+         sum += element.size();
+         n++;
+      }
+
+      return sum / n;
+
+   }
+
+   /**
+    * @param sum
+    * @param ga
+    * @param countEmpty if false ,genes that have no gene sets assigned to them are not counted in the total.
+    * @return The average number of gene sets per gene (per probe actually). This is a measure of gene set overlap. If
+    *         the value is 1, it means that each gene is (on average) in only one set. Large values indicate larger
+    *         amounts of overelap between gene sets.
+    */
+   public static double meanSetsPerGene( GeneAnnotations ga, boolean countEmpty ) {
+      double sum = 0.0;
+      int n = 0;
+
+      Map probeToSetMap = ga.getProbeToClassMap();
+
+      for ( Iterator iter = probeToSetMap.keySet().iterator(); iter.hasNext(); ) {
+         String probe = ( String ) iter.next();
+
+         Collection element;
+
+         element = ( Collection ) probeToSetMap.get( probe );
+
+         if ( !countEmpty && element.size() == 0 ) {
+            continue;
+         }
+
+         sum += element.size();
+         n++;
 
       }
 
       return sum / n;
+
+   }
+
+   public static IHistogram1D geneSetSizeDistribution( GeneAnnotations ga,
+         int numBins, int minSize, int maxSize ) {
+      Histogram1D hist = new Histogram1D( "Distribution of gene set sizes",
+            numBins, minSize, maxSize );
+
+      Map geneSetToGeneMap = ga.getClassToGeneMap();
+
+      for ( Iterator iter = geneSetToGeneMap.keySet().iterator(); iter
+            .hasNext(); ) {
+         String geneSet = ( String ) iter.next();
+
+         Collection element;
+
+         element = ( Collection ) geneSetToGeneMap.get( geneSet );
+         hist.fill( element.size() );
+      }
+
+      return hist;
 
    }
 
@@ -109,12 +172,11 @@ public class GeneSetMapTools {
          String geneSet = ( String ) iter.next();
 
          Set element;
-         if ( geneSetToGeneMap.containsKey( geneSet ) ) {
-            element = ( Set ) geneSetToGeneMap.get( geneSet );
-            if ( element.size() < minClassSize || element.size() > maxClassSize ) {
-               removeUs.add( geneSet );
-            }
+         element = ( Set ) geneSetToGeneMap.get( geneSet );
+         if ( element.size() < minClassSize || element.size() > maxClassSize ) {
+            removeUs.add( geneSet );
          }
+
       }
 
       for ( Iterator iter = removeUs.iterator(); iter.hasNext(); ) {
@@ -134,11 +196,16 @@ public class GeneSetMapTools {
 
    /**
     * <p>
-    * Remove classes which are too similar to some other class. Classes which have fractionSameThreshold of a larger
-    * class will be ignored. This doesn't know which classes are relevant to the data, so it does not work perfectly.
-    * The algorithm is: for each class, compare it to all other classes, starting with small classes. If any class
-    * encountered is nearly the same as the query class (with tolerance fractionSameThreshold), the smaller of the two
-    * classes is deleted and the query continues with the class that is left.
+    * Remove classes which are too similar to some other class. In addition, the user can select a penalty for large
+    * gene sets. Thus when two gene sets are found to be similar, the decision of which one to keep can be tuned based
+    * on the size penalty. We find it useful to penalize large gene sets so we tend to keep smaller ones (but not too
+    * small). Useful values of the penalty are above 1 (a value of 1 will result in the larger class always being
+    * retained).
+    * </p>
+    * <p>
+    * The amount of similarity to be tolerated is set by the parameter fractionSameThreshold, representing the fraction
+    * of genes in the smaller class which are also found in the larger class. Thus, setting this threshold to be 0.0
+    * means that no overlap is tolerated. Setting it to 1 means that classes will never be discarded.
     * </p>
     * 
     * @param fractionSameThreshold A value between 0 and 1, indicating how similar a class must be before it gets
@@ -147,6 +214,9 @@ public class GeneSetMapTools {
     * @param messenger For updating a log.
     * @param maxClassSize Large class considered. (that doesn't mean they are removed)
     * @param minClassSize Smallest class considered. (that doesn't mean they are removed)
+    * @param bigClassPenalty A value greater or equal to one, indicating the cost of retaining a larger class in favor
+    *        of a smaller one. The penalty is scaled with the difference in sizes of the two classes being considered,
+    *        so very large classes are more heavily penalized.
     */
    public static void ignoreSimilar( double fractionSameThreshold,
          GeneAnnotations ga, StatusViewer messenger, int maxClassSize,
@@ -163,8 +233,9 @@ public class GeneSetMapTools {
       }
 
       // iterate over all the classes, starting from the smallest one.
-
-      List sortedList = ga.sortGeneSetsBySize();
+      //      List sortedList = ga.sortGeneSetsBySize();
+      List sortedList = new ArrayList( ga.getClassToGeneMap().keySet() );
+      Collections.shuffle(sortedList);
 
       // OUTER - compare all classes to each other.
       for ( Iterator iter = sortedList.iterator(); iter.hasNext(); ) {
@@ -173,7 +244,8 @@ public class GeneSetMapTools {
 
          int querySize = queryClass.size();
 
-         if ( querySize > maxClassSize || querySize < minClassSize ) {
+         if ( seenit.contains( queryClassId ) || querySize > maxClassSize
+               || querySize < minClassSize ) {
             continue;
          }
 
@@ -184,7 +256,8 @@ public class GeneSetMapTools {
             String targetClassId = ( String ) iterb.next();
 
             /// skip self comparisons and also symmetric comparisons.
-            if ( seenit.contains( targetClassId ) ) {
+            if ( seenit.contains( targetClassId )
+                  || targetClassId.equals( queryClassId ) ) {
                continue;
             }
 
@@ -192,7 +265,8 @@ public class GeneSetMapTools {
                   .get( targetClassId );
 
             int targetSize = targetClass.size();
-            if ( targetSize > maxClassSize || targetSize < minClassSize ) {
+            if ( targetSize < querySize || targetSize > maxClassSize
+                  || targetSize < minClassSize ) {
                continue;
             }
 
@@ -205,25 +279,17 @@ public class GeneSetMapTools {
                      .size() )
                      / bigClassPenalty;
 
-               //   System.err.println( sizeScore );
-
                if ( sizeScore < 1.0 ) { // delete the larget class.
                   deleteUs.add( targetClassId );
                   seenit.add( targetClassId );
                } else {
                   deleteUs.add( queryClassId );
                   seenit.add( queryClassId );
-
+                  break; // query is no longer relevant, go to the next one.
                }
 
                storeSimilarSets( classesToSimilarMap, queryClassId,
                      targetClassId );
-
-               //    queryClassId = targetClassId; // swap. The query class is being deleted, so we should skip it. Move
-               // on
-               // to the target.
-               //    queryClass = targetClass;
-               //   break; // if we do the swap, target and query are equal.
             }
 
          } /* inner while */
@@ -270,8 +336,7 @@ public class GeneSetMapTools {
    }
 
    /**
-    * Helper function for ignoreSimilar. big class penalty? small class penalty? target function: number of genes
-    * covered - redundancy. parameters: overlap penalty - too much overlap - considered similar.
+    * Helper function for ignoreSimilar.
     */
    private static boolean areSimilarClasses( Set biggerClass, Set smallerClass,
          double fractionSameThreshold, double bigClassPenalty ) {
