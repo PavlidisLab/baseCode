@@ -8,9 +8,16 @@ public class TestApp {
   boolean packFrame = false;
 
   //Construct the application
-  public TestApp() {
+  public TestApp( String filename ) {
+
     TestFrame frame = new TestFrame();
-    
+    ColorMatrix matrix = new ColorMatrix( filename, true );
+    //matrix.standardize();
+    JMatrixDisplay matrixDisplay = new JMatrixDisplay( matrix );
+    //matrixDisplay.getMatrix().standardize();
+    frame.getContentPane().add( matrixDisplay, BorderLayout.CENTER );
+
+
     //Validate frames that have preset sizes
     //Pack frames that have useful preferred size info, e.g. from their layout
     if (packFrame) {
@@ -32,7 +39,7 @@ public class TestApp {
     frame.setVisible(true);
   }
 
-  //Main method
+  //Main method: args[0] can contain the name of the data file
   public static void main(String[] args) {
     try {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -40,6 +47,9 @@ public class TestApp {
     catch(Exception e) {
       e.printStackTrace();
     }
-    new TestApp();
+    if (args.length > 0)
+       new TestApp( args[0] );
+    else
+       System.err.println( "Please specify the name of the data file by passing it as a program argument." );
   }
 }

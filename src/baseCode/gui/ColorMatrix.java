@@ -9,7 +9,8 @@ package baseCode.Gui;
 import java.awt.Color;
 import baseCode.dataStructure.reader.DoubleMatrixReader;
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
-import java.net.URL;
+import baseCode.Math.MatrixStats;
+import cern.colt.list.DoubleArrayList;
 
 /**
  *
@@ -27,7 +28,7 @@ public class ColorMatrix {
 
     double m_minValue, m_maxValue;
     int m_totalRows, m_totalColumns;
-    
+
     /** to be able to sort the rows by an arbitrary key */
     int m_rowKeys[];
 
@@ -58,7 +59,7 @@ public class ColorMatrix {
         DenseDoubleMatrix2DNamed matrix = loadFile( filename );
         loadMatrix( matrix, normalize );
     }
-    
+
     public ColorMatrix( DenseDoubleMatrix2DNamed matrix, boolean normalize ) {
 
         loadMatrix( matrix, normalize );
@@ -85,14 +86,15 @@ public class ColorMatrix {
      * @param suggestedNumberOfColors  palette resolution; if colorPalette.length
      *        does not evenly divide into this number, the actual number of
      *        colors in the palette will be rounded down.
-     * @param colorPalette  the simplest color map is { minColor, maxColor };
+     * @param colorMap  the simplest color map is { minColor, maxColor };
      *                  you might, however, want to go through intermediate
      *                  colors instead of following a straight-line route
      *                  through the color space.
      * @return Color[]  the color palette
      */
-    Color[] initColorPalette( int suggestedNumberOfColors, Color[] colorPalette ) {
+    Color[] createColorPalette( int suggestedNumberOfColors, Color[] colorMap ) {
 
+        Color[] colorPalette;
         Color minColor;
         Color maxColor;
 
@@ -116,13 +118,13 @@ public class ColorMatrix {
         for (int segment = 0;  segment < totalSegments;  segment++)
         {
            // the minimum color for each segment as defined by the current color map
-           minColor = m_currentColorMap[segment];
+           minColor = colorMap[segment];
            int r = minColor.getRed();
            int g = minColor.getGreen();
            int b = minColor.getBlue();
 
            // the maximum color for each segment and the step sizes
-           maxColor = m_currentColorMap[segment + 1];
+           maxColor = colorMap[segment + 1];
            int redStepSize   = getStepSize( r, maxColor.getRed(),   colorsPerSegment );
            int greenStepSize = getStepSize( g, maxColor.getGreen(), colorsPerSegment );
            int blueStepSize  = getStepSize( b, maxColor.getBlue(),  colorsPerSegment );
@@ -150,12 +152,12 @@ public class ColorMatrix {
 
         return colorPalette;
 
-    } // end initColorPalette
+    } // end createColorPalette
 
 
-    public void initColors()
+    public void mapValuesToColors()
     {
-        m_colorPalette = initColorPalette( m_suggestedNumberOfColors, m_currentColorMap );
+        m_colorPalette = createColorPalette( m_suggestedNumberOfColors, m_currentColorMap );
         double range = m_maxValue - m_minValue;
         if (0.0 == range)
         {
@@ -170,7 +172,7 @@ public class ColorMatrix {
             for (int column = 0;  column < m_totalColumns;  column++)
             {
                 double value = m_matrix.get( row, column );
-                
+
                 if (Double.isNaN (value))
                 {
                     // the value is missing
@@ -190,7 +192,7 @@ public class ColorMatrix {
                 }
             }
         }
-    } // end initColors
+    } // end mapValuesToColors
 
 
     public int getRowCount() {
@@ -204,20 +206,20 @@ public class ColorMatrix {
     }
 
     public void setRowKeys( int[] rowKeys ) {
-        
+
         m_rowKeys = rowKeys;
     }
-    
+
     public Color getColor( int row, int column ) {
-        
+
         return getColor( row, column, true );
     }
-    
+
     /**
      * @see  #setRowKeys
      */
     public Color getColor( int row, int column, boolean isRowKey ) {
-        
+
         if (isRowKey)
         {
             row = m_rowKeys[row];
@@ -241,32 +243,32 @@ public class ColorMatrix {
      * @param  values  new row values
      */
     protected void setRow( int row, double values[] ) {
-        
+
         // clip if we have more values than columns
         int totalValues = Math.min( values.length, m_totalColumns );
-                 
+
         for (int column = 0;  column < totalValues;  column++)
             m_matrix.set( row, column, values[column] );
-        
+
     } // end setRow
-    
+
     /**
      * To be able to sort the rows by an arbitrary key.
      * Creates <code>m_rowKeys</code> array and initializes it in
-     * ascending order from 0 to <code>m_totalRows</code>-1, 
+     * ascending order from 0 to <code>m_totalRows</code>-1,
      * so that by default it matches the physical order
      * of the columns: [0,1,2,...,m_totalRows-1]
      */
     protected int[] createRowKeys() {
-        
+
         m_rowKeys = new int[m_totalRows];
-        
+
         for (int i = 0;  i < m_totalRows;  i++)
             m_rowKeys[i] = i;
-       
+
         return m_rowKeys;
     }
-    
+
     public void loadMatrix( DenseDoubleMatrix2DNamed matrix, boolean normalize ) {
 
         m_matrix = matrix; // by reference, or should we clone?
@@ -274,41 +276,14 @@ public class ColorMatrix {
         m_totalColumns = m_matrix.columns();
         m_colors = new Color[m_totalRows][m_totalColumns];
         createRowKeys();
-        
-        // normalize the data
-        if (normalize)
-        {
-            // normalize the data in each row
-            for (int r = 0;  r < m_totalRows;  r++)
-            {
-                double[] rowValues = matrix.getRow( r );
-                cern.colt.list.DoubleArrayList doubleArrayList = new cern.colt.list.DoubleArrayList( rowValues );
-                doubleArrayList = baseCode.Math.Stats.standardize( doubleArrayList );
-                rowValues = doubleArrayList.elements();
-                setRow( r, rowValues );
-            }
-            
-            // ??? - we normalized to variance one, mean zero, so shouldn't this be true:
-            m_minValue = -1;
-            m_maxValue = 1;
-        }
-        //else
-        {
-            // compute min and max values in the matrix
-            m_minValue = m_maxValue = m_matrix.get( 0, 0 );
-            for (int r = 0;  r < m_totalRows;  r++)
-            {
-                for (int c = 0;  c < m_totalColumns;  c++)
-                {
-                    double value = m_matrix.get( r, c );
-                    m_minValue = (m_minValue > value ? value : m_minValue);
-                    m_maxValue = (m_maxValue < value ? value : m_maxValue);
-                }
-            }
-        }
+
+        standardize();
+
+        m_minValue = MatrixStats.min( m_matrix );
+        m_maxValue = MatrixStats.max( m_matrix );
 
         // map values to colors
-        initColors();
+        mapValuesToColors();
     }
 
     public DenseDoubleMatrix2DNamed loadFile( String filename ) {
@@ -317,6 +292,30 @@ public class ColorMatrix {
         DenseDoubleMatrix2DNamed matrix = (DenseDoubleMatrix2DNamed) m_matrixReader.read( filename );
         return matrix;
     }
-    
-    
+
+    /**
+     * Normalizes the elements of an array to variance one and mean zero,
+     * ignoring missing values
+     */
+    public void standardize() {
+
+       // normalize the data in each row
+       for (int r = 0; r < m_totalRows; r++)
+       {
+          double[] rowValues = m_matrix.getRow(r);
+          DoubleArrayList doubleArrayList = new cern.colt.list.DoubleArrayList( rowValues );
+          doubleArrayList = baseCode.Math.Stats.standardize(doubleArrayList);
+          rowValues = doubleArrayList.elements();
+          setRow(r, rowValues);
+       }
+
+       // we normalized to variance one and mean zero,
+       // so no value should fall outside the range [-2,2]
+       m_minValue = -2;
+       m_maxValue = 2;
+
+       //mapValuesToColors();
+
+    } // end standardize
+
 }
