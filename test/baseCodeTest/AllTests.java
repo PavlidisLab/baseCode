@@ -1,6 +1,8 @@
 package baseCodeTest;
 
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 public class AllTests
     extends TestCase {
@@ -17,6 +19,9 @@ public class AllTests
       suite.addTestSuite( baseCodeTest.math.TestDescriptiveWithMissing.class );
       suite.addTestSuite( baseCodeTest.xml.TestGOParser.class );
       suite.addTestSuite( baseCodeTest.util.TestDiff.class );
+      suite.addTestSuite( baseCodeTest.dataStructure.TestQueue.class );
+      suite.addTestSuite( baseCodeTest.dataStructure.TestStack.class );
       return suite;
    }
+
 }

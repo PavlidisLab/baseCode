@@ -90,6 +90,7 @@ public class DirectedGraphNode
    /**
     * Get the subtree of the graph starting from this node.
     * @return Graph
+    * @todo the nodes in the new graph could have references to nodes that are not in the subtree; other methods must ignore.
     */
    public Graph getChildGraph() {
       return new DirectedGraph( this.getAllChildNodes() );
@@ -170,7 +171,7 @@ public class DirectedGraphNode
 
       for ( Iterator it = this.getChildIterator(); it.hasNext(); ) {
          Object j = it.next();
-         list.add( j );
+         list.add( ( DirectedGraphNode ) getGraph().get( j ) );
          ( ( DirectedGraphNode ) getGraph().get( j ) ).getAllChildNodes( list );
       }
       return list;
@@ -183,7 +184,7 @@ public class DirectedGraphNode
 
       for ( Iterator it = this.getParentIterator(); it.hasNext(); ) {
          Object j = it.next();
-         list.add( j );
+         list.add( ( DirectedGraphNode ) getGraph().get( j ) );
          ( ( DirectedGraphNode ) getGraph().get( j ) ).getAllParentNodes( list );
       }
       return list;

@@ -59,10 +59,9 @@ public class TestDirectedGraph
 
    public void testGetChildren() {
       DirectedGraphNode n = (DirectedGraphNode)testGraph.get("c");
-
-      String actualReturn = n.getChildGraph().toString();
-      System.err.print( actualReturn );
       String expectedReturn = "cee.\n\tdee.\n\teee.\n\teff.";
+      String actualReturn = n.getChildGraph().toString();
+      System.err.println( actualReturn );
       assertEquals( "return", expectedReturn, actualReturn );
    }
 

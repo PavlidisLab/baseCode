@@ -36,6 +36,15 @@ public abstract class AbstractGraph implements Graph {
 
 
    /**
+    *
+    * @param node GraphNode
+    */
+   public void addNode(GraphNode node) {
+      items.put(node.getKey(), node);
+   }
+
+
+   /**
     * Add a new node to the graph identifed by key, with contents item.
     * @param key Object
     * @param item Object

@@ -26,9 +26,9 @@ public class TestGOParser
       super.setUp();
       InputStream i =
           GOParser.class.getResourceAsStream( "/data/go-termdb-sample.xml" );
-if (i == null) {
-   throw new Exception("Couldn't read the sample file");
-}
+      if ( i == null ) {
+         throw new Exception( "Couldn't read the sample file" );
+      }
       gOParser = new GOParser( i );
 
    }
@@ -38,11 +38,12 @@ if (i == null) {
       super.tearDown();
    }
 
-/** @todo set up mechanism for writing results if they don't exist.*/
+   /** @todo set up mechanism for writing results if they don't exist.*/
    public void testGOParser() throws IOException, SAXException, ParserConfigurationException {
       String actualReturn = gOParser.getGraph().toString();
-      String expectedReturn =  RegressionTesting.readTestResult("/data/goparsertestoutput.txt" );
-   assertEquals( "Diffs: " + RegressionTesting.regress(expectedReturn, actualReturn), expectedReturn, actualReturn );
+      String expectedReturn = RegressionTesting.readTestResult( "/data/goparsertestoutput.txt" );
+      assertEquals( "Diffs: " + RegressionTesting.regress( expectedReturn, actualReturn ),
+                    expectedReturn, actualReturn );
    }
 
 }

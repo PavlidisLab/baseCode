@@ -30,8 +30,7 @@ public class DirectedGraph
    public DirectedGraph( Set nodes ) {
       items = new LinkedHashMap();
       for (Iterator it = nodes.iterator(); it.hasNext();) {
-         DirectedGraphNode n = (DirectedGraphNode)it.next();
-         this.addNode(n.getKey(), n.getItem());
+         this.addNode((DirectedGraphNode)it.next());
       }
    }
 
