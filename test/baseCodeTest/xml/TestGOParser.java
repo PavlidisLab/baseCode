@@ -25,7 +25,8 @@ public class TestGOParser
    protected void setUp() throws Exception {
       super.setUp();
       InputStream i =
-          GOParser.class.getResourceAsStream( "/data/go-termdb-sample.xml" );
+         GOParser.class.getResourceAsStream( "/data/go-termdb-sample.xml" );
+   //   GOParser.class.getResourceAsStream( "/data/go_200406-termdb.xml" );
       if ( i == null ) {
          throw new Exception( "Couldn't read the sample file" );
       }
@@ -45,5 +46,7 @@ public class TestGOParser
       assertEquals( "Diffs: " + RegressionTesting.regress( expectedReturn, actualReturn ),
                     expectedReturn, actualReturn );
    }
+
+
 
 }

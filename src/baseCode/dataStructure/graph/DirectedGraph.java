@@ -9,6 +9,9 @@ import java.util.Set;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.LinkedHashMap;
+import baseCode.dataStructure.Queue;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * A graph that contains DirectedGraphNodes. It can be cyclic. Small unconnected parts of the graph will
@@ -16,7 +19,7 @@ import java.util.LinkedHashMap;
  * Tree traversals start from the root node, which is defined as the node with the most children.
  *
  * <p>Copyright (c) Columbia University
- * @todo do something about cyclicity
+ * @todo do something about cyclicity; make this a dag or a subclass...
  * @author Paul Pavlidis
  * @version $Id$
  */
@@ -27,14 +30,24 @@ public class DirectedGraph
       super();
    }
 
+   /**
+    *
+    * @param nodes Set of DirectedGraphNodes
+    */
    public DirectedGraph( Set nodes ) {
       items = new LinkedHashMap();
-      for (Iterator it = nodes.iterator(); it.hasNext();) {
-         this.addNode((DirectedGraphNode)it.next());
+      for ( Iterator it = nodes.iterator(); it.hasNext(); ) {
+        DirectedGraphNode a = ( DirectedGraphNode ) it.next();
+        this.addNode(a);
       }
    }
 
-   protected void addNode( Object key, Object item, Graph graph ) {
+   /**
+    *
+    * @param key Object
+    * @param item Object
+    */
+   public void addNode( Object key, Object item) {
       if ( !items.containsKey( key ) ) {
          items.put( key, new DirectedGraphNode( key, item, this ) );
       }
@@ -115,17 +128,14 @@ public class DirectedGraph
     * @return String
     */
    public String toString() {
-
+      prune();
+      this.topoSort();
       List nodes = new ArrayList( items.values() );
       Collections.sort( nodes );
-      Collections.reverse( nodes );
-      Iterator it = nodes.iterator();
-      DirectedGraphNode root = ( DirectedGraphNode ) it.next();
+      DirectedGraphNode root = ( DirectedGraphNode ) nodes.get( 0 );
       StringBuffer buf = new StringBuffer();
       int tablevel = 0;
-      //    for (Iterator it = nodes.iterator(); it.hasNext();) {
       makeString( root, buf, tablevel );
-      //     }
       return ( buf.toString() );
    }
 
@@ -143,7 +153,7 @@ public class DirectedGraph
       Set children = startNode.getChildNodes();
 
       if ( !startNode.isVisited() ) {
-         buf.append( startNode );
+         buf.append( startNode + "\n");
          startNode.mark();
       }
       tabLevel++;
@@ -163,6 +173,58 @@ public class DirectedGraph
    }
 
    /**
+    * Remove vertices to nodes that aren't in the graph.
+    */
+   public void prune() {
+      for ( Iterator it = this.items.keySet().iterator(); it.hasNext(); ) {
+         DirectedGraphNode v = ( DirectedGraphNode ) items.get( it.next() );
+         v.prune();
+      }
+   }
+
+   /**
+    * Fills in the topoSortOrder for each node.
+    */
+   public void topoSort() {
+      Queue q = new Queue();
+      int counter = 0;
+      DirectedGraphNode v;
+      Map degrees = new HashMap();
+
+      /* Get the degrees of all items, and enqueue zero-indegree nodes */
+      for ( Iterator it = this.items.keySet().iterator(); it.hasNext(); ) {
+         v = ( DirectedGraphNode ) items.get( it.next() );
+         degrees.put( v, new Integer( v.inDegree() ) );
+         if ( ( ( Integer ) degrees.get( v ) ).intValue() == 0 ) {
+            q.enqueue( v );
+         }
+      }
+
+      while ( !q.isEmpty() ) {
+         v = ( DirectedGraphNode ) q.dequeue();
+         v.setTopoSortOrder( ++counter );
+         for ( Iterator vit = v.getChildNodes().iterator(); vit.hasNext(); ) {
+            DirectedGraphNode w = ( DirectedGraphNode ) vit.next();
+            /* decrement the degree of this node */
+            int inDegree = ( ( Integer ) degrees.get( w ) ).intValue();
+            inDegree--;
+            degrees.put( w, new Integer( inDegree ) );
+
+            /* see if this now is one of the zero-indegree nodes */
+            if ( inDegree == 0 ) {
+               q.enqueue( w );
+            }
+         }
+      }
+
+      if ( counter != items.size() ) {
+         throw new IllegalStateException( "Graph contains a cycle; " + counter + " items found, " +
+                                          items.size() + " expected" );
+      }
+
+   }
+
+   /**
     * Generate a JTree corresponding to this graph.
     *
     * @todo note that nodes are only allowed to have one parent in
@@ -170,11 +232,10 @@ public class DirectedGraph
     * @return javax.swing.JTree
     */
    public JTree treeView() {
+      this.topoSort();
       List nodes = new ArrayList( items.values() );
       Collections.sort( nodes );
-      Collections.reverse( nodes );
-      Iterator it = nodes.iterator();
-      DirectedGraphNode root = ( DirectedGraphNode ) it.next();
+      DirectedGraphNode root = ( DirectedGraphNode ) nodes.get( 0 );
       DefaultMutableTreeNode top = new DefaultMutableTreeNode( root );
       root.mark();
       addJTreeNode( top, root );

@@ -1,6 +1,5 @@
 package baseCode.dataStructure.graph;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -14,17 +13,42 @@ import java.util.Set;
  * @version $Id$
  */
 public class DirectedGraphNode
-    extends AbstractGraphNode {
+    extends AbstractGraphNode
+    implements Comparable {
 
    private Set parents;
    // immediate parents, references to other GraphNodes by keys.
    private Set children;
    // immediate children, references to other GraphNodes by keys.
 
+   private int topoSortOrder = 0;
+
+   /**
+    *
+    * @param key Object
+    * @param value Object
+    * @param graph Graph
+    */
    public DirectedGraphNode( Object key, Object value, Graph graph ) {
       super( key, value, graph );
       parents = new LinkedHashSet();
       children = new LinkedHashSet();
+   }
+
+   /**
+    *
+    * @param i int
+    */
+   public void setTopoSortOrder( int i ) {
+      topoSortOrder = i;
+   }
+
+   /**
+    *
+    * @return int
+    */
+   public int getTopoSortOrder() {
+      return topoSortOrder;
    }
 
    /**
@@ -88,20 +112,35 @@ public class DirectedGraphNode
    }
 
    /**
-    * Get the subtree of the graph starting from this node.
+    * Get the subgraph starting from this node, including this node.
     * @return Graph
-    * @todo the nodes in the new graph could have references to nodes that are not in the subtree; other methods must ignore.
     */
    public Graph getChildGraph() {
-      return new DirectedGraph( this.getAllChildNodes() );
+      Set k = this.getAllChildNodes();
+      k.add( this );
+
+      DirectedGraph returnVal = new DirectedGraph();
+      for ( Iterator it = k.iterator(); it.hasNext(); ) {
+         DirectedGraphNode m = ( DirectedGraphNode ) it.next();
+         returnVal.addNode( ( DirectedGraphNode ) m.clone() );
+      }
+      returnVal.prune(); // failing to do this will cause all kinds of problems
+      return returnVal;
    }
 
    /**
     *
     * @return int number of immediate children this node has.
     */
-   public int numDirectChildren() {
+   public int outDegree() {
       return children.size();
+   }
+
+   /**
+    * @return int number of immediate parents this node has.
+    */
+   public int inDegree() {
+      return parents.size();
    }
 
    /**
@@ -110,6 +149,14 @@ public class DirectedGraphNode
     */
    public int numChildren() {
       return getAllChildNodes( null ).size();
+   }
+
+   /**
+    *
+    * @return int how many parents this node has, determined recursively.
+    */
+   public int numParents() {
+      return getAllParentNodes( null ).size();
    }
 
    /**
@@ -153,16 +200,37 @@ public class DirectedGraphNode
       return this.getItem().toString();
    }
 
-   public int compareTo( Object o ) {
-      if ( ( ( DirectedGraphNode ) o ).numChildren() > this.numChildren() ) {
-         return -1;
-      } else if ( ( ( DirectedGraphNode ) o ).numChildren() < this.numChildren() ) {
-         return 1;
+   /**
+    * Remove connections that are to nodes not contained in this graph
+    */
+   public void prune() {
+      for ( Iterator it = this.getChildIterator(); it.hasNext(); ) {
+         Object j = it.next();
+         DirectedGraphNode k = ( DirectedGraphNode ) getGraph().get( j );
+         if ( k == null ) {
+            if ( log.isDebugEnabled() ) {
+               log.debug( "Pruned child " + j + " from " + this );
+            }
+            children.remove( j );
+         }
+
       }
-      return 0;
+
+      for ( Iterator it = this.getParentIterator(); it.hasNext(); ) {
+         Object j = it.next();
+         DirectedGraphNode k = ( DirectedGraphNode ) getGraph().get( j );
+         if ( k == null ) {
+            if ( log.isDebugEnabled() ) {
+               log.debug( "Pruned parent " + j + " from " + this );
+            }
+            parents.remove( j );
+         }
+
+      }
+
    }
 
-   /* private methods */
+   /*************** private methods ****************/
 
    private Set getAllChildNodes( Set list ) {
       if ( list == null ) {
@@ -196,6 +264,40 @@ public class DirectedGraphNode
 
    private Iterator getParentIterator() {
       return parents.iterator();
+   }
+
+   /**
+    * Uses the topological sort order.
+    * @param o Object
+    * @return int
+    */
+   public int compareTo( Object o ) {
+      DirectedGraphNode k = ( DirectedGraphNode ) o;
+      int ord = k.getTopoSortOrder();
+      if ( ord < this.topoSortOrder ) {
+         return 1;
+      } else if ( ord > this.topoSortOrder ) {
+         return -1;
+      }
+      return 0;
+   }
+
+   /**
+    * Makes a copy of this node. It does not make a deep copy of the contents. This should be used when making subgraphs.
+    * @return Object
+    */
+   public Object clone() {
+      DirectedGraphNode r = new DirectedGraphNode( key, item, graph );
+      for ( Iterator it = this.getParentIterator(); it.hasNext(); ) {
+         Object j = it.next();
+         r.addParent( j );
+      }
+
+      for ( Iterator it = this.getChildIterator(); it.hasNext(); ) {
+         Object j = it.next();
+         r.addChild( j );
+      }
+      return r;
    }
 
 }

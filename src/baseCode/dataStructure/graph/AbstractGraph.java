@@ -40,32 +40,10 @@ public abstract class AbstractGraph implements Graph {
     * @param node GraphNode
     */
    public void addNode(GraphNode node) {
+      node.setGraph(this);
       items.put(node.getKey(), node);
    }
 
-
-   /**
-    * Add a new node to the graph identifed by key, with contents item.
-    * @param key Object
-    * @param item Object
-    */
-   public void addNode(Object key, Object item) {
-       addNode(key, item, this);
-    }
-
-
-   /**
-    * Add a new node to the graph identifed by key, with contents item.
-    *
-    * @param key An object (typically a String or Integer, but can be any kind
-    *   of object)
-    * @param item An object that the node contains.
-    * @param graph Graph
-    */
-   protected abstract void addNode(
-      Object key,
-      Object item,
-      Graph graph);
 
    /**
     * Retrieve a node by key. To get the contents of a node use
@@ -78,6 +56,15 @@ public abstract class AbstractGraph implements Graph {
    public GraphNode get(Object key) {
       return (GraphNode)items.get(key);
    }
+
+   /**
+    *
+    * @return Map
+    */
+   public Map getItems() {
+      return items;
+   }
+
 
    /**
     * Retrieve the contents of a node by key.

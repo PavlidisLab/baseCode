@@ -16,4 +16,6 @@ public interface GraphNode {
    public void unMark();
 
    public boolean isVisited();
+
+    public void setGraph(Graph graph);
 }

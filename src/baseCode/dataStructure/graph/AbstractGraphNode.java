@@ -1,4 +1,6 @@
 package baseCode.dataStructure.graph;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  *
@@ -12,6 +14,7 @@ public abstract class AbstractGraphNode implements Comparable, GraphNode {
    protected Object item;
    protected Graph graph; // the graph this belongs to.
    protected boolean visited = false;
+   protected static Log log = LogFactory.getLog( GraphNode.class );
 
    /**
     * Get the actual contents of the node.
@@ -48,6 +51,13 @@ public abstract class AbstractGraphNode implements Comparable, GraphNode {
    public AbstractGraphNode(Object key) {
       this.key = key;
       this.item = null;
+   }
+   /**
+    * Set the graph this belongs to.
+    * @param graph Graph
+    */
+   public void setGraph(Graph graph) {
+      this.graph = graph;
    }
 
    /**
