@@ -55,7 +55,6 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
     * <li>Random effects, Z-transformed. Weights are computed using CH eqns 18-20, 18-8 with 18-3
     * <li>Random effects, untransformed. Weights are computed using CH eqns 18-10, 18-20, 18-24.
     * </ol>
-    * 
     * The default is untransformed, fixed effects.
     * 
     * @param correlations
@@ -97,6 +96,8 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
          this.q = super.qStatistic( effects, conditionalVariances, super
                .weightedMean( effects, weights ) );
 
+       
+
          if ( !fixed ) { // adjust the conditional variances and weights.
             this.bsv = metaREVariance( effects, conditionalVariances, weights );
 
@@ -115,6 +116,11 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
       this.v = super.metaVariance( conditionalVariances );
       this.z = Math.abs( e ) / Math.sqrt( v );
       this.p = Probability.errorFunctionComplemented( z );
+  
+//      if ( qTest( q, effects.size() ) < 0.05 ) {
+//         System.err.println("Q was significant: " + qTest( q, effects.size() ) );
+//      }
+      
       return p;
    }
 
