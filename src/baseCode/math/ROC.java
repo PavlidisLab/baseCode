@@ -1,4 +1,4 @@
-package baseCode.Math;
+package baseCode.math;
 
 import java.util.Map;
 import cern.jet.stat.Probability;

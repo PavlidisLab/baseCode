@@ -1,4 +1,4 @@
-package baseCode.Math;
+package baseCode.math;
 
 /*
  Copyright © 2004 Columbia University

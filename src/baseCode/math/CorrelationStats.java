@@ -1,4 +1,4 @@
-package baseCode.Math;
+package baseCode.math;
 
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;

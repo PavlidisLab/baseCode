@@ -1,4 +1,4 @@
-package baseCode.Math;
+package baseCode.math;
 
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.ObjectArrayList;

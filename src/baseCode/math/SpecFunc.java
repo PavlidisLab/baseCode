@@ -1,4 +1,4 @@
-package baseCode.Math;
+package baseCode.math;
 
 import cern.jet.math.Arithmetic;
 
