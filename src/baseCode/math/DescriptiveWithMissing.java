@@ -671,7 +671,7 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
     * @see sampleStandardize
     */
    public static void normalize( DoubleArrayList data ) {
-      return sampleStandardize( data );
+      sampleStandardize( data );
    }
    
    /**
