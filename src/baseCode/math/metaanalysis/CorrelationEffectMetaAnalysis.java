@@ -1,5 +1,6 @@
 package baseCode.math.metaanalysis;
 
+import baseCode.math.Constants;
 import baseCode.math.CorrelationStats;
 import cern.colt.list.DoubleArrayList;
 import cern.jet.stat.Descriptive;
@@ -65,16 +66,13 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
          // initial values.
          conditionalVariances = fisherTransformedSamplingVariances( sampleSizes );
          weights = metaFEWeights( conditionalVariances );
-         this.q = super.qStatistic( fzte, conditionalVariances, super
-               .weightedMean( fzte, weights ) );
+         this.q = super.qStatistic( fzte, conditionalVariances, super.weightedMean( fzte, weights ) );
 
          if ( !fixed ) { // adjust the conditional variances and weights.
             this.bsv = metaREVariance( fzte, conditionalVariances, weights );
 
             for ( int i = 0; i < conditionalVariances.size(); i++ ) {
-               conditionalVariances.setQuick( i, conditionalVariances
-                     .getQuick( i )
-                     + bsv );
+               conditionalVariances.setQuick( i, conditionalVariances.getQuick( i ) + bsv );
             }
             weights = metaFEWeights( conditionalVariances );
          }
@@ -84,16 +82,12 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
 
          conditionalVariances = samplingVariances( effects, sampleSizes );
          weights = metaFEWeights( conditionalVariances );
-         this.q = super.qStatistic( effects, conditionalVariances, super
-               .weightedMean( effects, weights ) );
+         this.q = super.qStatistic( effects, conditionalVariances, super.weightedMean( effects, weights ) );
 
          if ( !fixed ) { // adjust the conditional variances and weights.
             this.bsv = metaREVariance( effects, conditionalVariances, weights );
-
             for ( int i = 0; i < conditionalVariances.size(); i++ ) {
-               conditionalVariances.setQuick( i, conditionalVariances
-                     .getQuick( i )
-                     + bsv );
+               conditionalVariances.setQuick( i, conditionalVariances.getQuick( i ) + bsv );
             }
 
             weights = metaFEWeights( conditionalVariances );
@@ -101,10 +95,11 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
 
          this.e = super.weightedMean( effects, weights );
       }
-
       this.v = super.metaVariance( conditionalVariances );
       this.z = Math.abs( e ) / Math.sqrt( v );
       this.p = Probability.errorFunctionComplemented( z );
+
+      // System.err.println(effects);
 
       //      if ( qTest( q, effects.size() ) < 0.05 ) {
       //         System.err.println("Q was significant: " + qTest( q, effects.size() ) );
@@ -115,10 +110,16 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
 
    /**
     * Equation 18-10 from CH. For untransformed correlations.
+    * <p>
     * 
     * <pre>
     * v_i = ( 1 - r_i &circ; 2 ) &circ; 2 / ( n_i - 1 )
     * </pre>
+    * 
+    * <p>
+    * I added a regularization to this, so that we don't get ridiculous variances when correlations are close to 1 (this
+    * happens). If the correlation is very close to 1 (or -1), we fudge it to be a value less close to 1 (e.g., 0.999)
+    * </p>
     * 
     * @param r
     * @param n
@@ -126,18 +127,23 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
     */
    protected double samplingVariance( double r, double numsamples ) {
 
-      if ( numsamples <= 0 )
-            throw new IllegalArgumentException( "N must be greater than 0" );
+      if ( numsamples <= 0 ) throw new IllegalArgumentException( "N must be greater than 0" );
 
       if ( !CorrelationStats.isValidPearsonCorrelation( r ) )
-            throw new IllegalArgumentException( "r=" + r
-                  + " is not a valid Pearson correlation" );
+            throw new IllegalArgumentException( "r=" + r + " is not a valid Pearson correlation" );
+
+      double FUDGE = 0.001;
+      if ( Math.abs( r ) - 1.0 < FUDGE ) {
+         r = Math.abs( r ) - FUDGE; // don't care about sign. any more.
+      }
 
       if ( numsamples < 2 ) {
          return Double.NaN;
       }
       double k = 1.0 - r * r;
-      return k * k / ( numsamples - 1 );
+      double var = k * k / ( numsamples - 1 );
+
+      return var;
    }
 
    /**
@@ -145,13 +151,12 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
     * 
     * @param effectSizes
     * @param sampleSizes
+    * @see samplingVariance
     * @return
     */
-   protected DoubleArrayList samplingVariances( DoubleArrayList effectSizes,
-         DoubleArrayList sampleSizes ) {
+   protected DoubleArrayList samplingVariances( DoubleArrayList effectSizes, DoubleArrayList sampleSizes ) {
 
-      if ( effectSizes.size() != sampleSizes.size() )
-            throw new IllegalArgumentException( "Unequal sample sizes." );
+      if ( effectSizes.size() != sampleSizes.size() ) throw new IllegalArgumentException( "Unequal sample sizes." );
 
       DoubleArrayList answer = new DoubleArrayList( sampleSizes.size() );
       for ( int i = 0; i < sampleSizes.size(); i++ ) {
@@ -179,8 +184,7 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
     */
    protected double fisherTransformedSamplingVariance( double sampleSize ) {
 
-      if ( sampleSize <= 3.0 )
-            throw new IllegalStateException( "N is too small" );
+      if ( sampleSize <= 3.0 ) throw new IllegalStateException( "N is too small" );
 
       return 1.0 / ( sampleSize - 3.0 );
    }
@@ -191,13 +195,11 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
     * @param sampleSizes
     * @return
     */
-   protected DoubleArrayList fisherTransformedSamplingVariances(
-         DoubleArrayList sampleSizes ) {
+   protected DoubleArrayList fisherTransformedSamplingVariances( DoubleArrayList sampleSizes ) {
 
       DoubleArrayList answer = new DoubleArrayList( sampleSizes.size() );
       for ( int i = 0; i < sampleSizes.size(); i++ ) {
-         answer.add( fisherTransformedSamplingVariance( sampleSizes
-               .getQuick( i ) ) );
+         answer.add( fisherTransformedSamplingVariance( sampleSizes.getQuick( i ) ) );
       }
       return answer;
    }

@@ -1,5 +1,6 @@
 package baseCode.math.metaanalysis;
 
+import baseCode.math.Constants;
 import cern.colt.list.DoubleArrayList;
 import cern.jet.stat.Descriptive;
 import cern.jet.stat.Probability;
@@ -62,16 +63,13 @@ public abstract class MetaAnalysis {
     * @param globalMean double
     * @return double
     */
-   protected double qStatistic( DoubleArrayList effectSizes,
-         DoubleArrayList variances, double globalMean ) {
+   protected double qStatistic( DoubleArrayList effectSizes, DoubleArrayList variances, double globalMean ) {
 
-      if ( !( effectSizes.size() == variances.size() ) )
-            throw new IllegalArgumentException( "Unequal sizes" );
+      if ( !( effectSizes.size() == variances.size() ) ) throw new IllegalArgumentException( "Unequal sizes" );
 
       double r = 0.0;
       for ( int i = 0, n = effectSizes.size(); i < n; i++ ) {
-         r += Math.pow( effectSizes.getQuick( i ) - globalMean, 2.0 )
-               / variances.getQuick( i );
+         r += Math.pow( effectSizes.getQuick( i ) - globalMean, 2.0 ) / variances.getQuick( i );
       }
       return r;
    }
@@ -98,17 +96,19 @@ public abstract class MetaAnalysis {
     * @param sampleSizes
     * @return
     */
-   protected double weightedMean( DoubleArrayList effectSizes,
-         DoubleArrayList weights ) {
+   protected double weightedMean( DoubleArrayList effectSizes, DoubleArrayList weights ) {
 
-      if ( !( effectSizes.size() == weights.size() ) )
-            throw new IllegalArgumentException( "Unequal sizes" );
+      if ( !( effectSizes.size() == weights.size() ) ) throw new IllegalArgumentException( "Unequal sizes" );
 
       double wm = 0.0;
       for ( int i = 0; i < effectSizes.size(); i++ ) {
          wm += weights.getQuick( i ) * effectSizes.getQuick( i );
       }
-      return wm /= Descriptive.sum( weights );
+
+      double s = Descriptive.sum( weights );
+
+      if ( s == 0.0 ) return 0.0;
+      return wm /= s;
    }
 
    /**
@@ -120,19 +120,16 @@ public abstract class MetaAnalysis {
     * @param qualityIndices
     * @return
     */
-   protected double weightedMean( DoubleArrayList effectSizes,
-         DoubleArrayList weights, DoubleArrayList qualityIndices ) {
+   protected double weightedMean( DoubleArrayList effectSizes, DoubleArrayList weights, DoubleArrayList qualityIndices ) {
 
-      if ( !( effectSizes.size() == weights.size() && weights.size() == qualityIndices
-            .size() ) ) throw new IllegalArgumentException( "Unequal sizes" );
+      if ( !( effectSizes.size() == weights.size() && weights.size() == qualityIndices.size() ) )
+            throw new IllegalArgumentException( "Unequal sizes" );
 
       double wm = 0.0;
       for ( int i = 0; i < effectSizes.size(); i++ ) {
-         wm += weights.getQuick( i ) * effectSizes.getQuick( i )
-               * qualityIndices.getQuick( i );
+         wm += weights.getQuick( i ) * effectSizes.getQuick( i ) * qualityIndices.getQuick( i );
       }
-      return wm /= ( Descriptive.sum( weights ) * Descriptive
-            .sum( qualityIndices ) );
+      return wm /= ( Descriptive.sum( weights ) * Descriptive.sum( qualityIndices ) );
    }
 
    /**
@@ -145,7 +142,9 @@ public abstract class MetaAnalysis {
     *    
     *     
     *      
-    *         v_dot = 1/sum_i=1&circ;k ( 1/v_i)
+    *       
+    *          v_dot = 1/sum_i=1&circ;k ( 1/v_i)
+    *        
     *       
     *      
     *     
@@ -179,7 +178,9 @@ public abstract class MetaAnalysis {
     *    
     *     
     *      
-    *         v_dot = [ sum_i=1&circ;k ( q_i &circ; 2 * w_i) ]/[ sum_i=1&circ;k  q_i * w_i ]&circ;2
+    *       
+    *          v_dot = [ sum_i=1&circ;k ( q_i &circ; 2 * w_i) ]/[ sum_i=1&circ;k  q_i * w_i ]&circ;2
+    *        
     *       
     *      
     *     
@@ -191,15 +192,12 @@ public abstract class MetaAnalysis {
     * @param variances
     * @return
     */
-   protected double metaVariance( DoubleArrayList weights,
-         DoubleArrayList qualityIndices ) {
+   protected double metaVariance( DoubleArrayList weights, DoubleArrayList qualityIndices ) {
       double num = 0.0;
       double denom = 0.0;
       for ( int i = 0; i < weights.size(); i++ ) {
-         num += Math.pow( weights.getQuick( i ), 2 )
-               * qualityIndices.getQuick( i );
-         denom += Math.pow(
-               weights.getQuick( i ) * qualityIndices.getQuick( i ), 2 );
+         num += Math.pow( weights.getQuick( i ), 2 ) * qualityIndices.getQuick( i );
+         denom += Math.pow( weights.getQuick( i ) * qualityIndices.getQuick( i ), 2 );
       }
       if ( denom == 0.0 ) {
          throw new IllegalStateException( "Attempt to divide by zero." );
@@ -225,8 +223,7 @@ public abstract class MetaAnalysis {
     * @return
     */
    protected double metaRESampleVariance( DoubleArrayList effectSizes ) {
-      return Descriptive.sampleVariance( effectSizes, Descriptive
-            .mean( effectSizes ) );
+      return Descriptive.sampleVariance( effectSizes, Descriptive.mean( effectSizes ) );
    }
 
    /**
@@ -248,7 +245,9 @@ public abstract class MetaAnalysis {
     * <pre>
     * 
     *  
-    *   s&circ;2 = [Q - ( k - 1 ) ] / c
+    *   
+    *    s&circ;2 = [Q - ( k - 1 ) ] / c
+    *    
     *   
     *  
     * </pre>
@@ -258,7 +257,9 @@ public abstract class MetaAnalysis {
     * <pre>
     * 
     *  
-    *   c = Max(sum_i=1&circ;k w_i - [ sum_i&circ;k w_i&circ;2 / sum_i&circ;k w_i ], 0)
+    *   
+    *    c = Max(sum_i=1&circ;k w_i - [ sum_i&circ;k w_i&circ;2 / sum_i&circ;k w_i ], 0)
+    *    
     *   
     *  
     * </pre>
@@ -268,18 +269,15 @@ public abstract class MetaAnalysis {
     * @param weights
     * @return
     */
-   protected double metaREVariance( DoubleArrayList effectSizes,
-         DoubleArrayList variances, DoubleArrayList weights ) {
+   protected double metaREVariance( DoubleArrayList effectSizes, DoubleArrayList variances, DoubleArrayList weights ) {
 
-      if ( !( effectSizes.size() == weights.size() && weights.size() == variances
-            .size() ) ) throw new IllegalArgumentException( "Unequal sizes" );
+      if ( !( effectSizes.size() == weights.size() && weights.size() == variances.size() ) )
+            throw new IllegalArgumentException( "Unequal sizes" );
 
       // the weighted unconditional variance.
-      double q = qStatistic( effectSizes, variances, weightedMean( effectSizes,
-            weights ) );
+      double q = qStatistic( effectSizes, variances, weightedMean( effectSizes, weights ) );
 
-      double c = Descriptive.sum( weights )
-            - Descriptive.sumOfSquares( weights ) / Descriptive.sum( weights );
+      double c = Descriptive.sum( weights ) - Descriptive.sumOfSquares( weights ) / Descriptive.sum( weights );
       return Math.max( ( q - ( effectSizes.size() - 1 ) ) / c, 0.0 );
    }
 
@@ -289,8 +287,10 @@ public abstract class MetaAnalysis {
     * 
     * <pre>
     * 
+    *  
+    *     
+    *    v_i&circ;* = sigma-hat_theta&circ;2 + v_i.
     *    
-    *   v_i&circ;* = sigma-hat_theta&circ;2 + v_i.
     *   
     *  
     * </pre>
@@ -299,8 +299,7 @@ public abstract class MetaAnalysis {
     * @param sampleVariance estimated...somehow.
     * @return
     */
-   protected DoubleArrayList metaREWeights( DoubleArrayList variances,
-         double sampleVariance ) {
+   protected DoubleArrayList metaREWeights( DoubleArrayList variances, double sampleVariance ) {
       DoubleArrayList w = new DoubleArrayList( variances.size() );
 
       for ( int i = 0; i < variances.size(); i++ ) {
@@ -315,19 +314,17 @@ public abstract class MetaAnalysis {
 
    /**
     * Weights under a fixed effects model. Simply w_i = 1/v_i. CH eqn 18-2.
-    * 
-    * @param variances
+    * @param variances 
     * @return
     */
-protected DoubleArrayList metaFEWeights( DoubleArrayList variances ) {
+   protected DoubleArrayList metaFEWeights( DoubleArrayList variances ) {
       DoubleArrayList w = new DoubleArrayList( variances.size() );
 
       for ( int i = 0; i < variances.size(); i++ ) {
          double v = variances.getQuick( i );
-         if ( v <= 0 ) {
-            v = Double.MIN_VALUE;
-            
-         //   throw new IllegalStateException( "Negative or zero variance" );
+         if ( v <=  Constants.SMALL) {
+            v = Constants.SMALL;
+            System.err.println( "Tiny variance    " + v );
          }
          w.add( 1 / v );
       }

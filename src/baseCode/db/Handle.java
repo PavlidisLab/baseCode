@@ -25,7 +25,6 @@ import java.util.Vector;
  * 
  * @author Paul Pavlidis
  * @version $Id$
- * 
  */
 
 public class Handle {
@@ -40,12 +39,10 @@ public class Handle {
     * @param password String
     * @throws SQLException
     */
-   public Handle( String host, String database, String user, String password )
-         throws SQLException {
+   public Handle( String host, String database, String user, String password ) throws SQLException {
       try {
          Class.forName( "com.mysql.jdbc.Driver" ).newInstance();
-         String url = "jdbc:mysql://" + host + "/" + database
-               + "?relaxAutoCommit=true";
+         String url = "jdbc:mysql://" + host + "/" + database + "?relaxAutoCommit=true";
          con = DriverManager.getConnection( url, user, password );
          //       stat = newStatement();
       } catch ( ClassNotFoundException e ) {
@@ -62,6 +59,10 @@ public class Handle {
     */
    public Connection getCon() {
       return con;
+   }
+
+   public String quote( String k ) throws SQLException {
+      return con.nativeSQL( k );
    }
 
    /**
@@ -120,8 +121,7 @@ public class Handle {
     * @return java.sql.PreparedStatement
     * @throws SQLException
     */
-   public PreparedStatement prepareStatement( String query )
-         throws SQLException {
+   public PreparedStatement prepareStatement( String query ) throws SQLException {
       return con.prepareStatement( query );
    }
 
@@ -239,7 +239,5 @@ public class Handle {
       return null;
 
    }
-
-   
 
 }
