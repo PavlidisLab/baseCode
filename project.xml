@@ -1,0 +1,52 @@
+<?xml version="1.0" ?>
+<project>
+    <pomVersion>3</pomVersion>
+    <name>basic code utilities</name>
+
+<groupId>baseCode</groupId>
+<artifactId>baseCode</artifactId>
+<currentVersion>0.1</currentVersion>
+
+    <versions>
+      <version>
+        <id>0.1</id>
+        <name>0.1</name>
+      </version>
+    </versions>
+
+<repository>
+    <connection>
+      scm:cvs:ext:${maven.username}@adgate.cu-genome.org:/fsnode/projects/cvs/pavlab/:baseCode
+    </connection>
+</repository>
+
+
+ <developers>
+  	<developer>
+        <name>Paul Pavlidis</name>
+        <id>pavlidis</id>
+        <email>pavlidis@dbmi.columbia.edu</email>
+        <organization>Columbia University</organization>
+      </developer>
+    </developers>
+
+
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+  </build>
+
+    <dependencies>
+        <dependency>
+           <id>colt</id>
+     <artifactId>colt</artifactId>
+     <jar>colt.jar</jar>
+        </dependency>
+
+
+        <dependency>
+           <id>mysql</id>
+     <artifactId>mysql-connector-java</artifactId>
+<version>3.0.8-stable-bin</version>
+        </dependency>
+</dependencies>
+</project>
