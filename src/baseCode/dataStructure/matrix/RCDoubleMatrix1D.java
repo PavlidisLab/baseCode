@@ -180,7 +180,6 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
          if ( index >= otherSize ) continue; // in case our arrays are ragged.
          returnVal += map.get( index ) * y.getQuick( index );
       }
-
       return returnVal;
    }
 

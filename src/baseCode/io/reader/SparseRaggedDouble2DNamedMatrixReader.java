@@ -206,7 +206,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
 //      IntArrayList indexes = new IntArrayList( amount );
 //      DoubleArrayList values = new DoubleArrayList( amount );
 
-      OpenIntDoubleHashMap map = new OpenIntDoubleHashMap(amount);
+      OpenIntDoubleHashMap map = new OpenIntDoubleHashMap(amount,0.4,0.7);
       
       int maxind = 0;
       while ( toki.hasMoreTokens() ) {
