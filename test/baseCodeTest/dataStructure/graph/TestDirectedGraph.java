@@ -6,21 +6,41 @@ package baseCodeTest.dataStructure.graph;
 
 import baseCode.dataStructure.graph.DirectedGraph;
 import junit.framework.TestCase;
+import baseCode.dataStructure.graph.DirectedGraphNode;
 
 /**
- * 
+ *
  * <p>Copyright (c) Columbia University
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class TestDirectedGraph extends TestCase {
-
+public class TestDirectedGraph
+    extends TestCase {
+   DirectedGraph testGraph;
    /**
     * Constructor for TestDirectedGraph.
     * @param arg0
     */
-   public TestDirectedGraph(String arg0) {
-      super(arg0);
+   public TestDirectedGraph( String arg0 ) {
+      super( arg0 );
+      testGraph = new DirectedGraph();
+
+      testGraph.addNode( "b", "bee." );
+      testGraph.addNode( "a", "aaa." );
+      testGraph.addNode( "c", "cee." );
+      testGraph.addNode( "d", "dee." );
+      testGraph.addNode( "f", "eff." );
+      testGraph.addNode( "e", "eee." );
+
+      testGraph.addParentTo( "b", "a" );
+      testGraph.addParentTo( "c", "a" );
+      testGraph.addChildTo( "a", "c" ); // redundant
+      testGraph.addChildTo( "a", "b" ); // redundant
+
+      testGraph.addChildTo( "c", "d" ); // top down
+      testGraph.addChildTo( "c", "e" ); // top down
+      testGraph.addParentTo( "f", "c" ); // bottom up
+
    }
 
    /*
@@ -37,25 +57,13 @@ public class TestDirectedGraph extends TestCase {
       super.tearDown();
    }
 
-   public void testDirectedGraph() {
-      DirectedGraph f = new DirectedGraph();
-      f.addNode("b", "bee.");
-      f.addNode("a", "aaa.");
-      f.addNode("c", "cee.");
-      f.addNode("d", "dee.");
-      f.addNode("f", "eff.");
-      f.addNode("e", "eee.");
-      f.addParentTo("b", "a");
-      f.addParentTo("c", "a");
-      f.addChildTo("a", "c"); // redundant
-      f.addChildTo("a", "b"); // redundant
+   public void testGetChildren() {
+      DirectedGraphNode n = (DirectedGraphNode)testGraph.get("c");
 
-      f.addChildTo("c", "d"); // top down
-      f.addChildTo("c", "e"); // top down
-      f.addParentTo("f", "c"); // bottom up
-
-      System.err.println(f);
-
+      String actualReturn = n.getChildGraph().toString();
+      System.err.print( actualReturn );
+      String expectedReturn = "cee.\n\tdee.\n\teee.\n\teff.";
+      assertEquals( "return", expectedReturn, actualReturn );
    }
 
 }

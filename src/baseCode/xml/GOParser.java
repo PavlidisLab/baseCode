@@ -10,8 +10,8 @@ import baseCode.dataStructure.OntologyEntry;
 import baseCode.dataStructure.graph.DirectedGraph;
 
 /**
- * 
- * 
+ *
+ *
  * <p>Copyright (c) Columbia University
  * @author Paul Pavlidis
  * @version $Id$
@@ -30,17 +30,15 @@ public class GOParser {
          ParserConfigurationException,
          SAXException,
          ParserConfigurationException {
-      // FileReader r = new FileReader( URLDecoder.decode(GOParser.class.getResource( "/data/go-termdb-sample.xml" ).getFile(), "ISO-8859-1"));
-
-      
-
       System.setProperty(
          "org.xml.sax.driver",
          "org.apache.xerces.parsers.SAXParser");
+
       XMLReader xr = XMLReaderFactory.createXMLReader();
       GOHandler handler = new GOHandler();
       xr.setContentHandler(handler);
       xr.setErrorHandler(handler);
+      xr.setDTDHandler(handler);
       xr.parse(new InputSource(i));
 
       m = handler.getResults();
@@ -79,9 +77,7 @@ class GOHandler extends DefaultHandler {
       String qName,
       Attributes atts) {
 
-      //   System.err.println( "Element: " + name + " " + qName );
-
-      if (name.equals("term")) {
+    if (name.equals("term")) {
          inTerm = true;
       } else if (name.equals("accession")) {
          accBuf = new StringBuffer();
@@ -158,45 +154,7 @@ class GOHandler extends DefaultHandler {
          } else if (inName) {
             nameBuf.append(ch, start, length);
          }
-         if (inSyn) {
-            //
-         }
-
-         if (inIsa) {
-            //
-         }
-         if (inPartOf) {
-            //
-         }
-
       }
-   }
-
-   public void setDocumentLocator(Locator locator) {
-   }
-
-   public void startDocument() throws SAXException {
-   }
-
-   public void endDocument() throws SAXException {
-   }
-
-   public void startPrefixMapping(String prefix, String uri)
-      throws SAXException {
-   }
-
-   public void endPrefixMapping(String prefix) throws SAXException {
-   }
-
-   public void skippedEntity(String name) throws SAXException {
-   }
-
-   public void ignorableWhitespace(char[] text, int start, int length)
-      throws SAXException {
-   }
-
-   public void processingInstruction(String target, String data)
-      throws SAXException {
    }
 
 }

@@ -21,12 +21,13 @@ import baseCode.gui.TreePanel;
 import baseCode.xml.GOParser;
 
 /**
- * 
+ * Not a 'real' test.
  * <p>Copyright (c) Columbia University
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class TestTreePanel extends JFCTestCase {
+public class TestTreePanel
+    extends JFCTestCase {
    private GOParser gOParser = null;
    private TreePanel tree = null;
 
@@ -34,8 +35,8 @@ public class TestTreePanel extends JFCTestCase {
     * Constructor for TestTreePanel.
     * @param arg0
     */
-   public TestTreePanel(String arg0) {
-      super(arg0);
+   public TestTreePanel( String arg0 ) {
+      super( arg0 );
    }
 
    /*
@@ -44,26 +45,26 @@ public class TestTreePanel extends JFCTestCase {
    protected void setUp() throws Exception {
       super.setUp();
 
-      setHelper(new JFCTestHelper()); // Uses the AWT Event Queue.
+      setHelper( new JFCTestHelper() ); // Uses the AWT Event Queue.
 
       InputStream i =
-         GOParser.class.getResourceAsStream("/data/go-termdb-sample.xml");
-
-      gOParser = new GOParser(i);
+          //     GOParser.class.getResourceAsStream("/data/go-termdb-sample.xml");
+          GOParser.class.getResourceAsStream( "/data/go_200406-termdb.xml" );
+      gOParser = new GOParser( i );
       final JTree t = gOParser.getGraph().treeView();
 
       //Create and set up the window.
-      JFrame frame = new JFrame("GOTreeDemo");
-      frame.setSize(200, 200);
-      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      JFrame frame = new JFrame( "GOTreeDemo" );
+      frame.setSize( 200, 200 );
+      frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 
       //Create and set up the content pane.
-      TreePanel newContentPane = new TreePanel(t);
-      newContentPane.setOpaque(true); //content panes must be opaque
-      frame.setContentPane(newContentPane);
+      TreePanel newContentPane = new TreePanel( t );
+      newContentPane.setOpaque( true ); //content panes must be opaque
+      frame.setContentPane( newContentPane );
       //Display the window.
       frame.pack();
-      frame.setVisible(true);
+      frame.setVisible( true );
 
    }
 
@@ -73,14 +74,13 @@ public class TestTreePanel extends JFCTestCase {
    protected void tearDown() throws Exception {
       gOParser = null;
       tree = null;
-  //    TestHelper.cleanUp(this); // using this seems to cause problems.
+      //    TestHelper.cleanUp(this); // using this seems to cause problems.
       super.tearDown();
    }
 
-   public void testTreeGUI()
-      throws IOException, SAXException, ParserConfigurationException {
-
-      assertEquals("return", true, true);
+   public void testTreeGUI() throws IOException, SAXException, ParserConfigurationException {
+      sleep( 1000000 );
+      assertEquals( "return", true, true );
    }
 
 }

@@ -1,16 +1,16 @@
 package baseCode.dataStructure.graph;
 
 /**
- * 
- * 
+ *
+ *
  * <p>Copyright (c) Columbia University
  * @author Paul Pavlidis
  * @version $Id$
  */
-public abstract class AbstractGraphNode implements Comparable {
+public abstract class AbstractGraphNode implements Comparable, GraphNode {
    protected Object key;
    protected Object item;
-   protected AbstractGraph graph; // the graph this belongs to.
+   protected Graph graph; // the graph this belongs to.
    protected boolean visited = false;
 
    /**
@@ -22,12 +22,21 @@ public abstract class AbstractGraphNode implements Comparable {
    }
 
    /**
+    * Get the key for the node.
+    * @return Object
+    */
+   public Object getKey() {
+      return key;
+   }
+
+
+   /**
     * Create a new node with key and value given. The key is stored by the graph
     * and is used to retrieve nodes. Keys and nodes can be any kind of object.
     * @param key
     * @param value
     */
-   public AbstractGraphNode(Object key, Object value, AbstractGraph graph) {
+   public AbstractGraphNode(Object key, Object value, Graph graph) {
       this.setValue(key, value);
       this.graph = graph;
    }
@@ -66,14 +75,14 @@ public abstract class AbstractGraphNode implements Comparable {
     * Return the graph that contains this node instance.
     * @return
     */
-   protected AbstractGraph getGraph() {
+   public Graph getGraph() {
       return graph;
    }
 
    /**
     * Mark this node as visited.
     */
-   protected void mark() {
+   public void mark() {
       visited = true;
    }
 
@@ -81,7 +90,7 @@ public abstract class AbstractGraphNode implements Comparable {
     * Unmark this node so it is 'unvisited'.
     *
     */
-   protected void unMark() {
+   public void unMark() {
       visited = false;
    }
 
@@ -89,7 +98,7 @@ public abstract class AbstractGraphNode implements Comparable {
     * Return true if the node has been visited.
     * @return
     */
-   protected boolean isVisited() {
+   public boolean isVisited() {
       return visited;
    }
 
