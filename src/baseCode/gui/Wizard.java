@@ -36,12 +36,12 @@ import baseCode.util.StatusViewer;
  */
 
 public abstract class Wizard extends JDialog {
-   JPanel mainPanel;
-   FlowLayout flowlayout1 = new FlowLayout();
-   JPanel BottomPanel = new JPanel();
-   JPanel BottomPanelWrap = new JPanel();
-   JLabel jLabelStatus = new JLabel();
-   JPanel jPanelStatus = new JPanel();
+   protected JPanel mainPanel;
+   protected FlowLayout flowlayout1 = new FlowLayout();
+   protected JPanel BottomPanel = new JPanel();
+   protected JPanel BottomPanelWrap = new JPanel();
+   protected JLabel jLabelStatus = new JLabel();
+   protected JPanel jPanelStatus = new JPanel();
    
    protected JButton nextButton = new JButton();
    protected JButton backButton = new JButton();
