@@ -37,14 +37,14 @@
 		</developer>
 		<developer>
 			<name>William Braynen</name>
-			<id>braynen</id>
+			<id>wbraynen</id>
 			<email>wbraynen@ic.sunysb.edu</email>
 			<organization>Columbia University</organization>
 		</developer>
 		<developer>
 			<name>Homin Lee</name>
-			<id>hlk7</id>
-			<email>hlk7@cs.columbia.edu</email>
+			<id>hkl7</id>
+			<email>hkl7@cs.columbia.edu</email>
 			<organization>Columbia University</organization>
 		</developer>
 	</developers>
@@ -88,6 +88,7 @@
 <directory>${basedir}/test</directory>
 <includes>
 <include>**/data/*.txt</include>
+<include>**/data/*.xml</include>
 </includes>
 </resource>
 </resources>
