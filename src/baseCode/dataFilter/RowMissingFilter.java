@@ -2,7 +2,7 @@ package baseCode.dataFilter;
 
 import java.util.Vector;
 
-import baseCode.dataStructure.NamedMatrix;
+import baseCode.dataStructure.matrix.NamedMatrix;
 import cern.colt.list.IntArrayList;
 
 /**

@@ -1,7 +1,7 @@
 package baseCodeTest.dataFilter;
 
 import baseCode.dataFilter.RowLevelFilter;
-import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 
 /**
  * 

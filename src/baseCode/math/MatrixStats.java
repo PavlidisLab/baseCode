@@ -1,8 +1,8 @@
 package baseCode.math;
 
 import cern.colt.list.DoubleArrayList;
-import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
-import baseCode.dataStructure.SparseDoubleMatrix2DNamed;
+import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.matrix.SparseDoubleMatrix2DNamed;
 
 /**
  * 

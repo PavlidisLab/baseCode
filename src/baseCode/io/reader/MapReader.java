@@ -1,4 +1,4 @@
-package baseCode.dataStructure.reader;
+package baseCode.io.reader;
 
 import java.io.BufferedReader;
 import java.io.File;

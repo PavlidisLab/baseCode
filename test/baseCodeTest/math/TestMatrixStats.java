@@ -2,8 +2,8 @@ package baseCodeTest.math;
 
 import java.io.IOException;
 
-import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
-import baseCode.dataStructure.reader.DoubleMatrixReader;
+import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.io.reader.DoubleMatrixReader;
 import baseCode.math.MatrixStats;
 import baseCode.util.RegressionTesting;
 import baseCodeTest.dataFilter.AbstractTestFilter;

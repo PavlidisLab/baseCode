@@ -2,7 +2,7 @@ package baseCode.dataFilter;
 
 import java.util.Vector;
 
-import baseCode.dataStructure.NamedMatrix;
+import baseCode.dataStructure.matrix.NamedMatrix;
 
 /**
  * Remove probes that have names meeting certain rules indicating they may have

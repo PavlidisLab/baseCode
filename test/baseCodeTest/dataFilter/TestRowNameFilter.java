@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import baseCode.dataFilter.RowNameFilter;
-import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
-import baseCode.dataStructure.StringMatrix2DNamed;
+import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.matrix.StringMatrix2DNamed;
 
 /**
  * @author Pavlidis

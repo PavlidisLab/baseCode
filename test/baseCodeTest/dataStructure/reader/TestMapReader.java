@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import junit.framework.TestCase;
-import baseCode.dataStructure.reader.MapReader;
+import baseCode.io.reader.MapReader;
 
 /**
  * <p>

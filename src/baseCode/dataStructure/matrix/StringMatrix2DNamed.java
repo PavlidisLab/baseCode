@@ -1,4 +1,4 @@
-package baseCode.dataStructure;
+package baseCode.dataStructure.matrix;
 
 import cern.colt.matrix.ObjectMatrix1D;
 import cern.colt.matrix.impl.DenseObjectMatrix2D;

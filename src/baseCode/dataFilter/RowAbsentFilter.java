@@ -2,8 +2,8 @@ package baseCode.dataFilter;
 
 import java.util.Vector;
 
-import baseCode.dataStructure.NamedMatrix;
-import baseCode.dataStructure.StringMatrix2DNamed;
+import baseCode.dataStructure.matrix.NamedMatrix;
+import baseCode.dataStructure.matrix.StringMatrix2DNamed;
 
 /**
  * Filter a data matrix according to flags given in a separate matrix.

@@ -1,4 +1,4 @@
-package baseCode.dataStructure.reader;
+package baseCode.io.reader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import baseCode.dataStructure.NamedMatrix;
+import baseCode.dataStructure.matrix.NamedMatrix;
 
 /**
  * Abstract class representing an object that can read in a {@link NamedMatrix}

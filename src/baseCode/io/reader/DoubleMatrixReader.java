@@ -1,4 +1,4 @@
-package baseCode.dataStructure.reader;
+package baseCode.io.reader;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,11 +14,11 @@ import java.util.Iterator;
 
 import cern.colt.list.DoubleArrayList;
 
-import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
-import baseCode.dataStructure.NamedMatrix;
+import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.matrix.NamedMatrix;
 
 /**
- * Reader for {@link baseCode.dataStructure.DenseDoubleMatrix2DNamed}.
+ * Reader for {@link baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed}.
  * <p>
  * Copyright (c) 2004
  * </p>

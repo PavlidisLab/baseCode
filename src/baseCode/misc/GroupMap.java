@@ -11,8 +11,8 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
-import baseCode.dataStructure.reader.MapReader;
+import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.io.reader.MapReader;
 
 /**
  * A data structure representing a map between items and a single set of keys.
@@ -66,7 +66,7 @@ public class GroupMap {
 
    /**
     * The input file format is that used by
-    * {@link baseCode.dataStructure.reader.MapReader}.
+    * {@link baseCode.io.reader.MapReader}.
     * 
     * @param filename Duplicate map file name to be read by a MapReader.
     * @param dataMatrix Data file this the map refers to.

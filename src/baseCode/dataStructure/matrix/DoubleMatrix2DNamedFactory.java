@@ -1,4 +1,5 @@
-package baseCode.dataStructure;
+package baseCode.dataStructure.matrix;
+
 
 /**
  * Use this factory to create matrices of type selected at runtime.

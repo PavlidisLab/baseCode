@@ -1,10 +1,10 @@
 package baseCodeTest.dataFilter;
 
 import junit.framework.TestCase;
-import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
-import baseCode.dataStructure.StringMatrix2DNamed;
-import baseCode.dataStructure.reader.DoubleMatrixReader;
-import baseCode.dataStructure.reader.StringMatrixReader;
+import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.matrix.StringMatrix2DNamed;
+import baseCode.io.reader.DoubleMatrixReader;
+import baseCode.io.reader.StringMatrixReader;
 
 /**
  * Fixture for testing filtering of matrices.

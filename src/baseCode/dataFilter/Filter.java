@@ -1,6 +1,6 @@
 package baseCode.dataFilter;
 
-import baseCode.dataStructure.NamedMatrix;
+import baseCode.dataStructure.matrix.NamedMatrix;
 
 /**
  * An interface representing the functionality of a class that can filter 2-d

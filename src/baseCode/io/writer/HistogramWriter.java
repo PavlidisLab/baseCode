@@ -1,4 +1,4 @@
-package baseCode.dataStructure.writer;
+package baseCode.io.writer;
 
 import hep.aida.IHistogram1D;
 

@@ -2,8 +2,8 @@ package baseCode.dataFilter;
 
 import java.util.Vector;
 
-import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
-import baseCode.dataStructure.NamedMatrix;
+import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.matrix.NamedMatrix;
 import baseCode.math.DescriptiveWithMissing;
 import baseCode.math.Stats;
 import cern.colt.list.DoubleArrayList;

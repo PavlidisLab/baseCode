@@ -1,8 +1,8 @@
 package baseCodeTest.dataFilter;
 
 import baseCode.dataFilter.RowMissingFilter;
-import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
-import baseCode.dataStructure.StringMatrix2DNamed;
+import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.matrix.StringMatrix2DNamed;
 
 /**
  * See the file test/data/matrix-testing.xls for the validation.

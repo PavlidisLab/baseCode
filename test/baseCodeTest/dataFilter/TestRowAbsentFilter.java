@@ -1,9 +1,9 @@
 package baseCodeTest.dataFilter;
 
 import baseCode.dataFilter.RowAbsentFilter;
-import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
-import baseCode.dataStructure.StringMatrix2DNamed;
-import baseCode.dataStructure.reader.StringMatrixReader;
+import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.matrix.StringMatrix2DNamed;
+import baseCode.io.reader.StringMatrixReader;
 
 /**
  * See the file test/data/matrix-testing.xls for the validation.

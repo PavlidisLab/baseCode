@@ -1,7 +1,7 @@
 package baseCode.dataFilter;
 
-import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
-import baseCode.dataStructure.NamedMatrix;
+import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.matrix.NamedMatrix;
 
 /**
  * Filter that remove individual values that are outside of a range. Removed

@@ -5,7 +5,7 @@ import java.lang.reflect.Constructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import baseCode.dataStructure.NamedMatrix;
+import baseCode.dataStructure.matrix.NamedMatrix;
 
 /**
  * Base implementation of the filter class. Subclasses must implement the

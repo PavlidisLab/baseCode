@@ -1,6 +1,7 @@
-package baseCode.dataStructure;
+package baseCode.dataStructure.matrix;
 
 import java.text.NumberFormat;
+
 
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;

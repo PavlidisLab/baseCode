@@ -1,4 +1,4 @@
-package baseCode.dataStructure;
+package baseCode.dataStructure.matrix;
 
 import java.util.Iterator;
 import java.util.Vector;

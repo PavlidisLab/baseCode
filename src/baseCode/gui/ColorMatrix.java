@@ -3,8 +3,8 @@ package baseCode.gui;
 import java.awt.Color;
 import java.io.IOException;
 
-import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
-import baseCode.dataStructure.reader.DoubleMatrixReader;
+import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.io.reader.DoubleMatrixReader;
 import baseCode.math.DescriptiveWithMissing;
 import baseCode.math.MatrixStats;
 import cern.colt.list.DoubleArrayList;

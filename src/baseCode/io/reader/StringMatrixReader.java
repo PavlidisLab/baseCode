@@ -1,4 +1,4 @@
-package baseCode.dataStructure.reader;
+package baseCode.io.reader;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,11 +9,11 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import baseCode.dataStructure.NamedMatrix;
-import baseCode.dataStructure.StringMatrix2DNamed;
+import baseCode.dataStructure.matrix.NamedMatrix;
+import baseCode.dataStructure.matrix.StringMatrix2DNamed;
 
 /**
- * Reader for {@link baseCode.dataStructure.StringMatrix2DNamed}
+ * Reader for {@link baseCode.dataStructure.matrix.StringMatrix2DNamed}
  * <p>
  * Copyright (c) 2004
  * </p>

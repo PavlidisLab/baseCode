@@ -7,7 +7,7 @@ package baseCode.dataFilter;
 import java.util.Set;
 import java.util.Vector;
 
-import baseCode.dataStructure.NamedMatrix;
+import baseCode.dataStructure.matrix.NamedMatrix;
 
 /**
  * Remove or retain rows that are on a list.
