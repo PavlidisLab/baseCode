@@ -29,13 +29,7 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
    private double n; // total sample size
    private double bsv; // between-studies variance component;
 
-   public void setFixed( boolean fixed ) {
-      this.fixed = fixed;
-   }
-
-   public void setTransform( boolean transform ) {
-      this.transform = transform;
-   }
+  
 
    public CorrelationEffectMetaAnalysis( boolean fixed, boolean transform ) {
       this.fixed = fixed;
@@ -71,7 +65,7 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
          DoubleArrayList fzte = CorrelationStats.fisherTransform( effects );
 
          // initial values.
-         conditionalVariances = fisherTransformedCorrelationSamplingVariances( sampleSizes );
+         conditionalVariances = fisherTransformedSamplingVariances( sampleSizes );
          weights = metaFEWeights( conditionalVariances );
          this.q = super.qStatistic( fzte, conditionalVariances, super
                .weightedMean( fzte, weights ) );
@@ -90,7 +84,7 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
          this.e = super.weightedMean( fzte, weights );
       } else {
 
-         conditionalVariances = correlationSamplingVariances( effects,
+         conditionalVariances = samplingVariances( effects,
                sampleSizes );
          weights = metaFEWeights( conditionalVariances );
          this.q = super.qStatistic( effects, conditionalVariances, super
@@ -135,7 +129,7 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
     * @param n
     * @return
     */
-   protected double correlationSamplingVariance( double r, double numsamples ) {
+   protected double samplingVariance( double r, double numsamples ) {
 
       if ( numsamples <= 0 )
             throw new IllegalArgumentException( "N must be greater than 0" );
@@ -158,7 +152,7 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
     * @param sampleSizes
     * @return
     */
-   protected DoubleArrayList correlationSamplingVariances(
+   protected DoubleArrayList samplingVariances(
          DoubleArrayList effectSizes, DoubleArrayList sampleSizes ) {
 
       if ( effectSizes.size() != sampleSizes.size() )
@@ -166,7 +160,7 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
 
       DoubleArrayList answer = new DoubleArrayList( sampleSizes.size() );
       for ( int i = 0; i < sampleSizes.size(); i++ ) {
-         answer.add( correlationSamplingVariance( effectSizes.getQuick( i ),
+         answer.add( samplingVariance( effectSizes.getQuick( i ),
                sampleSizes.getQuick( i ) ) );
       }
       return answer;
@@ -182,11 +176,11 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
     * @param n
     * @return
     */
-   protected double fisherTransformedCorrelationSamplingVariance( double n ) {
+   protected double fisherTransformedSamplingVariance( double sampleSize ) {
 
-      if ( n <= 3.0 ) throw new IllegalStateException( "N is too small" );
+      if ( sampleSize <= 3.0 ) throw new IllegalStateException( "N is too small" );
 
-      return 1.0 / ( n - 3.0 );
+      return 1.0 / ( sampleSize - 3.0 );
    }
 
    /**
@@ -195,15 +189,23 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
     * @param sampleSizes
     * @return
     */
-   protected DoubleArrayList fisherTransformedCorrelationSamplingVariances(
+   protected DoubleArrayList fisherTransformedSamplingVariances(
          DoubleArrayList sampleSizes ) {
 
       DoubleArrayList answer = new DoubleArrayList( sampleSizes.size() );
       for ( int i = 0; i < sampleSizes.size(); i++ ) {
-         answer.add( fisherTransformedCorrelationSamplingVariance( sampleSizes
+         answer.add( fisherTransformedSamplingVariance( sampleSizes
                .getQuick( i ) ) );
       }
       return answer;
+   }
+   
+   public void setFixed( boolean fixed ) {
+      this.fixed = fixed;
+   }
+
+   public void setTransform( boolean transform ) {
+      this.transform = transform;
    }
 
    public double getP() {
