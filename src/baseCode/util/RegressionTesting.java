@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
+import java.util.Collection;
+import java.util.Vector;
 
 import baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix;
 import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
@@ -46,14 +48,13 @@ public class RegressionTesting {
       resultBuf.close();
    }
 
-   
    /**
-    * 
     * @param istream
     * @return
     * @throws IOException
     */
-   public static String readTestResult(InputStream istream ) throws IOException {
+   public static String readTestResult( InputStream istream )
+         throws IOException {
       if ( istream == null ) {
          throw new IllegalStateException( "Null stream" );
       }
@@ -67,8 +68,7 @@ public class RegressionTesting {
       buf.close();
       return testOutput.toString();
    }
-   
-   
+
    /**
     * @param resourceName
     * @return the contents of the resource as a String
@@ -78,10 +78,10 @@ public class RegressionTesting {
          throws IOException {
       InputStream istream = RegressionTesting.class
             .getResourceAsStream( resourceName );
-      String result = readTestResult(istream);
+      String result = readTestResult( istream );
       istream.close();
       return result;
-     
+
    }
 
    /**
@@ -144,10 +144,84 @@ public class RegressionTesting {
       }
       return true;
    }
-   
-   
-   
-   
+
+   /**
+    * Test whether two object arrays are the same.
+    * 
+    * @param a
+    * @param b
+    * @return
+    */
+   public static boolean closeEnough( Object[] a, Object[] b ) {
+      if ( a.length != b.length ) {
+         return false;
+      }
+
+      for ( int i = 0; i < a.length; i++ ) {
+         if ( !a[i].equals( b[i] ) ) {
+            return false;
+         }
+      }
+      return true;
+   }
+
+   /**
+    * Test whether two collections contain the same items.
+    * 
+    * @param a
+    * @param b
+    * @return
+    */
+   public static boolean containsSame( Collection a, Collection b ) {
+      if ( a.size() != b.size() ) return false;
+
+      if ( !a.containsAll( b ) )
+            return false;
+
+      return true;
+   }
+
+   /**
+    * Test whether two object arrays contain the same items. The arrays are treated as Sets - repeats are not considered.
+    * 
+    * @param a
+    * @param b
+    * @return
+    */
+   public static boolean containsSame( Object[] a, Object[] b ) {
+      if ( a.length != b.length ) return false;
+      
+      Vector av = new Vector(a.length);
+      Vector bv = new Vector(b.length);
+      
+      for ( int i = 0; i < b.length; i++ ) {
+         av.add(a[i]);
+         bv.add(b[i]);
+      }
+
+      return av.containsAll(bv) ;
+
+   }
+
+   /**
+    * Test whether two double arrays contain the same items in any order (tolerance is ZERO)
+    * 
+    * @param a
+    * @param b
+    * @return
+    */
+   public static boolean containsSame( double[] a, double[] b ) {
+      if ( a.length != b.length ) return false;
+
+      Vector av = new Vector(a.length);
+      Vector bv = new Vector(b.length);
+      for ( int i = 0; i < b.length; i++ ) {
+         av.add(new Double(a[i]));
+         bv.add(new Double(b[i]));
+      }
+
+      return av.containsAll(bv) ;
+   }
 
    /**
     * Convenience for using Stuart D. Gathman's Diff.

@@ -37,7 +37,7 @@ public class TestSpecFunc extends TestCase {
       //  dhyper(2, 20, 100, 50);
       //  [1] 0.0009644643
       double expectedReturn = 0.0009644643;
-      double actualReturn = SpecFunc.hypergeometric( 20, 2, 100, 48 );
+      double actualReturn = SpecFunc.dhyper(2, 20, 100, 50 );
       assertEquals( expectedReturn, actualReturn, 1e-5 );
    }
 
@@ -45,8 +45,25 @@ public class TestSpecFunc extends TestCase {
       //      phyper(2, 20, 100, 50);
       //      [1] 0.001077697
       double expectedReturn = 0.001077697;
-      double actualReturn = SpecFunc.cumHyperGeometric( 20, 2, 100, 48 );
+      double actualReturn = SpecFunc.phyper( 2, 20, 100, 50, true );
       assertEquals( expectedReturn, actualReturn, 1e-5 );
    }
+   
+   public final void testCumHyperGeometricUT() {
+      //      phyper(18, 20, 100, 50, lower.tail=F);
+      //      [1] 7.384185e-08
+
+      double expectedReturn = 7.384185e-08;
+      double actualReturn = SpecFunc.phyper(18, 20, 100, 50, false );
+      assertEquals( expectedReturn, actualReturn, 1e-5 );
+   }
+   
+   public final void testdBinom() {
+     // dbinom(2, 100, 0.1) == 0.001623197
+      double expectedReturn =  0.001623197;
+      double actualReturn = SpecFunc.dbinom(2, 100, 0.1);
+      assertEquals( expectedReturn, actualReturn, 1e-5 );
+   } 
+   
 
 }

@@ -9,7 +9,7 @@ xmlns:jnlp="http://www.w3.org/2001/XMLSchema-instance">
     <name>baseCode</name>
     <groupId>baseCode</groupId>
 
-    <currentVersion>0.2.3</currentVersion>
+    <currentVersion>0.2.4</currentVersion>
     <organization>
         <name>Columbia University</name>
         <url>http://www.columbia.edu</url>
