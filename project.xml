@@ -80,6 +80,14 @@
          <include>**/*/*/*/Test*.java </include>
        </includes>
 <excludes></excludes>
+<resources>
+<resource>
+<directory>${basedir}/test</directory>
+<includes>
+<include>**/data/*.txt</include>
+</includes>
+</resource>
+</resources>
      </unitTest>
 </build>
 
