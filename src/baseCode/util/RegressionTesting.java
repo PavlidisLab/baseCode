@@ -3,6 +3,8 @@ package baseCode.util;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -78,10 +80,24 @@ public class RegressionTesting {
          throws IOException {
       InputStream istream = RegressionTesting.class
             .getResourceAsStream( resourceName );
+
+      if ( istream == null ) return null;
+
       String result = readTestResult( istream );
       istream.close();
       return result;
 
+   }
+
+   /**
+    * @throws IOException
+    * @param fileName - the full path of the file to be read.
+    * @return
+    */
+   public static String readTestResultFromFile( String fileName )
+         throws IOException {
+      InputStream is = new FileInputStream( fileName );
+      return readTestResult( is );
    }
 
    /**
@@ -175,14 +191,14 @@ public class RegressionTesting {
    public static boolean containsSame( Collection a, Collection b ) {
       if ( a.size() != b.size() ) return false;
 
-      if ( !a.containsAll( b ) )
-            return false;
+      if ( !a.containsAll( b ) ) return false;
 
       return true;
    }
 
    /**
-    * Test whether two object arrays contain the same items. The arrays are treated as Sets - repeats are not considered.
+    * Test whether two object arrays contain the same items. The arrays are treated as Sets - repeats are not
+    * considered.
     * 
     * @param a
     * @param b
@@ -190,16 +206,16 @@ public class RegressionTesting {
     */
    public static boolean containsSame( Object[] a, Object[] b ) {
       if ( a.length != b.length ) return false;
-      
-      Vector av = new Vector(a.length);
-      Vector bv = new Vector(b.length);
-      
+
+      Vector av = new Vector( a.length );
+      Vector bv = new Vector( b.length );
+
       for ( int i = 0; i < b.length; i++ ) {
-         av.add(a[i]);
-         bv.add(b[i]);
+         av.add( a[i] );
+         bv.add( b[i] );
       }
 
-      return av.containsAll(bv) ;
+      return av.containsAll( bv );
 
    }
 
@@ -213,14 +229,14 @@ public class RegressionTesting {
    public static boolean containsSame( double[] a, double[] b ) {
       if ( a.length != b.length ) return false;
 
-      Vector av = new Vector(a.length);
-      Vector bv = new Vector(b.length);
+      Vector av = new Vector( a.length );
+      Vector bv = new Vector( b.length );
       for ( int i = 0; i < b.length; i++ ) {
-         av.add(new Double(a[i]));
-         bv.add(new Double(b[i]));
+         av.add( new Double( a[i] ) );
+         bv.add( new Double( b[i] ) );
       }
 
-      return av.containsAll(bv) ;
+      return av.containsAll( bv );
    }
 
    /**

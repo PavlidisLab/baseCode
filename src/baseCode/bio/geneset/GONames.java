@@ -39,7 +39,7 @@ public class GONames {
    public GONames( String filename ) throws SAXException, IOException {
       if ( filename == null || filename.length() == 0 ) {
          throw new IllegalArgumentException(
-               "Invalid filename or no filename was given" );
+               "Invalid filename " + filename + " or no filename was given" );
       }
 
       InputStream i = new FileInputStream( filename );
