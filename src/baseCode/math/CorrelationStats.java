@@ -1,5 +1,6 @@
 package baseCode.math;
 
+import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 import cern.jet.math.Arithmetic;
@@ -87,14 +88,32 @@ public class CorrelationStats {
    }
 
    /**
-    * Compute the Fisher transform of the Pearson correlation.
+    * Compute the Fisher z transform of the Pearson correlation.
     * 
     * @param r Correlation coefficient.
     * @return Fisher transform of the Correlation.
     */
    public static double fisherTransform( double r ) {
+      if (!isValidPearsonCorrelation(r)) {
+         throw new IllegalArgumentException("Invalid correlation");
+      }
       return 0.5 * Math.log( ( 1.0 + r ) / ( 1.0 - r ) );
    }
+   
+   /** 
+    * Fisher-transform a list of correlations.
+    * @param e
+    * @return
+    */
+   public static DoubleArrayList fisherTransform( DoubleArrayList e ) {
+      DoubleArrayList r = new DoubleArrayList( e.size() );
+      for ( int i = 0; i < e.size(); i++ ) {
+         r.add( CorrelationStats.fisherTransform( e.getQuick( i ) ) );
+      }
+      return r;
+   }
+   
+   
 
    /**
     * Conver a correlation p value into a value between 0 and 255 inclusive. This is done by taking the log, multiplying
@@ -209,6 +228,10 @@ public class CorrelationStats {
          }
       }
       return ( corrguess );
+   }
+   
+   public static boolean isValidPearsonCorrelation( double r ) {
+      return ( r >= -1.0 && r <= 1.0 );
    }
 
 }

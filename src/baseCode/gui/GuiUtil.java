@@ -32,6 +32,7 @@ public class GuiUtil {
     * @param message
     */
    public static void error( String message ) {
+      
       JOptionPane.showMessageDialog( null, "Error: " + message + "\n", "Error",
             JOptionPane.ERROR_MESSAGE );
       log.error( message );
