@@ -49,7 +49,12 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
     * @param values These MuST be in the same order as the indexes, meaning that indexes[0] is the column for values[0].
     */
    public RCDoubleMatrix1D( IntArrayList indexes, DoubleArrayList values ) {
-      int s = indexes.get(indexes.size() - 1) + 1;
+      int k = indexes.size();
+      int s = 0;
+      if ( k > 0 ) {
+         s = indexes.get( k - 1 ) + 1;
+      }
+      
       setUp( s  );
       this.indexes = indexes;
       this.values = values;
