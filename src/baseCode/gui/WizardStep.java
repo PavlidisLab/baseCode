@@ -1,8 +1,5 @@
 package baseCode.gui;
 
-import java.io.File;
-
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Color;

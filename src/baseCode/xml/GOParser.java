@@ -57,6 +57,11 @@ public class GOParser {
    
    
    public GOParser( InputStream i ) throws IOException, SAXException {
+      
+      if (i.available() == 0) {  
+         throw new IOException("XML stream contains no data.");
+      }
+      
       System.setProperty( "org.xml.sax.driver",
             "org.apache.xerces.parsers.SAXParser" );
 
