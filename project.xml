@@ -39,6 +39,7 @@
         <dependency>
            <id>colt</id>
      <artifactId>colt</artifactId>
+<url>http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/download</url>
      <jar>colt.jar</jar>
         </dependency>
 
