@@ -60,28 +60,34 @@ public class Rank {
    }
 
    /**
-    * Rank transform a map, where the keys are strings and the values are the
-    * numerical values we wish to rank. Ties are not handled specially.
+    * Rank transform a map, where the values are numerical (java.lang.Double)
+    * values we wish to rank. Ties are not handled specially.
     * 
     * @param m
-    *           java.util.Map with keys strings, values doubles.
-    * @return A java.util.Map keys=old keys, values=integer rank of the key.
+    *           java.util.Map with keys Objects, values Doubles.
+    * @return A java.util.Map keys=old keys, values=java.lang.Integer rank of
+    *         the key.
+    * @throws IllegalArgumentException if the input Map does not have Double values.
     */
-   public static Map rankTransform( Map m ) {
+   public static Map rankTransform( Map m ) throws IllegalArgumentException {
       int counter = 0;
-      LinkedHashMap result = new LinkedHashMap();
+      
       keyAndValueData[] values = new keyAndValueData[m.size()];
-      Collection entries = m.entrySet();
-      Iterator itr = entries.iterator();
 
       /*
        * put the pvalues into an array of objects which contain the pvalue and
        * the gene id
        */
-      while ( itr.hasNext() ) {
-         Map.Entry tuple = ( Map.Entry ) itr.next();
-         String key = ( String ) tuple.getKey();
-         double val = ( double ) ( ( ( Double ) tuple.getValue() )
+      for (Iterator itr = m.keySet().iterator(); itr.hasNext(); ) {
+  
+         Object key = itr.next();
+
+         if ( !( m.get(key) instanceof Double ) ) {
+            throw new IllegalArgumentException(
+                  "Attempt to rank a map with non-Double values" );
+         }
+
+         double val = ( double ) ( ( ( Double ) m.get(key) )
                .doubleValue() );
          values[counter] = new keyAndValueData( key, val );
          counter++;
@@ -89,10 +95,10 @@ public class Rank {
 
       /* sort it */
       Arrays.sort( values );
-
+      Map result = new LinkedHashMap();
       /* put the sorted items back into a hashmap with the rank */
       for ( int i = 0; i < m.size(); i++ ) {
-         result.put( values[i].getId(), new Integer( m.size() - i ) );
+         result.put( values[i].getKey(), new Integer( i ) );
       }
       return result;
    }
@@ -138,11 +144,11 @@ class rankData implements Comparable {
  */
 
 class keyAndValueData implements Comparable {
-   private String key;
+   private Object key;
 
    private double value;
 
-   public keyAndValueData( String id, double v ) {
+   public keyAndValueData( Object id, double v ) {
       this.key = id;
       this.value = v;
    }
@@ -159,7 +165,7 @@ class keyAndValueData implements Comparable {
       }
    }
 
-   public String getId() {
+   public Object getKey() {
       return key;
    }
 
