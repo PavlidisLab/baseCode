@@ -8,8 +8,8 @@
   <property category="javaFormatting" name="packageThreshold" value="0"/>
   <property category="javaFormatting" name="wrapAtColumn" value="100"/>
   <property category="javadoc" name="custom.tags.1" value="todo;a;To Do:"/>
-  <property category="runtime" name="ConfigurationCount" value="6"/>
-  <property category="runtime" name="DefaultConfiguration" value="-1"/>
+  <property category="runtime" name="ConfigurationCount" value="7"/>
+  <property category="runtime" name="DefaultConfiguration" value="7"/>
   <property category="runtime.0" name="BuildTargetOnRun" value="com.borland.jbuilder.build.ProjectBuilder$ProjectBuildAction;make"/>
   <property category="runtime.0" name="ConfigurationName" value="testMatrixReader"/>
   <property category="runtime.0" name="RunnableType" value="com.borland.jbuilder.runtime.ApplicationRunner"/>
@@ -44,6 +44,11 @@
   <property category="runtime.6" name="ConfigurationName" value="Simple db handle test"/>
   <property category="runtime.6" name="RunnableType" value="com.borland.jbuilder.runtime.ApplicationRunner"/>
   <property category="runtime.6" name="application.class" value="baseCode.DB.Handle"/>
+  <property category="runtime.7" name="BuildTargetOnRun" value="com.borland.jbuilder.build.ProjectBuilder$ProjectBuildAction;make"/>
+  <property category="runtime.7" name="ConfigurationName" value="matrix display"/>
+  <property category="runtime.7" name="RunnableType" value="com.borland.jbuilder.runtime.ApplicationRunner"/>
+  <property category="runtime.7" name="application.class" value="baseCode.Gui.TestApp"/>
+  <property category="runtime.7" name="application.parameters" value="C:\2_not-normalized.txt C:\matrix.png"/>
   <property category="serverservices" name="disabled.services" value="connector;jdatastore;sqlj"/>
   <property category="serverservices" name="single.server.name" value="Tomcat 4.1"/>
   <property category="sys" name="AuthorLabel" value="@author"/>
@@ -60,10 +65,10 @@
   <property category="sys" name="ExcludeClassEnabled" value="0"/>
   <property category="sys" name="IncludeTestPath" value="1"/>
   <property category="sys" name="InstanceVisibility" value="2"/>
-  <property category="sys" name="JDK" value="java version 1.4.1_02-b06"/>
+  <property category="sys" name="JDK" value="java version 1.4.2_01-b06"/>
   <property category="sys" name="JvmVersion" value="1.2"/>
   <property category="sys" name="LastTag" value="0"/>
-  <property category="sys" name="Libraries" value="MySQL;colt (CERN High Performance  Scientific and Technical Computing);JUnit"/>
+  <property category="sys" name="Libraries" value="JUnit;colt;commons-logging;MySQL-java"/>
   <property category="sys" name="MakeStable" value="0"/>
   <property category="sys" name="OutPath" value="classes"/>
   <property category="sys" name="SourcePath" value="src;test"/>
@@ -73,8 +78,19 @@
   <property category="sys" name="Version" value="$Id$"/>
   <property category="sys" name="VersionLabel" value="@version"/>
   <property category="sys" name="WorkingDirectory" value="."/>
+  <property category="sys" name="max.package.levels" value="1"/>
   <property category="team" name="ignorePath.0" value="bak"/>
   <property category="team" name="ignorePath.1" value="classes"/>
+  <property category="team" name="ignorePath.10" value="testreallybig.out.txt"/>
+  <property category="team" name="ignorePath.11" value="testreallybig.txt"/>
+  <property category="team" name="ignorePath.2" value="baseCode.jar"/>
+  <property category="team" name="ignorePath.3" value="baseCorrelMatrixTest.jar"/>
+  <property category="team" name="ignorePath.4" value="coreCorrelMatrixTest.jar"/>
+  <property category="team" name="ignorePath.5" value="maven.xml"/>
+  <property category="team" name="ignorePath.6" value="testdata.txt"/>
+  <property category="team" name="ignorePath.7" value="testdatagolub.txt"/>
+  <property category="team" name="ignorePath.8" value="testdatamissing-badrows.txt"/>
+  <property category="team" name="ignorePath.9" value="testdatamissing.txt"/>
   <node name="Application" type="Archive">
     <property category="archiving" name="archiverClass" value="com.borland.jbuilder.wizard.archive.ApplicationArchiver"/>
     <property category="archiving" name="contentRules.1" value="I:**/*.*"/>
