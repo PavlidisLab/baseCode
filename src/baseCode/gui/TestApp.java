@@ -31,7 +31,6 @@ public class TestApp {
     }
     
     JMatrixDisplay matrixDisplay = new JMatrixDisplay( matrix );
-    matrixDisplay.getMatrix().standardize();
     matrixDisplay.setLabelsVisible( true );
     
     try {
@@ -64,6 +63,19 @@ public class TestApp {
     }
     frame.setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
     frame.setVisible(true);
+    
+    // toggle between standardized and not a few times
+    boolean isShowingStandardized = matrixDisplay.getStandardizedEnabled();
+    for (int i = 0;  i < 5;  i++)
+    {
+       try {
+          Thread.sleep( 1000 );
+          isShowingStandardized = ! isShowingStandardized;
+          matrixDisplay.setStandardizedEnabled( isShowingStandardized );
+          matrixDisplay.repaint();
+       }
+       catch( InterruptedException e ) {}
+    }
   }
 
   //Main method: args[0] can contain the name of the data file
