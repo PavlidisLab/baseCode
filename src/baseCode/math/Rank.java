@@ -100,6 +100,35 @@ public class Rank {
       return result;
    }
 
+   /**
+    * Return mean of top 2 elements in array. Used for histogram range setting. O(2N) runtime.
+    * 
+    * @param inArray double[]
+    * @return double
+    */
+   public static double meanOfTop2( double[] inArray ) {
+      double max1 = -Double.MAX_VALUE;
+      double max2 = -Double.MAX_VALUE;
+      int pin = 0;
+
+      if ( inArray.length < 2 ) {
+         throw new IllegalArgumentException( "Insufficient values, must be at least 2" );
+      }
+
+      for ( int i = 0; i < inArray.length; i++ ) {
+         if ( max1 < inArray[i] ) {
+            max1 = inArray[i];
+            pin = i;
+         }
+      }
+      for ( int i = 0; i < inArray.length; i++ ) {
+         if ( i != pin && max2 < inArray[i] ) {
+            max2 = inArray[i];
+         }
+      }
+      return ( max1 + max2 ) / 2;
+   }
+
 }
 
 /*

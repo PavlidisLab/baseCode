@@ -3,7 +3,6 @@ package baseCodeTest.math;
 import cern.colt.list.DoubleArrayList;
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.reader.DoubleMatrixReader;
-import baseCode.dataStructure.reader.StringMatrixReader;
 import baseCode.math.MatrixRowStats;
 import baseCode.util.RegressionTesting;
 import baseCodeTest.dataFilter.AbstractTestFilter;

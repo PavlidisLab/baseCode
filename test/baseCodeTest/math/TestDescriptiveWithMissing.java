@@ -239,25 +239,19 @@ public class TestDescriptiveWithMissing extends TestCase {
             Double.MIN_VALUE );
 
    }
-   
+
    public void testStandardize() {
-      DoubleArrayList expectedReturn = new DoubleArrayList(new double[] {-1.4556506857481,
-            Double.NaN,
-            -0.415900195928029,
-            0.103975048982007,
-            0.623850293892044,
-            1.14372553880208
-      });
-      
-//      double mean =  Descriptive.mean(data1Nomissing);
-//      double var = Descriptive.sampleVariance(data1Nomissing, mean);
-//      double stdev = Math.sqrt(var);
-//      Descriptive.standardize(data1Nomissing, mean, stdev);
-      
-      DescriptiveWithMissing.standardize(data1missing );
-      assertEquals( true, RegressionTesting.closeEnough(data1missing, expectedReturn, 0.0001));
+
+      // we use this because Descriptive.standardize does not do exactly the
+      // same thing - there is a correction applied.
+      DoubleArrayList expectedReturn = new DoubleArrayList( new double[] {
+            -1.4556506857481, Double.NaN, -0.415900195928029,
+            0.103975048982007, 0.623850293892044, 1.14372553880208 } );
+
+      DescriptiveWithMissing.standardize( data1missing );
+      assertEquals( true, RegressionTesting.closeEnough( data1missing,
+            expectedReturn, 0.0001 ) );
    }
-   
 
    public void testTrimmedMean() {
       data1Nomissing.sort();
@@ -279,8 +273,7 @@ public class TestDescriptiveWithMissing extends TestCase {
             DescriptiveWithMissing.sizeWithoutMissingValues( data1missing ),
             DescriptiveWithMissing.sum( data1missing ), DescriptiveWithMissing
                   .sumOfSquares( data1missing ) );
-      assertEquals( "return value", expectedReturn, actualReturn,
-            0.000001 );
+      assertEquals( "return value", expectedReturn, actualReturn, 0.000001 );
    }
 
 }

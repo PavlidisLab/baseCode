@@ -7,12 +7,7 @@ import cern.jet.stat.Probability;
 /**
  * Functions for calculating Receiver operator characteristics.
  * <p>
- * Copyright (c) 2004
- * </p>
- * <p>
- * Institution:: Columbia University
- * </p>
- * 
+ * Copyright (c) 2004 Columbia University
  * @author Paul Pavlidis
  * @version $Id$
  */

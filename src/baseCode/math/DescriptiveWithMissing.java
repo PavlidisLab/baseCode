@@ -1,7 +1,7 @@
 package baseCode.math;
 
 import cern.colt.list.DoubleArrayList;
-import cern.jet.stat.Descriptive;
+import cern.jet.stat.Descriptive;;
 
 /**
  * Mathematical functions for statistics that allow missing values without
@@ -607,6 +607,20 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
    }
 
    /**
+    * Returns the sample standard deviation.
+    * <p>
+    * This is included for compatibility with the superclass, but does not
+    * implement the correction used there.
+    * 
+    * @see cern.jet.statDescriptive#sampleStandardDeviation(int, double)
+    * @param size the number of elements of the data sequence.
+    * @param sampleVariance the <b>sample variance </b>.
+    */
+   public static double sampleStandardDeviation( int size, double sampleVariance ) {
+      return Math.sqrt( sampleVariance );
+   }
+
+   /**
     * Returns the sample variance of a data sequence. That is <tt>Sum (
     * (data[i]-mean)^2 ) / (data.size()-1)</tt>.
     * 
@@ -652,17 +666,18 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
    }
 
    /**
-    * Standardize
+    * Standardize. Note that this does something slightly different than
+    * standardize in the superclass, because our sampleStandardDeviation does
+    * not use the correction of the superclass (which isn't really standard).
     * 
     * @param data DoubleArrayList
     */
    public static void standardize( DoubleArrayList data ) {
-      double mean = DescriptiveWithMissing.mean( data );
-      double stdev = Math.sqrt( DescriptiveWithMissing.sampleVariance( data,
-            mean ) );
+      double mean = mean( data );
+      double stdev = Math.sqrt( sampleVariance( data, mean ) );
       DescriptiveWithMissing.standardize( data, mean, stdev );
    }
-   
+
    /**
     * Returns the sum of a data sequence. That is <tt>Sum( data[i] )</tt>.
     * 

@@ -34,6 +34,7 @@ public class AllTests extends TestCase {
       suite.addTestSuite( baseCodeTest.math.TestRank.class );
       suite.addTestSuite( baseCodeTest.math.TestMatrixRowStats.class );
       suite.addTestSuite( baseCodeTest.math.TestStats.class );
+      suite.addTestSuite( baseCodeTest.math.TestSpecFunc.class );
       
       suite.addTestSuite( baseCodeTest.xml.TestGOParser.class );
 

@@ -49,13 +49,14 @@ public class Stats {
     * @todo offer a regularized version of this function.
     */
    public static double cv( DoubleArrayList data ) {
-      return Math.sqrt( DescriptiveWithMissing.variance( data )
-            / DescriptiveWithMissing.mean( data ) );
+      double mean = DescriptiveWithMissing.mean( data );
+      return mean
+            / Math.sqrt( DescriptiveWithMissing.sampleVariance( data, mean ) );
    }
 
    /**
     * Convert an array into a cumulative array. Summing is from the left hand
-    * side.
+    * side. Use this to make CDFs where the concern is the left tail.
     * 
     * @param x DoubleArrayList
     * @return cern.colt.list.DoubleArrayList
@@ -66,33 +67,10 @@ public class Stats {
          return new DoubleArrayList( 0 );
       }
 
-      DoubleArrayList r = new DoubleArrayList( );
-
-      double sum = 0.0;
-      for ( int i = 0; i < x.size(); i++ ) {
-         sum += x.get( i );
-         r.add(  sum );
-      }
-      return r;
-   }
-
-   /**
-    * Convert an array into a cumulative array. Summing is from the right hand
-    * side. This is useful for creating cumulative density histograms from count
-    * histograms.
-    * 
-    * @param x the array of data to be cumulated.
-    * @return
-    */
-   public static DoubleArrayList cumulateRight( DoubleArrayList x ) {
-      if ( x.size() == 0 ) {
-         return new DoubleArrayList( 0 );
-      }
-
       DoubleArrayList r = new DoubleArrayList();
 
       double sum = 0.0;
-      for ( int i = x.size() - 1; i >= 0; i-- ) {
+      for ( int i = 0; i < x.size(); i++ ) {
          sum += x.get( i );
          r.add( sum );
       }
@@ -100,11 +78,35 @@ public class Stats {
    }
 
    /**
-    * Convert an array into a CDF. This assumes that the input contains counts
-    * representing the distribution in question.
+    * Convert an array into a cumulative array. Summing is from the right hand
+    * side. This is useful for creating upper-tail cumulative density histograms
+    * from count histograms, where the upper tail is expected to have very small
+    * numbers that could be lost to rounding.
     * 
-    * @param x The input of counts.
-    * @return The CDF.
+    * @param x the array of data to be cumulated.
+    * @return cern.colt.list.DoubleArrayList
+    */
+   public static DoubleArrayList cumulateRight( DoubleArrayList x ) {
+      if ( x.size() == 0 ) {
+         return new DoubleArrayList( 0 );
+      }
+
+      DoubleArrayList r = new DoubleArrayList( new double[x.size()] );
+
+      double sum = 0.0;
+      for ( int i = x.size() - 1; i >= 0; i-- ) {
+         sum += x.get( i );
+         r.set( i, sum );
+      }
+      return r;
+   }
+
+   /**
+    * Convert an array into a cumulative density function (CDF). This assumes
+    * that the input contains counts representing the distribution in question.
+    * 
+    * @param x The input of counts (i.e. a histogram).
+    * @return DoubleArrayList the CDF.
     */
    public static DoubleArrayList cdf( DoubleArrayList x ) {
       return cumulateRight( normalize( x ) );
@@ -122,10 +124,10 @@ public class Stats {
          return new DoubleArrayList( 0 );
       }
 
-      DoubleArrayList r = new DoubleArrayList( );
+      DoubleArrayList r = new DoubleArrayList();
 
       for ( int i = 0; i < x.size(); i++ ) {
-         r.add(x.get( i ) / normfactor );
+         r.add( x.get( i ) / normfactor );
       }
       return r;
 
@@ -142,27 +144,27 @@ public class Stats {
    }
 
    /**
-    * calculate the mean of the values above a particular quantile of an array.
-    * Quantile must be a value from 0 to 100.
+    * calculate the mean of the values above (NOT greater or equal to) a
+    * particular index rank of an array. Quantile must be a value from 0 to 100.
     * 
     * @see DescriptiveWithMissing#meanAboveQuantile
-    * @param quantile A value from 0 to 100
+    * @param index the rank of the value we wish to average above.
     * @param array Array for which we want to get the quantile.
-    * @param effectiveSize The size of the array.
+    * @param effectiveSize The size of the array, not including NaNs.
     * @return double
     */
-   public static double meanAboveQuantile( int quantile, double[] array,
-         int effectiveSize ) {
+   public static double meanAboveQuantile( int index, double[] array , int effectiveSize) {
+
       double[] temp = new double[effectiveSize];
       double median;
       double returnvalue = 0.0;
       int k = 0;
 
       temp = array;
-      median = quantile( quantile, array, effectiveSize );
+      median = quantile( index, array, effectiveSize );
 
       for ( int i = 0; i < effectiveSize; i++ ) {
-         if ( temp[i] >= median ) {
+         if ( temp[i] > median ) {
             returnvalue += temp[i];
             k++;
          }
@@ -182,13 +184,15 @@ public class Stats {
    }
 
    /**
-    * Given an array, calculate the quantile requested.
+    * Given a double array, calculate the quantile requested. Note that no
+    * interpolation is done.
     * 
     * @see DescriptiveWithMissing#quantile
-    * @param index int
-    * @param values double[]
-    * @param effectiveSize int
-    * @return double
+    * @param index - the rank of the value we wish to get. Thus if we have 200
+    *        items in the array, and want the median, we should enter 100.
+    * @param values double[] - array of data we want quantile of
+    * @param effectiveSize int the effective size of the array
+    * @return double the value at the requested quantile
     */
    public static double quantile( int index, double[] values, int effectiveSize ) {
       double pivot = -1.0;
@@ -206,40 +210,30 @@ public class Stats {
          for ( int i = 0; i < effectiveSize; i++ ) {
             temp[i] = values[i];
          }
-         try {
-            pivot = temp[0];
 
-            double[] smaller = new double[effectiveSize];
-            double[] bigger = new double[effectiveSize];
-            int itrSm = 0;
-            int itrBg = 0;
-            for ( int i = 1; i < effectiveSize; i++ ) {
-               if ( temp[i] <= pivot ) {
-                  smaller[itrSm] = temp[i];
-                  itrSm++;
-               } else if ( temp[i] > pivot ) {
-                  bigger[itrBg] = temp[i];
-                  itrBg++;
-               }
+         pivot = temp[0];
+
+         double[] smaller = new double[effectiveSize];
+         double[] bigger = new double[effectiveSize];
+         int itrSm = 0;
+         int itrBg = 0;
+         for ( int i = 1; i < effectiveSize; i++ ) {
+            if ( temp[i] <= pivot ) {
+               smaller[itrSm] = temp[i];
+               itrSm++;
+            } else if ( temp[i] > pivot ) {
+               bigger[itrBg] = temp[i];
+               itrBg++;
             }
-            if ( itrSm > index ) {
-               return quantile( index, smaller, itrSm );
-            } else if ( itrSm < index ) {
-               return quantile( index - itrSm - 1, bigger, itrBg );
-            } else {
-               return pivot;
-            }
-         } catch ( ArrayIndexOutOfBoundsException e ) {
-            System.out.println( "\n\nERROR:" + "  index=" + index + "  size="
-                  + effectiveSize + "  pivot=" + pivot );
-            for ( int i = 0; i < values.length; i++ ) {
-               System.out.print( "random_class[" + i + "]= " + values[i] );
-               if ( i <= effectiveSize ) {
-                  System.out.println( "   temp[" + i + "]= " + temp[i] );
-               }
-            }
-            return -1.0;
          }
+         if ( itrSm > index ) { // quantile must be in the 'smaller' array
+            return quantile( index, smaller, itrSm );
+         } else if ( itrSm < index ) { // quantile is in the 'bigger' array
+            return quantile( index - itrSm - 1, bigger, itrBg );
+         } else {
+            return pivot;
+         }
+
       }
    }
 
