@@ -1,6 +1,7 @@
 package baseCode.Gui;
 
 import java.awt.Color;
+import java.io.IOException;
 import baseCode.dataStructure.reader.DoubleMatrixReader;
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 import baseCode.Math.MatrixStats;
@@ -43,7 +44,7 @@ public class ColorMatrix {
      *                   be relative to the java interpreter, not the class
      *                   (not my fault -- that's how java treats relative paths)
      */
-    public ColorMatrix( String filename ) {
+    public ColorMatrix( String filename ) throws IOException {
 
         loadMatrixFromFile( filename );
     }
@@ -58,7 +59,7 @@ public class ColorMatrix {
      * @param  colorMap      the simplest color map is one with just two colors: { minColor, maxColor }
      * @param  missingColor  values missing from the matrix or non-numeric entries will be displayed using this color
      */
-    public ColorMatrix( String filename, Color[] colorMap, Color missingColor ) {
+    public ColorMatrix( String filename, Color[] colorMap, Color missingColor ) throws IOException {
 
        m_missingColor = missingColor;
        m_colorMap = colorMap;
@@ -180,7 +181,7 @@ public class ColorMatrix {
      * A convenience method for loading data files
      * @param  filename  the name of the data file
      */
-    public void loadMatrixFromFile( String filename ) {
+    public void loadMatrixFromFile( String filename ) throws IOException {
 
         m_matrixReader = new DoubleMatrixReader();
         DenseDoubleMatrix2DNamed matrix = (DenseDoubleMatrix2DNamed) m_matrixReader.read( filename );
@@ -221,61 +222,62 @@ public class ColorMatrix {
 
     public void mapValuesToColors()
     {
-        ColorMap colorMap = new ColorMap( m_colorMap );
-        double range = m_maxDisplayValue - m_minDisplayValue;
+      ColorMap colorMap = new ColorMap( m_colorMap );
+      double range = m_maxDisplayValue - m_minDisplayValue;
 
-        if (0.0 == range)
-        {
-            System.err.println( "Warning: range of values in data is zero." );
-            range = 1.0; // This avoids getting a step size of zero
-                         // in case all values in the matrix are equal.
-        }
+      if (0.0 == range)
+      {
+         // This is not an exception, just a warning, so no exception to throw
+         System.err.println( "Warning: range of values in data is zero." );
+         range = 1.0; // This avoids getting a step size of zero
+                      // in case all values in the matrix are equal.
+      }
 
-        // zoom factor for stretching or shrinking the range
-        double zoomFactor = (colorMap.getPaletteSize() - 1) / range;
+      // zoom factor for stretching or shrinking the range
+      double zoomFactor = (colorMap.getPaletteSize() - 1) / range;
 
-        // map values to colors
-        for (int row = 0;  row < m_totalRows;  row++)
-        {
-            for (int column = 0;  column < m_totalColumns;  column++)
+      // map values to colors
+      for (int row = 0;  row < m_totalRows;  row++)
+      {
+         for (int column = 0;  column < m_totalColumns;  column++)
+         {
+            double value = m_matrix.get( row, column );
+
+            if (Double.isNaN (value))
             {
-                double value = m_matrix.get( row, column );
-
-                if (Double.isNaN (value))
-                {
-                    // the value is missing
-                    m_colors[row][column] = m_missingColor;
-                }
-                else
-                {
-                    // clip extreme values (this makes sense for normalized
-                    // values because then for a standard deviation of one and
-                    // mean zero, we set m_minValue = -2 and m_maxValue = 2,
-                    // even though there could be a few extreme values
-                    // outside this range (right?)
-                    if (value > m_maxDisplayValue)
-                    {
-                        // clip extremely large values
-                        value = m_maxDisplayValue;
-                    }
-                    else if (value < m_minDisplayValue)
-                    {
-                        // clip extremely small values
-                        value = 0;
-                    }
-                    else
-                    {
-                        // shift the minimum value to zero
-                        // to the range [0, maxValue + minValue]
-                        value -= m_minDisplayValue;
-                    }
-
-                    // stretch or shrink the range to [0, totalColors]
-                    double valueNew = value * zoomFactor;
-                    int i = (int)valueNew;
-                    m_colors[row][column] = colorMap.getColor( i );
-                }
+               // the value is missing
+               m_colors[row][column] = m_missingColor;
             }
-        }
-    } // end mapValuesToColors
+            else
+            {
+              // clip extreme values (this makes sense for normalized
+              // values because then for a standard deviation of one and
+              // mean zero, we set m_minValue = -2 and m_maxValue = 2,
+              // even though there could be a few extreme values
+              // outside this range (right?)
+              if (value > m_maxDisplayValue)
+              {
+                 // clip extremely large values
+                 value = m_maxDisplayValue;
+              }
+              else if (value < m_minDisplayValue)
+              {
+                 // clip extremely small values
+                 value = 0;
+              }
+              else
+              {
+                 // shift the minimum value to zero
+                 // to the range [0, maxValue + minValue]
+                 value -= m_minDisplayValue;
+              }
+
+              // stretch or shrink the range to [0, totalColors]
+              double valueNew = value * zoomFactor;
+              int i = (int)valueNew;
+              m_colors[row][column] = colorMap.getColor( i );
+            }
+         }
+      }
+   } // end mapValuesToColors
 }
