@@ -10,6 +10,7 @@ public class TestApp {
   //Construct the application
   public TestApp() {
     TestFrame frame = new TestFrame();
+    
     //Validate frames that have preset sizes
     //Pack frames that have useful preferred size info, e.g. from their layout
     if (packFrame) {

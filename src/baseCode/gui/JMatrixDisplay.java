@@ -21,8 +21,8 @@ public class JMatrixDisplay extends JPanel {
   private final int m_defaultResolution  = 120;
   private int m_resolution = m_defaultResolution;
   private int m_textSize = 0;
-  protected static int m_geneHeight = 10; // in pixels
-  protected static int m_geneWidth = 5; // in pixels
+  protected static int m_rowHeight = 10; // in pixels
+  protected static int m_rowWidth = 5; // in pixels
 
 
   public JMatrixDisplay() {
@@ -44,8 +44,8 @@ public class JMatrixDisplay extends JPanel {
 
     if (m_colorMatrix != null)
     {
-      int height = m_geneHeight * m_colorMatrix.getGeneCount();
-      int width  = m_geneWidth  * m_colorMatrix.getChipCount();
+      int height = m_rowHeight * m_colorMatrix.getRowCount();
+      int width  = m_rowWidth  * m_colorMatrix.getColumnCount();
 
       if (m_isPrintLabels)
       {
@@ -78,19 +78,19 @@ public class JMatrixDisplay extends JPanel {
         ig.setColor(Color.white);
         ig.fillRect(0, 0, this.getWidth(), this.getHeight());
       }
-      int fontGutter = (int) ( (double) m_geneHeight * .22);
-      int geneCount = m_colorMatrix.getGeneCount();
-      int chipCount = m_colorMatrix.getChipCount();
+      int fontGutter = (int) ( (double) m_rowHeight * .22);
+      int rowCount = m_colorMatrix.getRowCount();
+      int columnCount = m_colorMatrix.getColumnCount();
 
       // loop through the microarray
-      for (int i = 0;  i < geneCount;  i++)
+      for (int i = 0;  i < rowCount;  i++)
       {
-        int y = i * m_geneHeight;
+        int y = i * m_rowHeight;
 
-        for (int j = 0;  j < chipCount;  j++)
+        for (int j = 0;  j < columnCount;  j++)
         {
-          int x = (j * m_geneWidth);
-          int width = ( (j + 1) * m_geneWidth) - x;
+          int x = (j * m_rowWidth);
+          int width = ( (j + 1) * m_rowWidth) - x;
 
           Color color = m_colorMatrix.getColor( i, j );
           g.setColor(color);
@@ -98,13 +98,13 @@ public class JMatrixDisplay extends JPanel {
           if (m_isImageSnapshot)
             ig.setColor(color);
 
-          g.fillRect(x, y, width, m_geneHeight);
+          g.fillRect(x, y, width, m_rowHeight);
 
           if (m_isImageSnapshot)
-            ig.fillRect(x, y, width, m_geneHeight);
+            ig.fillRect(x, y, width, m_rowHeight);
         }
 
-        if (m_isPrintLabels && chipCount > 0)
+        if (m_isPrintLabels && columnCount > 0)
         {
 
            g.setColor(Color.black);
@@ -117,18 +117,18 @@ public class JMatrixDisplay extends JPanel {
            if (m_isImageSnapshot)
                ig.setFont(m_labelFont);
 
-           int xRatio = (chipCount * m_geneWidth) + m_labelGutter;
-           int yRatio = y + m_geneHeight - fontGutter;
-           String geneName = m_colorMatrix.getGeneName( i );
-           if (null == geneName)
+           int xRatio = (columnCount * m_rowWidth) + m_labelGutter;
+           int yRatio = y + m_rowHeight - fontGutter;
+           String rowName = m_colorMatrix.getRowName( i );
+           if (null == rowName)
            {
-              geneName = "Undefined";
+              rowName = "Undefined";
            }
-           g.drawString( geneName, xRatio, yRatio );
+           g.drawString( rowName, xRatio, yRatio );
            if (m_isImageSnapshot)
-              ig.drawString( geneName, xRatio, yRatio );
+              ig.drawString( rowName, xRatio, yRatio );
 
-        } // end if print row (gene) labels
+        } // end if print row (row) labels
 
       } // end for rows
     } // end if (microarray != null)
@@ -154,7 +154,7 @@ public class JMatrixDisplay extends JPanel {
    * @return <code>Font</code> size
    */
   private int getFontSize() {
-    return Math.max( m_geneHeight, 5 );
+    return Math.max( m_rowHeight, 5 );
   }
 
 
