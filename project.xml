@@ -14,6 +14,10 @@
 	<repository>
 		<connection>scm:cvs:ext:${maven.username}@adgate.cu-genome.org:/fsnode/projects/cvs/pavlab:baseCode</connection>
 	</repository>
+
+	<siteAddress>microarray</siteAddress>
+	<siteDirectory>/proj/pavlidis/protected/baseCode</siteDirectory>
+
 	<developers>
 		<developer>
 			<name>Paul Pavlidis</name>
@@ -23,13 +27,13 @@
 		</developer>
 		<developer>
 			<name>William Braynen</name>
-			<id>braynen</id>
+			<id>wbraynen</id>
 			<email>wbraynen@ic.sunysb.edu</email>
 			<organization>Columbia University</organization>
 		</developer>
 		<developer>
 			<name>Homin Lee</name>
-			<id>hlk7</id>
+			<id>hkl7</id>
 			<email>hlk7@cs.columbia.edu</email>
 			<organization>Columbia University</organization>
 		</developer>
@@ -55,4 +59,16 @@
 			<version>1.0.3</version>
 		</dependency>
 	</dependencies>
+  <reports>
+    <report>maven-jdepend-plugin</report>
+    <report>maven-checkstyle-plugin</report>
+    <report>maven-pmd-plugin</report>
+    <report>maven-changelog-plugin</report>
+    <report>maven-file-activity-plugin</report>
+    <report>maven-developer-activity-plugin</report>
+    <report>maven-javadoc-plugin</report>
+    <report>maven-jxr-plugin</report>
+    <report>maven-junit-report-plugin</report>
+    <report>maven-tasklist-plugin</report>
+  </reports>  
 </project>
