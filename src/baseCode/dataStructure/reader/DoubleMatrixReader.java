@@ -175,7 +175,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
     * Read a matrix from a file, subject to filtering criteria.
     * 
     * @param filename data file to read from
-    * @param Set wantedRowNames contains names of rows we want to get
+    * @param wantedRowNames contains names of rows we want to get
     * @return NamedMatrix object constructed from the data file
     */
    public NamedMatrix read( String filename, Set wantedRowNames )

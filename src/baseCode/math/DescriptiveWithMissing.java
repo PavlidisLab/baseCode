@@ -585,7 +585,7 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
     * <p>
     * This is included for compatibility with the superclass, but does not implement the correction used there.
     * 
-    * @see cern.jet.statDescriptive#sampleStandardDeviation(int, double)
+    * @see cern.jet.stat.Descriptive#sampleStandardDeviation(int, double)
     * @param size the number of elements of the data sequence.
     * @param sampleVariance the <b>sample variance </b>.
     */

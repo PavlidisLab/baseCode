@@ -28,8 +28,12 @@ import javax.swing.JLabel;
  */
 
 public abstract class WizardStep extends JPanel {
+   
+   Wizard owner;
+   
    public WizardStep( Wizard wiz ) {
       super();
+      owner = wiz;
       try {
          BorderLayout layout = new BorderLayout();
          this.setLayout( layout );
@@ -48,6 +52,7 @@ public abstract class WizardStep extends JPanel {
       this.add( panel, BorderLayout.CENTER );
    }
 
+   /** @todo why the spaces for layout? */
    protected void addHelp( String text ) {
       JLabel label = new JLabel( text );
       JLabel jLabel1 = new JLabel( "      " );
@@ -65,7 +70,18 @@ public abstract class WizardStep extends JPanel {
       labelPanel.add( jLabel4, BorderLayout.EAST );
       this.add( labelPanel, BorderLayout.NORTH );
    }
+   
+   
+   /**
+    * Print a message to the status bar.
+    * @param a
+    */
+    public void showStatus( String a ) {
+       owner.showStatus( a );
+    }
+   
 
+   /** @todo this probably sould be elsewhere */
    protected boolean testfile( String filename ) {
       if ( filename != null && filename.length() > 0 ) {
          File f = new File( filename );

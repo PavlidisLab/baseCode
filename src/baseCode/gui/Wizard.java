@@ -2,14 +2,20 @@ package baseCode.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
+import baseCode.util.StatusViewer;
 
 /**
  * <p>
@@ -31,8 +37,12 @@ import javax.swing.JPanel;
 
 public abstract class Wizard extends JDialog {
    JPanel mainPanel;
-   BorderLayout borderLayout1 = new BorderLayout();
+   FlowLayout flowlayout1 = new FlowLayout();
    JPanel BottomPanel = new JPanel();
+   JPanel BottomPanelWrap = new JPanel();
+   JLabel jLabelStatus = new JLabel();
+   JPanel jPanelStatus = new JPanel();
+   
    protected JButton nextButton = new JButton();
    protected JButton backButton = new JButton();
    protected JButton cancelButton = new JButton();
@@ -40,6 +50,7 @@ public abstract class Wizard extends JDialog {
    protected int step;
    Vector steps = new Vector();
    protected JFrame callingframe;
+   private StatusViewer statusMessenger;
 
    public Wizard( JFrame callingframe, int width, int height ) {
       //enableEvents(AWTEvent.WINDOW_EVENT_MASK);
@@ -53,8 +64,11 @@ public abstract class Wizard extends JDialog {
       setResizable( true );
       mainPanel = ( JPanel ) this.getContentPane();
       mainPanel.setPreferredSize( new Dimension( width, height ) );
-      mainPanel.setLayout( borderLayout1 );
+      mainPanel.setLayout( new BorderLayout() );
 
+      	// holds the buttons and the status bar.
+      BottomPanelWrap.setLayout( new BorderLayout() );
+      
       //bottom buttons/////////////////////////////////////////////////////////
       BottomPanel.setPreferredSize( new Dimension( width, 40 ) );
       nextButton.setText( "Next >" );
@@ -78,9 +92,39 @@ public abstract class Wizard extends JDialog {
       BottomPanel.add( backButton, null );
       BottomPanel.add( nextButton, null );
       BottomPanel.add( finishButton, null );
-      mainPanel.add( BottomPanel, BorderLayout.SOUTH );
+      
+      // status bar
+      jPanelStatus.setBorder( BorderFactory.createEtchedBorder() );
+      jLabelStatus.setFont( new java.awt.Font( "Dialog", 0, 11 ) );
+      jLabelStatus.setPreferredSize(new Dimension(width - 40, 19) );
+      jLabelStatus.setHorizontalAlignment( SwingConstants.LEFT );
+      jPanelStatus.add( jLabelStatus, null );
+      statusMessenger = new StatusJlabel( jLabelStatus );
+   //   showStatus("Status goes here");
+      
+      BottomPanelWrap.add( BottomPanel, BorderLayout.NORTH );
+      BottomPanelWrap.add( jPanelStatus, BorderLayout.SOUTH );
+      
+      mainPanel.add( BottomPanelWrap, BorderLayout.SOUTH );
+     
    }
 
+   /**
+   * Print a message to the status bar.
+   * @param a
+   */
+   public void showStatus( String a ) {
+      statusMessenger.setStatus( a );
+   }
+   
+   /**
+    * Make the status bar empty.
+    *
+    */
+   public void clearStatus() {
+      statusMessenger.setStatus("");
+   }
+   
    protected void addStep( int step, WizardStep panel ) {
       steps.add( step - 1, panel );
       if ( step == 1 )
@@ -156,3 +200,4 @@ class Wizard_finishButton_actionAdapter implements
       adaptee.finishButton_actionPerformed( e );
    }
 }
+

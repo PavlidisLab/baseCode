@@ -12,8 +12,6 @@ import java.text.DecimalFormat;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import baseCode.graphics.text.Util;
-
 /**
  * A GUI legend component that displays a color map as a color gradient from min
  * to max, traversing all the colors in the color map.

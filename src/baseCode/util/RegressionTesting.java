@@ -64,9 +64,9 @@ public class RegressionTesting {
  
    /**
     * Test whether two DoubleArrayLists are 'close enough' to call equal.
-    * @param DoubleArrayList a
-    * @param DoubleArrayList b
-    * @param double tolerance
+    * @param a
+    * @param b
+    * @param tolerance
     * @return
     */
    public static boolean closeEnough(DoubleArrayList a, DoubleArrayList b, double tolerance) {

@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
@@ -420,10 +419,8 @@ public class JMatrixDisplay extends JPanel {
     *        class, like ColorMap.REDGREEN_COLORMAP and
     *        ColorMap.BLACKBODY_COLORMAP
     * 
-    * @throws an exception if the colorMap array argument contains less than two
-    *         colors.
     */
-   public void setColorMap( Color[] colorMap ) throws IllegalArgumentException {
+   public void setColorMap( Color[] colorMap )  {
 
       m_standardizedMatrix.setColorMap( colorMap );
       m_unstandardizedMatrix.setColorMap( colorMap );
@@ -433,7 +430,7 @@ public class JMatrixDisplay extends JPanel {
     * @return the current color map
     */
    public Color[] getColorMap() {
-      assert( m_matrix.m_colorMap == m_standardizedMatrix.m_colorMap );
+    //  assert( m_matrix.m_colorMap == m_standardizedMatrix.m_colorMap );
       return m_matrix.m_colorMap;
    }
 
