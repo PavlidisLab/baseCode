@@ -1,4 +1,4 @@
-package baseCodeTest;
+package baseCodeTest.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -20,12 +20,12 @@ public class MatrixDisplayApp {
    //Construct the application
    public MatrixDisplayApp(String inDataFilename, String outPngFilename) {
 
-      
+
       JFrame frame = new JFrame();
       frame.getContentPane().setLayout( new BorderLayout() );
       frame.setSize( new Dimension( 600, 550 ) );
       frame.setTitle( "Eisen Plot" );
-      
+
 
       //
       // Here is an example of how you'd display a matrix of doubles

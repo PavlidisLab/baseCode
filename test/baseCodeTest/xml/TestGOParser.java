@@ -26,7 +26,7 @@ public class TestGOParser
       super.setUp();
       InputStream i =
          GOParser.class.getResourceAsStream( "/data/go-termdb-sample.xml" );
-   //   GOParser.class.getResourceAsStream( "/data/go_200406-termdb.xml" );
+    //  GOParser.class.getResourceAsStream( "/data/go_200406-termdb.xml" );
       if ( i == null ) {
          throw new Exception( "Couldn't read the sample file" );
       }

@@ -1,4 +1,4 @@
-package baseCodeTest;
+package baseCodeTest.gui;
 
 import java.awt.FlowLayout;
 import java.awt.Dimension;
@@ -17,12 +17,12 @@ import baseCode.gui.ColorMap;
  * @version $Id$
  */
 public class GradientBarApp {
-   
+
    boolean packFrame = false;
 
    /** Creates a new instance of GradientBarApp */
    public GradientBarApp() {
-            
+
       JFrame frame = new JFrame();
       frame.getContentPane().setLayout( new FlowLayout() );
       frame.setSize( new Dimension( 300, 300 ) );
@@ -31,7 +31,7 @@ public class GradientBarApp {
       Color[] colorMap = ColorMap.GREENRED_COLORMAP;
       JGradientBar gradientBar = new JGradientBar( "-2", "+2", colorMap );
       gradientBar.setLabels( "a", "b" );
-      
+
       frame.getContentPane().add( gradientBar );
 
       //Validate frames that have preset sizes
@@ -65,5 +65,5 @@ public class GradientBarApp {
          e.printStackTrace();
       }
       new GradientBarApp();
-   }   
+   }
 }
