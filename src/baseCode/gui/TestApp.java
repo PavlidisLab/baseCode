@@ -20,19 +20,31 @@ public class TestApp {
     //
     // Here is an example of how you'd display a microarray
     //
-    JMatrixDisplay matrixDisplay = new JMatrixDisplay( new ColorMatrix( dataFilename ));
+    ColorMatrix matrix = null;
+    try {
+       matrix = new ColorMatrix( dataFilename );
+    }
+    catch (java.io.IOException e) {
+       System.err.println("Unable to open file " + dataFilename);
+       return;
+    }
+    
+    JMatrixDisplay matrixDisplay = new JMatrixDisplay( matrix );
     matrixDisplay.getMatrix().standardize();
-    //matrixDisplay.showRowNames( true ); // can be called any time: after the component has already been added for instance.
-
+    matrixDisplay.showLabels( true ); // can be called any time: after the component has already been added for instance.
+    
     try {
        matrixDisplay.saveScreenshotToFile( outPngFilename );
     }
     catch (java.io.IOException e) {
-       System.err.println("IOException: unable to save screenshot to " + outPngFilename);
+       System.err.println("Unable to save screenshot to file " + outPngFilename);
+       return;
     }
 
     frame.getContentPane().add( matrixDisplay, BorderLayout.CENTER );
-    frame.setSize( matrixDisplay.getSize() );
+    Dimension d = new Dimension( matrixDisplay.getSize() );
+    d.height += 20; // for the title frame
+    frame.setSize( d );
 
     //Validate frames that have preset sizes
     //Pack frames that have useful preferred size info, e.g. from their layout
