@@ -12,7 +12,6 @@ public class JMatrixDisplay extends JPanel {
   ColorMatrix m_colorMatrix;
 
   boolean m_isPrintLabels = true;
-  boolean m_isImageSnapshot = true;
   BufferedImage m_image = null;
 
   private int m_ratioWidth = 0, m_labelWidth = 70;
@@ -25,9 +24,9 @@ public class JMatrixDisplay extends JPanel {
   private int m_textSize = 0;
   protected static int m_rowHeight = 10; // in pixels
   protected static int m_rowWidth = 5; // in pixels
-  
+
   private boolean picOnceSaved = false;
-  
+
   public JMatrixDisplay() {
 
      this( new ColorMatrix() );
@@ -69,87 +68,65 @@ public class JMatrixDisplay extends JPanel {
   protected void paintComponent( Graphics g ) {
 
     super.paintComponent(g);
+    drawDisplay( g, m_colorMatrix );
 
-    if (m_colorMatrix != null)
-    {
-      Graphics2D ig = null;
-      if (m_isImageSnapshot) {
-        m_image = new BufferedImage(this.getWidth(),
-                                    this.getHeight(),
-                                    BufferedImage.TYPE_INT_RGB);
-        ig = m_image.createGraphics();
-        ig.setColor(Color.white);
-        ig.fillRect(0, 0, this.getWidth(), this.getHeight());
-      }
-      int fontGutter = (int) ( (double) m_rowHeight * .22);
-      int rowCount = m_colorMatrix.getRowCount();
-      int columnCount = m_colorMatrix.getColumnCount();
-
-      // loop through the microarray
-      for (int i = 0;  i < rowCount;  i++)
-      {
-        int y = i * m_rowHeight;
-
-        for (int j = 0;  j < columnCount;  j++)
-        {
-          int x = (j * m_rowWidth);
-          int width = ( (j + 1) * m_rowWidth) - x;
-
-          Color color = m_colorMatrix.getColor( i, j );
-          g.setColor(color);
-
-          if (m_isImageSnapshot)
-            ig.setColor(color);
-
-          g.fillRect(x, y, width, m_rowHeight);
-
-          if (m_isImageSnapshot)
-            ig.fillRect(x, y, width, m_rowHeight);
-        }
-
-        if (m_isPrintLabels && columnCount > 0)
-        {
-
-           g.setColor(Color.black);
-           if (m_isImageSnapshot)
-               ig.setColor(Color.black);
-
-           setFont();
-
-           g.setFont(m_labelFont);
-           if (m_isImageSnapshot)
-               ig.setFont(m_labelFont);
-
-           int xRatio = (columnCount * m_rowWidth) + m_labelGutter;
-           int yRatio = y + m_rowHeight - fontGutter;
-           String rowName = m_colorMatrix.getRowName( i );
-           if (null == rowName)
-           {
-              rowName = "Undefined";
-           }
-           g.drawString( rowName, xRatio, yRatio );
-           if (m_isImageSnapshot)
-              ig.drawString( rowName, xRatio, yRatio );
-
-        } // end if print row (row) labels
-
-      } // end for rows
-    } // end if (microarray != null)
-    
-    if ( ! picOnceSaved )
-    {
-        picOnceSaved = true;
-        // save screenshot to file
-        String filename = "C:\\matrix.png";
-        try {
-            saveToFile( filename );
-        }
-        catch (java.io.IOException e) {
-            System.err.println ("IOException: unable to save screenshot to " + filename);
-        }
+    if (!picOnceSaved) {
+       picOnceSaved = true;
+       // save screenshot to file
+       String filename = "C:\\matrix.png";
+       try {
+          saveToFile(filename);
+       }
+       catch (java.io.IOException e) {
+          System.err.println("IOException: unable to save screenshot to " + filename);
+       }
     }
-    
   } // end paintComponent
+
+  /**
+   * Gets called from #paintComponent and #saveToFile
+   */
+  protected void drawDisplay( Graphics g, ColorMatrix colorMatrix ) {
+
+     if (colorMatrix != null)
+     {
+        g.setColor(Color.white);
+        g.fillRect(0, 0, this.getWidth(), this.getHeight());
+
+        int fontGutter = (int) ( (double) m_rowHeight * .22);
+        int rowCount = colorMatrix.getRowCount();
+        int columnCount = colorMatrix.getColumnCount();
+
+        // loop through the microarray
+        for (int i = 0;  i < rowCount;  i++)
+        {
+           int y = i * m_rowHeight;
+
+           for (int j = 0; j < columnCount; j++) {
+              int x = (j * m_rowWidth);
+              int width = ( (j + 1) * m_rowWidth) - x;
+
+              Color color = colorMatrix.getColor(i, j);
+              g.setColor(color);
+              g.fillRect(x, y, width, m_rowHeight);
+           }
+
+           if (m_isPrintLabels && columnCount > 0) {
+
+              g.setColor(Color.black);
+              setFont();
+              g.setFont(m_labelFont);
+              int xRatio = (columnCount * m_rowWidth) + m_labelGutter;
+              int yRatio = y + m_rowHeight - fontGutter;
+              String rowName = colorMatrix.getRowName(i);
+              if (null == rowName) {
+                 rowName = "Undefined";
+              }
+              g.drawString(rowName, xRatio, yRatio);
+           } // end if print row (row) labels
+        } // end for rows
+     } // end if (colorMatrix != null)
+  } // end drawDisplay
 
   /**
    * Sets the <code>Font</code> used for drawing text
@@ -179,6 +156,14 @@ public class JMatrixDisplay extends JPanel {
    */
   public void saveToFile( String outFileName ) throws java.io.IOException {
 
+     Graphics2D g = null;
+     m_image = new BufferedImage(this.getWidth(),
+                                 this.getHeight(),
+                                 BufferedImage.TYPE_INT_RGB);
+     g = m_image.createGraphics();
+
+     drawDisplay( g, m_colorMatrix );
+
       ImageIO.write( m_image, "png", new File( outFileName ));
-  }  
+  }
 }
