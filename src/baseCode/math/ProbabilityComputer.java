@@ -1,6 +1,7 @@
 package baseCode.math;
 
 /**
+ * An interface that describes objects that can produce probabilities according to some distribution. 
  * <hr>
  * <p>
  * Copyright (c) 2004 Columbia University

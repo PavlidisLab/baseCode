@@ -24,8 +24,38 @@ import cern.colt.list.ObjectArrayList;
 public class Rank {
 
    /**
-    * Rank transform an array. Ties are not handled specially. The ranks are constructed based on the sort order of the elements.
-    * That is, low values get low numbered ranks.
+    * Return a permutation which puts the array in sorted order. In other words, the values returned indicate the
+    * positions of the sorted values in the current array (the lowest value has the lowest rank, but it could be located
+    * anywhere in the array).
+    * 
+    * @param array
+    * @return
+    */
+   public static IntArrayList order( DoubleArrayList array ) {
+
+      // FIXME this is easily done, albeit very inefficiently, if we 1) get the ranks and then 2) find the indexes of the
+      // ranks.
+      IntArrayList ranks = rankTransform( array );
+
+      IntArrayList order = new IntArrayList( ranks.size() );
+
+      for ( int i = 0; i < ranks.size(); i++ ) {
+
+         // find the ith item.
+         for ( int j = 0; j < ranks.size(); j++ ) {
+            if ( i == ranks.getQuick( j ) ) {
+               order.add(  j );
+               break;
+            }
+         }
+
+      }
+      return order;
+   }
+
+   /**
+    * Rank transform an array. Ties are not handled specially. The ranks are constructed based on the sort order of the
+    * elements. That is, low values get low numbered ranks.
     * 
     * @param array DoubleArrayList
     * @return cern.colt.list.DoubleArrayList
@@ -98,37 +128,6 @@ public class Rank {
       }
       return result;
    }
-
-   /**
-    * Return mean of top 2 elements in array. Used for histogram range setting. O(2N) runtime.
-    * 
-    * @param inArray double[]
-    * @return double
-    */
-   public static double meanOfTop2( double[] inArray ) {
-      double max1 = -Double.MAX_VALUE;
-      double max2 = -Double.MAX_VALUE;
-      int pin = 0;
-
-      if ( inArray.length < 2 ) {
-         throw new IllegalArgumentException(
-               "Insufficient values, must be at least 2" );
-      }
-
-      for ( int i = 0; i < inArray.length; i++ ) {
-         if ( max1 < inArray[i] ) {
-            max1 = inArray[i];
-            pin = i;
-         }
-      }
-      for ( int i = 0; i < inArray.length; i++ ) {
-         if ( i != pin && max2 < inArray[i] ) {
-            max2 = inArray[i];
-         }
-      }
-      return ( max1 + max2 ) / 2;
-   }
-
 }
 
 /*
@@ -148,7 +147,7 @@ class rankData implements Comparable {
    public int compareTo( Object a ) {
       rankData other = ( rankData ) ( a );
       if ( this.value < other.getValue() ) {
-         return   -1;
+         return -1;
       } else if ( this.value > other.getValue() ) {
          return 1;
       } else {
@@ -183,7 +182,7 @@ class keyAndValueData implements Comparable {
       keyAndValueData other = ( keyAndValueData ) ob;
 
       if ( this.value < other.value ) {
-         return  -1;
+         return -1;
       } else if ( this.value > other.value ) {
          return 1;
       } else {
