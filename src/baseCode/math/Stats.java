@@ -24,7 +24,7 @@ import cern.jet.stat.Descriptive;
  */
 public class Stats {
 
-   private Stats() {
+   private Stats() { /* block instantiation */
    };
 
    /**
@@ -180,8 +180,8 @@ public class Stats {
     * @return
     */
    public static double range( DoubleArrayList data ) {
-      return DescriptiveWithMissing.max( data )
-            - DescriptiveWithMissing.min( data );
+      return Descriptive.max( data )
+            - Descriptive.min( data );
    }
 
    /**

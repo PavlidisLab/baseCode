@@ -20,7 +20,7 @@ import baseCode.dataStructure.StringMatrix2DNamed;
  * <p>
  * Institution:: Columbia University
  * </p>
- * 
+ *
  * @author Paul Pavlidis
  * @version $Id$
  */
@@ -37,8 +37,8 @@ public class StringMatrixReader extends AbstractNamedMatrixReader {
 
    /**
     * Missing values are entered as an empty string.
-    * 
-    * @param stream
+    *
+    * @param stream InputStream
     * @return NamedMatrix
     * @throws IOException
     */

@@ -50,6 +50,8 @@ public class RowNameFilter extends AbstractFilter implements Filter {
 
    /**
     * Filter according to row names.
+    * @param data
+    * @return
     */
    public NamedMatrix filter( NamedMatrix data ) {
       Vector MTemp = new Vector();

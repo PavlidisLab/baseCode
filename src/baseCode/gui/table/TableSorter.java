@@ -68,7 +68,7 @@ import baseCode.gui.JMatrixDisplay;
 public class TableSorter
     extends AbstractTableModel {
    protected TableModel tableModel;
-   private JMatrixDisplay m_matrixDisplay;
+   JMatrixDisplay m_matrixDisplay;
 
    public static final int DESCENDING = -1;
    public static final int NOT_SORTED = 0;
@@ -88,13 +88,13 @@ public class TableSorter
    };
 
    private Row[] viewToModel;
-   private int[] modelToView;
+   int[] modelToView;
 
    private JTableHeader tableHeader;
    private MouseListener mouseListener;
    private TableModelListener tableModelListener;
    private Map columnComparators = new HashMap();
-   private List sortingColumns = new ArrayList();
+   List sortingColumns = new ArrayList();
 
    public TableSorter() {
       this.mouseListener = new MouseHandler();
@@ -117,7 +117,7 @@ public class TableSorter
       m_matrixDisplay = matrixDisplay;
    }
 
-   private void clearSortingState() {
+   void clearSortingState() {
       viewToModel = null;
       modelToView = null;
    }
@@ -262,7 +262,7 @@ public class TableSorter
       return getViewToModel()[viewIndex].modelIndex;
    }
 
-   private int[] getModelToView() {
+   int[] getModelToView() {
       if ( modelToView == null ) {
          int n = getViewToModel().length;
          modelToView = new int[n];
@@ -307,7 +307,7 @@ public class TableSorter
 
    private class Row
        implements Comparable {
-      private int modelIndex;
+      int modelIndex;
 
       public Row( int index ) {
          this.modelIndex = index;
@@ -561,7 +561,7 @@ public class TableSorter
 
    private class SortableHeaderRenderer
        implements TableCellRenderer {
-      private TableCellRenderer tableCellRenderer;
+      TableCellRenderer tableCellRenderer;
 
       public SortableHeaderRenderer( TableCellRenderer tableCellRenderer ) {
          this.tableCellRenderer = tableCellRenderer;
@@ -577,8 +577,8 @@ public class TableSorter
              value, isSelected, hasFocus, row, column );
          if ( c instanceof JLabel ) {
             JLabel l = ( JLabel ) c;
-            l.setHorizontalTextPosition( JLabel.LEFT );
-            l.setVerticalAlignment( JLabel.BOTTOM );
+            l.setHorizontalTextPosition( SwingConstants.LEFT );
+            l.setVerticalAlignment( SwingConstants.BOTTOM );
             int modelColumn = table.convertColumnIndexToModel( column );
             l.setIcon( getHeaderRendererIcon( modelColumn, l.getFont().getSize() ) );
          }
@@ -587,8 +587,8 @@ public class TableSorter
    }
 
    private static class Directive {
-      private int column;
-      private int direction;
+      int column;
+      int direction;
 
       public Directive( int column, int direction ) {
          this.column = column;

@@ -144,6 +144,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
          f.filter( testdata );
          fail( "Should have gotten an exception" );
       } catch ( RuntimeException success ) {
+         
       }
    }
 

@@ -171,6 +171,7 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
 
    /**
     * Get all the parents of this node, recursively.
+    * @return
     */
    public Set getAllParentNodes() {
       return this.getAllParentNodes( null );

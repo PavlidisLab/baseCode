@@ -114,6 +114,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
          f.filter( testdata );
          fail( "Should have gotten an exception" );
       } catch ( IllegalArgumentException e ) {
+         System.err.println(e);
       }
 
    }
@@ -125,6 +126,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
          f.filter( testdata );
          fail( "Should have gotten an exception" );
       } catch ( IllegalStateException e ) {
+         System.err.println(e);
       }
 
    }
@@ -136,7 +138,9 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
          f.filter( testdata );
          fail( "Should have gotten an exception" );
       } catch ( IllegalStateException success ) {
+         System.err.println(success);
       } catch ( IllegalArgumentException success ) {
+         System.err.println(success);
       }
    }
 

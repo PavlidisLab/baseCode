@@ -15,9 +15,18 @@ import baseCode.dataStructure.SparseDoubleMatrix2DNamed;
 
 import cern.colt.list.DoubleArrayList;
 
+/**
+ * Tools to help make regression testing easier.
+ * 
+ *
+ * <hr>
+ * <p>Copyright (c) 2004 Columbia University
+ * @author pavlidis
+ * @version $Id$
+ */
 public class RegressionTesting {
 
-   private RegressionTesting() {
+   private RegressionTesting() { /* block instantiation */ 
    }
 
    //  private String resourcePath = "";
@@ -39,7 +48,8 @@ public class RegressionTesting {
 
    /**
     * @param resourceName
-    * @return @throws IOException
+    * @return the contents of the resource as a String
+    * @throws IOException
     */
    public static String readTestResult( String resourceName )
          throws IOException {

@@ -62,8 +62,7 @@ public class TestMatrixRowStats extends TestCase {
     * sumOfSquares(DenseDoubleMatrix2DNamed, DoubleArrayList)
     */
    public final void testSumOfSquaresDenseDoubleMatrix2DNamedDoubleArrayList() {
-      DoubleArrayList actualReturn = MatrixRowStats.sumOfSquares( testdata,
-            MatrixRowStats.means( testdata ) );
+      DoubleArrayList actualReturn = MatrixRowStats.sumOfSquares( testdata  );
       DoubleArrayList expectedReturn = new DoubleArrayList( new double[] {
             293847.67, 500060.93, 11146426060.47, 17712065.42, 18082011688.08,
             723701.66, 286139.3, 11612833039.53, 2918638887.99, 20682978339.68,

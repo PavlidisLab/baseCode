@@ -22,7 +22,7 @@ public class MatrixStats {
     * @return @throws OutOfMemoryError
     */
    public static DenseDoubleMatrix2DNamed correlationMatrix(
-         DenseDoubleMatrix2DNamed data ) throws OutOfMemoryError {
+         DenseDoubleMatrix2DNamed data ) {
       DenseDoubleMatrix2DNamed result = new DenseDoubleMatrix2DNamed( data
             .rows(), data.rows() );
 

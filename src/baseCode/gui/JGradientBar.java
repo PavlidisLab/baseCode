@@ -11,11 +11,12 @@ import java.text.DecimalFormat;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 /**
  * A GUI legend component that displays a color map as a color gradient from min
  * to max, traversing all the colors in the color map.
- * 
+ *
  * @author Will Braynen
  * @version $Id$
  */
@@ -31,12 +32,12 @@ public class JGradientBar extends JPanel {
 
 //      setOpaque( true );
 //      setBackground( Color.lightGray );
-      
+
       m_gradient = new JGradientLabel( EMPTY );
       m_min = new JNumberLabel();
       m_max = new JNumberLabel();
-      m_min.setHorizontalAlignment( JLabel.RIGHT );
-      m_max.setHorizontalAlignment( JLabel.LEFT );
+      m_min.setHorizontalAlignment( SwingConstants.RIGHT );
+      m_max.setHorizontalAlignment( SwingConstants.LEFT );
 
       Font font = getFont().deriveFont( Font.BOLD, 13.0f );
       m_min.setFont( font );
@@ -84,7 +85,7 @@ class JNumberLabel extends JLabel {
       setSize( d );
       setPreferredSize( d );
    }
-   
+
    public void setText( double number ) {
 
       // Only very small numbers (except for zero) as well as very large numbers
@@ -107,14 +108,18 @@ class JGradientLabel extends JLabel {
    protected static final int HEIGHT = 20;
    protected Color[] m_colorMap;
 
-   /** Creates a new instance of JGradientLabel */
+   /**
+    * Creates a new instance of JGradientLabel
+    *
+    * @param colorMap Color[]
+    */
    public JGradientLabel( Color[] colorMap ) {
 
       // colorMap should contain at least two colors
       if ( 0 == colorMap.length ) {
 
          // if there are no colors, default to grey for both colors
-         Color color = colorMap[0];
+
          colorMap = new Color[2];
          colorMap[0] = colorMap[1] = Color.LIGHT_GRAY;
       } else if ( 1 == colorMap.length ) {

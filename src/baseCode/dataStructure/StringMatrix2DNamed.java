@@ -1,8 +1,5 @@
 package baseCode.dataStructure;
 
-import java.util.Map;
-import java.util.Vector;
-
 import cern.colt.matrix.ObjectMatrix1D;
 import cern.colt.matrix.impl.DenseObjectMatrix2D;
 
@@ -21,10 +18,6 @@ import cern.colt.matrix.impl.DenseObjectMatrix2D;
 public class StringMatrix2DNamed extends AbstractNamedMatrix {
 
    private DenseObjectMatrix2D matrix;
-   private Vector rowNames;
-   private Vector colNames;
-   private Map rowMap; //contains a map of each row and elements in the row
-   private Map colMap;
 
    public StringMatrix2DNamed( int x, int y ) {
       super();

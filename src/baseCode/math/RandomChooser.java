@@ -16,7 +16,7 @@ import java.util.Random;
  */
 public class RandomChooser {
 
-   private RandomChooser() {
+   private RandomChooser() { /* block instantiation */
    }
 
    private static Random generator = new Random( System.currentTimeMillis() );

@@ -25,7 +25,6 @@ public class TestQueue extends TestCase {
 
    protected void setUp() throws Exception {
       super.setUp();
-      /** @todo verify the constructors */
       queue = new Queue();
       queue.enqueue( new Integer( 1 ) );
       queue.enqueue( new Integer( 2 ) );
@@ -86,6 +85,7 @@ public class TestQueue extends TestCase {
          shortQueue.enqueue( new Integer( 495 ) );
          fail( "Should raise an IndexOutOfBoundsException" );
       } catch ( IndexOutOfBoundsException success ) {
+         
       }
 
    }

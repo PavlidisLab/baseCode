@@ -1,6 +1,7 @@
 package baseCode.dataStructure;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 /**
  * <p>
@@ -49,7 +50,7 @@ public class Link extends Point {
     */
    public String toString() {
       return super.toString() + "\t"
-            + DecimalFormat.getInstance().format( this.weight );
+            + NumberFormat.getInstance().format( this.weight );
    }
 
 }

@@ -43,6 +43,7 @@ public abstract class AbstractGraphNode implements Comparable, GraphNode {
     * 
     * @param key
     * @param value
+    * @param graph
     */
    public AbstractGraphNode( Object key, Object value, Graph graph ) {
       this.setValue( key, value );

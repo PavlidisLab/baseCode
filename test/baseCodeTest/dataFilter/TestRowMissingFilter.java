@@ -102,6 +102,7 @@ public class TestRowMissingFilter extends AbstractTestFilter {
          f.setMinPresentFraction( 934109821 );
          fail( "Should have gotten an exception" );
       } catch ( IllegalArgumentException e ) {
+         
       }
 
    }
@@ -111,6 +112,7 @@ public class TestRowMissingFilter extends AbstractTestFilter {
          f.setMinPresentCount( -1093 );
          fail( "Should have gotten an exception" );
       } catch ( IllegalArgumentException e ) {
+        
       }
 
    }
@@ -120,6 +122,7 @@ public class TestRowMissingFilter extends AbstractTestFilter {
          f.setMaxFractionRemoved( 934109821 );
          fail( "Should have gotten an exception" );
       } catch ( IllegalArgumentException e ) {
+        
       }
 
    }
@@ -130,6 +133,7 @@ public class TestRowMissingFilter extends AbstractTestFilter {
          f.filter( testmissingdata );
          fail( "Should have gotten an exception" );
       } catch ( IllegalStateException e ) {
+       
       }
 
    }

@@ -28,7 +28,7 @@ import baseCode.graphics.text.Util;
  * <p>
  * Institution:: Columbia University
  * </p>
- * 
+ *
  * @author Will Braynen
  * @version $Id$
  */
@@ -131,7 +131,7 @@ public class JMatrixDisplay extends JPanel {
 
    /**
     * <code>JComponent</code> method used to render this component
-    * 
+    *
     * @param g Graphics used for painting
     */
    protected void paintComponent( Graphics g ) {
@@ -161,6 +161,9 @@ public class JMatrixDisplay extends JPanel {
 
    /**
     * Gets called from #paintComponent and #saveImage
+    *
+    * @param g Graphics
+    * @param leaveRoomForLabels boolean
     */
    protected void drawMatrix( Graphics g, boolean leaveRoomForLabels ) {
 
@@ -192,6 +195,8 @@ public class JMatrixDisplay extends JPanel {
 
    /**
     * Draws row names (horizontally)
+    *
+    * @param g Graphics
     */
    protected void drawRowNames( Graphics g ) {
 
@@ -219,6 +224,8 @@ public class JMatrixDisplay extends JPanel {
 
    /**
     * Draws column names vertically (turned 90 degrees counter-clockwise)
+    *
+    * @param g Graphics
     */
    protected void drawColumnNames( Graphics g ) {
 
@@ -270,6 +277,9 @@ public class JMatrixDisplay extends JPanel {
 
    /**
     * Saves the image to a png file.
+    *
+    * @param outPngFilename String
+    * @throws IOException
     */
    public void saveImage( String outPngFilename ) throws java.io.IOException {
       saveImage( outPngFilename, m_isShowLabels, m_isShowingStandardizedMatrix );
@@ -281,7 +291,11 @@ public class JMatrixDisplay extends JPanel {
    }
 
    /**
-    * @param standardize normalize to deviation 1, mean 0.
+    *
+    * @param outPngFilename String
+    * @param showLabels boolean
+    * @param standardize normalize to deviation 1, mean 0. @todo never read
+    * @throws IOException
     */
    public void saveImage( String outPngFilename, boolean showLabels,
          boolean standardize ) throws java.io.IOException {
@@ -322,6 +336,8 @@ public class JMatrixDisplay extends JPanel {
    /**
     * If this display component has already been added to the GUI, it will be
     * resized to fit or exclude the row names
+    *
+    * @param isShowLabels boolean
     */
    public void setLabelsVisible( boolean isShowLabels ) {
       m_isShowLabels = isShowLabels;
@@ -418,7 +434,7 @@ public class JMatrixDisplay extends JPanel {
     *        map; this can be one of the constants defined in the ColorMap
     *        class, like ColorMap.REDGREEN_COLORMAP and
     *        ColorMap.BLACKBODY_COLORMAP
-    * 
+    *
     */
    public void setColorMap( Color[] colorMap )  {
 
@@ -428,7 +444,6 @@ public class JMatrixDisplay extends JPanel {
 
    /**
     * @return the current color map
-    * @todo PP commented out assertion here.
     */
    public Color[] getColorMap() {
       return m_matrix.m_colorMap;
@@ -463,13 +478,13 @@ public class JMatrixDisplay extends JPanel {
    public void setDisplayRange( double min, double max ) {
       m_matrix.setDisplayRange( min, max );
    }
-   
+
    /**
     * @return the color used for missing values
     */
    public Color getMissingColor() {
       return m_matrix.m_missingColor;
    }
-   
+
 } // end class JMatrixDisplay
 

@@ -26,12 +26,13 @@ import baseCode.xml.GOParser;
  */
 public class TreePanelApp {
    private GOParser gOParser = null;
-   private TreePanel tree = null;
 
    /**
     * Constructor for TestTreePanel.
+    * @throws IOException
+    * @throws SAXException
     */
-   public TreePanelApp() throws IOException, SAXException, IOException {
+   public TreePanelApp() throws  SAXException, IOException {
 
       InputStream i =
       //           GOParser.class.getResourceAsStream("/data/go-termdb-sample.xml");

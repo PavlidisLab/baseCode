@@ -17,7 +17,6 @@ package baseCode.dataStructure;
 public class Stack {
 
    private Object[] stack;
-   private int capacity;
    private int top;
    private final static int DEFAULTCAPACITY = 10000;
 

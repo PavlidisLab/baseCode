@@ -22,14 +22,14 @@ import java.util.StringTokenizer;
  * <p>
  * Institution: Columbia University
  * </p>
- * 
+ *
  * @author Paul Pavlidis
  * @version $Id$
  */
 public class MapReader {
 
    /**
-    * 
+    *
     * @param filename String
     * @throws IOException
     * @return Map
@@ -39,16 +39,19 @@ public class MapReader {
    }
 
    /**
-    * 
-    * @param stream
+    *
+    * @param stream InputStream
     * @return @throws IOException
+    * @throws IOException
     */
    public Map read( InputStream stream ) throws IOException {
       return this.read( stream, false );
    }
 
    /**
+    *
     * @param filename name of the tab-delimited file
+    * @param hasHeader boolean
     * @return Map from the file.
     * @throws IOException
     */
@@ -63,10 +66,11 @@ public class MapReader {
    }
 
    /**
-    * 
-    * @param stream
-    * @param hasHeader
+    *
+    * @param stream InputStream
+    * @param hasHeader boolean
     * @return @throws IOException
+    * @throws IOException
     */
    public Map read( InputStream stream, boolean hasHeader ) throws IOException {
       Map result = new HashMap();

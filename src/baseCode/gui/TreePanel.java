@@ -28,8 +28,6 @@ import baseCode.dataStructure.graph.DirectedGraphNode;
  * @todo - this really doesn't do much.
  */
 public class TreePanel extends JPanel implements TreeSelectionListener {
-   //Optionally set the look and feel.
-   private static boolean useSystemLookAndFeel = false;
 
    private JTree tree;
    private JTextArea detailPane;

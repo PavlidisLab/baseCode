@@ -18,7 +18,7 @@ import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.NamedMatrix;
 
 /**
- * 
+ *
  * Reader for {@link baseCode.dataStructure.DenseDoubleMatrix2DNamed}.
  * <p>
  * Copyright (c) 2004
@@ -26,7 +26,7 @@ import baseCode.dataStructure.NamedMatrix;
  * <p>
  * Institution: Columbia University
  * </p>
- * 
+ *
  * @author Paul Pavlidis
  * @version $Id$
  */
@@ -35,6 +35,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
    /**
     * @param filename data file to read from
     * @return NamedMatrix object constructed from the data file
+    * @throws IOException
     */
    public NamedMatrix read( String filename ) throws IOException {
       return read( filename, null );
@@ -43,27 +44,34 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
    /**
     * @param stream InputStream stream to read from
     * @return NamedMatrix object constructed from the data file
+    * @throws IOException
     */
    public NamedMatrix read( InputStream stream ) throws IOException {
       return read( stream, null );
    }
 
    /**
+    *
+    * @param stream InputStream
+    * @param wantedRowNames Set
     * @return <code>read( stream, wantedRowNames, createEmptyRows )</code> with
-    *         <code>createEmptyRows</code> set to true.
+    *   <code>createEmptyRows</code> set to true.
+    * @throws IOException
     */
    public NamedMatrix read( InputStream stream, Set wantedRowNames )
          throws IOException {
             return read( stream, wantedRowNames, true );
    }
-   
+
    /**
-    * @param stream
-    * @param wantedRowNames
+    *
+    * @param stream InputStream
+    * @param wantedRowNames Set
     * @param createEmptyRows if a row contained in <code>wantedRowNames</code>
-    *                        is not found in the file, create an empty row
-    *                        filled with Double.NaN iff this param is true. 
-    * @return @throws IOException
+    *   is not found in the file, create an empty row filled with Double.NaN
+    *   iff this param is true.
+    * @return matrix
+    * @throws IOException
     */
    public NamedMatrix read( InputStream stream, Set wantedRowNames, boolean createEmptyRows )
          throws IOException {
@@ -88,7 +96,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
       if ( wantedRowNames != null && createEmptyRows ) {
          wantedRowsFound = new HashSet();
       }
-      
+
       colNames = readHeader( dis );
       int numHeadings = colNames.size();
 
@@ -121,7 +129,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
                wantedRowsFound.add( s );
             }
          }
-         
+
          //
          // If we're here, that means this row in the file contains the row
          // we want -- we don't want to skip this file row, so parse it
@@ -196,7 +204,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
          rowNumber++;
       }
       stream.close();
-      
+
       //
       // Add empty rows for each row name we didn't find in the file
       //
@@ -213,18 +221,19 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
             }
          }
       }
-      
-      return createMatrix( MTemp, rowNumber, numHeadings, 
+
+      return createMatrix( MTemp, rowNumber, numHeadings,
       rowNames, colNames );
 
    }
 
    /**
     * Read a matrix from a file, subject to filtering criteria.
-    * 
+    *
     * @param filename data file to read from
     * @param wantedRowNames contains names of rows we want to get
     * @return NamedMatrix object constructed from the data file
+    * @throws IOException
     */
    public NamedMatrix read( String filename, Set wantedRowNames )
          throws IOException {
@@ -241,7 +250,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
 
       DenseDoubleMatrix2DNamed matrix = new DenseDoubleMatrix2DNamed( rowCount,
             colCount );
-     
+
       for ( int i = 0; i < matrix.rows(); i++ ) {
          for ( int j = 0; j < matrix.columns(); j++ ) {
             if ( (( DoubleArrayList ) MTemp.get( i )).size() < j + 1 ) {
@@ -258,9 +267,9 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
       return matrix;
 
    } // end createMatrix
-   
+
    protected DoubleArrayList createEmptyRow( int numColumns ) {
-    
+
       DoubleArrayList row = new DoubleArrayList();
       for ( int i = 0;  i < numColumns;  i++ ) {
          row.add( Double.NaN );

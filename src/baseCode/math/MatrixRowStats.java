@@ -19,23 +19,17 @@ import cern.colt.list.DoubleArrayList;
  */
 public class MatrixRowStats {
 
-   private MatrixRowStats() {
-   }
-
-   public static DoubleArrayList sumOfSquares(
-         DenseDoubleMatrix2DNamed M ) {
-      return sumOfSquares( M, means( M ) );
-   }
-
+   
+   private MatrixRowStats() { /* keep us from instantiating this */ }
+   
    /**
     * Calculates the sum of squares for each row of a matrix
     * 
     * @param M DenseDoubleMatrix2DNamed
-    * @param means DoubleArrayList
     * @return DoubleArrayList
     */
    public static DoubleArrayList sumOfSquares(
-         DenseDoubleMatrix2DNamed M, DoubleArrayList means ) {
+         DenseDoubleMatrix2DNamed M ) {
       DoubleArrayList r = new DoubleArrayList();
 
       for ( int i = 0; i < M.rows(); i++ ) {
@@ -46,6 +40,7 @@ public class MatrixRowStats {
       return r;
    }
 
+ 
    /**
     * Calculates the means of a matrix's rows.
     * 

@@ -16,7 +16,7 @@ import java.awt.Color;
  * <p>
  * Institution:: Columbia University
  * </p>
- * 
+ *
  * @author Will Braynen
  * @version $Id$
  */
@@ -57,7 +57,12 @@ public class ColorMap {
       this( m_defaultSuggestedNumberOfColors, colorMap );
    }
 
-   /** Pre-condition: suggestedNumberOfColors > colorMap.length */
+   /**
+    * Pre-condition: suggestedNumberOfColors > colorMap.length
+    *
+    * @param suggestedNumberOfColors int
+    * @param colorMap Color[]
+    */
    public ColorMap( int suggestedNumberOfColors, Color[] colorMap ) {
 
       m_currentColorMap = colorMap;
@@ -67,9 +72,10 @@ public class ColorMap {
    /**
     * Calculate how fast we have to change color components. Assume min and max
     * colors are different!
-    * 
+    *
     * @param minColor red, green, or blue component of the RGB color
     * @param maxColor red, green, or blue component of the RGB color
+    * @param totalColors int
     * @return positive or negative step size
     */
    protected int getStepSize( int minColor, int maxColor, int totalColors ) {
@@ -81,7 +87,7 @@ public class ColorMap {
 
    /**
     * Allocates colors across a range.
-    * 
+    *
     * @param suggestedNumberOfColors palette resolution; if colorPalette.length
     *        does not evenly divide into this number, the actual number of
     *        colors in the palette will be rounded down.

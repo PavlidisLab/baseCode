@@ -26,6 +26,7 @@ public class StatusDebugLogger implements StatusViewer {
    }
 
    public void clear() {
+      // don't need to do anything.
    }
 
 }

@@ -80,7 +80,7 @@ public class MatrixDisplayApp {
       try {
          matrixDisplay.setColorMap( ColorMap.GREENRED_COLORMAP );
       }
-      catch( IllegalArgumentException e ) {}
+      catch( IllegalArgumentException e ) {e.printStackTrace();}
       
       matrixDisplay.setStandardizedEnabled( false );
       

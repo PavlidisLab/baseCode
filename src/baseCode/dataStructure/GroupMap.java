@@ -71,6 +71,7 @@ public class GroupMap {
     * @param filename Duplicate map file name to be read by a MapReader.
     * @param dataMatrix Data file this the map refers to.
     * @return Map
+    * @throws IOException
     */
    public Map read( String filename, DenseDoubleMatrix2DNamed dataMatrix )
          throws IOException {
