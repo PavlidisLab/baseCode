@@ -1,0 +1,16 @@
+Name	n.trt	n.ctrl	col.trt	col.ctrl	inf.trt	inf.ctrl
+Ciresi	124	127	15	21	13	14
+George	44	35	10	25	1	3
+Hannan	68	60	22	22	5	7
+Heard	151	157	60	82	5	6
+vanHeerden	28	26	4	10	NA	NA
+Maki	208	195	28	47	2	9
+Bach(a)	14	12	0	4	NA	NA
+Ramsay	199	189	45	63	1	4
+Appavu	12	7	1	1	NA	NA
+Trazzera	123	99	16	24	4	5
+Collins	98	139	2	25	1	4
+Bach(b)	116	117	2	16	0	3
+Tennenberg	137	145	8	32	5	9
+Pemberton	32	40	NA	NA	2	3
+Logghe	338	342	NA	NA	17	15
