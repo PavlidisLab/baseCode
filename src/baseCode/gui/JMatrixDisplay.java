@@ -313,4 +313,13 @@ public class JMatrixDisplay extends JPanel {
      m_cellSize = d;
      initSize();
   }
-}
+  
+  public Color getColor( int row, int column, boolean showStandardizedMatrix ) {
+     
+     if (showStandardizedMatrix)
+        return m_standardizedMatrix.getColor( row, column );
+     else
+        return m_matrix.getColor( row, column );
+  } // end getColor
+  
+} // end class JMatrixDisplay
