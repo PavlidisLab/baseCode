@@ -1,17 +1,10 @@
 package baseCode.Gui;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-
 import javax.imageio.ImageIO;
-import javax.swing.JPanel;
+import java.io.File;
 
 // vertical text
 import java.awt.geom.AffineTransform;
@@ -54,7 +47,7 @@ public class JMatrixDisplay extends JPanel {
 
   public JMatrixDisplay( ColorMatrix matrix ) {
 
-     m_matrix = matrix;
+     m_matrix = matrix;     
      initSize();
   }
 
@@ -62,34 +55,44 @@ public class JMatrixDisplay extends JPanel {
    * Sets the display size
    */
   protected void initSize() {
+     
+    Dimension d = getSize( m_isShowLabels );
+    setMinimumSize( d );
+    setPreferredSize( d );
+    setSize( d );
+    this.revalidate();
+}
+  
+  
+  protected Dimension getSize( boolean withLabels ) {
 
-    if (m_matrix != null)
+    if (m_matrix == null)
     {
-      // row label width and height (font-dependent)
-      setFont();
-      m_rowLabelWidth = m_labelGutter + maxStringPixelWidth( m_matrix.getRowNames(), m_labelFont, this );
-      //m_rowLabelWidth += m_labelGutter; // this is optional (leaves some space on the right)
-      m_columnLabelHeight = m_labelGutter + maxStringPixelWidth( m_matrix.getColumnNames(), m_labelFont, this );
-
-      // height and width of this display component
-      int height = m_cellHeight * m_matrix.getRowCount();
-      int width  = m_cellWidth  * m_matrix.getColumnCount();
-
-      // adjust for row and column labels
-      if (m_isShowLabels)
-      {
-          width  += m_rowLabelWidth;
-          height += m_columnLabelHeight;
-      }
-
-      // set the sizes
-      Dimension d = new Dimension( width, height );
-      setMinimumSize( d );
-      setPreferredSize( d );
-      setSize( d );
-      this.revalidate();
+       return null;
     }
-  }
+    
+    // row label width and height (font-dependent)
+    setFont();
+    m_rowLabelWidth = m_labelGutter + maxStringPixelWidth( m_matrix.getRowNames(), m_labelFont, this );
+    //m_rowLabelWidth += m_labelGutter; // this is optional (leaves some space on the right)
+    m_columnLabelHeight = maxStringPixelWidth( m_matrix.getColumnNames(), m_labelFont, this );
+    //m_columnLabelHeight += m_labelGutter; // this is optional (leaves some space on top)
+
+    // height and width of this display component
+    int height = m_cellHeight * m_matrix.getRowCount();
+    int width  = m_cellWidth  * m_matrix.getColumnCount();
+
+    // adjust for row and column labels
+    if (withLabels)
+    {
+       width  += m_rowLabelWidth;
+       height += (m_columnLabelHeight + m_labelGutter);
+    }
+
+    // set the sizes
+    return new Dimension( width, height );
+      
+  } // end getSize
 
   /**
    * <code>JComponent</code> method used to render this component
@@ -97,76 +100,92 @@ public class JMatrixDisplay extends JPanel {
    */
   protected void paintComponent( Graphics g ) {
 
-    super.paintComponent(g);
-    drawDisplay( g, m_matrix );
-
+      super.paintComponent(g);
+      drawMatrix( g, m_isShowLabels );
+    
+      if (m_isShowLabels)
+      {
+         drawRowNames( g );
+         drawColumnNames( g );
+      }    
   } // end paintComponent
 
   /**
    * Gets called from #paintComponent and #saveToFile
    */
-  protected void drawDisplay( Graphics g, ColorMatrix matrix ) {
+  protected void drawMatrix( Graphics g, boolean leaveRoomForLabels ) {
 
-     if (matrix != null)
+     if (m_matrix == null) return;
+
+     g.setColor(Color.white);
+     g.fillRect(0, 0, this.getWidth(), this.getHeight());
+
+     int rowCount = m_matrix.getRowCount();
+     int columnCount = m_matrix.getColumnCount();
+
+     // loop through the matrix, one row at a time
+     for (int i = 0;  i < rowCount;  i++)
      {
-        g.setColor(Color.white);
-        g.fillRect(0, 0, this.getWidth(), this.getHeight());
-
-        int rowCount = matrix.getRowCount();
-        int columnCount = matrix.getColumnCount();
-
-
-        if (m_isShowLabels && columnCount > 0)
+        int y = (i * m_cellHeight);
+        if (leaveRoomForLabels)
         {
-           drawColumnNames( g );
+           y += (m_columnLabelHeight + m_labelGutter);
         }
 
-        // loop through the matrix, one row at a time
-        for (int i = 0;  i < rowCount;  i++)
+        // draw an entire row, one cell at a time
+        for (int j = 0; j < columnCount; j++)
         {
-           int y = (i * m_cellHeight) + m_columnLabelHeight + m_labelGutter;
+           int x = (j * m_cellWidth);
+           int width = ( (j + 1) * m_cellWidth) - x;
 
-           // draw an entire row, one cell at a time
-           for (int j = 0; j < columnCount; j++)
-           {
-              int x = (j * m_cellWidth);
-              int width = ( (j + 1) * m_cellWidth) - x;
+           Color color = m_matrix.getColor(i, j);
+           g.setColor(color);
+           g.fillRect(x, y, width, m_cellHeight);
+        }
 
-              Color color = matrix.getColor(i, j);
-              g.setColor(color);
-              g.fillRect(x, y, width, m_cellHeight);
-           }
+     } // end looping through the matrix, one row at a time
+  } // end drawMatrix
 
-           // print row names
-           if (m_isShowLabels && columnCount > 0)
-           {
-              g.setColor(Color.black);
-              g.setFont(m_labelFont);
-              int xRatio = (columnCount * m_cellWidth) + m_labelGutter;
-              int yRatio = y + m_cellHeight - m_fontGutter;
-              String rowName = matrix.getRowName(i);
-              rowName = rowName.trim();  // remove leading and trailing whitespace
-              if (null == rowName) {
-                 rowName = "Undefined";
-              }
-              g.drawString(rowName, xRatio, yRatio);
-           } // end printing row names
-        } // end looping through the matrix, one row at a time
-     } // end if (matrix != null)
-  } // end drawDisplay
+  /**
+   * Draws row names (horizontally)
+   */
+  protected void drawRowNames( Graphics g ) {
 
+      if (m_matrix == null) return;
+
+      int rowCount = m_matrix.getRowCount();
+
+      // draw row names
+      for (int i = 0;  i < rowCount;  i++)
+      {
+         g.setColor( Color.black );
+         g.setFont( m_labelFont );
+         int y = (i * m_cellHeight) + m_columnLabelHeight + m_labelGutter;
+         int xRatio = (m_matrix.getColumnCount() * m_cellWidth) + m_labelGutter;
+         int yRatio = y + m_cellHeight - m_fontGutter;
+         String rowName = m_matrix.getRowName( i );
+         rowName = rowName.trim();  // remove leading and trailing whitespace
+         if (null == rowName) {
+            rowName = "Undefined";
+         }
+         g.drawString(rowName, xRatio, yRatio);
+      } // end drawing row names
+  } // end rawRowName
+  
   /**
    * Draws column names vertically (turned 90 degrees counter-clockwise)
    */
   protected void drawColumnNames( Graphics g ) {
 
+     if (m_matrix == null) return;
+     
      int columnCount = m_matrix.getColumnCount();
      for (int j = 0;  j < columnCount;  j++)
      {
         // compute the coordinates
         int x = m_cellWidth + (j * m_cellWidth) - m_fontGutter;
         int y = m_columnLabelHeight;
-
+        
         // get column name
         String columnName = m_matrix.getColumnName( j );
         if (null == columnName) {
@@ -176,7 +195,7 @@ public class JMatrixDisplay extends JPanel {
         // set font and color
         g.setColor( Color.black );
         g.setFont( m_labelFont );
-
+        
         // print the text vertically
         Graphics2D g2 = (Graphics2D)g;
         AffineTransform fontAT = new AffineTransform();
@@ -185,28 +204,27 @@ public class JMatrixDisplay extends JPanel {
         FontRenderContext frc = g2.getFontRenderContext();
         Font theDerivedFont = m_labelFont.deriveFont( fontAT );
         TextLayout tstring = new TextLayout( columnName, theDerivedFont, frc );
-        //  g2.transform(at); // shift to new coordinates.
         tstring.draw( g2, x, y );
      } // end for column
   } // end drawColumnNames
-
+  
   /**
    * ----------- SHOULD PROBABLY NOT BE IN THIS CLASS -----------
    *
    * @return  the pixel width of the string for the specified font.
    */
   public static int stringPixelWidth( String s, Font font, Component c ) {
-
+     
      FontMetrics fontMetrics = c.getFontMetrics( font );
      return fontMetrics.charsWidth( s.toCharArray(), 0, s.length() );
-
+     
   } // end stringPixelWidth
-
+  
   /**
    * ----------- SHOULD PROBABLY NOT BE IN THIS CLASS -----------
    */
   public static int maxStringPixelWidth( String[] strings, Font font, Component c ) {
-
+     
      // the number of chars in the longest string
      int maxWidth = 0;
      int width;
@@ -219,12 +237,12 @@ public class JMatrixDisplay extends JPanel {
         if (maxWidth < width)
            maxWidth = width;
      }
-
+     
      return maxWidth;
-
+     
   } // end getMaxPixelWidth
-
-
+  
+  
   /**
    * Sets the font used for drawing text
    */
@@ -248,27 +266,59 @@ public class JMatrixDisplay extends JPanel {
      return Math.max( m_cellHeight, 5 );
   }
 
+  
+  
   /**
-   * Saves screenshot to file
+   * Saves the image to a png file. The image file will <i>always</i> include 
+   * row and column names!
    */
-  public void saveScreenshotToFile( String outPngFilename ) throws java.io.IOException {
+  public void saveToFile( String outPngFilename ) throws java.io.IOException {
+     
+     saveToFile( outPngFilename, true );
+  }
+  
+  /**
+   * Saves the image to a png file.
+   */
+  public void saveToFile( String outPngFilename, boolean showLabels ) throws java.io.IOException {
 
      Graphics2D g = null;
-     m_image = new BufferedImage(this.getWidth(),
-                                 this.getHeight(),
-                                 BufferedImage.TYPE_INT_RGB);
+     
+     boolean wereLabelsShown = m_isShowLabels;
+     if ( ! wereLabelsShown ) 
+     {
+        // labels aren't visible, so make them visible
+        setLabelsVisible( true );
+        initSize();
+     }
+     
+     // draw the image to a buffer
+     Dimension d = getSize( showLabels ); // how big is the image with row and column labels
+     m_image = new BufferedImage( d.width, d.height, BufferedImage.TYPE_INT_RGB );
      g = m_image.createGraphics();
+     drawMatrix( g, showLabels );
+     if (showLabels)
+     {
+        drawRowNames( g );
+        drawColumnNames( g );
+     }
 
-     drawDisplay( g, m_matrix );
-
-      ImageIO.write( m_image, "png", new File( outPngFilename ));
-  }
+     // write the image to a png file
+     ImageIO.write( m_image, "png", new File( outPngFilename ));
+     
+     if ( ! wereLabelsShown )
+     {
+        // labels weren't visible to begin with, so hide them
+        setLabelsVisible( false );
+        initSize();
+     }
+  } // end saveToFile
 
   /**
    * If this display component has already been added to the GUI,
    * it will be resized to fit or exclude the row names
    */
-  public void showLabels( boolean isShowLabels ) {
+  public void setLabelsVisible( boolean isShowLabels ) {
      m_isShowLabels = isShowLabels;
      initSize();
   }
