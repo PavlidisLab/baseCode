@@ -14,3 +14,5 @@ baseCode.jar
 baseCorrelMatrixTest.jar
 coreCorrelMatrixTest.jar
 core.jar
+doc
+target
