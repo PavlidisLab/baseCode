@@ -179,7 +179,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
                   throw new IOException(
                         "Missing values not allowed for row labels" );
                }
-               rowNames.add( s );
+               rowNames.add( s.intern() );
             }
 
             columnNumber++;
@@ -247,7 +247,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
             if ( (( DoubleArrayList ) MTemp.get( i )).size() < j + 1 ) {
                matrix.set( i, j, Double.NaN );
                // this allows the input file to have ragged ends.
-               // todo I'm not sure this is a good idea -PP
+               // todo I'm not sure allowing ragged inputs is a good idea -PP
             } else {
                matrix.set( i, j, (( DoubleArrayList ) MTemp.get( i )).elements()[j]);
             }
