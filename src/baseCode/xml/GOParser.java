@@ -48,7 +48,7 @@ public class GOParser {
       Map nodes = m.getItems();
       Map result = new HashMap();
       for (Iterator it = nodes.keySet().iterator(); it.hasNext();) {
-         DirectedGraphNode node = ( DirectedGraphNode)it.next();
+         DirectedGraphNode node = ( DirectedGraphNode)nodes.get(it.next());
          OntologyEntry e = (OntologyEntry)node.getItem();
          result.put(e.getId(), e.getName());
       }
