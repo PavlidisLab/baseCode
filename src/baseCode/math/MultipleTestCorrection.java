@@ -27,7 +27,7 @@ public class MultipleTestCorrection {
     */
    public static double BonferroniCut( DoubleArrayList pvalues, double fwe ) {
       int numpvals = pvalues.size();
-      return fwe / ( double ) numpvals;
+      return fwe /  numpvals;
    }
 
    /**
@@ -49,7 +49,6 @@ public class MultipleTestCorrection {
       int n = pvalcop.size();
       double thresh = fdr * n / numpvals;
 
-      double corrected_p;
       for ( int i = 0; i < n; i++ ) {
          double p = pvalcop.get( i );
 

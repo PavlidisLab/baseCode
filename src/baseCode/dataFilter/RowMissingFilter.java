@@ -47,8 +47,8 @@ public class RowMissingFilter extends AbstractFilter implements Filter {
     */
    public void setMinPresentFraction( double k ) {
       if ( k < 0.0 || k > 1.0 )
-         throw new IllegalArgumentException(
-               "Min present fraction must be between 0 and 1, got " + k );
+            throw new IllegalArgumentException(
+                  "Min present fraction must be between 0 and 1, got " + k );
       minPresentFractionIsSet = true;
       minPresentFraction = k;
    }
@@ -61,8 +61,8 @@ public class RowMissingFilter extends AbstractFilter implements Filter {
     */
    public void setMaxFractionRemoved( double f ) {
       if ( f < 0.0 || f > 1.0 )
-         throw new IllegalArgumentException(
-               "Max fraction removed must be between 0 and 1, got " + f );
+            throw new IllegalArgumentException(
+                  "Max fraction removed must be between 0 and 1, got " + f );
       maxFractionRemovedIsSet = true;
       maxFractionRemoved = f;
    }
@@ -108,7 +108,7 @@ public class RowMissingFilter extends AbstractFilter implements Filter {
       }
 
       /* decide whether we need to invoke the 'too many removed' clause */
-      if ( kept < ( double ) numRows * ( 1.0 - maxFractionRemoved )
+      if ( kept <   numRows * ( 1.0 - maxFractionRemoved )
             && maxFractionRemoved != 0.0 ) {
          IntArrayList sortedPresent = new IntArrayList( numRows );
          sortedPresent = present.copy();
@@ -123,10 +123,10 @@ public class RowMissingFilter extends AbstractFilter implements Filter {
                      + " non-missing values, but that's too many given the max fraction of "
                      + maxFractionRemoved
                      + "; minpresent adjusted to "
-                     + ( int ) sortedPresent
-                           .get( ( int ) ( ( double ) numRows * ( maxFractionRemoved ) ) ) );
-         minPresentCount = ( int ) sortedPresent
-               .get( ( int ) ( ( double ) numRows * ( maxFractionRemoved ) ) );
+                     + sortedPresent
+                           .get( ( int ) ( numRows * ( maxFractionRemoved ) ) ) );
+         minPresentCount = sortedPresent
+               .get( ( int ) ( numRows * ( maxFractionRemoved ) ) );
 
          // Do another pass to add rows we missed before.
          kept = 0;

@@ -10,6 +10,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 
+import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.SparseDoubleMatrix2DNamed;
+
 import cern.colt.list.DoubleArrayList;
 
 public class RegressionTesting {
@@ -72,6 +75,44 @@ public class RegressionTesting {
       for (int i = 0; i < a.size(); i++) {
          if (Math.abs(a.getQuick(i) - b.getQuick(i)) > tolerance) 
             return false;
+      }
+      return true;
+   }
+   
+   /**
+    * Test whether two DenseDoubleMatrix2DNamed's are 'close enough' to call equal.
+    * @param a
+    * @param b
+    * @param tolerance
+    * @return try if all the values in both matrices are within 'tolerance' of each other.
+    */
+   public static boolean closeEnough(DenseDoubleMatrix2DNamed a, DenseDoubleMatrix2DNamed b, double tolerance) {
+      if (a.rows() != b.rows() || a.columns() != b.columns()) return false;
+      
+      for (int i = 0; i < a.rows(); i++) {
+         for (int j = 0; j < a.columns(); j++) {
+         if (Math.abs(a.getQuick(i,j) - b.getQuick(i,j)) > tolerance) 
+            return false;
+         }
+      }
+      return true;
+   }
+   
+   /**
+    * Test whether two SparseDoubleMatrix2DNamed are 'close enough' to call equal.
+    * @param a
+    * @param b
+    * @param tolerance
+    * @return
+    */
+   public static boolean closeEnough(SparseDoubleMatrix2DNamed a, SparseDoubleMatrix2DNamed b, double tolerance) {
+      if (a.rows() != b.rows() || a.columns() != b.columns()) return false;
+      
+      for (int i = 0; i < a.rows(); i++) {
+         for (int j = 0; j < a.columns(); j++) {
+         if (Math.abs(a.getQuick(i,j) - b.getQuick(i,j)) > tolerance) 
+            return false;
+         }
       }
       return true;
    }

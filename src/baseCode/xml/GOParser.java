@@ -2,8 +2,9 @@ package baseCode.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
-
-import javax.xml.parsers.ParserConfigurationException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -14,6 +15,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import baseCode.dataStructure.OntologyEntry;
 import baseCode.dataStructure.graph.DirectedGraph;
+import baseCode.dataStructure.graph.DirectedGraphNode;
 
 /**
  * 
@@ -28,13 +30,33 @@ public class GOParser {
 
    private DirectedGraph m;
 
+   /**
+    * Get the graph that was created.
+    * @return a DirectedGraph. Nodes contain OntologyEntry instances.
+    */
    public DirectedGraph getGraph() {
       return m;
    }
 
-   public GOParser( InputStream i ) throws IOException,
-         ParserConfigurationException, SAXException,
-         ParserConfigurationException {
+   /**
+    * Get a simple Map that contains keys that are the GO ids, values are the names.
+    * This can replace the functionality of the GONameReader in classScore.
+    * 
+    * @return Map
+    */
+   public Map getGONameMap() {
+      Map nodes = m.getItems();
+      Map result = new HashMap();
+      for (Iterator it = nodes.keySet().iterator(); it.hasNext();) {
+         DirectedGraphNode node = ( DirectedGraphNode)it.next();
+         OntologyEntry e = (OntologyEntry)node.getItem();
+         result.put(e.getId(), e.getName());
+      }
+      return result;
+   }
+   
+   
+   public GOParser( InputStream i ) throws IOException, SAXException {
       System.setProperty( "org.xml.sax.driver",
             "org.apache.xerces.parsers.SAXParser" );
 

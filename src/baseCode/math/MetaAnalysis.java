@@ -28,7 +28,7 @@ public class MetaAnalysis {
          r += Math.log( pvals.getQuick( i ) );
       }
       r *= -2.0;
-      return Probability.chiSquare( r, 2.0 * ( double ) pvals.size() );
+      return Probability.chiSquare( r, 2.0 *   pvals.size() );
    }
 
    /**
@@ -43,7 +43,7 @@ public class MetaAnalysis {
          r += pvals.getQuick( i );
       }
       r *= -2.0;
-      return Probability.chiSquare( r, 2.0 * ( double ) pvals.size() );
+      return Probability.chiSquare( r, 2.0 *  pvals.size() );
    }
 
    /**

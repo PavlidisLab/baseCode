@@ -153,7 +153,8 @@ public class Stats {
     * @param effectiveSize The size of the array, not including NaNs.
     * @return double
     */
-   public static double meanAboveQuantile( int index, double[] array , int effectiveSize) {
+   public static double meanAboveQuantile( int index, double[] array,
+         int effectiveSize ) {
 
       double[] temp = new double[effectiveSize];
       double median;
@@ -204,37 +205,37 @@ public class Stats {
             }
          }
          return ans;
-      } else {
-         double[] temp = new double[effectiveSize];
-
-         for ( int i = 0; i < effectiveSize; i++ ) {
-            temp[i] = values[i];
-         }
-
-         pivot = temp[0];
-
-         double[] smaller = new double[effectiveSize];
-         double[] bigger = new double[effectiveSize];
-         int itrSm = 0;
-         int itrBg = 0;
-         for ( int i = 1; i < effectiveSize; i++ ) {
-            if ( temp[i] <= pivot ) {
-               smaller[itrSm] = temp[i];
-               itrSm++;
-            } else if ( temp[i] > pivot ) {
-               bigger[itrBg] = temp[i];
-               itrBg++;
-            }
-         }
-         if ( itrSm > index ) { // quantile must be in the 'smaller' array
-            return quantile( index, smaller, itrSm );
-         } else if ( itrSm < index ) { // quantile is in the 'bigger' array
-            return quantile( index - itrSm - 1, bigger, itrBg );
-         } else {
-            return pivot;
-         }
-
       }
+      
+      double[] temp = new double[effectiveSize];
+
+      for ( int i = 0; i < effectiveSize; i++ ) {
+         temp[i] = values[i];
+      }
+
+      pivot = temp[0];
+
+      double[] smaller = new double[effectiveSize];
+      double[] bigger = new double[effectiveSize];
+      int itrSm = 0;
+      int itrBg = 0;
+      for ( int i = 1; i < effectiveSize; i++ ) {
+         if ( temp[i] <= pivot ) {
+            smaller[itrSm] = temp[i];
+            itrSm++;
+         } else if ( temp[i] > pivot ) {
+            bigger[itrBg] = temp[i];
+            itrBg++;
+         }
+      }
+      if ( itrSm > index ) { // quantile must be in the 'smaller' array
+         return quantile( index, smaller, itrSm );
+      } else if ( itrSm < index ) { // quantile is in the 'bigger' array
+         return quantile( index - itrSm - 1, bigger, itrBg );
+      } else {
+         return pivot;
+      }
+
    }
 
 }

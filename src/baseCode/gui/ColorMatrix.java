@@ -7,6 +7,7 @@ import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.reader.DoubleMatrixReader;
 import baseCode.math.DescriptiveWithMissing;
 import baseCode.math.MatrixRowStats;
+import baseCode.math.MatrixStats;
 import cern.colt.list.DoubleArrayList;
 
 /**
@@ -220,8 +221,8 @@ public class ColorMatrix implements Cloneable {
       m_colors = new Color[m_totalRows][m_totalColumns];
       createRowKeys();
 
-      m_displayMin = m_min = MatrixRowStats.min( m_matrix );
-      m_displayMax = m_max = MatrixRowStats.max( m_matrix );
+      m_displayMin = m_min = MatrixStats.min( m_matrix );
+      m_displayMax = m_max = MatrixStats.max( m_matrix );
 
       // map values to colors
       mapValuesToColors();

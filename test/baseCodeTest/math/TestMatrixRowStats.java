@@ -124,16 +124,6 @@ public class TestMatrixRowStats extends TestCase {
             actualReturn, 0.00001 ) );
    }
 
-   public final void testMin() {
-      double expectedReturn = -965.3;
-      double actualReturn = MatrixRowStats.min( testdata );
-      assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
-   }
 
-   public final void testMax() {
-      double expectedReturn = 44625.7;
-      double actualReturn = MatrixRowStats.max( testdata );
-      assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
-   }
 
 }

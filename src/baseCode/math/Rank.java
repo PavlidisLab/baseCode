@@ -85,7 +85,7 @@ public class Rank {
                   "Attempt to rank a map with non-Double values" );
          }
 
-         double val = ( double ) ( ( ( Double ) m.get( key ) ).doubleValue() );
+         double val = ( ( Double ) m.get( key ) ).doubleValue();
          values[counter] = new keyAndValueData( key, val );
          counter++;
       }
@@ -101,7 +101,8 @@ public class Rank {
    }
 
    /**
-    * Return mean of top 2 elements in array. Used for histogram range setting. O(2N) runtime.
+    * Return mean of top 2 elements in array. Used for histogram range setting.
+    * O(2N) runtime.
     * 
     * @param inArray double[]
     * @return double
@@ -112,7 +113,8 @@ public class Rank {
       int pin = 0;
 
       if ( inArray.length < 2 ) {
-         throw new IllegalArgumentException( "Insufficient values, must be at least 2" );
+         throw new IllegalArgumentException(
+               "Insufficient values, must be at least 2" );
       }
 
       for ( int i = 0; i < inArray.length; i++ ) {

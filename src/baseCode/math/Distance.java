@@ -121,7 +121,7 @@ public class Distance {
          sxy += xj * yj;
       }
 
-      return sxy / ( double ) xe.length;
+      return sxy /  xe.length;
    }
 
    /**
@@ -159,6 +159,6 @@ public class Distance {
       if ( length == 0 ) {
          return -2.0; // flag of illegal value.
       }
-      return sxy / ( double ) length;
+      return sxy /  length;
    }
 }

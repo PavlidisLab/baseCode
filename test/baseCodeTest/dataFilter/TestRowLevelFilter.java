@@ -141,8 +141,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
    public final void testFilterBadFraction() {
       try {
          f.setLowCut( 110.3, true );
-         DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) f
-               .filter( testdata );
+         f.filter( testdata );
          fail( "Should have gotten an exception" );
       } catch ( RuntimeException success ) {
       }

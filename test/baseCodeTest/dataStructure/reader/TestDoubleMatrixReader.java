@@ -23,7 +23,7 @@ public class TestDoubleMatrixReader extends TestCase {
    DoubleMatrixReader reader = null;
    InputStream ism = null;
    InputStream ismb = null; // missing, with bad rows.
-
+   InputStream isbig = null; // missing, with bad rows.
    /*
     * @see TestCase#setUp()
     */
@@ -38,6 +38,9 @@ public class TestDoubleMatrixReader extends TestCase {
 
       ismb = TestStringMatrixReader.class
             .getResourceAsStream( "/data/testdatamissing-badrows.txt" );
+      
+      isbig = TestStringMatrixReader.class
+      .getResourceAsStream( "/data/melanoma_and_sarcomaMAS5.txt" );
    }
 
    /*
@@ -45,6 +48,11 @@ public class TestDoubleMatrixReader extends TestCase {
     */
    protected void tearDown() throws Exception {
       super.tearDown();
+      is.close();
+      ism.close();
+      ismb.close();
+      isbig.close();
+      matrix = null;
    }
 
    public void testReadInputStreamMissing() {
@@ -61,8 +69,6 @@ public class TestDoubleMatrixReader extends TestCase {
    public void testReadInputStreamMissingBad() {
       try {
          matrix = ( DenseDoubleMatrix2DNamed ) reader.read( ismb );
-         int actualReturn = matrix.rows();
-         int expectedReturn = 30;
          fail( "Should have gotten an IO error" );
       } catch ( IOException e ) {
       }
@@ -117,5 +123,19 @@ public class TestDoubleMatrixReader extends TestCase {
          e.printStackTrace();
       }
    }
+   
+//   public void testReadInputStreamBig() {
+//      try {
+//         matrix = ( DenseDoubleMatrix2DNamed ) reader.read( isbig );
+//         int actualReturn = matrix.rows();
+//         int expectedReturn = 12533;
+//         assertEquals( "return value ",
+//               expectedReturn, actualReturn );
+//      } catch ( IOException e ) {
+//         e.printStackTrace();
+//      } catch ( OutOfMemoryError e) {
+//         e.printStackTrace();
+//      }
+//   }
 
 }

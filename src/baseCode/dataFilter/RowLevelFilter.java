@@ -159,33 +159,33 @@ public class RowLevelFilter extends AbstractLevelFilter {
          }
 
          switch ( method ) {
-         case MIN: {
-            criteria.set( i, DescriptiveWithMissing.min( rowAsList ) );
-            break;
-         }
-         case MAX: {
-            criteria.set( i, DescriptiveWithMissing.max( rowAsList ) );
-            break;
-         }
-         case MEAN: {
-            criteria.set( i, DescriptiveWithMissing.mean( rowAsList ) );
-            break;
-         }
-         case MEDIAN: {
-            criteria.set( i, DescriptiveWithMissing.median( rowAsList ) );
-            break;
-         }
-         case RANGE: {
-            criteria.set( i, Stats.range( rowAsList ) );
-            break;
-         }
-         case CV: {
-            criteria.set( i, Stats.cv( rowAsList ) );
-            break;
-         }
-         default: {
-            break;
-         }
+            case MIN: {
+               criteria.set( i, DescriptiveWithMissing.min( rowAsList ) );
+               break;
+            }
+            case MAX: {
+               criteria.set( i, DescriptiveWithMissing.max( rowAsList ) );
+               break;
+            }
+            case MEAN: {
+               criteria.set( i, DescriptiveWithMissing.mean( rowAsList ) );
+               break;
+            }
+            case MEDIAN: {
+               criteria.set( i, DescriptiveWithMissing.median( rowAsList ) );
+               break;
+            }
+            case RANGE: {
+               criteria.set( i, Stats.range( rowAsList ) );
+               break;
+            }
+            case CV: {
+               criteria.set( i, Stats.cv( rowAsList ) );
+               break;
+            }
+            default: {
+               break;
+            }
          }
       }
 
@@ -208,7 +208,7 @@ public class RowLevelFilter extends AbstractLevelFilter {
          }
          int thresholdIndex = 0;
          thresholdIndex = ( int ) Math
-               .ceil( ( ( double ) consideredRows * ( 1.0 - highCut ) ) ) - 1;
+               .ceil( consideredRows * ( 1.0 - highCut ) ) - 1;
 
          thresholdIndex = Math.max( 0, thresholdIndex );
          realHighCut = sortedCriteria.get( thresholdIndex );
@@ -224,8 +224,7 @@ public class RowLevelFilter extends AbstractLevelFilter {
 
          int thresholdIndex = 0;
          thresholdIndex = startIndex
-               + ( int ) Math
-                     .floor( ( ( double ) ( consideredRows * lowCut ) ) );
+               + ( int ) Math.floor( consideredRows * lowCut );
          thresholdIndex = Math.min( numRows - 1, thresholdIndex );
          realLowCut = sortedCriteria.get( thresholdIndex );
       } else {

@@ -21,17 +21,17 @@ public class CorrelationStats {
 
    private static DoubleMatrix2D correlationPvalLookup;
    private static final double BINSIZE = 0.005; // resolution of correlation.
-                                                // Differences smaller than this
-                                                // are considered meaningless.
+   // Differences smaller than this
+   // are considered meaningless.
    private static final double STEPSIZE = BINSIZE * 2; // this MUST be more than
-                                                       // the binsize.
+   // the binsize.
    private static final int MAXCOUNT = 1000; // maximum number of things.
    private static final double LOG10 = Math.log( 10.0 );
    private static final double PVALCHOP = 8.0; // value by which log(pvalues)
-                                               // are scaled before storing as
-                                               // bytes. Values less than
-                                               // 10^e-256/PVALCHOP are
-                                               // 'clipped'.
+   // are scaled before storing as
+   // bytes. Values less than
+   // 10^e-256/PVALCHOP are
+   // 'clipped'.
 
    static {
       int numbins = ( int ) Math.ceil( 1.0 / BINSIZE );
@@ -67,14 +67,14 @@ public class CorrelationStats {
       if ( count <= MAXCOUNT
             && correlationPvalLookup.getQuick( bin, dof ) != 0.0 ) {
          return correlationPvalLookup.getQuick( bin, dof );
-      } else {
-         double t = correlationTstat( acorrel, dof );
-         double p = Probability.studentT( dof, -t );
-         if ( count < MAXCOUNT ) {
-            correlationPvalLookup.setQuick( bin, dof, p );
-         }
-         return p;
       }
+      double t = correlationTstat( acorrel, dof );
+      double p = Probability.studentT( dof, -t );
+      if ( count < MAXCOUNT ) {
+         correlationPvalLookup.setQuick( bin, dof, p );
+      }
+      return p;
+
    }
 
    /**
@@ -136,7 +136,7 @@ public class CorrelationStats {
     * @return double
     */
    public static double byteToCorrel( int correlByte ) {
-      return ( double ) correlByte / 128.0 - 1.0;
+      return correlByte / 128.0 - 1.0;
    }
 
    /**
@@ -147,8 +147,7 @@ public class CorrelationStats {
     * @return double
     */
    public static double correlationTstat( double correl, int dof ) {
-      return correl
-            / Math.sqrt( ( 1.0 - correl * correl ) / ( double ) ( dof ) );
+      return correl / Math.sqrt( ( 1.0 - correl * correl ) / dof );
    }
 
    /**
@@ -177,10 +176,8 @@ public class CorrelationStats {
 
       if ( p > 0.5 ) {
          return 1.0 - p;
-      } else {
-         return p;
       }
-
+      return p;
    }
 
    /**
@@ -208,7 +205,7 @@ public class CorrelationStats {
          }
 
          if ( preverr * err < 0 ) { // opposite signs. Means we missed. Make
-                                    // step smaller and keep going.
+            // step smaller and keep going.
             step /= 2;
          }
 

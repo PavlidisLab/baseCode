@@ -51,7 +51,6 @@ public class ROC {
     * @return The p value.
     */
    public static double rocpval( int numpos, double aroc ) {
-      double logstdev = 0.0;
       double stdev = Math.exp( -0.5 * ( Math.log( numpos ) + 1 ) );
       double z = ( aroc - 0.5 ) / stdev;
 

@@ -10,7 +10,6 @@ import java.io.InputStream;
 import javax.swing.JFrame;
 import javax.swing.JTree;
 import javax.swing.UIManager;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
@@ -32,8 +31,7 @@ public class TreePanelApp {
    /**
     * Constructor for TestTreePanel.
     */
-   public TreePanelApp() throws IOException, SAXException,
-         ParserConfigurationException, IOException {
+   public TreePanelApp() throws IOException, SAXException, IOException {
 
       InputStream i =
       //           GOParser.class.getResourceAsStream("/data/go-termdb-sample.xml");

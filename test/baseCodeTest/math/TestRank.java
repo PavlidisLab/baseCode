@@ -75,7 +75,7 @@ public class TestRank extends TestCase {
 
    public void testRankTransformBadMap() {
       try {
-         Map actualReturn = Rank.rankTransform( testbadmap );
+         Rank.rankTransform( testbadmap );
          fail( "Should have generated an exception" );
       } catch ( IllegalArgumentException success ) {
       }

@@ -49,7 +49,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
       DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) f
             .filter( testdata );
       int expectedReturn = testdata.rows() - 7; // 7 rows have some absent or
-                                                // marginal.
+      // marginal.
       int actualReturn = filtered.rows();
       assertEquals( "return value", expectedReturn, actualReturn );
    }
@@ -80,7 +80,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
       StringMatrix2DNamed filtered = ( StringMatrix2DNamed ) f
             .filter( teststringdata );
       int expectedReturn = testdata.rows() - 7; // 7 rows have some missing or
-                                                // marginal OR absent.
+      // marginal OR absent.
       int actualReturn = filtered.rows();
       assertEquals( "return value", expectedReturn, actualReturn );
    }
@@ -102,7 +102,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
       DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) f
             .filter( testdata );
       int expectedReturn = testdata.rows() - 7; // 7 rows have some missing or
-                                                // marginal.
+      // marginal.
       int actualReturn = filtered.rows();
       assertEquals( "return value", expectedReturn, actualReturn );
    }
@@ -111,8 +111,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
       try {
          f.setFlagMatrix( testpdata );
          f.setMinPresentFraction( 934109821 );
-         DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) f
-               .filter( testdata );
+         f.filter( testdata );
          fail( "Should have gotten an exception" );
       } catch ( IllegalArgumentException e ) {
       }
@@ -123,8 +122,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
       try {
          f.setFlagMatrix( testpdata );
          f.setMinPresentCount( 129 );
-         DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) f
-               .filter( testdata );
+         f.filter( testdata );
          fail( "Should have gotten an exception" );
       } catch ( IllegalStateException e ) {
       }
@@ -135,8 +133,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
       try {
          f.setFlagMatrix( null );
          f.setMinPresentCount( 10 );
-         DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) f
-               .filter( testdata );
+         f.filter( testdata );
          fail( "Should have gotten an exception" );
       } catch ( IllegalStateException success ) {
       } catch ( IllegalArgumentException success ) {

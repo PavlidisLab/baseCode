@@ -127,8 +127,7 @@ public class TestRowMissingFilter extends AbstractTestFilter {
    public void testFilterPresentCountInvalid() {
       try {
          f.setMinPresentCount( 129 );
-         DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) f
-               .filter( testmissingdata );
+         f.filter( testmissingdata );
          fail( "Should have gotten an exception" );
       } catch ( IllegalStateException e ) {
       }

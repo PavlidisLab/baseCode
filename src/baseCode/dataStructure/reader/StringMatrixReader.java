@@ -90,9 +90,8 @@ public class StringMatrixReader extends AbstractNamedMatrixReader {
                if ( missing ) {
                   throw new IOException(
                         "Missing values not allowed for row labels" );
-               } else {
-                  rowNames.add( s );
                }
+               rowNames.add( s );
             }
 
             columnNumber++;
@@ -117,12 +116,12 @@ public class StringMatrixReader extends AbstractNamedMatrixReader {
                matrix.set( i, j, "" );
                // this allows the input file to have ragged ends.
             } else {
-               matrix.set( i, j, ( String ) ( ( Vector ) MTemp.get( i ) )
+               matrix.set( i, j, ( ( Vector ) MTemp.get( i ) )
                      .get( j ) );
             }
          }
       }
-
+      stream.close();
       return matrix;
 
    }

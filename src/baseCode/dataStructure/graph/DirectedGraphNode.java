@@ -92,7 +92,7 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
    public Set getChildNodes() {
       Set f = new LinkedHashSet();
       for ( Iterator i = this.getChildIterator(); i.hasNext(); ) {
-         Object k = ( Object ) i.next();
+         Object k =  i.next();
          f.add( getGraph().get( k ) );
       }
       return f;
@@ -107,7 +107,7 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
    public Set getParentNodes() {
       Set f = new LinkedHashSet();
       for ( Iterator i = this.getParentIterator(); i.hasNext(); ) {
-         Object k = ( Object ) i.next();
+         Object k =  i.next();
          f.add( getGraph().get( k ) );
       }
       return f;
@@ -239,7 +239,7 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
 
       for ( Iterator it = this.getChildIterator(); it.hasNext(); ) {
          Object j = it.next();
-         list.add( ( DirectedGraphNode ) getGraph().get( j ) );
+         list.add(   getGraph().get( j ) );
          ( ( DirectedGraphNode ) getGraph().get( j ) ).getAllChildNodes( list );
       }
       return list;
@@ -252,7 +252,7 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
 
       for ( Iterator it = this.getParentIterator(); it.hasNext(); ) {
          Object j = it.next();
-         list.add( ( DirectedGraphNode ) getGraph().get( j ) );
+         list.add(   getGraph().get( j ) );
          ( ( DirectedGraphNode ) getGraph().get( j ) ).getAllParentNodes( list );
       }
       return list;

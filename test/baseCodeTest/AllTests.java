@@ -33,6 +33,7 @@ public class AllTests extends TestCase {
       suite.addTestSuite( baseCodeTest.math.TestDescriptiveWithMissing.class );
       suite.addTestSuite( baseCodeTest.math.TestRank.class );
       suite.addTestSuite( baseCodeTest.math.TestMatrixRowStats.class );
+      suite.addTestSuite( baseCodeTest.math.TestMatrixStats.class );
       suite.addTestSuite( baseCodeTest.math.TestStats.class );
       suite.addTestSuite( baseCodeTest.math.TestSpecFunc.class );
       

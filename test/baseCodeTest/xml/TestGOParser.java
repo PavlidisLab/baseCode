@@ -2,12 +2,7 @@ package baseCodeTest.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import junit.framework.TestCase;
-
-import org.xml.sax.SAXException;
 
 import baseCode.util.RegressionTesting;
 import baseCode.xml.GOParser;
@@ -44,8 +39,7 @@ public class TestGOParser extends TestCase {
       super.tearDown();
    }
 
-   public void testGOParser() throws IOException, SAXException,
-         ParserConfigurationException {
+   public void testGOParser() throws IOException {
       String actualReturn = gOParser.getGraph().toString();
       String expectedReturn = RegressionTesting
             .readTestResult( "/data/goparsertestoutput.txt" );

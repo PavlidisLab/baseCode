@@ -106,16 +106,9 @@ public class RandomChooser {
     * @param n int
     */
    public static void chooserandomWrep( int[] randomnums, int max, int n ) {
-      int numgot;
-      int newnum, i;
-      int repeat;
-
-      numgot = 0;
-      for ( i = 0; i < n; i++ ) {
-         newnum = ( char ) ( generator.nextInt() % max );
-         repeat = 0;
+    for ( int i = 0; i < n; i++ ) {
+         int newnum = ( char ) ( generator.nextInt() % max );
          randomnums[i] = newnum;
-
       }
    }
 

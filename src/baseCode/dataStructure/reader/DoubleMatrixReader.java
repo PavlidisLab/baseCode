@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import cern.colt.list.DoubleArrayList;
+
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.NamedMatrix;
 
@@ -49,7 +51,6 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
     * @param stream
     * @param wantedRowNames
     * @return @throws IOException
-    * @todo should take a set, not an array.
     */
    public NamedMatrix read( InputStream stream, Set wantedRowNames )
          throws IOException {
@@ -96,7 +97,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
          //
          // If we're here, we don't want to skip this row, so parse it
          //
-         Vector rowTemp = new Vector();
+         DoubleArrayList rowTemp = new DoubleArrayList();
          columnNumber = 0;
          String previousToken = "";
 
@@ -140,17 +141,16 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
 
             if ( columnNumber > 0 ) {
                if ( missing ) {
-                  rowTemp.add( Double.toString( Double.NaN ) );
+                  rowTemp.add( Double.NaN   );
                } else {
-                  rowTemp.add( s );
+                  rowTemp.add( Double.parseDouble(s) );
                }
             } else {
                if ( missing ) {
                   throw new IOException(
                         "Missing values not allowed for row labels" );
-               } else {
-                  rowNames.add( s );
                }
+               rowNames.add( s );
             }
 
             columnNumber++;
@@ -166,7 +166,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
          }
          rowNumber++;
       }
-
+      stream.close();
       return createMatrix( MTemp, rowNumber, numHeadings, rowNames, colNames );
 
    }
@@ -175,9 +175,8 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
     * Read a matrix from a file, subject to filtering criteria.
     * 
     * @param filename data file to read from
-    * @param wantedRowNames contains names or rows we want to get
+    * @param Set wantedRowNames contains names of rows we want to get
     * @return NamedMatrix object constructed from the data file
-    * @todo make this take a set instead of a String[] for wantedRowNames.
     */
    public NamedMatrix read( String filename, Set wantedRowNames )
          throws IOException {
@@ -194,21 +193,20 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
 
       DenseDoubleMatrix2DNamed matrix = new DenseDoubleMatrix2DNamed( rowCount,
             colCount );
-      matrix.setRowNames( rowNames );
-      matrix.setColumnNames( colNames );
-
+     
       for ( int i = 0; i < matrix.rows(); i++ ) {
          for ( int j = 0; j < matrix.columns(); j++ ) {
-            if ( ( ( Vector ) MTemp.get( i ) ).size() < j + 1 ) {
+            if ( (( DoubleArrayList ) MTemp.get( i )).size() < j + 1 ) {
                matrix.set( i, j, Double.NaN );
                // this allows the input file to have ragged ends.
+               // todo I'm not sure this is a good idea -PP
             } else {
-               matrix.set( i, j, Double
-                     .parseDouble( ( String ) ( ( Vector ) MTemp.get( i ) )
-                           .get( j ) ) );
+               matrix.set( i, j, (( DoubleArrayList ) MTemp.get( i )).elements()[j]);
             }
          }
       }
+      matrix.setRowNames( rowNames );
+      matrix.setColumnNames( colNames );
       return matrix;
 
    } // end createMatrix
