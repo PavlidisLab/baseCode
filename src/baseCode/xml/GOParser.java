@@ -13,7 +13,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import baseCode.dataStructure.OntologyEntry;
+import baseCode.bio.GOEntry;
 import baseCode.dataStructure.graph.DirectedGraph;
 import baseCode.dataStructure.graph.DirectedGraphNode;
 
@@ -49,7 +49,7 @@ public class GOParser {
       Map result = new HashMap();
       for ( Iterator it = nodes.keySet().iterator(); it.hasNext(); ) {
          DirectedGraphNode node = ( DirectedGraphNode ) nodes.get( it.next() );
-         OntologyEntry e = ( OntologyEntry ) node.getItem();
+         GOEntry e = ( GOEntry ) node.getItem();
          result.put( e.getId().intern(), e.getName().intern() );
       }
       return result;
@@ -104,6 +104,7 @@ class GOHandler extends DefaultHandler {
    private boolean inIsa = false;
    private boolean inSyn = false;
 
+   private String currentAspect;
    private StringBuffer nameBuf;
    private StringBuffer accBuf;
    private StringBuffer defBuf;
@@ -126,8 +127,8 @@ class GOHandler extends DefaultHandler {
                .length() );
 
          if ( !m.containsKey( parent ) ) {
-            m.addNode( parent, new OntologyEntry( parent, "no name yet",
-                  "no definition yet" ) );
+            m.addNode( parent, new GOEntry( parent, "no name yet",
+                  "no definition yet", "no aspect yet" ) );
          }
          String currentTerm = accBuf.toString();
          m.addParentTo( currentTerm, parent );
@@ -139,8 +140,8 @@ class GOHandler extends DefaultHandler {
                .length() );
 
          if ( !m.containsKey( parent ) ) {
-            m.addNode( parent, new OntologyEntry( parent, "no name yet",
-                  "no definition yet" ) );
+            m.addNode( parent, new GOEntry( parent, "no name yet",
+                  "no definition yet", "no aspect yet" ) );
          }
          String currentTerm = accBuf.toString();
          m.addParentTo( currentTerm, parent );
@@ -158,12 +159,12 @@ class GOHandler extends DefaultHandler {
       } else if ( name.equals( "accession" ) ) {
          inAcc = false;
          String currentTerm = accBuf.toString();
-         m.addNode( currentTerm, new OntologyEntry( currentTerm, "no name yet",
-               "no definition yet" ) );
+         m.addNode( currentTerm, new GOEntry( currentTerm, "no name yet",
+               "no definition yet", "no aspect yet" ) );
       } else if ( name.equals( "definition" ) ) {
          String currentTerm = accBuf.toString();
-         ( ( OntologyEntry ) m.getNodeContents( currentTerm ) )
-               .setDefinition( defBuf.toString().intern() );
+         ( ( GOEntry ) m.getNodeContents( currentTerm ) ).setDefinition( defBuf
+               .toString().intern() );
          inDef = false;
       } else if ( name.equals( "is_a" ) ) {
          inIsa = false;
@@ -174,8 +175,20 @@ class GOHandler extends DefaultHandler {
       } else if ( name.equals( "name" ) ) {
          inName = false;
          String currentTerm = accBuf.toString();
-         ( ( OntologyEntry ) m.getNodeContents( currentTerm ) )
-               .setName( nameBuf.toString().intern() );
+
+         String currentName = nameBuf.toString().intern();
+
+         ( ( GOEntry ) m.getNodeContents( currentTerm ) ).setName( currentName );
+
+         if ( currentName.equals( "molecular_function" )
+               || currentName.equals( "biological_process" )
+               || currentName.equals( "cellular_component" ) ) {
+            currentAspect = currentName;
+         }
+
+         ( ( GOEntry ) m.getNodeContents( currentTerm ) )
+               .setAspect( currentAspect );
+
       }
    }
 

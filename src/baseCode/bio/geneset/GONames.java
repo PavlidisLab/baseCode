@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.xml.sax.SAXException;
 
-import baseCode.dataStructure.OntologyEntry;
+import baseCode.bio.GOEntry;
 import baseCode.dataStructure.graph.DirectedGraph;
 import baseCode.dataStructure.graph.DirectedGraphNode;
 import baseCode.xml.GOParser;
@@ -80,7 +80,7 @@ public class GONames {
             .getChildNodes();
       for ( Iterator it = children.iterator(); it.hasNext(); ) {
          DirectedGraphNode child = ( DirectedGraphNode ) it.next();
-         String childKey = ( ( OntologyEntry ) child.getItem() ).getId()
+         String childKey = ( ( GOEntry ) child.getItem() ).getId()
                .intern();
          returnVal.add( childKey.intern() );
       }
@@ -97,7 +97,7 @@ public class GONames {
             .getParentNodes();
       for ( Iterator it = parents.iterator(); it.hasNext(); ) {
          DirectedGraphNode parent = ( DirectedGraphNode ) it.next();
-         String parentKey = ( ( OntologyEntry ) parent.getItem() ).getId()
+         String parentKey = ( ( GOEntry ) parent.getItem() ).getId()
                .intern();
          returnVal.add( parentKey.intern() );
       }
@@ -125,6 +125,20 @@ public class GONames {
 
       return ( ( String ) ( goNameMap.get( go_ID ) ) ).intern();
    }
+   
+   
+   /**
+    * Get the aspect (molecular_function etc) for an id.
+    * @param go_ID
+    * @return
+    */
+   public String getAspectForId( String go_ID ) {
+      if ( !goNameMap.containsKey( go_ID ) ) {
+         return "<no aspect available>";
+      }
+      return ((GOEntry)getGraph().getNodeContents(go_ID)).getAspect();
+   }
+   
 
    /**
     * @param id String

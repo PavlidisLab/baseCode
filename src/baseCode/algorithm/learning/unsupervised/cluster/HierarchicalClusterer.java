@@ -90,6 +90,9 @@ public class HierarchicalClusterer implements ClusteringAlgorithm {
             continue;
          }
          double d = nodes.distanceTo( elA );
+         
+         //...
+         
       }
 
       objects.add( closestPairs.first() );

@@ -31,7 +31,16 @@ public class Cluster extends Distanceable {
       this.distAlg = distAlg;
       this.items = items;
    }
-
+   
+   /**
+    * 
+    * @return true if this cluster is made up of multiple distanceables, or multiple ones.
+    */
+   public boolean isCompound() {
+      return items != null && items.size() > 1;
+   }
+   
+   
    /*
     * (non-Javadoc)
     * 

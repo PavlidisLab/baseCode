@@ -54,7 +54,7 @@ public class HierarchicalClustererTest extends TestCase {
 
    public void testRun() {
       foo.run();
-      DoubleDistanceable[] expectedResults = new DoubleDistanceable[]{
+      Cluster[] expectedResults = new Cluster[]{
             new DoubleDistanceable(8),
             new DoubleDistanceable(5),
             new DoubleDistanceable(5),

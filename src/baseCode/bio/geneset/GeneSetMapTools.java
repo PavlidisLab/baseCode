@@ -21,6 +21,83 @@ import baseCode.util.StatusViewer;
  */
 public class GeneSetMapTools {
 
+   /**
+    * @param ga
+    * @return
+    */
+   public static double meanGeneSetSize( GeneAnnotations ga ) {
+      double sum = 0.0;
+      int n = 0;
+
+      Map geneSetToGeneMap = ga.getClassToGeneMap();
+
+      for ( Iterator iter = geneSetToGeneMap.keySet().iterator(); iter
+            .hasNext(); ) {
+         String geneSet = ( String ) iter.next();
+
+         Set element;
+         if ( geneSetToGeneMap.containsKey( geneSet ) ) {
+            element = ( Set ) geneSetToGeneMap.get( geneSet );
+            sum += element.size();
+            n++;
+         }
+
+      }
+
+      return sum / n;
+
+   }
+
+   /**
+    * @param ga
+    * @param gon
+    * @param messenger
+    * @param aspect
+    */
+   public static void removeAspect( GeneAnnotations ga, GONames gon,
+         StatusViewer messenger, String aspect ) {
+      if ( !( aspect.equals( "molecular_function" )
+            || aspect.equals( "biological_process" ) || aspect
+            .equals( "cellular_component" ) ) ) {
+         throw new IllegalArgumentException( "Unknown aspect requested" );
+      }
+
+      Map geneSetToGeneMap = ga.getClassToGeneMap();
+
+      Set removeUs = new HashSet();
+      for ( Iterator iter = geneSetToGeneMap.keySet().iterator(); iter
+            .hasNext(); ) {
+         String geneSet = ( String ) iter.next();
+
+         if ( gon.getAspectForId( geneSet ).equals( aspect ) ) {
+            removeUs.add( geneSet );
+         }
+
+      }
+
+      for ( Iterator iter = removeUs.iterator(); iter.hasNext(); ) {
+         String geneSet = ( String ) iter.next();
+         ga.removeClassFromMaps( geneSet );
+      }
+
+      ga.resetSelectedSets();
+      ga.sortGeneSets();
+
+      if ( messenger != null ) {
+         messenger.setStatus( "There are now " + ga.numClasses()
+               + " sets remaining after removing aspect " + aspect );
+      }
+
+   }
+
+   /**
+    * Remove gene sets that don't meet certain criteria.
+    * 
+    * @param ga
+    * @param messenger
+    * @param minClassSize
+    * @param maxClassSize
+    */
    public static void removeBySize( GeneAnnotations ga, StatusViewer messenger,
          int minClassSize, int maxClassSize ) {
 
@@ -73,7 +150,7 @@ public class GeneSetMapTools {
     */
    public static void ignoreSimilar( double fractionSameThreshold,
          GeneAnnotations ga, StatusViewer messenger, int maxClassSize,
-         int minClassSize ) {
+         int minClassSize, double bigClassPenalty ) {
 
       Map classesToSimilarMap = new LinkedHashMap();
       Set seenit = new HashSet();
@@ -89,7 +166,7 @@ public class GeneSetMapTools {
 
       List sortedList = ga.sortGeneSetsBySize();
 
-      // OUTER
+      // OUTER - compare all classes to each other.
       for ( Iterator iter = sortedList.iterator(); iter.hasNext(); ) {
          String queryClassId = ( String ) iter.next();
          Set queryClass = ( Set ) ga.getClassToGeneMap().get( queryClassId );
@@ -100,16 +177,16 @@ public class GeneSetMapTools {
             continue;
          }
 
+         seenit.add( queryClassId );
+
          // INNER
          for ( Iterator iterb = sortedList.iterator(); iterb.hasNext(); ) {
             String targetClassId = ( String ) iterb.next();
 
             /// skip self comparisons and also symmetric comparisons.
-            if ( targetClassId.equals( queryClassId )
-                  || seenit.contains( targetClassId ) ) {
+            if ( seenit.contains( targetClassId ) ) {
                continue;
             }
-            seenit.add( targetClassId );
 
             Set targetClass = ( Set ) ga.getClassToGeneMap()
                   .get( targetClassId );
@@ -119,30 +196,37 @@ public class GeneSetMapTools {
                continue;
             }
 
-            if ( targetSize < querySize ) {
-               if ( areSimilarClasses( queryClass, targetClass,
-                     fractionSameThreshold ) ) {
+            double sizeScore;
+
+            if ( areSimilarClasses( targetClass, queryClass,
+                  fractionSameThreshold, bigClassPenalty ) ) {
+
+               sizeScore = ( ( double ) targetClass.size() / ( double ) queryClass
+                     .size() )
+                     / bigClassPenalty;
+
+               //   System.err.println( sizeScore );
+
+               if ( sizeScore < 1.0 ) { // delete the larget class.
                   deleteUs.add( targetClassId );
-
-                  storeSimilarSets( classesToSimilarMap, targetClassId,
-                        queryClassId );
-                  //     at this point there is no reason to keep looking at the target - it was removed.
-               }
-            } else {
-
-               if ( areSimilarClasses( targetClass, queryClass,
-                     fractionSameThreshold ) ) {
+                  seenit.add( targetClassId );
+               } else {
                   deleteUs.add( queryClassId );
-                  storeSimilarSets( classesToSimilarMap, queryClassId,
-                        targetClassId );
-                  queryClassId = targetClassId; // swap. The query class is being deleted, so we should skip it. Move on
-                                                // to the target.
-                  queryClass = targetClass;
-                  break; // if we do the swap, target and query are equal.
+                  seenit.add( queryClassId );
+
                }
+
+               storeSimilarSets( classesToSimilarMap, queryClassId,
+                     targetClassId );
+
+               //    queryClassId = targetClassId; // swap. The query class is being deleted, so we should skip it. Move
+               // on
+               // to the target.
+               //    queryClass = targetClass;
+               //   break; // if we do the swap, target and query are equal.
             }
+
          } /* inner while */
-         seenit.add( queryClassId );
       }
       /* end while ... */
 
@@ -186,32 +270,49 @@ public class GeneSetMapTools {
    }
 
    /**
-    * Helper function for ignoreSimilar
+    * Helper function for ignoreSimilar. big class penalty? small class penalty? target function: number of genes
+    * covered - redundancy. parameters: overlap penalty - too much overlap - considered similar.
     */
    private static boolean areSimilarClasses( Set biggerClass, Set smallerClass,
-         double fractionSameThreshold ) {
+         double fractionSameThreshold, double bigClassPenalty ) {
 
       if ( biggerClass.size() < smallerClass.size() ) {
          throw new IllegalArgumentException( "Invalid sizes" );
       }
 
+      /*
+       * Threshold of how many items from the smaller class must NOT be in the bigger class, before we consider the
+       * classes different.
+       */
       int notInThresh = ( int ) Math.ceil( fractionSameThreshold
             * smallerClass.size() );
 
       int notin = 0;
+
+      int overlap = 0;
       for ( Iterator iter = smallerClass.iterator(); iter.hasNext(); ) {
 
-         String probe = ( String ) iter.next();
-         if ( !biggerClass.contains( probe ) ) {
+         String gene = ( String ) iter.next();
+         if ( !biggerClass.contains( gene ) ) {
             notin++;
+         } else {
+            overlap++;
          }
          if ( notin > notInThresh ) {
-            return false;
+            // return false;
          }
       }
 
+      if ( ( double ) overlap / ( double ) smallerClass.size() > fractionSameThreshold ) {
+         //         System.err.println( "Small class of size " + smallerClass.size()
+         //               + " too much contained (overlap = " + overlap
+         //               + ") in large class of size " + biggerClass.size() );
+         return true;
+      }
+
       /* return true is the count is high enough */
-      return true;
+      //   return true;
+      return false;
 
    }
 
