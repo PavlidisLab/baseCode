@@ -630,7 +630,6 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
 
       return sum / ( effsize - 1 );
    }
-   
 
    /**
     * Modifies a data sequence to be standardized. Mising values are ignored.
@@ -658,12 +657,9 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
     * @param data DoubleArrayList
     */
    public static void standardize( DoubleArrayList data ) {
-      int effsize = DescriptiveWithMissing.sizeWithoutMissingValues( data );
-      double sumsq = DescriptiveWithMissing.sumOfSquares( data );
-      double sum = DescriptiveWithMissing.sum( data );
-      double variance = DescriptiveWithMissing.variance( effsize, sum, sumsq );
       double mean = DescriptiveWithMissing.mean( data );
-      double stdev = DescriptiveWithMissing.standardDeviation( variance );
+      double stdev = Math.sqrt( DescriptiveWithMissing.sampleVariance( data,
+            mean ) );
       DescriptiveWithMissing.standardize( data, mean, stdev );
    }
 
@@ -805,143 +801,143 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
       double v;
       int i;
       switch ( k ) { // optimized for speed
-      case -2:
-         if ( c == 0.0 ) {
+         case -2:
+            if ( c == 0.0 ) {
+               for ( i = from - 1; ++i <= to; ) {
+                  if ( Double.isNaN( elements[i] ) ) {
+                     continue;
+                  }
+                  v = elements[i];
+                  sum += 1 / ( v * v );
+               }
+            } else {
+               for ( i = from - 1; ++i <= to; ) {
+                  if ( Double.isNaN( elements[i] ) ) {
+                     continue;
+                  }
+                  v = elements[i] - c;
+                  sum += 1 / ( v * v );
+               }
+            }
+            break;
+         case -1:
+            if ( c == 0.0 ) {
+               for ( i = from - 1; ++i <= to; ) {
+                  if ( Double.isNaN( elements[i] ) ) {
+                     continue;
+                  }
+                  sum += 1 / ( elements[i] );
+               }
+            } else {
+               for ( i = from - 1; ++i <= to; ) {
+                  if ( Double.isNaN( elements[i] ) ) {
+                     continue;
+                  }
+                  sum += 1 / ( elements[i] - c );
+               }
+            }
+            break;
+         case 0:
+            sum += to - from + 1;
+            break;
+         case 1:
+            if ( c == 0.0 ) {
+               for ( i = from - 1; ++i <= to; ) {
+                  if ( Double.isNaN( elements[i] ) ) {
+                     continue;
+                  }
+                  sum += elements[i];
+               }
+            } else {
+               for ( i = from - 1; ++i <= to; ) {
+                  if ( Double.isNaN( elements[i] ) ) {
+                     continue;
+                  }
+                  sum += elements[i] - c;
+               }
+            }
+            break;
+         case 2:
+            if ( c == 0.0 ) {
+               for ( i = from - 1; ++i <= to; ) {
+                  if ( Double.isNaN( elements[i] ) ) {
+                     continue;
+                  }
+                  v = elements[i];
+                  sum += v * v;
+               }
+            } else {
+               for ( i = from - 1; ++i <= to; ) {
+                  if ( Double.isNaN( elements[i] ) ) {
+                     continue;
+                  }
+                  v = elements[i] - c;
+                  sum += v * v;
+               }
+            }
+            break;
+         case 3:
+            if ( c == 0.0 ) {
+               for ( i = from - 1; ++i <= to; ) {
+                  v = elements[i];
+                  sum += v * v * v;
+               }
+            } else {
+               for ( i = from - 1; ++i <= to; ) {
+                  if ( Double.isNaN( elements[i] ) ) {
+                     continue;
+                  }
+                  v = elements[i] - c;
+                  sum += v * v * v;
+               }
+            }
+            break;
+         case 4:
+            if ( c == 0.0 ) {
+               for ( i = from - 1; ++i <= to; ) {
+                  if ( Double.isNaN( elements[i] ) ) {
+                     continue;
+                  }
+                  v = elements[i];
+                  sum += v * v * v * v;
+               }
+            } else {
+               for ( i = from - 1; ++i <= to; ) {
+                  if ( Double.isNaN( elements[i] ) ) {
+                     continue;
+                  }
+                  v = elements[i] - c;
+                  sum += v * v * v * v;
+               }
+            }
+            break;
+         case 5:
+            if ( c == 0.0 ) {
+               for ( i = from - 1; ++i <= to; ) {
+                  if ( Double.isNaN( elements[i] ) ) {
+                     continue;
+                  }
+                  v = elements[i];
+                  sum += v * v * v * v * v;
+               }
+            } else {
+               for ( i = from - 1; ++i <= to; ) {
+                  if ( Double.isNaN( elements[i] ) ) {
+                     continue;
+                  }
+                  v = elements[i] - c;
+                  sum += v * v * v * v * v;
+               }
+            }
+            break;
+         default:
             for ( i = from - 1; ++i <= to; ) {
                if ( Double.isNaN( elements[i] ) ) {
                   continue;
                }
-               v = elements[i];
-               sum += 1 / ( v * v );
+               sum += Math.pow( elements[i] - c, k );
             }
-         } else {
-            for ( i = from - 1; ++i <= to; ) {
-               if ( Double.isNaN( elements[i] ) ) {
-                  continue;
-               }
-               v = elements[i] - c;
-               sum += 1 / ( v * v );
-            }
-         }
-         break;
-      case -1:
-         if ( c == 0.0 ) {
-            for ( i = from - 1; ++i <= to; ) {
-               if ( Double.isNaN( elements[i] ) ) {
-                  continue;
-               }
-               sum += 1 / ( elements[i] );
-            }
-         } else {
-            for ( i = from - 1; ++i <= to; ) {
-               if ( Double.isNaN( elements[i] ) ) {
-                  continue;
-               }
-               sum += 1 / ( elements[i] - c );
-            }
-         }
-         break;
-      case 0:
-         sum += to - from + 1;
-         break;
-      case 1:
-         if ( c == 0.0 ) {
-            for ( i = from - 1; ++i <= to; ) {
-               if ( Double.isNaN( elements[i] ) ) {
-                  continue;
-               }
-               sum += elements[i];
-            }
-         } else {
-            for ( i = from - 1; ++i <= to; ) {
-               if ( Double.isNaN( elements[i] ) ) {
-                  continue;
-               }
-               sum += elements[i] - c;
-            }
-         }
-         break;
-      case 2:
-         if ( c == 0.0 ) {
-            for ( i = from - 1; ++i <= to; ) {
-               if ( Double.isNaN( elements[i] ) ) {
-                  continue;
-               }
-               v = elements[i];
-               sum += v * v;
-            }
-         } else {
-            for ( i = from - 1; ++i <= to; ) {
-               if ( Double.isNaN( elements[i] ) ) {
-                  continue;
-               }
-               v = elements[i] - c;
-               sum += v * v;
-            }
-         }
-         break;
-      case 3:
-         if ( c == 0.0 ) {
-            for ( i = from - 1; ++i <= to; ) {
-               v = elements[i];
-               sum += v * v * v;
-            }
-         } else {
-            for ( i = from - 1; ++i <= to; ) {
-               if ( Double.isNaN( elements[i] ) ) {
-                  continue;
-               }
-               v = elements[i] - c;
-               sum += v * v * v;
-            }
-         }
-         break;
-      case 4:
-         if ( c == 0.0 ) {
-            for ( i = from - 1; ++i <= to; ) {
-               if ( Double.isNaN( elements[i] ) ) {
-                  continue;
-               }
-               v = elements[i];
-               sum += v * v * v * v;
-            }
-         } else {
-            for ( i = from - 1; ++i <= to; ) {
-               if ( Double.isNaN( elements[i] ) ) {
-                  continue;
-               }
-               v = elements[i] - c;
-               sum += v * v * v * v;
-            }
-         }
-         break;
-      case 5:
-         if ( c == 0.0 ) {
-            for ( i = from - 1; ++i <= to; ) {
-               if ( Double.isNaN( elements[i] ) ) {
-                  continue;
-               }
-               v = elements[i];
-               sum += v * v * v * v * v;
-            }
-         } else {
-            for ( i = from - 1; ++i <= to; ) {
-               if ( Double.isNaN( elements[i] ) ) {
-                  continue;
-               }
-               v = elements[i] - c;
-               sum += v * v * v * v * v;
-            }
-         }
-         break;
-      default:
-         for ( i = from - 1; ++i <= to; ) {
-            if ( Double.isNaN( elements[i] ) ) {
-               continue;
-            }
-            sum += Math.pow( elements[i] - c, k );
-         }
-         break;
+            break;
       }
       return sum;
    }

@@ -58,6 +58,7 @@ public class RegressionTesting {
       return testOutput.toString();
    }
    
+ 
    /**
     * Test whether two DoubleArrayLists are 'close enough' to call equal.
     * @param DoubleArrayList a
@@ -74,6 +75,7 @@ public class RegressionTesting {
       }
       return true;
    }
+   
    
 
    /**

@@ -2,6 +2,7 @@ package baseCodeTest.math;
 
 import junit.framework.TestCase;
 import baseCode.math.DescriptiveWithMissing;
+import baseCode.util.RegressionTesting;
 import cern.colt.list.DoubleArrayList;
 import cern.jet.stat.Descriptive;
 
@@ -238,6 +239,25 @@ public class TestDescriptiveWithMissing extends TestCase {
             Double.MIN_VALUE );
 
    }
+   
+   public void testStandardize() {
+      DoubleArrayList expectedReturn = new DoubleArrayList(new double[] {-1.4556506857481,
+            Double.NaN,
+            -0.415900195928029,
+            0.103975048982007,
+            0.623850293892044,
+            1.14372553880208
+      });
+      
+//      double mean =  Descriptive.mean(data1Nomissing);
+//      double var = Descriptive.sampleVariance(data1Nomissing, mean);
+//      double stdev = Math.sqrt(var);
+//      Descriptive.standardize(data1Nomissing, mean, stdev);
+      
+      DescriptiveWithMissing.standardize(data1missing );
+      assertEquals( true, RegressionTesting.closeEnough(data1missing, expectedReturn, 0.0001));
+   }
+   
 
    public void testTrimmedMean() {
       data1Nomissing.sort();
