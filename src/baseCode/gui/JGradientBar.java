@@ -31,15 +31,20 @@ public class JGradientBar extends JPanel {
    /** Creates a new instance of JGradientBar */
    public JGradientBar() {
 
+//      setOpaque( true );
+//      setBackground( Color.lightGray );
+      
       m_gradient = new JGradientLabel( EMPTY );
       m_min = new JNumberLabel();
       m_max = new JNumberLabel();
+      m_min.setHorizontalAlignment( JLabel.RIGHT );
+      m_max.setHorizontalAlignment( JLabel.LEFT );
 
       Font font = getFont().deriveFont( Font.BOLD, 13.0f );
       m_min.setFont( font );
       m_max.setFont( font );
 
-      setLayout( new FlowLayout() );
+      setLayout( new FlowLayout( FlowLayout.LEADING ) );
       add( m_min );
       add( m_gradient );
       add( m_max );
@@ -58,20 +63,30 @@ public class JGradientBar extends JPanel {
 
 class JNumberLabel extends JLabel {
 
-   DecimalFormat m_scientificNotation = new DecimalFormat( "0.##E0" );
-   DecimalFormat m_regular = new DecimalFormat();
-   protected final int MINIMUM_WIDTH = 10;
+   protected static final DecimalFormat m_scientificNotation = new DecimalFormat( "0.##E0" );
+   protected static final DecimalFormat m_regular = new DecimalFormat();
+   protected static final int MINIMUM_WIDTH = 100;
+   protected static final int WIDTH = 40;
 
    public JNumberLabel() {
       super();
+      init();
    }
 
    public JNumberLabel( double number ) {
-      super();
+      this();
       m_regular.setMaximumFractionDigits( 3 );
       setText( number );
    }
 
+   protected void init() {
+//      setOpaque( true );
+//      setBackground( Color.lightGray );
+      Dimension d = new Dimension( WIDTH, JGradientLabel.HEIGHT );
+      setSize( d );
+      setPreferredSize( d );
+   }
+   
    public void setText( double number ) {
 
       // Only very small and very large numbers should be displayed in
@@ -85,23 +100,14 @@ class JNumberLabel extends JLabel {
 
       super.setText( text );
    }
-
-   public Dimension getPreferredSize() {
-      Dimension d = super.getPreferredSize();
-      if ( getText().length() > 0
-            && Util.stringPixelWidth( getText(), getFont(), this ) < MINIMUM_WIDTH ) {
-         d.width = MINIMUM_WIDTH;
-      }
-      return d;
-   }
 }
 
 class JGradientLabel extends JLabel {
 
    // fields
-   final int WIDTH = 100;
-   final int HEIGHT = 20;
-   Color[] m_colorMap;
+   protected static final int WIDTH = 100;
+   protected static final int HEIGHT = 20;
+   protected Color[] m_colorMap;
 
    /** Creates a new instance of JGradientLabel */
    public JGradientLabel( Color[] colorMap ) {
