@@ -61,8 +61,6 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
       AbstractNamedMatrixReader {
 
    private static final int INITIAL_SIZE = 10000;
-   IntArrayList indexes = new IntArrayList( INITIAL_SIZE );
-   DoubleArrayList values = new DoubleArrayList( INITIAL_SIZE );
 
    /*
     * (non-Javadoc)
@@ -197,15 +195,16 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
 
    private DoubleMatrix1D readOneRow( BufferedReader dis, int amount )
          throws IOException {
-
+      
+      
       String rowInd = dis.readLine(); // row with indices.
       String rowWei = dis.readLine(); // row with weights.
 
       StringTokenizer tokw = new StringTokenizer( rowWei, " \t" );
       StringTokenizer toki = new StringTokenizer( rowInd, " \t" );
 
-      indexes.clear();
-      values.clear();
+      IntArrayList indexes = new IntArrayList( INITIAL_SIZE );
+      DoubleArrayList values = new DoubleArrayList( INITIAL_SIZE );
 
       while ( toki.hasMoreTokens() ) {
          double eval = Double.parseDouble( tokw.nextToken() );
@@ -230,7 +229,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
          if ( eval != 0.0 ) {
             k = -k - 1;
             
-            if (k < 0) {
+            if (k < -1) {
                throw new IllegalStateException("k was less than zero...");
             }
             
