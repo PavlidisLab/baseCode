@@ -118,17 +118,7 @@ public class ColorMatrix
    }
 
    public Color getColor( int row, int column ) {
-      
-      int r = m_colors[row][column].getRed();
-      int g = m_colors[row][column].getGreen();
-      int b = m_colors[row][column].getBlue();
-      
       row = getTrueRowIndex( row );
-      
-      r = m_colors[row][column].getRed();
-      g = m_colors[row][column].getGreen();
-      b = m_colors[row][column].getBlue();
-      
       return m_colors[row][column];
    }
 
