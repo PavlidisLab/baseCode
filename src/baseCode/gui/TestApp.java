@@ -13,7 +13,7 @@ public class TestApp {
   boolean packFrame = false;
 
   //Construct the application
-  public TestApp( String dataFilename, String outPngFilename ) {
+  public TestApp( String inDataFilename, String outPngFilename ) {
 
     TestFrame frame = new TestFrame();
 
@@ -21,16 +21,15 @@ public class TestApp {
     // Here is an example of how you'd display a matrix of doubles
     // visually with colors
     //
-    ColorMatrix matrix = null;
+    JMatrixDisplay matrixDisplay = null;
     try {
-       matrix = new ColorMatrix( dataFilename );
+       matrixDisplay = new JMatrixDisplay( inDataFilename );
     }
     catch (java.io.IOException e) {
-       System.err.println("Unable to open file " + dataFilename);
+       System.err.println("Unable to open file " + inDataFilename);
        return;
     }
-    
-    JMatrixDisplay matrixDisplay = new JMatrixDisplay( matrix );
+
     matrixDisplay.setLabelsVisible( true );
     
     try {
