@@ -21,6 +21,8 @@ public class JMatrixDisplay extends JPanel {
 
   // data fields
   ColorMatrix m_matrix;
+  ColorMatrix m_standardizedMatrix;
+  boolean m_isShowingStandardizedMatrix = false;
 
   protected boolean m_isShowLabels = false;
   protected BufferedImage m_image = null;
@@ -41,8 +43,12 @@ public class JMatrixDisplay extends JPanel {
 
   public JMatrixDisplay( ColorMatrix matrix ) {
 
-     m_matrix = matrix;     
+     m_matrix = matrix;
      initSize();
+     
+     // create a standardized copy of the matrix
+     m_standardizedMatrix = (ColorMatrix) matrix.clone();
+     m_standardizedMatrix.standardize();     
   }
 
   /**
@@ -55,7 +61,7 @@ public class JMatrixDisplay extends JPanel {
     setPreferredSize( d );
     setSize( d );
     this.revalidate();
-}
+  }
   
   
   protected Dimension getSize( boolean withLabels ) {
@@ -104,18 +110,29 @@ public class JMatrixDisplay extends JPanel {
       }    
   } // end paintComponent
 
+  public void setStandardizedEnabled( boolean showStandardizedMatrix )
+  {
+     m_isShowingStandardizedMatrix = showStandardizedMatrix;
+  }
+  
+  public boolean getStandardizedEnabled() {
+     
+     return m_isShowingStandardizedMatrix;
+  }
+  
   /**
    * Gets called from #paintComponent and #saveToFile
    */
   protected void drawMatrix( Graphics g, boolean leaveRoomForLabels ) {
 
-     if (m_matrix == null) return;
-
+     // which matrix do we draw?  standardized or not?
+     ColorMatrix matrix = m_isShowingStandardizedMatrix ? m_standardizedMatrix : m_matrix;
+        
      g.setColor(Color.white);
      g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-     int rowCount = m_matrix.getRowCount();
-     int columnCount = m_matrix.getColumnCount();
+     int rowCount = matrix.getRowCount();
+     int columnCount = matrix.getColumnCount();
 
      // loop through the matrix, one row at a time
      for (int i = 0;  i < rowCount;  i++)
@@ -132,7 +149,7 @@ public class JMatrixDisplay extends JPanel {
            int x = (j * m_cellSize.width);
            int width = ( (j + 1) * m_cellSize.width) - x;
 
-           Color color = m_matrix.getColor(i, j);
+           Color color = matrix.getColor(i, j); // BLAH!!! change to matrix
            g.setColor(color);
            g.fillRect(x, y, width, m_cellSize.height);
         }
