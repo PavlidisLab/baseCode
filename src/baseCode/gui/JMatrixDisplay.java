@@ -423,24 +423,21 @@ public class JMatrixDisplay extends JPanel {
     * @throws an exception if the colorMap array argument contains less than two
     *         colors.
     */
-   public void setColorMap( Color[] colorMap ) throws Exception {
+   public void setColorMap( Color[] colorMap ) throws IllegalArgumentException {
 
       m_standardizedMatrix.setColorMap( colorMap );
-      m_matrix.setColorMap( colorMap );
+      m_unstandardizedMatrix.setColorMap( colorMap );
    }
 
    /**
     * @return the current color map
     */
    public Color[] getColorMap() {
+      assert( m_matrix.m_colorMap == m_standardizedMatrix.m_colorMap );
       return m_matrix.m_colorMap;
    }
 
    /**
-    * 
-    * 
-    * /**
-    * 
     * @return the smallest value in the matrix
     */
    public double getMin() {
