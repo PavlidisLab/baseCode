@@ -14,10 +14,12 @@ public class StatusStderr implements StatusViewer {
 	public StatusStderr () {}
 	
    public void setStatus( String s ) {
+      if (s.equals("")) return;
       System.err.println( s );
    }
 
    public void setError( String s ) {
+      if (s.equals("")) return;
       System.err.println( "Error:" + s );
    }
 

@@ -34,7 +34,7 @@ public class GeneSetMapTools {
       double sum = 0.0;
       int n = 0;
 
-      Map geneSetToGeneMap = ga.getClassToGeneMap();
+      Map geneSetToGeneMap = ga.getGeneSetToGeneMap();
 
       for ( Iterator iter = geneSetToGeneMap.keySet().iterator(); iter
             .hasNext(); ) {
@@ -68,7 +68,7 @@ public class GeneSetMapTools {
       double sum = 0.0;
       int n = 0;
 
-      Map probeToSetMap = ga.getProbeToClassMap();
+      Map probeToSetMap = ga.getProbeToGeneSetMap();
 
       for ( Iterator iter = probeToSetMap.keySet().iterator(); iter.hasNext(); ) {
          String probe = ( String ) iter.next();
@@ -95,7 +95,7 @@ public class GeneSetMapTools {
       Histogram1D hist = new Histogram1D( "Distribution of gene set sizes",
             numBins, minSize, maxSize );
 
-      Map geneSetToGeneMap = ga.getClassToGeneMap();
+      Map geneSetToGeneMap = ga.getGeneSetToGeneMap();
 
       for ( Iterator iter = geneSetToGeneMap.keySet().iterator(); iter
             .hasNext(); ) {
@@ -125,7 +125,7 @@ public class GeneSetMapTools {
          throw new IllegalArgumentException( "Unknown aspect requested" );
       }
 
-      Map geneSetToGeneMap = ga.getClassToGeneMap();
+      Map geneSetToGeneMap = ga.getGeneSetToGeneMap();
 
       Set removeUs = new HashSet();
       for ( Iterator iter = geneSetToGeneMap.keySet().iterator(); iter
@@ -164,7 +164,7 @@ public class GeneSetMapTools {
    public static void removeBySize( GeneAnnotations ga, StatusViewer messenger,
          int minClassSize, int maxClassSize ) {
 
-      Map geneSetToGeneMap = ga.getClassToGeneMap();
+      Map geneSetToGeneMap = ga.getGeneSetToGeneMap();
 
       Set removeUs = new HashSet();
       for ( Iterator iter = geneSetToGeneMap.keySet().iterator(); iter
@@ -234,13 +234,13 @@ public class GeneSetMapTools {
 
       // iterate over all the classes, starting from the smallest one.
       //      List sortedList = ga.sortGeneSetsBySize();
-      List sortedList = new ArrayList( ga.getClassToGeneMap().keySet() );
-      Collections.shuffle(sortedList);
+      List sortedList = new ArrayList( ga.getGeneSetToGeneMap().keySet() );
+      Collections.shuffle( sortedList );
 
       // OUTER - compare all classes to each other.
       for ( Iterator iter = sortedList.iterator(); iter.hasNext(); ) {
          String queryClassId = ( String ) iter.next();
-         Set queryClass = ( Set ) ga.getClassToGeneMap().get( queryClassId );
+         Set queryClass = ( Set ) ga.getGeneSetToGeneMap().get( queryClassId );
 
          int querySize = queryClass.size();
 
@@ -261,8 +261,8 @@ public class GeneSetMapTools {
                continue;
             }
 
-            Set targetClass = ( Set ) ga.getClassToGeneMap()
-                  .get( targetClassId );
+            Set targetClass = ( Set ) ga.getGeneSetToGeneMap().get(
+                  targetClassId );
 
             int targetSize = targetClass.size();
             if ( targetSize < querySize || targetSize > maxClassSize
@@ -385,10 +385,10 @@ public class GeneSetMapTools {
     * Identify classes which are absoluely identical to others. This isn't superfast, because it doesn't know which
     * classes are actually relevant in the data.
     */
-   public static void collapseClasses( GeneAnnotations geneData,
+   public static void collapseGeneSets( GeneAnnotations geneData,
          StatusViewer messenger ) {
-      Map setToGeneMap = geneData.getClassToGeneMap();
-      Map classesToRedundantMap = geneData.getClassesToRedundantMap();
+      Map setToGeneMap = geneData.getGeneSetToGeneMap();
+      Map classesToRedundantMap = geneData.geneSetToRedundantMap();
       LinkedHashMap seenClasses = new LinkedHashMap();
       LinkedHashMap sigs = new LinkedHashMap();
 
@@ -407,18 +407,27 @@ public class GeneSetMapTools {
          String classId = ( String ) iter.next();
          Set classMembers = ( Set ) setToGeneMap.get( classId );
 
-         // todo - hack : Skip classes that are huge. It's too slow
+         if ( classMembers.contains( null ) ) {
+            classMembers.remove( null ); // FIXME why do we need to do this?
+            //          throw new IllegalStateException(classId + " contains null.");
+         }
+
+         // @todo - hack : Skip classes that are huge. It's too slow
          // otherwise. This is a total heuristic. Note that this
          // doesn't mean the class won't get analyzed, it just
          // means we don't bother looking for redundancies. Big
          // classes are less likely to be identical to others,
          // anyway. In tests, the range shown below has no effect
          // on the results, but it _could_ matter.
-         if ( classMembers.size() > 250 || classMembers.size() < 2 ) {
+         if ( classMembers == null || classMembers.size() > 250
+               || classMembers.size() < 2 ) {
             continue;
          }
 
          Vector cls = new Vector( classMembers );
+
+         if ( cls == null ) continue;
+
          Collections.sort( cls );
          String signature = "";
          seenit.clear();
