@@ -11,6 +11,7 @@ import baseCode.gui.JMatrixDisplay;
 /**
  * This is an example of how you'd display a microarray.
  *
+ * @author  Will Braynen
  * @version $Id$
  */
 public class MatrixDisplayApp {
