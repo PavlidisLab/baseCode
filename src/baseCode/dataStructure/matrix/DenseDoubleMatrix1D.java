@@ -1,5 +1,6 @@
 package baseCode.dataStructure.matrix;
 
+
 /**
  * Use this class when fast iteration over the matrix is of primary interest. The primary change
  * is that getQuick is faster, and toArray returns the actual elements, not a copy. The latter
@@ -60,4 +61,7 @@ public class DenseDoubleMatrix1D extends
    public double[] toArray() {
       return elements;
    }
+   
+   
+ 
 }

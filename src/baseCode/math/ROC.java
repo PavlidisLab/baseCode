@@ -41,9 +41,15 @@ public class ROC {
       int numPosSeen = 0;
       int numNegSeen = 0;
       int targetSize = ranks.size();
+      
       if ( targetSize == 0 ) {
          return 0.0;
       }
+      
+      if (totalSize <= 0) {
+         throw new IllegalArgumentException("Total size must be positive. ( received " + totalSize + ")");
+      }
+      
       double result = 0.0;
       for ( int i = 0; i < totalSize; i++ ) {
          if ( ranks.contains( new Integer( i ) ) ) {
@@ -53,18 +59,21 @@ public class ROC {
             System.err.print( "-" );
             result += numPosSeen;
             numNegSeen++;
-            if ( maxFP > 0 && numNegSeen >= maxFP ) {  
+            if ( maxFP > 0 && numNegSeen >= maxFP ) {
                break;
             }
          }
 
-//         if ( numPosSeen == targetSize ) { // we've seen all the positives, we can stop.
-//            result += numPosSeen * ( totalSize - i - 1 );
-//            break;
- //        }
+         //         if ( numPosSeen == targetSize ) { // we've seen all the positives, we can stop.
+         //            result += numPosSeen * ( totalSize - i - 1 );
+         //            break;
+         //        }
       }
-      System.err.println( numNegSeen + " negs, " + numPosSeen + " pos seen out of " + targetSize + " positives" ); 
+      System.err.println( numNegSeen + " negs, " + numPosSeen
+            + " pos seen out of " + targetSize + " positives" );
 
+      if (numPosSeen == 0 ) return 0.0;
+      
       if ( maxFP > 0 ) {
          return result / ( targetSize * numNegSeen );
       }

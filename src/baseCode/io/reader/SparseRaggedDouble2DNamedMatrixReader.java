@@ -25,13 +25,15 @@ import cern.colt.matrix.DoubleMatrix1D;
  * 
  *  
  *   
- *                            2          &lt;--- number of items - the first line of the file only. NOTE - this line is often blank or not present.
- *                            1 2        &lt;--- items 1 has 2 edges
- *                            1 2        &lt;--- edge indices are to items 1 &amp; 2
- *                            0.1 100    &lt;--- with the following weights
- *                            2 2        &lt;--- items 2 also has 2 edges
- *                            1 2        &lt;--- edge indices are also to items 1 &amp; 2 (fully connected)
- *                            100 0.1    &lt;--- with the following weights
+ *    
+ *                             2          &lt;--- number of items - the first line of the file only. NOTE - this line is often blank or not present.
+ *                             1 2        &lt;--- items 1 has 2 edges
+ *                             1 2        &lt;--- edge indices are to items 1 &amp; 2
+ *                             0.1 100    &lt;--- with the following weights
+ *                             2 2        &lt;--- items 2 also has 2 edges
+ *                             1 2        &lt;--- edge indices are also to items 1 &amp; 2 (fully connected)
+ *                             100 0.1    &lt;--- with the following weights
+ *    
  *   
  *  
  * </pre>
@@ -69,8 +71,8 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
     * get the data for one matrix row)
     * 
     * @param stream
-    * @param offset A value indicating the lowest value for the indexes listed. This is here in case the indexes in the stream
-    * are numbered starting from 1 instead of zero.
+    * @param offset A value indicating the lowest value for the indexes listed. This is here in case the indexes in the
+    *        stream are numbered starting from 1 instead of zero.
     * @return @throws IOException
     */
    public NamedMatrix readOneRow( BufferedReader dis, int offset )
@@ -101,8 +103,8 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
     * Read an entire sparse matrix from a stream.
     * 
     * @param stream
-    * @param offset A value indicating the lowest value for the indexes listed. This is here in case the indexes in the stream
-    * are numbered starting from 1 instead of zero.
+    * @param offset A value indicating the lowest value for the indexes listed. This is here in case the indexes in the
+    *        stream are numbered starting from 1 instead of zero.
     * @return @throws IOException
     */
    public NamedMatrix read( InputStream stream, int offset ) throws IOException {
@@ -145,8 +147,19 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
    private DoubleMatrix1D readOneRow( BufferedReader dis, int amount, int offset )
          throws IOException {
 
-      String rowInd = dis.readLine(); // row with indices.
-      String rowWei = dis.readLine(); // row with weights.
+      /* we have to be careful to skip any lines that invalid. Each line should have at least
+       * two characters. In the files JW provided there are some lines that are just " ".
+       */
+      String rowInd = "";
+      String rowWei = "";
+      
+      while ( rowInd.length() < 2 ) {
+         rowInd = dis.readLine(); // row with indices.
+      }
+
+      while ( rowWei.length() < 2 ) {
+         rowWei = dis.readLine(); // row with weights.
+      }
 
       StringTokenizer tokw = new StringTokenizer( rowWei, " \t" );
       StringTokenizer toki = new StringTokenizer( rowInd, " \t" );
@@ -169,7 +182,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
       IntArrayList indexes = map.keys();
       indexes.sort();
       int[] ix = indexes.elements();
-      int size =  ix.length;
+      int size = ix.length;
       for ( int j = 0; j < size; j++ ) {
          finalValues.add( values.get( map.get( ix[j] ) ) );
       }

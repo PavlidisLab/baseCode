@@ -185,4 +185,6 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
       }
       return sum;
    }
+
+   
 }
