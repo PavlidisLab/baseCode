@@ -112,7 +112,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
       SparseRaggedDoubleMatrix2DNamed returnVal = new SparseRaggedDoubleMatrix2DNamed();
 
       String row;
-      int k = 0;
+      int k = 1;
 
       while ( ( row = dis.readLine() ) != null ) {
 
