@@ -5,6 +5,7 @@ import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
+import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import cern.colt.matrix.impl.RCDoubleMatrix2D;
 
 /**
@@ -25,7 +26,6 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
    protected DoubleArrayList values;
 
    /**
-    * 
     * @param values
     */
    public RCDoubleMatrix1D( double[] values ) {
@@ -33,9 +33,7 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
       assign( values );
    }
 
-
    /**
-    * 
     * @param length
     */
    public RCDoubleMatrix1D( int length ) {
@@ -54,8 +52,8 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
       if ( k > 0 ) {
          s = indexes.get( k - 1 ) + 1;
       }
-      
-      setUp( s  );
+
+      setUp( s );
       this.indexes = indexes;
       this.values = values;
    }
@@ -90,8 +88,10 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
     * @see cern.colt.matrix.DoubleMatrix1D#like2D(int, int)
     */
    public DoubleMatrix2D like2D( int rows, int columns ) {
-      return new RCDoubleMatrix2D( rows, columns );
+      return new DenseDoubleMatrix2D( rows, columns );
    }
+
+    
 
    /*
     * (non-Javadoc)
@@ -135,8 +135,7 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
       return this;
 
    }
-   
-   
+
    /*
     * (non-Javadoc)
     * 
@@ -186,5 +185,12 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
       return sum;
    }
 
-   
+   /*
+    * (non-Javadoc)
+    * 
+    * @see java.lang.Object#toString()
+    */
+   public String toString() {
+      return new cern.colt.matrix.doublealgo.Formatter().toString( this );
+   }
 }

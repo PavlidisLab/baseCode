@@ -43,12 +43,20 @@ import baseCode.util.StatusViewer;
  *        
  *         
  *          
- *                     probe-&gt;Classes -- each value is a Set of the Classes that a probe belongs to.
- *                     Classes-&gt;probe -- each value is a Set of the probes that belong to a class
- *                     probe-&gt;gene -- each value is the gene name corresponding to the probe.
- *                     gene-&gt;list of probes -- each value is a list of probes corresponding to a gene
- *                     probe-&gt;description -- each value is a text description of the probe (actually...of the gene)
- *          
+ *           
+ *            
+ *             
+ *              
+ *                         probe-&gt;Classes -- each value is a Set of the Classes that a probe belongs to.
+ *                         Classes-&gt;probe -- each value is a Set of the probes that belong to a class
+ *                         probe-&gt;gene -- each value is the gene name corresponding to the probe.
+ *                         gene-&gt;list of probes -- each value is a list of probes corresponding to a gene
+ *                         probe-&gt;description -- each value is a text description of the probe (actually...of the gene)
+ *              
+ *               
+ *              
+ *             
+ *            
  *           
  *          
  *         
@@ -88,6 +96,7 @@ public class GeneAnnotations {
    private Map probeToGeneName;
    private Map probeToDescription;
    private Map geneToProbeList;
+   private Map geneToClassMap;
    private Map classToGeneMap; //stores Classes->genes map. use to get a list
    // of classes.
 
@@ -111,8 +120,9 @@ public class GeneAnnotations {
       probeToGeneName = new HashMap();
       probeToDescription = new HashMap();
       geneToProbeList = new HashMap();
+      geneToClassMap = new HashMap();
       classesToRedundantMap = new HashMap();
-      this.readFile( filename );
+      this.read( filename );
       classToGeneMap = makeClassToGeneMap();
       GeneSetMapTools.collapseClasses( this, messenger );
       prune( ABSOLUTE_MINIMUM_GENESET_SIZE, PRACTICAL_MAXIMUM_GENESET_SIZE );
@@ -122,7 +132,7 @@ public class GeneAnnotations {
    }
 
    /**
-    * This is for creating GeneAnnotations by pruning a copy
+    * This is for creating GeneAnnotations by pruning a copy.
     * 
     * @param geneData GeneAnnotations copy to prune from
     * @param probes Map only include these probes
@@ -134,6 +144,7 @@ public class GeneAnnotations {
       probeToGeneName = new HashMap( geneData.probeToGeneName );
       probeToDescription = new HashMap( geneData.probeToDescription );
       geneToProbeList = new HashMap( geneData.geneToProbeList );
+      geneToClassMap = new HashMap( geneData.geneToClassMap );
       Vector probeList = new Vector( geneData.getProbeToGeneMap().keySet() );
       classesToRedundantMap = new HashMap( geneData.classesToRedundantMap );
 
@@ -151,7 +162,10 @@ public class GeneAnnotations {
    }
 
    /**
+    * Make a new GeneAnnotations that only includes the probes in the parameter 'probes'.
+    * 
     * @param stream
+    * @param probe Only probes in this set are left.
     * @throws IOException todo some refactoring is needed here to simplify all these constructors.
     */
    public GeneAnnotations( InputStream stream, Set probes,
@@ -162,8 +176,9 @@ public class GeneAnnotations {
       probeToGeneName = new HashMap();
       probeToDescription = new HashMap();
       geneToProbeList = new HashMap();
+      geneToClassMap = new HashMap();
       classesToRedundantMap = new HashMap();
-      this.readFromStream( stream );
+      this.read( stream );
       classToGeneMap = makeClassToGeneMap();
       GeneSetMapTools.collapseClasses( this, messenger );
       prune( 2, 1000 );
@@ -189,9 +204,10 @@ public class GeneAnnotations {
             }
          }
          classToProbeMap.remove( id );
-         // System.err.println("Removed " + id+ ", " + classToProbeMap.size() + " left");
+         classToGeneMap.remove( id );
+
       }
-      if ( classToGeneMap.containsKey( id ) ) classToGeneMap.remove( id );
+
       if ( classesToRedundantMap.containsKey( id ) )
             classesToRedundantMap.remove( id );
    }
@@ -388,6 +404,9 @@ public class GeneAnnotations {
          genes.add( probeToGeneName.get( probe_it2.next() ) );
       }
       classToGeneMap.put( id, genes );
+
+      geneToClassMap.put( id, probeToClassMap.get( id ) );
+
       resetSelectedSets();
    }
 
@@ -612,8 +631,8 @@ public class GeneAnnotations {
    }
 
    /********************************************************************************************************************
-    * Private methods ***********************************************************************
-    */
+    * Private methods
+    *******************************************************************************************************************/
 
    /**
     * @return mapping of classes to genes.
@@ -634,7 +653,7 @@ public class GeneAnnotations {
       return map;
    }
 
-   private void readFromStream( InputStream bis ) throws IOException {
+   private void read( InputStream bis ) throws IOException {
       if ( bis == null ) {
          throw new IOException( "Inputstream was null" );
       }
@@ -664,6 +683,7 @@ public class GeneAnnotations {
 
          probeIds.add( probe );
          probeToClassMap.put( probe.intern(), new ArrayList() );
+         geneToClassMap.put( group, probeToClassMap.get( probe ) );
 
          /* read gene description */
          if ( st.hasMoreTokens() ) {
@@ -681,6 +701,7 @@ public class GeneAnnotations {
             probeToDescription.put( probe.intern(), "[No description]" );
          }
 
+         /* read GO data */
          if ( st.hasMoreTokens() ) {
             classIds = st.nextToken();
 
@@ -709,7 +730,7 @@ public class GeneAnnotations {
    }
 
    //read infrom a file.
-   private void readFile( String filename ) throws IOException {
+   private void read( String filename ) throws IOException {
 
       if ( !FileTools.testFile( filename ) ) {
          throw new IOException( "Could not read from " + filename );
@@ -717,7 +738,7 @@ public class GeneAnnotations {
 
       FileInputStream fis = new FileInputStream( filename );
       BufferedInputStream bis = new BufferedInputStream( fis );
-      readFromStream( bis );
+      read( bis );
    }
 
    /**
@@ -752,6 +773,13 @@ public class GeneAnnotations {
     */
    public Map getClassToGeneMap() {
       return classToGeneMap;
+   }
+
+   /**
+    * @return Returns the geneToClassMap.
+    */
+   public Map getGeneToClassMap() {
+      return geneToClassMap;
    }
 
    /**

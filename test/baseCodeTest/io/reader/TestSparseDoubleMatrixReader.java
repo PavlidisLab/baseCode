@@ -41,8 +41,8 @@ public class TestSparseDoubleMatrixReader extends TestCase {
          matrix = ( SparseDoubleMatrix2DNamed ) reader.read ( isa, null );
          String actualReturn = matrix.toString();
          String expectedReturn = RegressionTesting.readTestResult(TestSparseDoubleMatrixReader.class
-               .getResourceAsStream("/data/JW-testoutput.txt"));
-      //   System.err.println(matrix);
+               .getResourceAsStream("/data/JW-testoutputSym.txt"));
+     //    System.err.println("testReadStream\nHere it is:\n" + actualReturn + "\nExpected:\n" + expectedReturn);
          assertEquals( "return value", expectedReturn, actualReturn );
          
       } catch ( IOException e ) {
@@ -57,7 +57,7 @@ public class TestSparseDoubleMatrixReader extends TestCase {
          String actualReturn = matrix.toString();
          String expectedReturn = RegressionTesting.readTestResult(TestSparseDoubleMatrixReader.class
                .getResourceAsStream("/data/JW-testoutput.txt"));
-       // System.err.println(matrix);
+     //    System.err.println("testReadJW\nHere it is:\n" + actualReturn + "\nExpected:\n" + expectedReturn);
          assertEquals( "return value", expectedReturn, actualReturn );
        // 
       } catch ( IOException e ) {

@@ -101,6 +101,10 @@ public abstract class AbstractNamedMatrix implements NamedMatrix {
     * @return int
     */
    public final int getRowIndexByName( String s ) {
+      if ( !rowNames.contains( s ) ) {
+         throw new IllegalArgumentException( s + " not found" );
+      }
+
       return ( ( Integer ) rowMap.get( s ) ).intValue();
    }
 
@@ -109,6 +113,10 @@ public abstract class AbstractNamedMatrix implements NamedMatrix {
     * @return int
     */
    public final int getColIndexByName( String r ) {
+      if ( !colNames.contains( r ) ) {
+         throw new IllegalArgumentException( r + " not found" );
+      }
+
       return ( ( Integer ) this.colMap.get( r ) ).intValue();
    }
 

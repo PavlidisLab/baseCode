@@ -10,13 +10,14 @@ import cern.colt.list.DoubleArrayList;
  * @author pavlidis
  * @version $Id$
  */
-public interface Ranker {
+public abstract class Ranker {
 
-   public Object best();
+   public abstract Object best();
    
-   public Object worst();
+   public abstract Object worst();
    
-   public DoubleArrayList getScores();
+   public abstract DoubleArrayList getScores();
+   
    
    
 }

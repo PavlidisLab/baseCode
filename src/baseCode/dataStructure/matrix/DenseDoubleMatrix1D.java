@@ -62,6 +62,4 @@ public class DenseDoubleMatrix1D extends
       return elements;
    }
    
-   
- 
 }

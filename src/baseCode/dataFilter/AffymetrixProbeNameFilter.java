@@ -56,6 +56,15 @@ public class AffymetrixProbeNameFilter extends AbstractFilter implements Filter 
    public AffymetrixProbeNameFilter( int[] criteria ) {
       this.setCriteria( criteria );
    }
+   
+   /**
+    * Filter probes with all criteria switched on.
+    *
+    */
+   public AffymetrixProbeNameFilter(   ) {
+      this.setCriteria( new int[] {1,2,3,4,5} );
+   }
+   
 
    private void setCriteria( int[] criteria ) {
       for ( int i = 0; i < criteria.length; i++ ) {

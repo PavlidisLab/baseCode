@@ -20,10 +20,9 @@ import cern.colt.matrix.DoubleMatrix1D;
 public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
 
    private Vector matrix; // a vector of DoubleArrayList containing the values of the matrix
-    
+
    int columns = 0;
    private boolean isDirty = true;
-
 
    public SparseRaggedDoubleMatrix2DNamed() {
       matrix = new Vector();
@@ -60,7 +59,7 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
 
       }
 
-      columns = max ;
+      columns = max;
       isDirty = false;
       return columns;
    }
@@ -111,8 +110,8 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
    }
 
    /**
-    * (non-Javadoc)
-    *  Note that in a sparse matrix, zero values are considered "missing"!
+    * (non-Javadoc) Note that in a sparse matrix, zero values are considered "missing"!
+    * 
     * @see baseCode.dataStructure.matrix.NamedMatrix#isMissing(int, int)
     */
    public boolean isMissing( int i, int j ) {
@@ -124,35 +123,39 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
     */
    public String toString() {
       NumberFormat nf = NumberFormat.getInstance();
+      
+      StringBuffer buf = new StringBuffer();
+      
       String result = "";
       if ( this.hasColNames() || this.hasRowNames() ) {
-         result = "label";
+         buf.append( "label");
       }
 
       if ( this.hasColNames() ) {
          for ( int i = 0; i < columns(); i++ ) {
-            result = result + "\t" + getColName( i );
+            buf.append( "\t" + getColName( i ));
          }
-         result += "\n";
+         buf.append( "\n");
       }
 
       for ( int i = 0; i < rows(); i++ ) {
          if ( this.hasRowNames() ) {
-            result += getRowName( i );
+            buf.append( getRowName( i ));
          }
          for ( int j = 0; j < columns(); j++ ) {
 
             double value = get( i, j );
 
             if ( value == 0.0 ) {
-               result = result + "\t";
+               buf.append( "\t");
             } else {
-               result = result + "\t" + nf.format( value );
+               buf.append( "\t" + nf.format( value ));
             }
          }
-         result += "\n";
+
+         buf.append( "\n");
       }
-      return result;
+      return buf.toString();
    }
 
    /**
@@ -164,7 +167,6 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
       return ( ( DoubleMatrix1D ) matrix.get( i ) ).getQuick( j );
    }
 
-   
    /**
     * This gives just the list of values in the row - make sure this is what you want. It does not include the zero
     * values.
@@ -179,10 +181,10 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
       return returnVal;
    }
 
+
    /*
-    * (non-Javadoc)
-    * 
-    * @see baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix#getRowMatrix1D(int)
+    *  (non-Javadoc)
+    * @see baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix#viewRow(int)
     */
    public DoubleMatrix1D viewRow( int i ) {
       return ( DoubleMatrix1D ) matrix.get( i );
@@ -197,22 +199,20 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
       // return getRowMatrix1D( i ).toArray();
       return ( ( DoubleMatrix1D ) matrix.get( i ) ).toArray();
    }
-   
- /**
-  * 
-  * @param name
-  * @param indexes
-  * @param values
-  */
-   public void addRow(String name, IntArrayList indexes, DoubleArrayList values) {
-      DoubleMatrix1D rowToAdd = new RCDoubleMatrix1D(indexes , values);
-      
-     matrix.add( rowToAdd );
-     this.addColumnName( name, matrix.size() - 1 );
-     this.addRowName( name, matrix.size() - 1 );
-     isDirty = true;
+
+   /**
+    * @param name
+    * @param indexes
+    * @param values
+    */
+   public void addRow( String name, IntArrayList indexes, DoubleArrayList values ) {
+      DoubleMatrix1D rowToAdd = new RCDoubleMatrix1D( indexes, values );
+
+      matrix.add( rowToAdd );
+      this.addColumnName( name, matrix.size() - 1 );
+      this.addRowName( name, matrix.size() - 1 );
+      isDirty = true;
    }
-   
 
    /**
     * @param matrix1D
@@ -222,16 +222,15 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
       this.addColumnName( name, matrix.size() - 1 );
       this.addRowName( name, matrix.size() - 1 );
       isDirty = true;
-      
    }
 
-   /* (non-Javadoc)
+   /*
+    * (non-Javadoc)
+    * 
     * @see baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix#getQuick(int, int)
     */
    public double getQuick( int i, int j ) {
-      return get(i,j);
+      return get( i, j );
    }
- 
- 
 
 }

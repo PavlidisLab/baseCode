@@ -24,7 +24,7 @@ public class MatrixStats {
     * @return DenseDoubleMatrix2DNamed
     */
    public static DenseDoubleMatrix2DNamed correlationMatrix(
-         DenseDoubleMatrix2DNamed data ) {
+         AbstractNamedDoubleMatrix data ) {
       DenseDoubleMatrix2DNamed result = new DenseDoubleMatrix2DNamed( data
             .rows(), data.rows() );
 
@@ -49,7 +49,7 @@ public class MatrixStats {
     * @return SparseDoubleMatrix2DNamed
     */
    public static SparseDoubleMatrix2DNamed correlationMatrix(
-         DenseDoubleMatrix2DNamed data, double threshold ) {
+         AbstractNamedDoubleMatrix data, double threshold ) {
       SparseDoubleMatrix2DNamed result = new SparseDoubleMatrix2DNamed( data
             .rows(), data.rows() );
 
@@ -76,7 +76,7 @@ public class MatrixStats {
     * @param matrix DenseDoubleMatrix2DNamed
     * @return the smallest value in the matrix
     */
-   public static double min( DenseDoubleMatrix2DNamed matrix ) {
+   public static double min( AbstractNamedDoubleMatrix matrix ) {
 
       int totalRows = matrix.rows();
       int totalColumns = matrix.columns();
@@ -109,7 +109,7 @@ public class MatrixStats {
     * @param matrix DenseDoubleMatrix2DNamed
     * @return the largest value in the matrix
     */
-   public static double max( DenseDoubleMatrix2DNamed matrix ) {
+   public static double max( AbstractNamedDoubleMatrix matrix ) {
 
       int totalRows = matrix.rows();
       int totalColumns = matrix.columns();
@@ -126,7 +126,6 @@ public class MatrixStats {
             if ( val > max ) {
                max = val;
             }
-
          }
       }
 
@@ -139,8 +138,8 @@ public class MatrixStats {
    }
 
    /**
-    * Normalize a matrix in place to be a transition matrix. Assumes that values operate such that small values
-    * represent closer distances, and the values are probabilities.
+    * Normalize a matrix in place to be a transition matrix. Assumes that values operate such that small values like p
+    * values represent closer distances, and the values are probabilities.
     * <p>
     * Each point is first transformed via v' = exp(-v/sigma). Then the values for each node's edges are adjusted to sum
     * to 1.
@@ -166,7 +165,30 @@ public class MatrixStats {
          row.assign( Functions.div( sum ) );
 
       }
+   }
 
+   /**
+    * Normalize a count matrix in place to be a transition matrix. Assumes that the values are defined as "bigger is better"
+    * 
+    * @param matrixToNormalize
+    * @param sigma
+    */
+   public static void countsNormalize (
+         AbstractNamedDoubleMatrix matrixToNormalize, final double sigma ) {
+
+      final double min = MatrixStats.min( matrixToNormalize );
+      DoubleFunction f = new DoubleFunction() {
+         public double apply( double value ) {
+            return value - min + 1;
+         }
+      };
+
+      for ( int j = 0; j < matrixToNormalize.rows(); j++ ) { // do each row in turn ...
+         DoubleMatrix1D row = matrixToNormalize.viewRow( j );
+         row.assign( f );
+         double sum = row.zSum();
+         row.assign( Functions.div( sum ) );
+      }
    }
 
 }

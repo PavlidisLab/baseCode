@@ -11,6 +11,14 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
+/**
+ * 
+ *
+ * <hr>
+ * <p>Copyright (c) 2004 Columbia University
+ * @author pavlidis
+ * @version $Id$
+ */
 public abstract class AbstractNamedDoubleMatrix extends AbstractNamedMatrix {
 
    /* (non-Javadoc)
@@ -55,6 +63,7 @@ public abstract class AbstractNamedDoubleMatrix extends AbstractNamedMatrix {
     */
    public abstract double getQuick( int i, int j );
 
+   
    /**
     * @param j
     * @return
