@@ -211,6 +211,10 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
          double eval = Double.parseDouble( tokw.nextToken() );
          int ind = Integer.parseInt( toki.nextToken() ) - 1; // this is a JW thing - the indexes start at 1.
 
+         if (ind < 0) {
+            continue; // assume this is garbage.
+         }
+         
          /*
           * index of the search key, if it is contained in the receiver; otherwise, (-(insertion point) - 1). The
           * insertion point is defined as the the point at which the value would be inserted into the receiver: the
@@ -223,10 +227,15 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
             values.setQuick( k, eval );
          }
 
-         if ( eval != 0 ) {
+         if ( eval != 0.0 ) {
             k = -k - 1;
-            indexes.beforeInsert( k, ind );
-            values.beforeInsert( k, eval );
+            
+            if (k < 0) {
+               throw new IllegalStateException("k was less than zero...");
+            }
+            
+            indexes.beforeInsert( k, ind ); // this is slow.
+            values.beforeInsert( k, eval ); // this is slow.
          }
 
          if ( values.size() > amount ) {
