@@ -1,7 +1,14 @@
 package baseCode.dataStructure.reader;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * <p>Title: MapReader</p>
@@ -14,57 +21,42 @@ import java.util.*;
  */
 public class MapReader {
 
-   /**
-    *
-    * @param String filename: name of the tab-delimited file
-    * @return Map from the file.
-    */
-   public Map read(String filename) {
-      Map result = new HashMap();
+    /**
+     * @param filename name of the tab-delimited file
+     * @return Map from the file.
+     */
+    public Map read(String filename) throws IOException {
+        Map result = new HashMap();
 
-      File infile = new File(filename);
-      if (!infile.exists() || !infile.canRead()) {
-         throw new IllegalArgumentException("Could not read from " + filename);
-      }
+        File infile = new File(filename);
+        if (!infile.exists() || !infile.canRead()) {
+            throw new IllegalArgumentException("Could not read from " +
+                                               filename);
+        }
 
-      try {
-         BufferedReader dis = new BufferedReader(new FileReader(filename));
-         String row;
+        BufferedReader dis = new BufferedReader(new FileReader(filename));
+        String row;
 
-         while ( (row = dis.readLine()) != null) {
+        while ((row = dis.readLine()) != null) {
             StringTokenizer st = new StringTokenizer(row, "\t");
             String key = st.nextToken();
 
             String value = st.nextToken();
 
             if (st.hasMoreTokens()) {
-               Set innerList = new HashSet();
-               innerList.add(value);
-               while (st.hasMoreTokens()) {
-                  value = st.nextToken();
-               }
-               innerList.add(value);
-               result.put(key, innerList);
+                Set innerList = new HashSet();
+                innerList.add(value);
+                while (st.hasMoreTokens()) {
+                    value = st.nextToken();
+                }
+                innerList.add(value);
+                result.put(key, innerList);
+            } else {
+                result.put(key, value);
             }
-            else {
-               result.put(key, value);
-            }
-         }
-         dis.close();
-      }
+        }
+        dis.close();
 
-      catch (IOException e) {
-         System.out.println("IOException: " + e);
-         e.printStackTrace();
-      }
-      return result;
-   }
-
-   public static void main(String[] args) {
-      //Group_Parse fi = new Group_Parse(args[0]);
-      //fi.print(probe_group_map);
-      //	fi.probe_repeat();
-      //	fi.print(probe_repeat_val);
-   }
-
+        return result;
+    }
 } // end of class

@@ -15,28 +15,28 @@ public class Link extends Point {
 
    private double weight;
 
-   /**
-    *
-    * @param i
-    * @param j
-    * @param weight
-    */
-   public Link(int i, int j, double weight) {
+    /**
+     *
+     * @param i int
+     * @param j int
+     * @param weight double
+     */
+    public Link(int i, int j, double weight) {
      super(i,j);
      this.weight = weight;
   }
 
-  /**
-   *
-   * @return
-   */
-   public double getWeight() { return weight; }
+    /**
+     *
+     * @return double
+     */
+    public double getWeight() { return weight; }
 
-   /**
-    *
-    * @return
-    */
-   public String toString() {
+    /**
+     *
+     * @return java.lang.String
+     */
+    public String toString() {
       return super.toString() + "\t" + DecimalFormat.getInstance().format(this.weight);
    }
 

@@ -20,31 +20,32 @@ public class GroupMap {
 
    public int getUniqueItems() { return uniqueItems; }
 
-   /**
-    *
-    * @param k
-    * @return
-    */
-   public boolean hasDuplicates(String k) {
+    /**
+     *
+     * @param k String
+     * @return boolean
+     */
+    public boolean hasDuplicates(String k) {
       return numDuplicates(k) > 0;
    }
 
-   /**
-    *
-    * @param k
-    * @return
-    */
-   public int numDuplicates(String k) {
+    /**
+     *
+     * @param k String
+     * @return int
+     */
+    public int numDuplicates(String k) {
        return ((HashSet)duplicateMap.get(k)).size();
    }
 
 
-   /**
-   *
-   * @param filename Duplicate map file name to be read.
-   * @param dataMatrix Data file this the map refers to.
-   */
-  public Map read(String filename, DenseDoubleMatrix2DNamed dataMatrix) {
+    /**
+     *
+     * @param filename Duplicate map file name to be read.
+     * @param dataMatrix Data file this the map refers to.
+     * @return Map
+     */
+    public Map read(String filename, DenseDoubleMatrix2DNamed dataMatrix) {
 
      if (filename == null || dataMatrix == null) {
         throw new IllegalArgumentException("You must give a valid file name and data matrix.");

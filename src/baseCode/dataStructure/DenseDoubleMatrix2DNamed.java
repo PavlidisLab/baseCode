@@ -1,12 +1,19 @@
 package baseCode.dataStructure;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Vector;
+
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
-import cern.colt.matrix.impl.AbstractMatrix2D;
-import java.text.NumberFormat;
 import corejava.Format;
 
 /**
+ * <p>Title: DenseDoubleMatrix2DNamed</p>
+ * <p>Description: A matrix that knows about row and column names.</p>
+ * <p>Copyright: Copyright (c) 2004</p>
+ * <p>Institution:: Columbia University</p>
   @author Paul Pavlidis
   @version $Id$
  */
@@ -19,9 +26,13 @@ public class DenseDoubleMatrix2DNamed
    private Map rowMap; //contains a map of each row and elements in the row
    private Map colMap;
 
-   /**
-    */
-   public DenseDoubleMatrix2DNamed(int rows, int cols, double T[][]) {
+    /**
+     *
+     * @param rows int
+     * @param cols int
+     * @param T double[][]
+     */
+    public DenseDoubleMatrix2DNamed(int rows, int cols, double T[][]) {
       super(T);
       rowMap = new HashMap(); //contains a map of each row name to index of the row.
       colMap = new HashMap();
@@ -30,9 +41,12 @@ public class DenseDoubleMatrix2DNamed
 
    }
 
-   /**
-    */
-   public DenseDoubleMatrix2DNamed(int rows, int cols) {
+    /**
+     *
+     * @param rows int
+     * @param cols int
+     */
+    public DenseDoubleMatrix2DNamed(int rows, int cols) {
       super(rows, cols);
       rowMap = new LinkedHashMap(); //contains a map of each row name to index of the row.
       rowNames = new Vector();
@@ -40,21 +54,23 @@ public class DenseDoubleMatrix2DNamed
 
    }
 
-   /**
-    * Return a reference to a specific row.
-    * @param row
-    * @return
-    */
-   public double[] getRow(int row) {
+    /**
+     * Return a reference to a specific row.
+     *
+     * @param row int
+     * @return double[]
+     */
+    public double[] getRow(int row) {
       return viewRow(row).toArray();
    }
 
-   /**
-    * Return a copy of a given column.
-    * @param i
-    * @return
-    */
-   public double[] getCol(int col) {
+    /**
+     * Return a copy of a given column.
+     *
+     * @param col int
+     * @return double[]
+     */
+    public double[] getCol(int col) {
       double[] result = new double[rows()];
       for (int i = 0; i < rows(); i++) {
          result[i] = get(i, col);
@@ -62,28 +78,28 @@ public class DenseDoubleMatrix2DNamed
       return result;
    }
 
-   /**
-    *
-    * @param r
-    * @return
-    */
-   public boolean hasRow(String r) {
+    /**
+     *
+     * @param r String
+     * @return boolean
+     */
+    public boolean hasRow(String r) {
       return this.rowMap.containsKey(r);
    }
 
-   /**
-    *
-    * @return
-    */
-   public Iterator getRowNameMapIterator() {
+    /**
+     *
+     * @return java.util.Iterator
+     */
+    public Iterator getRowNameMapIterator() {
       return this.rowMap.keySet().iterator();
    }
 
-   /**
-    *
-    * @return
-    */
-   public String toString() {
+    /**
+     *
+     * @return java.lang.String
+     */
+    public String toString() {
       Format nf = new Format("%.4g");
       StringBuffer result = new StringBuffer(this.rows()*this.columns());
       if (this.hasColNames() || this.hasRowNames()) {
@@ -113,117 +129,119 @@ public class DenseDoubleMatrix2DNamed
       return result.toString();
    }
 
-   /**
-    *
-    * @param s
-    */
-   public void addColumnName(String s) {
+    /**
+     *
+     * @param s String
+     */
+    public void addColumnName(String s) {
       this.colNames.add(s);
       this.colMap.put(s, new Integer(columns()));
    }
 
-   /**
-    *
-    * @param s
-    */
-   public void addRowName(String s) {
+    /**
+     *
+     * @param s String
+     */
+    public void addRowName(String s) {
       this.rowNames.add(s);
       this.rowMap.put(s, new Integer(rows()));
    }
 
-   /**
-    *
-    * @param s
-    * @return
-    */
-   public int getRowIndexByName(String s) {
+    /**
+     *
+     * @param s String
+     * @return int
+     */
+    public int getRowIndexByName(String s) {
       return ( (Integer) rowMap.get(s)).intValue();
    }
 
-   /**
-    *
-    * @param r
-    * @return
-    */
-   public int getColIndexByName(String r) {
+    /**
+     *
+     * @param r String
+     * @return int
+     */
+    public int getColIndexByName(String r) {
     return ( (Integer)this.colMap.get(r)).intValue();
  }
 
 
-   /**
-    *
-    * @param s
-    * @return
-    */
-   public double[] getRowByName(String s) {
+    /**
+     *
+     * @param s String
+     * @return double[]
+     */
+    public double[] getRowByName(String s) {
       return getRow(getRowIndexByName(s));
    }
 
-   /**
-    *
-    * @param i
-    * @return
-    */
-   public String getRowName(int i) {
+    /**
+     *
+     * @param i int
+     * @return java.lang.String
+     */
+    public String getRowName(int i) {
       return (String) rowNames.get(i);
    }
 
-   /**
-    *
-    * @param i
-    * @return
-    */
-   public String getColName(int i) {
+    /**
+     *
+     * @param i int
+     * @return java.lang.String
+     */
+    public String getColName(int i) {
       return (String) colNames.get(i);
    }
 
-   /**
-    *
-    * @return
-    */
-   public boolean hasRowNames() {
+    /**
+     *
+     * @return boolean
+     */
+    public boolean hasRowNames() {
       return rowNames.size() == rows();
    }
 
-   /**
-    *
-    * @return
-    */
-   public boolean hasColNames() {
+    /**
+     *
+     * @return boolean
+     */
+    public boolean hasColNames() {
       return colNames.size() == columns();
    }
 
-   /**
-    *
-    * @param v
-    */
-   public void setRowNames(Vector v) {
+    /**
+     *
+     * @param v Vector
+     */
+    public void setRowNames(Vector v) {
       for (int i = 0; i < v.size(); i++) {
          addRowName((String)v.get(i));
       }
    }
 
-   /**
-    *
-    * @param v
-    */
-   public void setColumnNames(Vector v) {
+    /**
+     *
+     * @param v Vector
+     */
+    public void setColumnNames(Vector v) {
       this.colNames = v;
    }
 
-   /**
-    *
-    * @return
-    */
-   public Vector getColNames() {
+    /**
+     *
+     * @return java.util.Vector
+     */
+    public Vector getColNames() {
       return colNames;
    }
 
-   /**
-    * @todo make this use copy instead, need to encapsulate the doublematrix2d instead of inheriting from it.
-    * @return
-    */
-   public DenseDoubleMatrix2DNamed copyMatrix() {
+    /**
+     *
+     * @todo make this use copy instead, need to encapsulate the doublematrix2d
+     *   instead of inheriting from it.
+     * @return baseCode.dataStructure.DenseDoubleMatrix2DNamed
+     */
+    public DenseDoubleMatrix2DNamed copyMatrix() {
       DenseDoubleMatrix2DNamed returnval = new DenseDoubleMatrix2DNamed(this.rows(), this.columns());
       for (int i = 0, n = this.rows(); i < n; i++) {
          returnval.addRowName(this.getRowName(i));

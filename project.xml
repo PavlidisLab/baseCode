@@ -15,9 +15,7 @@
     </versions>
 
 <repository>
-    <connection>
-      scm:cvs:ext:${maven.username}@adgate.cu-genome.org:/fsnode/projects/cvs/pavlab/:baseCode
-    </connection>
+    <connection>scm:cvs:ext:${maven.username}@adgate.cu-genome.org:/fsnode/projects/cvs/pavlab:baseCode</connection>
 </repository>
 
 
@@ -28,7 +26,24 @@
         <email>pavlidis@dbmi.columbia.edu</email>
         <organization>Columbia University</organization>
       </developer>
+
+      <developer>
+        <name>William Braynen</name>
+        <id>braynen</id>
+        <email>wbraynen@ic.sunysb.edu</email>
+        <organization>Columbia University</organization>
+      </developer>
+
+      <developer>
+        <name>Homin Lee</name>
+        <id>hlk7</id>
+        <email>hlk7@cs.columbia.edu</email>
+        <organization>Columbia University</organization>
+      </developer>
+
     </developers>
+
+
 
 
   <build>

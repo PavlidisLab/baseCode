@@ -1,11 +1,10 @@
 package baseCode.dataStructure.writer;
 
 import java.io.PrintStream;
-import hep.aida.IHistogram1D;
 import corejava.Format;
+import hep.aida.IHistogram1D;
 
 /**
- *
  * <p>Title: </p>
  * <p>Description: </p>
  * <p>Copyright: Copyright (c) 2004</p>
@@ -15,7 +14,12 @@ import corejava.Format;
  */
 public class HistogramWriter {
 
-   public void write(IHistogram1D h, PrintStream s) {
+    /**
+     * Print out a IHistogram1D object.
+     * @param h IHistogram1D to be printed.
+     * @param s PrintStream to be printed to.
+     */
+    public void write(IHistogram1D h, PrintStream s) {
       //   NumberFormat k = new DecimalFormat();
       Format k = new Format("%1.5g");
       int total = h.entries();

@@ -1,11 +1,11 @@
 package baseCode.dataStructure;
 
-import cern.colt.matrix.impl.DenseObjectMatrix2D;
-import java.util.Vector;
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.Iterator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
+
+import cern.colt.matrix.impl.DenseObjectMatrix2D;
 
 /**
  *
@@ -33,11 +33,11 @@ public class StringMatrix2DNamed
       colMap = new HashMap();
    }
 
-   /**
-    *
-    * @return
-    */
-   public String toString() {
+    /**
+     *
+     * @return java.lang.String
+     */
+    public String toString() {
       String result = "label";
       for (int i = 0; i < columns(); i++) {
          result = result + "\t" + getColName(i);
@@ -94,20 +94,20 @@ public class StringMatrix2DNamed
       }
    }
 
-   /**
-    *
-    * @return
-    */
-   public Iterator getRowNameMapIterator() {
+    /**
+     *
+     * @return java.util.Iterator
+     */
+    public Iterator getRowNameMapIterator() {
       return this.rowMap.keySet().iterator();
    }
 
-   /**
-    *
-    * @param r
-    * @return
-    */
-   public boolean hasRow(String r) {
+    /**
+     *
+     * @param r String
+     * @return boolean
+     */
+    public boolean hasRow(String r) {
       return this.rowMap.get(r) == null;
    }
 

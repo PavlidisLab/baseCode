@@ -1,10 +1,10 @@
 package baseCode.dataStructure.reader;
 
-import java.io.*;
-
-import baseCode.dataStructure.*;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import baseCode.dataStructure.NamedMatrix;
 
 /**
  *
@@ -17,7 +17,7 @@ import java.util.Vector;
  */
 public abstract class MatrixReader {
 
-   public abstract NamedMatrix read(String filename);
+   public abstract NamedMatrix read(String filename) throws IOException;
 
    protected Vector readHeader(BufferedReader dis) throws IOException {
       Vector headerVec = new Vector();
@@ -52,9 +52,8 @@ public abstract class MatrixReader {
          }
 
          if (missing) {
-            System.err.println("Warning: Missing values not allowed in the header (column " +
+            throw new IOException("Warning: Missing values not allowed in the header (column " +
                                columnNumber + ")");
-            continue;
          }
          else if (columnNumber > 0) {
             headerVec.add(s);
