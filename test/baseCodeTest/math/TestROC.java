@@ -42,5 +42,11 @@ public class TestROC extends TestCase {
       double expectedReturn = ( 21.0 - 5.0 ) / 21.0;
       assertEquals( "return value", expectedReturn, actualReturn, 0.00001 );
    }
+   
+   public void testArocN() {
+      double actualReturn = ROC.aroc( 10, ranksOfPositives, 2 );
+      double expectedReturn = 2.0/6.0;
+      assertEquals( "return value", expectedReturn, actualReturn, 0.00001 );
+   }
 
 }

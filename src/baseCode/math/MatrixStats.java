@@ -166,6 +166,7 @@ public class MatrixStats {
          row.assign( f );
 
          double sum = row.zSum();
+                  
          row.assign( Functions.div( sum ) );
 
       }

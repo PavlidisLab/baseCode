@@ -39,10 +39,14 @@ public class RankProp extends Algorithm {
       y.set( k, 1.0 ); // query point
       yorig = query.viewRow( 0 ); // the query.
 
+      if (alpha == 0.0) {
+         return yorig;
+      }
+      
       for ( int loops = 0; loops < maxIter; loops++ ) { // iterations of propagation
 
          yold.assign( y ); // initially all zero except for 1 at the query point.
-
+         
          for ( int j = 0; j < dim; j++ ) {
             if ( j == k ) continue; // don't update query
 
