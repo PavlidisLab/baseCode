@@ -2,6 +2,7 @@ package baseCode.math;
 
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
+import cern.jet.math.Arithmetic;
 import cern.jet.stat.Probability;
 
 /**
@@ -25,7 +26,6 @@ public class CorrelationStats {
    private static final double STEPSIZE = BINSIZE * 2; // this MUST be more than
    // the binsize.
    private static final int MAXCOUNT = 1000; // maximum number of things.
-   private static final double LOG10 = Math.log( 10.0 );
    private static final double PVALCHOP = 8.0; // value by which log(pvalues)
    // are scaled before storing as
    // bytes. Values less than
@@ -106,7 +106,7 @@ public class CorrelationStats {
     */
    public static int pvalueAsByte( double correl, int count ) {
       int p = -( int ) Math.floor( PVALCHOP
-            * ( Math.log( pvalue( correl, count ) ) / LOG10 ) );
+            * Arithmetic.log10( pvalue( correl, count ) ) );
 
       if ( p < 0 ) {
          return 0;
