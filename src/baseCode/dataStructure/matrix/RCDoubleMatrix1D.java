@@ -1,5 +1,6 @@
 package baseCode.dataStructure.matrix;
 
+import cern.colt.function.DoubleDoubleFunction;
 import cern.colt.function.DoubleFunction;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
@@ -146,8 +147,8 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
       double returnVal = 0.0;
       for ( int i = idx.length; --i >= 0; ) {
          double value = vals[i];
-         int index =  idx[i];
-         if (index >= otherSize) continue; // in case our arrays are ragged.
+         int index = idx[i];
+         if ( index >= otherSize ) continue; // in case our arrays are ragged.
          returnVal += value * y.getQuick( index );
       }
       return returnVal;
@@ -166,5 +167,16 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
          if ( r != value ) vals[i] = r;
       }
       return this;
+   }
+
+
+   public double zSum() {
+      double[] vals = values.elements();
+      double sum = 0.0;
+      for ( int i = 0; i < vals.length; i++ ) {
+         sum += vals[i];
+
+      }
+      return sum;
    }
 }
