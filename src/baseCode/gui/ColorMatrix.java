@@ -141,7 +141,7 @@ public class ColorMatrix {
     public String[] getColumnNames() {
        
        String[] columnNames = new String[m_totalColumns];
-       for (int i = 0;  i < m_totalRows;  i++) {
+       for (int i = 0;  i < m_totalColumns;  i++) {
           columnNames[i] = getColumnName( i );
        }
        return columnNames;
