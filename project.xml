@@ -3,7 +3,7 @@
     <name>baseCode</name>
     <groupId>baseCode</groupId>
     <artifactId>baseCode</artifactId>
-    <currentVersion>0.2</currentVersion>
+    <currentVersion>0.2.1</currentVersion>
     <organization>
         <name>Columbia University</name>
         <url>http://www.columbia.edu</url>
@@ -18,12 +18,15 @@
     </repository>
     <versions>
         <version>
-            <id>0.1</id>
-            <name>0.1</name>
+            <id>0.2.1</id>
+            <name>0.2.1</name>
         </version>
     </versions>
     <branches/>
     <mailingLists/>
+        <licenses>
+        <license>GPL</license>
+    </licenses>
     <developers>
         <developer>
             <name>Paul Pavlidis</name>
