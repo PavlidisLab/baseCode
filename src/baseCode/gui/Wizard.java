@@ -18,23 +18,15 @@ import javax.swing.SwingConstants;
 import baseCode.util.StatusViewer;
 
 /**
- * <p>
- * Title:
- * </p>
- * <p>
- * Description:
- * </p>
- * <p>
- * Copyright: Copyright (c) 2004
- * </p>
- * <p>
- * Company:
- * </p>
  * 
- * @author not attributable
+ * 
+ *
+ * <hr>
+ * <p>Copyright (c) 2004-2005 Columbia University
+ * @author pavlidis
+ * @author Homin Lee
  * @version $Id$
  */
-
 public abstract class Wizard extends JDialog {
    protected JPanel mainPanel;
    protected FlowLayout flowlayout1 = new FlowLayout();
@@ -47,7 +39,7 @@ public abstract class Wizard extends JDialog {
    protected JButton backButton = new JButton();
    protected JButton cancelButton = new JButton();
    protected JButton finishButton = new JButton();
-   protected int step;
+
    Vector steps = new Vector();
    protected JFrame callingframe;
    private StatusViewer statusMessenger;

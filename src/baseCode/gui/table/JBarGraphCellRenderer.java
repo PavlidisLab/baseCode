@@ -76,8 +76,8 @@ public class JBarGraphCellRenderer extends JLabel implements TableCellRenderer {
          m_isBarGraph = true;
          m_values = value;
 
-         Double x = new Double( ( ( Double ) ( ( ArrayList ) value ).get( 0 ) )
-               .doubleValue() );
+//         Double x = new Double( ( ( Double ) ( ( ArrayList ) value ).get( 0 ) )
+//               .doubleValue() );
 
          //        
          //            x = new Double( m_regular.format( -Math

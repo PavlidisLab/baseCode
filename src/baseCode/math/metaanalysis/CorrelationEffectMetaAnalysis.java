@@ -1,6 +1,5 @@
 package baseCode.math.metaanalysis;
 
-import baseCode.math.Constants;
 import baseCode.math.CorrelationStats;
 import cern.colt.list.DoubleArrayList;
 import cern.jet.stat.Descriptive;

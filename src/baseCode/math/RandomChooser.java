@@ -8,7 +8,7 @@ import java.util.Random;
  * Copyright (c) 2004
  * </p>
  * <p>
- * Institution:: Columbia University
+ * Institution: Columbia University
  * </p>
  * 
  * @author Paul Pavlidis
@@ -21,6 +21,14 @@ public class RandomChooser {
 
    private static Random generator = new Random( System.currentTimeMillis() );
 
+   /**
+    * Initialized the random number generator witha  given seed.
+    * @param seed
+    */
+   public static void init(long seed) {
+      generator = new Random(seed);
+   }
+   
    /**
     * Fill randomvals with random things from sourcedata, without replacement.
     * 

@@ -176,5 +176,19 @@ public class FileTools {
       }
       return false;
    }
+   
+   /**
+    * 
+    * @param file
+    * @return
+    */
+   public static boolean testFile( File file ) {
+      if ( file != null   ) {
+         if ( file.isFile() && file.canRead() ) {
+            return true;
+         }
+      }
+      return false;
+   }
 
 }

@@ -90,7 +90,7 @@ public abstract class MetaAnalysis {
     * General formula for weighted mean of effect sizes. Cooper and Hedges 18-1, or HS pg. 100.
     * <p>
     * In HS, the weights are simply the sample sizes. For CH, the weights are 1/v for a fixed effect model. Under a
-    * random effects model, we would use 1/(v + v_bs) where v_bs is the betwee-studies variance.
+    * random effects model, we would use 1/(v + v_bs) where v_bs is the between-studies variance.
     * 
     * @param effectSizes
     * @param sampleSizes
@@ -135,22 +135,8 @@ public abstract class MetaAnalysis {
    /**
     * CH 18-3. Can be used for fixed or random effects model, the variances just have to computed differently.
     * 
-    * <pre>
-    * 
-    *  
-    *   
-    *    
-    *     
-    *      
-    *       
-    *          v_dot = 1/sum_i=1&circ;k ( 1/v_i)
-    *        
-    *       
-    *      
-    *     
-    *    
-    *   
-    *  
+    * <pre>      
+    *          v_dot = 1/sum_i=1&circ;k ( 1/v_i) 
     * </pre>
     * 
     * @param variances
@@ -239,7 +225,7 @@ public abstract class MetaAnalysis {
    //            - Descriptive.mean( variances ), 0.0 );
    //   }
    /**
-    * CH equation 18-23. Another estimator of the between-studies variance s <sup>2 </sup> for random effects model.
+    * CH equation 18-23. Another estimator of the between-studies variance s<sup>2 </sup> for random effects model.
     * This is non-zero only if Q is larger than expected under the null hypothesis that the variance is zero.
     * 
     * <pre>

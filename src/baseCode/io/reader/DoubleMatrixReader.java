@@ -32,7 +32,7 @@ import cern.colt.list.DoubleArrayList;
 public class DoubleMatrixReader extends AbstractNamedMatrixReader {
 
    private int numHeadings;
-   private Vector colNames;
+   private List colNames;
 
    /**
     * @param filename data file to read from
@@ -77,9 +77,9 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
 
       BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
 
-      Vector MTemp = new Vector();
+      List MTemp = new Vector();
 
-      Vector rowNames = new Vector();
+      List rowNames = new Vector();
 
       //BufferedReader dis = new BufferedReader( new FileReader( filename ) );
       //   int columnNumber = 0;
@@ -264,8 +264,8 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
    // protected methods
    // -----------------------------------------------------------------
 
-   protected DenseDoubleMatrix2DNamed createMatrix( Vector MTemp, int rowCount,
-         int colCount, Vector rowNames, Vector colNames ) {
+   protected DenseDoubleMatrix2DNamed createMatrix( List MTemp, int rowCount,
+         int colCount, List rowNames, List colNames ) {
 
       DenseDoubleMatrix2DNamed matrix = new DenseDoubleMatrix2DNamed( rowCount,
             colCount );
