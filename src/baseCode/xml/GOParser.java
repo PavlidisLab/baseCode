@@ -5,11 +5,12 @@ import java.io.*;
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
-import baseCode.dataStructure.*;
+import baseCode.dataStructure.OntologyEntry;
+import baseCode.dataStructure.graph.DirectedGraph;
 
 public class GOParser {
 
-   private Graph m;
+   private DirectedGraph m;
 
    public GOParser() throws IOException, ParserConfigurationException, SAXException,
        ParserConfigurationException {
@@ -23,7 +24,7 @@ public class GOParser {
       xr.setErrorHandler( handler );
       xr.parse( new InputSource( r ) );
 
-      Graph m = handler.getResults();
+      DirectedGraph m = handler.getResults();
 
       System.err.println(m.toString());
 
@@ -34,13 +35,13 @@ public class GOParser {
 class GOHandler
     extends DefaultHandler {
 
-   private Graph m;
+   private DirectedGraph m;
 
-   public Graph getResults() { return m;}
+   public DirectedGraph getResults() { return m;}
 
    public GOHandler() {
       super();
-      m = new Graph("head");
+      m = new DirectedGraph("head");
    }
 
    private boolean inTerm = false;
