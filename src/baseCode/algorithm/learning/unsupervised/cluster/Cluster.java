@@ -32,6 +32,10 @@ public class Cluster extends Distanceable {
       this.items = items;
    }
    
+   public void addItem(Cluster item ) {
+      
+   }
+   
    /**
     * 
     * @return true if this cluster is made up of multiple distanceables, or multiple ones.

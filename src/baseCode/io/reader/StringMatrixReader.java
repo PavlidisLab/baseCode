@@ -124,4 +124,11 @@ public class StringMatrixReader extends AbstractNamedMatrixReader {
       return matrix;
 
    }
+
+   /* (non-Javadoc)
+    * @see baseCode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
+    */
+   public NamedMatrix readOneRow( BufferedReader dis ) throws IOException {
+     throw new UnsupportedOperationException();
+   }
 }

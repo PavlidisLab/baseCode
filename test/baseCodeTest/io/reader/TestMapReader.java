@@ -1,4 +1,4 @@
-package baseCodeTest.dataStructure.reader;
+package baseCodeTest.io.reader;
 
 import java.io.IOException;
 import java.io.InputStream;

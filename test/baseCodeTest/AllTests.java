@@ -13,13 +13,23 @@ public class AllTests extends TestCase {
    public static Test suite() {
       TestSuite suite = new TestSuite();
       suite
-            .addTestSuite( baseCodeTest.dataStructure.reader.TestStringMatrixReader.class );
+            .addTestSuite( baseCodeTest.io.reader.TestStringMatrixReader.class );
       suite
-            .addTestSuite( baseCodeTest.dataStructure.reader.TestDoubleMatrixReader.class );
+            .addTestSuite( baseCodeTest.io.reader.TestDoubleMatrixReader.class );
+      
+      suite
+      .addTestSuite( baseCodeTest.io.reader.TestSparseDoubleMatrixReader.class );
+      
+      suite
+      .addTestSuite( baseCodeTest.io.reader.TestSparseRaggedDouble2DNamedMatrixReader.class );
+      
 
       suite
-            .addTestSuite( baseCodeTest.dataStructure.writer.TestHistogramWriter.class );
+            .addTestSuite( baseCodeTest.io.writer.TestHistogramWriter.class );
 
+      
+      suite.addTestSuite(baseCodeTest.dataStructure.matrix.TestSparseRaggedDoubleMatrix2DNamed.class);
+      
       suite.addTestSuite( baseCodeTest.dataStructure.TestQueue.class );
       suite.addTestSuite( baseCodeTest.dataStructure.TestStack.class );
 

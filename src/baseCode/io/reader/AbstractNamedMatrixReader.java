@@ -2,6 +2,7 @@ package baseCode.io.reader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -26,6 +27,11 @@ public abstract class AbstractNamedMatrixReader {
 
    public abstract NamedMatrix read( String filename ) throws IOException;
 
+   public abstract NamedMatrix read( InputStream stream ) throws IOException;
+   
+   public abstract NamedMatrix readOneRow(BufferedReader dis ) throws IOException;
+   
+   
    protected static final Log log = LogFactory
          .getLog( AbstractNamedMatrixReader.class );
 

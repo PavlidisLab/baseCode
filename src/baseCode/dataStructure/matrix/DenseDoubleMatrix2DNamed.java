@@ -1,7 +1,8 @@
 package baseCode.dataStructure.matrix;
 
+import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
-import cern.colt.matrix.impl.AbstractMatrix2D;
+import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import corejava.Format;
 
@@ -18,7 +19,7 @@ import corejava.Format;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class DenseDoubleMatrix2DNamed extends AbstractNamedMatrix {
+public class DenseDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
 
    private DenseDoubleMatrix2D matrix;
 
@@ -48,6 +49,7 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedMatrix {
    public double[] getRow( int row ) {
       return viewRow( row ).toArray();
    }
+   
 
    /**
     * Return a copy of a given column.
@@ -233,5 +235,16 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedMatrix {
     */
    public double[][] toArray() {
       return matrix.toArray();
+   }
+
+   /* (non-Javadoc)
+    * @see baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix#getRowArrayList(int)
+    */
+   public DoubleArrayList getRowArrayList( int i ) {
+      return new DoubleArrayList(getRow(i));
+   }
+   
+   public DoubleMatrix1D getRowMatrix1D(int i) {
+      return new DenseDoubleMatrix1D(getRow(i));
    }
 }

@@ -2,7 +2,9 @@ package baseCode.dataStructure.matrix;
 
 import java.text.NumberFormat;
 
+import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
+import cern.colt.matrix.impl.SparseDoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 
 /**
@@ -22,7 +24,7 @@ import cern.colt.matrix.impl.SparseDoubleMatrix2D;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class SparseDoubleMatrix2DNamed extends AbstractNamedMatrix implements
+public class SparseDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix implements
       NamedMatrix {
 
    private SparseDoubleMatrix2D matrix;
@@ -110,7 +112,15 @@ public class SparseDoubleMatrix2DNamed extends AbstractNamedMatrix implements
             result += getRowName( i );
          }
          for ( int j = 0; j < columns(); j++ ) {
-            result = result + "\t" + nf.format( get( i, j ) );
+
+            double value = get( i, j );
+
+            if ( value == 0.0 ) {
+               result = result + "\t";
+            } else {
+
+               result = result + "\t" + nf.format( value );
+            }
          }
          result += "\n";
       }
@@ -195,4 +205,40 @@ public class SparseDoubleMatrix2DNamed extends AbstractNamedMatrix implements
       return matrix.viewRow( row );
    }
 
+   /**
+    * @return
+    */
+   public int cardinality() {
+      return matrix.cardinality();
+   }
+   /**
+    * @param minNonZeros
+    */
+   public void ensureCapacity( int minNonZeros ) {
+      matrix.ensureCapacity( minNonZeros );
+   }
+   /**
+    * @return
+    */
+   public int size() {
+      return matrix.size();
+   }
+   /**
+    * 
+    */
+   public void trimToSize() {
+      matrix.trimToSize();
+   }
+
+   /* (non-Javadoc)
+    * @see baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix#getRowArrayList(int)
+    */
+   public DoubleArrayList getRowArrayList( int i ) {
+     return new DoubleArrayList(getRow(i));
+   }
+   
+   public DoubleMatrix1D getRowMatrix1D(int i) {
+      return new SparseDoubleMatrix1D(getRow(i));
+   }
+   
 }

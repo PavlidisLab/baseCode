@@ -45,19 +45,16 @@ public class RegressionTesting {
       resultBuf.close();
    }
 
+   
    /**
-    * @param resourceName
-    * @return the contents of the resource as a String
+    * 
+    * @param istream
+    * @return
     * @throws IOException
     */
-   public static String readTestResult( String resourceName )
-         throws IOException {
-      InputStream istream = RegressionTesting.class
-            .getResourceAsStream( resourceName );
-
+   public static String readTestResult(InputStream istream ) throws IOException {
       if ( istream == null ) {
-         throw new IllegalStateException( "Resource " + resourceName
-               + " not found" );
+         throw new IllegalStateException( "Null stream" );
       }
 
       BufferedReader buf = new BufferedReader( new InputStreamReader( istream ) );
@@ -68,6 +65,22 @@ public class RegressionTesting {
       }
       buf.close();
       return testOutput.toString();
+   }
+   
+   
+   /**
+    * @param resourceName
+    * @return the contents of the resource as a String
+    * @throws IOException
+    */
+   public static String readTestResult( String resourceName )
+         throws IOException {
+      InputStream istream = RegressionTesting.class
+            .getResourceAsStream( resourceName );
+      String result = readTestResult(istream);
+      istream.close();
+      return result;
+     
    }
 
    /**

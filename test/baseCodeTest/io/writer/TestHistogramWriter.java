@@ -1,4 +1,4 @@
-package baseCodeTest.dataStructure.writer;
+package baseCodeTest.io.writer;
 
 import hep.aida.ref.Histogram1D;
 

@@ -7,7 +7,17 @@ import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 
 /**
- * aminal
+ * Start with all items in separate clusters.
+ * 
+ * Compute the distances between all clusters
+ * 
+ * Find the clusters with the highest similarity. Combine them into one cluster
+ * 
+ * Iterate until there is only one cluster.
+ * 
+ * Output: for each cluster, print the clusters it contains.
+ * 
+ * 
  * <hr>
  * <p>
  * Copyright (c) 2004 Columbia University
@@ -25,7 +35,7 @@ public class HierarchicalClusterer implements ClusteringAlgorithm {
    /**
     * At the end of the run, this contains the cluster tree.
     */
-   Cluster nodes;
+   ClusterNode nodes;
 
    
    /**
@@ -80,48 +90,17 @@ public class HierarchicalClusterer implements ClusteringAlgorithm {
             }
          }
       }
+      
+      // make a new cluster.
+      
+      
 
-      nodes = ( Cluster ) closestPairs.first();
-
-      // measure the distance of the new cluster to all the others.
-      for ( int i = 0; i < objects.size(); i++ ) {
-         Cluster elA = ( Cluster ) objects.elements()[i];
-         if ( elA.isVisited() ) {
-            continue;
-         }
-         double d = nodes.distanceTo( elA );
-         
-         //...
-         
-      }
-
-      objects.add( closestPairs.first() );
-      ( ( ClusterNode ) closestPairs.first() ).getFirstThing().mark();
-      ( ( ClusterNode ) closestPairs.first() ).getSecondThing().mark();
-      closestPairs.remove( closestPairs.first() );
-
-      // now we can iterate over the collection, adding nodes and marking their contents after added to the tree.
-      for ( int i = 0; i < objects.size(); i++ ) {
-         Cluster elA = ( Cluster ) objects.elements()[i];
-         if ( elA.isVisited() ) {
-            continue;
-         }
-         for ( int j = i + 1; j < objects.size(); j++ ) {
-            Cluster elB = ( Cluster ) objects.elements()[j];
-            if ( elB.isVisited() ) {
-               continue;
-            }
-
-            double d = distances.getQuick( i, j );
-            if ( closestPairs.first() == null
-                  || d < ( ( ClusterNode ) closestPairs.first() ).getDistance() ) {
-               closestPairs.add( new ClusterNode( d, elA, elB ) );
-               if ( closestPairs.size() > STORED ) {
-                  closestPairs.remove( closestPairs.last() );
-               }
-            }
-         }
-      }
+      // while there are still nodes left, keep finding the closest pairs.
+      
+      
+      
+      
+     
    }
 
    /**
@@ -136,7 +115,7 @@ public class HierarchicalClusterer implements ClusteringAlgorithm {
 
 /* just a helper to store the infor about a cluster node. */
 
-class ClusterNode {
+class ClusterNode implements Comparable {
    private double distance;
    private Cluster firstThing;
    private Cluster secondThing;
@@ -175,6 +154,14 @@ class ClusterNode {
 
    public void setSecondThing( Cluster secondThing ) {
       this.secondThing = secondThing;
+   }
+
+   /* (non-Javadoc)
+    * @see java.lang.Comparable#compareTo(java.lang.Object)
+    */
+   public int compareTo( Object o ) {
+      // TODO Auto-generated method stub
+      return 0;
    }
 }
 

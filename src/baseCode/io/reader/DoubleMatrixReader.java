@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -30,6 +31,9 @@ import cern.colt.list.DoubleArrayList;
  */
 public class DoubleMatrixReader extends AbstractNamedMatrixReader {
 
+   private int numHeadings;
+   private   Vector colNames;
+   
    /**
     * @param filename data file to read from
     * @return NamedMatrix object constructed from the data file
@@ -74,7 +78,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
       BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
 
       Vector MTemp = new Vector();
-      Vector colNames;
+       
       Vector rowNames = new Vector();
 
       //BufferedReader dis = new BufferedReader( new FileReader( filename ) );
@@ -93,20 +97,12 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
       }
 
       colNames = readHeader( dis );
-      int numHeadings = colNames.size();
+      numHeadings = colNames.size();
 
       while ( ( row = dis.readLine() ) != null ) {
-         StringTokenizer st = new StringTokenizer( row, "\t", true );
-
-         //
-         // Skip rows in which we are not interested
-         //
-         String s = null;
-         if ( st.hasMoreTokens() ) {
-            s = st.nextToken();
-         } else {
-            continue;
-         }
+         
+         String s  = parseRow(row, rowNames, MTemp );
+         
          if ( wantedRowNames != null ) {
 
             // if we already have all the rows we want, then bail out
@@ -122,78 +118,6 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
                // we found the row we want in the file
                wantedRowsFound.add( s );
             }
-         }
-
-         //
-         // If we're here, that means this row in the file contains the row
-         // we want -- we don't want to skip this file row, so parse it
-         //
-         DoubleArrayList rowTemp = new DoubleArrayList();
-         columnNumber = 0;
-         String previousToken = "";
-
-         while ( st.hasMoreTokens() ) {
-            // Iterate through the row, parsing it into row name and values
-            if ( columnNumber > 0 ) {
-               // if columnNumber == 0, then we just entered this loop and
-               // have already called st.nextToken() above to get the first
-               // string, so we don't want to call it twice, or we'll skip
-               // the row name
-               s = st.nextToken();
-            }
-            boolean missing = false;
-
-            if ( s.compareTo( "\t" ) == 0 ) {
-               /* two tabs in a row */
-               if ( previousToken.compareTo( "\t" ) == 0 ) {
-                  missing = true;
-               } else if ( !st.hasMoreTokens() ) { // at end of line.
-                  missing = true;
-               } else {
-                  previousToken = s;
-                  continue;
-               }
-            } else if ( s.compareTo( " " ) == 0 ) {
-               if ( previousToken.compareTo( "\t" ) == 0 ) {
-                  missing = true;
-               } else {
-                  throw new IOException( "Spaces not allowed after values" );
-                  // bad, not allowed.
-               }
-            } else if ( s.compareToIgnoreCase( "NaN" ) == 0 ) {
-               if ( previousToken.compareTo( "\t" ) == 0 ) {
-                  missing = true;
-               } else {
-                  throw new IOException(
-                        "NaN found where it isn't supposed to be" );
-                  // bad, not allowed - missing a tab?
-               }
-            }
-
-            if ( columnNumber > 0 ) {
-               if ( missing ) {
-                  rowTemp.add( Double.NaN );
-               } else {
-                  rowTemp.add( Double.parseDouble( s ) );
-               }
-            } else {
-               if ( missing ) {
-                  throw new IOException(
-                        "Missing values not allowed for row labels" );
-               }
-               rowNames.add( s.intern() );
-            }
-
-            columnNumber++;
-            previousToken = s;
-         } // end while (st.hasMoreTokens())
-         // done parsing one row -- no more tokens
-
-         MTemp.add( rowTemp );
-         if ( rowTemp.size() > numHeadings ) {
-            throw new IOException( "Too many values (" + rowTemp.size()
-                  + ") in row " + rowNumber + " (based on headings count of "
-                  + numHeadings + ")" );
          }
          rowNumber++;
       }
@@ -218,6 +142,121 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
 
       return createMatrix( MTemp, rowNumber, numHeadings, rowNames, colNames );
 
+   }
+   
+   
+   /* (non-Javadoc)
+    * @see baseCode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
+    */
+   public NamedMatrix readOneRow( BufferedReader dis ) throws IOException {
+      String row = dis.readLine();
+      Vector MTemp = new Vector();
+    
+      Vector rowNames = new Vector();
+      String s  = parseRow(row, rowNames, MTemp );
+      return createMatrix( MTemp, 1, numHeadings, rowNames, colNames );
+   }
+   
+
+   /**
+    * @throws IOException
+    * @param numHeadings
+    * @param MTemp
+    * @param rowNames
+    * @param rowNumber
+    * @param wantedRowNames
+    * @param row
+    * @return name of the row
+    */
+   private String parseRow( String row, List rowNames, List MTemp ) throws IOException {
+     
+      StringTokenizer st = new StringTokenizer( row, "\t", true );
+
+      //
+      // Skip rows in which we are not interested
+      //
+      String s = null;
+      if ( st.hasMoreTokens() ) {
+         s = st.nextToken();
+      } else {
+        // continue;
+      }
+     
+
+      //
+      // If we're here, that means this row in the file contains the row
+      // we want -- we don't want to skip this file row, so parse it
+      //
+      DoubleArrayList rowTemp = new DoubleArrayList();
+      int columnNumber = 0;
+      String previousToken = "";
+
+      while ( st.hasMoreTokens() ) {
+         // Iterate through the row, parsing it into row name and values
+         if ( columnNumber > 0 ) {
+            // if columnNumber == 0, then we just entered this loop and
+            // have already called st.nextToken() above to get the first
+            // string, so we don't want to call it twice, or we'll skip
+            // the row name
+            s = st.nextToken();
+         }
+         boolean missing = false;
+
+         if ( s.compareTo( "\t" ) == 0 ) {
+            /* two tabs in a row */
+            if ( previousToken.compareTo( "\t" ) == 0 ) {
+               missing = true;
+            } else if ( !st.hasMoreTokens() ) { // at end of line.
+               missing = true;
+            } else {
+               previousToken = s;
+            //  continue;
+            }
+         } else if ( s.compareTo( " " ) == 0 ) {
+            if ( previousToken.compareTo( "\t" ) == 0 ) {
+               missing = true;
+            } else {
+               throw new IOException( "Spaces not allowed after values" );
+               // bad, not allowed.
+            }
+         } else if ( s.compareToIgnoreCase( "NaN" ) == 0 ) {
+            if ( previousToken.compareTo( "\t" ) == 0 ) {
+               missing = true;
+            } else {
+               throw new IOException(
+                     "NaN found where it isn't supposed to be" );
+               // bad, not allowed - missing a tab?
+            }
+         }
+
+         if ( columnNumber > 0 ) {
+            if ( missing ) {
+               rowTemp.add( Double.NaN );
+            } else {
+               rowTemp.add( Double.parseDouble( s ) );
+            }
+         } else {
+            if ( missing ) {
+               throw new IOException(
+                     "Missing values not allowed for row labels" );
+            }
+            rowNames.add( s.intern() );
+         }
+
+         columnNumber++;
+         previousToken = s;
+      } // end while (st.hasMoreTokens())
+      // done parsing one row -- no more tokens
+
+      if ( rowTemp.size() > numHeadings ) {
+         throw new IOException( "Too many values (" + rowTemp.size()
+               + ") in row  (based on headings count of "
+               + numHeadings + ")" );
+      }
+      
+      MTemp.add( rowTemp );
+      return s;
+      
    }
 
    /**
@@ -274,5 +313,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
       }
       return row;
    }
+
+ 
 
 } // end class DoubleMatrixReader
