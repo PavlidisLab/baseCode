@@ -153,13 +153,13 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
       String rowInd = "";
       String rowWei = "";
       
-      while ( rowInd.length() < 2 ) {
+ //     while ( rowInd.length() < 2 ) {
          rowInd = dis.readLine(); // row with indices.
-      }
+  //    }
 
-      while ( rowWei.length() < 2 ) {
+  //    while ( rowWei.length() < 2 ) {
          rowWei = dis.readLine(); // row with weights.
-      }
+  //    }
 
       StringTokenizer tokw = new StringTokenizer( rowWei, " \t" );
       StringTokenizer toki = new StringTokenizer( rowInd, " \t" );
