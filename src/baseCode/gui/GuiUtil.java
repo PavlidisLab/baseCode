@@ -6,7 +6,7 @@ import javax.swing.JOptionPane;
 
 /**
  * Little oft-used functions.
- * 
+ *
  * @version $Id$
  */
 
@@ -29,10 +29,10 @@ public class GuiUtil {
 
    public static void error( Exception e, String message ) {
       JOptionPane.showMessageDialog( null, "Error: " + message + "\n"
-            + e.toString() + "\n" + e.getStackTrace() );
+            + e.toString() + "\n" + e.getStackTrace(),"Error", JOptionPane.ERROR_MESSAGE );
    }
 
    public static void error( String message ) {
-      JOptionPane.showMessageDialog( null, "Error: " + message + "\n" );
+      JOptionPane.showMessageDialog( null, "Error: " + message + "\n","Error", JOptionPane.ERROR_MESSAGE );
    }
 }
