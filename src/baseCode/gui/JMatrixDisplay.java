@@ -133,7 +133,7 @@ public class JMatrixDisplay extends JPanel {
          m_matrix = m_standardizedMatrix;
       }
       else {
-         m_unstandardizedMatrix = m_unstandardizedMatrix;
+         m_matrix = m_unstandardizedMatrix;
       }
    } // end setStandardizedEnabled
 
@@ -309,10 +309,14 @@ public class JMatrixDisplay extends JPanel {
       initSize();
    }
 
-   public ColorMatrix getMatrix() {
+   public ColorMatrix getColorMatrix() {
       return m_matrix;
    }
 
+   public DenseDoubleMatrix2DNamed getMatrix() {
+      return m_matrix.m_matrix;
+   }
+   
    /**
     * @param  matrix  the new matrix to use;  will resize
     *                 this display component as necessary
@@ -377,7 +381,7 @@ public class JMatrixDisplay extends JPanel {
    public String[] getRowNames() {
       return m_matrix.getRowNames();
    }
-
+   
    /**
     * @param  colorMap  an array of colors which define the midpoints in the
     *                   color map; this can be one of the constants defined
