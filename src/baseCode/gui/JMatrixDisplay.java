@@ -3,6 +3,8 @@ package baseCode.Gui;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.File;
 
 public class JMatrixDisplay extends JPanel {
 
@@ -10,7 +12,7 @@ public class JMatrixDisplay extends JPanel {
   ColorMatrix m_colorMatrix;
 
   boolean m_isPrintLabels = true;
-  boolean m_isImageSnapshot = false;
+  boolean m_isImageSnapshot = true;
   BufferedImage m_image = null;
 
   private int m_ratioWidth = 0, m_labelWidth = 70;
@@ -23,8 +25,9 @@ public class JMatrixDisplay extends JPanel {
   private int m_textSize = 0;
   protected static int m_rowHeight = 10; // in pixels
   protected static int m_rowWidth = 5; // in pixels
-
-
+  
+  private boolean picOnceSaved = false;
+  
   public JMatrixDisplay() {
 
      this( new ColorMatrix() );
@@ -132,6 +135,20 @@ public class JMatrixDisplay extends JPanel {
 
       } // end for rows
     } // end if (microarray != null)
+    
+    if ( ! picOnceSaved )
+    {
+        picOnceSaved = true;
+        // save screenshot to file
+        String filename = "C:\\matrix.png";
+        try {
+            saveToFile( filename );
+        }
+        catch (java.io.IOException e) {
+            System.err.println ("IOException: unable to save screenshot to " + filename);
+        }
+    }
+    
   } // end paintComponent
 
   /**
@@ -157,5 +174,11 @@ public class JMatrixDisplay extends JPanel {
     return Math.max( m_rowHeight, 5 );
   }
 
+  /**
+   * Saves to file
+   */
+  public void saveToFile( String outFileName ) throws java.io.IOException {
 
+      ImageIO.write( m_image, "png", new File( outFileName ));
+  }  
 }

@@ -16,6 +16,7 @@ import javax.swing.*;
 public class TestFrame extends JFrame {
   JPanel contentPane;
   BorderLayout borderLayout1 = new BorderLayout();
+  JMatrixDisplayPanel m_matrixDisplayPanel = new JMatrixDisplayPanel();
 
   //Construct the frame
   public TestFrame() {
@@ -27,7 +28,7 @@ public class TestFrame extends JFrame {
       e.printStackTrace();
     }
 
-    contentPane.add( new JMatrixDisplayPanel(), BorderLayout.CENTER );
+    contentPane.add( m_matrixDisplayPanel, BorderLayout.CENTER );
   }
 
   //Component initialization
@@ -44,5 +45,10 @@ public class TestFrame extends JFrame {
     if (e.getID() == WindowEvent.WINDOW_CLOSING) {
       System.exit(0);
     }
+  }
+  
+  public JMatrixDisplay getMatrixDisplay() {
+      
+      return m_matrixDisplayPanel.getMatrixDisplay();
   }
 }

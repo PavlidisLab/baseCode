@@ -6,7 +6,7 @@ import javax.swing.JPanel;
 public class JMatrixDisplayPanel extends JPanel {
   FlowLayout flowLayout1 = new FlowLayout();
 
-  JMatrixDisplay m_matrixDisplay;
+  protected JMatrixDisplay m_matrixDisplay;
 
   public JMatrixDisplayPanel() {
     try {
@@ -24,5 +24,10 @@ public class JMatrixDisplayPanel extends JPanel {
 
   void jbInit() throws Exception {
     this.setLayout(flowLayout1);
+  }
+  
+  public JMatrixDisplay getMatrixDisplay() {
+      
+      return m_matrixDisplay;
   }
 }
