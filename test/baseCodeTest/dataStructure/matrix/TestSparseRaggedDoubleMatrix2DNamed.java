@@ -73,7 +73,7 @@ public class TestSparseRaggedDoubleMatrix2DNamed extends TestCase {
       assertEquals( "return value", expectedReturn, actualReturn );
    }
    
-   
+   /* getRow returns a double[] */
    public void testGetRow() {
       DoubleArrayList actualReturn = new DoubleArrayList(matrix.getRow(2));
       DoubleArrayList  expectedReturn = new DoubleArrayList(new double[] {

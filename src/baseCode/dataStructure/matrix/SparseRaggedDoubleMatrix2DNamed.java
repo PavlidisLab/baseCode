@@ -8,6 +8,7 @@ import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix1D;
+import cern.jet.stat.Descriptive;
 
 /**
  * A sparse matrix class where the rows are ragged.
@@ -21,16 +22,16 @@ import cern.colt.matrix.impl.SparseDoubleMatrix1D;
 public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
 
    private Vector matrix; // a vector of DoubleArrayList containing the values of the matrix
-   private Vector indexes; // a vector of IntArrayList listing the columns used in each row.
+   // private Vector indexes; // a vector of IntArrayList listing the columns used in each row.
 
    int columns = 0;
    private boolean isDirty = true;
 
    private DoubleMatrix1D rowToGive;
-   
+
    public SparseRaggedDoubleMatrix2DNamed() {
       matrix = new Vector();
-      indexes = new Vector();
+      //    indexes = new Vector();
    }
 
    /*
@@ -43,9 +44,7 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
    }
 
    /*
-    * (non-Javadoc)
-    * 
-    * Unfortunately this has to iterate over the entire array.
+    * (non-Javadoc) Unfortunately this has to iterate over the entire array.
     * 
     * @see baseCode.dataStructure.matrix.NamedMatrix#columns()
     */
@@ -56,20 +55,19 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
       }
 
       int max = 0;
-      for ( Iterator iter = indexes.iterator(); iter.hasNext(); ) {
-         IntArrayList element = ( IntArrayList ) iter.next();
-         int[] el = element.elements();
-         for ( int i = 0; i < el.length; i++ ) {
-            int value = el[i];
-            if ( value > max ) {
-               max = value;
-            }
+      for ( Iterator iter = matrix.iterator(); iter.hasNext(); ) {
+         DoubleMatrix1D element = ( DoubleMatrix1D ) iter.next();
+
+         int value = element.size();
+         if ( value > max ) {
+            max = value;
          }
+
       }
-      
+
       columns = max;
-      System.err.println("Computed columns: " + columns);
-      rowToGive = new SparseDoubleMatrix1D(columns);
+      System.err.println( "Computed columns: " + columns );
+      rowToGive = new SparseDoubleMatrix1D( columns );
       isDirty = false;
       return columns;
    }
@@ -84,8 +82,7 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
    }
 
    /**
-    * Slow. todo Could save time if we know indices were sorted. Calling this frequently should be
-    * avoided at all costs.
+    * Slow. todo Could save time if we know indices were sorted. Calling this frequently should be avoided at all costs.
     * 
     * @param i row
     * @param j column
@@ -93,26 +90,28 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
     */
    public void set( int i, int j, double d ) {
 
-      if ( matrix.size() < i + 1 ) {
-         throw new IllegalArgumentException( "Index out of bounds" );
-      }
+      //      if ( matrix.size() < i + 1 ) {
+      //         throw new IllegalArgumentException( "Index out of bounds" );
+      //      }
+      //
+      //      DoubleArrayList row = ( DoubleArrayList ) matrix.get( i );
+      //      IntArrayList rowind = ( IntArrayList ) indexes.get( i );
+      //      int[] el = rowind.elements();
+      //      boolean success = false;
+      //      for ( int k = 0; k < el.length; k++ ) {
+      //         if ( el[k] == j ) {
+      //            row.set( k, d );
+      //            success = true;
+      //            break;
+      //         }
+      //      }
+      //
+      //      if ( !success ) {
+      //         rowind.add( j );
+      //         row.add( d );
+      //      }
 
-      DoubleArrayList row = ( DoubleArrayList ) matrix.get( i );
-      IntArrayList rowind = ( IntArrayList ) indexes.get( i );
-      int[] el = rowind.elements();
-      boolean success = false;
-      for ( int k = 0; k < el.length; k++ ) {
-         if ( el[k] == j ) {
-            row.set( k, d );
-            success = true;
-            break;
-         }
-      }
-
-      if ( !success ) {
-         rowind.add( j );
-         row.add( d );
-      }
+      ( ( DoubleMatrix1D ) matrix.get( i ) ).set( j, d );
 
    }
 
@@ -148,17 +147,17 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
     */
    public boolean isMissing( int i, int j ) {
 
-      IntArrayList rowind = ( IntArrayList ) indexes.get( i );
-      int[] el = rowind.elements();
-      boolean success = false;
-      for ( int k = 0; k < el.length; k++ ) {
-         if ( el[k] == j ) {
-            success = true;
-            break;
-         }
-      }
+      //      IntArrayList rowind = ( IntArrayList ) indexes.get( i );
+      //      int[] el = rowind.elements();
+      //      boolean success = false;
+      //      for ( int k = 0; k < el.length; k++ ) {
+      //         if ( el[k] == j ) {
+      //            success = true;
+      //            break;
+      //         }
+      //      }
 
-      return !success;
+      return get( i, j ) == 0.0;
    }
 
    /**
@@ -206,71 +205,71 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
     * @return
     */
    public double get( int i, int j ) {
-      DoubleArrayList row = ( DoubleArrayList ) matrix.get( i );
-      IntArrayList rowind = ( IntArrayList ) indexes.get( i );
-      int[] el = rowind.elements();
-      for ( int k = 0; k < el.length; k++ ) {
-         if ( el[k] == j + 1 ) {
-            return row.getQuick( k );
-         }
-      }
-      return 0.0;
+      return ( ( DoubleMatrix1D ) matrix.get( i ) ).getQuick( j );
    }
 
-   /**
-    * If we are just iterating over the row, then we just want the item selected by an index into the row, not a column
-    * number.
-    * 
-    * @param row
-    * @param index
-    * @return
-    */
-   public double getByInd( int row, int index ) {
-      return ( ( DoubleArrayList ) matrix.get( row ) ).getQuick( index );
-   }
+   //   /**
+   //    * If we are just iterating over the row, then we just want the item selected by an index into the row, not a
+   // column
+   //    * number.
+   //    *
+   //    * @param row
+   //    * @param index
+   //    * @return
+   //    */
+   //   public double getByInd( int row, int index ) {
+   //      return ( ( DoubleArrayList ) matrix.get( row ) ).getQuick( index );
+   //   }
+
+   //   /**
+   //    * Get the column number for a row item.
+   //    *
+   //    * @param row
+   //    * @param num
+   //    * @return
+   //    */
+   //   public double getIndex( int row, int num ) {
+   //      return ( ( IntArrayList ) indexes.get( row ) ).getQuick( num );
+   //   }
 
    /**
-    * Get the column number for a row item.
-    * 
-    * @param row
-    * @param num
-    * @return
-    */
-   public double getIndex( int row, int num ) {
-      return ( ( IntArrayList ) indexes.get( row ) ).getQuick( num );
-   }
-
-   /**
-    * This gives just the list of values in the row - make sure this is what you want. It does not include the zero values.
+    * This gives just the list of values in the row - make sure this is what you want. It does not include the zero
+    * values.
     * 
     * @param row
     * @return
     */
    public DoubleArrayList getRowArrayList( int row ) {
-      return ( DoubleArrayList ) matrix.get( row );
+      //return ( DoubleArrayList ) matrix.get( row );
+      DoubleArrayList returnVal = new DoubleArrayList();
+      ( ( DoubleMatrix1D ) matrix.get( row ) ).getNonZeros( new IntArrayList(),
+            returnVal );
+      return returnVal;
    }
 
-  /*
-   *  (non-Javadoc)
-   * @see baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix#getRowMatrix1D(int)
-   */
+   /*
+    * (non-Javadoc)
+    * 
+    * @see baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix#getRowMatrix1D(int)
+    */
    public DoubleMatrix1D getRowMatrix1D( int i ) {
 
-      DoubleArrayList values = getRowArrayList( i );
-      IntArrayList index = getIndex( i );
- 
-      if (rowToGive == null ) {
-         columns();
-      }
-      
-      rowToGive.assign(0.0); // requires iterating over the entire thing.
-      for ( int j = 0; j < values.size(); j++ ) {
-         double value = values.getQuick( j );
-         int ind = index.getQuick( j ) - 1;
-         rowToGive.set( ind, value );
-      }
-
-      return rowToGive;
+      //      DoubleArrayList values = getRowArrayList( i );
+      //      IntArrayList index = getIndex( i );
+      // 
+      //      if (rowToGive == null ) {
+      //         columns();
+      //      }
+      //      
+      //      rowToGive.assign(0.0); // requires iterating over the entire thing.
+      //      for ( int j = 0; j < values.size(); j++ ) {
+      //         double value = values.getQuick( j );
+      //         int ind = index.getQuick( j ) - 1;
+      //         rowToGive.set( ind, value );
+      //      }
+      //
+      //      return rowToGive;
+      return ( DoubleMatrix1D ) matrix.get( i );
    }
 
    /*
@@ -279,16 +278,17 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
     * @see baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix#getRow(int)
     */
    public double[] getRow( int i ) {
-      return getRowMatrix1D( i ).toArray();
+      // return getRowMatrix1D( i ).toArray();
+      return ( ( DoubleMatrix1D ) matrix.get( i ) ).toArray();
    }
 
-   /**
-    * @param row
-    * @return
-    */
-   public IntArrayList getIndex( int row ) {
-      return ( IntArrayList ) indexes.get( row );
-   }
+   //   /**
+   //    * @param row
+   //    * @return
+   //    */
+   //   public IntArrayList getIndex( int row ) {
+   //      return ( IntArrayList ) indexes.get( row );
+   //   }
 
    /**
     * @param name
@@ -296,22 +296,33 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
     * @param indexes
     */
    public void addRow( String name, DoubleArrayList values, IntArrayList ind ) {
-      matrix.add( values );
-      indexes.add( ind );
+
+      SparseDoubleMatrix1D rowToAdd = new SparseDoubleMatrix1D( max( ind ) );
+      //   matrix.add( new SparseDoubleMatrix1D( values.elements() ) );
+      //  indexes.add( new SparseIntMatrix1D( ind.elements()) );
+
+      int[] v = ind.elements();
+      for ( int i = 0; i < v.length; i++ ) {
+         int j = v[i];
+         rowToAdd.set( j - 1, values.get( i ) );
+      }
+      matrix.add( rowToAdd );
       this.addColumnName( name, matrix.size() - 1 );
       this.addRowName( name, matrix.size() - 1 );
       isDirty = true;
    }
 
-   /**
-    * @param string
-    */
-   public void addRow( String name ) {
-      matrix.add(new DoubleArrayList());
-      indexes.add(new IntArrayList());
-      this.addColumnName( name, matrix.size() - 1 );
-      this.addRowName( name, matrix.size() - 1 );
-      
+   private static int max( IntArrayList data ) {
+      int size = data.size();
+      if ( size == 0 ) throw new IllegalArgumentException();
+
+      int[] elements = data.elements();
+      int max = elements[size - 1];
+      for ( int i = size - 1; --i >= 0; ) {
+         if ( elements[i] > max ) max = elements[i];
+      }
+
+      return max;
    }
 
 }
