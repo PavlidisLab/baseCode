@@ -20,3 +20,10 @@ target
 javadoc1428158283
 javadoc1593946925
 velocity.log
+maven.xml
+testdata.txt
+testdatagolub.txt
+testdatamissing-badrows.txt
+testdatamissing.txt
+testreallybig.out.txt
+testreallybig.txt
