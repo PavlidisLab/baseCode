@@ -109,6 +109,24 @@ public class ColorMatrix
       return m_matrix.get( row, column );
    }
 
+   public double[] getRow( int row ) {
+      return m_matrix.getRow( row );
+   }
+
+   public double[] getRowByName( String rowName ) {
+      boolean hasRows = m_matrix.hasRowNames();
+      return m_matrix.getRowByName( rowName );
+   }
+
+   public double[] getColumn( int column ) {
+      return m_matrix.getCol( column );
+   }
+
+   public double[] getColumnByName( String columnName ) {
+      int col = m_matrix.getColIndexByName( columnName );
+      return m_matrix.getCol( col );
+   }
+
    public Color getColor( int row, int column ) {
       return getColor( row, column, true );
    }

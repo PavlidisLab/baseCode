@@ -22,7 +22,8 @@ import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 public class JMatrixDisplay extends JPanel {
 
    // data fields
-   ColorMatrix m_matrix;
+   ColorMatrix m_matrix; // reference to standardized or unstandardized matrix
+   ColorMatrix m_unstandardizedMatrix;
    ColorMatrix m_standardizedMatrix;
    boolean m_isShowingStandardizedMatrix = false;
 
@@ -61,7 +62,7 @@ public class JMatrixDisplay extends JPanel {
 
    public void init( ColorMatrix matrix ) {
 
-      m_matrix = matrix;
+      m_unstandardizedMatrix = m_matrix = matrix;
       initSize();
 
       // create a standardized copy of the matrix
@@ -128,7 +129,13 @@ public class JMatrixDisplay extends JPanel {
 
    public void setStandardizedEnabled( boolean showStandardizedMatrix ) {
       m_isShowingStandardizedMatrix = showStandardizedMatrix;
-   }
+      if ( showStandardizedMatrix ) {
+         m_matrix = m_standardizedMatrix;
+      }
+      else {
+         m_unstandardizedMatrix = m_unstandardizedMatrix;
+      }
+   } // end setStandardizedEnabled
 
    public boolean getStandardizedEnabled() {
 
@@ -140,14 +147,11 @@ public class JMatrixDisplay extends JPanel {
     */
    protected void drawMatrix( Graphics g, boolean leaveRoomForLabels ) {
 
-      // which matrix do we draw?  standardized or not?
-      ColorMatrix matrix = m_isShowingStandardizedMatrix ? m_standardizedMatrix : m_matrix;
-
       g.setColor(Color.white);
       g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-      int rowCount = matrix.getRowCount();
-      int columnCount = matrix.getColumnCount();
+      int rowCount = m_matrix.getRowCount();
+      int columnCount = m_matrix.getColumnCount();
 
       // loop through the matrix, one row at a time
       for (int i = 0;  i < rowCount;  i++) {
@@ -161,7 +165,7 @@ public class JMatrixDisplay extends JPanel {
             int x = (j * m_cellSize.width);
             int width = ( (j + 1) * m_cellSize.width) - x;
 
-            Color color = matrix.getColor(i, j); // BLAH!!! change to matrix
+            Color color = m_matrix.getColor(i, j);
             g.setColor(color);
             g.fillRect(x, y, width, m_cellSize.height);
          }
@@ -275,10 +279,6 @@ public class JMatrixDisplay extends JPanel {
          initSize();
       }
 
-      // Normalize the image?
-      boolean wasStandardized = m_isShowingStandardizedMatrix;
-      setStandardizedEnabled( standardize );
-
       // Draw the image to a buffer
       Dimension d = getSize( showLabels ); // how big is the image with row and column labels
       m_image = new BufferedImage( d.width, d.height, BufferedImage.TYPE_INT_RGB );
@@ -298,7 +298,6 @@ public class JMatrixDisplay extends JPanel {
          setLabelsVisible( false );
          initSize();
       }
-      setStandardizedEnabled( wasStandardized );
    } // end saveToFile
 
    /**
@@ -340,20 +339,20 @@ public class JMatrixDisplay extends JPanel {
    }
 
    public Color getColor( int row, int column ) {
-
-      if (m_isShowingStandardizedMatrix)
-         return m_standardizedMatrix.getColor( row, column );
-      else
-         return m_matrix.getColor( row, column );
+      return m_matrix.getColor( row, column );
    } // end getColor
 
    public double getValue( int row, int column ) {
-
-      if (m_isShowingStandardizedMatrix)
-         return m_standardizedMatrix.getValue( row, column );
-      else
-         return m_matrix.getValue( row, column );
+      return m_matrix.getValue( row, column );
    } // end getValue
+
+   public double[] getRow( int row ) {
+      return m_matrix.getRow( row );
+   }
+
+   public double[] getRowByName( String rowName ) {
+      return m_matrix.getRowByName( rowName );
+   }
 
    public int getRowCount() {
       return m_matrix.getRowCount();
