@@ -1,6 +1,7 @@
 package baseCode.dataStructure.matrix;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -77,24 +78,24 @@ public interface NamedMatrix {
    public boolean hasColNames();
 
    /**
-    * @param v Vector a vector of Strings.
+    * @param v List a vector of Strings.
     */
-   public void setRowNames( Vector v );
+   public void setRowNames( List v );
 
    /**
-    * @param v Vector a vector of Strings.
+    * @param v List a vector of Strings.
     */
-   public void setColumnNames( Vector v );
+   public void setColumnNames( List v );
 
    /**
-    * @return Vector of Strings
+    * @return List of Strings
     */
-   public Vector getColNames();
+   public List getColNames();
 
    /**
-    * @return Vector of Strings
+    * @return List of Strings
     */
-   public Vector getRowNames();
+   public List getRowNames();
 
    /**
     * @param r String

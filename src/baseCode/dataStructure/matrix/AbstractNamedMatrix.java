@@ -2,6 +2,7 @@ package baseCode.dataStructure.matrix;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -144,23 +145,23 @@ public abstract class AbstractNamedMatrix implements NamedMatrix {
       return colNames.size() == columns();
    }
 
-   public final void setRowNames( Vector v ) {
+   public final void setRowNames( List v ) {
       for ( int i = 0; i < v.size(); i++ ) {
          addRowName( ( String ) v.get( i ), i );
       }
    }
 
-   public final void setColumnNames( Vector v ) {
+   public final void setColumnNames( List v ) {
       for ( int i = 0; i < v.size(); i++ ) {
          addColumnName( ( String ) v.get( i ), i );
       }
    }
 
-   public final Vector getColNames() {
+   public final List getColNames() {
       return colNames;
    }
 
-   public final Vector getRowNames() {
+   public final List getRowNames() {
       return rowNames;
    }
 
