@@ -374,6 +374,14 @@ public class JMatrixDisplay extends JPanel {
     public String getRowName( int row ) {
 	return m_matrix.getRowName( row );
     }
+    
+    public String[] getColumnNames() {
+        return m_matrix.getColumnNames();
+    }
+    
+    public String[] getRowNames() {
+        return m_matrix.getRowNames();
+    }
 
     /**
      * @param  colorMap  an array of colors which define the midpoints in the
