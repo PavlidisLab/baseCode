@@ -91,7 +91,6 @@
       
         
     </dependencies>
-    </dependencies>
     <build>
         <sourceDirectory>src</sourceDirectory>
         <unitTestSourceDirectory>test</unitTestSourceDirectory>

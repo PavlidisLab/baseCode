@@ -100,7 +100,6 @@ public abstract class Wizard extends JDialog {
       jLabelStatus.setHorizontalAlignment( SwingConstants.LEFT );
       jPanelStatus.add( jLabelStatus, null );
       statusMessenger = new StatusJlabel( jLabelStatus );
-   //   showStatus("Status goes here");
       
       BottomPanelWrap.add( BottomPanel, BorderLayout.NORTH );
       BottomPanelWrap.add( jPanelStatus, BorderLayout.SOUTH );
@@ -152,12 +151,28 @@ public abstract class Wizard extends JDialog {
       show();
    }
 
+   /**
+    * Define what happens when the 'next' button is pressed
+    * @param e
+    */
    protected abstract void nextButton_actionPerformed( ActionEvent e );
 
+   /**
+    * Define what happens when the 'back' button is pressed
+    * @param e
+    */
    protected abstract void backButton_actionPerformed( ActionEvent e );
 
+   /**
+    * Define what happens when the 'cancel' button is pressed.
+    * @param e
+    */
    protected abstract void cancelButton_actionPerformed( ActionEvent e );
 
+   /**
+    * Define what happens when the 'finish' button is pressed.
+    * @param e
+    */
    protected abstract void finishButton_actionPerformed( ActionEvent e );
 }
 

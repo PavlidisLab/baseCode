@@ -57,6 +57,8 @@ public abstract class AppDialog extends JDialog {
    JPanel bottomPanel = new JPanel();
    protected JButton actionButton = new JButton();
    protected JButton cancelButton = new JButton();
+protected JButton helpButton = new JButton();
+   
    protected JFrame callingframe;
 
    public AppDialog( JFrame callingframe, int width, int height ) {
@@ -82,6 +84,10 @@ public abstract class AppDialog extends JDialog {
             this ) );
       actionButton.addActionListener( new AppDialog_actionButton_actionAdapter(
             this ) );
+      
+      helpButton.addActionListener( new AppDialog_helpButton_actionAdapter( this ));
+      
+      bottomPanel.add( helpButton, null );
       bottomPanel.add( cancelButton, null );
       bottomPanel.add( actionButton, null );
       mainPanel.add( contentPanel, BorderLayout.CENTER );
@@ -99,6 +105,7 @@ public abstract class AppDialog extends JDialog {
       show();
    }
 
+   // helper to respond to links.
    class LinkFollower implements HyperlinkListener {
 
       /*
@@ -107,10 +114,8 @@ public abstract class AppDialog extends JDialog {
        * @see javax.swing.event.HyperlinkListener#hyperlinkUpdate(javax.swing.event.HyperlinkEvent)
        */
       public void hyperlinkUpdate( HyperlinkEvent e ) {
-         System.err.println( "wow" );
          if ( e.getEventType() == HyperlinkEvent.EventType.ACTIVATED ) {
             try {
-               System.err.println( "wow" );
                BrowserLauncher.openURL( e.getURL().toExternalForm() );
             } catch ( IOException e1 ) {
                GuiUtil.error( "Could not open link" );
@@ -119,13 +124,15 @@ public abstract class AppDialog extends JDialog {
       }
    }
 
-   class HelpTextArea extends JEditorPane {
+   // Slightly specialized editor pane.
+   class HelpEditorPane extends JEditorPane {
 
-      HelpTextArea( String text ) {
+      HelpEditorPane( String text ) {
          super();
          this.setEditable( false );
          this.setContentType( "text/html" );
          this.setText( text );
+         this.addHyperlinkListener( new LinkFollower() );
       }
 
    }
@@ -133,10 +140,9 @@ public abstract class AppDialog extends JDialog {
    // @todo why using spaces for layout?
    protected void addHelp( String text ) {
 
-      HelpTextArea helpArea = null;
+      HelpEditorPane helpArea = null;
 
-      helpArea = new HelpTextArea( text );
-      helpArea.addHyperlinkListener( new LinkFollower() );
+      helpArea = new HelpEditorPane( text );
       JLabel jLabel1 = new JLabel( "      " );
       JLabel jLabel2 = new JLabel( " " );
       JLabel jLabel3 = new JLabel( " " );
@@ -152,8 +158,8 @@ public abstract class AppDialog extends JDialog {
       labelPanel.add( jLabel4, BorderLayout.EAST );
       contentPanel.add( labelPanel, BorderLayout.NORTH );
 
-      helpArea
-            .addMouseListener( new AppDialog_mouselistener_actionAdapter( this ) );
+      helpArea.addMouseListener( new AppDialog_mouselistener_actionAdapter(
+            this ) );
 
    }
 
@@ -168,11 +174,17 @@ public abstract class AppDialog extends JDialog {
    protected void setCancelButtonText( String val ) {
       cancelButton.setText( val );
    }
+   
+   protected void setHelpButtonText( String val ) {
+      helpButton.setText ( val );
+   }
 
    protected abstract void cancelButton_actionPerformed( ActionEvent e );
 
    protected abstract void actionButton_actionPerformed( ActionEvent e );
 
+   protected abstract void helpButton_actionPerformed(ActionEvent e );
+   
    /**
     * @param e
     */
@@ -180,7 +192,22 @@ public abstract class AppDialog extends JDialog {
       // TODO Auto-generated method stub
    }
 
+
+
 }
+
+class AppDialog_helpButton_actionAdapter  implements
+java.awt.event.ActionListener {
+   AppDialog adaptee;
+   AppDialog_helpButton_actionAdapter( AppDialog adaptee ) {
+      this.adaptee = adaptee;
+   }
+
+   public void actionPerformed( ActionEvent e ) {
+      adaptee.helpButton_actionPerformed( e );
+   }
+}
+
 
 class AppDialog_cancelButton_actionAdapter implements
       java.awt.event.ActionListener {
