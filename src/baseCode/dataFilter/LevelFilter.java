@@ -4,8 +4,7 @@ import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 import java.text.DecimalFormat;
 import cern.colt.list.DoubleArrayList;
 import java.util.Vector;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 
 /**
  * Filter rows that have values too high and/or too low.
@@ -15,9 +14,10 @@ import org.apache.commons.logging.LogFactory;
  * <p>Institution:: Columbia University</p>
  * @author Paul Pavlidis
  * @version $Id$
+ * @todo implement high level filtering. 
  */
 public class LevelFilter
-    implements Filter {
+    extends AbstractFilter  implements Filter {
 
    private double lowCut;
    private double highCut;
@@ -26,7 +26,6 @@ public class LevelFilter
    private boolean useAsFraction = true;
    private boolean removeAllNegative = false; // remove rows that have all negative values IN ADDITION TO as removing rows according to the critier.
    private double background;
-
    /**
     * Set the low threshold for removal. If not set, no filtering will occur.
     * @param l
@@ -51,7 +50,7 @@ public class LevelFilter
     * @param t
     */
    public void setRemoveAllNegative(boolean t) {
-      System.err.println("Rows with all negative values will be removed PRIOR TO applying the level filter.");
+      log.info("Rows with all negative values will be removed PRIOR TO applying the level filter.");
       removeAllNegative = t;
    }
 
@@ -143,7 +142,7 @@ public class LevelFilter
          }
       }
 
-/** @todo: implement high level filtering. */
+
 
       DenseDoubleMatrix2DNamed returnval = new DenseDoubleMatrix2DNamed(MTemp.size(), numCols);
       for (int i = 0; i < MTemp.size(); i++) {
@@ -154,7 +153,7 @@ public class LevelFilter
       returnval.setColumnNames(data.getColNames());
       returnval.setRowNames(rowNames);
 
-      System.err.println(
+      log.info(
           "There are " + kept + " rows left after filtering.");
 
       return (returnval);

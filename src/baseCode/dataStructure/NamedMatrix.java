@@ -1,7 +1,6 @@
 package baseCode.dataStructure;
 
 import java.util.Vector;
-import java.util.Map;
 import java.util.Iterator;
 
 
@@ -16,6 +15,7 @@ import java.util.Iterator;
  * @version $Id$
  */
 public interface NamedMatrix   {
+
 
    /**
     *
@@ -81,6 +81,9 @@ public interface NamedMatrix   {
     */
    public void setColumnNames(Vector v);
 
+   public Vector getColNames();
+
+
    /**
     *
     * @param r
@@ -94,7 +97,23 @@ public interface NamedMatrix   {
     */
    public Iterator getRowNameMapIterator();
 
+/**
+ * 
+ * @return
+ */
+	public int rows();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public int columns();
 
+
+public void set (int i, int j, Object val);
+
+public Object[] getRowObj(int i);
+public Object[] getColObj(int i);
 
 
 }

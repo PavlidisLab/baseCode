@@ -11,11 +11,10 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
- * <p>Title: MapReader</p>
- * <p>Description: Reads a tab-delimited file with lines of the format Key Value.
+* Reads a tab-delimited file with lines of the format Key Value.
  * If there are multiple values, then a Set is created for each key containing its values.</p>
- * <p>Copyright: Copyright (c) 2004</p>
- * <p>Institution:: Columbia University</p>
+ * <p>Copyright (c) 2004</p>
+ * <p>Institution: Columbia University</p>
  * @author Paul Pavlidis
  * @version $Id$
  */

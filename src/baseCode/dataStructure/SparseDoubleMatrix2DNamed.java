@@ -52,6 +52,11 @@ public class SparseDoubleMatrix2DNamed
       colNames = new Vector();
 
    }
+   
+   public void set(int row, int col, Object value) {
+		 super.set(row, col, ((Double)value).doubleValue());
+	}
+   
 
     /**
      * Return a reference to a specific row.
@@ -84,6 +89,25 @@ public class SparseDoubleMatrix2DNamed
       }
       return result;
    }
+   
+   public Object[] getRowObj(int row) {
+		   Double[] result = new Double[columns()];
+		   for (int i = 0; i < columns(); i++) {
+			   result[i] = new Double(get(row, i));
+		   }
+		   return result;
+	   }
+	
+	
+	   public Object[] getColObj(int col) {
+		  Double[] result = new Double[rows()];
+		  for (int i = 0; i < rows(); i++) {
+			 result[i] = new Double(get(i, col));
+		  }
+		  return result;
+	   }
+
+   
 
     /**
      *

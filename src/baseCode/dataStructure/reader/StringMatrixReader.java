@@ -10,11 +10,9 @@ import baseCode.dataStructure.NamedMatrix;
 import baseCode.dataStructure.StringMatrix2DNamed;
 
 /**
- *
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2004</p>
- * <p>Institution:: Columbia University</p>
+ * Reads StringMatrix2DNamed from files.
+ * <p>Copyright (c) 2004</p>
+ * <p>Institution: Columbia University</p>
  * @author Paul Pavlidis
  * @version $Id$
  */

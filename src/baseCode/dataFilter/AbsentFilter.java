@@ -3,8 +3,7 @@ package baseCode.dataFilter;
 import java.util.Vector;
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.StringMatrix2DNamed;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 /**
  * Filter data according to flags given in a separate matrix. The flags can be 'A', 'P' or 'M', for absent, present and marginal.
  * <p>Title: </p>
@@ -14,8 +13,7 @@ import org.apache.commons.logging.LogFactory;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class AbsentFilter
-    implements Filter {
+public class AbsentFilter extends AbstractFilter  implements Filter {
 
    private StringMatrix2DNamed flags = null;
    private double minPresentFraction = 0.0;
@@ -25,8 +23,7 @@ public class AbsentFilter
    private boolean fractionIsSet = false;
    private boolean countIsSet = false;
    private boolean flagsSet = false;
-   static Log log = LogFactory.getLog(Filter.class);
-
+   
    /**
     *
     * @param f The matrix containing the flags.

@@ -1,6 +1,9 @@
 package baseCode.dataFilter;
 
-import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.NamedMatrix;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Vector;
 
 /**
@@ -12,10 +15,9 @@ import java.util.Vector;
  * @version $Id$
  */
 
-public class AffymetrixProbeNameFilter
-    implements Filter {
-
-   public DenseDoubleMatrix2DNamed filter(DenseDoubleMatrix2DNamed data) {
+public class AffymetrixProbeNameFilter extends AbstractFilter  implements Filter {
+		
+   public NamedMatrix filter(NamedMatrix data) {
       Vector MTemp = new Vector();
       Vector rowNames = new Vector();
       int numRows = data.rows();
@@ -42,21 +44,39 @@ public class AffymetrixProbeNameFilter
    //         continue;
          }
 
-         MTemp.add(data.getRow(i));
+         MTemp.add(data.getRowObj(i));
          rowNames.add(name);
          kept++;
       }
 
-      DenseDoubleMatrix2DNamed returnval = new DenseDoubleMatrix2DNamed(MTemp.size(), numCols);
-      for (int i = 0; i < MTemp.size(); i++) {
-         for (int j = 0; j < numCols; j++) {
-            returnval.set(i, j, ( (double[]) MTemp.get(i))[j]);
-         }
-      }
-      returnval.setColumnNames(data.getColNames());
-      returnval.setRowNames(rowNames);
+	NamedMatrix returnval = null;
+	   try {
+		   Constructor cr = data.getClass().getConstructor(new Class[]{int.class, int.class});
+			returnval =
+			   (NamedMatrix) cr.newInstance(
+				   new Object[] { new Integer(MTemp.size()), new Integer(numCols)});
+	   } catch (SecurityException e) {
+		   e.printStackTrace();
+	   } catch (IllegalArgumentException e) {
+		   e.printStackTrace();
+	   } catch (NoSuchMethodException e) {
+		   e.printStackTrace();
+	   } catch (InstantiationException e) {
+		   e.printStackTrace();
+	   } catch (IllegalAccessException e) {
+		   e.printStackTrace();
+	   } catch (InvocationTargetException e) {
+		   e.printStackTrace();
+	   }
 
-      System.err.println(
+		for (int i = 0; i < MTemp.size(); i++) {
+		   for (int j = 0; j < numCols; j++) {
+			  returnval.set(i, j,  ( (Object[]) MTemp.get(i))[j]);
+		   }
+		}
+		returnval.setColumnNames(data.getColNames());
+		returnval.setRowNames(rowNames);
+      log.info(
           "There are " + kept + " rows left after filtering.");
 
       return (returnval);

@@ -32,6 +32,8 @@ import cern.jet.stat.Descriptive;
 public class DescriptiveWithMissing
     extends cern.jet.stat.Descriptive {
 
+	private DescriptiveWithMissing() {}
+
    /**
     * Not supported.
     *

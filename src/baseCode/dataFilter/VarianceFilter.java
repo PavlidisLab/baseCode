@@ -1,8 +1,6 @@
 package baseCode.dataFilter;
 
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  *
@@ -13,7 +11,8 @@ import org.apache.commons.logging.LogFactory;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class VarianceFilter  implements Filter {
+public class VarianceFilter  extends AbstractFilter  implements Filter  {
+
    public DenseDoubleMatrix2DNamed filter(DenseDoubleMatrix2DNamed data) {
       return null;
    }

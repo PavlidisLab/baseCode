@@ -10,13 +10,13 @@ import cern.jet.stat.Descriptive;
  * <p>Description: </p>
  * <p>Copyright: Copyright (c) 2004</p>
  * <p>Institution:: Columbia University</p>
- * @author not attributable
+ * @author Paul Pavlidis
  * @version $Id$
  */
 
 public class TestDescriptiveWithMissing
     extends TestCase {
-   private DescriptiveWithMissing dwm = null;
+ 
    private DoubleArrayList data1missing;
    private DoubleArrayList data1Nomissing;
    private DoubleArrayList data2missing;
@@ -30,7 +30,6 @@ public class TestDescriptiveWithMissing
 
    protected void setUp() throws Exception {
       super.setUp();
-      dwm = new DescriptiveWithMissing();
       data1missing = new DoubleArrayList(new double[] {1.0, Double.NaN, 3.0,
                                          4.0, 5.0, 6.0});
       data2missing = new DoubleArrayList(new double[] {Double.NaN, Double.NaN,
@@ -52,7 +51,6 @@ public class TestDescriptiveWithMissing
    }
 
    protected void tearDown() throws Exception {
-      dwm = null;
       super.tearDown();
    }
 
@@ -64,7 +62,7 @@ public class TestDescriptiveWithMissing
 
       double expectedReturn = Descriptive.correlation(datacortest1Nomissing, s1,
           datacortest2Nomissing, s2);
-      double actualReturn = dwm.correlation(data1missing, data2missing);
+      double actualReturn = DescriptiveWithMissing.correlation(data1missing, data2missing);
       assertEquals("return value", expectedReturn, actualReturn,
                    Double.MIN_VALUE);
    }
@@ -75,14 +73,14 @@ public class TestDescriptiveWithMissing
       double s2 = Descriptive.standardDeviation(Descriptive.variance(datacortest2Nomissing.size(),
           Descriptive.sum(datacortest2Nomissing), Descriptive.sumOfSquares(datacortest2Nomissing)));
 
-      double s1m = dwm.standardDeviation(dwm.variance(
+      double s1m = DescriptiveWithMissing.standardDeviation(DescriptiveWithMissing.variance(
           data1missing));
-      double s2m = dwm.standardDeviation(dwm.variance(
+      double s2m = DescriptiveWithMissing.standardDeviation(DescriptiveWithMissing.variance(
           data2missing));
 
       double expectedReturn = Descriptive.correlation(datacortest1Nomissing, s1,
           datacortest2Nomissing, s2);
-      double actualReturn = dwm.correlation(data1missing, s1m, data2missing, s2m);
+      double actualReturn = DescriptiveWithMissing.correlation(data1missing, s1m, data2missing, s2m);
 
       assertEquals("return value", expectedReturn, actualReturn,
                    Double.MIN_VALUE);
@@ -90,21 +88,21 @@ public class TestDescriptiveWithMissing
 
    public void testCovariance() {
       double expectedReturn = Descriptive.covariance(datacortest1Nomissing, datacortest2Nomissing);
-      double actualReturn = dwm.covariance(data1missing, data2missing);
+      double actualReturn = DescriptiveWithMissing.covariance(data1missing, data2missing);
       assertEquals("return value", expectedReturn, actualReturn,
                    Double.MIN_VALUE);
    }
 
    public void testDurbinWatson() {
       double expectedReturn = Descriptive.durbinWatson(data1Nomissing);
-      double actualReturn = dwm.durbinWatson(data1missing);
+      double actualReturn = DescriptiveWithMissing.durbinWatson(data1missing);
       assertEquals("return value", expectedReturn, actualReturn,
                    Double.MIN_VALUE);
    }
 
    public void testDurbinWatsonTwo() {
       double expectedReturn = Descriptive.durbinWatson(data2Nomissing);
-      double actualReturn = dwm.durbinWatson(data2missing);
+      double actualReturn = DescriptiveWithMissing.durbinWatson(data2missing);
       assertEquals("return value", expectedReturn, actualReturn,
                    Double.MIN_VALUE);
    }
@@ -114,7 +112,7 @@ public class TestDescriptiveWithMissing
       try {
          double expectedReturn = Descriptive.durbinWatson(
              data3shortNomissing);
-         double actualReturn = dwm.durbinWatson(
+         double actualReturn = DescriptiveWithMissing.durbinWatson(
              data3shortmissing);
          assertEquals("Short array failure.", expectedReturn, actualReturn,
                       Double.MIN_VALUE);
@@ -130,7 +128,7 @@ public class TestDescriptiveWithMissing
 
    public void testGeometricMean() {
       double expectedReturn = Descriptive.geometricMean(data1Nomissing);
-      double actualReturn = dwm.geometricMean(data1missing);
+      double actualReturn = DescriptiveWithMissing.geometricMean(data1missing);
       assertEquals("Excercises sumOfLogarithms too; return value", expectedReturn, actualReturn,
                    Double.MIN_VALUE);
 
@@ -138,7 +136,7 @@ public class TestDescriptiveWithMissing
 
    public void testMean() {
       double expectedReturn = Descriptive.mean(data1Nomissing);
-      double actualReturn = dwm.mean(data1missing);
+      double actualReturn = DescriptiveWithMissing.mean(data1missing);
       assertEquals("return value", expectedReturn, actualReturn,
                    Double.MIN_VALUE);
 
@@ -146,14 +144,14 @@ public class TestDescriptiveWithMissing
 
    public void testMin() {
       double expectedReturn = Descriptive.min(data1Nomissing);
-      double actualReturn = dwm.min(data1missing);
+      double actualReturn = DescriptiveWithMissing.min(data1missing);
       assertEquals("return value", expectedReturn, actualReturn,
                    Double.MIN_VALUE);
    }
 
    public void testMax() {
       double expectedReturn = Descriptive.max(data1Nomissing);
-      double actualReturn = dwm.max(data1missing);
+      double actualReturn = DescriptiveWithMissing.max(data1missing);
       assertEquals("return value", expectedReturn, actualReturn,
                    Double.MIN_VALUE);
    }
@@ -162,14 +160,14 @@ public class TestDescriptiveWithMissing
       data1missing.sort();
       data1Nomissing.sort();
       double expectedReturn = Descriptive.median(data1Nomissing);
-      double actualReturn = dwm.median(data1missing);
+      double actualReturn = DescriptiveWithMissing.median(data1missing);
       assertEquals("return value", expectedReturn, actualReturn,
                    Double.MIN_VALUE);
    }
 
    public void testProduct() {
       double expectedReturn = Descriptive.product(data1Nomissing);
-      double actualReturn = dwm.product(data1missing);
+      double actualReturn = DescriptiveWithMissing.product(data1missing);
       assertEquals("return value", expectedReturn, actualReturn,
                    Double.MIN_VALUE);
    }
@@ -178,10 +176,10 @@ public class TestDescriptiveWithMissing
       double expectedReturn = Descriptive.sampleKurtosis(data1Nomissing,
           Descriptive.mean(data1Nomissing),
           Descriptive.sampleVariance(data1Nomissing, Descriptive.mean(data1Nomissing)));
-      double actualReturn = dwm.sampleKurtosis(data1missing,
-                                               dwm.mean(data1missing),
-                                               dwm.sampleVariance(data1missing,
-          dwm.mean(data1missing)));
+      double actualReturn = DescriptiveWithMissing.sampleKurtosis(data1missing,
+                                               DescriptiveWithMissing.mean(data1missing),
+                                               DescriptiveWithMissing.sampleVariance(data1missing,
+          DescriptiveWithMissing.mean(data1missing)));
       assertEquals("Exercises sampleVariance, mean as well; return value", expectedReturn,
                    actualReturn,
                    Double.MIN_VALUE);
@@ -191,7 +189,7 @@ public class TestDescriptiveWithMissing
       data1missing.sort();
       data1Nomissing.sort();
       double expectedReturn = Descriptive.quantile(data1Nomissing, 0.10);
-      double actualReturn = dwm.quantile(data1missing, 0.10);
+      double actualReturn = DescriptiveWithMissing.quantile(data1missing, 0.10);
       assertEquals("return value", expectedReturn, actualReturn,
                    Double.MIN_VALUE);
 
@@ -199,14 +197,14 @@ public class TestDescriptiveWithMissing
 
    public void testSum() {
       double expectedReturn = Descriptive.sum(data1Nomissing);
-      double actualReturn = dwm.sum(data1missing);
+      double actualReturn = DescriptiveWithMissing.sum(data1missing);
       assertEquals("return value", expectedReturn, actualReturn,
                    Double.MIN_VALUE);
    }
 
    public void testSumOfSquares() {
       double expectedReturn = Descriptive.sumOfSquares(data1Nomissing);
-      double actualReturn = dwm.sumOfSquares(data1missing);
+      double actualReturn = DescriptiveWithMissing.sumOfSquares(data1missing);
       assertEquals("return value", expectedReturn, actualReturn,
                    Double.MIN_VALUE);
    }
@@ -214,7 +212,7 @@ public class TestDescriptiveWithMissing
    public void testSampleVariance() {
       double expectedReturn = Descriptive.sampleVariance(data1Nomissing,
           Descriptive.mean(data1Nomissing));
-      double actualReturn = dwm.sampleVariance(
+      double actualReturn = DescriptiveWithMissing.sampleVariance(
           data1missing, DescriptiveWithMissing.mean(data1missing));
       assertEquals("return value", expectedReturn,
                    actualReturn,
@@ -226,7 +224,7 @@ public class TestDescriptiveWithMissing
       data1Nomissing.sort();
       data1missing.sort();
         double expectedReturn = Descriptive.trimmedMean(data1Nomissing, Descriptive.mean(data1Nomissing), 1, 1);
-        double actualReturn = dwm.trimmedMean(data1missing, dwm.mean(data1missing), 1, 1);
+        double actualReturn = DescriptiveWithMissing.trimmedMean(data1missing, DescriptiveWithMissing.mean(data1missing), 1, 1);
         assertEquals("return value", expectedReturn, actualReturn,
                      Double.MIN_VALUE);
 
@@ -237,10 +235,10 @@ public class TestDescriptiveWithMissing
       double expectedReturn = Descriptive.variance(data1Nomissing.size(),
           Descriptive.sum(data1Nomissing),
           Descriptive.sumOfSquares(data1Nomissing));
-      double actualReturn = dwm.variance(
-          dwm.sizeWithoutMissingValues(data1missing),
-          dwm.sum(data1missing),
-          dwm.sumOfSquares(data1missing));
+      double actualReturn = DescriptiveWithMissing.variance(
+          DescriptiveWithMissing.sizeWithoutMissingValues(data1missing),
+          DescriptiveWithMissing.sum(data1missing),
+          DescriptiveWithMissing.sumOfSquares(data1missing));
       assertEquals("return value", expectedReturn,
                    actualReturn,
                    Double.MIN_VALUE);

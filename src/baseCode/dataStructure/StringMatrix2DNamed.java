@@ -93,6 +93,48 @@ public class StringMatrix2DNamed
          addRowName( (String) v.get(i));
       }
    }
+   
+   /**
+	 *
+	 * @return java.util.Vector
+	 */
+	public Vector getColNames() {
+	  return colNames;
+   }
+   
+   
+   public Object[] getRow(int row) {
+		return viewRow(row).toArray();
+	 }
+   
+   
+   public Object[] getCol(int col) {
+		String[] result = new String[rows()];
+		for (int i = 0; i < rows(); i++) {
+		   result[i] = (String)get(i, col);
+		}
+		return result;
+	 }
+   
+   
+	 public Object[] getRowObj(int row) {
+			 String[] result = new String[columns()];
+			 for (int i = 0; i < columns(); i++) {
+				 result[i] = (String)get(row, i);
+			 }
+			 return result;
+		 }
+	
+	
+		 public Object[] getColObj(int col) {
+			String[] result = new String[rows()];
+			for (int i = 0; i < rows(); i++) {
+			   result[i] = (String)get(i, col);
+			}
+			return result;
+		 }
+
+   
 
     /**
      *

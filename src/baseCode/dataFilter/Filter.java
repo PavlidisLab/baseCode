@@ -1,8 +1,8 @@
 package baseCode.dataFilter;
 
-import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.NamedMatrix;
 
 public interface Filter {
 
-   public DenseDoubleMatrix2DNamed filter (DenseDoubleMatrix2DNamed data);
+   public NamedMatrix filter (NamedMatrix data);
 }

@@ -7,17 +7,15 @@ import java.util.Vector;
 import baseCode.dataStructure.NamedMatrix;
 
 /**
- *
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2004</p>
- * <p>Institution:: Columbia University</p>
+* Abstract class for creating readers of matrices.
+ * <p>Copyright (c) 2004</p>
+ * <p>Institution: Columbia University</p>
  * @author Paul Pavlidis
  * @version $Id$
  */
 public abstract class MatrixReader {
 
-   public abstract NamedMatrix read(String filename) throws IOException;
+   public  abstract NamedMatrix read(String filename) throws IOException;
 
    protected Vector readHeader(BufferedReader dis) throws IOException {
       Vector headerVec = new Vector();

@@ -4,8 +4,6 @@ import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 import java.util.Vector;
 import cern.colt.list.DoubleArrayList;
 import java.text.DecimalFormat;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Remove rows from a matrix that are missing too many points.
@@ -16,8 +14,7 @@ import org.apache.commons.logging.LogFactory;
  * @author Paul Pavlidis
  * @version 1.0
  */
-public class MissingFilter
-    implements Filter {
+public class MissingFilter extends AbstractFilter  implements Filter {
 
    private int minpresent = 5;
    private static final int ABSOLUTEMINPRESENT = 2;
@@ -26,7 +23,6 @@ public class MissingFilter
    private boolean maxFractionRemovedIsSet = false;
    private boolean minPresentFractionIsSet = false;
    private boolean minPresentIsSet = false;
-
    /**
     * Set the minimum number of values that must be present in each row. The default value is 5. This is always overridden by a hard-coded value
     * (currently 2) that must be present for a row to be kept; but this value is in turn overridden by the maxfractionRemoved.
@@ -97,7 +93,7 @@ public class MissingFilter
          sortedPresent.sort();
          sortedPresent.reverse();
          DecimalFormat fo = new DecimalFormat();
-         System.err.println("There are " + fo.format(kept) +
+         log.info("There are " + fo.format(kept) +
                             " rows that meet criterion of at least " + fo.format(minpresent) +
                             " non-missing values, but that's too many given the max fraction of " +
                             maxfractionRemoved + "; minpresent adjusted to " +
@@ -126,7 +122,7 @@ public class MissingFilter
       returnval.setColumnNames(data.getColNames());
       returnval.setRowNames(rowNames);
 
-      System.err.println(
+      log.info(
           "There are " + kept + " rows after removing rows which have fewer than " + minpresent +
           " values (or fewer than " + ABSOLUTEMINPRESENT + ")");
 
