@@ -19,8 +19,7 @@ public class JMatrixDisplay extends JPanel {
   // data fields
   ColorMatrix m_matrix;
 
-  protected boolean m_isShowRowNames = false;
-  protected boolean m_isPrintColumnNames = true; // TO DO: implement
+  protected boolean m_isShowLabels = false;
   protected BufferedImage m_image = null;
 
   protected int m_ratioWidth = 0;
@@ -55,12 +54,13 @@ public class JMatrixDisplay extends JPanel {
       int height = m_cellHeight * m_matrix.getRowCount();
       int width  = m_cellWidth  * m_matrix.getColumnCount();
 
-      if (m_isShowRowNames)
+      if (m_isShowLabels)
       {
           width += m_rowNameWidth;
       }
 
       Dimension d = new Dimension( width, height );
+      setMinimumSize( d );
       setPreferredSize( d );
       setSize( d );
       this.revalidate();
@@ -91,11 +91,33 @@ public class JMatrixDisplay extends JPanel {
         int fontGutter = (int) ( (double) m_cellHeight * .22);
         int rowCount = matrix.getRowCount();
         int columnCount = matrix.getColumnCount();
+        int columnNamesHeight = 20; // TO DO: set dynamically to the width of the longest column name
 
+//        // TO DO: print column names vertically
+//        if (m_isShowLabels && columnCount > 0)
+//        {
+//           for (int j = 0;  j < columnCount;  j++)
+//           {           
+//              int x = (j * m_cellWidth);
+//              int y = columnNamesHeight;
+//
+//              g.setColor(Color.black);
+//              setFont();
+//              g.setFont(m_labelFont);
+//              int xRatio = (columnCount * m_cellWidth) + fontGutter;
+//              int yRatio = y + m_cellHeight - m_labelGutter;
+//              String columnName = matrix.getColumnName(j);
+//              if (null == columnName) {
+//                columnName = "Undefined";
+//              }
+//              g.drawString( "" + j, x, y );           
+//           }
+//        } // end printing column names
+        
         // loop through the matrix, one row at a time
         for (int i = 0;  i < rowCount;  i++)
         {
-           int y = i * m_cellHeight;
+           int y = columnNamesHeight + (i * m_cellHeight);
 
            // draw an entire row, one cell at a time
            for (int j = 0; j < columnCount; j++)
@@ -107,9 +129,9 @@ public class JMatrixDisplay extends JPanel {
               g.setColor(color);
               g.fillRect(x, y, width, m_cellHeight);
            }
-
+           
            // print row names
-           if (m_isShowRowNames && columnCount > 0)
+           if (m_isShowLabels && rowCount > 0)
            {
               g.setColor(Color.black);
               setFont();
@@ -130,14 +152,14 @@ public class JMatrixDisplay extends JPanel {
    * Sets the <code>Font</code> used for drawing text
    */
   private void setFont() {
-    int fontSize =
-        Math.min(getFontSize(),
+     int fontSize =
+         Math.min(getFontSize(),
                  (int)( (double) m_maxFontSize /
                         (double) m_defaultResolution * (double) m_resolution) );
     if((fontSize != m_fontSize) || (m_labelFont == null))
     {
-      m_fontSize  = fontSize;
-      m_labelFont = new Font("Ariel", Font.PLAIN, m_fontSize);
+       m_fontSize  = fontSize;
+       m_labelFont = new Font("Ariel", Font.PLAIN, m_fontSize);
     }
   }
 
@@ -146,7 +168,7 @@ public class JMatrixDisplay extends JPanel {
    * @return <code>Font</code> size
    */
   private int getFontSize() {
-    return Math.max( m_cellHeight, 5 );
+     return Math.max( m_cellHeight, 5 );
   }
 
   /**
@@ -169,8 +191,8 @@ public class JMatrixDisplay extends JPanel {
    * If this display component has already been added to the GUI,
    * it will be resized to fit or exclude the row names
    */
-  public void showRowNames( boolean isShowRowNames ) {
-     m_isShowRowNames = isShowRowNames;
+  public void showLabels( boolean isShowLabels ) {
+     m_isShowLabels = isShowLabels;
      initSize();
   }
 
