@@ -12,6 +12,8 @@ public class AllTests extends TestCase {
 
    public static Test suite() {
       TestSuite suite = new TestSuite();
+      
+      /* File reading/writing tests */
       suite
             .addTestSuite( baseCodeTest.io.reader.TestStringMatrixReader.class );
       suite
@@ -27,12 +29,13 @@ public class AllTests extends TestCase {
       suite
             .addTestSuite( baseCodeTest.io.writer.TestHistogramWriter.class );
 
-      
+      /* data structure tests */
       suite.addTestSuite(baseCodeTest.dataStructure.matrix.TestSparseRaggedDoubleMatrix2DNamed.class);
       suite.addTestSuite( baseCodeTest.dataStructure.matrix.TestRCDoubleMatrix1D.class );
       suite.addTestSuite( baseCodeTest.dataStructure.TestQueue.class );
       suite.addTestSuite( baseCodeTest.dataStructure.TestStack.class );
 
+      /* data filter tests */
       suite.addTestSuite( baseCodeTest.dataFilter.TestRowAffyNameFilter.class );
       suite.addTestSuite( baseCodeTest.dataFilter.TestRowNameFilter.class );
       suite.addTestSuite( baseCodeTest.dataFilter.TestRowAbsentFilter.class );
@@ -40,13 +43,17 @@ public class AllTests extends TestCase {
       suite.addTestSuite( baseCodeTest.dataFilter.TestRowLevelFilter.class );
       suite.addTestSuite( baseCodeTest.dataFilter.TestItemLevelFilter.class );
       
+      /* math tests */
       suite.addTestSuite( baseCodeTest.math.TestDescriptiveWithMissing.class );
       suite.addTestSuite( baseCodeTest.math.TestRank.class );
       suite.addTestSuite( baseCodeTest.math.TestMatrixRowStats.class );
       suite.addTestSuite( baseCodeTest.math.TestMatrixStats.class );
       suite.addTestSuite( baseCodeTest.math.TestStats.class );
       suite.addTestSuite( baseCodeTest.math.TestSpecFunc.class );
+      suite.addTestSuite( baseCodeTest.math.TestROC.class );
       
+      
+      /* XML tests */
       suite.addTestSuite( baseCodeTest.xml.TestGOParser.class );
 
       return suite;

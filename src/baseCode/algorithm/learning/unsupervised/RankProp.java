@@ -46,7 +46,9 @@ public class RankProp extends Algorithm {
 
          yold.assign( y ); // initially all zero except for 1 at the query point.
 
-         for ( int j = 0; j < matrix.rows(); j++ ) {
+         int lim = Math.min(yorig.size(), matrix.rows());
+         
+         for ( int j = 0; j < lim; j++ ) {
             if ( j == k ) continue; // don't update query
             
             double dotProduct = matrix.viewRow( j ).zDotProduct( yold );
