@@ -6,6 +6,8 @@ import java.awt.Graphics;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
+
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -15,8 +17,7 @@ import java.awt.Rectangle;
 /**
  * 
  * @author Will Braynen
- * @version $Id: JBarGraphCellRenderer.java,v 1.2 2004/06/24 14:10:24 pavlidis
- *          Exp $
+ * @version $Id$
  */
 public class JBarGraphCellRenderer extends JLabel implements TableCellRenderer {
 
@@ -28,7 +29,8 @@ public class JBarGraphCellRenderer extends JLabel implements TableCellRenderer {
    protected static Color m_selectionBackground;
    protected boolean m_isSelected = false;
    protected boolean m_isBarGraph = false;
-
+   DecimalFormat m_regular = new DecimalFormat();
+   
    public JBarGraphCellRenderer() {
       super();
       setOpaque( false );
@@ -74,7 +76,9 @@ public class JBarGraphCellRenderer extends JLabel implements TableCellRenderer {
          // bar graph
          m_isBarGraph = true;
          m_values = value;
-         Double x = ( Double ) ( ( ArrayList ) value ).get( 0 ); 
+         
+        // Double x = ( Double ) ( ( ArrayList ) value ).get( 0 ); 
+         Double x = new Double(m_regular.format(-Math.log( ( ( Double ) ( ( ArrayList ) value ).get( 0 ) ).doubleValue())/Math.log(10)));
          setToolTipText( x.toString() );
       }
       else if ( value.getClass().equals( Double.class ) ) {
@@ -109,13 +113,18 @@ public class JBarGraphCellRenderer extends JLabel implements TableCellRenderer {
       
       ArrayList values = ( ArrayList ) m_values;
 
+      double maxPval = 10.0;
+      
       for ( int i = 0; i < values.size(); i++ ) {
 
-         double value = ( ( Double ) values.get( i ) ).doubleValue();
+         // @todo only use log if doLog is requested. probably log should be in genesettablemodel
+         double value = Math.min(maxPval,-Math.log( ( ( Double ) values.get( i ) ).doubleValue())/Math.log(10));
+         
          if ( ! Double.isNaN( value ) )
          {
             // map from [0,1] range to [0,width] range
-            int x = ( int ) ( value * width );
+           // int x = ( int ) ( value * width );
+            int x = (int)( (double)width * value / maxPval ) ;
 
             // what color to use?
             if ( i < COLORS.length ) {
