@@ -21,7 +21,7 @@ public abstract class AbstractNamedMatrix implements NamedMatrix {
 
    private int lastColumnIndex = 0;
    private int lastRowIndex = 0;
-   
+
    /**
     * 
     *  
@@ -34,64 +34,64 @@ public abstract class AbstractNamedMatrix implements NamedMatrix {
       colNames = new Vector();
    }
 
-
    /**
-    * Add a column name when we don't care what the index will be. The index will be set by the method. This is useful for when
-    * we need to set up a matrix before we know how many column or rows there are.
+    * Add a column name when we don't care what the index will be. The index will be set by the method. This is useful
+    * for when we need to set up a matrix before we know how many column or rows there are.
+    * 
     * @param s
     */
    public final void addColumnName( String s ) {
-      
-      if ( colMap.containsKey(s)) {
-         throw new IllegalArgumentException("Duplicate column name " + s);
-      } 
-      
+
+      if ( colMap.containsKey( s ) ) {
+         throw new IllegalArgumentException( "Duplicate column name " + s );
+      }
+
       this.colNames.add( s );
       this.colMap.put( s, new Integer( lastColumnIndex ) );
       lastColumnIndex++;
-      
+
    }
-   
-   
+
    public final void addColumnName( String s, int i ) {
-      
-      if ( colMap.containsKey(s)) {
-         throw new IllegalArgumentException("Duplicate column name " + s);
-      } 
-      
+
+      if ( colMap.containsKey( s ) ) {
+         throw new IllegalArgumentException( "Duplicate column name " + s );
+      }
+
       this.colNames.add( s );
       this.colMap.put( s, new Integer( i ) );
    }
 
    /**
-    * Add a row name when we don't care what the index will be. The index will be set by the method. This is useful for when
-    * we need to set up a matrix before we know how many column or rows there are.
+    * Add a row name when we don't care what the index will be. The index will be set by the method. This is useful for
+    * when we need to set up a matrix before we know how many column or rows there are.
+    * 
     * @param s
     */
    public final void addRowName( String s ) {
-      
-      if ( rowMap.containsKey(s)) {
-    //     throw new IllegalArgumentException("Duplicate row name " + s);
+
+      if ( rowMap.containsKey( s ) ) {
+         //     throw new IllegalArgumentException("Duplicate row name " + s);
          return;
       }
-      
+
       this.rowNames.add( s );
       this.rowMap.put( s, new Integer( lastRowIndex ) );
       lastRowIndex++;
    }
-   
+
    /*
     * (non-Javadoc)
     * 
     * @see baseCode.dataStructure.NamedMatrix#addRowName(java.lang.String, int)
     */
    public final void addRowName( String s, int i ) {
-      
-      if ( rowMap.containsKey(s)) {
-   //      throw new IllegalArgumentException("Duplicate row name " + s);
+
+      if ( rowMap.containsKey( s ) ) {
+         //      throw new IllegalArgumentException("Duplicate row name " + s);
          return;
       }
-      
+
       this.rowNames.add( s );
       this.rowMap.put( s, new Integer( i ) );
    }
@@ -202,6 +202,5 @@ public abstract class AbstractNamedMatrix implements NamedMatrix {
       }
       return count;
    }
-
 
 }

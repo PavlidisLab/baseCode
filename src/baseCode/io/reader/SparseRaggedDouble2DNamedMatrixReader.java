@@ -6,14 +6,24 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 import baseCode.dataStructure.matrix.NamedMatrix;
 import baseCode.dataStructure.matrix.RCDoubleMatrix1D;
+import baseCode.dataStructure.matrix.SparseDoubleMatrix2DNamed;
 import baseCode.dataStructure.matrix.SparseRaggedDoubleMatrix2DNamed;
+import baseCode.util.FileTools;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
 import cern.colt.map.OpenIntIntHashMap;
+import cern.colt.map.OpenIntObjectHashMap;
 import cern.colt.matrix.DoubleMatrix1D;
 
 /**
@@ -26,13 +36,15 @@ import cern.colt.matrix.DoubleMatrix1D;
  *  
  *   
  *    
- *                             2          &lt;--- number of items - the first line of the file only. NOTE - this line is often blank or not present.
- *                             1 2        &lt;--- items 1 has 2 edges
- *                             1 2        &lt;--- edge indices are to items 1 &amp; 2
- *                             0.1 100    &lt;--- with the following weights
- *                             2 2        &lt;--- items 2 also has 2 edges
- *                             1 2        &lt;--- edge indices are also to items 1 &amp; 2 (fully connected)
- *                             100 0.1    &lt;--- with the following weights
+ *     
+ *                              2          &lt;--- number of items - the first line of the file only. NOTE - this line is often blank or not present.
+ *                              1 2        &lt;--- items 1 has 2 edges
+ *                              1 2        &lt;--- edge indices are to items 1 &amp; 2
+ *                              0.1 100    &lt;--- with the following weights
+ *                              2 2        &lt;--- items 2 also has 2 edges
+ *                              1 2        &lt;--- edge indices are also to items 1 &amp; 2 (fully connected)
+ *                              100 0.1    &lt;--- with the following weights
+ *     
  *    
  *   
  *  
@@ -48,17 +60,161 @@ import cern.colt.matrix.DoubleMatrix1D;
 public class SparseRaggedDouble2DNamedMatrixReader extends
       AbstractNamedMatrixReader {
 
+   /**
+    * Read a sparse square matrix that is expressed as an adjacency list in a tab-delimited file:
+    * 
+    * <pre>
+    * 
+    *                item1 item2 weight
+    *                item1 item5 weight
+    *  
+    * </pre>
+    * 
+    * <p>
+    * By definition the resulting matrix is square.
+    * 
+    * @param name of file
+    * @return
+    */
+   public NamedMatrix readFromAdjList( String fileName ) throws IOException {
+      if ( !FileTools.testFile( fileName ) ) {
+         throw new IOException( "Could not read from file " + fileName );
+      }
+      FileInputStream stream = new FileInputStream( fileName );
+      return readFromAdjList( stream );
+   }
+
+   /**
+    * @throws IOException
+    * @throws NumberFormatException Read a sparse square matrix that is expressed as an adjacency list in a
+    *         tab-delimited file:
+    * 
+    * <pre>
+    * 
+    *   item1 item2 weight
+    *   item1 item5 weight
+    *  
+    * </pre>
+    * 
+    * <p>
+    *         By definition the resulting matrix is square.
+    * @param stream
+    * @return
+    */
+   public NamedMatrix readFromAdjList(  InputStream stream )
+         throws NumberFormatException, IOException {
+      Set itemNames = new HashSet();
+      Map rows = new HashMap();
+
+      BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
+
+     OpenIntObjectHashMap indexNameMap = new OpenIntObjectHashMap(); // eventual row index --> name
+      Map nameIndexMap = new HashMap(); // name --> eventual row index
+
+      /* 
+       * Store the information about the matrix in a temporary set of data structures, the most important of which is
+       * a map of nodes to edge information. Each edge information object contains the index and the weight of the edge.
+       */
+      String row;
+      int index = 0;
+      while ( ( row = dis.readLine() ) != null ) {
+         StringTokenizer st = new StringTokenizer( row, " \t", false );
+
+         String itemA = "";
+         if ( st.hasMoreTokens() ) {
+            itemA = st.nextToken();
+
+            if ( !itemNames.contains( itemA ) ) {
+               rows.put( itemA, new HashSet() );
+               itemNames.add( itemA );
+              indexNameMap.put( index, itemA );
+               nameIndexMap.put( itemA, new Integer( index ) );
+               index++;
+            }
+         } else {
+            //  continue;
+         }
+
+         String itemB = "";
+         if ( st.hasMoreTokens() ) {
+            itemB = st.nextToken();
+            if ( !itemNames.contains( itemB ) ) {
+               rows.put( itemB, new HashSet() );
+               itemNames.add( itemB );
+              indexNameMap.put( index, itemB );
+               nameIndexMap.put( itemB, new Integer( index ) );
+               index++;
+            }
+         } else {
+            //  continue;
+         }
+
+         double weight;
+         if ( st.hasMoreTokens() ) {
+            weight = Double.parseDouble( st.nextToken() );
+         } else {
+            weight = 1.0; // just make it a binary matrix.
+         }
+
+         ( ( Set ) rows.get( itemA ) ).add( new IndexScoreDyad(
+               ( ( Integer ) nameIndexMap.get( itemB ) ).intValue(), weight ) );
+         ( ( Set ) rows.get( itemB ) ).add( new IndexScoreDyad(
+               ( ( Integer ) nameIndexMap.get( itemA ) ).intValue(), weight ) );
+      }
+
+      SparseRaggedDoubleMatrix2DNamed matrix = new SparseRaggedDoubleMatrix2DNamed();
+      
+      IntArrayList inL =  indexNameMap.keys();
+      inL.sort();
+      int[] indexList =inL.elements();
+      for ( int i = 0; i < indexList.length; i++ ) {
+         int itemIndex = indexList[i];
+ 
+         String itemName = ( String ) indexNameMap.get(itemIndex);
+         
+         Set arow = ( Set ) rows.get( itemName ); // set of IndexScoreDyads
+         int size = arow.size();
+
+         OpenIntIntHashMap map = new OpenIntIntHashMap( size, 0.4, 0.8 );
+         DoubleArrayList values = new DoubleArrayList( size );
+         DoubleArrayList finalValues = new DoubleArrayList( size );
+ 
+         int j = 0;
+         for ( Iterator iterator = arow.iterator(); iterator.hasNext(); ) {
+            IndexScoreDyad element = ( IndexScoreDyad ) iterator.next();
+            int ind = element.getKey();
+            double weight = element.getValue();
+            map.put( ind, j );
+            values.add( weight );
+            j++;
+         }
+         
+         IntArrayList indexes = map.keys();
+         indexes.sort();
+         int[] ix = indexes.elements();
+         for ( int k = 0; k < indexes.size(); k++ ) {
+            finalValues.add( values.get( map.get( ix[k] ) ) );
+         }
+
+         DoubleMatrix1D rowMatrix = new RCDoubleMatrix1D( indexes, finalValues );
+         matrix.addRow( itemName, rowMatrix );
+
+      }
+
+      dis.close();
+      return matrix;
+   }
+
    /*
     * (non-Javadoc)
     * 
     * @see baseCode.io.reader.AbstractNamedMatrixReader#read(java.lang.String)
     */
-   public NamedMatrix read( String filename ) throws IOException {
-      File infile = new File( filename );
-      if ( !infile.exists() || !infile.canRead() ) {
-         throw new IOException( "Could not read from file " + filename );
+   public NamedMatrix read( String fileName ) throws IOException {
+      if ( !FileTools.testFile( fileName ) ) {
+         throw new IOException( "Could not read from file " + fileName );
       }
-      FileInputStream stream = new FileInputStream( infile );
+      FileInputStream stream = new FileInputStream( fileName );
       return read( stream );
    }
 
@@ -147,19 +303,20 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
    private DoubleMatrix1D readOneRow( BufferedReader dis, int amount, int offset )
          throws IOException {
 
-      /* we have to be careful to skip any lines that invalid. Each line should have at least
-       * two characters. In the files JW provided there are some lines that are just " ".
+      /*
+       * we have to be careful to skip any lines that invalid. Each line should have at least two characters. In the
+       * files JW provided there are some lines that are just " ".
        */
       String rowInd = "";
       String rowWei = "";
-      
- //     while ( rowInd.length() < 2 ) {
-         rowInd = dis.readLine(); // row with indices.
-  //    }
 
-  //    while ( rowWei.length() < 2 ) {
-         rowWei = dis.readLine(); // row with weights.
-  //    }
+      //     while ( rowInd.length() < 2 ) {
+      rowInd = dis.readLine(); // row with indices.
+      //    }
+
+      //    while ( rowWei.length() < 2 ) {
+      rowWei = dis.readLine(); // row with weights.
+      //    }
 
       StringTokenizer tokw = new StringTokenizer( rowWei, " \t" );
       StringTokenizer toki = new StringTokenizer( rowInd, " \t" );
@@ -171,15 +328,16 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
       int i = 0;
       while ( toki.hasMoreTokens() ) {
 
-         double eval = Double.parseDouble( tokw.nextToken() );
+         double weight = Double.parseDouble( tokw.nextToken() );
          int ind = Integer.parseInt( toki.nextToken() ) - offset;
 
-         if (ind < 0) {
-            throw new IllegalStateException("Can't have negative index - check offset.");
+         if ( ind < 0 ) {
+            throw new IllegalStateException(
+                  "Can't have negative index - check offset." );
          }
-         
+
          map.put( ind, i );
-         values.add( eval );
+         values.add( weight );
          i++;
       }
 

@@ -162,7 +162,7 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
     * </pre>
     * 
     * <p>
-    * By definition the resulting matrix is square.
+    * By definition the resulting matrix is square and symmetric.
     * </p>
     * <p>
     * Note that the ordering of the items will be as they are encountered in the file.
@@ -181,17 +181,21 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
       BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
 
       String row;
+      int index = 0;
+      Map nameIndexMap = new HashMap(); // name --> eventual row index
       while ( ( row = dis.readLine() ) != null ) {
          StringTokenizer st = new StringTokenizer( row, " \t", false );
 
          String itemA = "";
+          
          if ( st.hasMoreTokens() ) {
             itemA = st.nextToken();
 
             if ( !itemNames.contains( itemA ) ) {
                rows.put( itemA, new HashSet() );
                itemNames.add( itemA );
-
+               nameIndexMap.put( itemA, new Integer( index ) );
+               index++;
             }
          } else {
           //  continue;
@@ -203,7 +207,8 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
             if ( !itemNames.contains( itemB ) ) {
                rows.put( itemB, new HashSet() );
                itemNames.add( itemB );
-
+               nameIndexMap.put( itemB, new Integer( index ) );
+               index++;
             }
          } else {
           //  continue;
@@ -216,7 +221,10 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
             weight = 1.0; // just make it a binary matrix.
          }
 
-         ( ( Set ) rows.get( itemA ) ).add( new Dyad( itemB, weight ) );
+         ( ( Set ) rows.get( itemA ) ).add( new IndexScoreDyad(
+               ( ( Integer ) nameIndexMap.get( itemB ) ).intValue(), weight ) );
+         ( ( Set ) rows.get( itemB ) ).add( new IndexScoreDyad(
+               ( ( Integer ) nameIndexMap.get( itemA ) ).intValue(), weight ) );
       }
 
       SparseDoubleMatrix2DNamed matrix = new SparseDoubleMatrix2DNamed(
@@ -232,12 +240,12 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
          int rowIndex = matrix.getRowIndexByName( itemA );
          Set arow = ( Set ) rows.get( itemA );
          for ( Iterator iterator = arow.iterator(); iterator.hasNext(); ) {
-            Dyad element = ( Dyad ) iterator.next();
-            String itemB = element.getKey();
+            IndexScoreDyad element = ( IndexScoreDyad ) iterator.next();
+            int ind = element.getKey();
             double weight = element.getValue();
-            int colIndex = matrix.getColIndexByName( itemB );
-            matrix.setQuick( rowIndex, colIndex, weight );
-       //     matrix.setQuick( colIndex, rowIndex, weight );
+          
+            matrix.setQuick( rowIndex, ind, weight );
+            matrix.setQuick( ind, rowIndex, weight );
          }
 
       }
@@ -257,30 +265,4 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
 
 }
 
-class Dyad {
-   String key;
-   double value;
-   
-   /**
-    * @param key
-    * @param value
-    */
-   public Dyad( String key, double value ) {
-      super();
-      this.key = key;
-      this.value = value;
-   }
-   /**
-    * @return Returns the key.
-    */
-   public String getKey() {
-      return key;
-   }
-   /**
-    * @return Returns the value.
-    */
-   public double getValue() {
-      return value;
-   }
-}
 
