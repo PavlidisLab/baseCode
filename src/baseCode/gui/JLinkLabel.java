@@ -4,6 +4,8 @@ import javax.swing.JLabel;
 import java.awt.Cursor;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
+import baseCode.util.BrowserLauncher;
+import java.io.IOException;
 
 /**
  * A clickable link label that contains a URL.
@@ -60,9 +62,13 @@ public class JLinkLabel
    }
    
    // @todo new thread
-   public void mouseClicked( MouseEvent e ) {
+   public void mouseClicked( MouseEvent event ) {
       if ( m_url != null ) {
-         JWebBrowser webBrowser = new JWebBrowser( m_url );
+         try {
+            BrowserLauncher.openURL( m_url );
+         } catch ( IOException ex ) {
+            GuiUtil.error( "Could not open a web browser window." );
+         }
       }      
    }
    
