@@ -26,6 +26,8 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
    int columns = 0;
    private boolean isDirty = true;
 
+   private DoubleMatrix1D rowToGive;
+   
    public SparseRaggedDoubleMatrix2DNamed() {
       matrix = new Vector();
       indexes = new Vector();
@@ -64,9 +66,11 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
             }
          }
       }
-      isDirty = false;
+      
       columns = max;
-
+      System.err.println("Computed columns: " + columns);
+      rowToGive = new SparseDoubleMatrix1D(columns);
+      isDirty = false;
       return columns;
    }
 
@@ -246,24 +250,27 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
       return ( DoubleArrayList ) matrix.get( row );
    }
 
-  
+  /*
+   *  (non-Javadoc)
+   * @see baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix#getRowMatrix1D(int)
+   */
    public DoubleMatrix1D getRowMatrix1D( int i ) {
 
       DoubleArrayList values = getRowArrayList( i );
       IntArrayList index = getIndex( i );
-
-      DoubleArrayList dense = new DoubleArrayList( columns() );
-      dense.setSize(columns());
+ 
+      if (rowToGive == null ) {
+         columns();
+      }
       
+      rowToGive.assign(0.0); // requires iterating over the entire thing.
       for ( int j = 0; j < values.size(); j++ ) {
-
          double value = values.getQuick( j );
          int ind = index.getQuick( j ) - 1;
-         
-         dense.set( ind, value );
+         rowToGive.set( ind, value );
       }
 
-      return new SparseDoubleMatrix1D( dense.elements() );
+      return rowToGive;
    }
 
    /*
