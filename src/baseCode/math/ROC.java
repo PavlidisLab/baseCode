@@ -52,11 +52,11 @@ public class ROC {
       
       double result = 0.0;
       for ( int i = 0; i < totalSize; i++ ) {
-         if ( ranks.contains( new Integer( i ) ) ) {
+         if ( ranks.contains( new Integer( i ) ) ) { // if the ith item in the ranked list is a positive.
             numPosSeen++;
-            System.err.print( "+" );
-         } else {
-            System.err.print( "-" );
+            System.err.print(i + "+ " );
+         } else { 
+            System.err.print(i +  "- " );
             result += numPosSeen;
             numNegSeen++;
             if ( maxFP > 0 && numNegSeen >= maxFP ) {

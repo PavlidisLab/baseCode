@@ -112,7 +112,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
       SparseRaggedDoubleMatrix2DNamed returnVal = new SparseRaggedDoubleMatrix2DNamed();
 
       String row;
-      int k = 1;
+      int k = 0;
 
       while ( ( row = dis.readLine() ) != null ) {
 
@@ -126,7 +126,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
             continue;
          }
 
-         int index = Integer.parseInt( tok.nextToken() );
+         int index = Integer.parseInt( tok.nextToken() ) - offset;
 
          int amount = Integer.parseInt( tok.nextToken() );
 
@@ -174,6 +174,10 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
          double eval = Double.parseDouble( tokw.nextToken() );
          int ind = Integer.parseInt( toki.nextToken() ) - offset;
 
+         if (ind < 0) {
+            throw new IllegalStateException("Can't have negative index - check offset.");
+         }
+         
          map.put( ind, i );
          values.add( eval );
          i++;

@@ -35,3 +35,4 @@ baseCode.jpx
 baseCode.jpx.local
 javadoc.xml
 .settings
+junit*.properties
