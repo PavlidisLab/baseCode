@@ -109,11 +109,11 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
       NumberVariable amount = new IntegerVariable();
       DoubleVariable eval = new DoubleVariable();
 
-      int dim = 0;
+      int dim = 10;
 
       dim = new Integer( Integer.parseInt( dis.readLine() ) ).intValue();
       SparseDoubleMatrix2DNamed returnVal = new SparseDoubleMatrix2DNamed( dim,
-            dim );
+          dim );
 
       for ( int k = 1; k <= dim; k++ ) {
 

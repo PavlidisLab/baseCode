@@ -97,12 +97,16 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
 
       while ( ( row = dis.readLine() ) != null ) {
 
-         if ( row.equals( "" ) ) {
+         if ( row.equals( "" )   ) {  // incase there is a blank line.
             continue;
          }
 
          StringTokenizer tok = new StringTokenizer( row, " \t" );
 
+         if (tok.countTokens() != 2 ) { // in case the row count is there.
+            continue;
+         }
+         
          int index = ( new Integer( Integer.parseInt( tok.nextToken() ) ) )
                .intValue();
 
