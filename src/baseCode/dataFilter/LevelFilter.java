@@ -22,7 +22,7 @@ public abstract class LevelFilter extends AbstractFilter {
     * 
     * @param lowCut the threshold
     */
-   protected void setLowCut( double lowCut ) {
+   public void setLowCut( double lowCut ) {
       this.lowCut = lowCut;
    }
 
@@ -31,7 +31,7 @@ public abstract class LevelFilter extends AbstractFilter {
     * @param lowCut
     * @param isFraction
     */
-   protected void setLowCut( double lowCut, boolean isFraction ) {
+   public void setLowCut( double lowCut, boolean isFraction ) {
       setLowCut( lowCut );
       setUseLowCutAsFraction( isFraction );
       useLowAsFraction = isFraction;
@@ -42,7 +42,7 @@ public abstract class LevelFilter extends AbstractFilter {
     * 
     * @param h the threshold
     */
-   protected void setHighCut( double h ) {
+   public void setHighCut( double h ) {
       highCut = h;
    }
 
