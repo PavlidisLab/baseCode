@@ -54,13 +54,27 @@ public class JMatrixCellRenderer extends JLabel implements TableCellRenderer {
       int column = coords.y;
 
       // Set the color
-      Color matrixColor = m_matrixDisplay.getColor( row, column );
+      Color matrixColor;
+      try {
+         matrixColor = m_matrixDisplay.getColor( row, column );
+      }
+      catch( ArrayIndexOutOfBoundsException e ) {
+         matrixColor = m_matrixDisplay.getMissingColor();
+      }
       setBackground( matrixColor );
-
+      
       // The tooltip should always show the actual (non-normalized) value
+      double matrixValue;
       boolean isStandardized = m_matrixDisplay.getStandardizedEnabled();
       m_matrixDisplay.setStandardizedEnabled( false );
-      double matrixValue = m_matrixDisplay.getValue( row, column );
+      {
+         try {
+            matrixValue = m_matrixDisplay.getValue( row, column );
+         }
+         catch( ArrayIndexOutOfBoundsException e ) {
+            matrixValue = Double.NaN;
+         }
+      }
       m_matrixDisplay.setStandardizedEnabled( isStandardized ); // return to
                                                                 // previous
                                                                 // state
