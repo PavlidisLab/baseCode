@@ -7,6 +7,7 @@ package baseCode.Util;
  * <p>Institution:: Columbia University</p>
  * @author Paul Pavlidis
  * @version $Id$
+ * @todo replace this with commons-logging.
  */
 
 public class Debug {
