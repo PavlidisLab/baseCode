@@ -23,7 +23,7 @@ public class JMatrixDisplay extends JPanel {
   protected BufferedImage m_image = null;
 
   protected int m_ratioWidth = 0;
-  protected int m_rowNameWidth = 70; // TO DO: set this dynamically to the width needed for the longest row name
+  protected int m_rowNameWidth;
   protected int m_labelGutter = 5;
   protected Font m_labelFont = null;
   protected int m_fontSize = 10;
@@ -41,6 +41,9 @@ public class JMatrixDisplay extends JPanel {
   public JMatrixDisplay( ColorMatrix matrix ) {
 
      m_matrix = matrix;
+     setFont();
+     m_rowNameWidth = m_labelGutter + maxStringPixelWidth( matrix.getRowNames(), m_labelFont, this );
+     //m_rowNameWidth += m_labelGutter; // this is optional (leaves some space on the right)
      initSize();
   }
 
@@ -91,7 +94,6 @@ public class JMatrixDisplay extends JPanel {
         int fontGutter = (int) ( (double) m_cellHeight * .22);
         int rowCount = matrix.getRowCount();
         int columnCount = matrix.getColumnCount();
-        int columnNamesHeight = 20; // TO DO: set dynamically to the width of the longest column name
 
 //        // TO DO: print column names vertically
 //        if (m_isShowLabels && columnCount > 0)
@@ -102,7 +104,6 @@ public class JMatrixDisplay extends JPanel {
 //              int y = columnNamesHeight;
 //
 //              g.setColor(Color.black);
-//              setFont();
 //              g.setFont(m_labelFont);
 //              int xRatio = (columnCount * m_cellWidth) + fontGutter;
 //              int yRatio = y + m_cellHeight - m_labelGutter;
@@ -117,7 +118,7 @@ public class JMatrixDisplay extends JPanel {
         // loop through the matrix, one row at a time
         for (int i = 0;  i < rowCount;  i++)
         {
-           int y = columnNamesHeight + (i * m_cellHeight);
+           int y = (i * m_cellHeight); // + columnNamesHeight
 
            // draw an entire row, one cell at a time
            for (int j = 0; j < columnCount; j++)
@@ -131,14 +132,14 @@ public class JMatrixDisplay extends JPanel {
            }
            
            // print row names
-           if (m_isShowLabels && rowCount > 0)
+           if (m_isShowLabels && columnCount > 0)
            {
               g.setColor(Color.black);
-              setFont();
               g.setFont(m_labelFont);
               int xRatio = (columnCount * m_cellWidth) + m_labelGutter;
               int yRatio = y + m_cellHeight - fontGutter;
               String rowName = matrix.getRowName(i);
+              rowName = rowName.trim();  // remove leading and trailing whitespace
               if (null == rowName) {
                  rowName = "Undefined";
               }
@@ -149,7 +150,42 @@ public class JMatrixDisplay extends JPanel {
   } // end drawDisplay
 
   /**
-   * Sets the <code>Font</code> used for drawing text
+   * ----------- SHOULD PROBABLY NOT BE IN THIS CLASS -----------
+   *
+   * @return  the pixel width of the string for the specified font.
+   */
+  public static int stringPixelWidth( String s, Font font, Component c ) {
+     
+     FontMetrics fontMetrics = c.getFontMetrics( font );
+     return fontMetrics.charsWidth( s.toCharArray(), 0, s.length() );
+     
+  } // end stringPixelWidth
+  
+  /**
+   * ----------- SHOULD PROBABLY NOT BE IN THIS CLASS -----------
+   */
+  public static int maxStringPixelWidth( String[] strings, Font font, Component c ) {
+     
+     // the number of chars in the longest string
+     int maxWidth = 0;
+     int width;
+     String s;
+     for (int i = 0;  i < strings.length;  i++)
+     {
+        s = strings[i];
+        s.trim();  // remove leading and trailing whitespace
+        width = stringPixelWidth( s, font, c );
+        if (maxWidth < width)
+           maxWidth = width;
+     }
+     
+     return maxWidth;
+     
+  } // end getMaxPixelWidth
+  
+  
+  /**
+   * Sets the font used for drawing text
    */
   private void setFont() {
      int fontSize =
@@ -164,8 +200,7 @@ public class JMatrixDisplay extends JPanel {
   }
 
   /**
-   * Gets the <code>Font</code> size
-   * @return <code>Font</code> size
+   * @return  the height of the font
    */
   private int getFontSize() {
      return Math.max( m_cellHeight, 5 );
