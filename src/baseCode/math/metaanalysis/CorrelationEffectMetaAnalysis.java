@@ -56,6 +56,8 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
     * <li>Random effects, untransformed. Weights are computed using CH eqns 18-10, 18-20, 18-24.
     * </ol>
     * 
+    * The default is untransformed, fixed effects.
+    * 
     * @param correlations
     * @param sampleSizes
     * @return p-value. The p-value is also stored in the field p.

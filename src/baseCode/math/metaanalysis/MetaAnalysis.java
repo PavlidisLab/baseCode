@@ -75,6 +75,19 @@ public abstract class MetaAnalysis {
       }
       return r;
    }
+   
+   
+   /**
+    * Test for statistical significance of Q.
+    * @param Q - computed using qStatistic
+    * @param N - number of studies.
+    * @see qStatistic
+    * @return The upper tail chi-square probability for Q with N - degrees of freedom.
+    */
+   public double qTest(double Q, double N) {
+      return Probability.chiSquareComplemented(N - 1, Q);
+   }
+   
 
    /**
     * General formula for weighted mean of effect sizes. Cooper and Hedges 18-1, or HS pg. 100.
