@@ -9,33 +9,34 @@ import java.io.File;
 public class JMatrixDisplay extends JPanel {
 
   // data fields
-  ColorMatrix m_colorMatrix;
+  ColorMatrix m_matrix;
 
-  boolean m_isPrintLabels = true;
-  BufferedImage m_image = null;
+  protected boolean m_isPrintRowNames = false;
+  protected boolean m_isPrintColumnNames = true; // TO DO: implement
+  protected BufferedImage m_image = null;
 
-  private int m_ratioWidth = 0, m_labelWidth = 70;
-  private int m_labelGutter = 5;
-  private Font m_labelFont = null;
-  private int m_fontSize = 10;
-  private final int m_maxFontSize = 10;
-  private final int m_defaultResolution  = 120;
-  private int m_resolution = m_defaultResolution;
-  private int m_textSize = 0;
-  protected static int m_rowHeight = 10; // in pixels
-  protected static int m_rowWidth = 5; // in pixels
+  protected int m_ratioWidth = 0;
+  protected int m_rowNameWidth = 70; // TO DO: set this dynamically to the width needed for the longest row name
+  protected int m_labelGutter = 5;
+  protected Font m_labelFont = null;
+  protected int m_fontSize = 10;
+  protected final int m_maxFontSize = 10;
+  protected final int m_defaultResolution  = 120;
+  protected int m_resolution = m_defaultResolution;
+  protected int m_textSize = 0;
 
-  private boolean picOnceSaved = false;
+  /** Cell height in pixels; if printing row names, minimum recommended height is 10 pixels */
+  protected static int m_cellHeight = 10; // in pixels
+  /** Cell width in pixels; if printing column names, minimum recommended width is 10 pixels */
+  protected static int m_cellWidth = 10; // in pixels
 
-  public JMatrixDisplay() {
-
-     this( new ColorMatrix() );
-  }
+  private boolean picOnceSaved = false;  // TO DO: delete this
 
 
-  public JMatrixDisplay( ColorMatrix colorMatrix ) {
 
-     m_colorMatrix = colorMatrix;
+  public JMatrixDisplay( ColorMatrix matrix ) {
+
+     m_matrix = matrix;
      initSize();
   }
 
@@ -44,14 +45,14 @@ public class JMatrixDisplay extends JPanel {
    */
   protected void initSize() {
 
-    if (m_colorMatrix != null)
+    if (m_matrix != null)
     {
-      int height = m_rowHeight * m_colorMatrix.getRowCount();
-      int width  = m_rowWidth  * m_colorMatrix.getColumnCount();
+      int height = m_cellHeight * m_matrix.getRowCount();
+      int width  = m_cellWidth  * m_matrix.getColumnCount();
 
-      if (m_isPrintLabels)
+      if (m_isPrintRowNames)
       {
-          width += m_labelWidth;
+          width += m_rowNameWidth;
       }
 
       Dimension d = new Dimension( width, height );
@@ -68,7 +69,7 @@ public class JMatrixDisplay extends JPanel {
   protected void paintComponent( Graphics g ) {
 
     super.paintComponent(g);
-    drawDisplay( g, m_colorMatrix );
+    drawDisplay( g, m_matrix );
 
     if (!picOnceSaved) {
        picOnceSaved = true;
@@ -86,46 +87,49 @@ public class JMatrixDisplay extends JPanel {
   /**
    * Gets called from #paintComponent and #saveToFile
    */
-  protected void drawDisplay( Graphics g, ColorMatrix colorMatrix ) {
+  protected void drawDisplay( Graphics g, ColorMatrix matrix ) {
 
-     if (colorMatrix != null)
+     if (matrix != null)
      {
         g.setColor(Color.white);
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-        int fontGutter = (int) ( (double) m_rowHeight * .22);
-        int rowCount = colorMatrix.getRowCount();
-        int columnCount = colorMatrix.getColumnCount();
+        int fontGutter = (int) ( (double) m_cellHeight * .22);
+        int rowCount = matrix.getRowCount();
+        int columnCount = matrix.getColumnCount();
 
-        // loop through the microarray
+        // loop through the matrix, one row at a time
         for (int i = 0;  i < rowCount;  i++)
         {
-           int y = i * m_rowHeight;
+           int y = i * m_cellHeight;
 
-           for (int j = 0; j < columnCount; j++) {
-              int x = (j * m_rowWidth);
-              int width = ( (j + 1) * m_rowWidth) - x;
+           // draw an entire row, one cell at a time
+           for (int j = 0; j < columnCount; j++) 
+           {
+              int x = (j * m_cellWidth);
+              int width = ( (j + 1) * m_cellWidth) - x;
 
-              Color color = colorMatrix.getColor(i, j);
+              Color color = matrix.getColor(i, j);
               g.setColor(color);
-              g.fillRect(x, y, width, m_rowHeight);
+              g.fillRect(x, y, width, m_cellHeight);
            }
 
-           if (m_isPrintLabels && columnCount > 0) {
-
+           // print row names
+           if (m_isPrintRowNames && columnCount > 0) 
+           {
               g.setColor(Color.black);
               setFont();
               g.setFont(m_labelFont);
-              int xRatio = (columnCount * m_rowWidth) + m_labelGutter;
-              int yRatio = y + m_rowHeight - fontGutter;
-              String rowName = colorMatrix.getRowName(i);
+              int xRatio = (columnCount * m_cellWidth) + m_labelGutter;
+              int yRatio = y + m_cellHeight - fontGutter;
+              String rowName = matrix.getRowName(i);
               if (null == rowName) {
                  rowName = "Undefined";
               }
               g.drawString(rowName, xRatio, yRatio);
-           } // end if print row (row) labels
-        } // end for rows
-     } // end if (colorMatrix != null)
+           } // end printing row names
+        } // end looping through the matrix, one row at a time
+     } // end if (matrix != null)
   } // end drawDisplay
 
   /**
@@ -148,7 +152,7 @@ public class JMatrixDisplay extends JPanel {
    * @return <code>Font</code> size
    */
   private int getFontSize() {
-    return Math.max( m_rowHeight, 5 );
+    return Math.max( m_cellHeight, 5 );
   }
 
   /**
@@ -162,7 +166,7 @@ public class JMatrixDisplay extends JPanel {
                                  BufferedImage.TYPE_INT_RGB);
      g = m_image.createGraphics();
 
-     drawDisplay( g, m_colorMatrix );
+     drawDisplay( g, m_matrix );
 
       ImageIO.write( m_image, "png", new File( outFileName ));
   }
