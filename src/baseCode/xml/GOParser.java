@@ -32,6 +32,7 @@ public class GOParser {
 
    /**
     * Get the graph that was created.
+    * 
     * @return a DirectedGraph. Nodes contain OntologyEntry instances.
     */
    public DirectedGraph getGraph() {
@@ -39,36 +40,43 @@ public class GOParser {
    }
 
    /**
-    * Get a simple Map that contains keys that are the GO ids, values are the names.
-    * This can replace the functionality of the GONameReader in classScore.
+    * Get a simple Map that contains keys that are the GO ids, values are the
+    * names. This can replace the functionality of the GONameReader in
+    * classScore.
     * 
     * @return Map
     */
    public Map getGONameMap() {
       Map nodes = m.getItems();
       Map result = new HashMap();
-      for (Iterator it = nodes.keySet().iterator(); it.hasNext();) {
-         DirectedGraphNode node = ( DirectedGraphNode)nodes.get(it.next());
-         OntologyEntry e = (OntologyEntry)node.getItem();
-         result.put(e.getId().intern(), e.getName().intern());
+      for ( Iterator it = nodes.keySet().iterator(); it.hasNext(); ) {
+         DirectedGraphNode node = ( DirectedGraphNode ) nodes.get( it.next() );
+         OntologyEntry e = ( OntologyEntry ) node.getItem();
+         result.put( e.getId().intern(), e.getName().intern() );
       }
       return result;
    }
-   
-   
+
    public GOParser( InputStream i ) throws IOException, SAXException {
-      
-      if (i.available() == 0) {  
-         throw new IOException("XML stream contains no data.");
+
+      if ( i.available() == 0 ) {
+         throw new IOException( "XML stream contains no data." );
       }
-      
+
       System.setProperty( "org.xml.sax.driver",
             "org.apache.xerces.parsers.SAXParser" );
 
       XMLReader xr = XMLReaderFactory.createXMLReader();
       GOHandler handler = new GOHandler();
+      xr.setFeature( "http://xml.org/sax/features/validation", false );
+      xr.setFeature( "http://xml.org/sax/features/external-general-entities",
+            false );
+      xr.setFeature(
+            "http://apache.org/xml/features/nonvalidating/load-external-dtd",
+            false );
       xr.setContentHandler( handler );
       xr.setErrorHandler( handler );
+      xr.setEntityResolver( handler );
       xr.setDTDHandler( handler );
       xr.parse( new InputSource( i ) );
 
