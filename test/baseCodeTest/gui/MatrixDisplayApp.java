@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 
 import baseCode.gui.JMatrixDisplay;
+import baseCode.gui.ColorMap;
 
 /**
  * This is an example of how you'd display a microarray.
@@ -72,18 +73,27 @@ public class MatrixDisplayApp {
       frame.setLocation( ( screenSize.width - frameSize.width ) / 2,
             ( screenSize.height - frameSize.height ) / 2 );
       frame.setVisible( true );
+      
+      matrixDisplay.setStandardizedEnabled( true );
 
-      // toggle between standardized and not a few times
-      boolean isShowingStandardized = matrixDisplay.getStandardizedEnabled();
-      for ( int i = 0; i < 5; i++ ) {
-         try {
-            Thread.sleep( 1000 );
-            isShowingStandardized = !isShowingStandardized;
-            matrixDisplay.setStandardizedEnabled( isShowingStandardized );
-            matrixDisplay.repaint();
-         } catch ( InterruptedException e ) {
-         }
+      // use the green-red color map
+      try {
+         matrixDisplay.setColorMap( ColorMap.GREENRED_COLORMAP );
       }
+      catch( IllegalArgumentException e ) {}
+      
+      matrixDisplay.setStandardizedEnabled( false );
+      
+      
+//      for ( int i = 0; i < 5; i++ ) {
+//         try {
+//            Thread.sleep( 1000 );
+//            isShowingStandardized = !isShowingStandardized;
+//            matrixDisplay.setStandardizedEnabled( isShowingStandardized );
+//            matrixDisplay.repaint();
+//         } catch ( InterruptedException e ) {
+//         }
+//      }
    }
 
    //Main method: args[0] can contain the name of the data file
