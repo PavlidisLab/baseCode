@@ -1,7 +1,3 @@
-/*
- * Created on Jun 16, 2004
- *
- */
 package baseCode.dataFilter;
 
 import java.lang.reflect.Constructor;
@@ -12,17 +8,6 @@ import org.apache.commons.logging.LogFactory;
 import baseCode.dataStructure.NamedMatrix;
 
 /**
- * @author Owner
- *
- */
-/**
- * <p>
- * Title:
- * </p>
- * <p>
- * Description:
- * </p>
- * <p>
  * Copyright (c) 2004
  * </p>
  * <p>

@@ -51,16 +51,8 @@ public class AffymetrixProbeNameFilter
          kept++;
       }
 
-      NamedMatrix returnval = null;
-      try {
-         Constructor cr = data.getClass().getConstructor( new Class[] {int.class, int.class} );
-         returnval =
-             ( NamedMatrix ) cr.newInstance(
-             new Object[] {new Integer( MTemp.size() ), new Integer( numCols )} );
-      }
-      catch ( Exception e ) {
-         e.printStackTrace();
-      }
+      NamedMatrix returnval = getOutputMatrix(data, MTemp, numCols);
+
 
       for ( int i = 0; i < MTemp.size(); i++ ) {
          for ( int j = 0; j < numCols; j++ ) {
