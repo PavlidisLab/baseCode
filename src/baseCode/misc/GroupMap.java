@@ -1,4 +1,4 @@
-package baseCode.dataStructure;
+package baseCode.misc;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,6 +11,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.reader.MapReader;
 
 /**
@@ -26,7 +27,6 @@ import baseCode.dataStructure.reader.MapReader;
  * 
  * @author Paul Pavlidis
  * @version $Id$
- * @todo this class should go elsewhere, it is not a basic data structure.
  */
 
 public class GroupMap {

@@ -18,7 +18,6 @@ import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.NamedMatrix;
 
 /**
- *
  * Reader for {@link baseCode.dataStructure.DenseDoubleMatrix2DNamed}.
  * <p>
  * Copyright (c) 2004
@@ -26,7 +25,7 @@ import baseCode.dataStructure.NamedMatrix;
  * <p>
  * Institution: Columbia University
  * </p>
- *
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
@@ -51,30 +50,27 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
    }
 
    /**
-    *
     * @param stream InputStream
     * @param wantedRowNames Set
-    * @return <code>read( stream, wantedRowNames, createEmptyRows )</code> with
-    *   <code>createEmptyRows</code> set to true.
+    * @return <code>read( stream, wantedRowNames, createEmptyRows )</code> with <code>createEmptyRows</code> set to
+    *         true.
     * @throws IOException
     */
    public NamedMatrix read( InputStream stream, Set wantedRowNames )
          throws IOException {
-            return read( stream, wantedRowNames, true );
+      return read( stream, wantedRowNames, true );
    }
 
    /**
-    *
     * @param stream InputStream
     * @param wantedRowNames Set
-    * @param createEmptyRows if a row contained in <code>wantedRowNames</code>
-    *   is not found in the file, create an empty row filled with Double.NaN
-    *   iff this param is true.
+    * @param createEmptyRows if a row contained in <code>wantedRowNames</code> is not found in the file, create an
+    *        empty row filled with Double.NaN iff this param is true.
     * @return matrix
     * @throws IOException
     */
-   public NamedMatrix read( InputStream stream, Set wantedRowNames, boolean createEmptyRows )
-         throws IOException {
+   public NamedMatrix read( InputStream stream, Set wantedRowNames,
+         boolean createEmptyRows ) throws IOException {
 
       BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
 
@@ -123,8 +119,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
             else if ( !wantedRowNames.contains( s ) ) {
                // maybe the next line in the file has the row we want
                continue;
-            }
-            else if ( createEmptyRows ) {
+            } else if ( createEmptyRows ) {
                // we found the row we want in the file
                wantedRowsFound.add( s );
             }
@@ -178,9 +173,9 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
 
             if ( columnNumber > 0 ) {
                if ( missing ) {
-                  rowTemp.add( Double.NaN   );
+                  rowTemp.add( Double.NaN );
                } else {
-                  rowTemp.add( Double.parseDouble(s) );
+                  rowTemp.add( Double.parseDouble( s ) );
                }
             } else {
                if ( missing ) {
@@ -212,7 +207,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
          Iterator iterator = wantedRowNames.iterator();
          while ( iterator.hasNext() ) {
             String s = ( String ) iterator.next();
-            if ( ! wantedRowsFound.contains( s ) ) {
+            if ( !wantedRowsFound.contains( s ) ) {
                // add an empty row
                DoubleArrayList emptyRow = createEmptyRow( numHeadings );
                rowNames.add( s );
@@ -222,14 +217,13 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
          }
       }
 
-      return createMatrix( MTemp, rowNumber, numHeadings,
-      rowNames, colNames );
+      return createMatrix( MTemp, rowNumber, numHeadings, rowNames, colNames );
 
    }
 
    /**
     * Read a matrix from a file, subject to filtering criteria.
-    *
+    * 
     * @param filename data file to read from
     * @param wantedRowNames contains names of rows we want to get
     * @return NamedMatrix object constructed from the data file
@@ -245,6 +239,10 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
       return read( stream, wantedRowNames );
    } // end read
 
+   //-----------------------------------------------------------------
+   // protected methods
+   // -----------------------------------------------------------------
+
    protected DenseDoubleMatrix2DNamed createMatrix( Vector MTemp, int rowCount,
          int colCount, Vector rowNames, Vector colNames ) {
 
@@ -253,12 +251,13 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
 
       for ( int i = 0; i < matrix.rows(); i++ ) {
          for ( int j = 0; j < matrix.columns(); j++ ) {
-            if ( (( DoubleArrayList ) MTemp.get( i )).size() < j + 1 ) {
+            if ( ( ( DoubleArrayList ) MTemp.get( i ) ).size() < j + 1 ) {
                matrix.set( i, j, Double.NaN );
                // this allows the input file to have ragged ends.
                // todo I'm not sure allowing ragged inputs is a good idea -PP
             } else {
-               matrix.set( i, j, (( DoubleArrayList ) MTemp.get( i )).elements()[j]);
+               matrix.set( i, j, ( ( DoubleArrayList ) MTemp.get( i ) )
+                     .elements()[j] );
             }
          }
       }
@@ -271,7 +270,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
    protected DoubleArrayList createEmptyRow( int numColumns ) {
 
       DoubleArrayList row = new DoubleArrayList();
-      for ( int i = 0;  i < numColumns;  i++ ) {
+      for ( int i = 0; i < numColumns; i++ ) {
          row.add( Double.NaN );
       }
       return row;
