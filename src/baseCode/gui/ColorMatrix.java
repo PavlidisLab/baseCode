@@ -1,17 +1,19 @@
 package baseCode.gui;
 
-import java.awt.Color;
 import java.io.IOException;
-import baseCode.dataStructure.reader.DoubleMatrixReader;
+
+import java.awt.Color;
+
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.reader.DoubleMatrixReader;
+import baseCode.math.DescriptiveWithMissing;
 import baseCode.math.MatrixRowStats;
 import cern.colt.list.DoubleArrayList;
-import baseCode.math.DescriptiveWithMissing;
 
 /**
  * <p>Title: ColorMatrix</p>
  * <p>Description: Creates a color matrix from a matrix of doubles</p>
- * <p>Copyright: Copyright (c) 2004</p>
+ * <p> Copyright (c) 2004</p>
  * <p>Institution:: Columbia University</p>
  * @author Will Braynen
  * @version $Id$
@@ -46,10 +48,12 @@ public class ColorMatrix
    protected int m_rowKeys[];
 
    /**
-    * @param  filename  either an absolute path, or if providing a relative
-    *                   path (e.g. data.txt), then keep in mind that it will
-    *                   be relative to the java interpreter, not the class
-    *                   (not my fault -- that's how java treats relative paths)
+    *
+    * @param filename either an absolute path, or if providing a relative path
+    *   (e.g. data.txt), then keep in mind that it will be relative to the java
+    *   interpreter, not the class (not my fault -- that's how java treats
+    *   relative paths)
+    * @throws IOException
     */
    public ColorMatrix( String filename ) throws IOException {
       loadMatrixFromFile( filename );
@@ -60,9 +64,13 @@ public class ColorMatrix
    }
 
    /**
-    * @param  filename      data filename
-    * @param  colorMap      the simplest color map is one with just two colors: { minColor, maxColor }
-    * @param  missingColor  values missing from the matrix or non-numeric entries will be displayed using this color
+    *
+    * @param filename data filename
+    * @param colorMap the simplest color map is one with just two colors: {
+    *   minColor, maxColor }
+    * @param missingColor values missing from the matrix or non-numeric entries
+    *   will be displayed using this color
+    * @throws IOException
     */
    public ColorMatrix( String filename, Color[] colorMap, Color missingColor ) throws IOException {
 
@@ -104,7 +112,12 @@ public class ColorMatrix
    }
 
    /**
-    * @see  #setRowKeys
+    *
+    * @see #setRowKeys
+    * @param row int
+    * @param column int
+    * @param isRowKey boolean
+    * @return Color
     */
    public Color getColor( int row, int column, boolean isRowKey ) {
 
@@ -173,11 +186,12 @@ public class ColorMatrix
    } // end setRow
 
    /**
-    * To be able to sort the rows by an arbitrary key.
-    * Creates <code>m_rowKeys</code> array and initializes it in
-    * ascending order from 0 to <code>m_totalRows</code>-1,
-    * so that by default it matches the physical order
-    * of the columns: [0,1,2,...,m_totalRows-1]
+    * To be able to sort the rows by an arbitrary key. Creates
+    * <code>m_rowKeys</code> array and initializes it in ascending order from 0
+    * to <code>m_totalRows</code>-1, so that by default it matches the physical
+    * order of the columns: [0,1,2,...,m_totalRows-1]
+    *
+    * @return int[]
     */
    protected int[] createRowKeys() {
 
@@ -207,7 +221,9 @@ public class ColorMatrix
 
    /**
     * A convenience method for loading data files
-    * @param  filename  the name of the data file
+    *
+    * @param filename the name of the data file
+    * @throws IOException
     */
    public void loadMatrixFromFile( String filename ) throws IOException {
 
@@ -310,7 +326,7 @@ public class ColorMatrix
 
                // stretch or shrink the range to [0, totalColors]
                double valueNew = value * zoomFactor;
-               int i = ( int )valueNew;
+               int i = ( int ) valueNew;
                m_colors[row][column] = colorMap.getColor( i );
             }
          }

@@ -1,43 +1,42 @@
-/*
- * Created on Jun 16, 2004
- *
- */
 package baseCodeTest.dataFilter;
 
-import junit.framework.TestCase;
+import baseCode.dataFilter.AffymetrixProbeNameFilter;
+import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.StringMatrix2DNamed;
 
 /**
- * @author Owner
+ * @author Pavlidis
+ * @version $Id$
  *
  */
 public class TestAffymetrixProbeNameFilter
-    extends TestCase {
+    extends AbstractTestFilter {
 
-   /**
-    * Constructor for AffymetrixProbeNameFilterTest.
-    * @param arg0
-    */
-   public TestAffymetrixProbeNameFilter( String arg0 ) {
-      super( arg0 );
-   }
 
-   /* (non-Javadoc)
-    * @see junit.framework.TestCase#setUp()
-    */
    protected void setUp() throws Exception {
-      // TODO Auto-generated method stub
       super.setUp();
    }
 
-   /* (non-Javadoc)
-    * @see junit.framework.TestCase#tearDown()
-    */
    protected void tearDown() throws Exception {
-      // TODO Auto-generated method stub
       super.tearDown();
    }
 
    public void testFilter() {
+      AffymetrixProbeNameFilter fi = new AffymetrixProbeNameFilter();
+      DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) fi.filter( testdata );
+      int expectedReturn = filtered.rows();
+    int actualReturn =filtered.rows();
+    assertEquals("return value", expectedReturn, actualReturn);
    }
+
+
+   public void testStringFilter() {
+   AffymetrixProbeNameFilter fi = new AffymetrixProbeNameFilter();
+   StringMatrix2DNamed filtered = ( StringMatrix2DNamed ) fi.filter( teststringdata );
+   int expectedReturn = filtered.rows();
+ int actualReturn =filtered.rows();
+ assertEquals("return value", expectedReturn, actualReturn);
+}
+
 
 }

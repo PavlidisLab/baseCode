@@ -1,7 +1,3 @@
-/*
- * Created on Jun 16, 2004
- *
- */
 package baseCodeTest.dataFilter;
 
 import java.util.HashSet;
@@ -9,64 +5,66 @@ import java.util.Set;
 
 import baseCode.dataFilter.RowNameFilter;
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
-import baseCode.dataStructure.reader.DoubleMatrixReader;
-import junit.framework.TestCase;
-import java.net.URL;
+import baseCode.dataStructure.StringMatrix2DNamed;
 
 /**
- * @author Paul Pavlidis
+ * @author Pavlidis
+ * @version $Id$
  *
  */
 public class TestRowNameFilter
-    extends TestCase {
+    extends AbstractTestFilter {
 
-   DenseDoubleMatrix2DNamed testdata;
-   DoubleMatrixReader f;
-   Set testfilterlist;
+   protected Set testfilterlist;
 
-   /**
-    * Constructor for RowNameFilterTest.
-    * @param arg0
-    */
-   public TestRowNameFilter( String arg0 ) {
-      super( arg0 );
-   }
-
-   /* (non-Javadoc)
-    * @see junit.framework.TestCase#setUp()
-    */
    protected void setUp() throws Exception {
-      // TODO Auto-generated method stub
       super.setUp();
-      f = new DoubleMatrixReader();
-       testdata = ( DenseDoubleMatrix2DNamed ) f.read(TestRowNameFilter.class.getResource("/data/testreallybig.txt").getFile());
-      testfilterlist = new HashSet();
 
+      testfilterlist = new HashSet();
       testfilterlist.add( "AB002380_at" );
       testfilterlist.add( "L31584_at" );
       testfilterlist.add( "L32832_s_at" );
       testfilterlist.add( "L36463_at" );
+      testfilterlist.add( "fooblydoobly" ); // shouldn't care.
    }
 
-   /* (non-Javadoc)
-    * @see junit.framework.TestCase#tearDown()
-    */
    protected void tearDown() throws Exception {
-      // TODO Auto-generated method stub
       super.tearDown();
       testfilterlist = null;
-      f = null;
-      testdata = null;
    }
 
    public void testFilter() {
       RowNameFilter fi = new RowNameFilter( testfilterlist );
       DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) fi.filter( testdata );
+      int expectedReturn = 4;
+      int actualReturn = filtered.rows();
+      assertEquals( "return value", expectedReturn, actualReturn );
    }
 
    public void testFilterExclude() {
       RowNameFilter fi = new RowNameFilter( testfilterlist, true );
-      fi.filter( testdata );
+      DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) fi.filter( testdata );
+      int expectedReturn = testdata.rows() - 4;
+      int actualReturn = filtered.rows();
+      assertEquals( "return value", expectedReturn, actualReturn );
    }
+
+   public void testFilterString() {
+     RowNameFilter fi = new RowNameFilter( testfilterlist );
+     StringMatrix2DNamed filtered = ( StringMatrix2DNamed ) fi.filter( teststringdata );
+     int expectedReturn = 4;
+     int actualReturn = filtered.rows();
+     assertEquals( "return value", expectedReturn, actualReturn );
+  }
+
+  public void testFilterStringExclude() {
+     RowNameFilter fi = new RowNameFilter( testfilterlist, true );
+     StringMatrix2DNamed filtered = ( StringMatrix2DNamed ) fi.filter( teststringdata );
+     int expectedReturn = teststringdata.rows() - 4;
+     int actualReturn = filtered.rows();
+     assertEquals( "return value", expectedReturn, actualReturn );
+  }
+
+
 
 }
