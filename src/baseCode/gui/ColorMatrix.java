@@ -27,6 +27,9 @@ public class ColorMatrix {
 
     double m_minValue, m_maxValue;
     int m_totalRows, m_totalColumns;
+    
+    /** to be able to sort the rows by an arbitrary key */
+    int m_rowKeys[];
 
     // colors and color maps
     Color m_missingColor = Color.lightGray;
@@ -200,10 +203,31 @@ public class ColorMatrix {
         return m_totalColumns;
     }
 
-    public Color getColor( int row, int column ) {
-
-        return m_colors[row][column];
+    public void setRowKeys( int[] rowKeys ) {
+        
+        m_rowKeys = rowKeys;
     }
+    
+    public Color getColor( int row, int column ) {
+        
+        return getColor( row, column, true );
+    }
+    
+    /**
+     * @see  #setRowKeys
+     */
+    public Color getColor( int row, int column, boolean isRowKey ) {
+        
+        if (isRowKey)
+        {
+            row = m_rowKeys[row];
+            return m_colors[row][column];
+        }
+        else
+        {
+            return m_colors[row][column];
+        }
+    } // end getColor
 
     public String getRowName( int i ) {
 
@@ -226,13 +250,31 @@ public class ColorMatrix {
         
     } // end setRow
     
+    /**
+     * To be able to sort the rows by an arbitrary key.
+     * Creates <code>m_rowKeys</code> array and initializes it in
+     * ascending order from 0 to <code>m_totalRows</code>-1, 
+     * so that by default it matches the physical order
+     * of the columns: [0,1,2,...,m_totalRows-1]
+     */
+    protected int[] createRowKeys() {
+        
+        m_rowKeys = new int[m_totalRows];
+        
+        for (int i = 0;  i < m_totalRows;  i++)
+            m_rowKeys[i] = i;
+       
+        return m_rowKeys;
+    }
+    
     public void loadMatrix( DenseDoubleMatrix2DNamed matrix, boolean normalize ) {
 
-        m_matrix = matrix;
+        m_matrix = matrix; // by reference, or should we clone?
         m_totalRows = m_matrix.rows();
         m_totalColumns = m_matrix.columns();
         m_colors = new Color[m_totalRows][m_totalColumns];
-
+        createRowKeys();
+        
         // normalize the data
         if (normalize)
         {
@@ -275,4 +317,6 @@ public class ColorMatrix {
         DenseDoubleMatrix2DNamed matrix = (DenseDoubleMatrix2DNamed) m_matrixReader.read( filename );
         return matrix;
     }
+    
+    
 }
