@@ -6,8 +6,13 @@ import cern.jet.stat.Probability;
 
 /**
  * Functions for calculating Receiver operator characteristics.
- * <p> Copyright (c) 2004</p>
- * <p>Institution:: Columbia University</p>
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution:: Columbia University
+ * </p>
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
@@ -15,7 +20,7 @@ public class ROC {
 
    /**
     * Calculate area under ROC
-    *
+    * 
     * @param totalSize int
     * @param ranks Map
     * @return AROC
@@ -43,11 +48,12 @@ public class ROC {
    }
 
    /**
-      For an AROC value, calculates a p value based on approximation
-      for calculating the stanadard deviation. Highly approximate!
-      @param numpos How many positives are in the data.
-      @param aroc The AROC
-      @return The p value.
+    * For an AROC value, calculates a p value based on approximation for
+    * calculating the stanadard deviation. Highly approximate!
+    * 
+    * @param numpos How many positives are in the data.
+    * @param aroc The AROC
+    * @return The p value.
     */
    public static double rocpval( int numpos, double aroc ) {
       double logstdev = 0.0;

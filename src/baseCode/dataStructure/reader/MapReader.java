@@ -13,33 +13,38 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
- * Reads a tab-delimited file with lines of the format Key Value.
- * If there are multiple values, then a Set is created for each key containing its values.</p>
- * <p>Copyright (c) 2004</p>
- * <p>Institution: Columbia University</p>
+ * Reads a tab-delimited file with lines of the format Key Value. If there are
+ * multiple values, then a Set is created for each key containing its values.
+ * </p>
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution: Columbia University
+ * </p>
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
 public class MapReader {
 
    /**
-    *
+    * 
     * @param filename String
     * @throws IOException
     * @return Map
     */
-   public Map read(String filename) throws IOException {
-      return this.read(filename, false);
+   public Map read( String filename ) throws IOException {
+      return this.read( filename, false );
    }
 
    /**
     * 
     * @param stream
-    * @return
-    * @throws IOException
+    * @return @throws IOException
     */
-   public Map read(InputStream stream) throws IOException {
-      return this.read(stream, false);
+   public Map read( InputStream stream ) throws IOException {
+      return this.read( stream, false );
    }
 
    /**
@@ -47,13 +52,13 @@ public class MapReader {
     * @return Map from the file.
     * @throws IOException
     */
-   public Map read(String filename, boolean hasHeader) throws IOException {
-      File infile = new File(filename);
-      if (!infile.exists() || !infile.canRead()) {
-         throw new IllegalArgumentException("Could not read from " + filename);
+   public Map read( String filename, boolean hasHeader ) throws IOException {
+      File infile = new File( filename );
+      if ( !infile.exists() || !infile.canRead() ) {
+         throw new IllegalArgumentException( "Could not read from " + filename );
       }
-      FileInputStream stream = new FileInputStream(infile);
-      return read(stream, hasHeader);
+      FileInputStream stream = new FileInputStream( infile );
+      return read( stream, hasHeader );
 
    }
 
@@ -61,34 +66,33 @@ public class MapReader {
     * 
     * @param stream
     * @param hasHeader
-    * @return
-    * @throws IOException
+    * @return @throws IOException
     */
-   public Map read(InputStream stream, boolean hasHeader) throws IOException {
+   public Map read( InputStream stream, boolean hasHeader ) throws IOException {
       Map result = new HashMap();
 
-      BufferedReader dis = new BufferedReader(new InputStreamReader(stream));
-      if (hasHeader) {
+      BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
+      if ( hasHeader ) {
          dis.readLine();
       }
 
       String row;
-      while ((row = dis.readLine()) != null) {
-         StringTokenizer st = new StringTokenizer(row, "\t");
+      while ( ( row = dis.readLine() ) != null ) {
+         StringTokenizer st = new StringTokenizer( row, "\t" );
          String key = st.nextToken();
 
          String value = st.nextToken();
 
-         if (st.hasMoreTokens()) {
+         if ( st.hasMoreTokens() ) {
             Set innerList = new HashSet();
-            innerList.add(value);
-            while (st.hasMoreTokens()) {
+            innerList.add( value );
+            while ( st.hasMoreTokens() ) {
                value = st.nextToken();
             }
-            innerList.add(value);
-            result.put(key, innerList);
+            innerList.add( value );
+            result.put( key, innerList );
          } else {
-            result.put(key, value);
+            result.put( key, value );
          }
       }
       dis.close();

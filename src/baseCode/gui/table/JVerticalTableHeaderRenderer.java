@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+
 import javax.swing.JTable;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
@@ -11,12 +12,12 @@ import javax.swing.table.TableCellRenderer;
 import baseCode.graphics.text.Util;
 
 /**
- * @author  Will Braynen
- * @version $Id$
+ * @author Will Braynen
+ * @version $Id: JVerticalTableHeaderRenderer.java,v 1.1 2004/06/22 23:38:58
+ *          wbraynen Exp $
  */
-public class JVerticalTableHeaderRenderer
-    extends JTableHeader
-    implements TableCellRenderer {
+public class JVerticalTableHeaderRenderer extends JTableHeader implements
+      TableCellRenderer {
 
    String m_columnName;
    final int PREFERRED_HEIGHT = 80;
@@ -25,9 +26,7 @@ public class JVerticalTableHeaderRenderer
    // This method is called each time a column header
    // using this renderer needs to be rendered.
    public Component getTableCellRendererComponent( JTable table, Object value,
-       boolean isSelected,
-       boolean hasFocus,
-       int rowIndex, int vColIndex ) {
+         boolean isSelected, boolean hasFocus, int rowIndex, int vColIndex ) {
       // 'value' is column header value of column 'vColIndex'
       // rowIndex is always -1
       // isSelected is always false
@@ -63,13 +62,17 @@ public class JVerticalTableHeaderRenderer
    }
 
    // The following methods override the defaults for performance reasons
-   public void validate() {}
+   public void validate() {
+   }
 
-   public void revalidate() {}
+   public void revalidate() {
+   }
 
    protected void firePropertyChange( String propertyName, Object oldValue,
-                                      Object newValue ) {}
+         Object newValue ) {
+   }
 
    public void firePropertyChange( String propertyName, boolean oldValue,
-                                   boolean newValue ) {}
+         boolean newValue ) {
+   }
 }

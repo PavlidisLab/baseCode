@@ -62,10 +62,37 @@ public class Stats {
     * @todo provide a method for the right-hand side.
     */
    public static DoubleArrayList cumulate( DoubleArrayList x ) {
-      DoubleArrayList r = new DoubleArrayList( x.size() );
+      if ( x.size() == 0 ) {
+         return new DoubleArrayList( 0 );
+      }
+
+      DoubleArrayList r = new DoubleArrayList( );
 
       double sum = 0.0;
       for ( int i = 0; i < x.size(); i++ ) {
+         sum += x.get( i );
+         r.add(  sum );
+      }
+      return r;
+   }
+
+   /**
+    * Convert an array into a cumulative array. Summing is from the right hand
+    * side. This is useful for creating cumulative density histograms from count
+    * histograms.
+    * 
+    * @param x the array of data to be cumulated.
+    * @return
+    */
+   public static DoubleArrayList cumulateRight( DoubleArrayList x ) {
+      if ( x.size() == 0 ) {
+         return new DoubleArrayList( 0 );
+      }
+
+      DoubleArrayList r = new DoubleArrayList();
+
+      double sum = 0.0;
+      for ( int i = x.size() - 1; i >= 0; i-- ) {
          sum += x.get( i );
          r.add( sum );
       }
@@ -80,7 +107,7 @@ public class Stats {
     * @return The CDF.
     */
    public static DoubleArrayList cdf( DoubleArrayList x ) {
-      return cumulate( normalize( x ) );
+      return cumulateRight( normalize( x ) );
    }
 
    /**
@@ -91,10 +118,14 @@ public class Stats {
     * @return Normalized array.
     */
    public static DoubleArrayList normalize( DoubleArrayList x, double normfactor ) {
-      DoubleArrayList r = new DoubleArrayList( x.size() );
+      if ( x.size() == 0 ) {
+         return new DoubleArrayList( 0 );
+      }
+
+      DoubleArrayList r = new DoubleArrayList( );
 
       for ( int i = 0; i < x.size(); i++ ) {
-         r.add( x.get( i ) / normfactor );
+         r.add(x.get( i ) / normfactor );
       }
       return r;
 

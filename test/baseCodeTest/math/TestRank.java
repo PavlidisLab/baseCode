@@ -3,9 +3,9 @@ package baseCodeTest.math;
 import java.util.HashMap;
 import java.util.Map;
 
+import junit.framework.TestCase;
 import baseCode.math.Rank;
 import cern.colt.list.DoubleArrayList;
-import junit.framework.TestCase;
 
 /**
  * Copyright (c) 2004 Columbia University
@@ -76,7 +76,7 @@ public class TestRank extends TestCase {
    public void testRankTransformBadMap() {
       try {
          Map actualReturn = Rank.rankTransform( testbadmap );
-         fail("Should have generated an exception");
+         fail( "Should have generated an exception" );
       } catch ( IllegalArgumentException success ) {
       }
    }

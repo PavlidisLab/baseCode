@@ -1,11 +1,14 @@
 package baseCode.dataStructure.graph;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- *
- *
- * <p>Copyright (c) Columbia University
+ * 
+ * 
+ * <p>
+ * Copyright (c) Columbia University
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
@@ -18,6 +21,7 @@ public abstract class AbstractGraphNode implements Comparable, GraphNode {
 
    /**
     * Get the actual contents of the node.
+    * 
     * @return
     */
    public Object getItem() {
@@ -26,47 +30,50 @@ public abstract class AbstractGraphNode implements Comparable, GraphNode {
 
    /**
     * Get the key for the node.
+    * 
     * @return Object
     */
    public Object getKey() {
       return key;
    }
 
-
    /**
     * Create a new node with key and value given. The key is stored by the graph
     * and is used to retrieve nodes. Keys and nodes can be any kind of object.
+    * 
     * @param key
     * @param value
     */
-   public AbstractGraphNode(Object key, Object value, Graph graph) {
-      this.setValue(key, value);
+   public AbstractGraphNode( Object key, Object value, Graph graph ) {
+      this.setValue( key, value );
       this.graph = graph;
    }
 
    /**
     * Create a new node when given only a key.
+    * 
     * @param key
     */
-   public AbstractGraphNode(Object key) {
+   public AbstractGraphNode( Object key ) {
       this.key = key;
       this.item = null;
    }
+
    /**
     * Set the graph this belongs to.
+    * 
     * @param graph Graph
     */
-   public void setGraph(Graph graph) {
+   public void setGraph( Graph graph ) {
       this.graph = graph;
    }
 
-   
-   public void setValue(Object key, Object value) {
+   public void setValue( Object key, Object value ) {
       this.item = value;
       this.key = key;
    }
 
-   public void setItem(Object value) {
+   public void setItem( Object value ) {
       this.item = value;
    }
 

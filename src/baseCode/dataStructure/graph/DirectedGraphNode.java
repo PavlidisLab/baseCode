@@ -5,16 +5,16 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * A graph node that has the concept of parents and children.
- * Keys can be anything, but probably Strings or Integers.
- *
- * <p>Copyright (c) Columbia University
+ * A graph node that has the concept of parents and children. Keys can be
+ * anything, but probably Strings or Integers.
+ * 
+ * <p>
+ * Copyright (c) Columbia University
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class DirectedGraphNode
-    extends AbstractGraphNode
-    implements Comparable {
+public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
 
    private Set parents;
    // immediate parents, references to other GraphNodes by keys.
@@ -24,7 +24,7 @@ public class DirectedGraphNode
    private int topoSortOrder = 0;
 
    /**
-    *
+    * 
     * @param key Object
     * @param value Object
     * @param graph Graph
@@ -36,7 +36,7 @@ public class DirectedGraphNode
    }
 
    /**
-    *
+    * 
     * @param i int
     */
    public void setTopoSortOrder( int i ) {
@@ -44,7 +44,7 @@ public class DirectedGraphNode
    }
 
    /**
-    *
+    * 
     * @return int
     */
    public int getTopoSortOrder() {
@@ -52,7 +52,7 @@ public class DirectedGraphNode
    }
 
    /**
-    *
+    * 
     * @param newChildKey Object
     */
    public void addChild( Object newChildKey ) {
@@ -60,7 +60,7 @@ public class DirectedGraphNode
    }
 
    /**
-    *
+    * 
     * @param newParentKey Object
     */
    public void addParent( Object newParentKey ) {
@@ -68,7 +68,7 @@ public class DirectedGraphNode
    }
 
    /**
-    *
+    * 
     * @return Object
     */
    public Object getParentKeys() {
@@ -76,7 +76,7 @@ public class DirectedGraphNode
    }
 
    /**
-    *
+    * 
     * @return Object
     */
    public Object getChildKeys() {
@@ -84,8 +84,9 @@ public class DirectedGraphNode
    }
 
    /**
-    * Get the immediate children of this node.
-    * References to the DirectedGraphNodes are given, as opposed to key values.
+    * Get the immediate children of this node. References to the
+    * DirectedGraphNodes are given, as opposed to key values.
+    * 
     * @return Set containing the child nodes of this node.
     */
    public Set getChildNodes() {
@@ -98,8 +99,9 @@ public class DirectedGraphNode
    }
 
    /**
-    * Get the immediate parents of this node.
-    * References to the DirectedGraphNodes are given, as opposed to key values.
+    * Get the immediate parents of this node. References to the
+    * DirectedGraphNodes are given, as opposed to key values.
+    * 
     * @return Set
     */
    public Set getParentNodes() {
@@ -113,6 +115,7 @@ public class DirectedGraphNode
 
    /**
     * Get the subgraph starting from this node, including this node.
+    * 
     * @return Graph
     */
    public Graph getChildGraph() {
@@ -129,7 +132,7 @@ public class DirectedGraphNode
    }
 
    /**
-    *
+    * 
     * @return int number of immediate children this node has.
     */
    public int outDegree() {
@@ -144,7 +147,7 @@ public class DirectedGraphNode
    }
 
    /**
-    *
+    * 
     * @return int how many children this node has, determined recursively.
     */
    public int numChildren() {
@@ -152,7 +155,7 @@ public class DirectedGraphNode
    }
 
    /**
-    *
+    * 
     * @return int how many parents this node has, determined recursively.
     */
    public int numParents() {
@@ -175,6 +178,7 @@ public class DirectedGraphNode
 
    /**
     * Check to see if this node has a particular immediate child.
+    * 
     * @param j Object
     * @return boolean
     */
@@ -184,6 +188,7 @@ public class DirectedGraphNode
 
    /**
     * Check to see if this node has a particular immediate parent.
+    * 
     * @param j Object
     * @return boolean
     */
@@ -225,7 +230,7 @@ public class DirectedGraphNode
 
    }
 
-   /*************** private methods ****************/
+   /** ************* private methods *************** */
 
    private Set getAllChildNodes( Set list ) {
       if ( list == null ) {
@@ -263,6 +268,7 @@ public class DirectedGraphNode
 
    /**
     * Uses the topological sort order.
+    * 
     * @param o Object
     * @return int
     */
@@ -278,7 +284,9 @@ public class DirectedGraphNode
    }
 
    /**
-    * Makes a copy of this node. It does not make a deep copy of the contents. This should be used when making subgraphs.
+    * Makes a copy of this node. It does not make a deep copy of the contents.
+    * This should be used when making subgraphs.
+    * 
     * @return Object
     */
    public Object clone() {

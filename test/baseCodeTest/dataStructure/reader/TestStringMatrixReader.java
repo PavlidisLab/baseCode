@@ -3,10 +3,9 @@ package baseCodeTest.dataStructure.reader;
 import java.io.IOException;
 import java.io.InputStream;
 
+import junit.framework.TestCase;
 import baseCode.dataStructure.StringMatrix2DNamed;
 import baseCode.dataStructure.reader.StringMatrixReader;
-
-import junit.framework.TestCase;
 
 /**
  * 
@@ -14,7 +13,8 @@ import junit.framework.TestCase;
  * Copyright (c) 2004 Columbia University
  * 
  * @author pavlidis
- * @version $Id$
+ * @version $Id: TestStringMatrixReader.java,v 1.1 2004/06/23 22:13:21 pavlidis
+ *          Exp $
  */
 public class TestStringMatrixReader extends TestCase {
 
@@ -52,8 +52,7 @@ public class TestStringMatrixReader extends TestCase {
          e.printStackTrace();
       }
    }
-   
-   
+
    public void testReadInputStreamColumnCount() {
       try {
          matrix = ( StringMatrix2DNamed ) reader.read( is );
@@ -64,24 +63,27 @@ public class TestStringMatrixReader extends TestCase {
          e.printStackTrace();
       }
    }
-   
+
    public void testReadInputStreamGotRowName() {
       try {
          matrix = ( StringMatrix2DNamed ) reader.read( is );
-         boolean actualReturn = matrix.containsRowName("gene1_at") && matrix.containsRowName("AFFXgene30_at");
+         boolean actualReturn = matrix.containsRowName( "gene1_at" )
+               && matrix.containsRowName( "AFFXgene30_at" );
          boolean expectedReturn = true;
          assertEquals( "return value", expectedReturn, actualReturn );
       } catch ( IOException e ) {
          e.printStackTrace();
       }
    }
-   
+
    public void testReadInputStreamGotColName() {
       try {
          matrix = ( StringMatrix2DNamed ) reader.read( is );
-         boolean actualReturn = matrix.containsColumnName("sample1") && matrix.containsColumnName("sample12");
+         boolean actualReturn = matrix.containsColumnName( "sample1" )
+               && matrix.containsColumnName( "sample12" );
          boolean expectedReturn = true;
-         assertEquals( "return value (for sample1 and sample12)", expectedReturn, actualReturn );
+         assertEquals( "return value (for sample1 and sample12)",
+               expectedReturn, actualReturn );
       } catch ( IOException e ) {
          e.printStackTrace();
       }

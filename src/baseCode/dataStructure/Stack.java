@@ -1,9 +1,16 @@
 package baseCode.dataStructure;
 
 /**
- * <p>Simple Stack implementation</p>
- * <p>Copyright (c) 2004</p>
- * <p>Institution: Columbia University</p>
+ * <p>
+ * Simple Stack implementation
+ * </p>
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution: Columbia University
+ * </p>
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
@@ -23,6 +30,7 @@ public class Stack {
 
    /**
     * Build a stack with a given capacity.
+    * 
     * @param capacity int
     */
    public Stack( int capacity ) {
@@ -31,6 +39,7 @@ public class Stack {
 
    /**
     * Remove the most recently added item.
+    * 
     * @return Object
     */
    public Object pop() {
@@ -45,6 +54,7 @@ public class Stack {
 
    /**
     * Add an item to the stack.
+    * 
     * @param obj Object
     */
    public void push( Object obj ) {
@@ -56,6 +66,7 @@ public class Stack {
 
    /**
     * Get the most recently added item, without removing it.
+    * 
     * @return Object
     */
    public Object top() {
@@ -66,7 +77,7 @@ public class Stack {
    }
 
    /**
-    *
+    * 
     * @return boolean
     */
    public boolean isEmpty() {
@@ -74,7 +85,7 @@ public class Stack {
    }
 
    /**
-    *
+    * 
     * @return boolean
     */
    public boolean isFull() {

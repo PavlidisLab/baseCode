@@ -10,13 +10,20 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import baseCode.dataStructure.reader.MapReader;
 
 /**
- * A data structure representing a map between items and a single set of keys. For example,
- * a set of probes and the genes they map to. Probes that point to the same gene are in the same "group".
- * <p> Copyright (c) 2004</p>
- * <p>Institution: Columbia University</p>
+ * A data structure representing a map between items and a single set of keys.
+ * For example, a set of probes and the genes they map to. Probes that point to
+ * the same gene are in the same "group".
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution: Columbia University
+ * </p>
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  * @todo this class should go elsewhere, it is not a basic data structure.
@@ -29,7 +36,7 @@ public class GroupMap {
    private static Log log = LogFactory.getLog( GroupMap.class );
 
    /**
-    *
+    * 
     * @return int The number of unique items in the GroupMap.
     */
    public int getUniqueItems() {
@@ -38,7 +45,7 @@ public class GroupMap {
 
    /**
     * For a given key, return true if it has duplicates.
-    *
+    * 
     * @param k String
     * @return boolean
     */
@@ -47,7 +54,9 @@ public class GroupMap {
    }
 
    /**
-    * For a given key, return the number of duplicates it has (not counting itself).
+    * For a given key, return the number of duplicates it has (not counting
+    * itself).
+    * 
     * @param k String
     * @return int
     */
@@ -56,23 +65,27 @@ public class GroupMap {
    }
 
    /**
-    * The input file format is that used by {@link baseCode.dataStructure.reader.MapReader}.
-    *
+    * The input file format is that used by
+    * {@link baseCode.dataStructure.reader.MapReader}.
+    * 
     * @param filename Duplicate map file name to be read by a MapReader.
     * @param dataMatrix Data file this the map refers to.
     * @return Map
     */
-   public Map read( String filename, DenseDoubleMatrix2DNamed dataMatrix ) throws IOException {
+   public Map read( String filename, DenseDoubleMatrix2DNamed dataMatrix )
+         throws IOException {
 
       if ( filename == null || dataMatrix == null ) {
-         throw new IllegalArgumentException( "You must give a valid file name and data matrix." );
+         throw new IllegalArgumentException(
+               "You must give a valid file name and data matrix." );
       }
 
       MapReader m = new MapReader();
       Map initialMap = m.read( filename );
       Map insideOutMap = new HashMap();
 
-      // first we turn the map inside-out so we have gene --> probeA, probeB, probeC.
+      // first we turn the map inside-out so we have gene --> probeA, probeB,
+      // probeC.
       Set keys = initialMap.keySet();
       for ( Iterator it = keys.iterator(); it.hasNext(); ) {
          String p = ( String ) it.next();
@@ -92,7 +105,8 @@ public class GroupMap {
       uniqueItems = insideOutMap.size();
       log.info( uniqueItems + " unique items read from duplicate map" );
 
-      // turn that map into a map of probeA --> probe1, probe2, where probes1 and probes2 are in the same 'group' as probeA
+      // turn that map into a map of probeA --> probe1, probe2, where probes1
+      // and probes2 are in the same 'group' as probeA
       this.duplicateMap = new HashMap();
       keys = insideOutMap.keySet();
       for ( Iterator it = keys.iterator(); it.hasNext(); ) {
@@ -116,7 +130,8 @@ public class GroupMap {
          }
       }
 
-      // now a sanity check. Make sure every item in our data is also in the duplicate map.
+      // now a sanity check. Make sure every item in our data is also in the
+      // duplicate map.
       for ( Iterator it = dataMatrix.getRowNameMapIterator(); it.hasNext(); ) {
          boolean foundProblem = false;
          String rowName = ( String ) it.next();
@@ -126,7 +141,7 @@ public class GroupMap {
          }
          if ( foundProblem ) {
             throw new IllegalStateException(
-                "The data has item(s) that aren't in the duplicate map." );
+                  "The data has item(s) that aren't in the duplicate map." );
          }
       }
 

@@ -4,26 +4,30 @@
  */
 package baseCodeTest.dataStructure.graph;
 
-import baseCode.dataStructure.graph.DirectedGraph;
-import junit.framework.TestCase;
-import baseCode.dataStructure.graph.DirectedGraphNode;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
+
+import junit.framework.TestCase;
+import baseCode.dataStructure.graph.DirectedGraph;
+import baseCode.dataStructure.graph.DirectedGraphNode;
 
 /**
- *
- * <p>Copyright (c) Columbia University
+ * 
+ * <p>
+ * Copyright (c) Columbia University
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class TestDirectedGraph
-    extends TestCase {
+public class TestDirectedGraph extends TestCase {
    DirectedGraph testGraph;
    DirectedGraph testGraphCycle; // has a cycle.
+
    /**
     * Constructor for TestDirectedGraph.
+    * 
     * @param arg0
     */
    public TestDirectedGraph( String arg0 ) {
@@ -86,20 +90,19 @@ public class TestDirectedGraph
       assertEquals( "return", expectedReturn, actualReturn );
    }
 
-    public void testTopoSort() {
-       testGraph.topoSort();
-       List nodes = new ArrayList( testGraph.getItems().values() );
-       Collections.sort( nodes );
-       StringBuffer buf = new StringBuffer();
-       for (Iterator it = nodes.iterator(); it.hasNext(); ) {
-          buf.append(it.next().toString());
-       }
-       String actualReturn = buf.toString();
-       String expectedReturn = "aaa.bee.cee.dee.eee.eff.";
+   public void testTopoSort() {
+      testGraph.topoSort();
+      List nodes = new ArrayList( testGraph.getItems().values() );
+      Collections.sort( nodes );
+      StringBuffer buf = new StringBuffer();
+      for ( Iterator it = nodes.iterator(); it.hasNext(); ) {
+         buf.append( it.next().toString() );
+      }
+      String actualReturn = buf.toString();
+      String expectedReturn = "aaa.bee.cee.dee.eee.eff.";
 
-       assertEquals( "return", expectedReturn, actualReturn );
-    }
-
+      assertEquals( "return", expectedReturn, actualReturn );
+   }
 
    public void testGetChildren() {
       DirectedGraphNode n = ( DirectedGraphNode ) testGraph.get( "c" );

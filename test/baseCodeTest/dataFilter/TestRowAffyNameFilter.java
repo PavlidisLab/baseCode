@@ -22,24 +22,24 @@ public class TestRowAffyNameFilter extends AbstractTestFilter {
 
    public void testFilter() {
       RowAffyNameFilter fi = new RowAffyNameFilter( new int[] {
-            RowAffyNameFilter.AFFX, RowAffyNameFilter.X,
-            RowAffyNameFilter.ST, RowAffyNameFilter.F } );
+            RowAffyNameFilter.AFFX, RowAffyNameFilter.X, RowAffyNameFilter.ST,
+            RowAffyNameFilter.F } );
       DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) fi
             .filter( testdata );
       int expectedReturn = teststringdata.rows() - 5; // file contains on AFFX,
-                                                      // and two _f_ tags.
+      // and two _f_ tags.
       int actualReturn = filtered.rows();
       assertEquals( "return value", expectedReturn, actualReturn );
    }
 
    public void testStringFilter() {
       RowAffyNameFilter fi = new RowAffyNameFilter( new int[] {
-            RowAffyNameFilter.AFFX, RowAffyNameFilter.X,
-            RowAffyNameFilter.ST, RowAffyNameFilter.F } );
+            RowAffyNameFilter.AFFX, RowAffyNameFilter.X, RowAffyNameFilter.ST,
+            RowAffyNameFilter.F } );
       StringMatrix2DNamed filtered = ( StringMatrix2DNamed ) fi
             .filter( teststringdata );
       int expectedReturn = teststringdata.rows() - 5; // file contains on AFFX,
-                                                      // and two _f_ tags.
+      // and two _f_ tags.
       int actualReturn = filtered.rows();
       assertEquals( "return value", expectedReturn, actualReturn );
    }

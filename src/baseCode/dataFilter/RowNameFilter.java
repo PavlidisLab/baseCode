@@ -3,6 +3,7 @@
  *
  */
 package baseCode.dataFilter;
+
 import java.util.Set;
 import java.util.Vector;
 
@@ -10,21 +11,20 @@ import baseCode.dataStructure.NamedMatrix;
 
 /**
  * Remove or retain rows that are on a list.
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class RowNameFilter
-    extends AbstractFilter
-    implements Filter {
+public class RowNameFilter extends AbstractFilter implements Filter {
 
    private boolean exclude = false;
    private Set filterNames;
 
    /**
-    *
+    * 
     * @param namesToFilter
     * @param exclude Set to true if you want the list to indicate items to be
-    * skipped, rather than selected.
+    *        skipped, rather than selected.
     */
    public RowNameFilter( Set namesToFilter, boolean exclude ) {
       this( namesToFilter );
@@ -70,7 +70,7 @@ public class RowNameFilter
          }
       }
 
-      NamedMatrix returnval = getOutputMatrix(data, MTemp.size(), numCols);
+      NamedMatrix returnval = getOutputMatrix( data, MTemp.size(), numCols );
 
       for ( int i = 0; i < MTemp.size(); i++ ) {
          for ( int j = 0; j < numCols; j++ ) {
@@ -80,8 +80,7 @@ public class RowNameFilter
       returnval.setColumnNames( data.getColNames() );
       returnval.setRowNames( rowNames );
 
-      log.info(
-          "There are " + kept + " rows left after filtering." );
+      log.info( "There are " + kept + " rows left after filtering." );
 
       return ( returnval );
    }

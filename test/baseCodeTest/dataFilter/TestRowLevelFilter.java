@@ -130,7 +130,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
    public final void testFilterFractionMaxRemoveNeg() {
       f.setLowCut( 0.6, true );
       f.setRemoveAllNegative( true ); // removes 3 of 30 rows. 27 * 0.6 =16.2,
-                                      // ceil 17, + 3 = 20
+      // ceil 17, + 3 = 20
       DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) f
             .filter( testdata );
       int actualReturn = filtered.rows();
@@ -237,7 +237,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
             .filter( testdata );
       int actualReturn = filtered.rows();
       int expectedReturn = 14; // 3 neg, 0.1*27 = 3, 0.3*27 = 9, inclusive at
-                               // top means 10 + 3 + 3 = 16, from 30 is 14.
+      // top means 10 + 3 + 3 = 16, from 30 is 14.
       assertEquals( "return value", expectedReturn, actualReturn );
    }
 

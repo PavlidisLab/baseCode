@@ -1,9 +1,15 @@
 package baseCode.dataStructure;
+
 /**
  * Simple Queue implementation.
- *
- * <p>Copyright (c) 2004</p>
- * <p>Institution: Columbia University</p>
+ * 
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution: Columbia University
+ * </p>
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
@@ -26,12 +32,13 @@ public class Queue {
    }
 
    /**
-    *
+    * 
     * @param obj Object
     */
    public void enqueue( Object obj ) {
       if ( isFull() ) {
-         throw new IndexOutOfBoundsException( "Attempt to enqueue in a full queue" );
+         throw new IndexOutOfBoundsException(
+               "Attempt to enqueue in a full queue" );
       }
       back = increment( back );
       queue[back] = obj;
@@ -39,7 +46,7 @@ public class Queue {
    }
 
    /**
-    *
+    * 
     * @return Object
     */
    public Object dequeue() {
@@ -54,7 +61,7 @@ public class Queue {
    }
 
    /**
-    *
+    * 
     * @return boolean
     */
    public boolean isEmpty() {
@@ -62,7 +69,7 @@ public class Queue {
    }
 
    /**
-    *
+    * 
     * @return boolean
     */
    public boolean isFull() {
@@ -70,14 +77,13 @@ public class Queue {
    }
 
    /**
-    *
+    *  
     */
    public void makeEmpty() {
       currentSize = 0;
       front = 0;
       back = -1;
    }
-
 
    private int increment( int i ) {
       if ( ++i == queue.length ) {

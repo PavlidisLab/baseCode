@@ -1,8 +1,7 @@
 package baseCode.gui;
 
-import java.io.IOException;
-
 import java.awt.Color;
+import java.io.IOException;
 
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.reader.DoubleMatrixReader;
@@ -11,23 +10,30 @@ import baseCode.math.MatrixRowStats;
 import cern.colt.list.DoubleArrayList;
 
 /**
- * <p>Title: ColorMatrix</p>
- * <p>Description: Creates a color matrix from a matrix of doubles</p>
- * <p> Copyright (c) 2004</p>
- * <p>Institution:: Columbia University</p>
+ * <p>
+ * Title: ColorMatrix
+ * </p>
+ * <p>
+ * Description: Creates a color matrix from a matrix of doubles
+ * </p>
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution:: Columbia University
+ * </p>
+ * 
  * @author Will Braynen
  * @version $Id$
  */
-public class ColorMatrix
-    implements Cloneable {
+public class ColorMatrix implements Cloneable {
 
    // data fields
 
    /**
-    * Min and max values to display, which might not be the actual min
-    * and max values in the matrix.  For instance, we might want to clip
-    * values, or show a bigger color range for equal comparison with other
-    * rows or matrices.
+    * Min and max values to display, which might not be the actual min and max
+    * values in the matrix. For instance, we might want to clip values, or show
+    * a bigger color range for equal comparison with other rows or matrices.
     */
    protected double m_displayMin;
    protected double m_displayMax;
@@ -48,11 +54,11 @@ public class ColorMatrix
    protected int m_rowKeys[];
 
    /**
-    *
+    * 
     * @param filename either an absolute path, or if providing a relative path
-    *   (e.g. data.txt), then keep in mind that it will be relative to the java
-    *   interpreter, not the class (not my fault -- that's how java treats
-    *   relative paths)
+    *        (e.g. data.txt), then keep in mind that it will be relative to the
+    *        java interpreter, not the class (not my fault -- that's how java
+    *        treats relative paths)
     * @throws IOException
     */
    public ColorMatrix( String filename ) throws IOException {
@@ -64,15 +70,16 @@ public class ColorMatrix
    }
 
    /**
-    *
+    * 
     * @param filename data filename
     * @param colorMap the simplest color map is one with just two colors: {
-    *   minColor, maxColor }
+    *        minColor, maxColor }
     * @param missingColor values missing from the matrix or non-numeric entries
-    *   will be displayed using this color
+    *        will be displayed using this color
     * @throws IOException
     */
-   public ColorMatrix( String filename, Color[] colorMap, Color missingColor ) throws IOException {
+   public ColorMatrix( String filename, Color[] colorMap, Color missingColor )
+         throws IOException {
 
       m_missingColor = missingColor;
       m_colorMap = colorMap;
@@ -80,11 +87,14 @@ public class ColorMatrix
    }
 
    /**
-    * @param  matrix        the matrix
-    * @param  colorMap      the simplest color map is one with just two colors: { minColor, maxColor }
-    * @param  missingColor  values missing from the matrix or non-numeric entries will be displayed using this color
+    * @param matrix the matrix
+    * @param colorMap the simplest color map is one with just two colors: {
+    *        minColor, maxColor }
+    * @param missingColor values missing from the matrix or non-numeric entries
+    *        will be displayed using this color
     */
-   public ColorMatrix( DenseDoubleMatrix2DNamed matrix, Color[] colorMap, Color missingColor ) {
+   public ColorMatrix( DenseDoubleMatrix2DNamed matrix, Color[] colorMap,
+         Color missingColor ) {
 
       m_missingColor = missingColor;
       m_colorMap = colorMap;
@@ -100,9 +110,9 @@ public class ColorMatrix
    }
 
    protected int getTrueRowIndex( int row ) {
-      return m_rowKeys[ row ];
+      return m_rowKeys[row];
    }
-   
+
    public double getValue( int row, int column ) {
       row = getTrueRowIndex( row );
       return m_matrix.get( row, column );
@@ -156,17 +166,17 @@ public class ColorMatrix
    public int getRowIndexByName( String rowName ) {
       return m_matrix.getRowIndexByName( rowName );
    }
-   
+
    /**
     * Changes values in a row, clipping if there are more values than columns.
-    *
-    * @param  row     row whose values we want to change
-    * @param  values  new row values
+    * 
+    * @param row row whose values we want to change
+    * @param values new row values
     */
    protected void setRow( int row, double values[] ) {
 
       row = getTrueRowIndex( row );
-      
+
       // clip if we have more values than columns
       int totalValues = Math.min( values.length, m_totalColumns );
 
@@ -178,10 +188,10 @@ public class ColorMatrix
 
    /**
     * To be able to sort the rows by an arbitrary key. Creates
-    * <code>m_rowKeys</code> array and initializes it in ascending order from 0
-    * to <code>m_totalRows</code>-1, so that by default it matches the physical
-    * order of the columns: [0,1,2,...,m_totalRows-1]
-    *
+    * <code>m_rowKeys</code> array and initializes it in ascending order from
+    * 0 to <code>m_totalRows</code> -1, so that by default it matches the
+    * physical order of the columns: [0,1,2,...,m_totalRows-1]
+    * 
     * @return int[]
     */
    protected int[] createRowKeys() {
@@ -191,15 +201,15 @@ public class ColorMatrix
       }
       return m_rowKeys;
    }
-   
+
    public void setRowKeys( int[] rowKeys ) {
       m_rowKeys = rowKeys;
    }
-   
+
    public void resetRowKeys() {
       for ( int i = 0; i < m_totalRows; i++ ) {
          m_rowKeys[i] = i;
-      }      
+      }
    }
 
    public void init( DenseDoubleMatrix2DNamed matrix ) {
@@ -219,14 +229,15 @@ public class ColorMatrix
 
    /**
     * A convenience method for loading data files
-    *
+    * 
     * @param filename the name of the data file
     * @throws IOException
     */
    public void loadMatrixFromFile( String filename ) throws IOException {
 
       m_matrixReader = new DoubleMatrixReader();
-      DenseDoubleMatrix2DNamed matrix = ( DenseDoubleMatrix2DNamed )m_matrixReader.read( filename );
+      DenseDoubleMatrix2DNamed matrix = ( DenseDoubleMatrix2DNamed ) m_matrixReader
+            .read( filename );
       init( matrix );
    }
 
@@ -239,7 +250,8 @@ public class ColorMatrix
       // normalize the data in each row
       for ( int r = 0; r < m_totalRows; r++ ) {
          double[] rowValues = getRow( r );
-         DoubleArrayList doubleArrayList = new cern.colt.list.DoubleArrayList( rowValues );
+         DoubleArrayList doubleArrayList = new cern.colt.list.DoubleArrayList(
+               rowValues );
          DescriptiveWithMissing.standardize( doubleArrayList );
          rowValues = doubleArrayList.elements();
          setRow( r, rowValues );
@@ -253,7 +265,7 @@ public class ColorMatrix
    } // end standardize
 
    /**
-    * @return  a DenseDoubleMatrix2DNamed object
+    * @return a DenseDoubleMatrix2DNamed object
     */
    public DenseDoubleMatrix2DNamed getMatrix() {
       return m_matrix;
@@ -279,17 +291,18 @@ public class ColorMatrix
    }
 
    /**
-    * @param  colorMap  an array of colors which define the midpoints in the
-    *                   color map; this can be one of the constants defined
-    *                   in the ColorMap class, like ColorMap.REDGREEN_COLORMAP
-    *                   and ColorMap.BLACKBODY_COLORMAP
-    *
-    * @throws IllegalArgumentException if the colorMap array argument contains less than
-    *                      two colors.
+    * @param colorMap an array of colors which define the midpoints in the color
+    *        map; this can be one of the constants defined in the ColorMap
+    *        class, like ColorMap.REDGREEN_COLORMAP and
+    *        ColorMap.BLACKBODY_COLORMAP
+    * 
+    * @throws IllegalArgumentException if the colorMap array argument contains
+    *         less than two colors.
     */
    public void setColorMap( Color[] colorMap ) throws IllegalArgumentException {
 
-      if (colorMap.length < 2) throw new IllegalArgumentException();
+      if ( colorMap.length < 2 )
+         throw new IllegalArgumentException();
 
       m_colorMap = colorMap;
       mapValuesToColors();
@@ -354,13 +367,14 @@ public class ColorMatrix
 
       // create another double matrix
       Color[][] colors = new Color[m_totalRows][m_totalColumns];
-      DenseDoubleMatrix2DNamed m = new DenseDoubleMatrix2DNamed( m_totalRows, m_totalColumns );
+      DenseDoubleMatrix2DNamed m = new DenseDoubleMatrix2DNamed( m_totalRows,
+            m_totalColumns );
       // copy the row and column names
       for ( int i = 0; i < m_totalRows; i++ ) {
-         m.addRowName( m_matrix.getRowName( i ) , i);
+         m.addRowName( m_matrix.getRowName( i ), i );
       }
       for ( int i = 0; i < m_totalColumns; i++ ) {
-         m.addColumnName( m_matrix.getColName( i ) , i);
+         m.addColumnName( m_matrix.getColName( i ), i );
          // copy the data
       }
       for ( int r = 0; r < m_totalRows; r++ ) {
@@ -371,10 +385,10 @@ public class ColorMatrix
 
       // create another copy of a color matrix (this class)
       ColorMatrix clonedColorMatrix = new ColorMatrix( m );
-      
-      int[] rowKeys = (int[]) m_rowKeys.clone();
+
+      int[] rowKeys = ( int[] ) m_rowKeys.clone();
       clonedColorMatrix.setRowKeys( rowKeys );
-      
+
       return clonedColorMatrix;
 
    } // end clone

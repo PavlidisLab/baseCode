@@ -1,19 +1,19 @@
 package baseCodeTest.gui;
 
-import java.awt.FlowLayout;
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.awt.Color;
-import javax.swing.UIManager;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import baseCode.gui.JGradientBar;
-import baseCode.gui.ColorMap;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Toolkit;
 
+import javax.swing.JFrame;
+import javax.swing.UIManager;
+
+import baseCode.gui.ColorMap;
+import baseCode.gui.JGradientBar;
 
 /**
- *
- * @author  Will Braynen
+ * 
+ * @author Will Braynen
  * @version $Id$
  */
 public class GradientBarApp {
@@ -36,7 +36,8 @@ public class GradientBarApp {
       frame.getContentPane().add( gradientBar );
 
       //Validate frames that have preset sizes
-      //Pack frames that have useful preferred size info, e.g. from their layout
+      //Pack frames that have useful preferred size info, e.g. from their
+      // layout
       if ( packFrame ) {
          frame.pack();
       } else {
@@ -52,7 +53,7 @@ public class GradientBarApp {
          frameSize.width = screenSize.width;
       }
       frame.setLocation( ( screenSize.width - frameSize.width ) / 2,
-                         ( screenSize.height - frameSize.height ) / 2 );
+            ( screenSize.height - frameSize.height ) / 2 );
       frame.setVisible( true );
 
    }
@@ -61,8 +62,7 @@ public class GradientBarApp {
    public static void main( String[] args ) {
       try {
          UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
-      }
-      catch ( Exception e ) {
+      } catch ( Exception e ) {
          e.printStackTrace();
       }
       new GradientBarApp();

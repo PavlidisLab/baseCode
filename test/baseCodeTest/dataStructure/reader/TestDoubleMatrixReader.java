@@ -8,13 +8,15 @@ import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.reader.DoubleMatrixReader;
 
 /**
- *  
- * <p>Copyright (c) 2004 Columbia University
+ * 
+ * <p>
+ * Copyright (c) 2004 Columbia University
+ * 
  * @author pavlidis
- * @version $Id$
+ * @version $Id: TestDoubleMatrixReader.java,v 1.2 2004/06/24 17:48:03 pavlidis
+ *          Exp $
  */
 public class TestDoubleMatrixReader extends TestCase {
-
 
    DenseDoubleMatrix2DNamed matrix = null;
    InputStream is = null;
@@ -30,12 +32,12 @@ public class TestDoubleMatrixReader extends TestCase {
       reader = new DoubleMatrixReader();
       is = TestStringMatrixReader.class
             .getResourceAsStream( "/data/testdata.txt" );
-      
+
       ism = TestStringMatrixReader.class
-      .getResourceAsStream( "/data/testdatamissing.txt" );
-      
+            .getResourceAsStream( "/data/testdatamissing.txt" );
+
       ismb = TestStringMatrixReader.class
-      .getResourceAsStream( "/data/testdatamissing-badrows.txt" );
+            .getResourceAsStream( "/data/testdatamissing-badrows.txt" );
    }
 
    /*
@@ -45,7 +47,6 @@ public class TestDoubleMatrixReader extends TestCase {
       super.tearDown();
    }
 
-   
    public void testReadInputStreamMissing() {
       try {
          matrix = ( DenseDoubleMatrix2DNamed ) reader.read( ism );
@@ -56,18 +57,17 @@ public class TestDoubleMatrixReader extends TestCase {
          e.printStackTrace();
       }
    }
-   
+
    public void testReadInputStreamMissingBad() {
       try {
          matrix = ( DenseDoubleMatrix2DNamed ) reader.read( ismb );
          int actualReturn = matrix.rows();
          int expectedReturn = 30;
-         fail("Should have gotten an IO error");
+         fail( "Should have gotten an IO error" );
       } catch ( IOException e ) {
       }
    }
-   
-   
+
    /*
     * Class under test for NamedMatrix read(InputStream)
     */
@@ -81,8 +81,7 @@ public class TestDoubleMatrixReader extends TestCase {
          e.printStackTrace();
       }
    }
-   
-   
+
    public void testReadInputStreamColumnCount() {
       try {
          matrix = ( DenseDoubleMatrix2DNamed ) reader.read( is );
@@ -93,28 +92,30 @@ public class TestDoubleMatrixReader extends TestCase {
          e.printStackTrace();
       }
    }
-   
+
    public void testReadInputStreamGotRowName() {
       try {
          matrix = ( DenseDoubleMatrix2DNamed ) reader.read( is );
-         boolean actualReturn = matrix.containsRowName("gene1_at") && matrix.containsRowName("AFFXgene30_at");
+         boolean actualReturn = matrix.containsRowName( "gene1_at" )
+               && matrix.containsRowName( "AFFXgene30_at" );
          boolean expectedReturn = true;
          assertEquals( "return value", expectedReturn, actualReturn );
       } catch ( IOException e ) {
          e.printStackTrace();
       }
    }
-   
+
    public void testReadInputStreamGotColName() {
       try {
          matrix = ( DenseDoubleMatrix2DNamed ) reader.read( is );
-         boolean actualReturn = matrix.containsColumnName("sample1") && matrix.containsColumnName("sample12");
+         boolean actualReturn = matrix.containsColumnName( "sample1" )
+               && matrix.containsColumnName( "sample12" );
          boolean expectedReturn = true;
-         assertEquals( "return value (for sample1 and sample12)", expectedReturn, actualReturn );
+         assertEquals( "return value (for sample1 and sample12)",
+               expectedReturn, actualReturn );
       } catch ( IOException e ) {
          e.printStackTrace();
       }
    }
-
 
 }

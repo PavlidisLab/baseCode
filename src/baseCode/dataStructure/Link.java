@@ -3,21 +3,29 @@ package baseCode.dataStructure;
 import java.text.DecimalFormat;
 
 /**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p> Copyright (c) 2004</p>
- * <p>Institution:: Columbia University</p>
+ * <p>
+ * Title:
+ * </p>
+ * <p>
+ * Description:
+ * </p>
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution:: Columbia University
+ * </p>
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
 
-public class Link
-    extends Point {
+public class Link extends Point {
 
    private double weight;
 
    /**
-    *
+    * 
     * @param i int
     * @param j int
     * @param weight double
@@ -28,7 +36,7 @@ public class Link
    }
 
    /**
-    *
+    * 
     * @return double
     */
    public double getWeight() {
@@ -36,11 +44,12 @@ public class Link
    }
 
    /**
-    *
+    * 
     * @return java.lang.String
     */
    public String toString() {
-      return super.toString() + "\t" + DecimalFormat.getInstance().format( this.weight );
+      return super.toString() + "\t"
+            + DecimalFormat.getInstance().format( this.weight );
    }
 
 }

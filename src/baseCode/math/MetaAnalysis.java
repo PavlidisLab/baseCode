@@ -5,8 +5,13 @@ import cern.jet.stat.Probability;
 
 /**
  * Statistics for meta-analysis
- * <p> Copyright (c) 2004</p>
- * <p>Institution: Columbia University</p>
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution: Columbia University
+ * </p>
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
@@ -28,7 +33,7 @@ public class MetaAnalysis {
 
    /**
     * Use for p values that have already been log transformed.
-    *
+    * 
     * @param pvals DoubleArrayList
     * @return double
     */
@@ -42,7 +47,7 @@ public class MetaAnalysis {
    }
 
    /**
-    *
+    * 
     * @param r double
     * @param n int
     * @return double
@@ -56,17 +61,18 @@ public class MetaAnalysis {
    }
 
    /**
-    *
+    * 
     * @param effectSizes DoubleArrayList
     * @param variances DoubleArrayList
     * @param globalMean double
     * @return double
     */
-   public static double qTest( DoubleArrayList effectSizes, DoubleArrayList variances,
-                               double globalMean ) {
+   public static double qTest( DoubleArrayList effectSizes,
+         DoubleArrayList variances, double globalMean ) {
       double r = 0.0;
       for ( int i = 0, n = effectSizes.size(); i < n; i++ ) {
-         r += Math.pow( effectSizes.getQuick( i ) - globalMean, 2.0 ) / variances.getQuick( i );
+         r += Math.pow( effectSizes.getQuick( i ) - globalMean, 2.0 )
+               / variances.getQuick( i );
       }
       return r;
    }

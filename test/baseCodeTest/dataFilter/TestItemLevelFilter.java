@@ -5,16 +5,18 @@ import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 
 /**
  * 
- *
+ * 
  * <hr>
- * <p>Copyright (c) 2004 Columbia University
+ * <p>
+ * Copyright (c) 2004 Columbia University
+ * 
  * @author pavlidis
  * @version $Id$
  */
 public class TestItemLevelFilter extends AbstractTestFilter {
 
    ItemLevelFilter f = null;
-   
+
    /*
     * @see TestCase#setUp()
     */
@@ -32,10 +34,11 @@ public class TestItemLevelFilter extends AbstractTestFilter {
    }
 
    public final void testFilter() {
-      f.setLowCut(0.0);
-      DenseDoubleMatrix2DNamed result = (DenseDoubleMatrix2DNamed)f.filter(testdata);
+      f.setLowCut( 0.0 );
+      DenseDoubleMatrix2DNamed result = ( DenseDoubleMatrix2DNamed ) f
+            .filter( testdata );
       int expectedReturn = 283;
-      int actualReturn = result.size() - result.numMissing(); 
+      int actualReturn = result.size() - result.numMissing();
       assertEquals( "return value", expectedReturn, actualReturn );
    }
 

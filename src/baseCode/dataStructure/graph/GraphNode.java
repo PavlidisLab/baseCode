@@ -1,7 +1,7 @@
 package baseCode.dataStructure.graph;
 
 public interface GraphNode {
-   
+
    /**
     * 
     * @return the contents of the node.
@@ -16,12 +16,14 @@ public interface GraphNode {
 
    /**
     * Set the contents of the node.
+    * 
     * @param value
     */
    public void setItem( Object value );
 
    /**
     * Set the key and value associated with this node.
+    * 
     * @param key
     * @param value
     */
@@ -35,13 +37,13 @@ public interface GraphNode {
 
    /**
     * Mark this node (i.e., to track whether it has been visited)
-    *
+    *  
     */
    public void mark();
 
    /**
     * Unmark this node.
-    *
+    *  
     */
    public void unMark();
 
@@ -55,5 +57,5 @@ public interface GraphNode {
     * 
     * @param graph
     */
-    public void setGraph(Graph graph);
+   public void setGraph( Graph graph );
 }

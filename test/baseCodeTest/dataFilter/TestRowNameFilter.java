@@ -10,11 +10,10 @@ import baseCode.dataStructure.StringMatrix2DNamed;
 /**
  * @author Pavlidis
  * @version $Id$
- *
+ *  
  */
 
-public class TestRowNameFilter
-    extends AbstractTestFilter {
+public class TestRowNameFilter extends AbstractTestFilter {
 
    protected Set testfilterlist;
 
@@ -36,7 +35,8 @@ public class TestRowNameFilter
 
    public void testFilter() {
       RowNameFilter fi = new RowNameFilter( testfilterlist );
-      DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) fi.filter( testdata );
+      DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) fi
+            .filter( testdata );
       int expectedReturn = 4;
       int actualReturn = filtered.rows();
       assertEquals( "return value", expectedReturn, actualReturn );
@@ -44,28 +44,29 @@ public class TestRowNameFilter
 
    public void testFilterExclude() {
       RowNameFilter fi = new RowNameFilter( testfilterlist, true );
-      DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) fi.filter( testdata );
+      DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) fi
+            .filter( testdata );
       int expectedReturn = testdata.rows() - 4;
       int actualReturn = filtered.rows();
       assertEquals( "return value", expectedReturn, actualReturn );
    }
 
    public void testFilterString() {
-     RowNameFilter fi = new RowNameFilter( testfilterlist );
-     StringMatrix2DNamed filtered = ( StringMatrix2DNamed ) fi.filter( teststringdata );
-     int expectedReturn = 4;
-     int actualReturn = filtered.rows();
-     assertEquals( "return value", expectedReturn, actualReturn );
-  }
+      RowNameFilter fi = new RowNameFilter( testfilterlist );
+      StringMatrix2DNamed filtered = ( StringMatrix2DNamed ) fi
+            .filter( teststringdata );
+      int expectedReturn = 4;
+      int actualReturn = filtered.rows();
+      assertEquals( "return value", expectedReturn, actualReturn );
+   }
 
-  public void testFilterStringExclude() {
-     RowNameFilter fi = new RowNameFilter( testfilterlist, true );
-     StringMatrix2DNamed filtered = ( StringMatrix2DNamed ) fi.filter( teststringdata );
-     int expectedReturn = teststringdata.rows() - 4;
-     int actualReturn = filtered.rows();
-     assertEquals( "return value", expectedReturn, actualReturn );
-  }
-
-
+   public void testFilterStringExclude() {
+      RowNameFilter fi = new RowNameFilter( testfilterlist, true );
+      StringMatrix2DNamed filtered = ( StringMatrix2DNamed ) fi
+            .filter( teststringdata );
+      int expectedReturn = teststringdata.rows() - 4;
+      int actualReturn = filtered.rows();
+      assertEquals( "return value", expectedReturn, actualReturn );
+   }
 
 }

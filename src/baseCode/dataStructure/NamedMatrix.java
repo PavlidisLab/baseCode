@@ -100,7 +100,7 @@ public interface NamedMatrix {
     * @return Vector of Strings
     */
    public Vector getRowNames();
-   
+
    /**
     * 
     * @param r String
@@ -164,11 +164,11 @@ public interface NamedMatrix {
 
    /**
     * Return the number of missing values in the matrix.
+    * 
     * @return
     */
    public int numMissing();
-   
-   
+
    /**
     * 
     * @param rowName
@@ -186,6 +186,5 @@ public interface NamedMatrix {
    /**
     * @return
     */
-
 
 }

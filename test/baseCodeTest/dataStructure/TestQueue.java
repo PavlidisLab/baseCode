@@ -1,25 +1,31 @@
 package baseCodeTest.dataStructure;
 
-import junit.framework.*;
-import baseCode.dataStructure.*;
+import junit.framework.TestCase;
+import baseCode.dataStructure.Queue;
 
 /**
- * <p>  </p>
- * <p>  </p>
- * <p>Copyright (c) 2004</p>
- * <p>Institution: Columbia University</p>
+ * <p>
+ * </p>
+ * <p>
+ * </p>
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution: Columbia University
+ * </p>
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
 
-public class TestQueue
-    extends TestCase {
+public class TestQueue extends TestCase {
    private Queue queue = null;
    private Queue shortQueue = null;
 
    protected void setUp() throws Exception {
       super.setUp();
-      /**@todo verify the constructors*/
+      /** @todo verify the constructors */
       queue = new Queue();
       queue.enqueue( new Integer( 1 ) );
       queue.enqueue( new Integer( 2 ) );
@@ -79,8 +85,8 @@ public class TestQueue
          shortQueue.enqueue( new Integer( 495 ) );
          shortQueue.enqueue( new Integer( 495 ) );
          fail( "Should raise an IndexOutOfBoundsException" );
+      } catch ( IndexOutOfBoundsException success ) {
       }
-      catch ( IndexOutOfBoundsException success ) {}
 
    }
 

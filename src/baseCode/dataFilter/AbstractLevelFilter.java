@@ -3,10 +3,11 @@ package baseCode.dataFilter;
 import baseCode.math.Stats;
 
 /**
- * Abstract class representing a filter that removes things from matrices
- * based on the values themselves.
+ * Abstract class representing a filter that removes things from matrices based
+ * on the values themselves.
  * 
  * Copyright (c) 2004 Columbia University
+ * 
  * @author Owner
  * @version $Id$
  */
@@ -16,7 +17,7 @@ public abstract class AbstractLevelFilter extends AbstractFilter {
    protected double highCut = Double.MAX_VALUE;
    protected boolean useLowAsFraction = false;
    protected boolean useHighAsFraction = false;
-   
+
    /**
     * Set the low threshold for removal.
     * 
@@ -82,7 +83,7 @@ public abstract class AbstractLevelFilter extends AbstractFilter {
       }
       useLowAsFraction = setting;
    }
-   
+
    /**
     * Set the filter to interpret the low and high cuts as fractions; that is,
     * if true, lowcut 0.1 means remove 0.1 of the rows with the lowest values.
@@ -94,8 +95,5 @@ public abstract class AbstractLevelFilter extends AbstractFilter {
       setUseHighCutAsFraction( setting );
       setUseLowCutAsFraction( setting );
    }
-
-   
-
 
 }

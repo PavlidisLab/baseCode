@@ -4,29 +4,35 @@ import java.util.Random;
 
 /**
  * Fill arrays with random values given a source of values.
- * <p> Copyright (c) 2004</p>
- * <p>Institution:: Columbia University</p>
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution:: Columbia University
+ * </p>
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
 public class RandomChooser {
 
-   private RandomChooser() {}
+   private RandomChooser() {
+   }
 
    private static Random generator = new Random( System.currentTimeMillis() );
 
    /**
     * Fill randomvals with random things from sourcedata, without replacement.
-    *
+    * 
     * @param randomvals answers go here.
     * @param sourcedata Data to be randomly selected
-    * @param deck an array pre-filled with integers from 0 to max, but they don't
-    *   have to be in order.
+    * @param deck an array pre-filled with integers from 0 to max, but they
+    *        don't have to be in order.
     * @param max how many values we need.
     * @param n int
     */
-   public static void chooserandom( double[] randomvals, double[] sourcedata, int[] deck,
-                             int max, int n ) {
+   public static void chooserandom( double[] randomvals, double[] sourcedata,
+         int[] deck, int max, int n ) {
       int rand;
       int i;
       int temp;
@@ -41,10 +47,10 @@ public class RandomChooser {
 
    /**
     * choose n random integers from 0 to max without repeating
-    *
+    * 
     * @param randomnums answers go here.
-    * @param deck an array pre-filled with integers from 0 to max, but they don't
-    *   have to be in order.
+    * @param deck an array pre-filled with integers from 0 to max, but they
+    *        don't have to be in order.
     * @param max how many values we need.
     * @param n int
     */
@@ -61,13 +67,14 @@ public class RandomChooser {
 
    /**
     * choose n random integers from 0 to max without repeating
-    *
+    * 
     * @param randomnums int[]
     * @param recLog record of what values are already chosen.
     * @param max int
     * @param n int
     */
-   public static void chooserandom( int[] randomnums, boolean[] recLog, int max, int n ) {
+   public static void chooserandom( int[] randomnums, boolean[] recLog,
+         int max, int n ) {
       int numgot;
       int i;
       int newnum;
@@ -91,8 +98,9 @@ public class RandomChooser {
    }
 
    /**
-    * Same as chooserandom, but with replacement -- that is, repeats are allowed.
-    *
+    * Same as chooserandom, but with replacement -- that is, repeats are
+    * allowed.
+    * 
     * @param randomnums int[]
     * @param max int
     * @param n int

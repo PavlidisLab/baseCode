@@ -16,7 +16,8 @@ import baseCode.dataStructure.NamedMatrix;
  * </p>
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * @version $Id: AffymetrixProbeNameFilter.java,v 1.8 2004/06/28 10:08:51
+ *          pavlidis Exp $
  */
 public class AffymetrixProbeNameFilter extends AbstractFilter implements Filter {
 

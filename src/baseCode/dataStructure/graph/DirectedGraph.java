@@ -2,52 +2,54 @@ package baseCode.dataStructure.graph;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.util.LinkedHashMap;
+
 import baseCode.dataStructure.Queue;
-import java.util.Map;
-import java.util.HashMap;
 
 /**
- * A graph that contains DirectedGraphNodes. It can be cyclic. Small unconnected parts of the graph will
- * be ignored for many operation.
- * Tree traversals start from the root node, which is defined as the node with the most children.
- *
- * <p>Copyright (c) Columbia University
+ * A graph that contains DirectedGraphNodes. It can be cyclic. Small unconnected
+ * parts of the graph will be ignored for many operation. Tree traversals start
+ * from the root node, which is defined as the node with the most children.
+ * 
+ * <p>
+ * Copyright (c) Columbia University
+ * 
  * @todo do something about cyclicity; make this a dag or a subclass...
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class DirectedGraph
-    extends AbstractGraph {
+public class DirectedGraph extends AbstractGraph {
 
    public DirectedGraph() {
       super();
    }
 
    /**
-    *
+    * 
     * @param nodes Set of DirectedGraphNodes
     */
    public DirectedGraph( Set nodes ) {
       items = new LinkedHashMap();
       for ( Iterator it = nodes.iterator(); it.hasNext(); ) {
-        DirectedGraphNode a = ( DirectedGraphNode ) it.next();
-        this.addNode(a);
+         DirectedGraphNode a = ( DirectedGraphNode ) it.next();
+         this.addNode( a );
       }
    }
 
    /**
-    *
+    * 
     * @param key Object
     * @param item Object
     */
-   public void addNode( Object key, Object item) {
+   public void addNode( Object key, Object item ) {
       if ( !items.containsKey( key ) ) {
          items.put( key, new DirectedGraphNode( key, item, this ) );
       }
@@ -55,6 +57,7 @@ public class DirectedGraph
 
    /**
     * Add a child to a particualar node identified by key.
+    * 
     * @param key Object
     * @param newChildKey Object
     * @param newChild Object
@@ -71,15 +74,16 @@ public class DirectedGraph
    /**
     * Add a child to a particular node identified by key; if the node is not in
     * the graph, an exception is thrown.
-    *
+    * 
     * @param key Object
     * @param newChildKey Object
     * @throws IllegalStateException if the graph doesn't contain the child node.
     */
-   public void addChildTo( Object key, Object newChildKey ) throws IllegalStateException {
+   public void addChildTo( Object key, Object newChildKey )
+         throws IllegalStateException {
       if ( !items.containsKey( newChildKey ) ) {
          throw new IllegalStateException(
-             "Attempt to add link to node that is not in the graph" );
+               "Attempt to add link to node that is not in the graph" );
       }
 
       if ( items.containsKey( key ) ) {
@@ -90,7 +94,7 @@ public class DirectedGraph
    }
 
    /**
-    *
+    * 
     * @param key Object
     * @param newParentKey Object
     * @param newParent Object
@@ -105,15 +109,16 @@ public class DirectedGraph
    }
 
    /**
-    *
+    * 
     * @param key Object
     * @param newParentKey Object
     * @throws IllegalStateException
     */
-   public void addParentTo( Object key, Object newParentKey ) throws IllegalStateException {
+   public void addParentTo( Object key, Object newParentKey )
+         throws IllegalStateException {
       if ( !items.containsKey( newParentKey ) ) {
          throw new IllegalStateException(
-             "Attempt to add link to node that is not in the graph" );
+               "Attempt to add link to node that is not in the graph" );
       }
 
       if ( items.containsKey( key ) ) {
@@ -124,7 +129,9 @@ public class DirectedGraph
    }
 
    /**
-    * Shows the tree as a tabbed list. Items that have no parents are shown at the 'highest' level.
+    * Shows the tree as a tabbed list. Items that have no parents are shown at
+    * the 'highest' level.
+    * 
     * @return String
     */
    public String toString() {
@@ -139,12 +146,12 @@ public class DirectedGraph
       return ( buf.toString() );
    }
 
-   /* Helper for toString. Together with toString,
-    * demonstrates how to iterate over the tree */
-   private String makeString(
-       DirectedGraphNode startNode,
-       StringBuffer buf,
-       int tabLevel ) {
+   /*
+    * Helper for toString. Together with toString, demonstrates how to iterate
+    * over the tree
+    */
+   private String makeString( DirectedGraphNode startNode, StringBuffer buf,
+         int tabLevel ) {
 
       if ( buf == null ) {
          buf = new StringBuffer();
@@ -153,7 +160,7 @@ public class DirectedGraph
       Set children = startNode.getChildNodes();
 
       if ( !startNode.isVisited() ) {
-         buf.append( startNode + "\n");
+         buf.append( startNode + "\n" );
          startNode.mark();
       }
       tabLevel++;
@@ -218,17 +225,17 @@ public class DirectedGraph
       }
 
       if ( counter != items.size() ) {
-         throw new IllegalStateException( "Graph contains a cycle; " + counter + " items found, " +
-                                          items.size() + " expected" );
+         throw new IllegalStateException( "Graph contains a cycle; " + counter
+               + " items found, " + items.size() + " expected" );
       }
 
    }
 
    /**
     * Generate a JTree corresponding to this graph.
-    *
+    * 
     * @todo note that nodes are only allowed to have one parent in
-    *   DefaultMutableTreeNodes
+    *       DefaultMutableTreeNodes
     * @return javax.swing.JTree
     */
    public JTree treeView() {
@@ -243,16 +250,15 @@ public class DirectedGraph
       return tree;
    }
 
-   private void addJTreeNode(
-       DefaultMutableTreeNode startJTreeNode,
-       DirectedGraphNode startNode ) {
+   private void addJTreeNode( DefaultMutableTreeNode startJTreeNode,
+         DirectedGraphNode startNode ) {
       Set children = startNode.getChildNodes();
 
       for ( Iterator it = children.iterator(); it.hasNext(); ) {
          DirectedGraphNode nextNode = ( DirectedGraphNode ) it.next();
          if ( !nextNode.isVisited() ) {
-            DefaultMutableTreeNode newJTreeNode =
-                new DefaultMutableTreeNode( nextNode );
+            DefaultMutableTreeNode newJTreeNode = new DefaultMutableTreeNode(
+                  nextNode );
             startJTreeNode.add( newJTreeNode );
             nextNode.mark();
             this.addJTreeNode( newJTreeNode, nextNode );

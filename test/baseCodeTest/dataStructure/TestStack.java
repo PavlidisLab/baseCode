@@ -1,19 +1,25 @@
 package baseCodeTest.dataStructure;
 
-import junit.framework.*;
-import baseCode.dataStructure.*;
+import junit.framework.TestCase;
+import baseCode.dataStructure.Stack;
 
 /**
- * <p>  </p>
- * <p>  </p>
- * <p>Copyright (c) 2004</p>
- * <p>Institution: Columbia University</p>
+ * <p>
+ * </p>
+ * <p>
+ * </p>
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution: Columbia University
+ * </p>
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
 
-public class TestStack
-    extends TestCase {
+public class TestStack extends TestCase {
    private Stack stack = null;
    private Stack stackShort = null;
 
@@ -75,8 +81,8 @@ public class TestStack
          stackShort.push( new Integer( 495 ) );
          stackShort.push( new Integer( 495 ) );
          fail( "Should raise an IndexOutOfBoundsException" );
+      } catch ( IndexOutOfBoundsException success ) {
       }
-      catch ( IndexOutOfBoundsException success ) {}
 
    }
 

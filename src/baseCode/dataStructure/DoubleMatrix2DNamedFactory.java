@@ -1,11 +1,17 @@
 package baseCode.dataStructure;
 
 /**
- *  Use this factory to create matrices of type selected at runtime.
- * <p> Copyright (c) 2004</p>
- * <p>Institution: Columbia University</p>
+ * Use this factory to create matrices of type selected at runtime.
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution: Columbia University
+ * </p>
+ * 
  * @author Paul Pavlidis
- * @version $Id$
+ * @version $Id: DoubleMatrix2DNamedFactory.java,v 1.3 2004/06/23 22:13:21
+ *          pavlidis Exp $
  */
 
 public class DoubleMatrix2DNamedFactory {
@@ -19,7 +25,7 @@ public class DoubleMatrix2DNamedFactory {
    }
 
    public static DenseDoubleMatrix2DNamed dense( double T[][] ) {
-      return new DenseDoubleMatrix2DNamed(  T );
+      return new DenseDoubleMatrix2DNamed( T );
    }
 
    public static DenseDoubleMatrix2DNamed dense( int cols, int rows ) {

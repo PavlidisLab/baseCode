@@ -1,24 +1,24 @@
 package baseCode.gui;
 
-import javax.swing.JPanel;
-import javax.swing.JLabel;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-
-import javax.swing.JLabel;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GradientPaint;
-import java.awt.Dimension;
 import java.text.DecimalFormat;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import baseCode.graphics.text.Util;
 
 /**
- * A GUI legend component that displays a color map as a color gradient
- * from min to max, traversing all the colors in the color map.
- *
- * @author  Will Braynen
+ * A GUI legend component that displays a color map as a color gradient from min
+ * to max, traversing all the colors in the color map.
+ * 
+ * @author Will Braynen
  * @version $Id$
  */
 public class JGradientBar extends JPanel {
@@ -56,8 +56,6 @@ public class JGradientBar extends JPanel {
 
 } // end class JGradientBar
 
-
-
 class JNumberLabel extends JLabel {
 
    DecimalFormat m_scientificNotation = new DecimalFormat( "0.##E0" );
@@ -76,12 +74,12 @@ class JNumberLabel extends JLabel {
 
    public void setText( double number ) {
 
-      // Only very small and very large numbers should be displayed in scientific notation
+      // Only very small and very large numbers should be displayed in
+      // scientific notation
       String text;
       if ( Math.abs( number ) < 0.01 || Math.abs( number ) > 999 ) {
          text = m_scientificNotation.format( number );
-      }
-      else {
+      } else {
          text = m_regular.format( number );
       }
 
@@ -90,13 +88,13 @@ class JNumberLabel extends JLabel {
 
    public Dimension getPreferredSize() {
       Dimension d = super.getPreferredSize();
-      if ( getText().length() > 0 && Util.stringPixelWidth( getText(), getFont(), this ) < MINIMUM_WIDTH ) {
+      if ( getText().length() > 0
+            && Util.stringPixelWidth( getText(), getFont(), this ) < MINIMUM_WIDTH ) {
          d.width = MINIMUM_WIDTH;
       }
       return d;
    }
 }
-
 
 class JGradientLabel extends JLabel {
 
@@ -109,14 +107,13 @@ class JGradientLabel extends JLabel {
    public JGradientLabel( Color[] colorMap ) {
 
       // colorMap should contain at least two colors
-      if (0 == colorMap.length) {
+      if ( 0 == colorMap.length ) {
 
          // if there are no colors, default to grey for both colors
          Color color = colorMap[0];
          colorMap = new Color[2];
          colorMap[0] = colorMap[1] = Color.LIGHT_GRAY;
-      }
-      else if (1 == colorMap.length) {
+      } else if ( 1 == colorMap.length ) {
 
          // if there is only one color, make the second color the same
          Color color = colorMap[0];
@@ -133,7 +130,7 @@ class JGradientLabel extends JLabel {
 
    protected void paintComponent( Graphics g ) {
 
-      Graphics2D g2 = (Graphics2D) g;
+      Graphics2D g2 = ( Graphics2D ) g;
 
       final int width = getWidth();
       final int height = getHeight();
@@ -146,12 +143,13 @@ class JGradientLabel extends JLabel {
       int intervalCount = m_colorMap.length - 1;
       int intervalWidth = width / intervalCount;
 
-      for (int i = 0;  i < intervalCount;  i++) {
+      for ( int i = 0; i < intervalCount; i++ ) {
 
          Color color1 = m_colorMap[i];
-         Color color2 = m_colorMap[i+1];
+         Color color2 = m_colorMap[i + 1];
 
-         GradientPaint oneColorToAnother = new GradientPaint( x, y, color1, x + intervalWidth, y, color2 );
+         GradientPaint oneColorToAnother = new GradientPaint( x, y, color1, x
+               + intervalWidth, y, color2 );
          g2.setPaint( oneColorToAnother );
          g2.fillRect( x, y, width, height );
 

@@ -25,8 +25,7 @@ public class Rank {
    /**
     * Rank transform an array. Ties are not handled specially.
     * 
-    * @param array
-    *           DoubleArrayList
+    * @param array DoubleArrayList
     * @return cern.colt.list.DoubleArrayList
     */
    public static DoubleArrayList rankTransform( DoubleArrayList array ) {
@@ -62,32 +61,31 @@ public class Rank {
     * Rank transform a map, where the values are numerical (java.lang.Double)
     * values we wish to rank. Ties are not handled specially.
     * 
-    * @param m
-    *           java.util.Map with keys Objects, values Doubles.
+    * @param m java.util.Map with keys Objects, values Doubles.
     * @return A java.util.Map keys=old keys, values=java.lang.Integer rank of
     *         the key.
-    * @throws IllegalArgumentException if the input Map does not have Double values.
+    * @throws IllegalArgumentException if the input Map does not have Double
+    *         values.
     */
    public static Map rankTransform( Map m ) throws IllegalArgumentException {
       int counter = 0;
-      
+
       keyAndValueData[] values = new keyAndValueData[m.size()];
 
       /*
        * put the pvalues into an array of objects which contain the pvalue and
        * the gene id
        */
-      for (Iterator itr = m.keySet().iterator(); itr.hasNext(); ) {
-  
+      for ( Iterator itr = m.keySet().iterator(); itr.hasNext(); ) {
+
          Object key = itr.next();
 
-         if ( !( m.get(key) instanceof Double ) ) {
+         if ( !( m.get( key ) instanceof Double ) ) {
             throw new IllegalArgumentException(
                   "Attempt to rank a map with non-Double values" );
          }
 
-         double val = ( double ) ( ( ( Double ) m.get(key) )
-               .doubleValue() );
+         double val = ( double ) ( ( ( Double ) m.get( key ) ).doubleValue() );
          values[counter] = new keyAndValueData( key, val );
          counter++;
       }

@@ -18,7 +18,7 @@ import cern.colt.matrix.impl.DenseObjectMatrix2D;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class StringMatrix2DNamed extends AbstractNamedMatrix  {
+public class StringMatrix2DNamed extends AbstractNamedMatrix {
 
    private DenseObjectMatrix2D matrix;
    private Vector rowNames;
@@ -28,7 +28,7 @@ public class StringMatrix2DNamed extends AbstractNamedMatrix  {
 
    public StringMatrix2DNamed( int x, int y ) {
       super();
-      matrix = new DenseObjectMatrix2D(x,y);
+      matrix = new DenseObjectMatrix2D( x, y );
    }
 
    /**
@@ -51,7 +51,6 @@ public class StringMatrix2DNamed extends AbstractNamedMatrix  {
       }
       return result;
    }
-   
 
    public Object[] getRow( int row ) {
       return viewRow( row ).toArray();
@@ -81,11 +80,9 @@ public class StringMatrix2DNamed extends AbstractNamedMatrix  {
       return result;
    }
 
-
    public boolean isMissing( int i, int j ) {
       return get( i, j ) == "";
    }
-
 
    /**
     * @return
@@ -93,6 +90,7 @@ public class StringMatrix2DNamed extends AbstractNamedMatrix  {
    public int columns() {
       return matrix.columns();
    }
+
    /**
     * @param row
     * @param column
@@ -101,6 +99,7 @@ public class StringMatrix2DNamed extends AbstractNamedMatrix  {
    public Object get( int row, int column ) {
       return matrix.get( row, column );
    }
+
    /**
     * @param row
     * @param column
@@ -109,18 +108,21 @@ public class StringMatrix2DNamed extends AbstractNamedMatrix  {
    public Object getQuick( int row, int column ) {
       return matrix.getQuick( row, column );
    }
+
    /**
     * @return
     */
    public int rows() {
       return matrix.rows();
    }
+
    /**
     * @return
     */
    public int size() {
       return matrix.size();
    }
+
    /**
     * @param column
     * @return
@@ -128,6 +130,7 @@ public class StringMatrix2DNamed extends AbstractNamedMatrix  {
    public ObjectMatrix1D viewColumn( int column ) {
       return matrix.viewColumn( column );
    }
+
    /**
     * @param row
     * @return
@@ -135,6 +138,7 @@ public class StringMatrix2DNamed extends AbstractNamedMatrix  {
    public ObjectMatrix1D viewRow( int row ) {
       return matrix.viewRow( row );
    }
+
    /**
     * @param row
     * @param column
@@ -143,6 +147,7 @@ public class StringMatrix2DNamed extends AbstractNamedMatrix  {
    public void set( int row, int column, Object value ) {
       matrix.set( row, column, value );
    }
+
    /**
     * @param row
     * @param column

@@ -48,7 +48,7 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
    /**
     * 
     * @param k the minimum fraction of present values that there must be, in
-    *           order to keep the row.
+    *        order to keep the row.
     */
    public void setMinPresentFraction( double k ) {
       if ( k < 0.0 || k > 1.0 )
@@ -61,7 +61,7 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
    /**
     * 
     * @param k the minimum number of present values there must be in order to
-    *           keep the row.
+    *        keep the row.
     */
    public void setMinPresentCount( int k ) {
       if ( k < 0 ) {

@@ -3,10 +3,13 @@ package baseCodeTest.math;
 import junit.framework.TestCase;
 
 /**
- *  
- * <p>Copyright (c) 2004 Columbia University
+ * 
+ * <p>
+ * Copyright (c) 2004 Columbia University
+ * 
  * @author pavlidis
- * @version $Id$
+ * @version $Id: TestCorrelationStats.java,v 1.2 2004/06/28 10:08:51 pavlidis
+ *          Exp $
  * @todo write tests.
  */
 public class TestCorrelationStats extends TestCase {

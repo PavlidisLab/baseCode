@@ -15,9 +15,15 @@ import java.util.Set;
 import java.util.Vector;
 
 /**
- * Database handle container and query convenience functions.</p>
- * <p> Copyright (c) 2004</p>
- * <p>Institution: Columbia University</p>
+ * Database handle container and query convenience functions.
+ * </p>
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution: Columbia University
+ * </p>
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  * @deprecated
@@ -26,35 +32,35 @@ import java.util.Vector;
 public class Handle {
 
    private Connection con;
+
    //  private Statement stat;
    /**
-    *
+    * 
     * @param host String
     * @param database String
     * @param user String
     * @param password String
     * @throws SQLException
     */
-   public Handle( String host, String database, String user, String password ) throws SQLException {
+   public Handle( String host, String database, String user, String password )
+         throws SQLException {
       try {
          Class.forName( "com.mysql.jdbc.Driver" ).newInstance();
-         String url = "jdbc:mysql://" + host + "/" + database + "?relaxAutoCommit=true";
+         String url = "jdbc:mysql://" + host + "/" + database
+               + "?relaxAutoCommit=true";
          con = DriverManager.getConnection( url, user, password );
          //       stat = newStatement();
-      }
-      catch ( ClassNotFoundException e ) {
+      } catch ( ClassNotFoundException e ) {
          throw new RuntimeException( e );
-      }
-      catch ( InstantiationException e ) {
+      } catch ( InstantiationException e ) {
          throw new RuntimeException( e );
-      }
-      catch ( IllegalAccessException e ) {
+      } catch ( IllegalAccessException e ) {
          throw new RuntimeException( e );
       }
    }
 
    /**
-    *
+    * 
     * @return java.sql.Connection
     */
    public Connection getCon() {
@@ -62,7 +68,7 @@ public class Handle {
    }
 
    /**
-    *
+    * 
     * @return java.sql.Statement
     * @throws SQLException
     */
@@ -70,9 +76,9 @@ public class Handle {
       return con.createStatement();
    }
 
-   //  public boolean isClosed() throws SQLException  {
-//      return stat.getResultSet().close();
-//   }
+   //  public boolean isClosed() throws SQLException {
+   //      return stat.getResultSet().close();
+   //   }
 
    /**
     * Close the database connection.
@@ -80,14 +86,13 @@ public class Handle {
    public void closeCon() {
       try {
          this.con.close();
-      }
-      catch ( SQLException ex ) {
+      } catch ( SQLException ex ) {
          ex.printStackTrace();
       }
       con = null;
    }
 
-// This is really only here for debugging.
+   // This is really only here for debugging.
    public Handle() throws SQLException {
       this( "localhost", "tmm", "javauser", "toast" );
    }
@@ -97,7 +102,7 @@ public class Handle {
    }
 
    /**
-    *
+    * 
     * @param query String
     * @return int
     * @throws SQLException
@@ -107,7 +112,7 @@ public class Handle {
    }
 
    /**
-    *
+    * 
     * @param query String
     * @return java.sql.ResultSet
     * @throws SQLException
@@ -117,17 +122,18 @@ public class Handle {
    }
 
    /**
-    *
+    * 
     * @param query String
     * @return java.sql.PreparedStatement
     * @throws SQLException
     */
-   public PreparedStatement prepareStatement( String query ) throws SQLException {
+   public PreparedStatement prepareStatement( String query )
+         throws SQLException {
       return con.prepareStatement( query );
    }
 
    /**
-    *
+    * 
     * @param query String
     * @return java.util.Map
     * @throws SQLException
@@ -148,7 +154,7 @@ public class Handle {
    }
 
    /**
-    *
+    * 
     * @param query String
     * @return java.util.Set
     * @throws SQLException
@@ -170,7 +176,7 @@ public class Handle {
    }
 
    /**
-    *
+    * 
     * @param query String
     * @return java.util.List
     * @throws SQLException
@@ -191,10 +197,10 @@ public class Handle {
    }
 
    /**
-    *
+    * 
     * @param query String
     * @return Object containing the first result obtained. If no result, it
-    *   return null.
+    *         return null.
     * @throws SQLException
     */
    public Integer queryToInt( String query ) throws SQLException {
@@ -211,7 +217,7 @@ public class Handle {
    }
 
    /**
-    *
+    * 
     * @param query String
     * @return java.lang.Double
     * @throws SQLException
@@ -230,7 +236,7 @@ public class Handle {
    }
 
    /**
-    *
+    * 
     * @param query String
     * @return java.lang.String
     * @throws SQLException
@@ -251,13 +257,13 @@ public class Handle {
    public static void main( String[] args ) {
       try {
          Handle f = new Handle();
-         List k = f.queryToList( "SELECT official_name FROM gene WHERE official_name LIKE 'MAT%'" );
+         List k = f
+               .queryToList( "SELECT official_name FROM gene WHERE official_name LIKE 'MAT%'" );
          for ( Iterator it = k.iterator(); it.hasNext(); ) {
             String name = ( String ) it.next();
             System.err.println( name );
          }
-      }
-      catch ( Exception e ) {
+      } catch ( Exception e ) {
          e.printStackTrace();
       }
    }

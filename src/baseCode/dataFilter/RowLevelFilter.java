@@ -59,32 +59,32 @@ public class RowLevelFilter extends AbstractLevelFilter {
     * Use the minimum of the row as the criterion.
     */
    public static final int MIN = 1;
-   
+
    /**
     * Use the maximum of the row as the criterion.
     */
    public static final int MAX = 2;
-   
+
    /**
     * Use the median as the criterion.
     */
    public static final int MEDIAN = 3;
-   
+
    /**
     * Use the mean as the criterion.
     */
    public static final int MEAN = 4;
-   
+
    /**
     * Use the range as the criterion
     */
    public static final int RANGE = 5;
-   
+
    /**
     * Use the coefficient of variation as the criterion
     */
    public static final int CV = 6;
-   
+
    private int method = MAX;
 
    /**
@@ -102,7 +102,6 @@ public class RowLevelFilter extends AbstractLevelFilter {
       this.method = method;
    }
 
-   
    /**
     * Set the filter to remove all rows that have only negative values. This is
     * applied BEFORE applying fraction-based criteria. In other words, if you
@@ -116,8 +115,6 @@ public class RowLevelFilter extends AbstractLevelFilter {
             + "removed PRIOR TO applying fraction-based criteria." );
       removeAllNegative = t;
    }
-
-  
 
    /**
     * 

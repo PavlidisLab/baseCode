@@ -11,29 +11,38 @@ import org.apache.commons.logging.LogFactory;
 import baseCode.dataStructure.NamedMatrix;
 
 /**
- * Abstract class representing an object that can read in a {@link NamedMatrix} from a file.
- * <p> Copyright (c) 2004</p>
- * <p>Institution:: Columbia University</p>
+ * Abstract class representing an object that can read in a {@link NamedMatrix}
+ * from a file.
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution:: Columbia University
+ * </p>
+ * 
  * @author Paul Pavlidis
- * @version $Id$
+ * @version $Id: AbstractNamedMatrixReader.java,v 1.2 2004/06/24 17:48:03
+ *          pavlidis Exp $
  */
 public abstract class AbstractNamedMatrixReader {
 
    public abstract NamedMatrix read( String filename ) throws IOException;
 
-   protected static final Log log = LogFactory.getLog(AbstractNamedMatrixReader.class);
-   
+   protected static final Log log = LogFactory
+         .getLog( AbstractNamedMatrixReader.class );
+
    protected Vector readHeader( BufferedReader dis ) throws IOException {
       Vector headerVec = new Vector();
       String header = dis.readLine();
-      StringTokenizer st = new StringTokenizer( header, "\t", true ); // return delims.
-      
+      StringTokenizer st = new StringTokenizer( header, "\t", true ); // return
+                                                                      // delims.
+
       String previousToken = "";
       int columnNumber = 0;
       while ( st.hasMoreTokens() ) {
          String s = st.nextToken();
          boolean missing = false;
-         
+
          if ( s.compareTo( "\t" ) == 0 ) {
             /* two tabs in a row */
             if ( previousToken.compareTo( "\t" ) == 0 ) {
@@ -51,8 +60,9 @@ public abstract class AbstractNamedMatrixReader {
          }
 
          if ( missing ) {
-            throw new IOException( "Warning: Missing values not allowed in the header (column " +
-                                   columnNumber + ")" );
+            throw new IOException(
+                  "Warning: Missing values not allowed in the header (column "
+                        + columnNumber + ")" );
          } else if ( columnNumber > 0 ) {
             headerVec.add( s );
          }
@@ -62,10 +72,10 @@ public abstract class AbstractNamedMatrixReader {
       }
 
       //return columnNumber - 1;
-      if (headerVec.size() == 0) {
-         log.warn("No headings found");
+      if ( headerVec.size() == 0 ) {
+         log.warn( "No headings found" );
       }
-      
+
       return headerVec;
 
    }

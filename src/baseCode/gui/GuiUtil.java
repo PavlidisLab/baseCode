@@ -1,11 +1,12 @@
 package baseCode.gui;
 
-import java.io.*;
-import javax.swing.*;
+import java.io.File;
+
+import javax.swing.JOptionPane;
 
 /**
  * Little oft-used functions.
- *
+ * 
  * @version $Id$
  */
 
@@ -27,9 +28,8 @@ public class GuiUtil {
    }
 
    public static void error( Exception e, String message ) {
-      JOptionPane.showMessageDialog( null,
-                                     "Error: " + message + "\n" + e.toString() +
-                                     "\n" + e.getStackTrace() );
+      JOptionPane.showMessageDialog( null, "Error: " + message + "\n"
+            + e.toString() + "\n" + e.getStackTrace() );
    }
 
    public static void error( String message ) {

@@ -4,8 +4,13 @@ import cern.colt.list.DoubleArrayList;
 
 /**
  * Alternative distance and similarity metrics for vectors.
- * <p> Copyright (c) 2004</p>
- * <p>Institution:: Columbia University</p>
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution:: Columbia University
+ * </p>
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
@@ -13,7 +18,7 @@ public class Distance {
 
    /**
     * Calculate the Manhattan distance between two vectors.
-    *
+    * 
     * @param x DoubleArrayList
     * @param y DoubleArrayList
     * @return Manhattan distance between x and y
@@ -29,7 +34,8 @@ public class Distance {
 
       int length = x.size();
       for ( j = 0; j < length; j++ ) {
-         if ( !Double.isNaN( x.elements()[j] ) && !Double.isNaN( y.elements()[j] ) ) {
+         if ( !Double.isNaN( x.elements()[j] )
+               && !Double.isNaN( y.elements()[j] ) ) {
             sum += Math.abs( x.elements()[j] - y.elements()[j] );
             numused++;
          }
@@ -39,7 +45,7 @@ public class Distance {
 
    /**
     * Calculate the Euclidean distance between two vectors.
-    *
+    * 
     * @param x DoubleArrayList
     * @param y DoubleArrayList
     * @return Euclidean distance between x and y
@@ -58,7 +64,8 @@ public class Distance {
       int length = x.size();
 
       for ( j = 0; j < length; j++ ) {
-         if ( !Double.isNaN( x.elements()[j] ) && !Double.isNaN( y.elements()[j] ) ) {
+         if ( !Double.isNaN( x.elements()[j] )
+               && !Double.isNaN( y.elements()[j] ) ) {
             sum += Math.pow( ( x.elements()[j] - y.elements()[j] ), 2 );
             numused++;
          }
@@ -73,12 +80,13 @@ public class Distance {
 
    /**
     * Spearman Rank Correlation. This does the rank transformation of the data.
-    *
+    * 
     * @param x DoubleArrayList
     * @param y DoubleArrayList
     * @return Spearman's rank correlation between x and y.
     */
-   public static double spearmanRankCorrelation( DoubleArrayList x, DoubleArrayList y ) {
+   public static double spearmanRankCorrelation( DoubleArrayList x,
+         DoubleArrayList y ) {
       double sum = 0.0;
 
       if ( x.size() != y.size() ) {
@@ -89,15 +97,18 @@ public class Distance {
       DoubleArrayList ry = Rank.rankTransform( y );
 
       for ( int j = 0; j < x.size(); j++ ) {
-         sum += ( rx.elements()[j] - ry.elements()[j] * ( rx.elements()[j] - ry.elements()[j] ) );
+         sum += ( rx.elements()[j] - ry.elements()[j]
+               * ( rx.elements()[j] - ry.elements()[j] ) );
       }
 
       return 1.0 - 6.0 * sum / ( Math.pow( x.size(), 3 ) - x.size() );
    }
 
    /**
-    * Highly optimized implementation of the Pearson correlation. The inputs must be standardized
-    * - mean zero, variance one, without any missing values.
+    * Highly optimized implementation of the Pearson correlation. The inputs
+    * must be standardized - mean zero, variance one, without any missing
+    * values.
+    * 
     * @param xe A standardized vector
     * @param ye A standardized vector
     * @return Pearson correlation coefficient.
@@ -115,13 +126,15 @@ public class Distance {
 
    /**
     * Like correlationofNormedFast, but takes DoubleArrayLists as inputs,
-    * handles missing values correctly, and does more error checking.
-    * Assumes the data has been converted to z scores already.
-    * @param x  A standardized vector
-    * @param y  A standardized vector
+    * handles missing values correctly, and does more error checking. Assumes
+    * the data has been converted to z scores already.
+    * 
+    * @param x A standardized vector
+    * @param y A standardized vector
     * @return The Pearson correlation between x and y.
     */
-   public static double correlationOfStandardized( DoubleArrayList x, DoubleArrayList y ) {
+   public static double correlationOfStandardized( DoubleArrayList x,
+         DoubleArrayList y ) {
 
       if ( x.size() != y.size() ) {
          throw new IllegalArgumentException( "Array lengths must be the same" );

@@ -3,10 +3,20 @@ package baseCode.gui;
 import java.awt.Color;
 
 /**
- * <p>Title: ColorMap</p>
- * <p>Description: contains predefined color maps for visualization and color palette methods</p>
- * <p> Copyright (c) 2004</p>
- * <p>Institution:: Columbia University</p>
+ * <p>
+ * Title: ColorMap
+ * </p>
+ * <p>
+ * Description: contains predefined color maps for visualization and color
+ * palette methods
+ * </p>
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution:: Columbia University
+ * </p>
+ * 
  * @author Will Braynen
  * @version $Id$
  */
@@ -21,14 +31,15 @@ public class ColorMap {
 
    public static final int m_defaultSuggestedNumberOfColors = 64;
    public static final Color DARK_RED = new Color( 128, 0, 0 );
-   public static final Color[] GREENRED_COLORMAP = {
-       Color.green, Color.black, Color.red};
-   public static final Color[] REDGREEN_COLORMAP = {
-       Color.red, Color.black, Color.green};
-   public static final Color[] BLACKBODY_COLORMAP = {
-       Color.black, DARK_RED, Color.orange, Color.yellow, Color.white};
+   public static final Color[] GREENRED_COLORMAP = { Color.green, Color.black,
+         Color.red };
+   public static final Color[] REDGREEN_COLORMAP = { Color.red, Color.black,
+         Color.green };
+   public static final Color[] BLACKBODY_COLORMAP = { Color.black, DARK_RED,
+         Color.orange, Color.yellow, Color.white };
 
-   protected Color[] m_currentColorMap = GREENRED_COLORMAP; // reference to a color map
+   protected Color[] m_currentColorMap = GREENRED_COLORMAP; // reference to a
+                                                            // color map
    protected Color[] m_colorPalette;
 
    public ColorMap() {
@@ -54,12 +65,12 @@ public class ColorMap {
    }
 
    /**
-    * Calculate how fast we have to change color components.
-    * Assume min and max colors are different!
-    *
-    * @param  minColor  red, green, or blue component of the RGB color
-    * @param  maxColor  red, green, or blue component of the RGB color
-    * @return  positive or negative step size
+    * Calculate how fast we have to change color components. Assume min and max
+    * colors are different!
+    * 
+    * @param minColor red, green, or blue component of the RGB color
+    * @param maxColor red, green, or blue component of the RGB color
+    * @return positive or negative step size
     */
    protected int getStepSize( int minColor, int maxColor, int totalColors ) {
 
@@ -70,24 +81,24 @@ public class ColorMap {
 
    /**
     * Allocates colors across a range.
-    *
-    * @param suggestedNumberOfColors  palette resolution; if colorPalette.length
+    * 
+    * @param suggestedNumberOfColors palette resolution; if colorPalette.length
     *        does not evenly divide into this number, the actual number of
     *        colors in the palette will be rounded down.
-    * @param colorMap  the simplest color map is { minColor, maxColor };
-    *                  you might, however, want to go through intermediate
-    *                  colors instead of following a straight-line route
-    *                  through the color space.
-    * @return Color[]  the color palette
+    * @param colorMap the simplest color map is { minColor, maxColor }; you
+    *        might, however, want to go through intermediate colors instead of
+    *        following a straight-line route through the color space.
+    * @return Color[] the color palette
     */
-   protected Color[] createColorPalette( int suggestedNumberOfColors, Color[] colorMap ) {
+   protected Color[] createColorPalette( int suggestedNumberOfColors,
+         Color[] colorMap ) {
 
       Color[] colorPalette;
       Color minColor;
       Color maxColor;
 
       // number of segments is one less than the number of points
-      // dividing the line into segments;  the color map contains points,
+      // dividing the line into segments; the color map contains points,
       // not segments, so for example, if the color map is trivially
       // { minColor, maxColor }, then there is only one segment
       int totalSegments = m_currentColorMap.length - 1;
@@ -104,7 +115,8 @@ public class ColorMap {
       colorPalette = new Color[totalColors];
 
       for ( int segment = 0; segment < totalSegments; segment++ ) {
-         // the minimum color for each segment as defined by the current color map
+         // the minimum color for each segment as defined by the current color
+         // map
          minColor = colorMap[segment];
          int r = minColor.getRed();
          int g = minColor.getGreen();
@@ -113,8 +125,10 @@ public class ColorMap {
          // the maximum color for each segment and the step sizes
          maxColor = colorMap[segment + 1];
          int redStepSize = getStepSize( r, maxColor.getRed(), colorsPerSegment );
-         int greenStepSize = getStepSize( g, maxColor.getGreen(), colorsPerSegment );
-         int blueStepSize = getStepSize( b, maxColor.getBlue(), colorsPerSegment );
+         int greenStepSize = getStepSize( g, maxColor.getGreen(),
+               colorsPerSegment );
+         int blueStepSize = getStepSize( b, maxColor.getBlue(),
+               colorsPerSegment );
 
          for ( int k, i = 0; i < colorsPerSegment; i++ ) {
             // clip
@@ -151,7 +165,7 @@ public class ColorMap {
    }
 
    /**
-    * @return  the number of colors in the palette
+    * @return the number of colors in the palette
     */
    public int getPaletteSize() {
 

@@ -1,10 +1,10 @@
 package baseCode.gui.table;
 
-import java.text.DecimalFormat;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
+import java.text.DecimalFormat;
+
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
@@ -12,12 +12,12 @@ import javax.swing.table.TableCellRenderer;
 import baseCode.gui.JMatrixDisplay;
 
 /**
- * @author  Will Braynen
- * @version $Id$
+ * @author Will Braynen
+ * @version $Id: JMatrixTableCellRenderer.java,v 1.3 2004/06/23 21:41:56
+ *          wbraynen Exp $
  */
-public class JMatrixTableCellRenderer
-    extends JLabel
-    implements TableCellRenderer {
+public class JMatrixTableCellRenderer extends JLabel implements
+      TableCellRenderer {
 
    JMatrixDisplay m_matrixDisplay;
 
@@ -36,13 +36,9 @@ public class JMatrixTableCellRenderer
 
    // This method is called each time a cell in a column
    // using this renderer needs to be rendered.
-   public Component getTableCellRendererComponent(
-       JTable table,
-       Object tableCellValue,
-       boolean isSelected,
-       boolean hasFocus,
-       int displayedRow,
-       int displayedColumn ) {
+   public Component getTableCellRendererComponent( JTable table,
+         Object tableCellValue, boolean isSelected, boolean hasFocus,
+         int displayedRow, int displayedColumn ) {
       // 'value' is value contained in the cell located at
       // (rowIndex, vColIndex)
 
@@ -66,14 +62,16 @@ public class JMatrixTableCellRenderer
       boolean isStandardized = m_matrixDisplay.getStandardizedEnabled();
       m_matrixDisplay.setStandardizedEnabled( false );
       double matrixValue = m_matrixDisplay.getValue( row, column );
-      m_matrixDisplay.setStandardizedEnabled( isStandardized ); // return to previous state
+      m_matrixDisplay.setStandardizedEnabled( isStandardized ); // return to
+                                                                // previous
+                                                                // state
 
-      // Only very small and very large numbers should be displayed in scientific notation
+      // Only very small and very large numbers should be displayed in
+      // scientific notation
       String value;
       if ( Math.abs( matrixValue ) < 0.01 || Math.abs( matrixValue ) > 100000 ) {
          value = m_scientificNotation.format( matrixValue );
-      }
-      else {
+      } else {
          value = m_regular.format( matrixValue );
       }
       setToolTipText( value );
@@ -83,14 +81,18 @@ public class JMatrixTableCellRenderer
    }
 
    // The following methods override the defaults for performance reasons
-   public void validate() {}
+   public void validate() {
+   }
 
-   public void revalidate() {}
+   public void revalidate() {
+   }
 
    protected void firePropertyChange( String propertyName, Object oldValue,
-                                      Object newValue ) {}
+         Object newValue ) {
+   }
 
    public void firePropertyChange( String propertyName, boolean oldValue,
-                                   boolean newValue ) {}
+         boolean newValue ) {
+   }
 
 } // end class MatrixDisplayCellRenderer

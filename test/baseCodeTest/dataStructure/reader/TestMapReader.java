@@ -7,10 +7,19 @@ import junit.framework.TestCase;
 import baseCode.dataStructure.reader.MapReader;
 
 /**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright (c) 2004</p>
- * <p>Institution: Columbia University</p>
+ * <p>
+ * Title:
+ * </p>
+ * <p>
+ * Description:
+ * </p>
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution: Columbia University
+ * </p>
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
@@ -29,19 +38,19 @@ public class TestMapReader extends TestCase {
    }
 
    public void testRead() throws IOException {
-      InputStream m =
-         TestMapReader.class.getResourceAsStream("/data/testmap.txt");
+      InputStream m = TestMapReader.class
+            .getResourceAsStream( "/data/testmap.txt" );
       int expectedReturn = 100;
-      int actualReturn = mapReader.read(m, true).size(); // file has header
-      assertEquals("return value", expectedReturn, actualReturn);
+      int actualReturn = mapReader.read( m, true ).size(); // file has header
+      assertEquals( "return value", expectedReturn, actualReturn );
    }
 
    public void testReadNoHeader() throws IOException {
-      InputStream m =
-         TestMapReader.class.getResourceAsStream("/data/testmap.txt");
+      InputStream m = TestMapReader.class
+            .getResourceAsStream( "/data/testmap.txt" );
       int expectedReturn = 101;
-      int actualReturn = mapReader.read(m).size(); // file has header
-      assertEquals("return value", expectedReturn, actualReturn);
+      int actualReturn = mapReader.read( m ).size(); // file has header
+      assertEquals( "return value", expectedReturn, actualReturn );
    }
 
 }
