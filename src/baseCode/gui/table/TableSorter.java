@@ -113,7 +113,7 @@ public class TableSorter extends AbstractTableModel {
         this( tableModel );
         m_matrixDisplay = matrixDisplay;
     }
-    
+
     private void clearSortingState() {
         viewToModel = null;
         modelToView = null;
@@ -344,7 +344,7 @@ public class TableSorter extends AbstractTableModel {
                    }
                    else if(o1.getClass().equals(Point.class)) {
                       comparator = getComparator( Double.class );
-                      
+
                       // If sortColumn is in the matrix display, then model.getValueAt()
                       // returns a Point object that represents a coordinate into the
                       // display matrix.  This is done so that the display matrix object
@@ -361,16 +361,16 @@ public class TableSorter extends AbstractTableModel {
                    }
                    else if(o1.getClass().equals(ArrayList.class)) {
                       comparator = getComparator( Double.class );
-                      
+
                       if (m_matrixDisplay != null) {
 
                          // Because of the bar graph cell renderer, getValueAt
                          // in our table model returns an array of two values:
                          // the first is the actual p value, and the second is
-                         // the expected p value.  Here, we want to sort by 
+                         // the expected p value.  Here, we want to sort by
                          // the actual p value, which should be the first item
                          // in the array list.
-                         
+
                          Double a = ( Double ) ( ( ArrayList ) o1 ).get( 0 );
                          Double b = ( Double ) ( ( ArrayList ) o2 ).get( 0 );
 
@@ -458,6 +458,8 @@ public class TableSorter extends AbstractTableModel {
               JTableHeader h = ( JTableHeader ) e.getSource();
               TableColumnModel columnModel = h.getColumnModel();
               int viewColumn = columnModel.getColumnIndexAtX( e.getX() );
+              if ( viewColumn == -1) return;
+
               int column = columnModel.getColumn( viewColumn ).getModelIndex();
               if ( column != -1 ) {
                  int status = getSortingStatus( column );
