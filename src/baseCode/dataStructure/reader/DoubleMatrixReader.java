@@ -230,7 +230,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
          throws IOException {
       File infile = new File( filename );
       if ( !infile.exists() || !infile.canRead() ) {
-         throw new IllegalArgumentException( "Could not read from " + filename );
+         throw new IOException( "Could not read from file " + filename );
       }
       FileInputStream stream = new FileInputStream( infile );
       return read( stream, wantedRowNames );
