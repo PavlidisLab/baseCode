@@ -1,0 +1,5 @@
+Optimizeit Profiler 6.0 build 031104 Audit System.
+(c) 1997-2003 Borland.
+Port is 4030
+CPU profiler (sampler mode) started.
+High-resolution counter available

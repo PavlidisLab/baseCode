@@ -1,0 +1,31 @@
+package baseCode.dataStructure;
+
+
+/**
+ * <p>Title: </p>
+ * <p>Description: </p>
+ * <p>Copyright: Copyright (c) 2004</p>
+ * <p>Institution:: Columbia University</p>
+ * @author Paul Pavlidis
+ * @version $Id$
+ */
+
+public class DoubleMatrix2DNamedFactory {
+
+   public static SparseDoubleMatrix2DNamed sparse(int rows, int cols, double T[][]) {
+      return new SparseDoubleMatrix2DNamed(rows, cols, T);
+   }
+
+   public static SparseDoubleMatrix2DNamed sparse(int rows, int cols) {
+      return new SparseDoubleMatrix2DNamed(rows, cols);
+   }
+
+   public static DenseDoubleMatrix2DNamed dense(int cols, int rows, double T[][]) {
+      return new DenseDoubleMatrix2DNamed(rows, cols, T);
+   }
+
+   public static DenseDoubleMatrix2DNamed dense(int cols, int rows) {
+      return new DenseDoubleMatrix2DNamed(rows, cols);
+   }
+
+}
