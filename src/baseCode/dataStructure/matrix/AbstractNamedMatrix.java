@@ -71,7 +71,8 @@ public abstract class AbstractNamedMatrix implements NamedMatrix {
    public final void addRowName( String s ) {
       
       if ( rowMap.containsKey(s)) {
-         throw new IllegalArgumentException("Duplicate row name " + s);
+    //     throw new IllegalArgumentException("Duplicate row name " + s);
+         return;
       }
       
       this.rowNames.add( s );
@@ -87,7 +88,8 @@ public abstract class AbstractNamedMatrix implements NamedMatrix {
    public final void addRowName( String s, int i ) {
       
       if ( rowMap.containsKey(s)) {
-         throw new IllegalArgumentException("Duplicate row name " + s);
+   //      throw new IllegalArgumentException("Duplicate row name " + s);
+         return;
       }
       
       this.rowNames.add( s );
