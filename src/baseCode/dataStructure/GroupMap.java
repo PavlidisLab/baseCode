@@ -1,7 +1,7 @@
 package baseCode.dataStructure;
 
 import java.util.*;
-
+import java.io.IOException;
 import baseCode.dataStructure.reader.*;
 
 /**
@@ -45,7 +45,7 @@ public class GroupMap {
      * @param dataMatrix Data file this the map refers to.
      * @return Map
      */
-    public Map read(String filename, DenseDoubleMatrix2DNamed dataMatrix) {
+    public Map read(String filename, DenseDoubleMatrix2DNamed dataMatrix) throws IOException {
 
      if (filename == null || dataMatrix == null) {
         throw new IllegalArgumentException("You must give a valid file name and data matrix.");
