@@ -200,16 +200,17 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
       //
       // Add empty rows for each row name we didn't find in the file
       //
-      int x = wantedRowNames.size();
-      Iterator iterator = wantedRowNames.iterator();
-      while ( iterator.hasNext() ) {
-         String s = ( String ) iterator.next();
-         if ( ! wantedRowsFound.contains( s ) ) {
-            // add an empty row
-            DoubleArrayList emptyRow = createEmptyRow( numHeadings );
-            rowNames.add( s );
-            MTemp.add( emptyRow );
-            rowNumber++;
+      if ( wantedRowNames != null && createEmptyRows ) {
+         Iterator iterator = wantedRowNames.iterator();
+         while ( iterator.hasNext() ) {
+            String s = ( String ) iterator.next();
+            if ( ! wantedRowsFound.contains( s ) ) {
+               // add an empty row
+               DoubleArrayList emptyRow = createEmptyRow( numHeadings );
+               rowNames.add( s );
+               MTemp.add( emptyRow );
+               rowNumber++;
+            }
          }
       }
       
