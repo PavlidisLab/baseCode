@@ -341,12 +341,12 @@ public class ColorMatrix implements Cloneable {
                   value = m_displayMax;
                } else if ( value < m_displayMin ) {
                   // clip extremely small values
-                  value = 0;
-               } else {
-                  // shift the minimum value to zero
-                  // to the range [0, maxValue + minValue]
-                  value -= m_displayMin;
+                  value = m_displayMin;
                }
+               
+               // shift the minimum value to zero
+               // to the range [0, maxValue + minValue]
+               value -= m_displayMin;
 
                // stretch or shrink the range to [0, totalColors]
                double valueNew = value * zoomFactor;
