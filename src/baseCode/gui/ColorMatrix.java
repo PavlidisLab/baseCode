@@ -15,7 +15,7 @@ import baseCode.Math.DescriptiveWithMissing;
  * @author Will Braynen
  * @version $Id$
  */
-public class ColorMatrix {
+public class ColorMatrix implements Cloneable {
 
     // data fields
 
@@ -25,7 +25,8 @@ public class ColorMatrix {
      * values, or show a bigger color range for equal comparison with other
      * rows or matrices.
      */
-    public double m_minDisplayValue, m_maxDisplayValue;   protected Color[][] m_colors;
+    public double m_minDisplayValue, m_maxDisplayValue;
+    protected Color[][] m_colors;
     protected Color m_missingColor = Color.lightGray;
     protected Color[] m_colorMap = ColorMap.GREENRED_COLORMAP;
 
@@ -217,7 +218,7 @@ public class ColorMatrix {
        {
           double[] rowValues = m_matrix.getRow(r);
           DoubleArrayList doubleArrayList = new cern.colt.list.DoubleArrayList( rowValues );
-         DescriptiveWithMissing.standardize(doubleArrayList);
+          DescriptiveWithMissing.standardize(doubleArrayList);
           rowValues = doubleArrayList.elements();
           setRow(r, rowValues);
        }
@@ -298,4 +299,36 @@ public class ColorMatrix {
          }
       }
    } // end mapValuesToColors
-}
+    
+    
+   public Object clone() {
+      
+//      try {
+//         
+//         cloneColorMatrix = (ColorMatrix) super.clone();
+//      }
+//      catch ()
+      
+      // create another double matrix
+      Color[][] colors = new Color[ m_totalRows ][ m_totalColumns ];
+      DenseDoubleMatrix2DNamed m = new DenseDoubleMatrix2DNamed( m_totalRows, m_totalColumns );
+      // copy the row and column names
+      for (int i = 0;  i < m_totalRows;  i++)
+         m.addRowName( m_matrix.getRowName( i ));
+      for (int i = 0;  i < m_totalColumns;  i++)
+         m.addColumnName( m_matrix.getColName( i ));
+      // copy the data
+      for (int r = 0;  r < m_totalRows;  r++)
+         for (int c = 0;  c < m_totalColumns;  c++)
+         {
+            m.set( r, c, m_matrix.get( r, c ));
+            //colors[r][c] = new Color( m_colors[r][c].getRGB() );
+         }
+
+      // create another copy of a color matrix (this class)
+      ColorMatrix clonedColorMatrix = new ColorMatrix( m );            
+      return clonedColorMatrix;
+      
+   } // end clone
+    
+} // end class ColorMatrix
