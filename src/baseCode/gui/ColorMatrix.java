@@ -352,7 +352,7 @@ public class ColorMatrix implements Cloneable {
 
                // stretch or shrink the range to [0, totalColors]
                double valueNew = value * zoomFactor;
-               int i = ( int ) valueNew;
+               int i = ( int ) Math.round( valueNew );
                m_colors[row][column] = colorMap.getColor( i );
             }
          }
