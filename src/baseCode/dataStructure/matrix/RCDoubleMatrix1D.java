@@ -51,6 +51,7 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
       this.map = map;
       this.values = values;
       this.indexes = map.keys();
+      indexes.sort();
    }
 
    /*

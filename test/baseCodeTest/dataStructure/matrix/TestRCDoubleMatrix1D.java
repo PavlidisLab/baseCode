@@ -57,7 +57,7 @@ public class TestRCDoubleMatrix1D extends TestCase {
 //      } );
       
       OpenIntIntHashMap ma = new OpenIntIntHashMap(3);
-      ma.put(1,0);
+      ma.put(1,0); // index -> location pairs.
       ma.put(2,1);
       ma.put(4,2);
 
@@ -67,12 +67,6 @@ public class TestRCDoubleMatrix1D extends TestCase {
       mb.put(2,2);
       mb.put(3,3);
 
-      
-      
-
-//      a = new RCDoubleMatrix1D( va, ina );
-//      b = new RCDoubleMatrix1D( vb, inb );
-      
       a = new RCDoubleMatrix1D(ma, va, 5);
       b = new RCDoubleMatrix1D(mb, vb, 4);
       
