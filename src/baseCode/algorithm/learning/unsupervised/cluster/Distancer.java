@@ -1,5 +1,7 @@
 package baseCode.algorithm.learning.unsupervised.cluster;
 
+import baseCode.common.Distanceable;
+
 /**
  * <hr>
  * <p>
@@ -15,6 +17,6 @@ public interface Distancer {
     * @param b
     * @return
     */
-   public double distance( Object a, Object b );
+   public double distance( Distanceable a, Distanceable b );
 
 }

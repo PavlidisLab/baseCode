@@ -2,11 +2,15 @@ package baseCodeTest.algorithm.learning.unsupervised.cluster;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Vector;
 
 import cern.colt.list.ObjectArrayList;
 
 import baseCode.algorithm.learning.unsupervised.cluster.DistanceFactory;
 import baseCode.common.Distanceable;
+import baseCode.algorithm.learning.unsupervised.cluster.Cluster;
 import baseCode.algorithm.learning.unsupervised.cluster.Distancer;
 import baseCode.algorithm.learning.unsupervised.cluster.HierarchicalClusterer;
 import junit.framework.TestCase;
@@ -76,27 +80,19 @@ public class HierarchicalClustererTest extends TestCase {
 
 ///** helpers **
 
-class DoubleDistanceable extends  Distanceable {
+class DoubleDistanceable extends Cluster {
 
    Double value;
-   Distancer f;
-
+   
    /**
     * @param value
     */
    public DoubleDistanceable( double value ) {
-      super();
       this.value = new Double(value);
-      f = new DoubleDifferenceFactory().getDistancer();
-   }
-
-   /*
-    * (non-Javadoc)
-    * 
-    * @see baseCode.algorithm.learning.unsupervised.cluster.Distanceable#distanceTo(baseCode.algorithm.learning.unsupervised.cluster.Distanceable)
-    */
-   public double distanceTo( baseCode.common.Distanceable a ) {
-      return f.distance(a, this);
+      Vector v = new Vector();
+      v.add(this.value);
+      this.items = v;
+      this.distAlg = new DoubleDifferenceFactory().getDistancer();
    }
 
    public static int compare( double d1, double d2 ) {
@@ -210,6 +206,15 @@ class DoubleDistanceable extends  Distanceable {
    public void unMark() {
       visited = false;
    }
+
+   /* (non-Javadoc)
+    * @see baseCode.common.Distanceable#toCollection()
+    */
+   public Collection toCollection() {
+      Collection ret =  new Vector();
+      ret.add(this);
+      return ret;
+   }
 }
 
 class DoubleDifference implements Distancer {
@@ -219,11 +224,12 @@ class DoubleDifference implements Distancer {
     * 
     * @see baseCode.algorithm.learning.unsupervised.cluster.Distancer#distance(java.lang.Object, java.lang.Object)
     */
-   public double distance( Object a, Object b ) {
+   public double distance( Distanceable a, Distanceable b ) {
       DoubleDistanceable ad = ( DoubleDistanceable ) a;
       DoubleDistanceable bd = ( DoubleDistanceable ) b;
       return Math.abs( ad.value.doubleValue() - bd.value.doubleValue() );
    }
+
 
 }
 

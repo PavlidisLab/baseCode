@@ -20,15 +20,18 @@ public class AverageLinkageDistancer implements Distancer {
     * 
     * @see baseCode.algorithm.learning.unsupervised.cluster.Distance#distance(java.lang.Object, java.lang.Object)
     */
-   public double distance( Object a, Object b ) {
+   public double distance( Distanceable a, Distanceable b ) {
 
       double mean = 0.0;
       int numComparisons = 0;
       
-      for ( Iterator iter = ( ( Collection ) a ).iterator(); iter.hasNext(); ) {
+      Collection ac = a.toCollection();
+      Collection bc = b.toCollection();
+      
+      for ( Iterator iter = ac.iterator(); iter.hasNext(); ) {
          Distanceable elementA = ( Distanceable ) iter.next();
 
-         for ( Iterator iterator = ( ( Collection ) b ).iterator(); iterator
+         for ( Iterator iterator = bc.iterator(); iterator
                .hasNext(); ) {
             Distanceable elementB = ( Distanceable ) iterator.next();
             mean += elementA.distanceTo( elementB );
