@@ -21,8 +21,7 @@ import cern.jet.stat.Descriptive;
  * </p>
  * 
  * @author Paul Pavlidis
- * @version $Id: TestDescriptiveWithMissing.java,v 1.6 2004/06/17 21:21:40
- *          pavlidis Exp $
+ * @version $Id$
  */
 
 public class TestDescriptiveWithMissing extends TestCase {
@@ -40,25 +39,36 @@ public class TestDescriptiveWithMissing extends TestCase {
 
    protected void setUp() throws Exception {
       super.setUp();
-      data1missing = new DoubleArrayList( new double[] { 1.0, Double.NaN, 3.0,
-            4.0, 5.0, 6.0 } );
-      data2missing = new DoubleArrayList( new double[] { Double.NaN,
-            Double.NaN, 3.0, Double.NaN, 3.5, 4.0 } );
-      data3shortmissing = new DoubleArrayList( new double[] { Double.NaN,
-            Double.NaN, 3.0 } );
+      data1missing = new DoubleArrayList( new double[] {
+            1.0, Double.NaN, 3.0, 4.0, 5.0, 6.0
+      } );
+      data2missing = new DoubleArrayList( new double[] {
+            Double.NaN, Double.NaN, 3.0, Double.NaN, 3.5, 4.0
+      } );
+      data3shortmissing = new DoubleArrayList( new double[] {
+            Double.NaN, Double.NaN, 3.0
+      } );
 
       /* versions of the above, but without the NaNs */
-      data1Nomissing = new DoubleArrayList( new double[] { 1.0, 3.0, 4.0, 5.0,
-            6.0 } );
-      data2Nomissing = new DoubleArrayList( new double[] { 3.0, 3.5, 4.0 } );
-      data3shortNomissing = new DoubleArrayList( new double[] { 3.0 } );
+      data1Nomissing = new DoubleArrayList( new double[] {
+            1.0, 3.0, 4.0, 5.0, 6.0
+      } );
+      data2Nomissing = new DoubleArrayList( new double[] {
+            3.0, 3.5, 4.0
+      } );
+      data3shortNomissing = new DoubleArrayList( new double[] {
+         3.0
+      } );
 
-      datacortest1Nomissing = new DoubleArrayList(
-            new double[] { 3.0, 5.0, 6.0 } );
-      dataAcortest1Nomissing = new DoubleArrayList( new double[] { 1.0, 3.0,
-            5.0, 6.0 } );
-      datacortest2Nomissing = new DoubleArrayList(
-            new double[] { 3.0, 3.5, 4.0 } );
+      datacortest1Nomissing = new DoubleArrayList( new double[] {
+            3.0, 5.0, 6.0
+      } );
+      dataAcortest1Nomissing = new DoubleArrayList( new double[] {
+            1.0, 3.0, 5.0, 6.0
+      } );
+      datacortest2Nomissing = new DoubleArrayList( new double[] {
+            3.0, 3.5, 4.0
+      } );
 
    }
 
@@ -67,11 +77,11 @@ public class TestDescriptiveWithMissing extends TestCase {
    }
 
    public void testCorrelationA() {
-      double s1 = Descriptive.standardDeviation( Descriptive.variance(
+      double s1 = Math.sqrt( Descriptive.sampleVariance(
             datacortest1Nomissing.size(), Descriptive
                   .sum( datacortest1Nomissing ), Descriptive
                   .sumOfSquares( datacortest1Nomissing ) ) );
-      double s2 = Descriptive.standardDeviation( Descriptive.variance(
+      double s2 = Math.sqrt( Descriptive.sampleVariance(
             datacortest2Nomissing.size(), Descriptive
                   .sum( datacortest2Nomissing ), Descriptive
                   .sumOfSquares( datacortest2Nomissing ) ) );
@@ -81,31 +91,28 @@ public class TestDescriptiveWithMissing extends TestCase {
       double actualReturn = DescriptiveWithMissing.correlation( data1missing,
             data2missing );
       assertEquals( "return value", expectedReturn, actualReturn,
-            Double.MIN_VALUE );
+            1e-15 );
    }
 
    public void testCorrelationB() {
-      double s1 = Descriptive.standardDeviation( Descriptive.variance(
+      double s1 = Math.sqrt( Descriptive.sampleVariance(
             datacortest1Nomissing.size(), Descriptive
                   .sum( datacortest1Nomissing ), Descriptive
                   .sumOfSquares( datacortest1Nomissing ) ) );
-      double s2 = Descriptive.standardDeviation( Descriptive.variance(
+      double s2 = Math.sqrt(  Descriptive.sampleVariance(
             datacortest2Nomissing.size(), Descriptive
                   .sum( datacortest2Nomissing ), Descriptive
                   .sumOfSquares( datacortest2Nomissing ) ) );
 
-      double s1m = DescriptiveWithMissing
-            .standardDeviation( DescriptiveWithMissing.variance( data1missing ) );
-      double s2m = DescriptiveWithMissing
-            .standardDeviation( DescriptiveWithMissing.variance( data2missing ) );
-
+      double s1m = 0;
+      double s2m = 0;
       double expectedReturn = Descriptive.correlation( datacortest1Nomissing,
             s1, datacortest2Nomissing, s2 );
       double actualReturn = DescriptiveWithMissing.correlation( data1missing,
             s1m, data2missing, s2m );
 
       assertEquals( "return value", expectedReturn, actualReturn,
-            Double.MIN_VALUE );
+            1e-15 );
    }
 
    public void testCovariance() {
@@ -246,7 +253,8 @@ public class TestDescriptiveWithMissing extends TestCase {
       // same thing - there is a correction applied.
       DoubleArrayList expectedReturn = new DoubleArrayList( new double[] {
             -1.4556506857481, Double.NaN, -0.415900195928029,
-            0.103975048982007, 0.623850293892044, 1.14372553880208 } );
+            0.103975048982007, 0.623850293892044, 1.14372553880208
+      } );
 
       DescriptiveWithMissing.standardize( data1missing );
       assertEquals( true, RegressionTesting.closeEnough( data1missing,

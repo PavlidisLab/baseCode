@@ -1,7 +1,7 @@
 package baseCode.math;
 
 /**
- * 
+ * Used in some ports of statsistical code.
  *
  * <hr>
  * <p>Copyright (c) 2004 Columbia University

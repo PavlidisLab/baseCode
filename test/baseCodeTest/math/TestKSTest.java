@@ -1,10 +1,10 @@
 package baseCodeTest.math;
 
-import baseCode.math.KSTest;
-import baseCode.math.ProbabilityComputer;
-import baseCode.math.UniformProbabilityComputer;
-import cern.colt.list.DoubleArrayList;
 import junit.framework.TestCase;
+import baseCode.math.KSTest;
+import baseCode.math.distribution.ProbabilityComputer;
+import baseCode.math.distribution.UniformProbabilityComputer;
+import cern.colt.list.DoubleArrayList;
 
 /**
  * <hr>

@@ -1,9 +1,8 @@
 package baseCodeTest.math.metaanalysis;
 
-import cern.colt.list.DoubleArrayList;
-import baseCode.math.metaanalysis.CorrelationEffectMetaAnalysis;
-import baseCode.math.metaanalysis.MeanDifferenceMetaAnalysis;
 import junit.framework.TestCase;
+import baseCode.math.metaanalysis.MeanDifferenceMetaAnalysis;
+import cern.colt.list.DoubleArrayList;
 
 /**
  * <hr>
@@ -21,6 +20,10 @@ public class TestMeanDifferenceMetaAnalysis extends TestCase {
    DoubleArrayList ds2nc;
    DoubleArrayList ds2cv;
    DoubleArrayList ds2d;
+
+//   DenseDoubleMatrix2DNamed catheter;
+//   DoubleArrayList catheterNumT;
+//   DoubleArrayList catheterNumC;
 
    /*
     * @see TestCase#setUp()
@@ -49,6 +52,33 @@ public class TestMeanDifferenceMetaAnalysis extends TestCase {
 
       uf = new MeanDifferenceMetaAnalysis( true );
       ur = new MeanDifferenceMetaAnalysis( false );
+
+  //    DoubleMatrixReader f = new DoubleMatrixReader();
+
+      // Catheter data set swiped from rmeta.
+      //      Name : Name of principal author
+      //      n.trt : number of coated catheters
+      //      n.ctrl : number of standard catheters
+      //      col.trt : number of coated catheters colonised
+      //                   by bacteria
+      //      col.ctrl : number of standard catheters colonised
+      //                   by bacteria
+      //      inf.trt : number of coated catheters resulting in
+      //                   bloodstream infection
+      //      inf.ctrl : number of standard catheters resulting in
+      //                   bloodstream infection
+      //     
+      //      Veenstra D et al (1998) "Efficacy of Antiseptic Impregnated
+      //      Central Venous Catheters in Preventing Nosocomial Infections: A
+      //      Meta-analysis" JAMA 281:261-267
+
+//      catheter = ( DenseDoubleMatrix2DNamed ) f.read( AbstractTestFilter.class
+//            .getResourceAsStream( "/data/catheter.txt" ) );
+//
+//      catheterNumT = new DoubleArrayList(catheter.getColByName("n.trt")); 
+//      catheterNumC = new DoubleArrayList(catheter.getColByName("n.ctrl")); 
+       
+
    }
 
    /*

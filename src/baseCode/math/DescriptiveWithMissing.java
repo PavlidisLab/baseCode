@@ -87,7 +87,7 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
       sy = 0.0;
       numused = 0;
       if ( x.size() != y.size() ) {
-         throw new ArithmeticException();
+         throw new ArithmeticException("Unequal vector sizes: " + x.size() + " != " + y.size());
       }
 
       double[] xel = x.elements();
@@ -119,7 +119,7 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
    }
 
    /**
-    * Returns the covariance of two data sequences. Pairs of values are only considered if both are not NaN. If there
+    * Returns the SAMPLE covariance of two data sequences. Pairs of values are only considered if both are not NaN. If there
     * are no non-missing pairs, the covariance is zero.
     * 
     * @param data1 the first vector
@@ -160,7 +160,7 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
          sumy += y;
          usedPairs++;
       }
-      return Sxy / usedPairs;
+      return Sxy / (usedPairs - 1);
    }
 
    /**

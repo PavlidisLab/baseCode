@@ -88,20 +88,31 @@ public class CorrelationStats {
    }
 
    /**
+    * Reverse the Fisher z-transform of correlations.
+    * 
+    * @param r
+    * @return
+    */
+   public static double unFisherTransform( double r ) {
+      return Math.exp( 2.0 * r - 1.0 ) / Math.exp( 2.0 * r + 1.0 );
+   }
+
+   /**
     * Compute the Fisher z transform of the Pearson correlation.
     * 
     * @param r Correlation coefficient.
     * @return Fisher transform of the Correlation.
     */
    public static double fisherTransform( double r ) {
-      if (!isValidPearsonCorrelation(r)) {
-         throw new IllegalArgumentException("Invalid correlation");
+      if ( !isValidPearsonCorrelation( r ) ) {
+         throw new IllegalArgumentException( "Invalid correlation " + r );
       }
       return 0.5 * Math.log( ( 1.0 + r ) / ( 1.0 - r ) );
    }
-   
-   /** 
+
+   /**
     * Fisher-transform a list of correlations.
+    * 
     * @param e
     * @return
     */
@@ -112,8 +123,6 @@ public class CorrelationStats {
       }
       return r;
    }
-   
-   
 
    /**
     * Conver a correlation p value into a value between 0 and 255 inclusive. This is done by taking the log, multiplying
@@ -229,7 +238,7 @@ public class CorrelationStats {
       }
       return ( corrguess );
    }
-   
+
    public static boolean isValidPearsonCorrelation( double r ) {
       return ( r >= -1.0 && r <= 1.0 );
    }

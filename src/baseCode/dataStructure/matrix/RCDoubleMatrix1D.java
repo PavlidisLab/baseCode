@@ -6,7 +6,6 @@ import cern.colt.list.IntArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
-import cern.colt.matrix.impl.RCDoubleMatrix2D;
 
 /**
  * A row-compressed 1D matrix. The only deviation from the contract of DoubleMatrix1D is in apply(), which only operates

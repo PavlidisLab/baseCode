@@ -7,8 +7,8 @@ import java.awt.Toolkit;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
-import baseCode.gui.JMatrixDisplay;
 import baseCode.gui.ColorMap;
+import baseCode.gui.JMatrixDisplay;
 
 /**
  * This is an example of how you'd display a microarray.

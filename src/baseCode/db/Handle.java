@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,7 +25,7 @@ import java.util.Vector;
  * 
  * @author Paul Pavlidis
  * @version $Id$
- * @deprecated
+ * 
  */
 
 public class Handle {
@@ -91,11 +90,11 @@ public class Handle {
 
    // This is really only here for debugging.
    public Handle() throws SQLException {
-      this( "localhost", "tmm", "javauser", "toast" );
+      this( "localhost", "tmm", "pavlidis", "toast" );
    }
 
    public Handle( String host, String database ) throws SQLException {
-      this( host, database, "javauser", "toast" );
+      this( host, database, "pavlidis", "toast" );
    }
 
    /**
@@ -241,18 +240,6 @@ public class Handle {
 
    }
 
-   public static void main( String[] args ) {
-      try {
-         Handle f = new Handle();
-         List k = f
-               .queryToList( "SELECT official_name FROM gene WHERE official_name LIKE 'MAT%'" );
-         for ( Iterator it = k.iterator(); it.hasNext(); ) {
-            String name = ( String ) it.next();
-            System.err.println( name );
-         }
-      } catch ( Exception e ) {
-         e.printStackTrace();
-      }
-   }
+   
 
 }

@@ -1,19 +1,15 @@
 package baseCodeTest.algorithm.learning.unsupervised.cluster;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Vector;
 
-import cern.colt.list.ObjectArrayList;
-
-import baseCode.algorithm.learning.unsupervised.cluster.DistanceFactory;
-import baseCode.common.Distanceable;
+import junit.framework.TestCase;
 import baseCode.algorithm.learning.unsupervised.cluster.Cluster;
+import baseCode.algorithm.learning.unsupervised.cluster.DistanceFactory;
 import baseCode.algorithm.learning.unsupervised.cluster.Distancer;
 import baseCode.algorithm.learning.unsupervised.cluster.HierarchicalClusterer;
-import junit.framework.TestCase;
+import baseCode.common.Distanceable;
+import cern.colt.list.ObjectArrayList;
 
 /**
  * <hr>

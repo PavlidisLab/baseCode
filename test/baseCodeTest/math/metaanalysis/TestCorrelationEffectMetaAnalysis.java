@@ -1,8 +1,8 @@
 package baseCodeTest.math.metaanalysis;
 
-import cern.colt.list.DoubleArrayList;
-import baseCode.math.metaanalysis.CorrelationEffectMetaAnalysis;
 import junit.framework.TestCase;
+import baseCode.math.metaanalysis.CorrelationEffectMetaAnalysis;
+import cern.colt.list.DoubleArrayList;
 
 /**
  * Tests based on Cooper and Hedges. Values recomputed by hand in some cases to fix roundoff error in the textbook.

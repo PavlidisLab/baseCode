@@ -1,5 +1,6 @@
 package baseCode.math;
 
+import baseCode.math.distribution.ProbabilityComputer;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
 import cern.jet.stat.Descriptive;
@@ -190,6 +191,7 @@ public class KSTest {
    }
 }
 
+/*
 //
 //    * ks.test <-
 //function(x, y, ..., alternative = c("two.sided", "less", "greater"),
@@ -275,7 +277,7 @@ public class KSTest {
 //    }
 //
 //    if(is.null(PVAL)) {
-//        ## <FIXME>
+//        ##  
 //        ## Currently, p-values for the two-sided two-sample case are
 //        ## exact if n.x * n.y < 10000 (unless controlled explicitly).
 //        ## In all other cases, the asymptotic distribution is used
@@ -289,7 +291,7 @@ public class KSTest {
 //        PVAL <- ifelse(alternative == "two.sided",
 //                       1 - pkstwo(sqrt(n) * STATISTIC),
 //                       exp(- 2 * n * STATISTIC^2))
-//        ## </FIXME>
+//        ##  
 //    }
 //
 //    RVAL <- list(statistic = STATISTIC,
@@ -303,3 +305,4 @@ public class KSTest {
 // 
 //     
 //   
+*/

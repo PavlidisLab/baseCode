@@ -2,8 +2,8 @@ package baseCodeTest.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
-import junit.framework.TestCase;
 
+import junit.framework.TestCase;
 import baseCode.util.RegressionTesting;
 import baseCode.xml.GOParser;
 

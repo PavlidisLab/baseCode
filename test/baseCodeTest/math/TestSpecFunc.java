@@ -1,7 +1,7 @@
 package baseCodeTest.math;
 
-import baseCode.math.SpecFunc;
 import junit.framework.TestCase;
+import baseCode.math.SpecFunc;
 
 /**
  * 

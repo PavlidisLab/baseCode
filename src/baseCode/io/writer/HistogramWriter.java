@@ -37,9 +37,9 @@ public class HistogramWriter {
       int total = h.entries();
       s.write( "Bin\tCount\tFraction\n" );
       for ( int i = 0; i < h.xAxis().bins(); i++ ) {
-         s.write( k.form( h.xAxis().binLowerEdge( i ) ) + "\t"
+         s.write( k.format( h.xAxis().binLowerEdge( i ) ) + "\t"
                + h.binEntries( i ) + "\t"
-               + k.form( ( double ) h.binEntries( i ) / ( double ) total )
+               + k.format( ( double ) h.binEntries( i ) / ( double ) total )
                + "\n" );
       }
    }

@@ -2,7 +2,6 @@ package baseCode.dataStructure.matrix;
 
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
-import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import corejava.Format;
 
@@ -50,6 +49,15 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
       return viewRow( row ).toArray();
    }
    
+   
+   /**
+    * Return a reference to a specific row.
+    * @param s String
+    * @return double[]
+    */
+   public double[] getRowByName( String s ) {
+      return getRow( getRowIndexByName( s ) );
+   }
 
    /**
     * Return a copy of a given column.
@@ -64,6 +72,24 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
       }
       return result;
    }
+   
+   
+   /**
+    * Return a copy of a given column.
+    * 
+    * @param col int
+    * @return double[]
+    */
+   public double[] getColByName( String s ) {
+      int col = getColIndexByName(s);
+      double[] result = new double[rows()];
+      for ( int i = 0; i < rows(); i++ ) {
+         result[i] = get( i, col );
+      }
+      return result;
+   }
+
+   
 
    public Object[] getRowObj( int row ) {
       Double[] result = new Double[columns()];
@@ -106,7 +132,7 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
             if ( Double.isNaN( get( i, j ) ) ) {
                result.append( "\t" );
             } else {
-               result.append( "\t" + nf.form( get( i, j ) ) );
+               result.append( "\t" + nf.format( get( i, j ) ) );
             }
          }
          result.append( "\n" );
@@ -122,11 +148,9 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
 
    /**
     * Make a copy of a matrix.
-    * 
-    * @todo make this use copy instead (? - PP - why not override clone?)
     * @return baseCode.dataStructure.DenseDoubleMatrix2DNamed
     */
-   public DenseDoubleMatrix2DNamed copyMatrix() {
+   public DenseDoubleMatrix2DNamed copy() {
       DenseDoubleMatrix2DNamed returnval = new DenseDoubleMatrix2DNamed( this
             .rows(), this.columns() );
       for ( int i = 0, n = this.rows(); i < n; i++ ) {

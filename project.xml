@@ -54,9 +54,9 @@ xmlns:jnlp="http://www.w3.org/2001/XMLSchema-instance">
               <dependency>
             <groupId>colt</groupId>
             <artifactId>colt</artifactId>
-              <version>1.0.3</version>
+              <version>1.2.0</version>
             <type>jar</type>
-            <url>http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/download</url>
+            <url>http://dsd.lbl.gov/~hoschek/colt/</url>
             <properties>
                 <category>lib</category>
                 <jnlp.jar>true</jnlp.jar>

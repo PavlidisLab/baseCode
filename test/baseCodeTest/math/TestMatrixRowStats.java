@@ -1,12 +1,12 @@
 package baseCodeTest.math;
 
-import cern.colt.list.DoubleArrayList;
+import junit.framework.TestCase;
 import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import baseCode.io.reader.DoubleMatrixReader;
 import baseCode.math.MatrixRowStats;
 import baseCode.util.RegressionTesting;
 import baseCodeTest.dataFilter.AbstractTestFilter;
-import junit.framework.TestCase;
+import cern.colt.list.DoubleArrayList;
 
 /**
  * 

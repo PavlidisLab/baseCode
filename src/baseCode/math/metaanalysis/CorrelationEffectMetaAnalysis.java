@@ -29,8 +29,6 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
    private double n; // total sample size
    private double bsv; // between-studies variance component;
 
-  
-
    public CorrelationEffectMetaAnalysis( boolean fixed, boolean transform ) {
       this.fixed = fixed;
       this.transform = transform;
@@ -51,7 +49,7 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
     * </ol>
     * The default is untransformed, fixed effects.
     * 
-    * @param correlations
+    * @param correlations - NOT fisher transformed. This routine takes care of that.
     * @param sampleSizes
     * @return p-value. The p-value is also stored in the field p.
     */
@@ -84,13 +82,10 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
          this.e = super.weightedMean( fzte, weights );
       } else {
 
-         conditionalVariances = samplingVariances( effects,
-               sampleSizes );
+         conditionalVariances = samplingVariances( effects, sampleSizes );
          weights = metaFEWeights( conditionalVariances );
          this.q = super.qStatistic( effects, conditionalVariances, super
                .weightedMean( effects, weights ) );
-
-       
 
          if ( !fixed ) { // adjust the conditional variances and weights.
             this.bsv = metaREVariance( effects, conditionalVariances, weights );
@@ -110,11 +105,11 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
       this.v = super.metaVariance( conditionalVariances );
       this.z = Math.abs( e ) / Math.sqrt( v );
       this.p = Probability.errorFunctionComplemented( z );
-  
-//      if ( qTest( q, effects.size() ) < 0.05 ) {
-//         System.err.println("Q was significant: " + qTest( q, effects.size() ) );
-//      }
-      
+
+      //      if ( qTest( q, effects.size() ) < 0.05 ) {
+      //         System.err.println("Q was significant: " + qTest( q, effects.size() ) );
+      //      }
+
       return p;
    }
 
@@ -152,16 +147,16 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
     * @param sampleSizes
     * @return
     */
-   protected DoubleArrayList samplingVariances(
-         DoubleArrayList effectSizes, DoubleArrayList sampleSizes ) {
+   protected DoubleArrayList samplingVariances( DoubleArrayList effectSizes,
+         DoubleArrayList sampleSizes ) {
 
       if ( effectSizes.size() != sampleSizes.size() )
             throw new IllegalArgumentException( "Unequal sample sizes." );
 
       DoubleArrayList answer = new DoubleArrayList( sampleSizes.size() );
       for ( int i = 0; i < sampleSizes.size(); i++ ) {
-         answer.add( samplingVariance( effectSizes.getQuick( i ),
-               sampleSizes.getQuick( i ) ) );
+         answer.add( samplingVariance( effectSizes.getQuick( i ), sampleSizes
+               .getQuick( i ) ) );
       }
       return answer;
    }
@@ -178,7 +173,8 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
     */
    protected double fisherTransformedSamplingVariance( double sampleSize ) {
 
-      if ( sampleSize <= 3.0 ) throw new IllegalStateException( "N is too small" );
+      if ( sampleSize <= 3.0 )
+            throw new IllegalStateException( "N is too small" );
 
       return 1.0 / ( sampleSize - 3.0 );
    }
@@ -199,7 +195,7 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
       }
       return answer;
    }
-   
+
    public void setFixed( boolean fixed ) {
       this.fixed = fixed;
    }

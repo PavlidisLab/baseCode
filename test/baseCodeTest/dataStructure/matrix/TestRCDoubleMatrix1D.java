@@ -1,13 +1,11 @@
 package baseCodeTest.dataStructure.matrix;
 
+import junit.framework.TestCase;
+import baseCode.dataStructure.matrix.RCDoubleMatrix1D;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
-import cern.colt.map.OpenIntDoubleHashMap;
-import cern.colt.map.OpenIntIntHashMap;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
-import baseCode.dataStructure.matrix.RCDoubleMatrix1D;
-import junit.framework.TestCase;
 
 /**
  * <hr>

@@ -1,12 +1,12 @@
 package baseCode.algorithm.learning.unsupervised;
 
-import com.braju.beta.format.Format;
-import com.braju.beta.format.Parameters;
-
 import baseCode.algorithm.Algorithm;
 import baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix;
 import baseCode.dataStructure.matrix.DenseDoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix1D;
+
+import com.braju.beta.format.Format;
+import com.braju.beta.format.Parameters;
 
 /**
  * Implementation of RankProp, as described in Weston et al. PNAS

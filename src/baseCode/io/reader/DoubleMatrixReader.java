@@ -153,7 +153,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
       Vector MTemp = new Vector();
 
       Vector rowNames = new Vector();
-      String s = parseRow( row, rowNames, MTemp, null );
+      parseRow( row, rowNames, MTemp, null );
       return createMatrix( MTemp, 1, numHeadings, rowNames, colNames );
    }
 
@@ -168,8 +168,8 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
     * @param row
     * @return name of the row
     */
-   private String parseRow( String row, List rowNames, List MTemp, Set wantedRowNames )
-         throws IOException {
+   private String parseRow( String row, List rowNames, List MTemp,
+         Set wantedRowNames ) throws IOException {
 
       StringTokenizer st = new StringTokenizer( row, "\t", true );
 
@@ -201,7 +201,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
                throw new IOException( "Spaces not allowed after values" );
                // bad, not allowed.
             }
-         } else if ( s.compareToIgnoreCase( "NaN" ) == 0 ) {
+         } else if ( s.compareToIgnoreCase( "NaN" ) == 0 || s.compareToIgnoreCase("NA") == 0) {
             if ( previousToken.compareTo( "\t" ) == 0 ) {
                missing = true;
             } else {
@@ -220,8 +220,8 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
             if ( missing ) {
                throw new IOException(
                      "Missing values not allowed for row labels" );
-            }  
-            if (wantedRowNames != null && !wantedRowNames.contains(s)) {
+            }
+            if ( wantedRowNames != null && !wantedRowNames.contains( s ) ) {
                return s;
             }
             rowNames.add( s.intern() );
