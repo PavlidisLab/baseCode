@@ -544,7 +544,8 @@ public class TableSorter extends AbstractTableModel {
                     value, isSelected, hasFocus, row, column);
             if (c instanceof JLabel) {
                 JLabel l = (JLabel) c;
-                l.setHorizontalTextPosition(JLabel.LEFT);
+                l.setHorizontalTextPosition( JLabel.LEFT );
+                l.setVerticalAlignment( JLabel.BOTTOM );
                 int modelColumn = table.convertColumnIndexToModel(column);
                 l.setIcon(getHeaderRendererIcon(modelColumn, l.getFont().getSize()));
             }
