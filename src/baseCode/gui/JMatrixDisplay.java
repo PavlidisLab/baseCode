@@ -6,6 +6,11 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.File;
 
+// vertical text
+import java.awt.geom.AffineTransform;
+import java.awt.font.*;
+
+
 /**
  * <p>Title: JMatrixDisplay</p>
  * <p>Description: a visual component for displaying a color matrix</p>
@@ -23,8 +28,10 @@ public class JMatrixDisplay extends JPanel {
   protected BufferedImage m_image = null;
 
   protected int m_ratioWidth = 0;
-  protected int m_rowNameWidth;
+  protected int m_rowLabelWidth; // max
+  protected int m_columnLabelHeight; // max
   protected int m_labelGutter = 5;
+  protected int m_fontGutter;
   protected Font m_labelFont = null;
   protected int m_fontSize = 10;
   protected final int m_maxFontSize = 10;
@@ -40,28 +47,35 @@ public class JMatrixDisplay extends JPanel {
 
   public JMatrixDisplay( ColorMatrix matrix ) {
 
-     m_matrix = matrix;
-     setFont();
-     m_rowNameWidth = m_labelGutter + maxStringPixelWidth( matrix.getRowNames(), m_labelFont, this );
-     //m_rowNameWidth += m_labelGutter; // this is optional (leaves some space on the right)
+     m_matrix = matrix;     
      initSize();
   }
 
   /**
-   * Sets the display sizes based on the microarraySetView
+   * Sets the display size
    */
   protected void initSize() {
 
     if (m_matrix != null)
     {
+      // row label width and height (font-dependent)
+      setFont();
+      m_rowLabelWidth = m_labelGutter + maxStringPixelWidth( m_matrix.getRowNames(), m_labelFont, this );
+      //m_rowLabelWidth += m_labelGutter; // this is optional (leaves some space on the right)
+      m_columnLabelHeight = m_labelGutter + maxStringPixelWidth( m_matrix.getColumnNames(), m_labelFont, this );
+ 
+      // height and width of this display component
       int height = m_cellHeight * m_matrix.getRowCount();
       int width  = m_cellWidth  * m_matrix.getColumnCount();
 
+      // adjust for row and column labels
       if (m_isShowLabels)
       {
-          width += m_rowNameWidth;
+          width  += m_rowLabelWidth;
+          height += m_columnLabelHeight; 
       }
 
+      // set the sizes
       Dimension d = new Dimension( width, height );
       setMinimumSize( d );
       setPreferredSize( d );
@@ -78,7 +92,7 @@ public class JMatrixDisplay extends JPanel {
 
     super.paintComponent(g);
     drawDisplay( g, m_matrix );
-
+        
   } // end paintComponent
 
   /**
@@ -91,34 +105,18 @@ public class JMatrixDisplay extends JPanel {
         g.setColor(Color.white);
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-        int fontGutter = (int) ( (double) m_cellHeight * .22);
         int rowCount = matrix.getRowCount();
         int columnCount = matrix.getColumnCount();
 
-//        // TO DO: print column names vertically
-//        if (m_isShowLabels && columnCount > 0)
-//        {
-//           for (int j = 0;  j < columnCount;  j++)
-//           {           
-//              int x = (j * m_cellWidth);
-//              int y = columnNamesHeight;
-//
-//              g.setColor(Color.black);
-//              g.setFont(m_labelFont);
-//              int xRatio = (columnCount * m_cellWidth) + fontGutter;
-//              int yRatio = y + m_cellHeight - m_labelGutter;
-//              String columnName = matrix.getColumnName(j);
-//              if (null == columnName) {
-//                columnName = "Undefined";
-//              }
-//              g.drawString( "" + j, x, y );           
-//           }
-//        } // end printing column names
+        if (m_isShowLabels && columnCount > 0)
+        {
+           drawColumnNames( g );
+        }
         
         // loop through the matrix, one row at a time
         for (int i = 0;  i < rowCount;  i++)
         {
-           int y = (i * m_cellHeight); // + columnNamesHeight
+           int y = (i * m_cellHeight) + m_columnLabelHeight + m_labelGutter;
 
            // draw an entire row, one cell at a time
            for (int j = 0; j < columnCount; j++)
@@ -137,7 +135,7 @@ public class JMatrixDisplay extends JPanel {
               g.setColor(Color.black);
               g.setFont(m_labelFont);
               int xRatio = (columnCount * m_cellWidth) + m_labelGutter;
-              int yRatio = y + m_cellHeight - fontGutter;
+              int yRatio = y + m_cellHeight - m_fontGutter;
               String rowName = matrix.getRowName(i);
               rowName = rowName.trim();  // remove leading and trailing whitespace
               if (null == rowName) {
@@ -149,6 +147,41 @@ public class JMatrixDisplay extends JPanel {
      } // end if (matrix != null)
   } // end drawDisplay
 
+  /**
+   * Draws column names vertically (turned 90 degrees counter-clockwise)
+   */
+  protected void drawColumnNames( Graphics g ) {
+
+     int columnCount = m_matrix.getColumnCount();
+     for (int j = 0;  j < columnCount;  j++)
+     {
+        // compute the coordinates
+        int x = m_cellWidth + (j * m_cellWidth) - m_fontGutter;
+        int y = m_columnLabelHeight;
+        
+        // get column name
+        String columnName = m_matrix.getColumnName( j );
+        if (null == columnName) {
+          columnName = "Undefined";
+        }
+
+        // set font and color
+        g.setColor( Color.black );
+        g.setFont( m_labelFont );
+        
+        // print the text vertically
+        Graphics2D g2 = (Graphics2D)g;
+        AffineTransform fontAT = new AffineTransform();
+        //fontAT.shear(0.2, 0.0);  // slant text backwards
+        fontAT.setToRotation( Math.PI * 3.0f / 2.0f ); // counter-clockwise 90 degrees
+        FontRenderContext frc = g2.getFontRenderContext();
+        Font theDerivedFont = m_labelFont.deriveFont( fontAT );
+        TextLayout tstring = new TextLayout( columnName, theDerivedFont, frc );
+        //  g2.transform(at); // shift to new coordinates.
+        tstring.draw( g2, x, y );
+     } // end for column
+  } // end drawColumnNames
+  
   /**
    * ----------- SHOULD PROBABLY NOT BE IN THIS CLASS -----------
    *
@@ -196,6 +229,7 @@ public class JMatrixDisplay extends JPanel {
     {
        m_fontSize  = fontSize;
        m_labelFont = new Font("Ariel", Font.PLAIN, m_fontSize);
+       m_fontGutter = (int) ( (double) m_cellHeight * .22);
     }
   }
 
