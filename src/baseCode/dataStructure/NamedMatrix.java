@@ -116,16 +116,24 @@ public interface NamedMatrix {
 
    /**
     *
-    * @param i int
+    * @param i int row
     * @return Object[]
     */
    public Object[] getRowObj( int i );
 
    /**
     *
-    * @param i int
+    * @param i int column
     * @return Object[]
     */
    public Object[] getColObj( int i );
 
+   /**
+    * Check if the value at a given index is missing.
+    * @param i row
+    * @param j column
+    * @return
+    */
+   public boolean isMissing(int i, int j);
+   
 }

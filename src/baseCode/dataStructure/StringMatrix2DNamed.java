@@ -148,5 +148,11 @@ public class StringMatrix2DNamed
    public void setColumnNames( Vector v ) {
       this.colNames = v;
    }
+   
+   public boolean isMissing(int i, int j) {
+       return get(i,j) == "";
+   }
+   
+   
 
 }

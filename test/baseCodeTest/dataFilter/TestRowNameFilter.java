@@ -22,10 +22,10 @@ public class TestRowNameFilter
       super.setUp();
 
       testfilterlist = new HashSet();
-      testfilterlist.add( "AB002380_at" );
-      testfilterlist.add( "L31584_at" );
-      testfilterlist.add( "L32832_s_at" );
-      testfilterlist.add( "L36463_at" );
+      testfilterlist.add( "gene1_at" );
+      testfilterlist.add( "gene4_at" );
+      testfilterlist.add( "gene13_s_at" );
+      testfilterlist.add( "gene30_at" );
       testfilterlist.add( "fooblydoobly" ); // shouldn't care.
    }
 

@@ -248,4 +248,9 @@ public class SparseDoubleMatrix2DNamed
    public Vector getColNames() {
       return colNames;
    }
+   
+   
+   public boolean isMissing(int i, int j) {
+       return Double.isNaN(get(i,j));
+   }
 }

@@ -27,11 +27,11 @@ public abstract class AbstractTestFilter extends TestCase {
       testdata =
          (DenseDoubleMatrix2DNamed)f.read(
             AbstractTestFilter.class.getResourceAsStream(
-               "/data/testreallybig.txt"));
+               "/data/testdata.txt"));
       teststringdata =
          (StringMatrix2DNamed)s.read(
             AbstractTestFilter.class.getResourceAsStream(
-               "/data/testreallybig.txt"));
+               "/data/testdata.txt"));
    }
 
    protected void tearDown() throws Exception {

@@ -30,6 +30,7 @@ public class DenseDoubleMatrix2DNamed
     * @param rows int
     * @param cols int
     * @param T double[][]
+    * @todo this needs to fill in the row names with dummy values.
     */
    public DenseDoubleMatrix2DNamed( int rows, int cols, double T[][] ) {
       super( T );
@@ -274,4 +275,8 @@ public class DenseDoubleMatrix2DNamed
       return returnval;
    }
 
+   public boolean isMissing(int i, int j) {
+       return Double.isNaN(get(i,j));
+   }
+   
 }

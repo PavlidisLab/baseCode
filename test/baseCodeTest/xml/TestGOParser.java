@@ -7,8 +7,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import junit.framework.TestCase;
 import org.xml.sax.SAXException;
 import baseCode.xml.GOParser;
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
 import baseCode.util.RegressionTesting;
 
 /**

@@ -30,6 +30,12 @@ public class StringMatrixReader extends MatrixReader {
       return read(stream);
    }
 
+   /**
+    * Missing values are entered as an empty string.
+    * @param stream
+    * @return
+    * @throws IOException
+    */
    public NamedMatrix read(InputStream stream) throws IOException {
       StringMatrix2DNamed matrix = null;
       Vector MTemp = new Vector();
@@ -69,7 +75,8 @@ public class StringMatrixReader extends MatrixReader {
 
             if (columnNumber > 0) {
                if (missing) {
-                  rowTemp.add(Double.toString(Double.NaN));
+                  //rowTemp.add(Double.toString(Double.NaN));
+                   rowTemp.add("");
                } else {
                   rowTemp.add(s);
                }
