@@ -49,6 +49,7 @@ public class DenseDoubleMatrix2DNamed
     public DenseDoubleMatrix2DNamed(int rows, int cols) {
       super(rows, cols);
       rowMap = new LinkedHashMap(); //contains a map of each row name to index of the row.
+      colMap = new HashMap();
       rowNames = new Vector();
       colNames = new Vector();
 
