@@ -22,6 +22,11 @@ public class NormalProbabilityComputer implements ProbabilityComputer {
    public NormalProbabilityComputer( double variance, double mean ) {
       super();
       this.variance = variance;
+      
+      if (variance < 0) {
+         throw new IllegalArgumentException("Variance must be non-negative");
+      }
+
       this.mean = mean;
    }
 
