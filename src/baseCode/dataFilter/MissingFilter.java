@@ -8,15 +8,11 @@ import cern.colt.list.IntArrayList;
 /**
  * Remove rows from a matrix that are missing too many points.
  * <p>
- * Copyright (c) 2004
- * </p>
- * <p>
- * Institution:: Columbia University
+ * Copyright (c) 2004 Columbia University
  * </p>
  * 
  * @author Paul Pavlidis
- * @version 1.0
- * @todo throw exceptions
+ * @version $Id$
  */
 public class MissingFilter extends AbstractFilter implements Filter {
 
@@ -34,8 +30,7 @@ public class MissingFilter extends AbstractFilter implements Filter {
     * (currently 2) that must be present for a row to be kept; but this value is
     * in turn overridden by the maxfractionRemoved.
     * 
-    * @param m
-    *           int
+    * @param m int
     */
    public void setMinPresentCount( int m ) {
       if ( m < 0 ) {
@@ -48,8 +43,7 @@ public class MissingFilter extends AbstractFilter implements Filter {
 
    /**
     * 
-    * @param m
-    *           double
+    * @param k double the fraction of values to be removed.
     */
    public void setMinPresentFraction( double k ) {
       if ( k < 0.0 || k > 1.0 )
@@ -63,8 +57,7 @@ public class MissingFilter extends AbstractFilter implements Filter {
     * Set the maximum fraction of rows which will be removed from the data set.
     * The default value is 0.3 Set it to 1.0 to remove this restriction.
     * 
-    * @param f
-    *           double
+    * @param f double
     */
    public void setMaxFractionRemoved( double f ) {
       if ( f < 0.0 || f > 1.0 )
@@ -74,19 +67,6 @@ public class MissingFilter extends AbstractFilter implements Filter {
       maxFractionRemoved = f;
    }
 
-   /**
-    * Run the filter on the given data using the parameters that have been set.
-    * 
-    * @param data
-    *           DenseDoubleMatrix2DNamed
-    * @return A new matrix that has been filtered.
-    * @throws InvocationTargetException
-    * @throws IllegalAccessException
-    * @throws InstantiationException
-    * @throws NoSuchMethodException
-    * @throws IllegalArgumentException
-    * @throws SecurityException
-    */
    public NamedMatrix filter( NamedMatrix data ) {
       Vector MTemp = new Vector();
       Vector rowNames = new Vector();
@@ -134,7 +114,7 @@ public class MissingFilter extends AbstractFilter implements Filter {
          sortedPresent = present.copy();
          sortedPresent.sort();
          sortedPresent.reverse();
- 
+
          log
                .info( "There are "
                      + kept
@@ -147,19 +127,18 @@ public class MissingFilter extends AbstractFilter implements Filter {
                            .get( ( int ) ( ( double ) numRows * ( maxFractionRemoved ) ) ) );
          minPresentCount = ( int ) sortedPresent
                .get( ( int ) ( ( double ) numRows * ( maxFractionRemoved ) ) );
-         
-         
+
          // Do another pass to add rows we missed before.
          kept = 0;
          MTemp.clear();
          for ( int i = 0; i < numRows; i++ ) {
-            if (  present.get( i ) >= minPresentCount
-                  && present.get( i ) >= ABSOLUTEMINPRESENT  ) {
+            if ( present.get( i ) >= minPresentCount
+                  && present.get( i ) >= ABSOLUTEMINPRESENT ) {
                kept++;
                MTemp.add( data.getRowObj( i ) );
             }
          }
-         
+
       }
 
       NamedMatrix returnval = getOutputMatrix( data, MTemp.size(), numCols );

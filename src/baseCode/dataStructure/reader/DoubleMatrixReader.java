@@ -31,7 +31,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
    }
 
    /**
-   	* @param   InputStream stream to read from
+   	* @param  stream InputStream stream to read from
    	* @return  NamedMatrix  object constructed from the data file
    	*/
    public NamedMatrix read(InputStream stream) throws IOException {

@@ -31,6 +31,10 @@ public class RowNameFilter
       this.exclude = exclude;
    }
 
+   /**
+    * 
+    * @param namesToFilter
+    */
    public RowNameFilter( Set namesToFilter ) {
       filterNames = namesToFilter;
    }

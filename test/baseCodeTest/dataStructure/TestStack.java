@@ -20,7 +20,6 @@ public class TestStack
    protected void setUp() throws Exception {
       super.setUp();
 
-      /**@todo verify the constructors*/
       stack = new Stack();
       stack.push( new Integer( 1 ) );
       stack.push( new Integer( 2 ) );

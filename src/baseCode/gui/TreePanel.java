@@ -23,6 +23,7 @@ import baseCode.dataStructure.graph.DirectedGraphNode;
  * <p>Copyright (c) Columbia University
  * @author Paul Pavlidis
  * @version $Id$
+ * @todo - this really doesn't do much.
  */
 public class TreePanel extends JPanel implements TreeSelectionListener {
    //Optionally set the look and feel.
@@ -54,9 +55,7 @@ public class TreePanel extends JPanel implements TreeSelectionListener {
       Dimension minimumSize = new Dimension(200, 250);
       detailView.setMinimumSize(minimumSize);
       treeView.setMinimumSize(minimumSize);
-      splitPane.setDividerLocation(100); //XXX: ignored in some releases
-      //of Swing. bug 4101306
-      //workaround for bug 4101306:
+      splitPane.setDividerLocation(100);
       treeView.setPreferredSize(new Dimension(500, 200));
 
       splitPane.setPreferredSize(new Dimension(500, 500));

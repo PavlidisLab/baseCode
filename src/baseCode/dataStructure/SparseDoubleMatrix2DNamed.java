@@ -22,8 +22,6 @@ import cern.colt.matrix.impl.SparseDoubleMatrix2D;
  * @author Paul Pavlidis
  * @version $Id: SparseDoubleMatrix2DNamed.java,v 1.5 2004/06/23 14:56:46
  *          pavlidis Exp $
- * @todo make an AbstractNamedMatrix that has reference implementations of
- *       common interface methods.
  */
 public class SparseDoubleMatrix2DNamed extends AbstractNamedMatrix implements
       NamedMatrix {

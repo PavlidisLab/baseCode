@@ -35,8 +35,7 @@ public class AbsentFilter extends AbstractFilter implements Filter {
 
    /**
     * 
-    * @param f
-    *           the matrix containing the flags.
+    * @param f the matrix containing the flags.
     */
    public void setFlagMatrix( StringMatrix2DNamed f ) {
       if ( f == null ) {
@@ -48,8 +47,7 @@ public class AbsentFilter extends AbstractFilter implements Filter {
 
    /**
     * 
-    * @param k
-    *           the minimum fraction of present values that there must be, in
+    * @param k the minimum fraction of present values that there must be, in
     *           order to keep the row.
     */
    public void setMinPresentFraction( double k ) {
@@ -62,8 +60,7 @@ public class AbsentFilter extends AbstractFilter implements Filter {
 
    /**
     * 
-    * @param k
-    *           the minimum number of present values there must be in order to
+    * @param k the minimum number of present values there must be in order to
     *           keep the row.
     */
    public void setMinPresentCount( int k ) {
@@ -77,8 +74,7 @@ public class AbsentFilter extends AbstractFilter implements Filter {
 
    /**
     * 
-    * @param k
-    *           whether to count 'marginal' as 'present'. Default is false.
+    * @param k whether to count 'marginal' as 'present'. Default is false.
     */
    public void setKeepMarginal( boolean k ) {
       keepMarginal = k;
@@ -88,10 +84,8 @@ public class AbsentFilter extends AbstractFilter implements Filter {
     * The data is going to be filtered in accordance to strings in 'flags'.
     * These are either 'A', 'P' or 'M' for absent, present and marginal.
     * 
-    * @param data
-    *           The input matrix
+    * @param data The input matrix
     * @return Matrix after filtering.
-    * @todo finish implementing this.
     */
    public NamedMatrix filter( NamedMatrix data ) {
 
@@ -153,7 +147,7 @@ public class AbsentFilter extends AbstractFilter implements Filter {
             // count missing values in the data as "absent", whatever the
             // flag really is.
             if ( data.isMissing( i, j ) ) {
-        //       log.debug( "Found missing data, counting as absent." );
+               //       log.debug( "Found missing data, counting as absent." );
                continue;
             }
 
@@ -203,7 +197,8 @@ public class AbsentFilter extends AbstractFilter implements Filter {
    /**
     * 
     * @param data
-    * @todo this should check more carefully.
+    * @todo this should check more carefully - actually test that the rows are
+    *       all the same.
     */
    private void validateFlags( NamedMatrix data ) {
       if ( flags == null || flags.rows() < data.rows()

@@ -17,47 +17,49 @@ import java.util.Vector;
 public interface NamedMatrix {
 
    /**
+    * Add a column name associated with an index.
     * 
-    * @param s
-    *           String
+    * @param s String a column name
+    * @param index int the column index associated with this name
     */
    public void addColumnName( String s, int index );
 
    /**
+    * Add a row name associated with a row index.
     * 
-    * @param s
-    *           String
+    * @param s String
+    * @param index int
     */
    public void addRowName( String s, int index );
 
    /**
+    * Get the index of a row by name..
     * 
-    * @param s
-    *           String
+    * @param s String
     * @return int
     */
    public int getRowIndexByName( String s );
 
    /**
+    * Get the index of a column by name.
     * 
-    * @param s
-    *           String
+    * @param s String
     * @return int
     */
    public int getColIndexByName( String s );
 
    /**
+    * Get the row name for an index
     * 
-    * @param i
-    *           int
+    * @param i int
     * @return java.lang.String
     */
    public String getRowName( int i );
 
    /**
+    * Gte the column name for an index.
     * 
-    * @param i
-    *           int
+    * @param i int
     * @return java.lang.String
     */
    public String getColName( int i );
@@ -69,6 +71,7 @@ public interface NamedMatrix {
    public boolean hasRowNames();
 
    /**
+    * Check if this matrix has a valid set of column names.
     * 
     * @return boolean
     */
@@ -76,28 +79,25 @@ public interface NamedMatrix {
 
    /**
     * 
-    * @param v
-    *           Vector
+    * @param v Vector a vector of Strings.
     */
    public void setRowNames( Vector v );
 
    /**
     * 
-    * @param v
-    *           Vector
+    * @param v Vector a vector of Strings.
     */
    public void setColumnNames( Vector v );
 
    /**
     * 
-    * @return Vector
+    * @return Vector of Strings
     */
    public Vector getColNames();
 
    /**
     * 
-    * @param r
-    *           String
+    * @param r String
     * @return boolean
     */
    public boolean hasRow( String r );
@@ -109,40 +109,40 @@ public interface NamedMatrix {
    public Iterator getRowNameMapIterator();
 
    /**
+    * Get the number of rows the matrix has
     * 
     * @return int
     */
    public int rows();
 
    /**
+    * Get the number of columns the matrix has.
     * 
     * @return int
     */
    public int columns();
 
    /**
+    * Set a value in the matrix.
     * 
-    * @param i
-    *           int
-    * @param j
-    *           int
-    * @param val
-    *           Object
+    * @param i int
+    * @param j int
+    * @param val Object
     */
    public void set( int i, int j, Object val );
 
    /**
+    * Get a row in the matrix as a generic Object[]. This exists so
+    * NamedMatrices can be used more generically.
     * 
-    * @param i
-    *           int row
+    * @param i int row
     * @return Object[]
     */
    public Object[] getRowObj( int i );
 
    /**
     * 
-    * @param i
-    *           int column
+    * @param i int column
     * @return Object[]
     */
    public Object[] getColObj( int i );
@@ -150,10 +150,8 @@ public interface NamedMatrix {
    /**
     * Check if the value at a given index is missing.
     * 
-    * @param i
-    *           row
-    * @param j
-    *           column
+    * @param i row
+    * @param j column
     * @return true if the value is missing, false otherwise.
     */
    public boolean isMissing( int i, int j );

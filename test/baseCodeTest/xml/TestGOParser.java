@@ -37,12 +37,12 @@ public class TestGOParser
       super.tearDown();
    }
 
-   /** @todo set up mechanism for writing results if they don't exist.*/
    public void testGOParser() throws IOException, SAXException, ParserConfigurationException {
       String actualReturn = gOParser.getGraph().toString();
       String expectedReturn = RegressionTesting.readTestResult( "/data/goparsertestoutput.txt" );
-      assertEquals( "Diffs: " + RegressionTesting.regress( expectedReturn, actualReturn ),
-                    expectedReturn, actualReturn );
+      assertEquals("return", expectedReturn, actualReturn);
+    /*  assertEquals( "Diffs: " + RegressionTesting.regress( expectedReturn, actualReturn ),
+                    expectedReturn, actualReturn ); */
    }
 
 

@@ -120,16 +120,14 @@ public class DenseDoubleMatrix2DNamed
    public double[] getRowByName( String s ) {
       return getRow( getRowIndexByName( s ) );
    }
-
-
  
    public void set( int row, int col, Object value ) {
       set( row, col, ( ( Double ) value ).doubleValue() );
    }
 
    /**
-    *
-    * @todo make this use copy instead
+    * Make a copy of a matrix.
+    * @todo make this use copy instead (? - PP - why not override clone?) 
     * @return baseCode.dataStructure.DenseDoubleMatrix2DNamed
     */
    public DenseDoubleMatrix2DNamed copyMatrix() {
@@ -156,6 +154,7 @@ public class DenseDoubleMatrix2DNamed
     * @param row
     * @param column
     * @return
+    * @see DoubleMatrix2D#get(int, int)
     */
    public double get( int row, int column ) {
       return matrix.get( row, column );
@@ -163,7 +162,8 @@ public class DenseDoubleMatrix2DNamed
    /**
     * @param row
     * @param column
-    * @return
+    * @return double 
+    * @see DenseDoubleMatrix2D#getQuick(int, int)
     */
    public double getQuick( int row, int column ) {
       return matrix.getQuick( row, column );
@@ -180,25 +180,29 @@ public class DenseDoubleMatrix2DNamed
     * @param row
     * @param column
     * @param value
+    * @see  DenseDoubleMatrix2D#setQuick(int, int, double)
     */
    public void setQuick( int row, int column, double value ) {
       matrix.setQuick( row, column, value );
    }
    /**
     * @param row
-    * @return
+    * @return DoubleMatrix1D
+    * @see DenseDoubleMatrix2D#viewRow(int)
     */
    public DoubleMatrix1D viewRow( int row ) {
       return matrix.viewRow( row );
    }
    /**
-    * @return
+    * @return the number of columns in the matrix
+    * @see cern.colt.matrix.impl.AbstractMatrix2D#columns()
     */
    public int columns() {
       return matrix.columns();
    }
    /**
-    * @return
+    * @return the number of rows in the matrix
+    * @see AbstractMatrix2D#rows()
     */
    public int rows() {
       return matrix.rows();

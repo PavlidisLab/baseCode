@@ -1,41 +1,81 @@
 package baseCode.dataStructure;
 
+/**
+ * A class representing a descriptive term that can be associated with things.
+ * 
+ * Copyright (c) 2004 Columbia University
+ * 
+ * @author Paul Pavlidis
+ * @version $Id$
+ */
 public class OntologyEntry {
 
    private String id = "";
    private String name = "";
    private String definition = "";
 
-   public OntologyEntry(String id) {
-      this(id, null, null);
+   /**
+    * 
+    * @param id
+    */
+   public OntologyEntry( String id ) {
+      this( id, null, null );
    }
 
-   public OntologyEntry(String id, String name, String def) {
+   /**
+    * 
+    * @param id
+    * @param name
+    * @param def
+    */
+   public OntologyEntry( String id, String name, String def ) {
       this.id = id;
       this.name = name;
       this.definition = def;
    }
 
+   /**
+    * 
+    * @return
+    */
    public String getName() {
       return name;
    }
+
+   /**
+    * 
+    * @return
+    */
    public String getId() {
       return id;
    }
+
+   /**
+    * 
+    * @return
+    */
    public String getDefinition() {
       return definition;
    }
 
-   public void setName(String n) {
+   /**
+    * 
+    * @param n
+    */
+   public void setName( String n ) {
       name = n;
    }
 
-   public void setDefinition(String d) {
+   /**
+    * 
+    * @param d
+    */
+   public void setDefinition( String d ) {
       definition = d;
    }
 
    public String toString() {
-      return new String(id + ": \t" + name);
+      return new String( id + ": \t" + name );
    }
 
 }

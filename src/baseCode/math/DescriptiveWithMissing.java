@@ -7,12 +7,12 @@ import cern.jet.stat.Descriptive;
  * Mathematical functions for statistics that allow missing values without scotching the calculations.
  *
  * <p>Be careful because some methods from cern.jet.stat.Descriptive have not been overridden and will
- * yield a UnsupportedOperationException if used!</p>
+ * yield a UnsupportedOperationException if used.</p>
  *
  * <p>Some functions that come with DoubleArrayLists will not work in an entirely compatible way
  * with missing values. For examples, size() reports the total number of elements, including missing values.
  * To get a count of non-missing values, use this.sizeWithoutMissingValues(). The right one to use
- * may vary, so be careful.</p>
+ * may vary.</p>
  *
  * <p>Not all methods need to be overridden. However, all methods that take a "size" parameter should
  * be passed the results of sizeWithoutMissingValues(data), instead of data.size().</p>

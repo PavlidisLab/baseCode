@@ -39,8 +39,8 @@ public class StringMatrixReader extends AbstractNamedMatrixReader {
     * Missing values are entered as an empty string.
     * 
     * @param stream
-    * @return @throws
-    *         IOException
+    * @return NamedMatrix
+    * @throws IOException
     */
    public NamedMatrix read( InputStream stream ) throws IOException {
       StringMatrix2DNamed matrix = null;

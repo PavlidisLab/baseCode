@@ -1,9 +1,3 @@
-/*
- * Created on Jun 22, 2004
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package baseCodeTest.math;
 
 import junit.framework.TestCase;
@@ -13,6 +7,7 @@ import junit.framework.TestCase;
  * <p>Copyright (c) 2004 Columbia University
  * @author pavlidis
  * @version $Id$
+ * @todo write tests.
  */
 public class TestCorrelationStats extends TestCase {
 

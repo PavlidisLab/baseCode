@@ -16,12 +16,73 @@ import baseCode.dataStructure.NamedMatrix;
  * </p>
  * 
  * @author Paul Pavlidis
- * @version $Id: AffymetrixProbeNameFilter.java,v 1.5 2004/06/23 15:11:39
- *          pavlidis Exp $
- * @todo make the filtering criteria configurable.
+ * @version $Id$
  */
-
 public class AffymetrixProbeNameFilter extends AbstractFilter implements Filter {
+
+   private boolean skip_ST = false;
+   private boolean skip_AFFX = false;
+   private boolean skip_F = false;
+   private boolean skip_X = false;
+   private boolean skip_G = false;
+
+   /**
+    * Filter probes that contain the '_st' (sense strand) tag
+    */
+   public static final int ST = 1;
+
+   /**
+    * Filter probes that have the AFFX prefix.
+    */
+   public static final int AFFX = 2;
+
+   /**
+    * Filter probes that have the "_f_at" (family) tag.
+    */
+   public static final int F = 3;
+
+   /**
+    * Filter probes that have the "_x_at" tag.
+    */
+   public static final int X = 4;
+
+   /**
+    * Filter probes that have the "_g_at" (group) tag.
+    */
+   public static final int G = 5;
+
+   /**
+    * 
+    * @param criteria int[] of constants indicating the criteria to use.
+    */
+   public AffymetrixProbeNameFilter( int[] criteria ) {
+      this.setCriteria( criteria );
+   }
+
+   private void setCriteria( int[] criteria ) {
+      for ( int i = 0; i < criteria.length; i++ ) {
+         switch ( criteria[i] ) {
+         case ST: {
+            skip_ST = true;
+         }
+         case AFFX: {
+            skip_AFFX = true;
+         }
+         case F: {
+            skip_F = true;
+         }
+         case X: {
+            skip_X = true;
+         }
+         case G: {
+            skip_G = true;
+         }
+         default: {
+            break;
+         }
+         }
+      }
+   }
 
    public NamedMatrix filter( NamedMatrix data ) {
       Vector MTemp = new Vector();
@@ -34,22 +95,25 @@ public class AffymetrixProbeNameFilter extends AbstractFilter implements Filter 
          String name = data.getRowName( i );
 
          // apply the rules.
-         if ( name.endsWith( "_st" ) ) { // 'st' means sense strand.
+         if ( skip_ST && name.endsWith( "_st" ) ) { // 'st' means sense strand.
             continue;
          }
 
-         if ( name.startsWith( "AFFX" ) ) {
+         if ( skip_AFFX && name.startsWith( "AFFX" ) ) {
             continue;
          }
 
-         if ( name.endsWith( "_f_at" ) ) { // gene family. We don't like.
+         if ( skip_F && name.endsWith( "_f_at" ) ) { // gene family. We don't
+            // like.
             continue;
          }
 
-         if ( name.endsWith( "_x_at" ) ) {
-            //         continue;
+         if ( skip_X && name.endsWith( "_x_at" ) ) {
+            continue;
          }
-
+         if ( skip_G && name.endsWith( "_g_at" ) ) {
+            continue;
+         }
          MTemp.add( data.getRowObj( i ) );
          rowNames.add( name );
          kept++;

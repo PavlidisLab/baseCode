@@ -31,11 +31,11 @@ public class RegressionTesting {
       resultBuf.close();
    }
 
+
    /**
-    *
+    * @param resourceName
+    * @return
     * @throws IOException
-    * @return String
-    * @param resourceName String
     */
    public static String readTestResult( String resourceName ) throws IOException {
       InputStream istream = RegressionTesting.class.
@@ -62,7 +62,7 @@ public class RegressionTesting {
     * @param actual String
     * @return String edit list
     */
-   public static String regress( String expected, String actual ) {
+ /**  public static String regress( String expected, String actual ) {
       Diff diff = new Diff( new Object[] {expected}
                             , new Object[] {actual} );
       Diff.change script = diff.diff_2( false );
@@ -73,5 +73,6 @@ public class RegressionTesting {
       p.print_script( script );
       return wtr.toString();
    }
+   */
 
 }
