@@ -662,30 +662,7 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
             mean ) );
       DescriptiveWithMissing.standardize( data, mean, stdev );
    }
-
-   /**
-    * @see sampleStandardize
-    */
-   public static void normalize( DoubleArrayList data ) {
-      sampleStandardize( data );
-   }
    
-   /**
-    * Standardize using a sample variance
-    *
-    * @param data DoubleArrayList
-    * @see #sampleVariance
-    */
-   public static void sampleStandardize( DoubleArrayList data ) {
-      int effsize = DescriptiveWithMissing.sizeWithoutMissingValues( data );
-      double sumsq = DescriptiveWithMissing.sumOfSquares( data );
-      double sum = DescriptiveWithMissing.sum( data );
-      double mean = DescriptiveWithMissing.mean( data );
-      double sampleVariance = DescriptiveWithMissing.sampleVariance( data, mean );
-      double stdev = DescriptiveWithMissing.standardDeviation( sampleVariance );
-      DescriptiveWithMissing.standardize( data, mean, stdev );
-   }
-
    /**
     * Returns the sum of a data sequence. That is <tt>Sum( data[i] )</tt>.
     * 
