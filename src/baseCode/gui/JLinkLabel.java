@@ -37,7 +37,7 @@ public class JLinkLabel extends JLabel implements MouseListener {
       this();
       setText( text, url );
    }
-
+   
    public void setText( String text ) {
       if ( m_url != null ) {
          setText( text, m_url );
@@ -63,15 +63,12 @@ public class JLinkLabel extends JLabel implements MouseListener {
    public void setText( String text, String url ) {
       m_text = text;
       m_url = url;
-
-      super.setText("Blah");
-      //super.setText( "<html><a href=\"" + url + "\">" + "<u>" + text + "</u>" + "</a></html>" );
-      super.setForeground(Color.blue);
+      super.setText( "<html><a href=\"" + url + "\">" + text + "</a></html>" );
    }
 
    public String toString()
    {
-   	  return m_text;
+   	  return "<html><a href=\"" + m_url + "\">" + m_text + "</a></html>" ;
    }
    
    public void mouseClicked( MouseEvent event ) {
