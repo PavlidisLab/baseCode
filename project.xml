@@ -1,8 +1,14 @@
-<project>
+<?xml version="1.0"?>
+
+<project 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://maven.apache.org/xsd/ http://maven.apache.org/xsd/maven-project-3.0.0.xsd"
+xmlns:jnlp="http://www.w3.org/2001/XMLSchema-instance">
     <pomVersion>3</pomVersion>
+        <id>baseCode</id>
     <name>baseCode</name>
     <groupId>baseCode</groupId>
-    <artifactId>baseCode</artifactId>
+
     <currentVersion>0.2.1</currentVersion>
     <organization>
         <name>Columbia University</name>
@@ -16,17 +22,7 @@
     <repository>
         <connection>scm:cvs:ext:${maven.username}@adgate.cu-genome.org:/fsnode/projects/cvs/pavlab:baseCode</connection>
     </repository>
-    <versions>
-        <version>
-            <id>0.2.1</id>
-            <name>0.2.1</name>
-        </version>
-    </versions>
-    <branches/>
-    <mailingLists/>
-        <licenses>
-        <license>GPL</license>
-    </licenses>
+
     <developers>
         <developer>
             <name>Paul Pavlidis</name>
@@ -50,14 +46,15 @@
             <roles/>
         </developer>
     </developers>
-    <licenses>
-        <license/>
+        <licenses>
+        <license><name>GPL</name></license>
     </licenses>
     <dependencies>
     
         <dependency>
             <groupId>colt</groupId>
             <artifactId>colt</artifactId>
+            <version/>
             <jar>colt.jar</jar>
             <type>jar</type>
              <jnlp.jar>true</jnlp.jar>
@@ -115,6 +112,14 @@
                 </resource>
             </resources>
         </unitTest>
+        <resources>
+            <resource>
+                <directory>${basedir}/src</directory>
+                <includes>
+                    <include>**/alert.gif</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
     <reports>
         <report>maven-jdepend-plugin</report>

@@ -15,11 +15,8 @@ import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import javax.swing.text.EditorKit;
-import javax.swing.text.html.HTMLEditorKit;
 
 import baseCode.util.BrowserLauncher;
 

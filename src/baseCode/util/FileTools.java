@@ -14,12 +14,15 @@ public class FileTools {
    protected final static String PNG_EXTENSION = "png";
    protected final static String GIF_EXTENSION = "gif";
    protected final static String TXT_EXTENSION = "txt";
+   protected final static String[] XML_EXTENSIONS = {"XML", "xml"};
+   
    protected final static String[] IMAGE_EXTENSIONS = { PNG_EXTENSION,
-   GIF_EXTENSION };
-   protected final static String[] DATA_EXTENSIONS = { TXT_EXTENSION };
+   GIF_EXTENSION, "PNG", "GIF" };
+   protected final static String[] DATA_EXTENSIONS = { TXT_EXTENSION, "TXT" };
    // default values
    public final static String DEFAULT_DATA_EXTENSION = TXT_EXTENSION;
    public final static String DEFAULT_IMAGE_EXTENSION = PNG_EXTENSION;
+   public final static String DEFAULT_XML_EXTENSION = "xml";
 
    /**
     * @param file
@@ -95,6 +98,23 @@ public class FileTools {
       return false;
    } // end hasImageExtension
 
+   
+   /**
+    * @param filename
+    * @return
+    */
+   public static boolean hasXMLExtension( String filename ) {
+      String extension = getExtension( filename );
+      if ( extension != null ) {
+         for ( int i = 0; i < FileTools.XML_EXTENSIONS.length; i++ ) {
+            if ( FileTools.XML_EXTENSIONS[i].equals( extension ) ) {
+               return true;
+            }
+         }
+      }
+      return false;
+   }
+   
    /**
     * 
     * @param filename
@@ -130,5 +150,7 @@ public class FileTools {
    public static String addDataExtension( String filename ) {
       return ( filename + "." + FileTools.DEFAULT_DATA_EXTENSION );
    }
+
+ 
 
 }
