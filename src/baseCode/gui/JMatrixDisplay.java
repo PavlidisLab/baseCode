@@ -463,5 +463,13 @@ public class JMatrixDisplay extends JPanel {
    public void setDisplayRange( double min, double max ) {
       m_matrix.setDisplayRange( min, max );
    }
+   
+   /**
+    * @return the color used for missing values
+    */
+   public Color getMissingColor() {
+      return m_matrix.m_missingColor;
+   }
+   
 } // end class JMatrixDisplay
 
