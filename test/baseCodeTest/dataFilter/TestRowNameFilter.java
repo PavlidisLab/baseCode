@@ -11,6 +11,7 @@ import baseCode.dataFilter.RowNameFilter;
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.reader.DoubleMatrixReader;
 import junit.framework.TestCase;
+import java.net.URL;
 
 /**
  * @author Paul Pavlidis
@@ -38,8 +39,7 @@ public class TestRowNameFilter
       // TODO Auto-generated method stub
       super.setUp();
       f = new DoubleMatrixReader();
-      testdata = ( DenseDoubleMatrix2DNamed ) f.read(
-          "C:/Program Files/eclipse/workspace/baseCode/testreallybig.txt" );
+       testdata = ( DenseDoubleMatrix2DNamed ) f.read(TestRowNameFilter.class.getResource("/data/testreallybig.txt").getFile());
       testfilterlist = new HashSet();
 
       testfilterlist.add( "AB002380_at" );
@@ -62,7 +62,6 @@ public class TestRowNameFilter
    public void testFilter() {
       RowNameFilter fi = new RowNameFilter( testfilterlist );
       DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) fi.filter( testdata );
-      System.err.print( filtered.toString() );
    }
 
    public void testFilterExclude() {
