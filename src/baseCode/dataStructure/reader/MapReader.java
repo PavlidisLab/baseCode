@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
-* Reads a tab-delimited file with lines of the format Key Value.
+ * Reads a tab-delimited file with lines of the format Key Value.
  * If there are multiple values, then a Set is created for each key containing its values.</p>
  * <p>Copyright (c) 2004</p>
  * <p>Institution: Columbia University</p>
@@ -20,42 +20,42 @@ import java.util.StringTokenizer;
  */
 public class MapReader {
 
-    /**
-     * @param filename name of the tab-delimited file
-     * @return Map from the file.
-     */
-    public Map read(String filename) throws IOException {
-        Map result = new HashMap();
+   /**
+    * @param filename name of the tab-delimited file
+    * @return Map from the file.
+    */
+   public Map read( String filename ) throws IOException {
+      Map result = new HashMap();
 
-        File infile = new File(filename);
-        if (!infile.exists() || !infile.canRead()) {
-            throw new IllegalArgumentException("Could not read from " +
-                                               filename);
-        }
+      File infile = new File( filename );
+      if ( !infile.exists() || !infile.canRead() ) {
+         throw new IllegalArgumentException( "Could not read from " +
+                                             filename );
+      }
 
-        BufferedReader dis = new BufferedReader(new FileReader(filename));
-        String row;
+      BufferedReader dis = new BufferedReader( new FileReader( filename ) );
+      String row;
 
-        while ((row = dis.readLine()) != null) {
-            StringTokenizer st = new StringTokenizer(row, "\t");
-            String key = st.nextToken();
+      while ( ( row = dis.readLine() ) != null ) {
+         StringTokenizer st = new StringTokenizer( row, "\t" );
+         String key = st.nextToken();
 
-            String value = st.nextToken();
+         String value = st.nextToken();
 
-            if (st.hasMoreTokens()) {
-                Set innerList = new HashSet();
-                innerList.add(value);
-                while (st.hasMoreTokens()) {
-                    value = st.nextToken();
-                }
-                innerList.add(value);
-                result.put(key, innerList);
-            } else {
-                result.put(key, value);
+         if ( st.hasMoreTokens() ) {
+            Set innerList = new HashSet();
+            innerList.add( value );
+            while ( st.hasMoreTokens() ) {
+               value = st.nextToken();
             }
-        }
-        dis.close();
+            innerList.add( value );
+            result.put( key, innerList );
+         } else {
+            result.put( key, value );
+         }
+      }
+      dis.close();
 
-        return result;
-    }
+      return result;
+   }
 } // end of class

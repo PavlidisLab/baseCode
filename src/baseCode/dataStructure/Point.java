@@ -3,7 +3,7 @@ package baseCode.dataStructure;
 /**
  * <p>Title: </p>
  * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2004</p>
+ * <p> Copyright (c) 2004</p>
  * <p>Institution:: Columbia University</p>
  * @author Paul Pavlidis
  * @version $Id$
@@ -18,8 +18,8 @@ public class Point {
     * @param i
     * @param j
     */
-   public Point(int i, int j) {
-      set(i,j);
+   public Point( int i, int j ) {
+      set( i, j );
    }
 
    /**
@@ -27,22 +27,23 @@ public class Point {
     * @param i
     * @param j
     */
-   public void set(int i, int j) {
+   public void set( int i, int j ) {
       x = i;
       y = j;
    }
 
    /**
     *
-    * @return
+    * @return array containing the coordinates x,y.
     */
    public int[] get() {
-      return new int[] {x,y};
+      return new int[] {
+          x, y};
    }
 
    /**
     *
-    * @return
+    * @return x the x value.
     */
    public int getx() {
       return x;
@@ -50,7 +51,7 @@ public class Point {
 
    /**
     *
-    * @return
+    * @return y the y value.
     */
    public int gety() {
       return y;
@@ -58,10 +59,10 @@ public class Point {
 
    /**
     *
-    * @return
+    * @return string representation of the point.
     */
    public String toString() {
-      return new String(x + "\t" + y);
+      return new String( x + "\t" + y );
    }
 
 }

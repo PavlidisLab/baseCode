@@ -1,119 +1,111 @@
 package baseCode.dataStructure;
 
-import java.util.Vector;
 import java.util.Iterator;
-
-
+import java.util.Vector;
 
 /**
- *
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2004</p>
+ * <p> Copyright (c) 2004</p>
  * <p>Institution:: Columbia University</p>
  * @author Paul Pavlidis
  * @version $Id$
  */
-public interface NamedMatrix   {
-
+public interface NamedMatrix {
 
    /**
     *
-    * @param s
+    * @param s String
     */
-   public void addColumnName(String s);
+   public void addColumnName( String s );
 
    /**
     *
-    * @param s
+    * @param s String
     */
-   public void addRowName(String s);
+   public void addRowName( String s );
 
    /**
     *
-    * @param s
-    * @return
+    * @param s String
+    * @return int
     */
-   public int getRowIndexByName(String s) ;
+   public int getRowIndexByName( String s );
 
    /**
     *
-    * @param s
-    * @return
+    * @param s String
+    * @return int
     */
-   public int getColIndexByName(String s);
+   public int getColIndexByName( String s );
 
    /**
     *
-    * @param i
-    * @return
+    * @param i int
+    * @return java.lang.String
     */
-   public String getRowName(int i) ;
+   public String getRowName( int i );
 
    /**
     *
-    * @param i
-    * @return
+    * @param i int
+    * @return java.lang.String
     */
-   public String getColName(int i);
+   public String getColName( int i );
 
    /**
     *
-    * @return
+    * @return boolean
     */
    public boolean hasRowNames();
 
    /**
     *
-    * @return
+    * @return boolean
     */
-   public boolean hasColNames() ;
+   public boolean hasColNames();
 
    /**
     *
-    * @param v
+    * @param v Vector
     */
-   public void setRowNames(Vector v);
+   public void setRowNames( Vector v );
 
    /**
     *
-    * @param v
+    * @param v Vector
     */
-   public void setColumnNames(Vector v);
+   public void setColumnNames( Vector v );
 
    public Vector getColNames();
 
-
    /**
     *
-    * @param r
-    * @return
+    * @param r String
+    * @return boolean
     */
-   public boolean hasRow(String r);
+   public boolean hasRow( String r );
 
    /**
     *
-    * @return
+    * @return java.util.Iterator
     */
    public Iterator getRowNameMapIterator();
 
-/**
- * 
- * @return
- */
-	public int rows();
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public int columns();
+   /**
+    *
+    * @return
+    */
+   public int rows();
 
+   /**
+    *
+    * @return
+    */
+   public int columns();
 
-public void set (int i, int j, Object val);
+   public void set( int i, int j, Object val );
 
-public Object[] getRowObj(int i);
-public Object[] getColObj(int i);
+   public Object[] getRowObj( int i );
 
+   public Object[] getColObj( int i );
 
 }

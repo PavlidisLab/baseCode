@@ -1,17 +1,15 @@
 package baseCode.math;
 
-import cern.colt.list.*;
+import cern.colt.list.DoubleArrayList;
 
 /**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2004</p>
+ * Methods for p-value correction of sets of hypothesis tests.
+ * <p> Copyright (c) 2004</p>
  * <p>Institution:: Columbia University</p>
  * @author Paul Pavlidis
  * @version $Id$
  */
 public class MultipleTestCorrection {
-
 
    /**
     * Determine the Bonferroni pvalue threshold to maintain the family wise error rate (assuming pvalues are independent).
@@ -19,9 +17,9 @@ public class MultipleTestCorrection {
     * @param fwe The family wise error rate
     * @return The minimum pvalue that maintains the FWE
     */
-   public static double BonferroniCut(DoubleArrayList pvalues, double fwe) {
+   public static double BonferroniCut( DoubleArrayList pvalues, double fwe ) {
       int numpvals = pvalues.size();
-      return fwe / (double)numpvals;
+      return fwe / ( double ) numpvals;
    }
 
    /**
@@ -32,25 +30,24 @@ public class MultipleTestCorrection {
     * @param fdr false discovery rate
     * @return The maximum pvalue that maintains the false discovery rate
     */
-   public static double BenjaminiHochbergCut(DoubleArrayList pvalues, double fdr) {
-     int numpvals = pvalues.size();
-     DoubleArrayList pvalcop = pvalues.copy();
-     pvalcop.sort();
-     pvalcop.reverse();
+   public static double BenjaminiHochbergCut( DoubleArrayList pvalues, double fdr ) {
+      int numpvals = pvalues.size();
+      DoubleArrayList pvalcop = pvalues.copy();
+      pvalcop.sort();
+      pvalcop.reverse();
 
-     int n = pvalcop.size();
-     double thresh = fdr * n / numpvals;
+      int n = pvalcop.size();
+      double thresh = fdr * n / numpvals;
 
+      double corrected_p;
+      for ( int i = 0; i < n; i++ ) {
+         double p = pvalcop.get( i );
 
-     double corrected_p;
-     for (int i = 0; i < n; i++) {
-       double p = pvalcop.get(i);
-
-       if (p < thresh) {
-          return p;
-       }
-     }
-     return 0.0;
+         if ( p < thresh ) {
+            return p;
+         }
+      }
+      return 0.0;
    }
 
 }
