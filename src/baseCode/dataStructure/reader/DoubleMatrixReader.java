@@ -6,9 +6,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import cern.colt.list.DoubleArrayList;
 
@@ -47,12 +49,23 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
    }
 
    /**
-    * 
-    * @param stream
-    * @param wantedRowNames
-    * @return @throws IOException
+    * @return <code>read( stream, wantedRowNames, createEmptyRows )</code> with
+    *         <code>createEmptyRows</code> set to true.
     */
    public NamedMatrix read( InputStream stream, Set wantedRowNames )
+         throws IOException {
+            return read( stream, wantedRowNames, true );
+   }
+   
+   /**
+    * @param stream
+    * @param wantedRowNames
+    * @param createEmptyRows if a row contained in <code>wantedRowNames</code>
+    *                        is not found in the file, create an empty row
+    *                        filled with Double.NaN iff this param is true. 
+    * @return @throws IOException
+    */
+   public NamedMatrix read( InputStream stream, Set wantedRowNames, boolean createEmptyRows )
          throws IOException {
 
       BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
@@ -66,6 +79,16 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
       int rowNumber = 0;
       String row;
 
+      //
+      // We need to keep track of which row names we actually found in the file
+      // because will want to add empty rows for each row name we didn't find
+      // (if createEmptyRows == true).
+      //
+      Set wantedRowsFound = null;
+      if ( wantedRowNames != null && createEmptyRows ) {
+         wantedRowsFound = new HashSet();
+      }
+      
       colNames = readHeader( dis );
       int numHeadings = colNames.size();
 
@@ -90,12 +113,18 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
             }
             // skip this row if it's not in wantedRowNames
             else if ( !wantedRowNames.contains( s ) ) {
+               // maybe the next line in the file has the row we want
                continue;
             }
+            else if ( createEmptyRows ) {
+               // we found the row we want in the file
+               wantedRowsFound.add( s );
+            }
          }
-
+         
          //
-         // If we're here, we don't want to skip this row, so parse it
+         // If we're here, that means this row in the file contains the row
+         // we want -- we don't want to skip this file row, so parse it
          //
          DoubleArrayList rowTemp = new DoubleArrayList();
          columnNumber = 0;
@@ -167,7 +196,25 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
          rowNumber++;
       }
       stream.close();
-      return createMatrix( MTemp, rowNumber, numHeadings, rowNames, colNames );
+      
+      //
+      // Add empty rows for each row name we didn't find in the file
+      //
+      int x = wantedRowNames.size();
+      Iterator iterator = wantedRowNames.iterator();
+      while ( iterator.hasNext() ) {
+         String s = ( String ) iterator.next();
+         if ( ! wantedRowsFound.contains( s ) ) {
+            // add an empty row
+            DoubleArrayList emptyRow = createEmptyRow( numHeadings );
+            rowNames.add( s );
+            MTemp.add( emptyRow );
+            rowNumber++;
+         }
+      }
+      
+      return createMatrix( MTemp, rowNumber, numHeadings, 
+      rowNames, colNames );
 
    }
 
@@ -210,5 +257,14 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
       return matrix;
 
    } // end createMatrix
+   
+   protected DoubleArrayList createEmptyRow( int numColumns ) {
+    
+      DoubleArrayList row = new DoubleArrayList();
+      for ( int i = 0;  i < numColumns;  i++ ) {
+         row.add( Double.NaN );
+      }
+      return row;
+   }
 
 } // end class DoubleMatrixReader
