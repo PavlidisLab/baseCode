@@ -1,4 +1,4 @@
-package baseCode.Util;
+package baseCode.util;
 
 /**
  * <p>Title: Stupid debugging helper.</p>
