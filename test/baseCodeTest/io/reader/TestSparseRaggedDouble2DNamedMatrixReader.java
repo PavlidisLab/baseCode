@@ -39,11 +39,12 @@ public class TestSparseRaggedDouble2DNamedMatrixReader extends TestCase {
    public void testReadInputStream()   {
       
       try {
-         matrix = ( SparseRaggedDoubleMatrix2DNamed ) reader.read ( is  );
+         matrix = ( SparseRaggedDoubleMatrix2DNamed ) reader.read ( is, 1  );
          String actualReturn = matrix.toString();
          String expectedReturn = RegressionTesting.readTestResult(TestSparseDoubleMatrixReader.class
                .getResourceAsStream("/data/JW-testoutput.txt"));
-          System.err.println(matrix);
+          System.err.println(actualReturn);
+          System.err.println("Expected:\n" + expectedReturn);
          assertEquals( "return value", expectedReturn, actualReturn );
          
       } catch ( IOException e ) {
