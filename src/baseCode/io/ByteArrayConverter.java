@@ -61,33 +61,78 @@ public class ByteArrayConverter {
    }
    
    public byte[] IntArrayToBytes(int[] iarray) {
-//    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-      byte[] barray = new byte[iarray.length];
-      for(int i = 0; i<barray.length; i++ ) {
-         barray[i]=(new Integer(iarray[i])).byteValue();
+      ByteArrayOutputStream bos = new ByteArrayOutputStream();
+      DataOutputStream dos = new DataOutputStream(bos);
+      for (int i=0;i<iarray.length;i++){
+         try{
+            dos.writeInt(iarray[i]);
+         }
+         catch(Exception e){
+            e.printStackTrace();
+         }
       }
-      return barray;
-      //return null;
+      return bos.toByteArray();
    }
    
    public int[] ByteArrayToInts(byte[] barray) {
-//    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-      int [] iarray = new int[barray.length];
-      for(int i = 0; i<barray.length; i++ ) {
-         iarray[i]=(new Byte(barray[i])).intValue();
-      }
-      return iarray;     
-      //return null;
-   }
-   public byte[] CharArrayToBytes(char[] carray) {
-//    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-      byte[] barray = new byte[carray.length];
-      //convert character array to a String
-      String s = new String(carray);
-      //use the String's getBytes to encode String into a sequence of bytes.
-      barray = s.getBytes();
-      return barray;
+      ByteArrayInputStream bis = new ByteArrayInputStream(barray);
+      DataInputStream dis = new DataInputStream(bis);
+      int [] iarray = new int[barray.length/4];
+      int i=0;
+      boolean EOF=false;
+        while(!EOF) {
+           try{
+              iarray[i]=dis.readInt();
+              System.err.println("int["+i+"] = "+ iarray[i]);
+              i++;
+           }
+           catch(EOFException e){
+              EOF=true;
+              //e.printStackTrace();
+           }
+           catch(IOException e){
+              EOF=true;
+              e.printStackTrace();
+           }
+        }
+        return iarray;     
    }
    
+   public byte[] CharArrayToBytes(char[] carray) {
+      ByteArrayOutputStream bos = new ByteArrayOutputStream();
+      DataOutputStream dos = new DataOutputStream(bos);
+      for (int i=0;i<carray.length;i++){
+         try{
+            dos.writeChar(carray[i]);
+         }
+         catch(Exception e){
+            e.printStackTrace();
+         }
+      }
+      return bos.toByteArray();
+   }
+   public char[] ByteArrayToChars(byte[] barray) {
+      ByteArrayInputStream bis = new ByteArrayInputStream(barray);
+      DataInputStream dis = new DataInputStream(bis);
+      char [] carray = new char[barray.length/2];
+      int i=0;
+      boolean EOF=false;
+        while(!EOF) {
+           try{
+              carray[i]=dis.readChar();
+              System.err.println("char["+i+"] = "+ carray[i]);
+              i++;
+           }
+           catch(EOFException e){
+              EOF=true;
+              //e.printStackTrace();
+           }
+           catch(IOException e){
+              EOF=true;
+              e.printStackTrace();
+           }
+        }
+        return carray;     
+   }
 
 }
