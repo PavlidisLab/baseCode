@@ -6,6 +6,12 @@
  */
 package baseCode.io;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.IOException;
+
 
 /**
  * @author Kiran Keshav
@@ -16,20 +22,39 @@ public class ByteArrayConverter {
    
    
    public byte[] DoubleArrayToBytes(double[] darray) {
-//    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-      byte[] barray = new byte[darray.length];
-      for(int i = 0; i<barray.length; i++ ) {
-         barray[i]=(new Double(darray[i])).byteValue();
-      }
-      return barray;
-      //return null;
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    DataOutputStream dos = new DataOutputStream(bos);
+    for (int i=0;i<darray.length;i++){
+       try{
+          dos.writeDouble(darray[i]);
+       }
+       catch(Exception e){
+          e.printStackTrace();
+       }
+    }
+    return bos.toByteArray();
    }
    
    public double[] ByteArrayToDoubles(byte[] barray) {
-//    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-      double [] darray = new double[barray.length];
-      for(int i = 0; i<barray.length; i++ ) {
-         darray[i]=(new Byte(barray[i])).doubleValue();
+    ByteArrayInputStream bis = new ByteArrayInputStream(barray);
+    DataInputStream dis = new DataInputStream(bis);
+    double [] darray = new double[barray.length/8];
+    int i=0;
+    boolean EOF=false;
+      while(!EOF) {
+         try{
+            darray[i]=dis.readDouble();
+            System.err.println("double["+i+"] = "+ darray[i]);
+            i++;
+         }
+         catch(EOFException e){
+            EOF=true;
+            //e.printStackTrace();
+         }
+         catch(IOException e){
+            EOF=true;
+            e.printStackTrace();
+         }
       }
       return darray;     
       //return null;
@@ -64,13 +89,5 @@ public class ByteArrayConverter {
       return barray;
    }
    
-//   public int[] ByteArrayToInts(byte[] barray) {
-////    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//      int [] iarray = new int[barray.length];
-//      for(int i = 0; i<barray.length; i++ ) {
-//         iarray[i]=(new Byte(barray[i])).intValue();
-//      }
-//      return iarray;     
-//      //return null;
-//   }
+
 }
