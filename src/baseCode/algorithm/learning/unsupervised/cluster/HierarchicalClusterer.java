@@ -2,8 +2,10 @@ package baseCode.algorithm.learning.unsupervised.cluster;
 
 import java.util.TreeSet;
 
-import baseCode.dataStructure.graph.BinaryTree;
-import baseCode.dataStructure.graph.DirectedGraph;
+import baseCode.common.Distanceable;
+import baseCode.dataStructure.tree.BinaryTree;
+import baseCode.dataStructure.tree.BinaryTreeNode;
+
 import cern.colt.list.ObjectArrayList;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
@@ -21,7 +23,7 @@ public class HierarchicalClusterer implements ClusteringAlgorithm {
 
    int STORED = 10;
 
-   BinaryTree nodes;
+   ClusterNode nodes;
 
    DoubleMatrix2D distances;
 
@@ -31,7 +33,6 @@ public class HierarchicalClusterer implements ClusteringAlgorithm {
     * foo
     */
    public HierarchicalClusterer( ObjectArrayList c ) {
-      nodes = new BinaryTree();
       this.objects = c;
       distances = new DenseDoubleMatrix2D( c.size(), c.size() );
    }
@@ -45,7 +46,8 @@ public class HierarchicalClusterer implements ClusteringAlgorithm {
 
       // keep a running list of the best distances.
       TreeSet closestPairs = new TreeSet();
-      closestPairs.add( new ClusterNode( Double.MAX_VALUE, null, null ) );
+      AverageLinkageDistancer ald = new AverageLinkageDistancer();
+      closestPairs.add( new ClusterNode( Double.MAX_VALUE, null, null, ald ) );
 
       // compute all the distances. Keep track of the best distances.
       for ( int i = 0; i < objects.size(); i++ ) {
@@ -57,7 +59,7 @@ public class HierarchicalClusterer implements ClusteringAlgorithm {
             distances.setQuick( j, i, d );
             if ( closestPairs.first() == null
                   || d < ( ( ClusterNode ) closestPairs.first() ).getDistance() ) {
-               closestPairs.add( new ClusterNode( d, elA, elB ) );
+               closestPairs.add( new ClusterNode( d, elA, elB, ald ) );
                if ( closestPairs.size() > STORED ) {
                   closestPairs.remove( closestPairs.last() );
                }
@@ -65,9 +67,20 @@ public class HierarchicalClusterer implements ClusteringAlgorithm {
          }
       }
 
-      // initilialized the clustering with the best cluster.
-      nodes.addNode( new Integer( closestPairs.first().hashCode() ),
-            closestPairs.first() );
+      nodes = ( ClusterNode ) closestPairs.first();  
+      
+      
+      // measure the distance of the new cluster to all the others.
+      for ( int i = 0; i < objects.size(); i++ ) {
+         Distanceable elA = ( Distanceable ) objects.elements()[i];
+         if ( elA.isVisited() ) {
+            continue;
+         }
+         double d = nodes.distanceTo(elA);
+         
+      }
+
+      
       objects.add( closestPairs.first() );
       ( ( ClusterNode ) closestPairs.first() ).getFirstThing().mark();
       ( ( ClusterNode ) closestPairs.first() ).getSecondThing().mark();
@@ -88,16 +101,13 @@ public class HierarchicalClusterer implements ClusteringAlgorithm {
             double d = distances.getQuick( i, j );
             if ( closestPairs.first() == null
                   || d < ( ( ClusterNode ) closestPairs.first() ).getDistance() ) {
-               closestPairs.add( new ClusterNode( d, elA, elB ) );
+               closestPairs.add( new ClusterNode( d, elA, elB, ald ) );
                if ( closestPairs.size() > STORED ) {
                   closestPairs.remove( closestPairs.last() );
                }
             }
-
          }
-
       }
-
    }
 
    /**
@@ -112,10 +122,11 @@ public class HierarchicalClusterer implements ClusteringAlgorithm {
 
 /* just a helper to store the infor about a cluster node. */
 
-class ClusterNode implements Comparable {
+class ClusterNode extends Distanceable {
    private double distance;
    private Distanceable firstThing;
    private Distanceable secondThing;
+   private Distancer distancer;
 
    /**
     * @param distance
@@ -123,11 +134,13 @@ class ClusterNode implements Comparable {
     * @param secondThing
     */
    public ClusterNode( double distance, Distanceable firstThing,
-         Distanceable secondThing ) {
+         Distanceable secondThing, Distancer distancer ) {
       super();
       this.distance = distance;
       this.firstThing = firstThing;
       this.secondThing = secondThing;
+      this.distancer = distancer;
+      ;
    }
 
    public double getDistance() {
@@ -146,7 +159,7 @@ class ClusterNode implements Comparable {
       this.firstThing = firstThing;
    }
 
-   public Distanceable getSecondThing() {
+   public Distanceable getSecondThing() { // this could be another cluster node.
       return secondThing;
    }
 
@@ -180,5 +193,14 @@ class ClusterNode implements Comparable {
 
    public int hashCode() {
       return new Double( distance ).hashCode();
+   }
+
+   /*
+    * (non-Javadoc)
+    * 
+    * @see baseCode.common.Distanceable#distanceTo(baseCode.common.Distanceable)
+    */
+   public double distanceTo( Distanceable a ) {
+      return distancer.distance( this, a );
    }
 }

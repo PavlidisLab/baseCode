@@ -3,6 +3,8 @@ package baseCode.dataStructure.graph;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import baseCode.common.Visitable;
+
 /**
  * <p>
  * Copyright (c) Columbia University
@@ -10,7 +12,7 @@ import org.apache.commons.logging.LogFactory;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public abstract class AbstractGraphNode implements Comparable, GraphNode {
+public abstract class AbstractGraphNode extends Visitable implements GraphNode {
    protected Object key;
    protected Object item;
    protected Graph graph; // the graph this belongs to.

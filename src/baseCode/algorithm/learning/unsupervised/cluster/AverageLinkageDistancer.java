@@ -3,6 +3,8 @@ package baseCode.algorithm.learning.unsupervised.cluster;
 import java.util.Collection;
 import java.util.Iterator;
 
+import baseCode.common.Distanceable;
+
 /**
  * <hr>
  * <p>

@@ -1,4 +1,4 @@
-package baseCode.algorithm.learning.unsupervised.cluster;
+package baseCode.common;
 
 /**
  * An object whose distance to other objects can be measured. It is up to the implementer
@@ -9,11 +9,10 @@ package baseCode.algorithm.learning.unsupervised.cluster;
  * @author pavlidis
  * @version $Id$
  */
-public interface Distanceable extends Visitable {
+public abstract class Distanceable extends Visitable {
    /**
     * @param a
     * @return
     */
-   public double distanceTo(Distanceable a);
-   
+   public abstract double distanceTo(Distanceable a);
 }

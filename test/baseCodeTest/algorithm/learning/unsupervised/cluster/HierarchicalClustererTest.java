@@ -6,7 +6,7 @@ import java.util.HashSet;
 import cern.colt.list.ObjectArrayList;
 
 import baseCode.algorithm.learning.unsupervised.cluster.DistanceFactory;
-import baseCode.algorithm.learning.unsupervised.cluster.Distanceable;
+import baseCode.common.Distanceable;
 import baseCode.algorithm.learning.unsupervised.cluster.Distancer;
 import baseCode.algorithm.learning.unsupervised.cluster.HierarchicalClusterer;
 import junit.framework.TestCase;
@@ -76,7 +76,7 @@ public class HierarchicalClustererTest extends TestCase {
 
 ///** helpers **
 
-class DoubleDistanceable implements Distanceable {
+class DoubleDistanceable extends  Distanceable {
 
    Double value;
    Distancer f;
@@ -95,7 +95,7 @@ class DoubleDistanceable implements Distanceable {
     * 
     * @see baseCode.algorithm.learning.unsupervised.cluster.Distanceable#distanceTo(baseCode.algorithm.learning.unsupervised.cluster.Distanceable)
     */
-   public double distanceTo( Distanceable a ) {
+   public double distanceTo( baseCode.common.Distanceable a ) {
       return f.distance(a, this);
    }
 

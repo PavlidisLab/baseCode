@@ -1,6 +1,6 @@
 package baseCode.dataStructure.graph;
 
-public interface GraphNode {
+public interface GraphNode   {
 
    /**
     * @return the contents of the node.
@@ -31,21 +31,6 @@ public interface GraphNode {
     * @return the Graph this belongs to.
     */
    public Graph getGraph();
-
-   /**
-    * Mark this node (i.e., to track whether it has been visited)
-    */
-   public void mark();
-
-   /**
-    * Unmark this node.
-    */
-   public void unMark();
-
-   /**
-    * @return true if the node is 'marked', false otherwise.
-    */
-   public boolean isVisited();
 
    /**
     * @param graph

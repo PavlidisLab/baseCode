@@ -11,6 +11,7 @@ package baseCode.dataStructure;
  * 
  * @author Paul Pavlidis
  * @version $Id$
+ * @deprecated -- use java.util.List instead.
  */
 public class Queue {
 

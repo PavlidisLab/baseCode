@@ -8,6 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import baseCode.common.Visitable;
+
 /**
  * <p>
  * Copyright (c) Columbia University
@@ -85,7 +87,7 @@ public abstract class AbstractGraph implements Graph {
     */
    public void unmarkAll() {
       for ( Iterator it = items.keySet().iterator(); it.hasNext(); ) {
-         ( ( GraphNode ) it.next() ).unMark();
+         ( ( Visitable ) it.next() ).unMark();
       }
    }
 }
