@@ -203,8 +203,8 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
       StringTokenizer tokw = new StringTokenizer( rowWei, " \t" );
       StringTokenizer toki = new StringTokenizer( rowInd, " \t" );
 
-      IntArrayList indexes = new IntArrayList( INITIAL_SIZE );
-      DoubleArrayList values = new DoubleArrayList( INITIAL_SIZE );
+      IntArrayList indexes = new IntArrayList( amount );
+      DoubleArrayList values = new DoubleArrayList( amount );
 
       while ( toki.hasMoreTokens() ) {
          double eval = Double.parseDouble( tokw.nextToken() );
