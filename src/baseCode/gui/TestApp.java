@@ -1,4 +1,4 @@
-package baseCode.Gui;
+package baseCode.gui;
 
 import javax.swing.UIManager;
 import java.awt.*;
