@@ -1,4 +1,5 @@
-GO:0003673: 	Gene_Ontology	GO:0003674: 	molecular_function
+GO:0003673: 	Gene_Ontology
+	GO:0003674: 	molecular_function
 		GO:0016209: 	antioxidant activity
 			GO:0045174: 	glutathione dehydrogenase (ascorbate) activity
 			GO:0004362: 	glutathione-disulfide reductase activity
