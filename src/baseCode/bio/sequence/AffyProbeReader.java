@@ -62,14 +62,15 @@ public class AffyProbeReader implements ArrayReporterReader {
             String probeSetId = sArray[0];
             if ( probeSetId.startsWith( "Probe" ) ) continue; // header.
 
-            if ( sArray.length < 5 ) throw new IOException( "File format is not valid" );
+          //  if ( sArray.length < 5 ) throw new IOException( "File format is not valid" );
 
-            String number = sArray[1];
-            String sequence = sArray[5];
-            int locationInTarget = Integer.parseInt( sArray[4] );
+            String xcoord = sArray[1];
+            String ycoord = sArray[1];
+            String sequence = sArray[4];
+            int locationInTarget = Integer.parseInt( sArray[3] ); // unfortunately this depends on the file.
             try {
-                Sequence ns = DNATools.createDNASequence( sequence, probeSetId + "_" + number );
-                AffymetrixProbe ap = new AffymetrixProbe( probeSetId, number, ns, locationInTarget );
+                Sequence ns = DNATools.createDNASequence( sequence, probeSetId + "_" + xcoord + "_" + ycoord );
+                AffymetrixProbe ap = new AffymetrixProbe( probeSetId, xcoord, ns, locationInTarget );
 
                 if ( !probeSets.containsKey( probeSetId ) )
                     probeSets.put( probeSetId, new AffymetrixProbeSet( probeSetId ) );

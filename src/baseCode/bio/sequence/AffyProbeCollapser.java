@@ -28,7 +28,7 @@ public class AffyProbeCollapser {
     public AffyProbeCollapser() {
     };
 
-    public void collapse( InputStream is, Writer writer ) throws IOException {
+    public void collapse( String arrayName, InputStream is, Writer writer ) throws IOException {
 
         AffyProbeReader apr = new AffyProbeReader();
 
@@ -39,22 +39,23 @@ public class AffyProbeCollapser {
             AffymetrixProbeSet apset = ( AffymetrixProbeSet ) probeSets.get( probeSetname );
 
             Sequence m = apset.collapse();
-            writer.write( ">" + probeSetname + "\n" + m.seqString() + "\n");
+            writer.write( ">target:" + arrayName + ":" + probeSetname + ";\n" + m.seqString() + "\n");
         }
 
     }
 
     public static void main( String[] args ) throws IOException {
-        String filename = args[0];
+        String arrayName = args[0];
+        String filename = args[1];
         File f = new File( filename );
         if ( !f.canRead() ) throw new IOException();
 
-        String outputFileName = args[1];
+        String outputFileName = args[2];
         File o = new File( outputFileName );
   //      if ( !o.canWrite() ) throw new IOException( "Can't write " + outputFileName );
 
         AffyProbeCollapser apc = new AffyProbeCollapser();
-        apc.collapse( new FileInputStream( f ), new BufferedWriter( new FileWriter( o ) ) );
+        apc.collapse( arrayName, new FileInputStream( f ), new BufferedWriter( new FileWriter( o ) ) );
 
     }
 }
