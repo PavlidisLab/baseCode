@@ -9,6 +9,8 @@ import cern.colt.list.DoubleArrayList;
  * <p>Institution:: Columbia University</p>
  * @author Paul Pavlidis
  * @version $Id$
+ * @todo Have min() and max() throw an EmptyMatrixException -- this exception
+ *       class does not yet exist and needs to be defined somewhere.
  */
 public class MatrixRowStats {
 
