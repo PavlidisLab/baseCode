@@ -237,8 +237,5 @@ public class SparseDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix impleme
      return new DoubleArrayList(getRow(i));
    }
    
-   public DoubleMatrix1D getRowMatrix1D(int i) {
-      return new SparseDoubleMatrix1D(getRow(i));
-   }
    
 }

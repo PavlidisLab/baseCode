@@ -47,6 +47,19 @@ public abstract class AbstractNamedDoubleMatrix extends AbstractNamedMatrix {
    
    public abstract DoubleArrayList getRowArrayList(int i);
    
-   public abstract DoubleMatrix1D getRowMatrix1D(int i);
    
+   /**
+    * @param i
+    * @param j
+    * @return
+    */
+   public abstract double getQuick( int i, int j );
+
+   /**
+    * @param j
+    * @return
+    */
+   public abstract DoubleMatrix1D viewRow( int j );
+
+ 
 }

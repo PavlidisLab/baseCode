@@ -244,7 +244,7 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
       return new DoubleArrayList(getRow(i));
    }
    
-   public DoubleMatrix1D getRowMatrix1D(int i) {
-      return new DenseDoubleMatrix1D(getRow(i));
-   }
+  
+
+    
 }

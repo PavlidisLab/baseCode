@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 
+import baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix;
 import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.matrix.SparseDoubleMatrix2DNamed;
 import cern.colt.list.DoubleArrayList;
@@ -110,8 +111,8 @@ public class RegressionTesting {
     * @param tolerance
     * @return try if all the values in both matrices are within 'tolerance' of each other.
     */
-   public static boolean closeEnough( DenseDoubleMatrix2DNamed a,
-         DenseDoubleMatrix2DNamed b, double tolerance ) {
+   public static boolean closeEnough( AbstractNamedDoubleMatrix a,
+         AbstractNamedDoubleMatrix b, double tolerance ) {
       if ( a.rows() != b.rows() || a.columns() != b.columns() ) return false;
 
       for ( int i = 0; i < a.rows(); i++ ) {

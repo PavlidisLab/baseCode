@@ -188,7 +188,7 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
     * 
     * @see baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix#getRowMatrix1D(int)
     */
-   public DoubleMatrix1D getRowMatrix1D( int i ) {
+   public DoubleMatrix1D viewRow( int i ) {
       return ( DoubleMatrix1D ) matrix.get( i );
    }
 
@@ -239,6 +239,13 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
       
    }
 
+   /* (non-Javadoc)
+    * @see baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix#getQuick(int, int)
+    */
+   public double getQuick( int i, int j ) {
+      return get(i,j);
+   }
+ 
  
 
 }

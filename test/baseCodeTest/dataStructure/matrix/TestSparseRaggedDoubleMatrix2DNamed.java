@@ -67,7 +67,7 @@ public class TestSparseRaggedDoubleMatrix2DNamed extends TestCase {
    //
    public void testGetRowMatrix1D() {
 
-      DoubleMatrix1D actualReturn = matrix.getRowMatrix1D( 2 );
+      DoubleMatrix1D actualReturn = matrix.viewRow( 2 );
       DoubleMatrix1D expectedReturn = new RCDoubleMatrix1D( new double[] {
             0.3, 0.0, 0.8
       } );

@@ -69,6 +69,15 @@ public class TestMatrixStats extends TestCase {
       assertEquals( true, RegressionTesting.closeEnough(expectedReturn, actualReturn, 0.001 ));
    }
    
+   public final void testRbfNormalize() {
+      MatrixStats.rbfNormalize(testdata, 100);
+      
+  //   System.err.println(testdata);
+      
+  //    assertEquals( true, RegressionTesting.closeEnough(expectedReturn, testdata, 0.001 ));
+   }
+   
+   
  /**  public final void testCorrelationMatrixHuge() {
       SparseDoubleMatrix2DNamed actualReturn = MatrixStats.correlationMatrix(testdatahuge, 0.9);
       DoubleMatrixReader f = new DoubleMatrixReader();

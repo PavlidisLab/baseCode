@@ -1,8 +1,13 @@
 package baseCode.math;
 
+import baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix;
 import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.matrix.SparseDoubleMatrix2DNamed;
+import cern.colt.function.DoubleDoubleFunction;
+import cern.colt.function.DoubleFunction;
 import cern.colt.list.DoubleArrayList;
+import cern.colt.matrix.DoubleMatrix1D;
+import cern.jet.math.Functions;
 
 /**
  * <hr>
@@ -133,4 +138,38 @@ public class MatrixStats {
       return max; // might be NaN if all values are missing
 
    }
+
+   /**
+    * Normalize a matrix in place to be a transition matrix. Assumes that values operate such that small values
+    * represent closer distances, and the values are probabilities.
+    * <p>
+    * Each point is first transformed via v' = exp(-v/sigma). Then the values for each node's edges are adjusted to sum
+    * to 1.
+    * 
+    * @param matrixToNormalize
+    * @param sigma a scaling factor for the input values.
+    */
+   public static void rbfNormalize(
+         AbstractNamedDoubleMatrix matrixToNormalize, final double sigma ) {
+      System.err.print( "Normalizing ..." );
+
+      DoubleFunction f = new DoubleFunction() {
+         public double apply( double value ) {
+            return Math.exp( -value / sigma );
+         }
+      };
+
+      for ( int j = 0; j < matrixToNormalize.rows(); j++ ) { // do each row in turn ...
+
+         DoubleMatrix1D row = matrixToNormalize.viewRow( j );
+
+         row.assign( f );
+
+         double sum = row.zSum();
+         row.assign( Functions.div( sum ) );
+
+      }
+      System.err.println( "  ...done. " );
+   }
+
 }
