@@ -20,22 +20,25 @@ public class JMatrixTableCellRenderer
     implements TableCellRenderer {
 
    JMatrixDisplay m_matrixDisplay;
-   DecimalFormat m_nf;
 
-   public JMatrixTableCellRenderer( JMatrixDisplay matrixDisplay, DecimalFormat nf ) {
+   // to format tooltips
+   DecimalFormat m_scientificNotation = new DecimalFormat( "0.##E0" );
+   DecimalFormat m_regular = new DecimalFormat();
+
+   public JMatrixTableCellRenderer( JMatrixDisplay matrixDisplay ) {
 
       m_matrixDisplay = matrixDisplay;
       setOpaque( true );
 
-      // to format tooltips
-      m_nf = nf;
+      // for tooltips
+      m_regular.setMaximumFractionDigits( 3 );
    }
 
    // This method is called each time a cell in a column
    // using this renderer needs to be rendered.
    public Component getTableCellRendererComponent(
        JTable table,
-       Object value,
+       Object tableCellValue,
        boolean isSelected,
        boolean hasFocus,
        int displayedRow,
@@ -43,7 +46,15 @@ public class JMatrixTableCellRenderer
       // 'value' is value contained in the cell located at
       // (rowIndex, vColIndex)
 
-      Point coords = ( Point ) value;
+      if ( isSelected ) {
+         // cell (and perhaps other cells) are selected
+      }
+
+      if ( hasFocus ) {
+         // this cell is the anchor and the table has the focus
+      }
+
+      Point coords = ( Point ) tableCellValue;
       int row = coords.x;
       int column = coords.y;
 
@@ -56,7 +67,16 @@ public class JMatrixTableCellRenderer
       m_matrixDisplay.setStandardizedEnabled( false );
       double matrixValue = m_matrixDisplay.getValue( row, column );
       m_matrixDisplay.setStandardizedEnabled( isStandardized ); // return to previous state
-      setToolTipText( "" + m_nf.format( matrixValue ) );
+
+      // Only very small and very large numbers should be displayed in scientific notation
+      String value;
+      if ( Math.abs( matrixValue ) < 0.01 || Math.abs( matrixValue ) > 100000 ) {
+         value = m_scientificNotation.format( matrixValue );
+      }
+      else {
+         value = m_regular.format( matrixValue );
+      }
+      setToolTipText( value );
 
       // Since the renderer is a component, return itself
       return this;

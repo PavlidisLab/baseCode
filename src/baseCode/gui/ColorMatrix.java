@@ -24,16 +24,18 @@ public class ColorMatrix
    // data fields
 
    /**
-    * min and max values to display, which might not be the actual min
+    * DO NOT SET THESE VALUES.
+    *
+    * Min and max values to display, which might not be the actual min
     * and max values in the matrix.  For instance, we might want to clip
     * values, or show a bigger color range for equal comparison with other
     * rows or matrices.
     */
-   protected double m_minDisplayValue;
-   protected double m_maxDisplayValue;
+   protected double m_displayMin; // DO NOT SET THIS
+   protected double m_displayMax; // DO NOT SET THIS
 
-   protected double m_minStandardizedDisplayValue = -2; // defaults to -2
-   protected double m_maxStandardizedDisplayValue = +2; // defaults to +2
+   protected double m_min;
+   protected double m_max;
 
    protected Color[][] m_colors;
    protected Color m_missingColor = Color.lightGray;
@@ -212,8 +214,8 @@ public class ColorMatrix
       m_colors = new Color[m_totalRows][m_totalColumns];
       createRowKeys();
 
-      m_minDisplayValue = MatrixRowStats.min( m_matrix );
-      m_maxDisplayValue = MatrixRowStats.max( m_matrix );
+      m_displayMin = m_min = MatrixRowStats.min( m_matrix );
+      m_displayMax = m_max = MatrixRowStats.max( m_matrix );
 
       // map values to colors
       mapValuesToColors();
@@ -247,8 +249,8 @@ public class ColorMatrix
          setRow( r, rowValues );
       }
 
-      m_minDisplayValue = m_minStandardizedDisplayValue;
-      m_maxDisplayValue = m_maxStandardizedDisplayValue;
+      m_displayMin = -2;
+      m_displayMax = +2;
 
       mapValuesToColors();
 
@@ -261,10 +263,23 @@ public class ColorMatrix
       return m_matrix;
    }
 
-   public void setDisplayValuesRange( double min, double max ) {
+   //
+   // Standardized display range
+   //
+   public void setDisplayRange( double min, double max ) {
 
-      m_minStandardizedDisplayValue = min;
-      m_maxStandardizedDisplayValue = max;
+      m_displayMin = min;
+      m_displayMax = max;
+
+      mapValuesToColors();
+   }
+
+   public double getDisplayMin() {
+      return m_displayMin;
+   }
+
+   public double getDisplayMax() {
+      return m_displayMax;
    }
 
    /**
@@ -286,7 +301,7 @@ public class ColorMatrix
 
    public void mapValuesToColors() {
       ColorMap colorMap = new ColorMap( m_colorMap );
-      double range = m_maxDisplayValue - m_minDisplayValue;
+      double range = m_displayMax - m_displayMin;
 
       if ( 0.0 == range ) {
          // This is not an exception, just a warning, so no exception to throw
@@ -312,16 +327,16 @@ public class ColorMatrix
                // mean zero, we set m_minValue = -2 and m_maxValue = 2,
                // even though there could be a few extreme values
                // outside this range (right?)
-               if ( value > m_maxDisplayValue ) {
+               if ( value > m_displayMax ) {
                   // clip extremely large values
-                  value = m_maxDisplayValue;
-               } else if ( value < m_minDisplayValue ) {
+                  value = m_displayMax;
+               } else if ( value < m_displayMin ) {
                   // clip extremely small values
                   value = 0;
                } else {
                   // shift the minimum value to zero
                   // to the range [0, maxValue + minValue]
-                  value -= m_minDisplayValue;
+                  value -= m_displayMin;
                }
 
                // stretch or shrink the range to [0, totalColors]

@@ -29,8 +29,9 @@ public class GradientBarApp {
       frame.setTitle( "JGradientBar Test" );
 
       Color[] colorMap = ColorMap.GREENRED_COLORMAP;
-      JGradientBar gradientBar = new JGradientBar( "-2", "+2", colorMap );
-      gradientBar.setLabels( "a", "b" );
+      JGradientBar gradientBar = new JGradientBar();
+      gradientBar.setColorMap( colorMap );
+      gradientBar.setLabels( -2, +2 );
 
       frame.getContentPane().add( gradientBar );
 
