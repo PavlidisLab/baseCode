@@ -43,11 +43,6 @@ public class ColorMatrix {
     final Color[] BLACKBODY_COLORMAP = { Color.black, DARK_RED, Color.orange, Color.yellow, Color.white };
     Color[] m_currentColorMap = GREENRED_COLORMAP; // reference to a color map
 
-    public ColorMatrix() {
-
-        this( "C:\\3_missing-values.txt", false );
-    }
-
     /**
      * @param  filename  either an absolute path, or if providing a relative
      *                   path (e.g. data.txt), then keep in mind that it will
@@ -166,6 +161,9 @@ public class ColorMatrix {
                          // in case all values in the matrix are equal.
         }
 
+        // zoom factor for stretching or shrinking the range
+        double zoomFactor = (m_colorPalette.length - 1) / range;
+
         // map values to colors
         for (int row = 0;  row < m_totalRows;  row++)
         {
@@ -179,15 +177,32 @@ public class ColorMatrix {
                     m_colors[row][column] = m_missingColor;
                 }
                 else
-                {
-                    // if values can be less than zero, shift them up
-                    // to the range [0, maxValue + minValue]
-                    if (m_minValue < 0)
+                {                    
+                    // clip extreme values (this makes sense for normalized
+                    // values because then for a standard deviation of one and
+                    // mean zero, we set m_minValue = -2 and m_maxValue = 2,
+                    // even though there could be a few extreme values 
+                    // outside this range (right?)
+                    if (value > m_maxValue)
                     {
-                        value += Math.abs( m_minValue );
+                        // clip extremely large values
+                        value = m_maxValue;
                     }
-                    // normalize the values to the range [0, totalColors]
-                    int i = (int)(( (m_colorPalette.length-1) / range ) * value );
+                    else if (value < m_minValue)
+                    {
+                        // clip extremely small values
+                        value = 0;
+                    }
+                    else
+                    {
+                        // shift the minimum value to zero
+                        // to the range [0, maxValue + minValue]
+                        value -= m_minValue;                        
+                    }
+                    
+                    // stretch or shrink the range to [0, totalColors]
+                    double valueNew = value * zoomFactor;
+                    int i = (int)valueNew;
                     m_colors[row][column] = m_colorPalette[i];
                 }
             }
@@ -277,10 +292,15 @@ public class ColorMatrix {
         m_colors = new Color[m_totalRows][m_totalColumns];
         createRowKeys();
 
-        standardize();
-
-        m_minValue = MatrixStats.min( m_matrix );
-        m_maxValue = MatrixStats.max( m_matrix );
+        if (normalize)
+        {
+            standardize();
+        }
+        else
+        {
+            m_minValue = MatrixStats.min( m_matrix );
+            m_maxValue = MatrixStats.max( m_matrix );
+        }
 
         // map values to colors
         mapValuesToColors();
