@@ -18,7 +18,7 @@ import baseCode.dataStructure.graph.DirectedGraph;
 import baseCode.dataStructure.graph.DirectedGraphNode;
 
 /**
- * 
+ * Read in the GO XML file provided by the Gene Ontology Consortium.
  * 
  * <p>
  * Copyright (c) Columbia University

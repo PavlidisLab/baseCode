@@ -72,10 +72,8 @@ public class Distance {
       }
       if ( sum == 0.0 ) {
          return 0.0;
-      } else {
-         return Math.sqrt( sum );
       }
-
+      return Math.sqrt( sum );
    }
 
    /**
@@ -105,9 +103,8 @@ public class Distance {
    }
 
    /**
-    * Highly optimized implementation of the Pearson correlation. The inputs
-    * must be standardized - mean zero, variance one, without any missing
-    * values.
+    * Highly optimized implementation of the Pearson correlation. The inputs must be standardized - mean zero, variance
+    * one, without any missing values.
     * 
     * @param xe A standardized vector
     * @param ye A standardized vector
@@ -121,13 +118,12 @@ public class Distance {
          sxy += xj * yj;
       }
 
-      return sxy /  xe.length;
+      return sxy / xe.length;
    }
 
    /**
-    * Like correlationofNormedFast, but takes DoubleArrayLists as inputs,
-    * handles missing values correctly, and does more error checking. Assumes
-    * the data has been converted to z scores already.
+    * Like correlationofNormedFast, but takes DoubleArrayLists as inputs, handles missing values correctly, and does
+    * more error checking. Assumes the data has been converted to z scores already.
     * 
     * @param x A standardized vector
     * @param y A standardized vector
@@ -159,6 +155,6 @@ public class Distance {
       if ( length == 0 ) {
          return -2.0; // flag of illegal value.
       }
-      return sxy /  length;
+      return sxy / length;
    }
 }

@@ -5,6 +5,8 @@ import java.io.File;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
+import java.awt.Color;
+
 import javax.swing.JLabel;
 
 /**
@@ -20,7 +22,7 @@ import javax.swing.JLabel;
  * <p>
  * Company:
  * </p>
- *
+ * 
  * @author not attributable
  * @version $Id$
  */
@@ -30,7 +32,7 @@ public abstract class WizardStep extends JPanel {
       super();
       try {
          BorderLayout layout = new BorderLayout();
-         this.setLayout(layout);
+         this.setLayout( layout );
          jbInit();
       } catch ( Exception e ) {
          e.printStackTrace();
@@ -47,20 +49,21 @@ public abstract class WizardStep extends JPanel {
    }
 
    protected void addHelp( String text ) {
-      JLabel label=new JLabel(text);
-      JLabel jLabel1 = new JLabel("      ");
-      JLabel jLabel2 = new JLabel(" ");
-      JLabel jLabel3 = new JLabel(" ");
-      JLabel jLabel4 = new JLabel("      ");
+      JLabel label = new JLabel( text );
+      JLabel jLabel1 = new JLabel( "      " );
+      JLabel jLabel2 = new JLabel( " " );
+      JLabel jLabel3 = new JLabel( " " );
+      JLabel jLabel4 = new JLabel( "      " );
       BorderLayout borderLayout1 = new BorderLayout();
       JPanel labelPanel = new JPanel();
-      labelPanel.setLayout(borderLayout1);
-      labelPanel.add(label, BorderLayout.CENTER);
-      labelPanel.add(jLabel1,  BorderLayout.WEST);
-      labelPanel.add(jLabel2, BorderLayout.NORTH);
-      labelPanel.add(jLabel3, BorderLayout.SOUTH);
-      labelPanel.add(jLabel4, BorderLayout.EAST);
-      this.add(labelPanel, BorderLayout.NORTH);
+      labelPanel.setBackground(Color.WHITE);
+      labelPanel.setLayout( borderLayout1 );
+      labelPanel.add( label, BorderLayout.CENTER );
+      labelPanel.add( jLabel1, BorderLayout.WEST );
+      labelPanel.add( jLabel2, BorderLayout.NORTH );
+      labelPanel.add( jLabel3, BorderLayout.SOUTH );
+      labelPanel.add( jLabel4, BorderLayout.EAST );
+      this.add( labelPanel, BorderLayout.NORTH );
    }
 
    protected boolean testfile( String filename ) {
@@ -68,16 +71,15 @@ public abstract class WizardStep extends JPanel {
          File f = new File( filename );
          if ( f.exists() ) {
             return true;
-         } else {
-            JOptionPane.showMessageDialog( null, "File " + filename
-                  + " doesn't exist.  " );
          }
-         return false;
-      } else {
-         JOptionPane
-               .showMessageDialog( null, "A required file field is blank." );
+         JOptionPane.showMessageDialog( null, "File " + filename
+               + " doesn't exist.  " );
+
          return false;
       }
+      JOptionPane.showMessageDialog( null, "A required file field is blank." );
+      return false;
+
    }
 
 }

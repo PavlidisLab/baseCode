@@ -38,6 +38,15 @@ public class RowNameFilter extends AbstractFilter implements Filter {
    public RowNameFilter( Set namesToFilter ) {
       filterNames = namesToFilter;
    }
+   
+   public RowNameFilter() {
+      filterNames = null;
+   }
+   
+   public void setFilterNames(Set namesToFilter, boolean exclude) {
+      this.filterNames = namesToFilter;
+      this.exclude = exclude;
+   }
 
    /**
     * Filter according to row names.
@@ -47,7 +56,7 @@ public class RowNameFilter extends AbstractFilter implements Filter {
       Vector rowNames = new Vector();
       int numRows = data.rows();
       int numCols = data.columns();
-
+      int numNeeded = filterNames.size();
       int kept = 0;
       for ( int i = 0; i < numRows; i++ ) {
          String name = data.getRowName( i );
@@ -60,14 +69,16 @@ public class RowNameFilter extends AbstractFilter implements Filter {
             MTemp.add( data.getRowObj( i ) );
             rowNames.add( name );
             kept++;
+            if (kept >= numNeeded) {
+               break; // no use in continuing.
+            }
          }
 
          if ( exclude ) {
-
             MTemp.add( data.getRowObj( i ) );
             rowNames.add( name );
             kept++;
-         }
+         }   
       }
 
       NamedMatrix returnval = getOutputMatrix( data, MTemp.size(), numCols );
