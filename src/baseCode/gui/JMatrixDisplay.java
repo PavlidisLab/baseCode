@@ -469,51 +469,5 @@ public class JMatrixDisplay extends JPanel {
    public void setDisplayRange( double min, double max ) {
       m_matrix.setDisplayRange( min, max );
    }
-
-   /**
-    * @param args[0] path to the matrix data file
-    * @param args[1] "true" iff you want to see the matrix normalized
-    * @param args[2] "true" iff you want to see the row and column labels
-    */
-   public static void main( String[] args ) {
-
-      // Make sure the filename was passed in
-      if ( args.length < 1 ) {
-         System.err
-               .println( "Please specify the name of the data file as a program argument" );
-         return;
-      }
-
-      // Create the matrix display
-      String inDataFilename = args[0];
-      JMatrixDisplay matrixDisplay = null;
-      try {
-         matrixDisplay = new JMatrixDisplay( inDataFilename );
-      } catch ( java.io.IOException e ) {
-         System.err.println( "Unable to open file " + inDataFilename );
-         return;
-      }
-
-      // Normalize?
-      boolean normalize = true;
-      if ( args.length > 1 ) {
-         normalize = Boolean.getBoolean( args[1] );
-      }
-      matrixDisplay.setStandardizedEnabled( normalize );
-
-      // Show labels?
-      boolean showLabels = true;
-      if ( args.length > 2 ) {
-         showLabels = Boolean.getBoolean( args[2] );
-      }
-      matrixDisplay.setLabelsVisible( showLabels );
-
-      // Create the frame
-      JFrame frame = new JFrame();
-      frame.setSize( matrixDisplay.getSize( showLabels ) );
-      frame.getContentPane().add( matrixDisplay );
-      frame.show();
-   }
-
 } // end class JMatrixDisplay
 
