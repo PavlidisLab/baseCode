@@ -1,14 +1,15 @@
 package baseCode.algorithm.learning.unsupervised;
 
+import com.braju.beta.format.Format;
+import com.braju.beta.format.Parameters;
+
 import baseCode.algorithm.Algorithm;
 import baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix;
 import baseCode.dataStructure.matrix.DenseDoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix1D;
 
-import com.braju.beta.format.Format;
-import com.braju.beta.format.Parameters;
-
 /**
+ * Implementation of RankProp, as described in Weston et al. PNAS
  * <hr>
  * <p>
  * Copyright (c) 2004 Columbia University
@@ -37,34 +38,7 @@ public class RankProp extends Algorithm {
 
    }
 
-   /**
-    * @return Returns the alpha.
-    */
-   public double getAlpha() {
-      return alpha;
-   }
-
-   /**
-    * @param alpha The alpha to set.
-    */
-   public void setAlpha( double alpha ) {
-      this.alpha = alpha;
-   }
-
-   /**
-    * @return Returns the max_loops.
-    */
-   public int getMaxIter() {
-      return maxIter;
-   }
-
-   /**
-    * @param max_loops The max_loops to set.
-    */
-   public void setMaxIter( int maxIter ) {
-      this.maxIter = maxIter;
-   }
-
+ 
    /**
     * @param matrix
     * @param matrix1D
@@ -103,12 +77,44 @@ public class RankProp extends Algorithm {
             y.set( j, ( alpha * dotProduct ) + query.getQuick( j ) );
          }
 
-//         if ( loops % 5 == 0 ) {
-//            log.info( " iteration " + loops + " y[0]="
-//                  + Format.sprintf( "%g", new Parameters( y.getQuick( 0 ) ) ) );
-//         }
+         if ( loops % 5 == 0 ) {
+            log.info( " iteration " + loops + " y[0]="
+                  + Format.sprintf( "%g", new Parameters( y.getQuick( 0 ) ) ) );
+         }
       }
       return y;
    }
+   
+   /**
+    * @return Returns the alpha.
+    */
+   public double getAlpha() {
+      return alpha;
+   }
+
+   /**
+    * controls amount of "clustering"
+    * @param alpha The alpha to set.
+    */
+   public void setAlpha( double alpha ) {
+      this.alpha = alpha;
+   }
+
+   /**
+    * Maximum iterations before stopping.
+    * @return Returns the max_loops.
+    */
+   public int getMaxIter() {
+      return maxIter;
+   }
+
+   /**
+    * Maximum iterations before stopping.
+    * @param max_loops The max_loops to set.
+    */
+   public void setMaxIter( int maxIter ) {
+      this.maxIter = maxIter;
+   }
+
 }
 

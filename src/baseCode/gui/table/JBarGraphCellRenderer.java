@@ -76,12 +76,16 @@ public class JBarGraphCellRenderer extends JLabel implements TableCellRenderer {
          m_isBarGraph = true;
          m_values = value;
 
-         // Double x = ( Double ) ( ( ArrayList ) value ).get( 0 );
-         Double x = new Double( m_regular.format( -Math
-               .log( ( ( Double ) ( ( ArrayList ) value ).get( 0 ) )
-                     .doubleValue() )
-               / Math.log( 10 ) ) );
-         setToolTipText( x.toString() );
+         Double x = new Double( ( ( Double ) ( ( ArrayList ) value ).get( 0 ) )
+               .doubleValue() );
+
+         //        
+         //            x = new Double( m_regular.format( -Math
+         //                  .log( ( ( Double ) ( ( ArrayList ) value ).get( 0 ) )
+         //                        .doubleValue() )
+         //                  / Math.log( 10 ) ) );
+
+         //      setToolTipText( x.toString() );
       } else if ( value.getClass().equals( Double.class ) ) {
          // just double value, no bar graph
          setText( value.toString() );
@@ -119,14 +123,17 @@ public class JBarGraphCellRenderer extends JLabel implements TableCellRenderer {
       for ( int i = 0; i < values.size(); i++ ) {
 
          // @todo only use log if doLog is requested. probably log should be in genesettablemodel
-         double value = Math.min( maxPval, -Math.log( ( ( Double ) values
-               .get( i ) ).doubleValue() )
-               / Math.log( 10 ) );
+         double val = ( ( Double ) values.get( i ) ).doubleValue();
+         double logval = 0.0;
 
-         if ( !Double.isNaN( value ) ) {
+         if ( val > 0 && val <= 1.0 ) {
+            logval = Math.min( maxPval, -Math.log( val ) / Math.log( 10 ) );
+         }
+
+         if ( !Double.isNaN( logval ) ) {
             // map from [0,1] range to [0,width] range
             // int x = ( int ) ( value * width );
-            int x = ( int ) ( width * value / maxPval );
+            int x = ( int ) ( width * logval / maxPval );
 
             // what color to use?
             if ( i < COLORS.length ) {
