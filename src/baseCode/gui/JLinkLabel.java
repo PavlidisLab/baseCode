@@ -1,7 +1,5 @@
 package baseCode.gui;
 
-import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
@@ -18,79 +16,77 @@ import baseCode.util.BrowserLauncher;
  */
 public class JLinkLabel extends JLabel implements MouseListener {
 
-   protected String m_url = null;
-   protected String m_text = "";
+	protected String m_url = null;
 
-   /** Creates a new instance of JLinkLabel */
-   public JLinkLabel() {
-      super();
-      setCursor( new Cursor( Cursor.HAND_CURSOR ) );
-      addMouseListener( this );
-   }
+	protected String m_text = "";
 
-   public JLinkLabel( String text ) {
-      this();
-      setText( text );
-   }
+	/** Creates a new instance of JLinkLabel */
+	public JLinkLabel() {
+		super();
+	}
 
-   public JLinkLabel( String text, String url ) {
-      this();
-      setText( text, url );
-   }
-   
-   public void setText( String text ) {
-      if ( m_url != null ) {
-         setText( text, m_url );
-      } else {
-         setText( text, text );
-      }
-   }
+	public JLinkLabel(String text) {
+		this();
+		setText(text);
+	}
 
-   /**
-    * @param url
-    */
-   public void setURL( String url ) {
-      setText( m_text, url );
-   }
+	public JLinkLabel(String text, String url) {
+		this();
+		setText(text, url);
+	}
 
-   /**
-    * @return
-    */
-   public String getURL() {
-      return m_url;
-   }
+	public void setText(String text) {
+		if (m_url != null) {
+			setText(text, m_url);
+		} else {
+			setText(text, text);
+		}
+	}
 
-   public void setText( String text, String url ) {
-      m_text = text;
-      m_url = url;
-      super.setText( "<html><a href=\"" + url + "\">" + text + "</a></html>" );
-   }
+	/**
+	 * @param url
+	 */
+	public void setURL(String url) {
+		setText(m_text, url);
+	}
 
-   public String toString()
-   {
-   	  return "<html><a href=\"" + m_url + "\">" + m_text + "</a></html>" ;
-   }
-   
-   public void mouseClicked( MouseEvent event ) {
-      if ( m_url != null ) {
-         try {
-         	BrowserLauncher.openURL( m_url );
-         } catch ( IOException ex ) {
-            GuiUtil.error( "Could not open a web browser window." );
-         }
-      }
-   }
+	/**
+	 * @return
+	 */
+	public String getURL() {
+		return m_url;
+	}
 
-   public void mouseEntered( MouseEvent e ) {
-   }
+	public void setText(String text, String url) {
+		m_text = text;
+		m_url = url;
+		super.setText("<html><a href=\"" + url + "\">" + text + "</a></html>");
+	}
 
-   public void mouseExited( MouseEvent e ) {
-   }
+	public String toString() {
+		return "<html><a href=\"" + m_url + "\">" + m_text + "</a></html>";
+	}
 
-   public void mousePressed( MouseEvent e ) {
-   }
+	public void mouseClicked(MouseEvent e) {
+		if (m_url != null) {
+			try {
+				BrowserLauncher.openURL(m_url);
+			} catch (IOException ex) {
+				GuiUtil.error("Could not open a web browser window.");
+			}
+		}
+	}
 
-   public void mouseReleased( MouseEvent e ) {
-   }
+	public void mouseEntered(MouseEvent e) {
+	}
+
+	public void mouseExited(MouseEvent e) {
+	}
+
+	public void mousePressed(MouseEvent e) {
+	}
+
+	public void mouseReleased(MouseEvent e) {
+	}
 
 }
