@@ -89,10 +89,10 @@ class JNumberLabel extends JLabel {
    
    public void setText( double number ) {
 
-      // Only very small and very large numbers should be displayed in
-      // scientific notation
+      // Only very small numbers (except for zero) as well as very large numbers
+      // should be displayed in scientific notation
       String text;
-      if ( Math.abs( number ) < 0.01 || Math.abs( number ) > 999 ) {
+      if ( ( number != 0 && Math.abs( number ) < 0.01 ) || Math.abs( number ) > 999 ) {
          text = m_scientificNotation.format( number );
       } else {
          text = m_regular.format( number );
