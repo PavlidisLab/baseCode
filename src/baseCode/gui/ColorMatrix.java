@@ -302,9 +302,10 @@ public class ColorMatrix implements Cloneable {
     */
    public void setColorMap( Color[] colorMap ) throws IllegalArgumentException {
 
-      if ( colorMap.length < 2 )
+      if ( colorMap.length < 2 ) {
          throw new IllegalArgumentException();
-
+      }
+         
       m_colorMap = colorMap;
       mapValuesToColors();
    }
@@ -368,24 +369,24 @@ public class ColorMatrix implements Cloneable {
 
       // create another double matrix
       Color[][] colors = new Color[m_totalRows][m_totalColumns];
-      DenseDoubleMatrix2DNamed m = new DenseDoubleMatrix2DNamed( m_totalRows,
+      DenseDoubleMatrix2DNamed matrix = new DenseDoubleMatrix2DNamed( m_totalRows,
             m_totalColumns );
       // copy the row and column names
       for ( int i = 0; i < m_totalRows; i++ ) {
-         m.addRowName( m_matrix.getRowName( i ), i );
+         matrix.addRowName( m_matrix.getRowName( i ), i );
       }
       for ( int i = 0; i < m_totalColumns; i++ ) {
-         m.addColumnName( m_matrix.getColName( i ), i );
+         matrix.addColumnName( m_matrix.getColName( i ), i );
          // copy the data
       }
       for ( int r = 0; r < m_totalRows; r++ ) {
          for ( int c = 0; c < m_totalColumns; c++ ) {
-            m.set( r, c, m_matrix.get( r, c ) );
+            matrix.set( r, c, m_matrix.get( r, c ) );
          }
       }
 
       // create another copy of a color matrix (this class)
-      ColorMatrix clonedColorMatrix = new ColorMatrix( m );
+      ColorMatrix clonedColorMatrix = new ColorMatrix( matrix, m_colorMap, m_missingColor );
 
       int[] rowKeys = ( int[] ) m_rowKeys.clone();
       clonedColorMatrix.setRowKeys( rowKeys );
