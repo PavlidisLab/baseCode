@@ -38,27 +38,4 @@ public class OntologyEntry {
       return new String(id + ": \t" + name);
    }
 
-   /**
-    * Two OntologyEntry instances are equal if their ids are equal.
-    *
-    * @param k Object to be compared to.
-    * @return boolean
-    */
-   public boolean equals(Object k) {
-      if (k == this)
-         return true;
-      if (!(k instanceof OntologyEntry) ) {
-         return false;
-      }
-
-      if (((OntologyEntry)k).getId() == id) {
-         return true;
-      }
-      return false;
-   }
-
-   public int hashCode() {
-      return getId().hashCode();
-   }
-
 }
