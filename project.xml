@@ -1,69 +1,58 @@
-<?xml version="1.0" ?>
+<?xml version="1.0"?>
 <project>
-    <pomVersion>3</pomVersion>
-    <name>basic code utilities</name>
-
-<groupId>baseCode</groupId>
-<artifactId>baseCode</artifactId>
-<currentVersion>0.1</currentVersion>
-
-    <versions>
-      <version>
-        <id>0.1</id>
-        <name>0.1</name>
-      </version>
-    </versions>
-
-<repository>
-    <connection>scm:cvs:ext:${maven.username}@adgate.cu-genome.org:/fsnode/projects/cvs/pavlab:baseCode</connection>
-</repository>
-
-
-
- <developers>
-  	<developer>
-        <name>Paul Pavlidis</name>
-        <id>pavlidis</id>
-        <email>pavlidis@dbmi.columbia.edu</email>
-        <organization>Columbia University</organization>
-      </developer>
-
-      <developer>
-        <name>William Braynen</name>
-        <id>braynen</id>
-        <email>wbraynen@ic.sunysb.edu</email>
-        <organization>Columbia University</organization>
-      </developer>
-
-      <developer>
-        <name>Homin Lee</name>
-        <id>hlk7</id>
-        <email>hlk7@cs.columbia.edu</email>
-        <organization>Columbia University</organization>
-      </developer>
-
-    </developers>
-
-
-
-
-  <build>
-    <sourceDirectory>src</sourceDirectory>
-  </build>
-
-    <dependencies>
-        <dependency>
-           <id>colt</id>
-     <artifactId>colt</artifactId>
-<url>http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/download</url>
-     <jar>colt.jar</jar>
-        </dependency>
-
-
-        <dependency>
-           <id>mysql</id>
-     <artifactId>mysql-connector-java</artifactId>
-<version>3.0.8-stable-bin</version>
-        </dependency>
-</dependencies>
+	<pomVersion>3</pomVersion>
+	<name>basic code utilities</name>
+	<groupId>baseCode</groupId>
+	<artifactId>baseCode</artifactId>
+	<currentVersion>0.1</currentVersion>
+	<versions>
+		<version>
+			<id>0.1</id>
+			<name>0.1</name>
+		</version>
+	</versions>
+	<repository>
+		<connection>scm:cvs:ext:${maven.username}@adgate.cu-genome.org:/fsnode/projects/cvs/pavlab:baseCode</connection>
+	</repository>
+	<developers>
+		<developer>
+			<name>Paul Pavlidis</name>
+			<id>pavlidis</id>
+			<email>pavlidis@dbmi.columbia.edu</email>
+			<organization>Columbia University</organization>
+		</developer>
+		<developer>
+			<name>William Braynen</name>
+			<id>braynen</id>
+			<email>wbraynen@ic.sunysb.edu</email>
+			<organization>Columbia University</organization>
+		</developer>
+		<developer>
+			<name>Homin Lee</name>
+			<id>hlk7</id>
+			<email>hlk7@cs.columbia.edu</email>
+			<organization>Columbia University</organization>
+		</developer>
+	</developers>
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+	</build>
+	<dependencies>
+		<dependency>
+			<id>colt</id>
+			<artifactId>colt</artifactId>
+			<url>http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/download</url>
+			<jar>colt.jar</jar>
+		</dependency>
+		<dependency>
+			<id>mysql</id>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>3.0.8-stable-bin</version>
+		</dependency>
+                		<dependency>
+			<id>commons-logging</id>
+			<artifactId>commons-logging</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+	</dependencies>
 </project>
