@@ -90,10 +90,13 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
          throw new ArithmeticException();
       }
 
+      double[] xel = x.elements();
+      double[] yel = y.elements();
+      
       int length = x.size();
       for ( j = 0; j < length; j++ ) {
-         xj = x.elements()[j];
-         yj = y.elements()[j];
+         xj = xel[j];
+         yj = yel[j];
 
          if ( !Double.isNaN( xj ) && !Double.isNaN( yj ) ) {
             sx += xj;
