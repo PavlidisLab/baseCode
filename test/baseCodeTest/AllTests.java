@@ -19,11 +19,11 @@ public class AllTests
       suite.addTestSuite( baseCodeTest.dataStructure.TestQueue.class );
       suite.addTestSuite( baseCodeTest.dataStructure.TestStack.class );
       
-      suite.addTestSuite( baseCodeTest.dataFilter.TestAffymetrixProbeNameFilter.class );
+      suite.addTestSuite( baseCodeTest.dataFilter.TestRowAffyNameFilter.class );
       suite.addTestSuite( baseCodeTest.dataFilter.TestRowNameFilter.class );
-      suite.addTestSuite(baseCodeTest.dataFilter.TestAbsentFilter.class);
-      suite.addTestSuite(baseCodeTest.dataFilter.TestMissingFilter.class);
-      suite.addTestSuite(baseCodeTest.dataFilter.TestLevelFilter.class);
+      suite.addTestSuite(baseCodeTest.dataFilter.TestRowAbsentFilter.class);
+      suite.addTestSuite(baseCodeTest.dataFilter.TestRowMissingFilter.class);
+      suite.addTestSuite(baseCodeTest.dataFilter.TestRowLevelFilter.class);
       
       suite.addTestSuite( baseCodeTest.math.TestDescriptiveWithMissing.class );
       suite.addTestSuite( baseCodeTest.math.TestRank.class );

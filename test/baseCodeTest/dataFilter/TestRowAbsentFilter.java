@@ -1,6 +1,6 @@
 package baseCodeTest.dataFilter;
 
-import baseCode.dataFilter.AbsentFilter;
+import baseCode.dataFilter.RowAbsentFilter;
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.StringMatrix2DNamed;
 import baseCode.dataStructure.reader.StringMatrixReader;
@@ -13,18 +13,18 @@ import baseCode.dataStructure.reader.StringMatrixReader;
  * @author Owner
  * @version $Id$
  */
-public class TestAbsentFilter extends AbstractTestFilter {
+public class TestRowAbsentFilter extends AbstractTestFilter {
 
    StringMatrix2DNamed testpdata = null;
 
-   AbsentFilter f = null;
+   RowAbsentFilter f = null;
 
    /*
     * @see TestCase#setUp()
     */
    protected void setUp() throws Exception {
       super.setUp();
-      f = new AbsentFilter();
+      f = new RowAbsentFilter();
       StringMatrixReader s = new StringMatrixReader();
       testpdata = ( StringMatrix2DNamed ) s.read( AbstractTestFilter.class
             .getResourceAsStream( "/data/test-presence-data.txt" ) );

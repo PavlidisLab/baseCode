@@ -97,6 +97,12 @@ public interface NamedMatrix {
 
    /**
     * 
+    * @return Vector of Strings
+    */
+   public Vector getRowNames();
+   
+   /**
+    * 
     * @param r String
     * @return boolean
     */
@@ -169,5 +175,10 @@ public interface NamedMatrix {
     * @return
     */
    public boolean containsColumnName( String columnName );
+
+   /**
+    * @return
+    */
+
 
 }

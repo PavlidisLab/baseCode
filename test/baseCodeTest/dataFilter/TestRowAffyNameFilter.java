@@ -1,6 +1,6 @@
 package baseCodeTest.dataFilter;
 
-import baseCode.dataFilter.AffymetrixProbeNameFilter;
+import baseCode.dataFilter.RowAffyNameFilter;
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.StringMatrix2DNamed;
 
@@ -10,7 +10,7 @@ import baseCode.dataStructure.StringMatrix2DNamed;
  *          pavlidis Exp $
  *  
  */
-public class TestAffymetrixProbeNameFilter extends AbstractTestFilter {
+public class TestRowAffyNameFilter extends AbstractTestFilter {
 
    protected void setUp() throws Exception {
       super.setUp();
@@ -21,9 +21,9 @@ public class TestAffymetrixProbeNameFilter extends AbstractTestFilter {
    }
 
    public void testFilter() {
-      AffymetrixProbeNameFilter fi = new AffymetrixProbeNameFilter( new int[] {
-            AffymetrixProbeNameFilter.AFFX, AffymetrixProbeNameFilter.X,
-            AffymetrixProbeNameFilter.ST, AffymetrixProbeNameFilter.F } );
+      RowAffyNameFilter fi = new RowAffyNameFilter( new int[] {
+            RowAffyNameFilter.AFFX, RowAffyNameFilter.X,
+            RowAffyNameFilter.ST, RowAffyNameFilter.F } );
       DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) fi
             .filter( testdata );
       int expectedReturn = teststringdata.rows() - 5; // file contains on AFFX,
@@ -33,9 +33,9 @@ public class TestAffymetrixProbeNameFilter extends AbstractTestFilter {
    }
 
    public void testStringFilter() {
-      AffymetrixProbeNameFilter fi = new AffymetrixProbeNameFilter( new int[] {
-            AffymetrixProbeNameFilter.AFFX, AffymetrixProbeNameFilter.X,
-            AffymetrixProbeNameFilter.ST, AffymetrixProbeNameFilter.F } );
+      RowAffyNameFilter fi = new RowAffyNameFilter( new int[] {
+            RowAffyNameFilter.AFFX, RowAffyNameFilter.X,
+            RowAffyNameFilter.ST, RowAffyNameFilter.F } );
       StringMatrix2DNamed filtered = ( StringMatrix2DNamed ) fi
             .filter( teststringdata );
       int expectedReturn = teststringdata.rows() - 5; // file contains on AFFX,

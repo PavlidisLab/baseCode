@@ -1,6 +1,6 @@
 package baseCodeTest.dataFilter;
 
-import baseCode.dataFilter.MissingFilter;
+import baseCode.dataFilter.RowMissingFilter;
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.StringMatrix2DNamed;
 
@@ -10,16 +10,16 @@ import baseCode.dataStructure.StringMatrix2DNamed;
  * @author pavlidis
  * @version $Id$
  */
-public class TestMissingFilter extends AbstractTestFilter {
+public class TestRowMissingFilter extends AbstractTestFilter {
 
-   	MissingFilter f = null;
+   	RowMissingFilter f = null;
    
    /*
     * @see TestCase#setUp()
     */
    protected void setUp() throws Exception {
       super.setUp();
-      f = new MissingFilter();
+      f = new RowMissingFilter();
    }
 
    /*

@@ -106,6 +106,10 @@ public abstract class AbstractNamedMatrix implements NamedMatrix {
    public final Vector getColNames() {
       return colNames;
    }
+   
+   public final Vector getRowNames() {
+      return rowNames;
+   }
 
    public final boolean hasRow( String r ) {
       return this.rowMap.containsKey( r );

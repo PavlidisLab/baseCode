@@ -22,7 +22,7 @@ import baseCode.dataStructure.StringMatrix2DNamed;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class AbsentFilter extends AbstractFilter implements Filter {
+public class RowAbsentFilter extends AbstractFilter implements Filter {
 
    private StringMatrix2DNamed flags = null;
 
