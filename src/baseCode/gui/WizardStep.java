@@ -79,6 +79,14 @@ public abstract class WizardStep extends JPanel {
     public void showStatus( String a ) {
        owner.showStatus( a );
     }
+    
+    /**
+     * Print a message to the status bar.
+     * @param a
+     */
+     public void showError( String a ) {
+        owner.showError( a );
+     }
    
 
 }

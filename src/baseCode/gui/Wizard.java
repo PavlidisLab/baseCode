@@ -117,6 +117,16 @@ public abstract class Wizard extends JDialog {
       statusMessenger.setStatus( a );
    }
    
+
+   /**
+   * Print an error message to the status bar.
+   * @param a
+   */
+   public void showError( String a ) {
+      statusMessenger.setError( a );
+   }
+   
+   
    /**
     * Make the status bar empty.
     *

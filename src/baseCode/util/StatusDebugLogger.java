@@ -15,8 +15,17 @@ public class StatusDebugLogger implements StatusViewer {
     * @see baseCode.util.StatusViewer#setStatus(java.lang.String)
     */
    public void setStatus( String s ) {
-      log.debug(s);
+      log.info(s);
+   }
 
+   /* (non-Javadoc)
+    * @see baseCode.util.StatusViewer#setError(java.lang.String)
+    */
+   public void setError( String s ) {
+      log.error(s);
+   }
+
+   public void clear() {
    }
 
 }
