@@ -11,6 +11,7 @@ import java.util.Vector;
 
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.NamedMatrix;
+import java.util.ArrayList;
 
 /**
  *
@@ -39,14 +40,14 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
    }
 
    /**
-    * 
+    *
     * @param stream
     * @param wantedRowNames
     * @return
     * @throws IOException
     * @todo should take a set, not an array.
     */
-   public NamedMatrix read(InputStream stream, String[] wantedRowNames)
+   public NamedMatrix read(InputStream stream, ArrayList wantedRowNames)
       throws IOException {
 
       BufferedReader dis = new BufferedReader(new InputStreamReader(stream));
@@ -78,7 +79,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
          if (wantedRowNames != null) {
 
             // if we already have all the rows we want, then bail out
-            if (rowNumber >= wantedRowNames.length) {
+            if (rowNumber >= wantedRowNames.size()) {
                return createMatrix(
                   MTemp,
                   rowNumber,
@@ -180,7 +181,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
     * @return  NamedMatrix     object constructed from the data file
     * @todo make this take a set instead of a String[] for wantedRowNames.
     */
-   public NamedMatrix read(String filename, String[] wantedRowNames)
+   public NamedMatrix read(String filename, ArrayList wantedRowNames)
       throws IOException {
       File infile = new File(filename);
       if (!infile.exists() || !infile.canRead()) {
@@ -222,11 +223,11 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
    /**
     * Returns true if and only if thisRowName is found in wantedRowNames array
     */
-   public boolean skipThisRow(String thisRowName, String[] wantedRowNames) {
+   public boolean skipThisRow(String thisRowName, ArrayList wantedRowNames) {
 
       boolean found = false;
-      for (int i = 0; i < wantedRowNames.length; i++) {
-         if (thisRowName.equals(wantedRowNames[i])) {
+      for (int i = 0; i < wantedRowNames.size(); i++) {
+         if (thisRowName.equals(wantedRowNames.get(i))) {
             return false; // found it!  so don't skip this row!
          }
       }
