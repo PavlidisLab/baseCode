@@ -90,6 +90,13 @@ xmlns:jnlp="http://www.w3.org/2001/XMLSchema-instance">
             <properties/>
         </dependency>
       
+        <dependency>
+            <groupId>hb</groupId>
+            <artifactId>hb</artifactId>
+            <version>beta2</version>
+            <type>jar</type>
+            <url>http://www.braju.com/download/sure/index.html</url>
+        </dependency>
         
     </dependencies>
     <build>

@@ -210,7 +210,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
                missing = true;
             } else {
                previousToken = s;
-            //  continue;
+               continue;
             }
          } else if ( s.compareTo( " " ) == 0 ) {
             if ( previousToken.compareTo( "\t" ) == 0 ) {

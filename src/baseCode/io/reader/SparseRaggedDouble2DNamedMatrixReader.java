@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import baseCode.dataStructure.matrix.NamedMatrix;
@@ -14,7 +15,22 @@ import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
 
 /**
- * Best data structure for reading really big, really sparse matrices when a matrix represetation is needed.
+ * Best data structure for reading really big, really sparse matrices when a matrix represetation is needed. *
+ * 
+ * <p>The standard format looks like this:
+ * 
+ * <pre>
+ *           
+ *                2          &lt;--- number of items - the first line of the file only. NOTE - this line is often blank or not present.
+ *                1 2        &lt;--- items 1 has 2 edges
+ *                1 2        &lt;--- edge indices are to items 1 &amp; 2
+ *                0.1 100    &lt;--- with the following weights
+ *                2 2        &lt;--- items 2 also has 2 edges
+ *                1 2        &lt;--- edge indices are also to items 1 &amp; 2 (fully connected)
+ *                100 0.1    &lt;--- with the following weights
+ *  
+ * </pre>
+ * 
  * <hr>
  * <p>
  * Copyright (c) 2004 Columbia University
@@ -49,13 +65,8 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
    public NamedMatrix readOneRow( BufferedReader dis ) throws IOException {
       SparseRaggedDoubleMatrix2DNamed returnVal = new SparseRaggedDoubleMatrix2DNamed();
 
-      String row = dis.readLine();
-
-  //    if ( row == null ) return null;
-
+      String row = dis.readLine(); // line containing the id and the number of edges.
       StringTokenizer tok = new StringTokenizer( row, " \t" );
-
-   //   if ( !tok.hasMoreTokens() ) return null;
 
       int index = ( new Integer( Integer.parseInt( tok.nextToken() ) ) )
             .intValue();
@@ -65,8 +76,9 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
 
       IntArrayList rowind = readOneIndexRow( dis, amount );
       DoubleArrayList values = readOneValueRow( dis, amount );
+      String rowName = new Integer( index ).toString();
 
-      returnVal.addRow( new Integer( index ).toString(), values, rowind ); // todo - this doesn't make it symmetric.s
+      returnVal.addRow( rowName, values, rowind );
       return returnVal;
    }
 
@@ -83,9 +95,11 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
       String row;
       int k = 1;
 
-      dis.readLine(); // discard the first line.
-      
       while ( ( row = dis.readLine() ) != null ) {
+
+         if ( row.equals( "" ) ) {
+            continue;
+         }
 
          StringTokenizer tok = new StringTokenizer( row, " \t" );
 
@@ -105,7 +119,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
          returnVal.addRow( new Integer( k ).toString(), values, rowind ); // todo - this doesn't make it symmetric.
          k++;
       }
-      //   ff.close();
+
       dis.close();
       return returnVal;
    }
@@ -126,7 +140,8 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
                .doubleValue();
          values.add( eval );
          if ( values.size() > amount ) {
-            throw new IllegalStateException( "Too many tokens (" + values.size() + ", expected " + amount + ")" );
+            throw new IllegalStateException( "Too many tokens ("
+                  + values.size() + ", expected " + amount + ")" );
          }
       }
       return values;
@@ -148,7 +163,8 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
                .intValue();
          rowind.add( ind );
          if ( rowind.size() > amount ) {
-            throw new IllegalStateException( "Too many tokens (" + rowind.size() + ", expected " + amount + ")" );
+            throw new IllegalStateException( "Too many tokens ("
+                  + rowind.size() + ", expected " + amount + ")" );
          }
       }
       return rowind;

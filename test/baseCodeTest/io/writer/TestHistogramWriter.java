@@ -52,7 +52,7 @@ public class TestHistogramWriter extends TestCase {
       super.tearDown();
    }
 
-   public final void testWrite() {
+   public final void testWriter() {
       String expectedReturn = "";
       String actualReturn = "";
       Writer k;

@@ -237,7 +237,7 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
    }
 
    /**
-    * This gives just the list of values in the row - probably not what you want.
+    * This gives just the list of values in the row - make sure this is what you want. It does not include the zero values.
     * 
     * @param row
     * @return
@@ -294,6 +294,17 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
       this.addColumnName( name, matrix.size() - 1 );
       this.addRowName( name, matrix.size() - 1 );
       isDirty = true;
+   }
+
+   /**
+    * @param string
+    */
+   public void addRow( String name ) {
+      matrix.add(new DoubleArrayList());
+      indexes.add(new IntArrayList());
+      this.addColumnName( name, matrix.size() - 1 );
+      this.addRowName( name, matrix.size() - 1 );
+      
    }
 
 }

@@ -76,7 +76,7 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
     * Read a sparse matrix in "JW" (Jason Weston) format. The format is like this:
     * 
     * <pre>          
-    *               2          &lt;--- number of items - the first line of the file only.
+    *               2          &lt;--- number of items - the first line of the file only. NOTE - this line is often blank or not present.
     *               1 2        &lt;--- items 1 has 2 edges
     *               1 2        &lt;--- edge indices are to items 1 &amp; 2
     *               0.1 100    &lt;--- with the following weights
