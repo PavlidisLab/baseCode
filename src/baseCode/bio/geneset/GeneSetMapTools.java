@@ -147,7 +147,7 @@ public class GeneSetMapTools {
       ga.sortGeneSets();
 
       if ( messenger != null ) {
-         messenger.setStatus( "There are now " + ga.numClasses()
+         messenger.setStatus( "There are now " + ga.numGeneSets()
                + " sets remaining after removing aspect " + aspect );
       }
 
@@ -188,7 +188,7 @@ public class GeneSetMapTools {
       ga.sortGeneSets();
 
       if ( messenger != null ) {
-         messenger.setStatus( "There are now " + ga.numClasses()
+         messenger.setStatus( "There are now " + ga.numGeneSets()
                + " sets remaining after removing sets with excluded sizes." );
       }
 
@@ -228,7 +228,7 @@ public class GeneSetMapTools {
 
       if ( messenger != null ) {
          messenger.setStatus( "...Highly (" + fractionSameThreshold * 100
-               + "%)  similar classes are being removed..." + ga.numClasses()
+               + "%)  similar classes are being removed..." + ga.numGeneSets()
                + " to start..." );
       }
 
@@ -307,7 +307,7 @@ public class GeneSetMapTools {
       ga.sortGeneSets();
 
       if ( messenger != null ) {
-         messenger.setStatus( "There are now " + ga.numClasses()
+         messenger.setStatus( "There are now " + ga.numGeneSets()
                + " classes represented on the chip (" + deleteUs.size()
                + " were ignored)" );
       }
@@ -397,7 +397,7 @@ public class GeneSetMapTools {
       if ( messenger != null ) {
          messenger
                .setStatus( "There are "
-                     + geneData.numClasses()
+                     + geneData.numGeneSets()
                      + " classes represented on the chip (of any size). Redundant classes are being removed..." );
       }
 
@@ -462,7 +462,7 @@ public class GeneSetMapTools {
       geneData.sortGeneSets();
 
       if ( messenger != null ) {
-         messenger.setStatus( "There are now " + geneData.numClasses()
+         messenger.setStatus( "There are now " + geneData.numGeneSets()
                + " classes represented on the chip (" + ignored
                + " were removed)" );
       }

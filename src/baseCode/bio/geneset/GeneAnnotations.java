@@ -33,40 +33,13 @@ import baseCode.util.StatusViewer;
  * Maintains the following important data structures, all derived from the input file:
  * 
  * <pre>
- * 
- *  
- *   
- *    
- *     
- *      
- *       
- *        
- *         
- *          
- *           
- *            
- *             
- *              
+
  *                         probe-&gt;Classes -- each value is a Set of the Classes that a probe belongs to.
  *                         Classes-&gt;probe -- each value is a Set of the probes that belong to a class
  *                         probe-&gt;gene -- each value is the gene name corresponding to the probe.
  *                         gene-&gt;list of probes -- each value is a list of probes corresponding to a gene
  *                         probe-&gt;description -- each value is a text description of the probe (actually...of the gene)
- *              
- *               
- *              
- *             
- *            
- *           
- *          
- *         
- *        
- *       
- *      
- *     
- *    
- *   
- *  
+
  * </pre>
  * 
  * <p>
@@ -186,6 +159,34 @@ public class GeneAnnotations {
       resetSelectedSets();
       sortGeneSets();
    }
+   
+   
+   
+   /**
+    * 
+    * @param fileName
+    */
+   public GeneAnnotations(String fileName, Set activeGenes,
+         StatusViewer messenger ) throws IOException {
+
+      FileInputStream fis = new FileInputStream( fileName );
+      BufferedInputStream bis = new BufferedInputStream( fis );
+      probeToClassMap = new LinkedHashMap();
+      classToProbeMap = new LinkedHashMap();
+      probeToGeneName = new HashMap();
+      probeToDescription = new HashMap();
+      geneToProbeList = new HashMap();
+      geneToClassMap = new HashMap();
+      classesToRedundantMap = new HashMap();
+      this.read( bis, activeGenes );
+      classToGeneMap = makeClassToGeneMap();
+      GeneSetMapTools.collapseClasses( this, messenger );
+      prune( 2, 1000 );
+      resetSelectedProbes();
+      resetSelectedSets();
+      sortGeneSets();
+   }
+   
 
   
 
@@ -330,26 +331,44 @@ public class GeneAnnotations {
    public ArrayList getGeneProbeList( String g ) {
       return ( ArrayList ) geneToProbeList.get( g );
    }
+   
+   
+   /**
+    * Get how many probes point to the same gene. This is like the old "numReplicates".
+    * @param g
+    * @return
+    */
+   public int numProbesForGene (String g ) {
+      return (( ArrayList ) geneToProbeList.get( g )).size(); 
+   }
+   
 
    /**
     * Get the number of classes. This is computed from the sortedGeneSets.
     * 
     * @return
     */
-   public int numClasses() {
+   public int numGeneSets() {
       if ( classToGeneMap == null ) {
          throw new IllegalStateException( "classToGeneMap was null" );
       }
       return classToGeneMap.size();
    }
+   
+   /**
+    * How many genes are in the file?
+    */
+   public int numGenes() {
+      return geneToProbeList.size();
+   }
 
    /**
-    * Get a class by an integer index i.
+    * Get a class by an integer index i from the sorted list.
     * 
     * @param i
     * @return
     */
-   public String getClass( int i ) {
+   public String getGeneSetByIndex( int i ) {
       return ( String ) sortedGeneSets.get( i );
    }
 
@@ -359,7 +378,7 @@ public class GeneAnnotations {
     * @param id String a class id
     * @return int number of probes in the class
     */
-   public int numProbes( String id ) {
+   public int numProbesInGeneSet( String id ) {
       if ( !classToProbeMap.containsKey( id ) ) {
          return 0;
       }
@@ -373,11 +392,16 @@ public class GeneAnnotations {
     * @param id String a class id
     * @return boolean
     */
-   public boolean classExists( String id ) {
+   public boolean geneSetExists( String id ) {
       return classToProbeMap.containsKey( id );
    }
 
-   public int numGenes( String id ) {
+   /**
+    * GEt the number of genes in a gene set.
+    * @param id
+    * @return
+    */
+   public int numGenesInGeneSet( String id ) {
       if ( !classToGeneMap.containsKey( id ) ) {
          return 0;
       }
@@ -764,9 +788,9 @@ public class GeneAnnotations {
       Set removeUs = new HashSet();
       for ( Iterator it = classToProbeMap.keySet().iterator(); it.hasNext(); ) {
          String id = ( String ) it.next();
-         if ( numProbes( id ) < lowThreshold || numGenes( id ) < lowThreshold
-               || numProbes( id ) > highThreshold
-               || numGenes( id ) > highThreshold ) {
+         if ( numProbesInGeneSet( id ) < lowThreshold || numGenesInGeneSet( id ) < lowThreshold
+               || numProbesInGeneSet( id ) > highThreshold
+               || numGenesInGeneSet( id ) > highThreshold ) {
             removeUs.add( id );
          }
       }

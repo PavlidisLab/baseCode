@@ -3,6 +3,8 @@ package baseCode.io.writer;
 import hep.aida.IHistogram1D;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import corejava.Format;
@@ -40,6 +42,16 @@ public class HistogramWriter {
                + k.form( ( double ) h.binEntries( i ) / ( double ) total )
                + "\n" );
       }
+   }
+   
+   /**
+    * Print to a stream.
+    * @param h
+    * @param s
+    * @throws IOException
+    */
+   public void write (IHistogram1D h, OutputStream s ) throws IOException {
+      this.write(h, new OutputStreamWriter(s) );
    }
 
 }
