@@ -13,6 +13,8 @@ import baseCode.dataStructure.matrix.RCDoubleMatrix1D;
 import baseCode.dataStructure.matrix.SparseRaggedDoubleMatrix2DNamed;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
+import cern.colt.map.AbstractIntDoubleMap;
+import cern.colt.map.OpenIntDoubleHashMap;
 import cern.colt.matrix.DoubleMatrix1D;
 
 /**
@@ -59,8 +61,6 @@ import cern.colt.matrix.DoubleMatrix1D;
  */
 public class SparseRaggedDouble2DNamedMatrixReader extends
       AbstractNamedMatrixReader {
-
-   private static final int INITIAL_SIZE = 10000;
 
    /*
     * (non-Javadoc)
@@ -141,57 +141,57 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
       return returnVal;
    }
 
-   /**
-    * @param dis
-    * @param amount
-    * @return @throws IOException
-    */
-   private DoubleArrayList readOneValueRow( BufferedReader dis, int amount )
-         throws IOException {
+//   /**
+//    * @param dis
+//    * @param amount
+//    * @return @throws IOException
+//    */
+//   private DoubleArrayList readOneValueRow( BufferedReader dis, int amount )
+//         throws IOException {
+//
+//      DoubleArrayList values = new DoubleArrayList( amount );
+//      String row = dis.readLine(); // row with weights.
+//      StringTokenizer tokb = new StringTokenizer( row, " \t" );
+//
+//      while ( tokb.hasMoreTokens() ) {
+//         double eval = ( new Double( Double.parseDouble( tokb.nextToken() ) ) )
+//               .doubleValue();
+//         values.add( eval );
+//         if ( values.size() > amount ) {
+//            throw new IllegalStateException( "Too many tokens ("
+//                  + values.size() + ", expected " + amount + ")" );
+//         }
+//      }
+//      return values;
+//   }
 
-      DoubleArrayList values = new DoubleArrayList( amount );
-      String row = dis.readLine(); // row with weights.
-      StringTokenizer tokb = new StringTokenizer( row, " \t" );
-
-      while ( tokb.hasMoreTokens() ) {
-         double eval = ( new Double( Double.parseDouble( tokb.nextToken() ) ) )
-               .doubleValue();
-         values.add( eval );
-         if ( values.size() > amount ) {
-            throw new IllegalStateException( "Too many tokens ("
-                  + values.size() + ", expected " + amount + ")" );
-         }
-      }
-      return values;
-   }
-
-   /**
-    * @param dis
-    * @param amount
-    * @return @throws IOException
-    */
-   private IntArrayList readOneIndexRow( BufferedReader dis, int amount )
-         throws IOException {
-
-      IntArrayList rowind = new IntArrayList( amount );
-      String row = dis.readLine(); // row with indices.
-      StringTokenizer tokb = new StringTokenizer( row, " \t" );
-      while ( tokb.hasMoreTokens() ) {
-         int ind = Integer.parseInt( tokb.nextToken() );
-
-         if ( rowind.size() > 0 && ind > rowind.getQuick( rowind.size() - 1 ) ) {
-            throw new IllegalStateException(
-                  "Indices must be given in ascending order." );
-         }
-
-         rowind.add( ind );
-         if ( rowind.size() > amount ) {
-            throw new IllegalStateException( "Too many tokens ("
-                  + rowind.size() + ", expected " + amount + ")" );
-         }
-      }
-      return rowind;
-   }
+//   /**
+//    * @param dis
+//    * @param amount
+//    * @return @throws IOException
+//    */
+//   private IntArrayList readOneIndexRow( BufferedReader dis, int amount )
+//         throws IOException {
+//
+//      IntArrayList rowind = new IntArrayList( amount );
+//      String row = dis.readLine(); // row with indices.
+//      StringTokenizer tokb = new StringTokenizer( row, " \t" );
+//      while ( tokb.hasMoreTokens() ) {
+//         int ind = Integer.parseInt( tokb.nextToken() );
+//
+//         if ( rowind.size() > 0 && ind > rowind.getQuick( rowind.size() - 1 ) ) {
+//            throw new IllegalStateException(
+//                  "Indices must be given in ascending order." );
+//         }
+//
+//         rowind.add( ind );
+//         if ( rowind.size() > amount ) {
+//            throw new IllegalStateException( "Too many tokens ("
+//                  + rowind.size() + ", expected " + amount + ")" );
+//         }
+//      }
+//      return rowind;
+//   }
 
    private DoubleMatrix1D readOneRow( BufferedReader dis, int amount )
          throws IOException {
@@ -203,46 +203,60 @@ public class SparseRaggedDouble2DNamedMatrixReader extends
       StringTokenizer tokw = new StringTokenizer( rowWei, " \t" );
       StringTokenizer toki = new StringTokenizer( rowInd, " \t" );
 
-      IntArrayList indexes = new IntArrayList( amount );
-      DoubleArrayList values = new DoubleArrayList( amount );
+//      IntArrayList indexes = new IntArrayList( amount );
+//      DoubleArrayList values = new DoubleArrayList( amount );
 
+      OpenIntDoubleHashMap map = new OpenIntDoubleHashMap(amount);
+      
+      int maxind = 0;
       while ( toki.hasMoreTokens() ) {
          double eval = Double.parseDouble( tokw.nextToken() );
          int ind = Integer.parseInt( toki.nextToken() ) - 1; // this is a JW thing - the indexes start at 1.
+         map.put(ind, eval);
 
-         if (ind < 0) {
-            continue; // assume this is garbage.
+         if (ind > maxind) {
+            maxind = ind;
          }
          
-         /*
-          * index of the search key, if it is contained in the receiver; otherwise, (-(insertion point) - 1). The
-          * insertion point is defined as the the point at which the value would be inserted into the receiver: the
-          * index of the first element greater than the key, or receiver.size(), if all elements in the receiver are
-          * less than the specified key. Note that this guarantees that the return value will be >= 0 if and only if the
-          * key is found.
-          */
-         int k = indexes.binarySearch( ind );
-         if ( k >= 0 ) { // found. This shouldn't happen - if it does it means there is a duplicate.
-            values.setQuick( k, eval );
-         }
-
-         if ( eval != 0.0 ) {
-            k = -k - 1;
-            
-            if (k < -1) {
-               throw new IllegalStateException("k was less than zero...");
-            }
-            
-            indexes.beforeInsert( k, ind ); // this is slow.
-            values.beforeInsert( k, eval ); // this is slow.
-         }
-
-         if ( values.size() > amount ) {
-            throw new IllegalStateException( "Too many tokens ("
-                  + values.size() + ", expected " + amount + ")" );
-         }
+//         if (ind < 0) {
+//            continue; // assume this is garbage.
+//         }
+//         
+//         
+//         /* the only reason we add things in order is to support setQuick and getQuick. An alternative
+//          * implemenation would use a Map to associate values with indices. */
+//         
+//         
+//         /*
+//          * index of the search key, if it is contained in the receiver; otherwise, (-(insertion point) - 1). The
+//          * insertion point is defined as the the point at which the value would be inserted into the receiver: the
+//          * index of the first element greater than the key, or receiver.size(), if all elements in the receiver are
+//          * less than the specified key. Note that this guarantees that the return value will be >= 0 if and only if the
+//          * key is found.
+//          */
+//         int k = indexes.binarySearch( ind );
+//         if ( k >= 0 ) { // found. This shouldn't happen - if it does it means there is a duplicate.
+//            values.setQuick( k, eval );
+//         }
+//
+//         if ( eval != 0.0 ) {
+//            k = -k - 1;
+//            
+//            if (k < -1) {
+//               throw new IllegalStateException("k was less than zero...");
+//            }
+//            
+//            indexes.beforeInsert( k, ind ); // this is slow.
+//            values.beforeInsert( k, eval ); // this is slow.
+//         }
+//
+//         if ( values.size() > amount ) {
+//            throw new IllegalStateException( "Too many tokens ("
+//                  + values.size() + ", expected " + amount + ")" );
+//         }
       }
-      return new RCDoubleMatrix1D( values, indexes );
+   //   return new RCDoubleMatrix1D( values, indexes );
+      return new RCDoubleMatrix1D(map, maxind + 1);
 
    }
 
