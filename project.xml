@@ -12,7 +12,7 @@
 <url>http://www.columbia.edu</url>
 </organization>
 
-<description>A set of useful data structures, math and statistics tools, and utilities that are often needed across projects.</description>
+<description>Data structures, math and statistics tools, and utilities that are often needed across projects.</description>
 
 	<versions>
 		<version>
@@ -26,8 +26,6 @@
 
 	<siteAddress>microarray</siteAddress>
 	<siteDirectory>/proj/pavlidis/protected/baseCode</siteDirectory>
-
-
 
 
 	<developers>
@@ -50,9 +48,7 @@
 			<organization>Columbia University</organization>
 		</developer>
 	</developers>
-	<build>
-		<sourceDirectory>src</sourceDirectory>
-	</build>
+
 	<dependencies>
 		<dependency>
 			<id>colt</id>
@@ -70,6 +66,7 @@
 			<artifactId>commons-logging</artifactId>
 			<version>1.0.3</version>
 		</dependency>
+
 <dependency>
 <id>jfcunit</id>
 <artifactId>jfcunit</artifactId>
@@ -79,13 +76,13 @@
 	</dependencies>
 
 <build>
+		<sourceDirectory>src</sourceDirectory>
 	<unitTestSourceDirectory>test</unitTestSourceDirectory>
      <unitTest>
        <includes>
-         <include>**/*/*/Test*.java </include>
-         <include>**/*/*/*/Test*.java </include>
+         <include>**/Test*.java </include>
        </includes>
-<excludes></excludes>
+<excludes><exclude>**/gui/Test*.java </exclude></excludes>
 <resources>
 <resource>
 <directory>${basedir}/test</directory>
@@ -111,7 +108,4 @@
     <report>maven-clover-plugin</report>
     
   </reports>
-
-
-
 </project>
