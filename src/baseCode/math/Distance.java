@@ -1,6 +1,7 @@
 package baseCode.math;
 
 import cern.colt.list.DoubleArrayList;
+import cern.colt.list.IntArrayList;
 
 /**
  * Alternative distance and similarity metrics for vectors.
@@ -91,8 +92,8 @@ public class Distance {
          throw new ArithmeticException();
       }
 
-      DoubleArrayList rx = Rank.rankTransform( x );
-      DoubleArrayList ry = Rank.rankTransform( y );
+      IntArrayList rx = Rank.rankTransform( x );
+      IntArrayList ry = Rank.rankTransform( y );
 
       for ( int j = 0; j < x.size(); j++ ) {
          sum += ( rx.elements()[j] - ry.elements()[j]

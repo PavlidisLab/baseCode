@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import cern.colt.list.DoubleArrayList;
+import cern.colt.list.IntArrayList;
 import cern.colt.list.ObjectArrayList;
 
 /**
@@ -23,12 +24,13 @@ import cern.colt.list.ObjectArrayList;
 public class Rank {
 
    /**
-    * Rank transform an array. Ties are not handled specially.
+    * Rank transform an array. Ties are not handled specially. The ranks are constructed based on the sort order of the elements.
+    * That is, low values get low numbered ranks.
     * 
     * @param array DoubleArrayList
     * @return cern.colt.list.DoubleArrayList
     */
-   public static DoubleArrayList rankTransform( DoubleArrayList array ) {
+   public static IntArrayList rankTransform( DoubleArrayList array ) {
       if ( array == null ) {
          throw new IllegalArgumentException( "Null array" );
       }
@@ -39,7 +41,7 @@ public class Rank {
       }
 
       ObjectArrayList ranks = new ObjectArrayList( size );
-      DoubleArrayList result = new DoubleArrayList( new double[size] );
+      IntArrayList result = new IntArrayList( new int[size] );
 
       // store the ranks in the array.
       for ( int i = 0; i < size; i++ ) {
@@ -146,7 +148,7 @@ class rankData implements Comparable {
    public int compareTo( Object a ) {
       rankData other = ( rankData ) ( a );
       if ( this.value < other.getValue() ) {
-         return -1;
+         return   -1;
       } else if ( this.value > other.getValue() ) {
          return 1;
       } else {
@@ -180,10 +182,10 @@ class keyAndValueData implements Comparable {
    public int compareTo( Object ob ) {
       keyAndValueData other = ( keyAndValueData ) ob;
 
-      if ( this.value > other.value ) {
+      if ( this.value < other.value ) {
+         return  -1;
+      } else if ( this.value > other.value ) {
          return 1;
-      } else if ( this.value < other.value ) {
-         return -1;
       } else {
          return 0;
       }

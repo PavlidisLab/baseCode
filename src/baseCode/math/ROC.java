@@ -1,6 +1,6 @@
 package baseCode.math;
 
-import java.util.Map;
+import java.util.Set;
 
 import cern.jet.stat.Probability;
 
@@ -15,32 +15,35 @@ import cern.jet.stat.Probability;
 public class ROC {
 
    /**
-    * Calculate area under ROC
+    * Calculate area under ROC. The input is the total number of items in the data, and the ranks of the positives in
+    * the current ranking. LOW ranks are considered better. (e.g., rank 0 is the 'best')
     * 
     * @param totalSize int
     * @param ranks Map
     * @return AROC
     */
-   public static double aroc( int totalSize, Map ranks ) {
-      int k = 0;
+   public static double aroc( int totalSize, Set ranks ) {
+      int numPosSeen = 0;
       int targetSize = ranks.size();
       if ( targetSize == 0 ) {
          return 0.0;
       }
       double result = 0.0;
-      for ( int i = 1; i <= totalSize; i++ ) {
-         if ( ranks.containsKey( new Integer( i ) ) ) {
-            k++;
+      for ( int i = 0; i < totalSize; i++ ) {
+         if ( ranks.contains( new Integer( i ) ) ) {
+            numPosSeen++;
+         //   System.err.print( "+" );
          } else {
-            result += k;
+         //   System.err.print( "-" );
+            result += numPosSeen;
          }
 
-         if ( k == targetSize ) {
-            result += targetSize * ( totalSize - i );
+         if ( numPosSeen == targetSize ) { // we've seen all the positives, we can stop.
+            result += numPosSeen * ( totalSize - i - 1 );
             break;
          }
       }
-      return result / ( k * ( totalSize - k ) );
+      return result / ( numPosSeen * ( totalSize - targetSize ) );
    }
 
    /**

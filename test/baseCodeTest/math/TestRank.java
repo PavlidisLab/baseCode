@@ -6,6 +6,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 import baseCode.math.Rank;
 import cern.colt.list.DoubleArrayList;
+import cern.colt.list.IntArrayList;
 
 /**
  * Copyright (c) 2004 Columbia University
@@ -51,9 +52,9 @@ public class TestRank extends TestCase {
     * Class under test for DoubleArrayList rankTransform(DoubleArrayList)
     */
    public void testRankTransformDoubleArrayList() {
-      DoubleArrayList actualReturn = Rank.rankTransform( testdata );
-      DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 1.0,
-            2.0, 3.0, 4.0, 5.0, 0.0 } );
+      IntArrayList actualReturn = Rank.rankTransform( testdata );
+      IntArrayList expectedReturn = new IntArrayList( new int[] { 1 ,
+            2 , 3 , 4 , 5 , 0 } );
       assertEquals( "return value", expectedReturn, actualReturn );
    }
 
