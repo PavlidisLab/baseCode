@@ -33,13 +33,30 @@ import baseCode.util.StatusViewer;
  * Maintains the following important data structures, all derived from the input file:
  * 
  * <pre>
-
- *                         probe-&gt;Classes -- each value is a Set of the Classes that a probe belongs to.
- *                         Classes-&gt;probe -- each value is a Set of the probes that belong to a class
- *                         probe-&gt;gene -- each value is the gene name corresponding to the probe.
- *                         gene-&gt;list of probes -- each value is a list of probes corresponding to a gene
- *                         probe-&gt;description -- each value is a text description of the probe (actually...of the gene)
-
+ * 
+ *  
+ *   
+ *    
+ *     
+ *      
+ *       
+ *        
+ *         
+ *                                                  probe-&gt;Classes -- each value is a Set of the Classes that a probe belongs to.
+ *                                                  Classes-&gt;probe -- each value is a Set of the probes that belong to a class
+ *                                                  probe-&gt;gene -- each value is the gene name corresponding to the probe.
+ *                                                  gene-&gt;list of probes -- each value is a list of probes corresponding to a gene
+ *                                                  probe-&gt;description -- each value is a text description of the probe (actually...of the gene)
+ *              
+ *          
+ *         
+ *        
+ *       
+ *      
+ *     
+ *    
+ *   
+ *  
  * </pre>
  * 
  * <p>
@@ -78,6 +95,8 @@ public class GeneAnnotations {
    Vector selectedProbes;
    private Vector selectedSets;
 
+   private StatusViewer messenger;
+
    /**
     * This is for creating GeneAnnotations by reading from a file
     * 
@@ -88,50 +107,54 @@ public class GeneAnnotations {
    public GeneAnnotations( String filename, StatusViewer messenger )
          throws IOException {
 
-      probeToClassMap = new LinkedHashMap();
-      classToProbeMap = new LinkedHashMap();
-      probeToGeneName = new HashMap();
-      probeToDescription = new HashMap();
-      geneToProbeList = new HashMap();
-      geneToClassMap = new HashMap();
-      classesToRedundantMap = new HashMap();
+      setUpDataStructures();
+      this.messenger = messenger;
+
       this.read( filename );
-      classToGeneMap = makeClassToGeneMap();
-      GeneSetMapTools.collapseClasses( this, messenger );
-      prune( ABSOLUTE_MINIMUM_GENESET_SIZE, PRACTICAL_MAXIMUM_GENESET_SIZE );
-      resetSelectedProbes();
-      resetSelectedSets();
-      sortGeneSets();
+      setUp();
    }
 
    /**
     * This is for creating GeneAnnotations by pruning a copy.
     * 
     * @param geneData GeneAnnotations copy to prune from
-    * @param probes Map only include these probes
+    * @param activeProbes Set only include these probes
     */
-   public GeneAnnotations( GeneAnnotations geneData, Set probes ) {
+   public GeneAnnotations( GeneAnnotations geneData, Set activeProbes ) {
 
+      // FIXME - shallow copies here could cause problems.
+
+      // CAREFUL this is a shallow copy! This is okay?
       probeToClassMap = new LinkedHashMap( geneData.probeToClassMap );
-      classToProbeMap = new LinkedHashMap( geneData.classToProbeMap );
-      probeToGeneName = new HashMap( geneData.probeToGeneName );
-      probeToDescription = new HashMap( geneData.probeToDescription );
-      geneToProbeList = new HashMap( geneData.geneToProbeList );
-      geneToClassMap = new HashMap( geneData.geneToClassMap );
-      Vector probeList = new Vector( geneData.getProbeToGeneMap().keySet() );
+
+      // make a deep copy of the classToProbeMap, which is a map of sets. Shallow copy is BAD.
+      this.classToProbeMap = new LinkedHashMap();
+      for ( Iterator iter = geneData.classToProbeMap.keySet().iterator(); iter
+            .hasNext(); ) {
+         String key = ( String ) iter.next();
+         this.classToProbeMap.put( key, new ArrayList(
+               ( ArrayList ) geneData.classToProbeMap.get( key ) ) );
+      }
+
+      probeToGeneName = new HashMap( geneData.probeToGeneName ); // shallow copy, okay
+      probeToDescription = new HashMap( geneData.probeToDescription ); // shallow copy, okay
+      geneToProbeList = new HashMap( geneData.geneToProbeList ); // shallow copy, okay?
+      geneToClassMap = new HashMap( geneData.geneToClassMap ); // shallow copy, okay?
       classesToRedundantMap = new HashMap( geneData.classesToRedundantMap );
 
-      Iterator it = probeList.iterator();
-      while ( it.hasNext() ) {
-         String probe = ( String ) it.next();
-         if ( !probes.contains( probe ) ) { // remove probes not in data set.
+      Vector allProbes = new Vector( probeToGeneName.keySet() );
+      for ( Iterator iter = allProbes.iterator(); iter.hasNext(); ) {
+         String probe = ( String ) iter.next();
+         if ( !activeProbes.contains( probe ) ) { // remove probes not in data set.
             removeProbeFromMaps( probe );
          }
       }
-      classToGeneMap = makeClassToGeneMap();
-      prune( 2, 1000 );
-      resetSelectedProbes();
-      resetSelectedSets();
+      setUp(); //creates the classToGene map.
+
+      System.err.println( "Orig: GO:0019058 has probes: "
+            + geneData.numProbesInGeneSet( "GO:0019058" ) );
+      System.err.println( "New: GO:0019058 has probes: "
+            + this.numProbesInGeneSet( "GO:0019058" ) );
    }
 
    /**
@@ -139,80 +162,27 @@ public class GeneAnnotations {
     * 
     * @param stream
     * @param activeGenes Only genes in this set are left.
-    * @throws IOException todo some refactoring is needed here to simplify all these constructors.
+    * @throws IOException
     */
    public GeneAnnotations( InputStream stream, Set activeGenes,
          StatusViewer messenger ) throws IOException {
-
-      probeToClassMap = new LinkedHashMap();
-      classToProbeMap = new LinkedHashMap();
-      probeToGeneName = new HashMap();
-      probeToDescription = new HashMap();
-      geneToProbeList = new HashMap();
-      geneToClassMap = new HashMap();
-      classesToRedundantMap = new HashMap();
+      this.messenger = messenger;
+      setUpDataStructures();
       this.read( stream, activeGenes );
-      classToGeneMap = makeClassToGeneMap();
-      GeneSetMapTools.collapseClasses( this, messenger );
-      prune( 2, 1000 );
-      resetSelectedProbes();
-      resetSelectedSets();
-      sortGeneSets();
+      setUp();
    }
-   
-   
-   
+
    /**
-    * 
     * @param fileName
     */
-   public GeneAnnotations(String fileName, Set activeGenes,
+   public GeneAnnotations( String fileName, Set activeGenes,
          StatusViewer messenger ) throws IOException {
-
+      this.messenger = messenger;
       FileInputStream fis = new FileInputStream( fileName );
       BufferedInputStream bis = new BufferedInputStream( fis );
-      probeToClassMap = new LinkedHashMap();
-      classToProbeMap = new LinkedHashMap();
-      probeToGeneName = new HashMap();
-      probeToDescription = new HashMap();
-      geneToProbeList = new HashMap();
-      geneToClassMap = new HashMap();
-      classesToRedundantMap = new HashMap();
+      setUpDataStructures();
       this.read( bis, activeGenes );
-      classToGeneMap = makeClassToGeneMap();
-      GeneSetMapTools.collapseClasses( this, messenger );
-      prune( 2, 1000 );
-      resetSelectedProbes();
-      resetSelectedSets();
-      sortGeneSets();
-   }
-   
-
-  
-
-   /**
-    * Remove a gene set (class) from all the maps that reference it.
-    * 
-    * @param id
-    */
-   public void removeClassFromMaps( String id ) {
-      if ( classToProbeMap.containsKey( id ) ) {
-         for ( Iterator pit = ( ( ArrayList ) classToProbeMap.get( id ) )
-               .iterator(); pit.hasNext(); ) {
-            String probe = ( String ) pit.next();
-            if ( probeToClassMap.containsKey( probe )
-                  && ( ( ArrayList ) probeToClassMap.get( probe ) )
-                        .contains( id ) ) {
-               ( ( ArrayList ) probeToClassMap.get( probe ) ).remove( id );
-            }
-         }
-         classToProbeMap.remove( id );
-         classToGeneMap.remove( id );
-
-      }
-
-      if ( classesToRedundantMap.containsKey( id ) )
-            classesToRedundantMap.remove( id );
+      setUp();
    }
 
    /**
@@ -331,36 +301,6 @@ public class GeneAnnotations {
    public ArrayList getGeneProbeList( String g ) {
       return ( ArrayList ) geneToProbeList.get( g );
    }
-   
-   
-   /**
-    * Get how many probes point to the same gene. This is like the old "numReplicates".
-    * @param g
-    * @return
-    */
-   public int numProbesForGene (String g ) {
-      return (( ArrayList ) geneToProbeList.get( g )).size(); 
-   }
-   
-
-   /**
-    * Get the number of classes. This is computed from the sortedGeneSets.
-    * 
-    * @return
-    */
-   public int numGeneSets() {
-      if ( classToGeneMap == null ) {
-         throw new IllegalStateException( "classToGeneMap was null" );
-      }
-      return classToGeneMap.size();
-   }
-   
-   /**
-    * How many genes are in the file?
-    */
-   public int numGenes() {
-      return geneToProbeList.size();
-   }
 
    /**
     * Get a class by an integer index i from the sorted list.
@@ -370,20 +310,6 @@ public class GeneAnnotations {
     */
    public String getGeneSetByIndex( int i ) {
       return ( String ) sortedGeneSets.get( i );
-   }
-
-   /**
-    * Get the number of probes in a class
-    * 
-    * @param id String a class id
-    * @return int number of probes in the class
-    */
-   public int numProbesInGeneSet( String id ) {
-      if ( !classToProbeMap.containsKey( id ) ) {
-         return 0;
-      }
-
-      return ( ( ArrayList ) classToProbeMap.get( id ) ).size();
    }
 
    /**
@@ -397,15 +323,60 @@ public class GeneAnnotations {
    }
 
    /**
-    * GEt the number of genes in a gene set.
-    * @param id
+    * Get how many probes point to the same gene. This is like the old "numReplicates".
+    * 
+    * @param g
     * @return
+    */
+   public int numProbesForGene( String g ) {
+      if ( !geneToProbeList.containsKey( g ) ) return 0;
+      return ( ( ArrayList ) geneToProbeList.get( g ) ).size();
+   }
+
+   /**
+    * Get the number of classes. This is computed from the sortedGeneSets.
+    * 
+    * @return
+    */
+   public int numGeneSets() {
+      if ( classToGeneMap == null ) {
+         throw new IllegalStateException( "classToGeneMap was null" );
+      }
+      return classToGeneMap.size();
+   }
+
+   /**
+    * How many genes are in the file?
+    */
+   public int numGenes() {
+      return geneToProbeList.size();
+   }
+
+   /**
+    * Get the number of probes in a gene set, identified by id.
+    * 
+    * @param id String a class id
+    * @return int number of probes in the class
+    */
+   public int numProbesInGeneSet( String id ) {
+      if ( !classToProbeMap.containsKey( id ) ) {
+         return 0;
+      }
+      //      System.err.println( "GO:0019058 has probes: "
+      //            + ( ( ArrayList ) classToProbeMap.get( "GO:0019058" ) ).size() );
+      return ( ( ArrayList ) classToProbeMap.get( id ) ).size();
+   }
+
+   /**
+    * Get the number of genes in a gene set, identified by id.
+    * 
+    * @param id String a class id
+    * @return int number of genes in the class
     */
    public int numGenesInGeneSet( String id ) {
       if ( !classToGeneMap.containsKey( id ) ) {
          return 0;
       }
-
       return ( ( Set ) classToGeneMap.get( id ) ).size();
    }
 
@@ -632,57 +603,151 @@ public class GeneAnnotations {
    }
 
    /**
+    * @return Returns the classToGeneMap.
+    */
+   public Map getClassToGeneMap() {
+      return classToGeneMap;
+   }
+
+   /**
+    * @return Returns the geneToClassMap.
+    */
+   public Map getGeneToClassMap() {
+      return geneToClassMap;
+   }
+
+   /**
+    * Compute how many genes have Gene set annotations.
+    * 
+    * @return
+    */
+   public int numAnnotatedGenes() {
+      int count = 0;
+      for ( Iterator iter = probeToClassMap.keySet().iterator(); iter.hasNext(); ) {
+         List element = ( ArrayList ) probeToClassMap.get( iter.next() );
+         if ( element.size() > 0 ) {
+            count++;
+         }
+      }
+      return count;
+   }
+
+   /********************************************************************************************************************
+    * Private or protected methods
+    *******************************************************************************************************************/
+
+   /**
+    * 
+    */
+   private void setUpDataStructures() {
+      probeToClassMap = new LinkedHashMap();
+      classToProbeMap = new LinkedHashMap();
+      probeToGeneName = new HashMap();
+      probeToDescription = new HashMap();
+      geneToProbeList = new HashMap();
+      geneToClassMap = new HashMap();
+      classesToRedundantMap = new HashMap();
+   }
+
+   /**
+    * Initialize the gene sets and other data structures that needs special handling before use.
+    */
+   private void setUp() {
+      this.classToGeneMap = makeClassToGeneMap();
+
+      GeneSetMapTools.collapseClasses( this, messenger );
+      prune( ABSOLUTE_MINIMUM_GENESET_SIZE, PRACTICAL_MAXIMUM_GENESET_SIZE );
+      resetSelectedProbes();
+      resetSelectedSets();
+      sortGeneSets();
+
+   }
+
+   /**
+    * Remove a gene set (class) from all the maps that reference it.
+    * 
+    * @param id
+    */
+   protected void removeClassFromMaps( String id ) {
+      if ( classToProbeMap.containsKey( id ) ) {
+         for ( Iterator pit = ( ( ArrayList ) classToProbeMap.get( id ) )
+               .iterator(); pit.hasNext(); ) {
+            String probe = ( String ) pit.next();
+            if ( probeToClassMap.containsKey( probe )
+                  && ( ( ArrayList ) probeToClassMap.get( probe ) )
+                        .contains( id ) ) {
+               if ( !( ( ArrayList ) probeToClassMap.get( probe ) ).remove( id ) ) {
+                  System.err.println( "Couldn't remove " + id
+                        + " from probe to class map for" + probe );
+               }
+            }
+         }
+         if ( classToProbeMap.remove( id ) == null )
+               System.err.println( "Couldn't remove " + id
+                     + " from classToProbeMap" );
+
+         if ( classToGeneMap.remove( id ) == null )
+               System.err.println( "Couldn't remove " + id
+                     + " from classToGeneMap" );
+      }
+      if ( classesToRedundantMap.containsKey( id ) )
+            classesToRedundantMap.remove( id );
+   }
+
+   /**
     * @param probe
     */
-   public void removeProbeFromMaps( String probe ) {
+   private void removeProbeFromMaps( String probe ) {
       if ( probeToGeneName.containsKey( probe ) ) {
          String gene = ( String ) probeToGeneName.get( probe );
          probeToGeneName.remove( probe );
-         if ( geneToProbeList.containsKey( gene ) )
-               ( ( ArrayList ) geneToProbeList.get( gene ) ).remove( probe );
+         if ( geneToProbeList.containsKey( gene ) ) {
+            ( ( ArrayList ) geneToProbeList.get( gene ) ).remove( probe );
+         }
       }
       if ( probeToClassMap.containsKey( probe ) ) {
          Iterator cit = ( ( ArrayList ) probeToClassMap.get( probe ) )
                .iterator();
          while ( cit.hasNext() ) {
             String geneSet = ( String ) cit.next();
-            if ( classToProbeMap.containsKey( geneSet ) )
-                  ( ( ArrayList ) classToProbeMap.get( geneSet ) )
-                        .remove( probe );
+            if ( classToProbeMap.containsKey( geneSet ) ) {
+               ( ( ArrayList ) classToProbeMap.get( geneSet ) ).remove( probe );
+            }
          }
-         probeToClassMap.remove( probe );
+         if ( probeToClassMap.remove( probe ) == null ) {
+            System.err.println( "Could not remove " + probe
+                  + " from probeToClassMap" );
+         }
       }
       if ( probeToDescription.containsKey( probe ) )
             probeToDescription.remove( probe );
    }
 
-   /********************************************************************************************************************
-    * Private methods
-    *******************************************************************************************************************/
-
    /**
-    * @return mapping of classes to genes.
+    * Fill in the classToGeneMap with information from the classToProbeMap.
+    * 
+    * @return mapping of gene sets to genes.
     */
    private Map makeClassToGeneMap() {
-      Map map = new HashMap();
-      Iterator it = classToProbeMap.keySet().iterator();
-      while ( it.hasNext() ) {
-         String id = ( String ) it.next();
-         Set genes = new HashSet();
-         List theseProbes = ( ArrayList ) classToProbeMap.get( id );
-         Iterator probe_it = theseProbes.iterator();
-         while ( probe_it.hasNext() ) {
-            genes.add( probeToGeneName.get( probe_it.next() ) );
+      Map gsToGeneMap = new HashMap();
+      for ( Iterator iter = classToProbeMap.keySet().iterator(); iter.hasNext(); ) {
+         String geneSetId = ( String ) iter.next();
+         List probesInSet = ( ArrayList ) classToProbeMap.get( geneSetId );
+
+         Set genesInSet = new HashSet();
+         for ( Iterator biter = probesInSet.iterator(); biter.hasNext(); ) {
+            String probe = ( String ) biter.next();
+            genesInSet.add( probeToGeneName.get( probe ) );
          }
-         map.put( id, genes );
+         gsToGeneMap.put( geneSetId, genesInSet );
       }
-      return map;
+      return gsToGeneMap;
    }
 
-   private void read(InputStream bis) throws IOException {
-      this.read(bis, null);
+   private void read( InputStream bis ) throws IOException {
+      this.read( bis, null );
    }
-   
+
    private void read( InputStream bis, Set activeGenes ) throws IOException {
       if ( bis == null ) {
          throw new IOException( "Inputstream was null" );
@@ -694,20 +759,26 @@ public class GeneAnnotations {
 
       // loop through rows. Makes hash map of probes to go, and map of go to
       // probes.
+      int n = 0;
       String line = "";
+
       while ( ( line = dis.readLine() ) != null ) {
          if ( line.startsWith( "#" ) ) continue;
          StringTokenizer st = new StringTokenizer( line, "\t" );
+
+         if ( !st.hasMoreTokens() ) {
+            continue; // blank line
+         }
 
          String probe = st.nextToken().intern();
 
          /* read gene name */
          String group = st.nextToken().intern();
-         
-         if (activeGenes != null && ! activeGenes.contains(group)) {
+
+         if ( activeGenes != null && !activeGenes.contains( group ) ) {
             continue;
          }
-         
+
          probeToGeneName.put( probe.intern(), group.intern() );
 
          // create the list if need be.
@@ -756,7 +827,10 @@ public class GeneAnnotations {
                ( ( ArrayList ) classToProbeMap.get( go ) ).add( probe );
             }
          }
-
+         if ( messenger != null && n % 500 == 0 ) {
+            messenger.setStatus( "Read " + n + " probes" );
+         }
+         n++;
       }
 
       /* Fill in the genegroupreader and the classmap */
@@ -764,7 +838,7 @@ public class GeneAnnotations {
       resetSelectedProbes();
    }
 
-   //read infrom a file.
+   //read in from a file.
    private void read( String filename ) throws IOException {
 
       if ( !FileTools.testFile( filename ) ) {
@@ -788,7 +862,8 @@ public class GeneAnnotations {
       Set removeUs = new HashSet();
       for ( Iterator it = classToProbeMap.keySet().iterator(); it.hasNext(); ) {
          String id = ( String ) it.next();
-         if ( numProbesInGeneSet( id ) < lowThreshold || numGenesInGeneSet( id ) < lowThreshold
+         if ( numProbesInGeneSet( id ) < lowThreshold
+               || numGenesInGeneSet( id ) < lowThreshold
                || numProbesInGeneSet( id ) > highThreshold
                || numGenesInGeneSet( id ) > highThreshold ) {
             removeUs.add( id );
@@ -801,36 +876,6 @@ public class GeneAnnotations {
       }
 
       sortGeneSets();
-   }
-
-   /**
-    * @return Returns the classToGeneMap.
-    */
-   public Map getClassToGeneMap() {
-      return classToGeneMap;
-   }
-
-   /**
-    * @return Returns the geneToClassMap.
-    */
-   public Map getGeneToClassMap() {
-      return geneToClassMap;
-   }
-
-   /**
-    * Compute how many genes have Gene set annotations.
-    * 
-    * @return
-    */
-   public int numAnnotatedGenes() {
-      int count = 0;
-      for ( Iterator iter = probeToClassMap.keySet().iterator(); iter.hasNext(); ) {
-         List element = ( ArrayList ) probeToClassMap.get( iter.next() );
-         if ( element.size() > 0 ) {
-            count++;
-         }
-      }
-      return count;
    }
 
 }
@@ -861,6 +906,8 @@ class ClassSizeComparator implements Comparator {
    public static void main( String[] args ) {
    }
 }
+
+// used for the comparator.
 
 class GeneSet {
    private String name;
