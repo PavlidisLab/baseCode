@@ -28,6 +28,10 @@ public abstract class WizardStep extends JPanel {
    
    Wizard owner;
    
+   /**
+    * 
+    * @param wiz
+    */
    public WizardStep( Wizard wiz ) {
       super();
       owner = wiz;
@@ -49,7 +53,8 @@ public abstract class WizardStep extends JPanel {
       this.add( panel, BorderLayout.CENTER );
    }
 
-   /** @todo why the spaces for layout? */
+   /** @param text
+    * @todo why the spaces for layout? */
    protected void addHelp( String text ) {
       JLabel label = new JLabel( text );
       JLabel jLabel1 = new JLabel( "      " );
@@ -78,7 +83,7 @@ public abstract class WizardStep extends JPanel {
     }
     
     /**
-     * Print a message to the status bar.
+     * Print an error message to the status bar.
      * @param a
      */
      public void showError( String a ) {

@@ -59,6 +59,7 @@ public class JLinkLabel
       super.setText( "<html><a href=\"" + url + "\">" + text + "</a></html>" );
    }
    
+   // @todo new thread
    public void mouseClicked( MouseEvent e ) {
       if ( m_url != null ) {
          JWebBrowser webBrowser = new JWebBrowser( m_url );

@@ -51,6 +51,7 @@
         <license/>
     </licenses>
     <dependencies>
+    
         <dependency>
             <groupId>colt</groupId>
             <artifactId>colt</artifactId>
@@ -60,6 +61,7 @@
             <url>http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/download</url>
             <properties/>
         </dependency>
+        
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -68,6 +70,7 @@
              <jnlp.jar>true</jnlp.jar>
             <properties/>
         </dependency>
+        
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
@@ -76,6 +79,7 @@
             <type>jar</type>
             <properties/>
         </dependency>
+        
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
@@ -84,6 +88,9 @@
             <type>jar</type>
             <properties/>
         </dependency>
+      
+        
+    </dependencies>
     </dependencies>
     <build>
         <sourceDirectory>src</sourceDirectory>

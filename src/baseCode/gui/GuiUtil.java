@@ -49,10 +49,10 @@ public class GuiUtil {
    public static boolean testFile( String filename ) {
       if ( filename != null && filename.length() > 0 ) {
          File f = new File( filename );
-         if ( f.exists() ) {
+         if ( f.exists() && f.canRead() ) {
             return true;
          }
-         error( "File " + filename + " doesn't exist.  " );
+         error( "File " + filename + " doesn't exist or isn't readable.  " );
          return false;
 
       }

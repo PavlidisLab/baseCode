@@ -7,6 +7,7 @@ import baseCode.dataStructure.matrix.NamedMatrix;
 import baseCode.math.DescriptiveWithMissing;
 import baseCode.math.Stats;
 import cern.colt.list.DoubleArrayList;
+import cern.jet.stat.Descriptive;
 
 /**
  * Remove rows from a matrix based on some row-based statistic. Rows with values
@@ -37,7 +38,7 @@ import cern.colt.list.DoubleArrayList;
  * <p>
  * For microarray expression data based on the Affymetrix MAS4.0 protocol (and
  * possibly others), negative values can occur. In some cases all the values can
- * be negative. As these values are generally viewed as non-sensical, one might
+ * be negative. As these values are generally viewed as nonsensical, one might
  * decide that data rows that are all negative should be filtered.
  * <h2>Behavior at extremes</h2>
  * <p>
@@ -160,11 +161,11 @@ public class RowLevelFilter extends AbstractLevelFilter {
 
          switch ( method ) {
             case MIN: {
-               criteria.set( i, DescriptiveWithMissing.min( rowAsList ) );
+               criteria.set( i, Descriptive.min( rowAsList ) );
                break;
             }
             case MAX: {
-               criteria.set( i, DescriptiveWithMissing.max( rowAsList ) );
+               criteria.set( i, Descriptive.max( rowAsList ) );
                break;
             }
             case MEAN: {
