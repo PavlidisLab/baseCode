@@ -30,7 +30,7 @@ import baseCode.util.StatusViewer;
  * <p>
  * Company:
  * </p>
- *
+ * 
  * @author not attributable
  * @version $Id$
  */
@@ -42,7 +42,7 @@ public abstract class Wizard extends JDialog {
    protected JPanel BottomPanelWrap = new JPanel();
    protected JLabel jLabelStatus = new JLabel();
    protected JPanel jPanelStatus = new JPanel();
-   
+
    protected JButton nextButton = new JButton();
    protected JButton backButton = new JButton();
    protected JButton cancelButton = new JButton();
@@ -66,9 +66,9 @@ public abstract class Wizard extends JDialog {
       mainPanel.setPreferredSize( new Dimension( width, height ) );
       mainPanel.setLayout( new BorderLayout() );
 
-      	// holds the buttons and the status bar.
+      // holds the buttons and the status bar.
       BottomPanelWrap.setLayout( new BorderLayout() );
-      
+
       //bottom buttons/////////////////////////////////////////////////////////
       BottomPanel.setPreferredSize( new Dimension( width, 40 ) );
       nextButton.setText( "Next >" );
@@ -92,52 +92,51 @@ public abstract class Wizard extends JDialog {
       BottomPanel.add( backButton, null );
       BottomPanel.add( nextButton, null );
       BottomPanel.add( finishButton, null );
-      
+
       // status bar
       jPanelStatus.setBorder( BorderFactory.createEtchedBorder() );
       jLabelStatus.setFont( new java.awt.Font( "Dialog", 0, 11 ) );
-      jLabelStatus.setPreferredSize(new Dimension(width - 40, 19) );
+      jLabelStatus.setPreferredSize( new Dimension( width - 40, 19 ) );
       jLabelStatus.setHorizontalAlignment( SwingConstants.LEFT );
       jPanelStatus.add( jLabelStatus, null );
       statusMessenger = new StatusJlabel( jLabelStatus );
-      
+
       BottomPanelWrap.add( BottomPanel, BorderLayout.NORTH );
       BottomPanelWrap.add( jPanelStatus, BorderLayout.SOUTH );
-      
+
       mainPanel.add( BottomPanelWrap, BorderLayout.SOUTH );
-     
+
    }
 
    /**
-   * Print a message to the status bar.
-   * @param a
-   */
+    * Print a message to the status bar.
+    * 
+    * @param a
+    */
    public void showStatus( String a ) {
       statusMessenger.setStatus( a );
    }
-   
 
    /**
-   * Print an error message to the status bar.
-   * @param a
-   */
+    * Print an error message to the status bar.
+    * 
+    * @param a
+    */
    public void showError( String a ) {
       statusMessenger.setError( a );
    }
-   
-   
+
    /**
     * Make the status bar empty.
-    *
     */
    public void clearStatus() {
-      statusMessenger.setStatus("");
+      statusMessenger.setStatus( "" );
    }
-   
+
    protected void addStep( int step, WizardStep panel ) {
       steps.add( step - 1, panel );
       if ( step == 1 )
-         mainPanel.add( ( JPanel ) steps.get( 0 ), BorderLayout.CENTER );
+            mainPanel.add( ( JPanel ) steps.get( 0 ), BorderLayout.CENTER );
    }
 
    public void showWizard() {
@@ -153,27 +152,45 @@ public abstract class Wizard extends JDialog {
 
    /**
     * Define what happens when the 'next' button is pressed
+    * 
     * @param e
     */
    protected abstract void nextButton_actionPerformed( ActionEvent e );
 
    /**
     * Define what happens when the 'back' button is pressed
+    * 
     * @param e
     */
    protected abstract void backButton_actionPerformed( ActionEvent e );
 
    /**
     * Define what happens when the 'cancel' button is pressed.
+    * 
     * @param e
     */
    protected abstract void cancelButton_actionPerformed( ActionEvent e );
 
    /**
     * Define what happens when the 'finish' button is pressed.
+    * 
     * @param e
     */
    protected abstract void finishButton_actionPerformed( ActionEvent e );
+
+   /**
+    * Disable the "finish" button, indicating the user has some steps to do yet.
+    */
+   public void setFinishDisabled() {
+      this.finishButton.setEnabled( false );
+   }
+
+   /**
+    * Enable the "finish" button, indicating the user can get out of the wizard at this stage.
+    */
+   public void setFinishEnabled() {
+      this.finishButton.setEnabled( true );
+   }
 }
 
 class Wizard_nextButton_actionAdapter implements java.awt.event.ActionListener {

@@ -2,6 +2,7 @@ package baseCode.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -56,8 +57,12 @@ public abstract class AppDialog extends JDialog {
    protected JButton cancelButton = new JButton();
 protected JButton helpButton = new JButton();
    
-   protected JFrame callingframe;
+   protected Container callingframe;
 
+   public AppDialog() {
+      
+   }
+   
    public AppDialog( JFrame callingframe, int width, int height ) {
       this.callingframe = callingframe;
       setModal( true );
