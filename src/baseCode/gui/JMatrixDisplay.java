@@ -44,52 +44,52 @@ public class JMatrixDisplay extends JPanel {
     protected Dimension m_cellSize = new Dimension( 10, 10 ); // in pixels
 
     public JMatrixDisplay( String filename ) throws IOException {
-     
+
 	ColorMatrix matrix = new ColorMatrix( filename );
 	init( matrix );
     }
-  
+
     public JMatrixDisplay( DenseDoubleMatrix2DNamed matrix ) {
-     
+
 	this( new ColorMatrix( matrix ));
     }
-  
+
     public JMatrixDisplay( ColorMatrix matrix ) {
 
 	init( matrix );
     }
 
     public void init( ColorMatrix matrix ) {
-     
+
 	m_matrix = matrix;
 	initSize();
-     
+
 	// create a standardized copy of the matrix
 	m_standardizedMatrix = (ColorMatrix) matrix.clone();
-	m_standardizedMatrix.standardize();     
+	m_standardizedMatrix.standardize();
 
     }
-  
+
     /**
      * Sets the display size
      */
     protected void initSize() {
-     
+
 	Dimension d = getSize( m_isShowLabels );
 	setMinimumSize( d );
 	setPreferredSize( d );
 	setSize( d );
 	this.revalidate();
     }
-  
-  
+
+
     protected Dimension getSize( boolean withLabels ) {
 
 	if (m_matrix == null)
 	    {
 		return null;
 	    }
-    
+
 	// row label width and height (font-dependent)
 	setFont();
 	m_rowLabelWidth = m_labelGutter + Util.maxStringPixelWidth( m_matrix.getRowNames(), m_labelFont, this );
@@ -110,7 +110,7 @@ public class JMatrixDisplay extends JPanel {
 
 	// set the sizes
 	return new Dimension( width, height );
-      
+
     } // end getSize
 
     /**
@@ -121,24 +121,24 @@ public class JMatrixDisplay extends JPanel {
 
 	super.paintComponent(g);
 	drawMatrix( g, m_isShowLabels );
-    
+
 	if (m_isShowLabels)
 	    {
 		drawRowNames( g );
 		drawColumnNames( g );
-	    }    
+	    }
     } // end paintComponent
 
     public void setStandardizedEnabled( boolean showStandardizedMatrix )
     {
 	m_isShowingStandardizedMatrix = showStandardizedMatrix;
     }
-  
+
     public boolean getStandardizedEnabled() {
-     
+
 	return m_isShowingStandardizedMatrix;
     }
-  
+
     /**
      * Gets called from #paintComponent and #saveToFile
      */
@@ -146,7 +146,7 @@ public class JMatrixDisplay extends JPanel {
 
 	// which matrix do we draw?  standardized or not?
 	ColorMatrix matrix = m_isShowingStandardizedMatrix ? m_standardizedMatrix : m_matrix;
-        
+
 	g.setColor(Color.white);
 	g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
@@ -200,21 +200,21 @@ public class JMatrixDisplay extends JPanel {
 		g.drawString(rowName, xRatio, yRatio);
 	    } // end drawing row names
     } // end rawRowName
-  
+
     /**
      * Draws column names vertically (turned 90 degrees counter-clockwise)
      */
     protected void drawColumnNames( Graphics g ) {
 
 	if (m_matrix == null) return;
-     
+
 	int columnCount = m_matrix.getColumnCount();
 	for (int j = 0;  j < columnCount;  j++)
 	    {
 		// compute the coordinates
 		int x = m_cellSize.width + (j * m_cellSize.width) - m_fontGutter;
 		int y = m_columnLabelHeight;
-        
+
 		// get column name
 		String columnName = m_matrix.getColumnName( j );
 		if (null == columnName) {
@@ -224,16 +224,16 @@ public class JMatrixDisplay extends JPanel {
 		// set font and color
 		g.setColor( Color.black );
 		g.setFont( m_labelFont );
-        
+
 		// print the text vertically
 		Util.drawVerticalString( g, columnName, m_labelFont, x, y );
-        
+
 	    } // end for column
     } // end drawColumnNames
-  
 
-  
-  
+
+
+
     /**
      * Sets the font used for drawing text
      */
@@ -257,32 +257,32 @@ public class JMatrixDisplay extends JPanel {
 	return Math.max( m_cellSize.height, 5 );
     }
 
-  
-  
+
+
     /**
-     * Saves the image to a png file. The image file will <i>always</i> include 
+     * Saves the image to a png file. The image file will <i>always</i> include
      * row and column names!
      */
     public void saveToFile( String outPngFilename ) throws java.io.IOException {
-     
+
 	saveToFile( outPngFilename, true );
     }
-  
+
     /**
      * Saves the image to a png file.
      */
     public void saveToFile( String outPngFilename, boolean showLabels ) throws java.io.IOException {
 
 	Graphics2D g = null;
-     
+
 	boolean wereLabelsShown = m_isShowLabels;
-	if ( ! wereLabelsShown ) 
+	if ( ! wereLabelsShown )
 	    {
 		// labels aren't visible, so make them visible
 		setLabelsVisible( true );
 		initSize();
 	    }
-     
+
 	// draw the image to a buffer
 	Dimension d = getSize( showLabels ); // how big is the image with row and column labels
 	m_image = new BufferedImage( d.width, d.height, BufferedImage.TYPE_INT_RGB );
@@ -296,7 +296,7 @@ public class JMatrixDisplay extends JPanel {
 
 	// write the image to a png file
 	ImageIO.write( m_image, "png", new File( outPngFilename ));
-     
+
 	if ( ! wereLabelsShown )
 	    {
 		// labels weren't visible to begin with, so hide them
@@ -326,47 +326,47 @@ public class JMatrixDisplay extends JPanel {
 	m_matrix = matrix;
 	initSize();
     }
-  
+
     public void setCellSize( Dimension d ) {
-     
+
 	m_cellSize = d;
 	initSize();
     }
-  
+
     public void setRowHeight( int height ) {
-  
+
 	m_cellSize.height = height;
 	initSize();
     }
-  
+
     public int getRowHeight() {
 	return m_cellSize.height;
     }
-  
+
     public Color getColor( int row, int column ) {
-     
+
 	if (m_isShowingStandardizedMatrix)
 	    return m_standardizedMatrix.getColor( row, column );
 	else
 	    return m_matrix.getColor( row, column );
     } // end getColor
-  
+
     public double getValue( int row, int column ) {
-     
+
 	if (m_isShowingStandardizedMatrix)
 	    return m_standardizedMatrix.getValue( row, column );
 	else
-	    return m_matrix.getValue( row, column );     
+	    return m_matrix.getValue( row, column );
     } // end getValue
-  
+
     public int getRowCount() {
 	return m_matrix.getRowCount();
     }
-  
+
     public int getColumnCount() {
 	return m_matrix.getColumnCount();
     }
-  
+
     public String getColumnName( int column ) {
 	return m_matrix.getColumnName( column );
     }
@@ -374,5 +374,20 @@ public class JMatrixDisplay extends JPanel {
     public String getRowName( int row ) {
 	return m_matrix.getRowName( row );
     }
-  
+
+    /**
+     * @param  colorMap  an array of colors which define the midpoints in the
+     *                   color map; this can be one of the constants defined
+     *                   in the ColorMap class, like ColorMap.REDGREEN_COLORMAP
+     *                   and ColorMap.BLACKBODY_COLORMAP
+     *
+     * @throws an exception if the colorMap array argument contains less than
+     *                      two colors.
+     */
+    public void setColorMap( Color[] colorMap ) throws Exception {
+
+       m_standardizedMatrix.setColorMap( colorMap );
+       m_matrix.setColorMap( colorMap );
+    }
+
 } // end class JMatrixDisplay
