@@ -42,9 +42,6 @@ public class TestApp {
     }
 
     frame.getContentPane().add( matrixDisplay, BorderLayout.CENTER );
-    Dimension d = new Dimension( matrixDisplay.getSize() );
-    d.height += 20; // for the title frame
-    frame.setSize( d );
 
     //Validate frames that have preset sizes
     //Pack frames that have useful preferred size info, e.g. from their layout
