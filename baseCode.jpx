@@ -33,12 +33,12 @@
   <property category="runtime.4" name="BuildTargetOnRun" value="com.borland.jbuilder.build.ProjectBuilder$ProjectBuildAction;make"/>
   <property category="runtime.4" name="ConfigurationName" value="test CorrelationMatrix; No missing"/>
   <property category="runtime.4" name="RunnableType" value="com.borland.jbuilder.runtime.ApplicationRunner"/>
-  <property category="runtime.4" name="application.class" value="baseCode.Math.CorrelationMetrics"/>
+  <property category="runtime.4" name="application.class" value="baseCode.math.CorrelationMetrics"/>
   <property category="runtime.4" name="application.parameters" value="C:\jbproject\core\testdata.txt"/>
   <property category="runtime.5" name="BuildTargetOnRun" value="com.borland.jbuilder.build.ProjectBuilder$ProjectBuildAction;make"/>
   <property category="runtime.5" name="ConfigurationName" value="test CorrelationMatrix;  missing values"/>
   <property category="runtime.5" name="RunnableType" value="com.borland.jbuilder.runtime.ApplicationRunner"/>
-  <property category="runtime.5" name="application.class" value="baseCode.Math.CorrelationMetrics"/>
+  <property category="runtime.5" name="application.class" value="baseCode.math.CorrelationMetrics"/>
   <property category="runtime.5" name="application.parameters" value="C:\jbproject\core\testdatamissing.txt"/>
   <property category="runtime.6" name="BuildTargetOnRun" value="com.borland.jbuilder.build.ProjectBuilder$ProjectBuildAction;make"/>
   <property category="runtime.6" name="ConfigurationName" value="Simple db handle test"/>
