@@ -107,6 +107,7 @@ public class CorrelationStats {
       if ( !isValidPearsonCorrelation( r ) ) {
          throw new IllegalArgumentException( "Invalid correlation " + r );
       }
+      
       return 0.5 * Math.log( ( 1.0 + r ) / ( 1.0 - r ) );
    }
 
@@ -239,8 +240,14 @@ public class CorrelationStats {
       return ( corrguess );
    }
 
+   /**
+    * Test if a value is a reasonable Pearson correlation (in the range -1 to 1; values outside of this
+    * range are acceptable within a small roundoff.
+    * @param r
+    * @return
+    */
    public static boolean isValidPearsonCorrelation( double r ) {
-      return ( r >= -1.0 && r <= 1.0 );
+      return ( r + Constants.SMALL >= -1.0 && r - Constants.SMALL <= 1.0 );
    }
 
 }

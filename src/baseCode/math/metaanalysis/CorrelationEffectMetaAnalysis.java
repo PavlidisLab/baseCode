@@ -130,8 +130,8 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
             throw new IllegalArgumentException( "N must be greater than 0" );
 
       if ( !CorrelationStats.isValidPearsonCorrelation( r ) )
-            throw new IllegalArgumentException(
-                  "r is not a valid Pearson correlation" );
+            throw new IllegalArgumentException( "r=" + r
+                  + " is not a valid Pearson correlation" );
 
       if ( numsamples < 2 ) {
          return Double.NaN;
@@ -155,8 +155,14 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
 
       DoubleArrayList answer = new DoubleArrayList( sampleSizes.size() );
       for ( int i = 0; i < sampleSizes.size(); i++ ) {
-         answer.add( samplingVariance( effectSizes.getQuick( i ), sampleSizes
-               .getQuick( i ) ) );
+
+         double ef = effectSizes.getQuick( i );
+
+         if ( Double.isNaN( ef ) ) {
+            answer.add( Double.NaN );
+         } else {
+            answer.add( samplingVariance( ef, sampleSizes.getQuick( i ) ) );
+         }
       }
       return answer;
    }

@@ -1,7 +1,7 @@
 package baseCode.math;
 
 /**
- * Used in some ports of statsistical code.
+ * Used in some ports of statistical code.
  *
  * <hr>
  * <p>Copyright (c) 2004 Columbia University
@@ -9,6 +9,11 @@ package baseCode.math;
  * @version $Id$
  */
 public abstract class Constants {
+   
+   public static final double TINY = 1e-20;
+   public static final double SMALL = 1e-10;
+   
+   
    /* sqrt(2) */
    public static final double M_SQRT_2 = 1.4142135623730950488016887242097;
    public static final double M_1_SQRT_2 = 0.707106781186547524400844362105;

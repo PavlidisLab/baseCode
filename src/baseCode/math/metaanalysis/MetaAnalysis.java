@@ -75,19 +75,18 @@ public abstract class MetaAnalysis {
       }
       return r;
    }
-   
-   
+
    /**
     * Test for statistical significance of Q.
+    * 
     * @param Q - computed using qStatistic
     * @param N - number of studies.
     * @see qStatistic
     * @return The upper tail chi-square probability for Q with N - degrees of freedom.
     */
-   public double qTest(double Q, double N) {
-      return Probability.chiSquareComplemented(N - 1, Q);
+   public double qTest( double Q, double N ) {
+      return Probability.chiSquareComplemented( N - 1, Q );
    }
-   
 
    /**
     * General formula for weighted mean of effect sizes. Cooper and Hedges 18-1, or HS pg. 100.
@@ -145,7 +144,9 @@ public abstract class MetaAnalysis {
     *   
     *    
     *     
-    *        v_dot = 1/sum_i=1&circ;k ( 1/v_i)
+    *      
+    *         v_dot = 1/sum_i=1&circ;k ( 1/v_i)
+    *       
     *      
     *     
     *    
@@ -162,7 +163,8 @@ public abstract class MetaAnalysis {
          var += 1.0 / variances.getQuick( i );
       }
       if ( var == 0.0 ) {
-         throw new IllegalStateException( "Variance of zero" );
+         var = Double.MIN_VALUE;
+         //   throw new IllegalStateException( "Variance of zero" );
       }
       return 1.0 / var;
    }
@@ -176,7 +178,9 @@ public abstract class MetaAnalysis {
     *   
     *    
     *     
-    *        v_dot = [ sum_i=1&circ;k ( q_i &circ; 2 * w_i) ]/[ sum_i=1&circ;k  q_i * w_i ]&circ;2
+    *      
+    *         v_dot = [ sum_i=1&circ;k ( q_i &circ; 2 * w_i) ]/[ sum_i=1&circ;k  q_i * w_i ]&circ;2
+    *       
     *      
     *     
     *    
@@ -232,19 +236,20 @@ public abstract class MetaAnalysis {
     * @param variances
     * @return
     */
-//   protected double metaREVariance( DoubleArrayList effectSizes,
-//         DoubleArrayList variances ) {
-//      return Math.max( metaRESampleVariance( effectSizes )
-//            - Descriptive.mean( variances ), 0.0 );
-//   }
-
+   //   protected double metaREVariance( DoubleArrayList effectSizes,
+   //         DoubleArrayList variances ) {
+   //      return Math.max( metaRESampleVariance( effectSizes )
+   //            - Descriptive.mean( variances ), 0.0 );
+   //   }
    /**
-    * CH equation 18-23. Another estimator of the between-studies variance s<sup>2</sup> for random effects model. This is non-zero
-    * only if Q is larger than expected under the null hypothesis that the variance is zero.
+    * CH equation 18-23. Another estimator of the between-studies variance s <sup>2 </sup> for random effects model.
+    * This is non-zero only if Q is larger than expected under the null hypothesis that the variance is zero.
     * 
     * <pre>
     * 
-    *  s&circ;2 = [Q - ( k - 1 ) ] / c
+    *  
+    *   s&circ;2 = [Q - ( k - 1 ) ] / c
+    *   
     *  
     * </pre>
     * 
@@ -252,7 +257,9 @@ public abstract class MetaAnalysis {
     * 
     * <pre>
     * 
-    *  c = Max(sum_i=1&circ;k w_i - [ sum_i&circ;k w_i&circ;2 / sum_i&circ;k w_i ], 0)
+    *  
+    *   c = Max(sum_i=1&circ;k w_i - [ sum_i&circ;k w_i&circ;2 / sum_i&circ;k w_i ], 0)
+    *   
     *  
     * </pre>
     * 
@@ -273,7 +280,7 @@ public abstract class MetaAnalysis {
 
       double c = Descriptive.sum( weights )
             - Descriptive.sumOfSquares( weights ) / Descriptive.sum( weights );
-      return Math.max(( q - (effectSizes.size() - 1) ) / c, 0.0 );
+      return Math.max( ( q - ( effectSizes.size() - 1 ) ) / c, 0.0 );
    }
 
    /**
@@ -281,8 +288,10 @@ public abstract class MetaAnalysis {
     * between-sample variance and the conditional variance.
     * 
     * <pre>
+    * 
+    *    
+    *   v_i&circ;* = sigma-hat_theta&circ;2 + v_i.
     *   
-    *  v_i&circ;* = sigma-hat_theta&circ;2 + v_i.
     *  
     * </pre>
     * 
@@ -310,17 +319,19 @@ public abstract class MetaAnalysis {
     * @param variances
     * @return
     */
-   protected DoubleArrayList metaFEWeights( DoubleArrayList variances ) {
+protected DoubleArrayList metaFEWeights( DoubleArrayList variances ) {
       DoubleArrayList w = new DoubleArrayList( variances.size() );
 
       for ( int i = 0; i < variances.size(); i++ ) {
-         if ( variances.getQuick( i ) <= 0 ) {
-            throw new IllegalStateException( "Negative or zero variance" );
+         double v = variances.getQuick( i );
+         if ( v <= 0 ) {
+            v = Double.MIN_VALUE;
+            
+         //   throw new IllegalStateException( "Negative or zero variance" );
          }
-         w.add( 1 / variances.getQuick( i ) );
+         w.add( 1 / v );
       }
 
       return w;
    }
-
 }
