@@ -63,12 +63,15 @@ public class Util {
    } // end getMaxPixelWidth
      
    /**
-    * Draws a string vertically, turned 90 degrees counter-clockwise
+    * Draws a string vertically, turned 90 degrees counter-clockwise.
+    * Read carefully what the <i>x</i> and <i>y</i> coordinates means;
+    * chances are that if you draw to (x,y) = (0,0), you won't see anything.
+    *
     * @param  g     the graphics context on which to draw
     * @param  text  the string to draw
     * @param  font  the font to use
-    * @param  x     the <i>x</i> coordinate
-    * @param  y     the <i>y</i> coordinate
+    * @param  x     the <i>x</i> coordinate where you want to place the baseline of the text.
+    * @param  y     the <i>y</i> coordinate where you want to place the first letter of the text.
     */
    public static void drawVerticalString( Graphics g, String text, Font font, int x, int y )
    {
