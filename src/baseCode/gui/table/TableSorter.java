@@ -57,14 +57,14 @@ import baseCode.gui.JMatrixDisplay;
  * @author Brendon McLean
  * @author Dan van Enckevort
  * @author Parwinder Sekhon
- * @author Paul Pavlidis
+ * @author Paul Pavlidis (minor)
  * @version 2.0 02/27/04
  * @version $Id$
  */
 
 public class TableSorter extends AbstractTableModel {
    protected TableModel tableModel;
-   JMatrixDisplay m_matrixDisplay;
+   JMatrixDisplay m_matrixDisplay; // get rid of this!
 
    public static final int DESCENDING = -1;
    public static final int NOT_SORTED = 0;
@@ -374,7 +374,6 @@ public class TableSorter extends AbstractTableModel {
                      // not the array lists themselves.
                      o1 = a;
                      o2 = b;
-                     //}
                   }
                } else if ( o1.getClass().equals( Vector.class ) ) {
                   if ( ( ( Vector ) o1 ).get( 0 ).getClass().equals(

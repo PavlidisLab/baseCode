@@ -65,12 +65,10 @@ public class JMatrixDisplay extends JPanel {
    }
 
    public JMatrixDisplay( DenseDoubleMatrix2DNamed matrix ) {
-
       this( new ColorMatrix( matrix ) );
    }
 
    public JMatrixDisplay( ColorMatrix matrix ) {
-
       init( matrix );
    }
 

@@ -417,15 +417,7 @@ public class ColorMatrix implements Cloneable {
    } // end mapValuesToColors
 
    public Object clone() {
-
-      //      try {
-      //
-      //         cloneColorMatrix = (ColorMatrix) super.clone();
-      //      }
-      //      catch ()
-
       // create another double matrix
-      Color[][] colors = new Color[m_totalRows][m_totalColumns];
       DenseDoubleMatrix2DNamed matrix = new DenseDoubleMatrix2DNamed(
             m_totalRows, m_totalColumns );
       // copy the row and column names

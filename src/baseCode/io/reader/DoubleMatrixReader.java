@@ -32,8 +32,8 @@ import cern.colt.list.DoubleArrayList;
 public class DoubleMatrixReader extends AbstractNamedMatrixReader {
 
    private int numHeadings;
-   private   Vector colNames;
-   
+   private Vector colNames;
+
    /**
     * @param filename data file to read from
     * @return NamedMatrix object constructed from the data file
@@ -78,11 +78,11 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
       BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
 
       Vector MTemp = new Vector();
-       
+
       Vector rowNames = new Vector();
 
       //BufferedReader dis = new BufferedReader( new FileReader( filename ) );
-      int columnNumber = 0;
+      //   int columnNumber = 0;
       int rowNumber = 0;
       String row;
 
@@ -100,9 +100,9 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
       numHeadings = colNames.size();
 
       while ( ( row = dis.readLine() ) != null ) {
-         
-         String s  = parseRow(row, rowNames, MTemp );
-         
+
+         String rowName = parseRow( row, rowNames, MTemp, wantedRowNames );
+
          if ( wantedRowNames != null ) {
 
             // if we already have all the rows we want, then bail out
@@ -111,12 +111,11 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
                      colNames );
             }
             // skip this row if it's not in wantedRowNames
-            else if ( !wantedRowNames.contains( s ) ) {
-               // maybe the next line in the file has the row we want
+            else if ( !wantedRowNames.contains( rowName ) ) {
                continue;
             } else if ( createEmptyRows ) {
                // we found the row we want in the file
-               wantedRowsFound.add( s );
+               wantedRowsFound.add( rowName );
             }
          }
          rowNumber++;
@@ -143,22 +142,23 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
       return createMatrix( MTemp, rowNumber, numHeadings, rowNames, colNames );
 
    }
-   
-   
-   /* (non-Javadoc)
+
+   /*
+    * (non-Javadoc)
+    * 
     * @see baseCode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
     */
    public NamedMatrix readOneRow( BufferedReader dis ) throws IOException {
       String row = dis.readLine();
       Vector MTemp = new Vector();
-    
+
       Vector rowNames = new Vector();
-      String s  = parseRow(row, rowNames, MTemp );
+      String s = parseRow( row, rowNames, MTemp, null );
       return createMatrix( MTemp, 1, numHeadings, rowNames, colNames );
    }
-   
 
    /**
+    * @param wantedRowNames
     * @throws IOException
     * @param numHeadings
     * @param MTemp
@@ -168,38 +168,20 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
     * @param row
     * @return name of the row
     */
-   private String parseRow( String row, List rowNames, List MTemp ) throws IOException {
-     
+   private String parseRow( String row, List rowNames, List MTemp, Set wantedRowNames )
+         throws IOException {
+
       StringTokenizer st = new StringTokenizer( row, "\t", true );
 
-      //
-      // Skip rows in which we are not interested
-      //
-      String s = null;
-      if ( st.hasMoreTokens() ) {
-         s = st.nextToken();
-      } else {
-        // continue;
-      }
-     
-
-      //
-      // If we're here, that means this row in the file contains the row
-      // we want -- we don't want to skip this file row, so parse it
-      //
       DoubleArrayList rowTemp = new DoubleArrayList();
       int columnNumber = 0;
       String previousToken = "";
+      String s = null;
 
       while ( st.hasMoreTokens() ) {
          // Iterate through the row, parsing it into row name and values
-         if ( columnNumber > 0 ) {
-            // if columnNumber == 0, then we just entered this loop and
-            // have already called st.nextToken() above to get the first
-            // string, so we don't want to call it twice, or we'll skip
-            // the row name
-            s = st.nextToken();
-         }
+
+         s = st.nextToken();
          boolean missing = false;
 
          if ( s.compareTo( "\t" ) == 0 ) {
@@ -223,8 +205,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
             if ( previousToken.compareTo( "\t" ) == 0 ) {
                missing = true;
             } else {
-               throw new IOException(
-                     "NaN found where it isn't supposed to be" );
+               throw new IOException( "NaN found where it isn't supposed to be" );
                // bad, not allowed - missing a tab?
             }
          }
@@ -239,6 +220,9 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
             if ( missing ) {
                throw new IOException(
                      "Missing values not allowed for row labels" );
+            }  
+            if (wantedRowNames != null && !wantedRowNames.contains(s)) {
+               return s;
             }
             rowNames.add( s.intern() );
          }
@@ -250,13 +234,12 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
 
       if ( rowTemp.size() > numHeadings ) {
          throw new IOException( "Too many values (" + rowTemp.size()
-               + ") in row  (based on headings count of "
-               + numHeadings + ")" );
+               + ") in row  (based on headings count of " + numHeadings + ")" );
       }
-      
+
       MTemp.add( rowTemp );
       return s;
-      
+
    }
 
    /**
@@ -313,7 +296,5 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
       }
       return row;
    }
-
- 
 
 } // end class DoubleMatrixReader
