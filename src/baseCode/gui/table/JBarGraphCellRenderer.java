@@ -18,7 +18,7 @@ public class JBarGraphCellRenderer extends JLabel implements TableCellRenderer {
 
    double[] m_values = null;
    final static int LINE_WIDTH = 2;
-   final static Color[] COLORS = { Color.RED, Color.BLUE, Color.DARK_GRAY,
+   final static Color[] COLORS = { Color.BLUE, Color.GRAY, Color.RED,
          Color.GREEN, Color.CYAN, Color.MAGENTA, Color.ORANGE };
 
    // This method is called each time a cell in a column
@@ -38,6 +38,8 @@ public class JBarGraphCellRenderer extends JLabel implements TableCellRenderer {
    protected void paintComponent( Graphics g ) {
 
       super.paintComponent( g );
+      
+      if (m_values == null) return;
 
       final int width = getWidth();
       final int height = getHeight();
@@ -57,7 +59,8 @@ public class JBarGraphCellRenderer extends JLabel implements TableCellRenderer {
          }
 
          // draw the vertical bar line
-         g.drawRect( x, y, LINE_WIDTH, height );
+         if ( x > width ) x = width - LINE_WIDTH;
+         g.fillRect( x, y, LINE_WIDTH, height );
       }
    } // end paintComponent
 } // end class
