@@ -2,6 +2,7 @@ package baseCodeTest.math;
 
 import java.io.IOException;
 
+import baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix;
 import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import baseCode.io.reader.DoubleMatrixReader;
 import baseCode.math.MatrixStats;
@@ -19,8 +20,8 @@ import junit.framework.TestCase;
  */
 public class TestMatrixStats extends TestCase {
    
-   protected DenseDoubleMatrix2DNamed testdata = null;
-   protected DenseDoubleMatrix2DNamed testdatahuge = null;
+   protected AbstractNamedDoubleMatrix testdata = null;
+   protected AbstractNamedDoubleMatrix testdatahuge = null;
    /*
     * @see TestCase#setUp()
     */
