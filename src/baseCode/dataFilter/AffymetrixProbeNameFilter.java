@@ -1,7 +1,5 @@
 package baseCode.dataFilter;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Vector;
 
 import baseCode.dataStructure.NamedMatrix;

@@ -11,8 +11,13 @@ import cern.colt.list.ObjectArrayList;
 
 /**
  * Calculate rank statistics for arrays.
- * <p> Copyright (c) 2004</p>
- * <p>Institution: Columbia University</p>
+ * <p>
+ * Copyright (c) 2004
+ * </p>
+ * <p>
+ * Institution: Columbia University
+ * </p>
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
@@ -20,21 +25,34 @@ public class Rank {
 
    /**
     * Rank transform an array. Ties are not handled specially.
-    *
-    * @param array DoubleArrayList
+    * 
+    * @param array
+    *           DoubleArrayList
     * @return cern.colt.list.DoubleArrayList
     */
    public static DoubleArrayList rankTransform( DoubleArrayList array ) {
-      ObjectArrayList ranks = new ObjectArrayList( array.size() );
-      DoubleArrayList result = new DoubleArrayList( array.size() );
+      if ( array == null ) {
+         throw new IllegalArgumentException( "Null array" );
+      }
 
-      for ( int i = 0; i < array.size(); i++ ) {
-         ranks.set( i, new rankData( i, array.getQuick( i ) ) );
+      int size = array.size();
+      if ( size == 0 ) {
+         return null;
+      }
+
+      ObjectArrayList ranks = new ObjectArrayList( size );
+      DoubleArrayList result = new DoubleArrayList( new double[size] );
+
+      // store the ranks in the array.
+      for ( int i = 0; i < size; i++ ) {
+         rankData rd = new rankData( i, array.get( i ) );
+         ranks.add( rd );
       }
 
       ranks.sort();
 
-      for ( int i = 0; i < array.size(); i++ ) {
+      // fill in the results.
+      for ( int i = 0; i < size; i++ ) {
          result.set( ( ( rankData ) ranks.get( i ) ).getIndex(), i );
       }
 
@@ -44,8 +62,9 @@ public class Rank {
    /**
     * Rank transform a map, where the keys are strings and the values are the
     * numerical values we wish to rank. Ties are not handled specially.
-    *
-    * @param m java.util.Map with keys strings, values doubles.
+    * 
+    * @param m
+    *           java.util.Map with keys strings, values doubles.
     * @return A java.util.Map keys=old keys, values=integer rank of the key.
     */
    public static Map rankTransform( Map m ) {
@@ -55,12 +74,15 @@ public class Rank {
       Collection entries = m.entrySet();
       Iterator itr = entries.iterator();
 
-      /* put the pvalues into an array of objects which contain the
-       * pvalue and the gene id */
+      /*
+       * put the pvalues into an array of objects which contain the pvalue and
+       * the gene id
+       */
       while ( itr.hasNext() ) {
          Map.Entry tuple = ( Map.Entry ) itr.next();
          String key = ( String ) tuple.getKey();
-         double val = ( double ) ( ( ( Double ) tuple.getValue() ).doubleValue() );
+         double val = ( double ) ( ( ( Double ) tuple.getValue() )
+               .doubleValue() );
          values[counter] = new keyAndValueData( key, val );
          counter++;
       }
@@ -80,8 +102,9 @@ public class Rank {
 /*
  * Helper class for rankTransform.
  */
-class rankData
-    implements Comparable {
+
+class rankData implements Comparable {
+
    private int index;
    private double value;
 
@@ -111,11 +134,12 @@ class rankData
 }
 
 /*
-    Helper class for rankTransform map.
+ * Helper class for rankTransform map.
  */
-class keyAndValueData
-    implements Comparable {
+
+class keyAndValueData implements Comparable {
    private String key;
+
    private double value;
 
    public keyAndValueData( String id, double v ) {

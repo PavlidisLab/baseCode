@@ -1,10 +1,10 @@
 package baseCode.dataFilter;
 
 import java.lang.reflect.Constructor;
-import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import baseCode.dataStructure.NamedMatrix;
 
 /**
