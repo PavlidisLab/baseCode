@@ -31,10 +31,10 @@ public class DoubleMatrixReader
    /**
     * Read a matrix from a file, subject to filtering criteria.
     * @param   filename        data file to read from
-    * @param   filterRowNames  contains names or rows we want to get
+    * @param   wantedRowNames  contains names or rows we want to get
     * @return  NamedMatrix     object constructed from the data file
     */
-   public NamedMatrix read( String filename, String[] filterRowNames ) throws IOException {
+   public NamedMatrix read( String filename, String[] wantedRowNames ) throws IOException {
 
       Vector MTemp = new Vector();
       Vector colNames;
@@ -60,14 +60,14 @@ public class DoubleMatrixReader
          } else {
             continue;
          }
-         if ( filterRowNames != null ) {
+         if ( wantedRowNames != null ) {
             
             // if we already have all the rows we want, then bail out
-            if ( rowNumber >= filterRowNames.length ) {
+            if ( rowNumber >= wantedRowNames.length ) {
                return createMatrix( MTemp, rowNumber, numHeadings, rowNames, colNames );
             }
-            // skip this row if it's not in filterRowNames
-            else if ( skipThisRow( s, filterRowNames ) ) {
+            // skip this row if it's not in wantedRowNames
+            else if ( skipThisRow( s, wantedRowNames ) ) {
                continue;
             }
          }
@@ -175,13 +175,13 @@ public class DoubleMatrixReader
    
    
    /**
-    * Returns true if and only if thisRowName is found in filterRowNames array
+    * Returns true if and only if thisRowName is found in wantedRowNames array
     */
-   public boolean skipThisRow( String thisRowName, String[] filterRowNames ) {
+   public boolean skipThisRow( String thisRowName, String[] wantedRowNames ) {
 
       boolean found = false;
-      for ( int i = 0; i < filterRowNames.length; i++ ) {
-         if ( thisRowName.equals( filterRowNames[i] ) ) {
+      for ( int i = 0; i < wantedRowNames.length; i++ ) {
+         if ( thisRowName.equals( wantedRowNames[i] ) ) {
             return false; // found it!  so don't skip this row!
          }
       }
