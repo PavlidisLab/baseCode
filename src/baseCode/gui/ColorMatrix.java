@@ -18,24 +18,24 @@ import cern.colt.list.DoubleArrayList;
 public class ColorMatrix {
 
     // data fields
-    protected Color[][] m_colors;
-    protected Color m_missingColor = Color.lightGray;
-    protected Color[] m_colorMap = ColorMap.GREENRED_COLORMAP;
+
     /**
      * min and max values to display, which might not be the actual min
      * and max values in the matrix.  For instance, we might want to clip
      * values, or show a bigger color range for equal comparison with other
      * rows or matrices.
      */
-    public double m_minDisplayValue, m_maxDisplayValue;
+    public double m_minDisplayValue, m_maxDisplayValue;   protected Color[][] m_colors;
+    protected Color m_missingColor = Color.lightGray;
+    protected Color[] m_colorMap = ColorMap.GREENRED_COLORMAP;
 
-    DenseDoubleMatrix2DNamed m_matrix;
-    DoubleMatrixReader m_matrixReader;
+    protected DenseDoubleMatrix2DNamed m_matrix;
+    protected DoubleMatrixReader m_matrixReader;
 
-    int m_totalRows, m_totalColumns;
+    protected int m_totalRows, m_totalColumns;
 
     /** to be able to sort the rows by an arbitrary key */
-    int m_rowKeys[];
+    protected int m_rowKeys[];
 
 
     /**
@@ -127,6 +127,24 @@ public class ColorMatrix {
     public String getColumnName( int column ) {
        
        return m_matrix.getColName( column );
+    }
+    
+    public String[] getRowNames() {
+       
+       String[] rowNames = new String[m_totalRows];
+       for (int i = 0;  i < m_totalRows;  i++) {
+          rowNames[i] = getRowName( i );
+       }
+       return rowNames;
+    }
+
+    public String[] getColumnNames() {
+       
+       String[] columnNames = new String[m_totalColumns];
+       for (int i = 0;  i < m_totalRows;  i++) {
+          columnNames[i] = getColumnName( i );
+       }
+       return columnNames;
     }
 
     /**
