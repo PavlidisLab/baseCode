@@ -1,13 +1,9 @@
 package baseCode.io;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.apache.commons.lang.time.StopWatch;
@@ -18,6 +14,7 @@ import org.apache.commons.lang.time.StopWatch;
  * <hr>
  * 
  * @author Kiran Keshav
+ * @author Paul Pavlidis
  * @version $Id$
  */
 public class ByteArrayConverter {
@@ -45,8 +42,8 @@ public class ByteArrayConverter {
          e.printStackTrace();
       }
       stopWatch.stop();
-      System.err.println( "DoubleArrayToBytes: Total doubles processed = " + darray.length + " Time taken = " + stopWatch.getTime()
-            + " ms" );
+      System.err.println( "DoubleArrayToBytes: Total doubles processed = " + darray.length + " Time taken = "
+            + stopWatch.getTime() + " ms" );
       return bos.toByteArray();
    }
 
@@ -155,7 +152,7 @@ public class ByteArrayConverter {
          bos.close();
 
       } catch ( IOException e ) {
-
+         // do nothing.
       }
 
       return bos.toByteArray();
@@ -169,18 +166,16 @@ public class ByteArrayConverter {
       ByteArrayInputStream bis = new ByteArrayInputStream( barray );
       DataInputStream dis = new DataInputStream( bis );
       char[] carray = new char[barray.length / CHAR_SIZE];
+
       int i = 0;
-      boolean EOF = false;
-      while ( !EOF ) {
-         try {
+      try {
+         while ( true ) {
             carray[i] = dis.readChar();
             i++;
-         } catch ( EOFException e ) {
-            EOF = true;
-         } catch ( IOException e ) {
-            EOF = true;
-            e.printStackTrace();
          }
+
+      } catch ( IOException e ) {
+         e.printStackTrace();
       }
 
       try {

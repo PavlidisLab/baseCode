@@ -3,7 +3,9 @@ package baseCode.io;
 import org.apache.commons.lang.time.StopWatch;
 
 /**
- * @author Kiran Keshav $Id$
+ * @author Kiran Keshav *
+ * @author Paul Pavlidis
+ * @version $Id$
  */
 public class StringConverter {
 
@@ -18,11 +20,10 @@ public class StringConverter {
     * @return double[]
     */
    public double[] StringToDoubles( String stringToParse ) {
-
-      String[] sArray = null;
+      
       StopWatch stopWatch = new StopWatch();
       stopWatch.start();
-      sArray = stringToParse.split( delimiter );
+      String[]  sArray = stringToParse.split( delimiter );
       double[] result = new double[sArray.length];
       for ( int i = 0; i < sArray.length; i++ ) {
          result[i] = Double.parseDouble( sArray[i] );
@@ -50,7 +51,6 @@ public class StringConverter {
 
       for ( int i = 0; i < arrayToConvert.length; i++ ) {
          buf.append( arrayToConvert[i] );
-
          if ( i > 0 ) buf.append( delimiter );
       }
 
