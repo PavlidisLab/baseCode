@@ -3,6 +3,7 @@ package baseCode.gui;
 import java.awt.Color;
 import java.io.IOException;
 
+import baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix;
 import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import baseCode.io.reader.DoubleMatrixReader;
 import baseCode.math.DescriptiveWithMissing;
@@ -44,7 +45,7 @@ public class ColorMatrix implements Cloneable {
    protected Color m_missingColor = Color.lightGray;
    protected Color[] m_colorMap = ColorMap.BLACKBODY_COLORMAP;
 
-   protected DenseDoubleMatrix2DNamed m_matrix;
+   protected AbstractNamedDoubleMatrix m_matrix;
    protected DoubleMatrixReader m_matrixReader;
 
    protected int m_totalRows, m_totalColumns;
@@ -85,7 +86,7 @@ public class ColorMatrix implements Cloneable {
     * @param colorMap the simplest color map is one with just two colors: { minColor, maxColor }
     * @param missingColor values missing from the matrix or non-numeric entries will be displayed using this color
     */
-   public ColorMatrix( DenseDoubleMatrix2DNamed matrix, Color[] colorMap,
+   public ColorMatrix( AbstractNamedDoubleMatrix matrix, Color[] colorMap,
          Color missingColor ) {
 
       m_missingColor = missingColor;
@@ -273,7 +274,7 @@ public class ColorMatrix implements Cloneable {
       }
    }
 
-   public void init( DenseDoubleMatrix2DNamed matrix ) {
+   public void init( AbstractNamedDoubleMatrix matrix ) {
 
       m_matrix = matrix; // by reference, or should we clone?
       m_totalRows = m_matrix.rows();
@@ -328,7 +329,7 @@ public class ColorMatrix implements Cloneable {
    /**
     * @return a DenseDoubleMatrix2DNamed object
     */
-   public DenseDoubleMatrix2DNamed getMatrix() {
+   public AbstractNamedDoubleMatrix getMatrix() {
       return m_matrix;
    }
 

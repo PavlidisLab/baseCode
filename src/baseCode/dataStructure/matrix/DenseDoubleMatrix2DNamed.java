@@ -114,13 +114,7 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
       return result.toString();
    }
 
-   /**
-    * @param s String
-    * @return double[]
-    */
-   public double[] getRowByName( String s ) {
-      return getRow( getRowIndexByName( s ) );
-   }
+  
 
    public void set( int row, int col, Object value ) {
       set( row, col, ( ( Double ) value ).doubleValue() );

@@ -56,6 +56,8 @@ public abstract class AbstractNamedDoubleMatrix extends AbstractNamedMatrix {
    public abstract DoubleArrayList getRowArrayList(int i);
    
    
+   public abstract double  get(int x, int y );
+   
    /**
     * @param i
     * @param j
@@ -63,6 +65,8 @@ public abstract class AbstractNamedDoubleMatrix extends AbstractNamedMatrix {
     */
    public abstract double getQuick( int i, int j );
 
+   public abstract void set(int x, int y, double value);
+   
    
    /**
     * @param j
@@ -70,5 +74,12 @@ public abstract class AbstractNamedDoubleMatrix extends AbstractNamedMatrix {
     */
    public abstract DoubleMatrix1D viewRow( int j );
 
+   /**
+    * @param s String
+    * @return double[]
+    */
+   public double[] getRowByName( String s ) {
+      return getRow( getRowIndexByName( s ) );
+   }
  
 }

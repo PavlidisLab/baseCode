@@ -233,4 +233,5 @@ public class SparseRaggedDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
       return get( i, j );
    }
 
+
 }
