@@ -7,9 +7,7 @@ import javax.imageio.ImageIO;
 import java.io.File;
 
 // vertical text
-import java.awt.geom.AffineTransform;
-import java.awt.font.*;
-
+import baseCode.graphics.text.Util;
 
 /**
  * <p>Title: JMatrixDisplay</p>
@@ -39,11 +37,7 @@ public class JMatrixDisplay extends JPanel {
   protected int m_resolution = m_defaultResolution;
   protected int m_textSize = 0;
 
-  /** Cell height in pixels; if printing row names, minimum recommended height is 10 pixels */
-  protected static int m_cellHeight = 10; // in pixels
-  /** Cell width in pixels; if printing column names, minimum recommended width is 10 pixels */
-  protected static int m_cellWidth = 10; // in pixels
-
+  protected Dimension m_cellSize = new Dimension( 10, 10 ); // in pixels
 
   public JMatrixDisplay( ColorMatrix matrix ) {
 
@@ -73,14 +67,14 @@ public class JMatrixDisplay extends JPanel {
     
     // row label width and height (font-dependent)
     setFont();
-    m_rowLabelWidth = m_labelGutter + maxStringPixelWidth( m_matrix.getRowNames(), m_labelFont, this );
+    m_rowLabelWidth = m_labelGutter + Util.maxStringPixelWidth( m_matrix.getRowNames(), m_labelFont, this );
     //m_rowLabelWidth += m_labelGutter; // this is optional (leaves some space on the right)
-    m_columnLabelHeight = maxStringPixelWidth( m_matrix.getColumnNames(), m_labelFont, this );
+    m_columnLabelHeight = Util.maxStringPixelWidth( m_matrix.getColumnNames(), m_labelFont, this );
     //m_columnLabelHeight += m_labelGutter; // this is optional (leaves some space on top)
 
     // height and width of this display component
-    int height = m_cellHeight * m_matrix.getRowCount();
-    int width  = m_cellWidth  * m_matrix.getColumnCount();
+    int height = m_cellSize.height * m_matrix.getRowCount();
+    int width  = m_cellSize.width  * m_matrix.getColumnCount();
 
     // adjust for row and column labels
     if (withLabels)
@@ -126,7 +120,7 @@ public class JMatrixDisplay extends JPanel {
      // loop through the matrix, one row at a time
      for (int i = 0;  i < rowCount;  i++)
      {
-        int y = (i * m_cellHeight);
+        int y = (i * m_cellSize.height);
         if (leaveRoomForLabels)
         {
            y += (m_columnLabelHeight + m_labelGutter);
@@ -135,12 +129,12 @@ public class JMatrixDisplay extends JPanel {
         // draw an entire row, one cell at a time
         for (int j = 0; j < columnCount; j++)
         {
-           int x = (j * m_cellWidth);
-           int width = ( (j + 1) * m_cellWidth) - x;
+           int x = (j * m_cellSize.width);
+           int width = ( (j + 1) * m_cellSize.width) - x;
 
            Color color = m_matrix.getColor(i, j);
            g.setColor(color);
-           g.fillRect(x, y, width, m_cellHeight);
+           g.fillRect(x, y, width, m_cellSize.height);
         }
 
      } // end looping through the matrix, one row at a time
@@ -160,11 +154,10 @@ public class JMatrixDisplay extends JPanel {
       {
          g.setColor( Color.black );
          g.setFont( m_labelFont );
-         int y = (i * m_cellHeight) + m_columnLabelHeight + m_labelGutter;
-         int xRatio = (m_matrix.getColumnCount() * m_cellWidth) + m_labelGutter;
-         int yRatio = y + m_cellHeight - m_fontGutter;
+         int y = (i * m_cellSize.height) + m_columnLabelHeight + m_labelGutter;
+         int xRatio = (m_matrix.getColumnCount() * m_cellSize.width) + m_labelGutter;
+         int yRatio = y + m_cellSize.height - m_fontGutter;
          String rowName = m_matrix.getRowName( i );
-         rowName = rowName.trim();  // remove leading and trailing whitespace
          if (null == rowName) {
             rowName = "Undefined";
          }
@@ -183,7 +176,7 @@ public class JMatrixDisplay extends JPanel {
      for (int j = 0;  j < columnCount;  j++)
      {
         // compute the coordinates
-        int x = m_cellWidth + (j * m_cellWidth) - m_fontGutter;
+        int x = m_cellSize.width + (j * m_cellSize.width) - m_fontGutter;
         int y = m_columnLabelHeight;
         
         // get column name
@@ -197,50 +190,12 @@ public class JMatrixDisplay extends JPanel {
         g.setFont( m_labelFont );
         
         // print the text vertically
-        Graphics2D g2 = (Graphics2D)g;
-        AffineTransform fontAT = new AffineTransform();
-        //fontAT.shear(0.2, 0.0);  // slant text backwards
-        fontAT.setToRotation( Math.PI * 3.0f / 2.0f ); // counter-clockwise 90 degrees
-        FontRenderContext frc = g2.getFontRenderContext();
-        Font theDerivedFont = m_labelFont.deriveFont( fontAT );
-        TextLayout tstring = new TextLayout( columnName, theDerivedFont, frc );
-        tstring.draw( g2, x, y );
+        Util.drawVerticalString( g, columnName, m_labelFont, x, y );
+        
      } // end for column
   } // end drawColumnNames
   
-  /**
-   * ----------- SHOULD PROBABLY NOT BE IN THIS CLASS -----------
-   *
-   * @return  the pixel width of the string for the specified font.
-   */
-  public static int stringPixelWidth( String s, Font font, Component c ) {
-     
-     FontMetrics fontMetrics = c.getFontMetrics( font );
-     return fontMetrics.charsWidth( s.toCharArray(), 0, s.length() );
-     
-  } // end stringPixelWidth
-  
-  /**
-   * ----------- SHOULD PROBABLY NOT BE IN THIS CLASS -----------
-   */
-  public static int maxStringPixelWidth( String[] strings, Font font, Component c ) {
-     
-     // the number of chars in the longest string
-     int maxWidth = 0;
-     int width;
-     String s;
-     for (int i = 0;  i < strings.length;  i++)
-     {
-        s = strings[i];
-        s.trim();  // remove leading and trailing whitespace
-        width = stringPixelWidth( s, font, c );
-        if (maxWidth < width)
-           maxWidth = width;
-     }
-     
-     return maxWidth;
-     
-  } // end getMaxPixelWidth
+
   
   
   /**
@@ -255,7 +210,7 @@ public class JMatrixDisplay extends JPanel {
     {
        m_fontSize  = fontSize;
        m_labelFont = new Font("Ariel", Font.PLAIN, m_fontSize);
-       m_fontGutter = (int) ( (double) m_cellHeight * .22);
+       m_fontGutter = (int) ( (double) m_cellSize.height * .22);
     }
   }
 
@@ -263,7 +218,7 @@ public class JMatrixDisplay extends JPanel {
    * @return  the height of the font
    */
   private int getFontSize() {
-     return Math.max( m_cellHeight, 5 );
+     return Math.max( m_cellSize.height, 5 );
   }
 
   
@@ -333,6 +288,12 @@ public class JMatrixDisplay extends JPanel {
    */
   public void setMatrix( ColorMatrix matrix ) {
      m_matrix = matrix;
+     initSize();
+  }
+  
+  public void setCellSize( Dimension d ) {
+     
+     m_cellSize = d;
      initSize();
   }
 }
