@@ -1,6 +1,6 @@
-package baseCodeTest.Math;
+package baseCodeTest.math;
 
-import baseCode.Math.DescriptiveWithMissing;
+import baseCode.math.DescriptiveWithMissing;
 import cern.colt.list.DoubleArrayList;
 import junit.framework.TestCase;
 import cern.jet.stat.Descriptive;

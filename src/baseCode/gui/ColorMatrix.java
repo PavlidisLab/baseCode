@@ -4,9 +4,9 @@ import java.awt.Color;
 import java.io.IOException;
 import baseCode.dataStructure.reader.DoubleMatrixReader;
 import baseCode.dataStructure.DenseDoubleMatrix2DNamed;
-import baseCode.Math.MatrixRowStats;
+import baseCode.math.MatrixRowStats;
 import cern.colt.list.DoubleArrayList;
-import baseCode.Math.DescriptiveWithMissing;
+import baseCode.math.DescriptiveWithMissing;
 
 /**
  * <p>Title: ColorMatrix</p>
