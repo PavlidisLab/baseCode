@@ -35,7 +35,7 @@ public class DoubleMatrixReader
     * @return  NamedMatrix     object constructed from the data file
     */
    public NamedMatrix read( String filename, String[] filterRowNames ) throws IOException {
-      DenseDoubleMatrix2DNamed matrix = null;
+
       Vector MTemp = new Vector();
       Vector colNames;
       Vector rowNames = new Vector();
@@ -60,8 +60,16 @@ public class DoubleMatrixReader
          } else {
             continue;
          }
-         if ( filterRowNames != null && skipThisRow( s, filterRowNames ) ) {
-            continue;
+         if ( filterRowNames != null ) {
+            
+            // if we already have all the rows we want, then bail out
+            if ( rowNumber >= filterRowNames.length ) {
+               return createMatrix( MTemp, rowNumber, numHeadings, rowNames, colNames );
+            }
+            // skip this row if it's not in filterRowNames
+            else if ( skipThisRow( s, filterRowNames ) ) {
+               continue;
+            }
          }
 
          //
@@ -138,8 +146,15 @@ public class DoubleMatrixReader
          }
          rowNumber++;
       }
+      
+      return createMatrix( MTemp, rowNumber, numHeadings, rowNames, colNames );
 
-      matrix = new DenseDoubleMatrix2DNamed( rowNumber, numHeadings );
+   } // end read
+
+   
+   protected DenseDoubleMatrix2DNamed createMatrix( Vector MTemp, int rowCount, int colCount, Vector rowNames, Vector colNames ) {  
+   
+      DenseDoubleMatrix2DNamed matrix = new DenseDoubleMatrix2DNamed( rowCount, colCount );
       matrix.setRowNames( rowNames );
       matrix.setColumnNames( colNames );
 
@@ -155,8 +170,10 @@ public class DoubleMatrixReader
          }
       }
       return matrix;
-   } // end read
-
+      
+   } // end createMatrix
+   
+   
    /**
     * Returns true if and only if thisRowName is found in filterRowNames array
     */
