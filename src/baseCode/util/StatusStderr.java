@@ -11,6 +11,8 @@ package baseCode.util;
  */
 public class StatusStderr implements StatusViewer {
 
+	public StatusStderr () {}
+	
    public void setStatus( String s ) {
       System.err.println( s );
    }

@@ -1,6 +1,5 @@
 package baseCode.dataStructure.matrix;
 
-import cern.colt.function.DoubleDoubleFunction;
 import cern.colt.function.DoubleFunction;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
