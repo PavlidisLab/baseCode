@@ -10,6 +10,7 @@ import baseCode.dataStructure.StringMatrix2DNamed;
  * @version $Id$
  *
  */
+
 public abstract class AbstractTestFilter extends TestCase {
 
    protected DenseDoubleMatrix2DNamed testdata;
@@ -17,10 +18,6 @@ public abstract class AbstractTestFilter extends TestCase {
 
    public AbstractTestFilter() {
       super();
-   }
-
-   public AbstractTestFilter(String name) {
-      super(name);
    }
 
    protected void setUp() throws Exception {

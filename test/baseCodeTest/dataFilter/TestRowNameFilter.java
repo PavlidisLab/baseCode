@@ -12,6 +12,7 @@ import baseCode.dataStructure.StringMatrix2DNamed;
  * @version $Id$
  *
  */
+
 public class TestRowNameFilter
     extends AbstractTestFilter {
 
