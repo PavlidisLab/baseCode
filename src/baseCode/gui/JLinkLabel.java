@@ -1,5 +1,6 @@
 package baseCode.gui;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -63,13 +64,20 @@ public class JLinkLabel extends JLabel implements MouseListener {
       m_text = text;
       m_url = url;
 
-      super.setText( "<html><a href=\"" + url + "\">" + text + "</a></html>" );
+      super.setText("Blah");
+      //super.setText( "<html><a href=\"" + url + "\">" + "<u>" + text + "</u>" + "</a></html>" );
+      super.setForeground(Color.blue);
    }
 
+   public String toString()
+   {
+   	  return m_text;
+   }
+   
    public void mouseClicked( MouseEvent event ) {
       if ( m_url != null ) {
          try {
-            BrowserLauncher.openURL( m_url );
+         	BrowserLauncher.openURL( m_url );
          } catch ( IOException ex ) {
             GuiUtil.error( "Could not open a web browser window." );
          }
