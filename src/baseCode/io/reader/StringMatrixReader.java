@@ -20,7 +20,7 @@ import baseCode.dataStructure.matrix.StringMatrix2DNamed;
  * <p>
  * Institution:: Columbia University
  * </p>
- *
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
@@ -37,7 +37,7 @@ public class StringMatrixReader extends AbstractNamedMatrixReader {
 
    /**
     * Missing values are entered as an empty string.
-    *
+    * 
     * @param stream InputStream
     * @return NamedMatrix
     * @throws IOException
@@ -116,8 +116,7 @@ public class StringMatrixReader extends AbstractNamedMatrixReader {
                matrix.set( i, j, "" );
                // this allows the input file to have ragged ends.
             } else {
-               matrix.set( i, j, ( ( Vector ) MTemp.get( i ) )
-                     .get( j ) );
+               matrix.set( i, j, ( ( Vector ) MTemp.get( i ) ).get( j ) );
             }
          }
       }

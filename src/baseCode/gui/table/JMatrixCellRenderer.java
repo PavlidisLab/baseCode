@@ -13,8 +13,7 @@ import baseCode.gui.JMatrixDisplay;
 
 /**
  * @author Will Braynen
- * @version $Id: JMatrixTableCellRenderer.java,v 1.3 2004/06/23 21:41:56
- *          wbraynen Exp $
+ * @version $Id$
  */
 public class JMatrixCellRenderer extends JLabel implements TableCellRenderer {
 
@@ -24,7 +23,7 @@ public class JMatrixCellRenderer extends JLabel implements TableCellRenderer {
    DecimalFormat m_scientificNotation = new DecimalFormat( "0.##E0" );
    DecimalFormat m_regular = new DecimalFormat();
 
-   public JMatrixCellRenderer(JMatrixDisplay matrixDisplay) {
+   public JMatrixCellRenderer( JMatrixDisplay matrixDisplay ) {
 
       m_matrixDisplay = matrixDisplay;
       setOpaque( true );
@@ -57,12 +56,11 @@ public class JMatrixCellRenderer extends JLabel implements TableCellRenderer {
       Color matrixColor;
       try {
          matrixColor = m_matrixDisplay.getColor( row, column );
-      }
-      catch( ArrayIndexOutOfBoundsException e ) {
+      } catch ( ArrayIndexOutOfBoundsException e ) {
          matrixColor = m_matrixDisplay.getMissingColor();
       }
       setBackground( matrixColor );
-      
+
       // The tooltip should always show the actual (non-normalized) value
       double matrixValue;
       boolean isStandardized = m_matrixDisplay.getStandardizedEnabled();
@@ -70,14 +68,13 @@ public class JMatrixCellRenderer extends JLabel implements TableCellRenderer {
       {
          try {
             matrixValue = m_matrixDisplay.getValue( row, column );
-         }
-         catch( ArrayIndexOutOfBoundsException e ) {
+         } catch ( ArrayIndexOutOfBoundsException e ) {
             matrixValue = Double.NaN;
          }
       }
       m_matrixDisplay.setStandardizedEnabled( isStandardized ); // return to
-                                                                // previous
-                                                                // state
+      // previous
+      // state
 
       // Only very small and very large numbers should be displayed in
       // scientific notation

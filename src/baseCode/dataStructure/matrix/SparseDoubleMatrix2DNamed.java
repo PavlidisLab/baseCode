@@ -2,7 +2,6 @@ package baseCode.dataStructure.matrix;
 
 import java.text.NumberFormat;
 
-
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 
@@ -21,8 +20,7 @@ import cern.colt.matrix.impl.SparseDoubleMatrix2D;
  * </p>
  * 
  * @author Paul Pavlidis
- * @version $Id: SparseDoubleMatrix2DNamed.java,v 1.5 2004/06/23 14:56:46
- *          pavlidis Exp $
+ * @version $Id$
  */
 public class SparseDoubleMatrix2DNamed extends AbstractNamedMatrix implements
       NamedMatrix {
@@ -30,7 +28,6 @@ public class SparseDoubleMatrix2DNamed extends AbstractNamedMatrix implements
    private SparseDoubleMatrix2D matrix;
 
    /**
-    * 
     * @param T double[][]
     */
    public SparseDoubleMatrix2DNamed( double T[][] ) {
@@ -39,7 +36,6 @@ public class SparseDoubleMatrix2DNamed extends AbstractNamedMatrix implements
    }
 
    /**
-    * 
     * @param rows int
     * @param cols int
     */
@@ -93,7 +89,6 @@ public class SparseDoubleMatrix2DNamed extends AbstractNamedMatrix implements
    }
 
    /**
-    * 
     * @return java.lang.String
     */
    public String toString() {
@@ -123,7 +118,6 @@ public class SparseDoubleMatrix2DNamed extends AbstractNamedMatrix implements
    }
 
    /**
-    * 
     * @param s String
     * @return double[]
     */

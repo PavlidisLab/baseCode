@@ -23,7 +23,6 @@ public class Point {
    private int x, y;
 
    /**
-    * 
     * @param i
     * @param j
     */
@@ -32,7 +31,6 @@ public class Point {
    }
 
    /**
-    * 
     * @param i
     * @param j
     */
@@ -42,15 +40,15 @@ public class Point {
    }
 
    /**
-    * 
     * @return array containing the coordinates x,y.
     */
    public int[] get() {
-      return new int[] { x, y };
+      return new int[] {
+            x, y
+      };
    }
 
    /**
-    * 
     * @return x the x value.
     */
    public int getx() {
@@ -58,7 +56,6 @@ public class Point {
    }
 
    /**
-    * 
     * @return y the y value.
     */
    public int gety() {
@@ -66,7 +63,6 @@ public class Point {
    }
 
    /**
-    * 
     * @return string representation of the point.
     */
    public String toString() {

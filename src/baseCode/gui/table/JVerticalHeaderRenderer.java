@@ -13,10 +13,10 @@ import baseCode.graphics.text.Util;
 
 /**
  * @author Will Braynen
- * @version $Id: JVerticalTableHeaderRenderer.java,v 1.1 2004/06/22 23:38:58
- *          wbraynen Exp $
+ * @version $Id$
  */
-public class JVerticalHeaderRenderer extends JTableHeader implements TableCellRenderer {
+public class JVerticalHeaderRenderer extends JTableHeader implements
+      TableCellRenderer {
 
    String m_columnName;
    final int PREFERRED_HEIGHT = 80;

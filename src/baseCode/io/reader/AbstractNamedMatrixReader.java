@@ -11,8 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import baseCode.dataStructure.matrix.NamedMatrix;
 
 /**
- * Abstract class representing an object that can read in a {@link NamedMatrix}
- * from a file.
+ * Abstract class representing an object that can read in a {@link NamedMatrix}from a file.
  * <p>
  * Copyright (c) 2004
  * </p>
@@ -21,8 +20,7 @@ import baseCode.dataStructure.matrix.NamedMatrix;
  * </p>
  * 
  * @author Paul Pavlidis
- * @version $Id: AbstractNamedMatrixReader.java,v 1.2 2004/06/24 17:48:03
- *          pavlidis Exp $
+ * @version $Id$
  */
 public abstract class AbstractNamedMatrixReader {
 
@@ -35,7 +33,7 @@ public abstract class AbstractNamedMatrixReader {
       Vector headerVec = new Vector();
       String header = dis.readLine();
       StringTokenizer st = new StringTokenizer( header, "\t", true ); // return
-                                                                      // delims.
+      // delims.
 
       String previousToken = "";
       int columnNumber = 0;

@@ -1,10 +1,10 @@
 package baseCode.gui;
 
-import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /**
  * <p>
@@ -19,17 +19,16 @@ import javax.swing.JLabel;
  * <p>
  * Company:
  * </p>
- *
+ * 
  * @author not attributable
  * @version $Id$
  */
 
 public abstract class WizardStep extends JPanel {
-   
+
    Wizard owner;
-   
+
    /**
-    * 
     * @param wiz
     */
    public WizardStep( Wizard wiz ) {
@@ -53,8 +52,10 @@ public abstract class WizardStep extends JPanel {
       this.add( panel, BorderLayout.CENTER );
    }
 
-   /** @param text
-    * @todo why the spaces for layout? */
+   /**
+    * @param text
+    * @todo why the spaces for layout?
+    */
    protected void addHelp( String text ) {
       JLabel label = new JLabel( text );
       JLabel jLabel1 = new JLabel( "      " );
@@ -63,7 +64,7 @@ public abstract class WizardStep extends JPanel {
       JLabel jLabel4 = new JLabel( "      " );
       BorderLayout borderLayout1 = new BorderLayout();
       JPanel labelPanel = new JPanel();
-      labelPanel.setBackground(Color.WHITE);
+      labelPanel.setBackground( Color.WHITE );
       labelPanel.setLayout( borderLayout1 );
       labelPanel.add( label, BorderLayout.CENTER );
       labelPanel.add( jLabel1, BorderLayout.WEST );
@@ -72,23 +73,23 @@ public abstract class WizardStep extends JPanel {
       labelPanel.add( jLabel4, BorderLayout.EAST );
       this.add( labelPanel, BorderLayout.NORTH );
    }
-   
-   
+
    /**
     * Print a message to the status bar.
+    * 
     * @param a
     */
-    public void showStatus( String a ) {
-       owner.showStatus( a );
-    }
-    
-    /**
-     * Print an error message to the status bar.
-     * @param a
-     */
-     public void showError( String a ) {
-        owner.showError( a );
-     }
-   
+   public void showStatus( String a ) {
+      owner.showStatus( a );
+   }
+
+   /**
+    * Print an error message to the status bar.
+    * 
+    * @param a
+    */
+   public void showError( String a ) {
+      owner.showError( a );
+   }
 
 }

@@ -1,7 +1,5 @@
 /*
- * Util.java
- *
- * Created on June 5, 2004, 10:21 AM
+ * Util.java Created on June 5, 2004, 10:21 AM
  */
 
 package baseCode.graphics.text;
@@ -15,10 +13,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 
-
-
 /**
- * 
  * @author Will Braynen
  * @version $Id$
  */
@@ -41,8 +36,7 @@ public class Util {
     * @param strings an array of strings whose pixels widths to compare
     * @param font the pixels width of a string varies from font to font
     * @param c the parent component; usually <code>this</code>
-    * @return the largest pixel width of a string in the <code>strings</code>
-    *         array.
+    * @return the largest pixel width of a string in the <code>strings</code> array.
     */
    public static int maxStringPixelWidth( String[] strings, Font font,
          Component c ) {
@@ -63,17 +57,14 @@ public class Util {
    } // end getMaxPixelWidth
 
    /**
-    * Draws a string vertically, turned 90 degrees counter-clockwise. Read
-    * carefully what the <i>x </i> and <i>y </i> coordinates means; chances are
-    * that if you draw to (x,y) = (0,0), you won't see anything.
+    * Draws a string vertically, turned 90 degrees counter-clockwise. Read carefully what the <i>x </i> and <i>y </i>
+    * coordinates means; chances are that if you draw to (x,y) = (0,0), you won't see anything.
     * 
     * @param g the graphics context on which to draw
     * @param text the string to draw
     * @param font the font to use
-    * @param x the <i>x </i> coordinate where you want to place the baseline of
-    *        the text.
-    * @param y the <i>y </i> coordinate where you want to place the first letter
-    *        of the text.
+    * @param x the <i>x </i> coordinate where you want to place the baseline of the text.
+    * @param y the <i>y </i> coordinate where you want to place the first letter of the text.
     */
    public static void drawVerticalString( Graphics g, String text, Font font,
          int x, int y ) {
@@ -81,7 +72,7 @@ public class Util {
       AffineTransform fontAT = new AffineTransform();
       //fontAT.shear(0.2, 0.0); // slant text backwards
       fontAT.setToRotation( Math.PI * 3.0f / 2.0f ); // counter-clockwise 90
-                                                     // degrees
+      // degrees
       FontRenderContext frc = g2.getFontRenderContext();
       Font theDerivedFont = font.deriveFont( fontAT );
       TextLayout tstring = new TextLayout( text, theDerivedFont, frc );

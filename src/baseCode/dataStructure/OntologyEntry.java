@@ -1,9 +1,7 @@
 package baseCode.dataStructure;
 
 /**
- * A class representing a descriptive term that can be associated with things.
- * 
- * Copyright (c) 2004 Columbia University
+ * A class representing a descriptive term that can be associated with things. Copyright (c) 2004 Columbia University
  * 
  * @author Paul Pavlidis
  * @version $Id$
@@ -15,7 +13,6 @@ public class OntologyEntry {
    private String definition = "";
 
    /**
-    * 
     * @param id
     */
    public OntologyEntry( String id ) {
@@ -23,7 +20,6 @@ public class OntologyEntry {
    }
 
    /**
-    * 
     * @param id
     * @param name
     * @param def
@@ -35,7 +31,6 @@ public class OntologyEntry {
    }
 
    /**
-    * 
     * @return
     */
    public String getName() {
@@ -43,7 +38,6 @@ public class OntologyEntry {
    }
 
    /**
-    * 
     * @return
     */
    public String getId() {
@@ -51,7 +45,6 @@ public class OntologyEntry {
    }
 
    /**
-    * 
     * @return
     */
    public String getDefinition() {
@@ -59,7 +52,6 @@ public class OntologyEntry {
    }
 
    /**
-    * 
     * @param n
     */
    public void setName( String n ) {
@@ -67,7 +59,6 @@ public class OntologyEntry {
    }
 
    /**
-    * 
     * @param d
     */
    public void setDefinition( String d ) {

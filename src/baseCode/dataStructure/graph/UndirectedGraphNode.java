@@ -4,8 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 
- * 
  * <p>
  * Copyright (c) Columbia University
  * 

@@ -28,7 +28,7 @@ public class MetaAnalysis {
          r += Math.log( pvals.getQuick( i ) );
       }
       r *= -2.0;
-      return Probability.chiSquare( r, 2.0 *   pvals.size() );
+      return Probability.chiSquare( r, 2.0 * pvals.size() );
    }
 
    /**
@@ -43,11 +43,10 @@ public class MetaAnalysis {
          r += pvals.getQuick( i );
       }
       r *= -2.0;
-      return Probability.chiSquare( r, 2.0 *  pvals.size() );
+      return Probability.chiSquare( r, 2.0 * pvals.size() );
    }
 
    /**
-    * 
     * @param r double
     * @param n int
     * @return double
@@ -61,7 +60,6 @@ public class MetaAnalysis {
    }
 
    /**
-    * 
     * @param effectSizes DoubleArrayList
     * @param variances DoubleArrayList
     * @param globalMean double

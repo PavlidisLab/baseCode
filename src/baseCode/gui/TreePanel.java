@@ -1,6 +1,5 @@
 /*
  * Created on Jun 20, 2004
- *
  */
 package baseCode.gui;
 
@@ -19,7 +18,6 @@ import javax.swing.tree.TreeSelectionModel;
 import baseCode.dataStructure.graph.DirectedGraphNode;
 
 /**
- * 
  * <p>
  * Copyright (c) Columbia University
  * 
@@ -66,8 +64,7 @@ public class TreePanel extends JPanel implements TreeSelectionListener {
       DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) tree
             .getLastSelectedPathComponent();
 
-      if ( node == null )
-         return;
+      if ( node == null ) return;
 
       DirectedGraphNode nodeInfo = ( DirectedGraphNode ) node.getUserObject();
       //    if (node.isLeaf()) {

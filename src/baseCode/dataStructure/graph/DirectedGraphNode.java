@@ -5,9 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * A graph node that has the concept of parents and children. Keys can be
- * anything, but probably Strings or Integers.
- * 
+ * A graph node that has the concept of parents and children. Keys can be anything, but probably Strings or Integers.
  * <p>
  * Copyright (c) Columbia University
  * 
@@ -16,15 +14,14 @@ import java.util.Set;
  */
 public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
 
-   private Set parents;
-   // immediate parents, references to other GraphNodes by keys.
-   private Set children;
+   protected Set parents;
+   // immeddiate parents, references to other GraphNodes by keys.
+   protected Set children;
    // immediate children, references to other GraphNodes by keys.
 
-   private int topoSortOrder = 0;
+   protected int topoSortOrder = 0;
 
    /**
-    * 
     * @param key Object
     * @param value Object
     * @param graph Graph
@@ -36,7 +33,6 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
    }
 
    /**
-    * 
     * @param i int
     */
    public void setTopoSortOrder( int i ) {
@@ -44,7 +40,6 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
    }
 
    /**
-    * 
     * @return int
     */
    public int getTopoSortOrder() {
@@ -52,7 +47,6 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
    }
 
    /**
-    * 
     * @param newChildKey Object
     */
    public void addChild( Object newChildKey ) {
@@ -60,7 +54,6 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
    }
 
    /**
-    * 
     * @param newParentKey Object
     */
    public void addParent( Object newParentKey ) {
@@ -68,7 +61,6 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
    }
 
    /**
-    * 
     * @return Object
     */
    public Object getParentKeys() {
@@ -76,7 +68,6 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
    }
 
    /**
-    * 
     * @return Object
     */
    public Object getChildKeys() {
@@ -84,30 +75,28 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
    }
 
    /**
-    * Get the immediate children of this node. References to the
-    * DirectedGraphNodes are given, as opposed to key values.
+    * Get the immediate children of this node. References to the DirectedGraphNodes are given, as opposed to key values.
     * 
     * @return Set containing the child nodes of this node.
     */
    public Set getChildNodes() {
       Set f = new LinkedHashSet();
       for ( Iterator i = this.getChildIterator(); i.hasNext(); ) {
-         Object k =  i.next();
+         Object k = i.next();
          f.add( getGraph().get( k ) );
       }
       return f;
    }
 
    /**
-    * Get the immediate parents of this node. References to the
-    * DirectedGraphNodes are given, as opposed to key values.
+    * Get the immediate parents of this node. References to the DirectedGraphNodes are given, as opposed to key values.
     * 
     * @return Set
     */
    public Set getParentNodes() {
       Set f = new LinkedHashSet();
       for ( Iterator i = this.getParentIterator(); i.hasNext(); ) {
-         Object k =  i.next();
+         Object k = i.next();
          f.add( getGraph().get( k ) );
       }
       return f;
@@ -131,8 +120,16 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
       return returnVal;
    }
 
+   
+
    /**
-    * 
+    * @return
+    */
+   public boolean isLeaf() {
+      return children.size() == 0;
+   }
+   
+   /**
     * @return int number of immediate children this node has.
     */
    public int outDegree() {
@@ -147,7 +144,6 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
    }
 
    /**
-    * 
     * @return int how many children this node has, determined recursively.
     */
    public int numChildren() {
@@ -155,7 +151,6 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
    }
 
    /**
-    * 
     * @return int how many parents this node has, determined recursively.
     */
    public int numParents() {
@@ -171,6 +166,7 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
 
    /**
     * Get all the parents of this node, recursively.
+    * 
     * @return
     */
    public Set getAllParentNodes() {
@@ -240,7 +236,7 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
 
       for ( Iterator it = this.getChildIterator(); it.hasNext(); ) {
          Object j = it.next();
-         list.add(   getGraph().get( j ) );
+         list.add( getGraph().get( j ) );
          ( ( DirectedGraphNode ) getGraph().get( j ) ).getAllChildNodes( list );
       }
       return list;
@@ -253,7 +249,7 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
 
       for ( Iterator it = this.getParentIterator(); it.hasNext(); ) {
          Object j = it.next();
-         list.add(   getGraph().get( j ) );
+         list.add( getGraph().get( j ) );
          ( ( DirectedGraphNode ) getGraph().get( j ) ).getAllParentNodes( list );
       }
       return list;
@@ -285,8 +281,8 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
    }
 
    /**
-    * Makes a copy of this node. It does not make a deep copy of the contents.
-    * This should be used when making subgraphs.
+    * Makes a copy of this node. It does not make a deep copy of the contents. This should be used when making
+    * subgraphs.
     * 
     * @return Object
     */

@@ -14,22 +14,21 @@ import cern.colt.list.DoubleArrayList;
  * 
  * @author Paul Pavlidis
  * @version $Id$
- * @todo Have min() and max() throw an EmptyMatrixException -- this exception
- *       class does not yet exist and needs to be defined somewhere.
+ * @todo Have min() and max() throw an EmptyMatrixException -- this exception class does not yet exist and needs to be
+ *       defined somewhere.
  */
 public class MatrixRowStats {
 
-   
-   private MatrixRowStats() { /* keep us from instantiating this */ }
-   
+   private MatrixRowStats() { /* keep us from instantiating this */
+   }
+
    /**
     * Calculates the sum of squares for each row of a matrix
     * 
     * @param M DenseDoubleMatrix2DNamed
     * @return DoubleArrayList
     */
-   public static DoubleArrayList sumOfSquares(
-         DenseDoubleMatrix2DNamed M ) {
+   public static DoubleArrayList sumOfSquares( DenseDoubleMatrix2DNamed M ) {
       DoubleArrayList r = new DoubleArrayList();
 
       for ( int i = 0; i < M.rows(); i++ ) {
@@ -40,7 +39,6 @@ public class MatrixRowStats {
       return r;
    }
 
- 
    /**
     * Calculates the means of a matrix's rows.
     * 
@@ -78,13 +76,15 @@ public class MatrixRowStats {
     * @param M DenseDoubleMatrix2DNamed
     * @return DoubleArrayList
     */
-   public static DoubleArrayList sampleStandardDeviations( DenseDoubleMatrix2DNamed M ) {
+   public static DoubleArrayList sampleStandardDeviations(
+         DenseDoubleMatrix2DNamed M ) {
       DoubleArrayList r = new DoubleArrayList();
       for ( int i = 0; i < M.rows(); i++ ) {
          DoubleArrayList row = new DoubleArrayList( M.getRow( i ) );
-        double mean = DescriptiveWithMissing.mean(row);
-         r.add( Math.sqrt(DescriptiveWithMissing
-                     .sampleVariance( row,mean ) ) );
+         double mean = DescriptiveWithMissing.mean( row );
+         r
+               .add( Math.sqrt( DescriptiveWithMissing.sampleVariance( row,
+                     mean ) ) );
       }
       return r;
    }

@@ -1,6 +1,5 @@
 /*
  * Created on Jun 20, 2004
- *
  */
 package baseCode.dataStructure.graph;
 
@@ -10,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 
  * <p>
  * Copyright (c) Columbia University
  * 
@@ -25,8 +23,7 @@ public abstract class AbstractGraph implements Graph {
    }
 
    /**
-    * Create a new graph from a set of nodes. This allows us to easily make
-    * subtrees.
+    * Create a new graph from a set of nodes. This allows us to easily make subtrees.
     * 
     * @param nodes Set of AbstractGraphNodes.
     */
@@ -39,7 +36,6 @@ public abstract class AbstractGraph implements Graph {
    }
 
    /**
-    * 
     * @param node GraphNode
     */
    public void addNode( GraphNode node ) {
@@ -48,8 +44,7 @@ public abstract class AbstractGraph implements Graph {
    }
 
    /**
-    * Retrieve a node by key. To get the contents of a node use
-    * getNodeContents(key)
+    * Retrieve a node by key. To get the contents of a node use getNodeContents(key)
     * 
     * @param key Object
     * @see #getNodeContents(Object)
@@ -60,7 +55,6 @@ public abstract class AbstractGraph implements Graph {
    }
 
    /**
-    * 
     * @return Map
     */
    public Map getItems() {
@@ -79,10 +73,8 @@ public abstract class AbstractGraph implements Graph {
    }
 
    /**
-    * 
     * @param key Object
-    * @return true if the graph contains an item referenced by key, false
-    *         otherwise.
+    * @return true if the graph contains an item referenced by key, false otherwise.
     */
    public boolean containsKey( Object key ) {
       return items.containsKey( key );
@@ -90,7 +82,6 @@ public abstract class AbstractGraph implements Graph {
 
    /**
     * Reset the 'visited' marks of the graph to false.
-    *  
     */
    public void unmarkAll() {
       for ( Iterator it = items.keySet().iterator(); it.hasNext(); ) {

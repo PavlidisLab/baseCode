@@ -1,6 +1,5 @@
 /*
  * Created on Jun 16, 2004
- *
  */
 package baseCode.dataFilter;
 
@@ -21,10 +20,8 @@ public class RowNameFilter extends AbstractFilter implements Filter {
    private Set filterNames;
 
    /**
-    * 
     * @param namesToFilter
-    * @param exclude Set to true if you want the list to indicate items to be
-    *        skipped, rather than selected.
+    * @param exclude Set to true if you want the list to indicate items to be skipped, rather than selected.
     */
    public RowNameFilter( Set namesToFilter, boolean exclude ) {
       this( namesToFilter );
@@ -32,24 +29,24 @@ public class RowNameFilter extends AbstractFilter implements Filter {
    }
 
    /**
-    * 
     * @param namesToFilter
     */
    public RowNameFilter( Set namesToFilter ) {
       filterNames = namesToFilter;
    }
-   
+
    public RowNameFilter() {
       filterNames = null;
    }
-   
-   public void setFilterNames(Set namesToFilter, boolean exclude) {
+
+   public void setFilterNames( Set namesToFilter, boolean exclude ) {
       this.filterNames = namesToFilter;
       this.exclude = exclude;
    }
 
    /**
     * Filter according to row names.
+    * 
     * @param data
     * @return
     */
@@ -71,7 +68,7 @@ public class RowNameFilter extends AbstractFilter implements Filter {
             MTemp.add( data.getRowObj( i ) );
             rowNames.add( name );
             kept++;
-            if (kept >= numNeeded) {
+            if ( kept >= numNeeded ) {
                break; // no use in continuing.
             }
          }
@@ -80,7 +77,7 @@ public class RowNameFilter extends AbstractFilter implements Filter {
             MTemp.add( data.getRowObj( i ) );
             rowNames.add( name );
             kept++;
-         }   
+         }
       }
 
       NamedMatrix returnval = getOutputMatrix( data, MTemp.size(), numCols );

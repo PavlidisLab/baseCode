@@ -4,14 +4,12 @@ import cern.colt.list.DoubleArrayList;
 import cern.jet.stat.Descriptive;
 
 /**
- * Miscellaneous functions used for statistical analysis. Some are optimized or
- * specialized versions of methods that can be found elsewhere.
- *
- * @see <a
- *      href="http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/cern/jet/math/package-summary.html">cern.jet.math
+ * Miscellaneous functions used for statistical analysis. Some are optimized or specialized versions of methods that can
+ * be found elsewhere.
+ * 
+ * @see <a href="http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/cern/jet/math/package-summary.html">cern.jet.math
  *      </a>
- * @see <a
- *      href="http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/cern/jet/stat/package-summary.html">cern.jet.stat
+ * @see <a href="http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/cern/jet/stat/package-summary.html">cern.jet.stat
  *      </a>
  *      <p>
  *      Copyright (c) 2004
@@ -29,7 +27,7 @@ public class Stats {
 
    /**
     * Test whether a value is a valid fractional or probability value.
-    *
+    * 
     * @param value
     * @return true if the value is in the interval 0 to 1.
     */
@@ -41,9 +39,8 @@ public class Stats {
    }
 
    /**
-    * Compute the coefficient of variation of an array (standard deviation /
-    * mean)
-    *
+    * Compute the coefficient of variation of an array (standard deviation / mean)
+    * 
     * @param data DoubleArrayList
     * @return the cv
     * @todo offer a regularized version of this function.
@@ -55,9 +52,9 @@ public class Stats {
    }
 
    /**
-    * Convert an array into a cumulative array. Summing is from the left hand
-    * side. Use this to make CDFs where the concern is the left tail.
-    *
+    * Convert an array into a cumulative array. Summing is from the left hand side. Use this to make CDFs where the
+    * concern is the left tail.
+    * 
     * @param x DoubleArrayList
     * @return cern.colt.list.DoubleArrayList
     */
@@ -77,11 +74,10 @@ public class Stats {
    }
 
    /**
-    * Convert an array into a cumulative array. Summing is from the right hand
-    * side. This is useful for creating upper-tail cumulative density histograms
-    * from count histograms, where the upper tail is expected to have very small
-    * numbers that could be lost to rounding.
-    *
+    * Convert an array into a cumulative array. Summing is from the right hand side. This is useful for creating
+    * upper-tail cumulative density histograms from count histograms, where the upper tail is expected to have very
+    * small numbers that could be lost to rounding.
+    * 
     * @param x the array of data to be cumulated.
     * @return cern.colt.list.DoubleArrayList
     */
@@ -101,9 +97,9 @@ public class Stats {
    }
 
    /**
-    * Convert an array into a cumulative density function (CDF). This assumes
-    * that the input contains counts representing the distribution in question.
-    *
+    * Convert an array into a cumulative density function (CDF). This assumes that the input contains counts
+    * representing the distribution in question.
+    * 
     * @param x The input of counts (i.e. a histogram).
     * @return DoubleArrayList the CDF.
     */
@@ -113,7 +109,7 @@ public class Stats {
 
    /**
     * Divide the elements of an array by a given factor.
-    *
+    * 
     * @param x Input array.
     * @param normfactor double
     * @return Normalized array.
@@ -134,7 +130,7 @@ public class Stats {
 
    /**
     * Adjust the elements of an array so they total to 1.0.
-    *
+    * 
     * @param x Input array.
     * @return Normalized array.
     */
@@ -143,9 +139,9 @@ public class Stats {
    }
 
    /**
-    * calculate the mean of the values above (NOT greater or equal to) a
-    * particular index rank of an array. Quantile must be a value from 0 to 100.
-    *
+    * calculate the mean of the values above (NOT greater or equal to) a particular index rank of an array. Quantile
+    * must be a value from 0 to 100.
+    * 
     * @see DescriptiveWithMissing#meanAboveQuantile
     * @param index the rank of the value we wish to average above.
     * @param array Array for which we want to get the quantile.
@@ -174,22 +170,20 @@ public class Stats {
 
    /**
     * Compute the range of an array.
-    *
+    * 
     * @param data DoubleArrayList
     * @return double
     */
    public static double range( DoubleArrayList data ) {
-      return Descriptive.max( data )
-            - Descriptive.min( data );
+      return Descriptive.max( data ) - Descriptive.min( data );
    }
 
    /**
-    * Given a double array, calculate the quantile requested. Note that no
-    * interpolation is done.
-    *
+    * Given a double array, calculate the quantile requested. Note that no interpolation is done.
+    * 
     * @see DescriptiveWithMissing#quantile
-    * @param index - the rank of the value we wish to get. Thus if we have 200
-    *        items in the array, and want the median, we should enter 100.
+    * @param index - the rank of the value we wish to get. Thus if we have 200 items in the array, and want the median,
+    *        we should enter 100.
     * @param values double[] - array of data we want quantile of
     * @param effectiveSize int the effective size of the array
     * @return double the value at the requested quantile

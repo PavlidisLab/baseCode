@@ -7,8 +7,7 @@ import java.awt.Color;
  * Title: ColorMap
  * </p>
  * <p>
- * Description: contains predefined color maps for visualization and color
- * palette methods
+ * Description: contains predefined color maps for visualization and color palette methods
  * </p>
  * <p>
  * Copyright (c) 2004
@@ -16,7 +15,7 @@ import java.awt.Color;
  * <p>
  * Institution:: Columbia University
  * </p>
- *
+ * 
  * @author Will Braynen
  * @version $Id$
  */
@@ -31,15 +30,18 @@ public class ColorMap {
 
    public static final int m_defaultSuggestedNumberOfColors = 64;
    public static final Color DARK_RED = new Color( 128, 0, 0 );
-   public static final Color[] GREENRED_COLORMAP = { Color.green, Color.black,
-         Color.red };
-   public static final Color[] REDGREEN_COLORMAP = { Color.red, Color.black,
-         Color.green };
-   public static final Color[] BLACKBODY_COLORMAP = { Color.black, DARK_RED,
-         Color.orange, Color.yellow, Color.white };
+   public static final Color[] GREENRED_COLORMAP = {
+         Color.green, Color.black, Color.red
+   };
+   public static final Color[] REDGREEN_COLORMAP = {
+         Color.red, Color.black, Color.green
+   };
+   public static final Color[] BLACKBODY_COLORMAP = {
+         Color.black, DARK_RED, Color.orange, Color.yellow, Color.white
+   };
 
    protected Color[] m_currentColorMap = GREENRED_COLORMAP; // reference to a
-                                                            // color map
+   // color map
    protected Color[] m_colorPalette;
 
    public ColorMap() {
@@ -59,7 +61,7 @@ public class ColorMap {
 
    /**
     * Pre-condition: suggestedNumberOfColors > colorMap.length
-    *
+    * 
     * @param suggestedNumberOfColors int
     * @param colorMap Color[]
     */
@@ -70,9 +72,8 @@ public class ColorMap {
    }
 
    /**
-    * Calculate how fast we have to change color components. Assume min and max
-    * colors are different!
-    *
+    * Calculate how fast we have to change color components. Assume min and max colors are different!
+    * 
     * @param minColor red, green, or blue component of the RGB color
     * @param maxColor red, green, or blue component of the RGB color
     * @param totalColors int
@@ -87,13 +88,11 @@ public class ColorMap {
 
    /**
     * Allocates colors across a range.
-    *
-    * @param suggestedNumberOfColors palette resolution; if colorPalette.length
-    *        does not evenly divide into this number, the actual number of
-    *        colors in the palette will be rounded down.
-    * @param colorMap the simplest color map is { minColor, maxColor }; you
-    *        might, however, want to go through intermediate colors instead of
-    *        following a straight-line route through the color space.
+    * 
+    * @param suggestedNumberOfColors palette resolution; if colorPalette.length does not evenly divide into this number,
+    *        the actual number of colors in the palette will be rounded down.
+    * @param colorMap the simplest color map is { minColor, maxColor }; you might, however, want to go through
+    *        intermediate colors instead of following a straight-line route through the color space.
     * @return Color[] the color palette
     */
    protected Color[] createColorPalette( int suggestedNumberOfColors,

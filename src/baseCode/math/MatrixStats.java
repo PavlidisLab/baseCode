@@ -1,23 +1,20 @@
 package baseCode.math;
 
-import cern.colt.list.DoubleArrayList;
 import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.matrix.SparseDoubleMatrix2DNamed;
+import cern.colt.list.DoubleArrayList;
 
 /**
- *
- *
  * <hr>
  * <p>
  * Copyright (c) 2004 Columbia University
- *
+ * 
  * @author pavlidis
  * @version $Id$
  */
 public class MatrixStats {
 
    /**
-    *
     * @todo this is pretty inefficient - calls new
     * @param data DenseDoubleMatrix2DNamed
     * @return DenseDoubleMatrix2DNamed
@@ -43,10 +40,8 @@ public class MatrixStats {
    }
 
    /**
-    *
     * @param data DenseDoubleMatrix2DNamed
-    * @param threshold only correlations with absolute values above this level
-    *   are stored.
+    * @param threshold only correlations with absolute values above this level are stored.
     * @return SparseDoubleMatrix2DNamed
     */
    public static SparseDoubleMatrix2DNamed correlationMatrix(
@@ -73,7 +68,7 @@ public class MatrixStats {
 
    /**
     * Find the minimum of the entire matrix.
-    *
+    * 
     * @param matrix DenseDoubleMatrix2DNamed
     * @return the smallest value in the matrix
     */
@@ -106,7 +101,7 @@ public class MatrixStats {
 
    /**
     * Compute the maximum value in the matrix.
-    *
+    * 
     * @param matrix DenseDoubleMatrix2DNamed
     * @return the largest value in the matrix
     */

@@ -8,6 +8,7 @@ import cern.jet.stat.Probability;
  * Functions for calculating Receiver operator characteristics.
  * <p>
  * Copyright (c) 2004 Columbia University
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
@@ -43,8 +44,8 @@ public class ROC {
    }
 
    /**
-    * For an AROC value, calculates a p value based on approximation for
-    * calculating the stanadard deviation. Highly approximate!
+    * For an AROC value, calculates a p value based on approximation for calculating the stanadard deviation. Highly
+    * approximate!
     * 
     * @param numpos How many positives are in the data.
     * @param aroc The AROC

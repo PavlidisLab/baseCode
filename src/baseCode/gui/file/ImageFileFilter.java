@@ -11,11 +11,10 @@ import baseCode.util.FileTools;
  * <p>
  * Copyright (c) 2004 Columbia University
  * 
- * @author  Will Braynen
+ * @author Will Braynen
  * @version $Id$
  */
-public class ImageFileFilter
-    extends FileFilter {
+public class ImageFileFilter extends FileFilter {
 
    public boolean accept( File f ) {
 

@@ -26,8 +26,7 @@ public class RandomChooser {
     * 
     * @param randomvals answers go here.
     * @param sourcedata Data to be randomly selected
-    * @param deck an array pre-filled with integers from 0 to max, but they
-    *        don't have to be in order.
+    * @param deck an array pre-filled with integers from 0 to max, but they don't have to be in order.
     * @param max how many values we need.
     * @param n int
     */
@@ -49,8 +48,7 @@ public class RandomChooser {
     * choose n random integers from 0 to max without repeating
     * 
     * @param randomnums answers go here.
-    * @param deck an array pre-filled with integers from 0 to max, but they
-    *        don't have to be in order.
+    * @param deck an array pre-filled with integers from 0 to max, but they don't have to be in order.
     * @param max how many values we need.
     * @param n int
     */
@@ -98,15 +96,14 @@ public class RandomChooser {
    }
 
    /**
-    * Same as chooserandom, but with replacement -- that is, repeats are
-    * allowed.
+    * Same as chooserandom, but with replacement -- that is, repeats are allowed.
     * 
     * @param randomnums int[]
     * @param max int
     * @param n int
     */
    public static void chooserandomWrep( int[] randomnums, int max, int n ) {
-    for ( int i = 0; i < n; i++ ) {
+      for ( int i = 0; i < n; i++ ) {
          int newnum = ( char ) ( generator.nextInt() % max );
          randomnums[i] = newnum;
       }

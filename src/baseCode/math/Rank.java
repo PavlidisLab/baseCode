@@ -58,14 +58,12 @@ public class Rank {
    }
 
    /**
-    * Rank transform a map, where the values are numerical (java.lang.Double)
-    * values we wish to rank. Ties are not handled specially.
+    * Rank transform a map, where the values are numerical (java.lang.Double) values we wish to rank. Ties are not
+    * handled specially.
     * 
     * @param m java.util.Map with keys Objects, values Doubles.
-    * @return A java.util.Map keys=old keys, values=java.lang.Integer rank of
-    *         the key.
-    * @throws IllegalArgumentException if the input Map does not have Double
-    *         values.
+    * @return A java.util.Map keys=old keys, values=java.lang.Integer rank of the key.
+    * @throws IllegalArgumentException if the input Map does not have Double values.
     */
    public static Map rankTransform( Map m ) throws IllegalArgumentException {
       int counter = 0;
@@ -73,8 +71,7 @@ public class Rank {
       keyAndValueData[] values = new keyAndValueData[m.size()];
 
       /*
-       * put the pvalues into an array of objects which contain the pvalue and
-       * the gene id
+       * put the pvalues into an array of objects which contain the pvalue and the gene id
        */
       for ( Iterator itr = m.keySet().iterator(); itr.hasNext(); ) {
 
@@ -101,8 +98,7 @@ public class Rank {
    }
 
    /**
-    * Return mean of top 2 elements in array. Used for histogram range setting.
-    * O(2N) runtime.
+    * Return mean of top 2 elements in array. Used for histogram range setting. O(2N) runtime.
     * 
     * @param inArray double[]
     * @return double

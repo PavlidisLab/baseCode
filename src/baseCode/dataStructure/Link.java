@@ -1,6 +1,5 @@
 package baseCode.dataStructure;
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 /**
@@ -26,7 +25,6 @@ public class Link extends Point {
    private double weight;
 
    /**
-    * 
     * @param i int
     * @param j int
     * @param weight double
@@ -37,7 +35,6 @@ public class Link extends Point {
    }
 
    /**
-    * 
     * @return double
     */
    public double getWeight() {
@@ -45,7 +42,6 @@ public class Link extends Point {
    }
 
    /**
-    * 
     * @return java.lang.String
     */
    public String toString() {

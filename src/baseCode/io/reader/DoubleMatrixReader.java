@@ -6,16 +6,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.StringTokenizer;
-import java.util.Vector;
-import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
-
-import cern.colt.list.DoubleArrayList;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.matrix.NamedMatrix;
+import cern.colt.list.DoubleArrayList;
 
 /**
  * Reader for {@link baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed}.

@@ -92,7 +92,7 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
 
       double[] xel = x.elements();
       double[] yel = y.elements();
-      
+
       int length = x.size();
       for ( j = 0; j < length; j++ ) {
          xj = xel[j];

@@ -8,7 +8,7 @@ import java.io.Writer;
 import corejava.Format;
 
 /**
- * Print an {@link hep.aidia.IHistogram1D} object to a text file.
+ * Print an {@link hep.aidia.IHistogram1D}object to a text file.
  * <p>
  * Copyright (c) 2004
  * </p>
@@ -16,8 +16,7 @@ import corejava.Format;
  * Institution: Columbia University
  * </p>
  * 
- * @see <a
- *      href="http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/hep/aida/IHistogram1D.html">hep.aida.IHistogram1D
+ * @see <a href="http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/hep/aida/IHistogram1D.html">hep.aida.IHistogram1D
  *      </a>
  * @author Paul Pavlidis
  * @version $Id$

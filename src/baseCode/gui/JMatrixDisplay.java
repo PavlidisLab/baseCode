@@ -28,7 +28,7 @@ import baseCode.graphics.text.Util;
  * <p>
  * Institution:: Columbia University
  * </p>
- *
+ * 
  * @author Will Braynen
  * @version $Id$
  */
@@ -131,7 +131,7 @@ public class JMatrixDisplay extends JPanel {
 
    /**
     * <code>JComponent</code> method used to render this component
-    *
+    * 
     * @param g Graphics used for painting
     */
    protected void paintComponent( Graphics g ) {
@@ -161,7 +161,7 @@ public class JMatrixDisplay extends JPanel {
 
    /**
     * Gets called from #paintComponent and #saveImage
-    *
+    * 
     * @param g Graphics
     * @param leaveRoomForLabels boolean
     */
@@ -195,13 +195,12 @@ public class JMatrixDisplay extends JPanel {
 
    /**
     * Draws row names (horizontally)
-    *
+    * 
     * @param g Graphics
     */
    protected void drawRowNames( Graphics g ) {
 
-      if ( m_matrix == null )
-         return;
+      if ( m_matrix == null ) return;
 
       int rowCount = m_matrix.getRowCount();
 
@@ -224,13 +223,12 @@ public class JMatrixDisplay extends JPanel {
 
    /**
     * Draws column names vertically (turned 90 degrees counter-clockwise)
-    *
+    * 
     * @param g Graphics
     */
    protected void drawColumnNames( Graphics g ) {
 
-      if ( m_matrix == null )
-         return;
+      if ( m_matrix == null ) return;
 
       int columnCount = m_matrix.getColumnCount();
       for ( int j = 0; j < columnCount; j++ ) {
@@ -277,7 +275,7 @@ public class JMatrixDisplay extends JPanel {
 
    /**
     * Saves the image to a png file.
-    *
+    * 
     * @param outPngFilename String
     * @throws IOException
     */
@@ -291,10 +289,10 @@ public class JMatrixDisplay extends JPanel {
    }
 
    /**
-    *
     * @param outPngFilename String
     * @param showLabels boolean
-    * @param standardize normalize to deviation 1, mean 0. @todo never read
+    * @param standardize normalize to deviation 1, mean 0.
+    * @todo never read
     * @throws IOException
     */
    public void saveImage( String outPngFilename, boolean showLabels,
@@ -312,7 +310,7 @@ public class JMatrixDisplay extends JPanel {
 
       // Draw the image to a buffer
       Dimension d = getSize( showLabels ); // how big is the image with row and
-                                           // column labels
+      // column labels
       m_image = new BufferedImage( d.width, d.height,
             BufferedImage.TYPE_INT_RGB );
       g = m_image.createGraphics();
@@ -334,9 +332,8 @@ public class JMatrixDisplay extends JPanel {
    } // end saveImage
 
    /**
-    * If this display component has already been added to the GUI, it will be
-    * resized to fit or exclude the row names
-    *
+    * If this display component has already been added to the GUI, it will be resized to fit or exclude the row names
+    * 
     * @param isShowLabels boolean
     */
    public void setLabelsVisible( boolean isShowLabels ) {
@@ -353,8 +350,7 @@ public class JMatrixDisplay extends JPanel {
    }
 
    /**
-    * @param matrix the new matrix to use; will resize this display component as
-    *        necessary
+    * @param matrix the new matrix to use; will resize this display component as necessary
     */
    public void setMatrix( ColorMatrix matrix ) {
       m_matrix = matrix;
@@ -430,13 +426,10 @@ public class JMatrixDisplay extends JPanel {
    }
 
    /**
-    * @param colorMap an array of colors which define the midpoints in the color
-    *        map; this can be one of the constants defined in the ColorMap
-    *        class, like ColorMap.REDGREEN_COLORMAP and
-    *        ColorMap.BLACKBODY_COLORMAP
-    *
+    * @param colorMap an array of colors which define the midpoints in the color map; this can be one of the constants
+    *        defined in the ColorMap class, like ColorMap.REDGREEN_COLORMAP and ColorMap.BLACKBODY_COLORMAP
     */
-   public void setColorMap( Color[] colorMap )  {
+   public void setColorMap( Color[] colorMap ) {
 
       m_standardizedMatrix.setColorMap( colorMap );
       m_unstandardizedMatrix.setColorMap( colorMap );

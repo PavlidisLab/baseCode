@@ -15,9 +15,8 @@ import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import baseCode.io.reader.MapReader;
 
 /**
- * A data structure representing a map between items and a single set of keys.
- * For example, a set of probes and the genes they map to. Probes that point to
- * the same gene are in the same "group".
+ * A data structure representing a map between items and a single set of keys. For example, a set of probes and the
+ * genes they map to. Probes that point to the same gene are in the same "group".
  * <p>
  * Copyright (c) 2004
  * </p>
@@ -36,7 +35,6 @@ public class GroupMap {
    private static Log log = LogFactory.getLog( GroupMap.class );
 
    /**
-    * 
     * @return int The number of unique items in the GroupMap.
     */
    public int getUniqueItems() {
@@ -54,8 +52,7 @@ public class GroupMap {
    }
 
    /**
-    * For a given key, return the number of duplicates it has (not counting
-    * itself).
+    * For a given key, return the number of duplicates it has (not counting itself).
     * 
     * @param k String
     * @return int
@@ -65,8 +62,7 @@ public class GroupMap {
    }
 
    /**
-    * The input file format is that used by
-    * {@link baseCode.io.reader.MapReader}.
+    * The input file format is that used by {@link baseCode.io.reader.MapReader}.
     * 
     * @param filename Duplicate map file name to be read by a MapReader.
     * @param dataMatrix Data file this the map refers to.

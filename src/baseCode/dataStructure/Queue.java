@@ -2,7 +2,6 @@ package baseCode.dataStructure;
 
 /**
  * Simple Queue implementation.
- * 
  * <p>
  * Copyright (c) 2004
  * </p>
@@ -32,7 +31,6 @@ public class Queue {
    }
 
    /**
-    * 
     * @param obj Object
     */
    public void enqueue( Object obj ) {
@@ -46,7 +44,6 @@ public class Queue {
    }
 
    /**
-    * 
     * @return Object
     */
    public Object dequeue() {
@@ -61,7 +58,6 @@ public class Queue {
    }
 
    /**
-    * 
     * @return boolean
     */
    public boolean isEmpty() {
@@ -69,7 +65,6 @@ public class Queue {
    }
 
    /**
-    * 
     * @return boolean
     */
    public boolean isFull() {

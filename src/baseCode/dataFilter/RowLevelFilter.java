@@ -10,40 +10,33 @@ import cern.colt.list.DoubleArrayList;
 import cern.jet.stat.Descriptive;
 
 /**
- * Remove rows from a matrix based on some row-based statistic. Rows with values
- * too high and/or too low can be removed. Thresholds are inclusive (i.e.,
- * values must be at least as high as the set threshold to be included. A number
- * of statistics are available. In addition, this filter can remove rows that
- * have all negative data values.
+ * Remove rows from a matrix based on some row-based statistic. Rows with values too high and/or too low can be removed.
+ * Thresholds are inclusive (i.e., values must be at least as high as the set threshold to be included. A number of
+ * statistics are available. In addition, this filter can remove rows that have all negative data values.
  * <p>
  * There are a number of decisions/caveats to consider:
  * <h2>Cutpoint determination</h2>
  * <p>
- * There are multiple ways of determining cutpoints. Some possibilities are the
- * maximum value, the minimum value, the mean value, or the median value. The
- * range and coefficient of variation are also included.
+ * There are multiple ways of determining cutpoints. Some possibilities are the maximum value, the minimum value, the
+ * mean value, or the median value. The range and coefficient of variation are also included.
  * <p>
- * Note that if you want to use different methods for high-level filtering than
- * for low-level filtering (e.g., using max for the low-level, and min for the
- * high-level, you have to filter twice. This could cause problems if you are
- * using fractional filtering and there are negative values (see below).
+ * Note that if you want to use different methods for high-level filtering than for low-level filtering (e.g., using max
+ * for the low-level, and min for the high-level, you have to filter twice. This could cause problems if you are using
+ * fractional filtering and there are negative values (see below).
  * <h2>Filtering ratiometric data</h2>
  * <p>
- * For data that are normalized or ratios, it does not make sense to use this
- * method on the raw data. In that situation, you should filter the data based
- * on the raw data, and then use a {@link RowNameFilter}to select the rows from
- * the ratio data.
- * 
+ * For data that are normalized or ratios, it does not make sense to use this method on the raw data. In that situation,
+ * you should filter the data based on the raw data, and then use a {@link RowNameFilter}to select the rows from the
+ * ratio data.
  * <h2>Negative values</h2>
  * <p>
- * For microarray expression data based on the Affymetrix MAS4.0 protocol (and
- * possibly others), negative values can occur. In some cases all the values can
- * be negative. As these values are generally viewed as nonsensical, one might
+ * For microarray expression data based on the Affymetrix MAS4.0 protocol (and possibly others), negative values can
+ * occur. In some cases all the values can be negative. As these values are generally viewed as nonsensical, one might
  * decide that data rows that are all negative should be filtered.
  * <h2>Behavior at extremes</h2>
  * <p>
- * If you request removal/inclusion of 1.0 of the data, you might not get the
- * result you expect because the filtering is inclusive.
+ * If you request removal/inclusion of 1.0 of the data, you might not get the result you expect because the filtering is
+ * inclusive.
  * <hr>
  * <p>
  * Copyright (c) 2004 Columbia University
@@ -89,8 +82,8 @@ public class RowLevelFilter extends AbstractLevelFilter {
    private int method = MAX;
 
    /**
-    * Choose the method that will be used for filtering. Default is 'MAX'. Those
-    * rows with the lowest values are removed during 'low' filtering.
+    * Choose the method that will be used for filtering. Default is 'MAX'. Those rows with the lowest values are removed
+    * during 'low' filtering.
     * 
     * @param method one of the filtering method constants.
     */
@@ -104,10 +97,9 @@ public class RowLevelFilter extends AbstractLevelFilter {
    }
 
    /**
-    * Set the filter to remove all rows that have only negative values. This is
-    * applied BEFORE applying fraction-based criteria. In other words, if you
-    * request filtering 0.5 of the values, and 0.5 have all negative values, you
-    * will get 0.25 of the data back. Default = false.
+    * Set the filter to remove all rows that have only negative values. This is applied BEFORE applying fraction-based
+    * criteria. In other words, if you request filtering 0.5 of the values, and 0.5 have all negative values, you will
+    * get 0.25 of the data back. Default = false.
     * 
     * @param t boolean
     */
@@ -118,7 +110,6 @@ public class RowLevelFilter extends AbstractLevelFilter {
    }
 
    /**
-    * 
     * @param data
     * @return
     */

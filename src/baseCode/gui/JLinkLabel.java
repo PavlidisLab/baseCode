@@ -10,15 +10,12 @@ import javax.swing.JLabel;
 import baseCode.util.BrowserLauncher;
 
 /**
- * A clickable link label that contains a URL.
- * When a mouse pointer is placed over it, it turns into a hand.
- *
- * @author  Will Braynen
+ * A clickable link label that contains a URL. When a mouse pointer is placed over it, it turns into a hand.
+ * 
+ * @author Will Braynen
  * @version $Id$
  */
-public class JLinkLabel
-       extends JLabel
-       implements MouseListener {
+public class JLinkLabel extends JLabel implements MouseListener {
 
    protected String m_url = null;
    protected String m_text = "";
@@ -43,14 +40,12 @@ public class JLinkLabel
    public void setText( String text ) {
       if ( m_url != null ) {
          setText( text, m_url );
-      }
-      else {
+      } else {
          setText( text, text );
       }
    }
 
    /**
-    *
     * @param url
     */
    public void setURL( String url ) {
@@ -58,7 +53,6 @@ public class JLinkLabel
    }
 
    /**
-    *
     * @return
     */
    public String getURL() {
@@ -82,9 +76,16 @@ public class JLinkLabel
       }
    }
 
-   public void mouseEntered( MouseEvent e ) {}
-   public void mouseExited( MouseEvent e ) {}
-   public void mousePressed( MouseEvent e ) {}
-   public void mouseReleased( MouseEvent e ) {}
+   public void mouseEntered( MouseEvent e ) {
+   }
+
+   public void mouseExited( MouseEvent e ) {
+   }
+
+   public void mousePressed( MouseEvent e ) {
+   }
+
+   public void mouseReleased( MouseEvent e ) {
+   }
 
 }

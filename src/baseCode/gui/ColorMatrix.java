@@ -31,9 +31,8 @@ public class ColorMatrix implements Cloneable {
    // data fields
 
    /**
-    * Min and max values to display, which might not be the actual min and max
-    * values in the matrix. For instance, we might want to clip values, or show
-    * a bigger color range for equal comparison with other rows or matrices.
+    * Min and max values to display, which might not be the actual min and max values in the matrix. For instance, we
+    * might want to clip values, or show a bigger color range for equal comparison with other rows or matrices.
     */
    protected double m_displayMin;
    protected double m_displayMax;
@@ -54,11 +53,9 @@ public class ColorMatrix implements Cloneable {
    protected int m_rowKeys[];
 
    /**
-    * 
-    * @param filename either an absolute path, or if providing a relative path
-    *        (e.g. data.txt), then keep in mind that it will be relative to the
-    *        java interpreter, not the class (not my fault -- that's how java
-    *        treats relative paths)
+    * @param filename either an absolute path, or if providing a relative path (e.g. data.txt), then keep in mind that
+    *        it will be relative to the java interpreter, not the class (not my fault -- that's how java treats relative
+    *        paths)
     * @throws IOException
     */
    public ColorMatrix( String filename ) throws IOException {
@@ -70,12 +67,9 @@ public class ColorMatrix implements Cloneable {
    }
 
    /**
-    * 
     * @param filename data filename
-    * @param colorMap the simplest color map is one with just two colors: {
-    *        minColor, maxColor }
-    * @param missingColor values missing from the matrix or non-numeric entries
-    *        will be displayed using this color
+    * @param colorMap the simplest color map is one with just two colors: { minColor, maxColor }
+    * @param missingColor values missing from the matrix or non-numeric entries will be displayed using this color
     * @throws IOException
     */
    public ColorMatrix( String filename, Color[] colorMap, Color missingColor )
@@ -88,10 +82,8 @@ public class ColorMatrix implements Cloneable {
 
    /**
     * @param matrix the matrix
-    * @param colorMap the simplest color map is one with just two colors: {
-    *        minColor, maxColor }
-    * @param missingColor values missing from the matrix or non-numeric entries
-    *        will be displayed using this color
+    * @param colorMap the simplest color map is one with just two colors: { minColor, maxColor }
+    * @param missingColor values missing from the matrix or non-numeric entries will be displayed using this color
     */
    public ColorMatrix( DenseDoubleMatrix2DNamed matrix, Color[] colorMap,
          Color missingColor ) {
@@ -113,22 +105,35 @@ public class ColorMatrix implements Cloneable {
       return m_rowKeys[row];
    }
 
-   public double getValue( int row, int column ) throws ArrayIndexOutOfBoundsException {
-      
-      if ( row >= m_totalRows ) throw new ArrayIndexOutOfBoundsException( 
-        "The matrix has only " + m_totalRows + " rows, so the maximum possible row index is " + ( m_totalRows - 1 )  + ". Row index " + row + " is too high." );
-      if ( column >= m_totalColumns ) throw new ArrayIndexOutOfBoundsException( 
-        "The matrix has only " + m_totalColumns + " columns, so the maximum possible column index is " + ( m_totalColumns - 1 ) + ". Column index " + column + " is too high." );
-      
+   public double getValue( int row, int column )
+         throws ArrayIndexOutOfBoundsException {
+
+      if ( row >= m_totalRows )
+            throw new ArrayIndexOutOfBoundsException( "The matrix has only "
+                  + m_totalRows
+                  + " rows, so the maximum possible row index is "
+                  + ( m_totalRows - 1 ) + ". Row index " + row
+                  + " is too high." );
+      if ( column >= m_totalColumns )
+            throw new ArrayIndexOutOfBoundsException( "The matrix has only "
+                  + m_totalColumns
+                  + " columns, so the maximum possible column index is "
+                  + ( m_totalColumns - 1 ) + ". Column index " + column
+                  + " is too high." );
+
       row = getTrueRowIndex( row );
       return m_matrix.get( row, column );
    }
 
    public double[] getRow( int row ) throws ArrayIndexOutOfBoundsException {
-      
-      if ( row >= m_totalRows ) throw new ArrayIndexOutOfBoundsException( 
-        "The matrix has only " + m_totalRows + " rows, so the maximum possible row index is " + ( m_totalRows - 1 ) + ". Row index " + row + " is too high." );
-      
+
+      if ( row >= m_totalRows )
+            throw new ArrayIndexOutOfBoundsException( "The matrix has only "
+                  + m_totalRows
+                  + " rows, so the maximum possible row index is "
+                  + ( m_totalRows - 1 ) + ". Row index " + row
+                  + " is too high." );
+
       row = getTrueRowIndex( row );
       return m_matrix.getRow( row );
    }
@@ -137,42 +142,69 @@ public class ColorMatrix implements Cloneable {
       return m_matrix.getRowByName( rowName );
    }
 
-   public Color getColor( int row, int column ) throws ArrayIndexOutOfBoundsException {
-      
-      if ( row >= m_totalRows ) throw new ArrayIndexOutOfBoundsException( 
-        "The matrix has only " + m_totalRows + " rows, so the maximum possible row index is " + ( m_totalRows - 1 ) + ". Row index " + row + " is too high." );
-      if ( column >= m_totalColumns ) throw new ArrayIndexOutOfBoundsException( 
-        "The matrix has only " + m_totalColumns + " columns, so the maximum possible column index is " + ( m_totalColumns - 1 ) + ". Column index " + column + " is too high." );
-      
+   public Color getColor( int row, int column )
+         throws ArrayIndexOutOfBoundsException {
+
+      if ( row >= m_totalRows )
+            throw new ArrayIndexOutOfBoundsException( "The matrix has only "
+                  + m_totalRows
+                  + " rows, so the maximum possible row index is "
+                  + ( m_totalRows - 1 ) + ". Row index " + row
+                  + " is too high." );
+      if ( column >= m_totalColumns )
+            throw new ArrayIndexOutOfBoundsException( "The matrix has only "
+                  + m_totalColumns
+                  + " columns, so the maximum possible column index is "
+                  + ( m_totalColumns - 1 ) + ". Column index " + column
+                  + " is too high." );
+
       row = getTrueRowIndex( row );
       return m_colors[row][column];
    }
 
-   public void setColor( int row, int column, Color newColor ) throws ArrayIndexOutOfBoundsException {
-      
-      if ( row >= m_totalRows ) throw new ArrayIndexOutOfBoundsException( 
-        "The matrix has only " + m_totalRows + " rows, so the maximum possible row index is " + ( m_totalRows - 1 ) + ". Row index " + row + " is too high." );
-      if ( column >= m_totalColumns ) throw new ArrayIndexOutOfBoundsException( 
-        "The matrix has only " + m_totalColumns + " columns, so the maximum possible column index is " + ( m_totalColumns - 1 ) + ". Column index " + column + " is too high." );
- 
+   public void setColor( int row, int column, Color newColor )
+         throws ArrayIndexOutOfBoundsException {
+
+      if ( row >= m_totalRows )
+            throw new ArrayIndexOutOfBoundsException( "The matrix has only "
+                  + m_totalRows
+                  + " rows, so the maximum possible row index is "
+                  + ( m_totalRows - 1 ) + ". Row index " + row
+                  + " is too high." );
+      if ( column >= m_totalColumns )
+            throw new ArrayIndexOutOfBoundsException( "The matrix has only "
+                  + m_totalColumns
+                  + " columns, so the maximum possible column index is "
+                  + ( m_totalColumns - 1 ) + ". Column index " + column
+                  + " is too high." );
+
       row = getTrueRowIndex( row );
       m_colors[row][column] = newColor;
    }
 
    public String getRowName( int row ) throws ArrayIndexOutOfBoundsException {
-      
-      if ( row >= m_totalRows ) throw new ArrayIndexOutOfBoundsException( 
-        "The matrix has only " + m_totalRows + " rows, so the maximum possible row index is " + ( m_totalRows - 1 ) + ". Row index " + row + " is too high." );
+
+      if ( row >= m_totalRows )
+            throw new ArrayIndexOutOfBoundsException( "The matrix has only "
+                  + m_totalRows
+                  + " rows, so the maximum possible row index is "
+                  + ( m_totalRows - 1 ) + ". Row index " + row
+                  + " is too high." );
 
       row = getTrueRowIndex( row );
       return m_matrix.getRowName( row );
    }
 
-   public String getColumnName( int column ) throws ArrayIndexOutOfBoundsException {
-      
-      if ( column >= m_totalColumns ) throw new ArrayIndexOutOfBoundsException( 
-        "The matrix has only " + m_totalColumns + " columns, so the maximum possible column index is " + ( m_totalColumns - 1 ) + ". Column index " + column + " is too high." );
-      
+   public String getColumnName( int column )
+         throws ArrayIndexOutOfBoundsException {
+
+      if ( column >= m_totalColumns )
+            throw new ArrayIndexOutOfBoundsException( "The matrix has only "
+                  + m_totalColumns
+                  + " columns, so the maximum possible column index is "
+                  + ( m_totalColumns - 1 ) + ". Column index " + column
+                  + " is too high." );
+
       return m_matrix.getColName( column );
    }
 
@@ -217,10 +249,9 @@ public class ColorMatrix implements Cloneable {
    } // end setRow
 
    /**
-    * To be able to sort the rows by an arbitrary key. Creates
-    * <code>m_rowKeys</code> array and initializes it in ascending order from
-    * 0 to <code>m_totalRows</code> -1, so that by default it matches the
-    * physical order of the columns: [0,1,2,...,m_totalRows-1]
+    * To be able to sort the rows by an arbitrary key. Creates <code>m_rowKeys</code> array and initializes it in
+    * ascending order from 0 to <code>m_totalRows</code> -1, so that by default it matches the physical order of the
+    * columns: [0,1,2,...,m_totalRows-1]
     * 
     * @return int[]
     */
@@ -272,9 +303,8 @@ public class ColorMatrix implements Cloneable {
    }
 
    /**
-    * Normalizes the elements of a matrix to variance one and mean zero,
-    * ignoring missing values
-    * todo move this to matrixstats or something.
+    * Normalizes the elements of a matrix to variance one and mean zero, ignoring missing values todo move this to
+    * matrixstats or something.
     */
    public void standardize() {
 
@@ -322,20 +352,16 @@ public class ColorMatrix implements Cloneable {
    }
 
    /**
-    * @param colorMap an array of colors which define the midpoints in the color
-    *        map; this can be one of the constants defined in the ColorMap
-    *        class, like ColorMap.REDGREEN_COLORMAP and
-    *        ColorMap.BLACKBODY_COLORMAP
-    * 
-    * @throws IllegalArgumentException if the colorMap array argument contains
-    *         less than two colors.
+    * @param colorMap an array of colors which define the midpoints in the color map; this can be one of the constants
+    *        defined in the ColorMap class, like ColorMap.REDGREEN_COLORMAP and ColorMap.BLACKBODY_COLORMAP
+    * @throws IllegalArgumentException if the colorMap array argument contains less than two colors.
     */
    public void setColorMap( Color[] colorMap ) throws IllegalArgumentException {
 
       if ( colorMap.length < 2 ) {
          throw new IllegalArgumentException();
       }
-         
+
       m_colorMap = colorMap;
       mapValuesToColors();
    }
@@ -375,7 +401,7 @@ public class ColorMatrix implements Cloneable {
                   // clip extremely small values
                   value = m_displayMin;
                }
-               
+
                // shift the minimum value to zero
                // to the range [0, maxValue + minValue]
                value -= m_displayMin;
@@ -399,8 +425,8 @@ public class ColorMatrix implements Cloneable {
 
       // create another double matrix
       Color[][] colors = new Color[m_totalRows][m_totalColumns];
-      DenseDoubleMatrix2DNamed matrix = new DenseDoubleMatrix2DNamed( m_totalRows,
-            m_totalColumns );
+      DenseDoubleMatrix2DNamed matrix = new DenseDoubleMatrix2DNamed(
+            m_totalRows, m_totalColumns );
       // copy the row and column names
       for ( int i = 0; i < m_totalRows; i++ ) {
          matrix.addRowName( m_matrix.getRowName( i ), i );
@@ -416,7 +442,8 @@ public class ColorMatrix implements Cloneable {
       }
 
       // create another copy of a color matrix (this class)
-      ColorMatrix clonedColorMatrix = new ColorMatrix( matrix, m_colorMap, m_missingColor );
+      ColorMatrix clonedColorMatrix = new ColorMatrix( matrix, m_colorMap,
+            m_missingColor );
 
       int[] rowKeys = ( int[] ) m_rowKeys.clone();
       clonedColorMatrix.setRowKeys( rowKeys );

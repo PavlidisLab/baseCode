@@ -35,7 +35,6 @@ public class Handle {
 
    //  private Statement stat;
    /**
-    * 
     * @param host String
     * @param database String
     * @param user String
@@ -60,7 +59,6 @@ public class Handle {
    }
 
    /**
-    * 
     * @return java.sql.Connection
     */
    public Connection getCon() {
@@ -68,7 +66,6 @@ public class Handle {
    }
 
    /**
-    * 
     * @return java.sql.Statement
     * @throws SQLException
     */
@@ -102,7 +99,6 @@ public class Handle {
    }
 
    /**
-    * 
     * @param query String
     * @return int
     * @throws SQLException
@@ -112,7 +108,6 @@ public class Handle {
    }
 
    /**
-    * 
     * @param query String
     * @return java.sql.ResultSet
     * @throws SQLException
@@ -122,7 +117,6 @@ public class Handle {
    }
 
    /**
-    * 
     * @param query String
     * @return java.sql.PreparedStatement
     * @throws SQLException
@@ -133,7 +127,6 @@ public class Handle {
    }
 
    /**
-    * 
     * @param query String
     * @return java.util.Map
     * @throws SQLException
@@ -154,7 +147,6 @@ public class Handle {
    }
 
    /**
-    * 
     * @param query String
     * @return java.util.Set
     * @throws SQLException
@@ -176,7 +168,6 @@ public class Handle {
    }
 
    /**
-    * 
     * @param query String
     * @return java.util.List
     * @throws SQLException
@@ -197,10 +188,8 @@ public class Handle {
    }
 
    /**
-    * 
     * @param query String
-    * @return Object containing the first result obtained. If no result, it
-    *         return null.
+    * @return Object containing the first result obtained. If no result, it return null.
     * @throws SQLException
     */
    public Integer queryToInt( String query ) throws SQLException {
@@ -217,7 +206,6 @@ public class Handle {
    }
 
    /**
-    * 
     * @param query String
     * @return java.lang.Double
     * @throws SQLException
@@ -236,7 +224,6 @@ public class Handle {
    }
 
    /**
-    * 
     * @param query String
     * @return java.lang.String
     * @throws SQLException

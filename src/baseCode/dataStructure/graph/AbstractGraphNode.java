@@ -4,8 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * 
- * 
  * <p>
  * Copyright (c) Columbia University
  * 
@@ -38,8 +36,8 @@ public abstract class AbstractGraphNode implements Comparable, GraphNode {
    }
 
    /**
-    * Create a new node with key and value given. The key is stored by the graph
-    * and is used to retrieve nodes. Keys and nodes can be any kind of object.
+    * Create a new node with key and value given. The key is stored by the graph and is used to retrieve nodes. Keys and
+    * nodes can be any kind of object.
     * 
     * @param key
     * @param value

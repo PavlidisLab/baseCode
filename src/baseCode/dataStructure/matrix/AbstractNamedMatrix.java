@@ -5,9 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Vector;
 
-
 /**
- * 
  * <p>
  * Copyright (c) 2004 Columbia University
  * 
@@ -49,7 +47,6 @@ public abstract class AbstractNamedMatrix implements NamedMatrix {
    }
 
    /**
-    * 
     * @param s String
     * @return int
     */
@@ -58,7 +55,6 @@ public abstract class AbstractNamedMatrix implements NamedMatrix {
    }
 
    /**
-    * 
     * @param r String
     * @return int
     */
@@ -67,7 +63,6 @@ public abstract class AbstractNamedMatrix implements NamedMatrix {
    }
 
    /**
-    * 
     * @param i int
     * @return java.lang.String
     */
@@ -76,7 +71,6 @@ public abstract class AbstractNamedMatrix implements NamedMatrix {
    }
 
    /**
-    * 
     * @param i int
     * @return java.lang.String
     */

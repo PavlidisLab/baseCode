@@ -56,7 +56,9 @@ public class StatusJlabel implements StatusViewer {
       jlabel.repaint();
    }
 
-   /* (non-Javadoc)
+   /*
+    * (non-Javadoc)
+    * 
     * @see baseCode.util.StatusViewer#clear()
     */
    public void clear() {

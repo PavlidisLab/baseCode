@@ -15,10 +15,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import baseCode.dataStructure.Queue;
 
 /**
- * A graph that contains DirectedGraphNodes. It can be cyclic. Small unconnected
- * parts of the graph will be ignored for many operation. Tree traversals start
- * from the root node, which is defined as the node with the most children.
- * 
+ * A graph that contains DirectedGraphNodes. It can be cyclic. Small unconnected parts of the graph will be ignored for
+ * many operation. Tree traversals start from the root node, which is defined as the node with the most children.
  * <p>
  * Copyright (c) Columbia University
  * 
@@ -33,7 +31,6 @@ public class DirectedGraph extends AbstractGraph {
    }
 
    /**
-    * 
     * @param nodes Set of DirectedGraphNodes
     */
    public DirectedGraph( Set nodes ) {
@@ -45,7 +42,6 @@ public class DirectedGraph extends AbstractGraph {
    }
 
    /**
-    * 
     * @param key Object
     * @param item Object
     */
@@ -72,8 +68,7 @@ public class DirectedGraph extends AbstractGraph {
    }
 
    /**
-    * Add a child to a particular node identified by key; if the node is not in
-    * the graph, an exception is thrown.
+    * Add a child to a particular node identified by key; if the node is not in the graph, an exception is thrown.
     * 
     * @param key Object
     * @param newChildKey Object
@@ -94,7 +89,6 @@ public class DirectedGraph extends AbstractGraph {
    }
 
    /**
-    * 
     * @param key Object
     * @param newParentKey Object
     * @param newParent Object
@@ -109,7 +103,6 @@ public class DirectedGraph extends AbstractGraph {
    }
 
    /**
-    * 
     * @param key Object
     * @param newParentKey Object
     * @throws IllegalStateException
@@ -129,8 +122,7 @@ public class DirectedGraph extends AbstractGraph {
    }
 
    /**
-    * Shows the tree as a tabbed list. Items that have no parents are shown at
-    * the 'highest' level.
+    * Shows the tree as a tabbed list. Items that have no parents are shown at the 'highest' level.
     * 
     * @return String
     */
@@ -147,8 +139,7 @@ public class DirectedGraph extends AbstractGraph {
    }
 
    /*
-    * Helper for toString. Together with toString, demonstrates how to iterate
-    * over the tree
+    * Helper for toString. Together with toString, demonstrates how to iterate over the tree
     */
    private String makeString( DirectedGraphNode startNode, StringBuffer buf,
          int tabLevel ) {
@@ -234,8 +225,7 @@ public class DirectedGraph extends AbstractGraph {
    /**
     * Generate a JTree corresponding to this graph.
     * 
-    * @todo note that nodes are only allowed to have one parent in
-    *       DefaultMutableTreeNodes
+    * @todo note that nodes are only allowed to have one parent in DefaultMutableTreeNodes
     * @return javax.swing.JTree
     */
    public JTree treeView() {
@@ -266,7 +256,5 @@ public class DirectedGraph extends AbstractGraph {
       }
 
    }
-
-
 
 }

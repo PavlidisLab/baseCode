@@ -1,6 +1,5 @@
 package baseCode.dataStructure.matrix;
 
-
 /**
  * Use this factory to create matrices of type selected at runtime.
  * <p>
@@ -11,8 +10,7 @@ package baseCode.dataStructure.matrix;
  * </p>
  * 
  * @author Paul Pavlidis
- * @version $Id: DoubleMatrix2DNamedFactory.java,v 1.3 2004/06/23 22:13:21
- *          pavlidis Exp $
+ * @version $Id$
  */
 
 public class DoubleMatrix2DNamedFactory {

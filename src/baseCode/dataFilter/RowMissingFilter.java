@@ -25,10 +25,9 @@ public class RowMissingFilter extends AbstractFilter implements Filter {
    private boolean minPresentIsSet = false;
 
    /**
-    * Set the minimum number of values that must be present in each row. The
-    * default value is 5. This is always overridden by a hard-coded value
-    * (currently 2) that must be present for a row to be kept; but this value is
-    * in turn overridden by the maxfractionRemoved.
+    * Set the minimum number of values that must be present in each row. The default value is 5. This is always
+    * overridden by a hard-coded value (currently 2) that must be present for a row to be kept; but this value is in
+    * turn overridden by the maxfractionRemoved.
     * 
     * @param m int
     */
@@ -42,7 +41,6 @@ public class RowMissingFilter extends AbstractFilter implements Filter {
    }
 
    /**
-    * 
     * @param k double the fraction of values to be removed.
     */
    public void setMinPresentFraction( double k ) {
@@ -54,8 +52,8 @@ public class RowMissingFilter extends AbstractFilter implements Filter {
    }
 
    /**
-    * Set the maximum fraction of rows which will be removed from the data set.
-    * The default value is 0.3 Set it to 1.0 to remove this restriction.
+    * Set the maximum fraction of rows which will be removed from the data set. The default value is 0.3 Set it to 1.0
+    * to remove this restriction.
     * 
     * @param f double
     */
@@ -108,7 +106,7 @@ public class RowMissingFilter extends AbstractFilter implements Filter {
       }
 
       /* decide whether we need to invoke the 'too many removed' clause */
-      if ( kept <   numRows * ( 1.0 - maxFractionRemoved )
+      if ( kept < numRows * ( 1.0 - maxFractionRemoved )
             && maxFractionRemoved != 0.0 ) {
          IntArrayList sortedPresent = new IntArrayList( numRows );
          sortedPresent = present.copy();

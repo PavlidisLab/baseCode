@@ -14,9 +14,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 /**
- * A GUI legend component that displays a color map as a color gradient from min
- * to max, traversing all the colors in the color map.
- *
+ * A GUI legend component that displays a color map as a color gradient from min to max, traversing all the colors in
+ * the color map.
+ * 
  * @author Will Braynen
  * @version $Id$
  */
@@ -25,13 +25,15 @@ public class JGradientBar extends JPanel {
    protected JNumberLabel m_min;
    protected JNumberLabel m_max;
    protected JGradientLabel m_gradient;
-   protected final static Color[] EMPTY = { Color.GRAY, Color.GRAY };
+   protected final static Color[] EMPTY = {
+         Color.GRAY, Color.GRAY
+   };
 
    /** Creates a new instance of JGradientBar */
    public JGradientBar() {
 
-//      setOpaque( true );
-//      setBackground( Color.lightGray );
+      //      setOpaque( true );
+      //      setBackground( Color.lightGray );
 
       m_gradient = new JGradientLabel( EMPTY );
       m_min = new JNumberLabel();
@@ -62,7 +64,8 @@ public class JGradientBar extends JPanel {
 
 class JNumberLabel extends JLabel {
 
-   protected static final DecimalFormat m_scientificNotation = new DecimalFormat( "0.##E0" );
+   protected static final DecimalFormat m_scientificNotation = new DecimalFormat(
+         "0.##E0" );
    protected static final DecimalFormat m_regular = new DecimalFormat();
    protected static final int MINIMUM_WIDTH = 100;
    protected static final int WIDTH = 40;
@@ -79,8 +82,8 @@ class JNumberLabel extends JLabel {
    }
 
    protected void init() {
-//      setOpaque( true );
-//      setBackground( Color.lightGray );
+      //      setOpaque( true );
+      //      setBackground( Color.lightGray );
       Dimension d = new Dimension( WIDTH, JGradientLabel.HEIGHT );
       setSize( d );
       setPreferredSize( d );
@@ -91,7 +94,8 @@ class JNumberLabel extends JLabel {
       // Only very small numbers (except for zero) as well as very large numbers
       // should be displayed in scientific notation
       String text;
-      if ( ( number != 0 && Math.abs( number ) < 0.01 ) || Math.abs( number ) > 999 ) {
+      if ( ( number != 0 && Math.abs( number ) < 0.01 )
+            || Math.abs( number ) > 999 ) {
          text = m_scientificNotation.format( number );
       } else {
          text = m_regular.format( number );
@@ -110,7 +114,7 @@ class JGradientLabel extends JLabel {
 
    /**
     * Creates a new instance of JGradientLabel
-    *
+    * 
     * @param colorMap Color[]
     */
    public JGradientLabel( Color[] colorMap ) {

@@ -11,11 +11,10 @@ import baseCode.util.FileTools;
  * <p>
  * Copyright (c) 2004 Columbia University
  * 
- * @author  Paul Pavlidis
+ * @author Paul Pavlidis
  * @version $Id$
  */
-public class XMLFileFilter
-    extends FileFilter {
+public class XMLFileFilter extends FileFilter {
 
    public boolean accept( File f ) {
 

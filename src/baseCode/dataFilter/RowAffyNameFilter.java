@@ -5,9 +5,8 @@ import java.util.Vector;
 import baseCode.dataStructure.matrix.NamedMatrix;
 
 /**
- * Remove probes that have names meeting certain rules indicating they may have
- * low reliability. This is targeted at cases like "AFFX", "_st", "_f_at" and so
- * forth.
+ * Remove probes that have names meeting certain rules indicating they may have low reliability. This is targeted at
+ * cases like "AFFX", "_st", "_f_at" and so forth.
  * <p>
  * Copyright (c) 2004
  * </p>
@@ -52,7 +51,6 @@ public class RowAffyNameFilter extends AbstractFilter implements Filter {
    public static final int G = 5;
 
    /**
-    * 
     * @param criteria int[] of constants indicating the criteria to use.
     */
    public RowAffyNameFilter( int[] criteria ) {
@@ -62,24 +60,24 @@ public class RowAffyNameFilter extends AbstractFilter implements Filter {
    private void setCriteria( int[] criteria ) {
       for ( int i = 0; i < criteria.length; i++ ) {
          switch ( criteria[i] ) {
-         case ST: {
-            skip_ST = true;
-         }
-         case AFFX: {
-            skip_AFFX = true;
-         }
-         case F: {
-            skip_F = true;
-         }
-         case X: {
-            skip_X = true;
-         }
-         case G: {
-            skip_G = true;
-         }
-         default: {
-            break;
-         }
+            case ST: {
+               skip_ST = true;
+            }
+            case AFFX: {
+               skip_AFFX = true;
+            }
+            case F: {
+               skip_F = true;
+            }
+            case X: {
+               skip_X = true;
+            }
+            case G: {
+               skip_G = true;
+            }
+            default: {
+               break;
+            }
          }
       }
    }

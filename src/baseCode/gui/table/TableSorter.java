@@ -1,61 +1,58 @@
 package baseCode.gui.table;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+
 import baseCode.gui.JMatrixDisplay;
 
 /**
- * TableSorter is a decorator for TableModels; adding sorting
- * functionality to a supplied TableModel. TableSorter does
- * not store or copy the data in its TableModel; instead it maintains
- * a map from the row indexes of the view to the row indexes of the
- * model. As requests are made of the sorter (like getValueAt(row, col))
- * they are passed to the underlying model after the row numbers
- * have been translated via the internal mapping array. This way,
- * the TableSorter appears to hold another copy of the table
- * with the rows in a different order.
- * <p/>
- * TableSorter registers itself as a listener to the underlying model,
- * just as the JTable itself would. Events recieved from the model
- * are examined, sometimes manipulated (typically widened), and then
- * passed on to the TableSorter's listeners (typically the JTable).
- * If a change to the model has invalidated the order of TableSorter's
- * rows, a note of this is made and the sorter will resort the
- * rows the next time a value is requested.
- * <p/>
- * When the tableHeader property is set, either by using the
- * setTableHeader() method or the two argument constructor, the
- * table header may be used as a complete UI for TableSorter.
- * The default renderer of the tableHeader is decorated with a renderer
- * that indicates the sorting status of each column. In addition,
- * a mouse listener is installed with the following behavior:
+ * TableSorter is a decorator for TableModels; adding sorting functionality to a supplied TableModel. TableSorter does
+ * not store or copy the data in its TableModel; instead it maintains a map from the row indexes of the view to the row
+ * indexes of the model. As requests are made of the sorter (like getValueAt(row, col)) they are passed to the
+ * underlying model after the row numbers have been translated via the internal mapping array. This way, the TableSorter
+ * appears to hold another copy of the table with the rows in a different order. <p/>TableSorter registers itself as a
+ * listener to the underlying model, just as the JTable itself would. Events recieved from the model are examined,
+ * sometimes manipulated (typically widened), and then passed on to the TableSorter's listeners (typically the JTable).
+ * If a change to the model has invalidated the order of TableSorter's rows, a note of this is made and the sorter will
+ * resort the rows the next time a value is requested. <p/>When the tableHeader property is set, either by using the
+ * setTableHeader() method or the two argument constructor, the table header may be used as a complete UI for
+ * TableSorter. The default renderer of the tableHeader is decorated with a renderer that indicates the sorting status
+ * of each column. In addition, a mouse listener is installed with the following behavior:
  * <ul>
- * <li>
- * Mouse-click: Clears the sorting status of all other columns
- * and advances the sorting status of that column through three
- * values: {NOT_SORTED, ASCENDING, DESCENDING} (then back to
- * NOT_SORTED again).
- * <li>
- * SHIFT-mouse-click: Clears the sorting status of all other columns
- * and cycles the sorting status of the column through the same
- * three values, in the opposite order: {NOT_SORTED, DESCENDING, ASCENDING}.
- * <li>
- * CONTROL-mouse-click and CONTROL-SHIFT-mouse-click: as above except
- * that the changes to the column do not cancel the statuses of columns
- * that are already sorting - giving a way to initiate a compound
- * sort.
+ * <li>Mouse-click: Clears the sorting status of all other columns and advances the sorting status of that column
+ * through three values: {NOT_SORTED, ASCENDING, DESCENDING} (then back to NOT_SORTED again).
+ * <li>SHIFT-mouse-click: Clears the sorting status of all other columns and cycles the sorting status of the column
+ * through the same three values, in the opposite order: {NOT_SORTED, DESCENDING, ASCENDING}.
+ * <li>CONTROL-mouse-click and CONTROL-SHIFT-mouse-click: as above except that the changes to the column do not cancel
+ * the statuses of columns that are already sorting - giving a way to initiate a compound sort.
  * </ul>
- * <p/>
- * This is a long overdue rewrite of a class of the same name that
- * first appeared in the swing table demos in 1997.
- *
+ * <p/>This is a long overdue rewrite of a class of the same name that first appeared in the swing table demos in 1997.
+ * 
  * @author Philip Milne
  * @author Brendon McLean
  * @author Dan van Enckevort
@@ -65,8 +62,7 @@ import baseCode.gui.JMatrixDisplay;
  * @version $Id$
  */
 
-public class TableSorter
-    extends AbstractTableModel {
+public class TableSorter extends AbstractTableModel {
    protected TableModel tableModel;
    JMatrixDisplay m_matrixDisplay;
 
@@ -147,17 +143,18 @@ public class TableSorter
    public void setTableHeader( JTableHeader tableHeader ) {
       if ( this.tableHeader != null ) {
          this.tableHeader.removeMouseListener( mouseListener );
-         TableCellRenderer defaultRenderer = this.tableHeader.getDefaultRenderer();
+         TableCellRenderer defaultRenderer = this.tableHeader
+               .getDefaultRenderer();
          if ( defaultRenderer instanceof SortableHeaderRenderer ) {
-            this.tableHeader.setDefaultRenderer( ( ( SortableHeaderRenderer ) defaultRenderer ).
-                                                 tableCellRenderer );
+            this.tableHeader
+                  .setDefaultRenderer( ( ( SortableHeaderRenderer ) defaultRenderer ).tableCellRenderer );
          }
       }
       this.tableHeader = tableHeader;
       if ( this.tableHeader != null ) {
          this.tableHeader.addMouseListener( mouseListener );
-         this.tableHeader.setDefaultRenderer(
-             new SortableHeaderRenderer( this.tableHeader.getDefaultRenderer() ) );
+         this.tableHeader.setDefaultRenderer( new SortableHeaderRenderer(
+               this.tableHeader.getDefaultRenderer() ) );
       }
    }
 
@@ -203,7 +200,8 @@ public class TableSorter
       if ( directive == EMPTY_DIRECTIVE ) {
          return null;
       }
-      return new Arrow( directive.direction == DESCENDING, size, sortingColumns.indexOf( directive ) );
+      return new Arrow( directive.direction == DESCENDING, size, sortingColumns
+            .indexOf( directive ) );
    }
 
    public void cancelSorting() {
@@ -305,8 +303,7 @@ public class TableSorter
 
    // Helper classes
 
-   private class Row
-       implements Comparable {
+   private class Row implements Comparable {
       int modelIndex;
 
       public Row( int index ) {
@@ -331,7 +328,8 @@ public class TableSorter
             } else if ( o1 == null ) {
                if ( directive.direction == DESCENDING ) // Define null less than everything, except null.
                   comparison = -1;
-               else // Define null greater than everything, except null.
+               else
+                  // Define null greater than everything, except null.
                   comparison = 1;
             } else if ( o2 == null ) {
                if ( directive.direction == DESCENDING )
@@ -348,8 +346,8 @@ public class TableSorter
 
                   // If sortColumn is in the matrix display, then model.getValueAt()
                   // returns a Point object that represents a coordinate into the
-                  // display matrix.  This is done so that the display matrix object
-                  // can be asked for both the color and the value.  We are here only
+                  // display matrix. This is done so that the display matrix object
+                  // can be asked for both the color and the value. We are here only
                   // interested in the value.
 
                   /**
@@ -364,7 +362,8 @@ public class TableSorter
                      o2 = new Double( m_matrixDisplay.getValue( p2.x, p2.y ) );
                   }
                } else if ( o1.getClass().equals( ArrayList.class ) ) {
-                  if ( ( ( ArrayList ) o1 ).get( 0 ).getClass().equals( Double.class ) ) {
+                  if ( ( ( ArrayList ) o1 ).get( 0 ).getClass().equals(
+                        Double.class ) ) {
                      comparator = getComparator( Double.class );
                      //only comparing the first member of the list
                      Double a = ( Double ) ( ( ArrayList ) o1 ).get( 0 );
@@ -378,19 +377,15 @@ public class TableSorter
                      //}
                   }
                } else if ( o1.getClass().equals( Vector.class ) ) {
-                  if ( ( ( Vector ) o1 ).get( 0 ).getClass().equals( String.class ) )
-                  {
-                     if ( ( ( Vector ) o1 ).size() == 2 )
-                     {
+                  if ( ( ( Vector ) o1 ).get( 0 ).getClass().equals(
+                        String.class ) ) {
+                     if ( ( ( Vector ) o1 ).size() == 2 ) {
                         comparison = -1;
-                        favor=true;
-                     }
-                     else if ( ( ( Vector ) o2 ).size() == 2)
-                     {
+                        favor = true;
+                     } else if ( ( ( Vector ) o2 ).size() == 2 ) {
                         comparison = 1;
-                        favor=true;
-                     }
-                     else  //compare normally
+                        favor = true;
+                     } else //compare normally
                      {
                         comparator = getComparator( String.class );
                         String a = ( String ) ( ( Vector ) o1 ).get( 0 );
@@ -398,21 +393,21 @@ public class TableSorter
                         o1 = a;
                         o2 = b;
                      }
-                  } else if ( ( ( Vector ) o1 ).get( 0 ).getClass().equals( Double.class ) ) {
-                     
+                  } else if ( ( ( Vector ) o1 ).get( 0 ).getClass().equals(
+                        Double.class ) ) {
+
                      //only comparing the first member of the list
                      Double a = ( Double ) ( ( ArrayList ) o1 ).get( 0 );
                      Double b = ( Double ) ( ( ArrayList ) o2 ).get( 0 );
                      comparator = getComparator( Double.class );
-                     
+
                      // yes, we did get a Vector, but we want to
                      // compare the Double values the Vectors contain,
                      // not the Vectors themselves
                      o1 = a;
                      o2 = b;
                   }
-               }
-               else{
+               } else {
                   comparator = getComparator( column );
                }
                if ( favor != true ) { //we're not favoring anyone
@@ -421,15 +416,15 @@ public class TableSorter
             }
 
             if ( comparison != 0 ) {
-               return directive.direction == DESCENDING ? -comparison : comparison;
+               return directive.direction == DESCENDING ? -comparison
+                     : comparison;
             }
          }
          return 0;
       }
    }
 
-   private class TableModelHandler
-       implements TableModelListener {
+   private class TableModelHandler implements TableModelListener {
       public void tableChanged( TableModelEvent e ) {
          // If we're not sorting by anything, just pass the event along.
          if ( !isSorting() ) {
@@ -467,13 +462,12 @@ public class TableSorter
          // clause avoids this problem.
          int column = e.getColumn();
          if ( e.getFirstRow() == e.getLastRow()
-              && column != TableModelEvent.ALL_COLUMNS
-              && getSortingStatus( column ) == NOT_SORTED
-              && modelToView != null ) {
+               && column != TableModelEvent.ALL_COLUMNS
+               && getSortingStatus( column ) == NOT_SORTED
+               && modelToView != null ) {
             int viewIndex = getModelToView()[e.getFirstRow()];
-            fireTableChanged( new TableModelEvent( TableSorter.this,
-                viewIndex, viewIndex,
-                column, e.getType() ) );
+            fireTableChanged( new TableModelEvent( TableSorter.this, viewIndex,
+                  viewIndex, column, e.getType() ) );
             return;
          }
 
@@ -484,8 +478,7 @@ public class TableSorter
       }
    }
 
-   private class MouseHandler
-       extends MouseAdapter {
+   private class MouseHandler extends MouseAdapter {
       public void mouseClicked( MouseEvent e ) {
          if ( e.getButton() == MouseEvent.BUTTON1 ) {
             JTableHeader h = ( JTableHeader ) e.getSource();
@@ -505,8 +498,7 @@ public class TableSorter
       }
    }
 
-   private static class Arrow
-       implements Icon {
+   private static class Arrow implements Icon {
       private boolean descending;
       private int size;
       private int priority;
@@ -559,8 +551,7 @@ public class TableSorter
       }
    }
 
-   private class SortableHeaderRenderer
-       implements TableCellRenderer {
+   private class SortableHeaderRenderer implements TableCellRenderer {
       TableCellRenderer tableCellRenderer;
 
       public SortableHeaderRenderer( TableCellRenderer tableCellRenderer ) {
@@ -568,19 +559,17 @@ public class TableSorter
       }
 
       public Component getTableCellRendererComponent( JTable table,
-          Object value,
-          boolean isSelected,
-          boolean hasFocus,
-          int row,
-          int column ) {
+            Object value, boolean isSelected, boolean hasFocus, int row,
+            int column ) {
          Component c = tableCellRenderer.getTableCellRendererComponent( table,
-             value, isSelected, hasFocus, row, column );
+               value, isSelected, hasFocus, row, column );
          if ( c instanceof JLabel ) {
             JLabel l = ( JLabel ) c;
             l.setHorizontalTextPosition( SwingConstants.LEFT );
             l.setVerticalAlignment( SwingConstants.BOTTOM );
             int modelColumn = table.convertColumnIndexToModel( column );
-            l.setIcon( getHeaderRendererIcon( modelColumn, l.getFont().getSize() ) );
+            l.setIcon( getHeaderRendererIcon( modelColumn, l.getFont()
+                  .getSize() ) );
          }
          return c;
       }

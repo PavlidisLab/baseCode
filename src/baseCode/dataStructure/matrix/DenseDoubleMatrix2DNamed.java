@@ -14,17 +14,15 @@ import corejava.Format;
  * <p>
  * Columbia University
  * </p>
- *
+ * 
  * @author Paul Pavlidis
- * @version $Id: DenseDoubleMatrix2DNamed.java,v 1.10 2004/06/29 11:33:34
- *          pavlidis Exp $
+ * @version $Id$
  */
 public class DenseDoubleMatrix2DNamed extends AbstractNamedMatrix {
 
    private DenseDoubleMatrix2D matrix;
 
    /**
-    *
     * @param T double[][]
     */
    public DenseDoubleMatrix2DNamed( double T[][] ) {
@@ -33,7 +31,6 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedMatrix {
    }
 
    /**
-    *
     * @param rows int
     * @param cols int
     */
@@ -44,7 +41,7 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedMatrix {
 
    /**
     * Return a reference to a specific row.
-    *
+    * 
     * @param row int
     * @return double[]
     */
@@ -54,7 +51,7 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedMatrix {
 
    /**
     * Return a copy of a given column.
-    *
+    * 
     * @param col int
     * @return double[]
     */
@@ -83,7 +80,6 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedMatrix {
    }
 
    /**
-    *
     * @return java.lang.String
     */
    public String toString() {
@@ -117,7 +113,6 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedMatrix {
    }
 
    /**
-    *
     * @param s String
     * @return double[]
     */
@@ -131,7 +126,7 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedMatrix {
 
    /**
     * Make a copy of a matrix.
-    *
+    * 
     * @todo make this use copy instead (? - PP - why not override clone?)
     * @return baseCode.dataStructure.DenseDoubleMatrix2DNamed
     */
@@ -155,7 +150,6 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedMatrix {
    }
 
    /**
-    *
     * @param row int
     * @param column int
     * @return @see DoubleMatrix2D#get(int, int)
@@ -165,7 +159,6 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedMatrix {
    }
 
    /**
-    *
     * @param row int
     * @param column int
     * @return double
@@ -176,7 +169,6 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedMatrix {
    }
 
    /**
-    *
     * @param row int
     * @param column int
     * @param value double
@@ -186,7 +178,6 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedMatrix {
    }
 
    /**
-    *
     * @param row int
     * @param column int
     * @param value double
@@ -197,7 +188,6 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedMatrix {
    }
 
    /**
-    *
     * @param column int
     * @return cern.colt.matrix.DoubleMatrix1D
     */
@@ -206,7 +196,6 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedMatrix {
    }
 
    /**
-    *
     * @param row int
     * @return DoubleMatrix1D
     * @see DenseDoubleMatrix2D#viewRow(int)
@@ -232,7 +221,6 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedMatrix {
    }
 
    /**
-    *
     * @return int
     * @see AbstractMatrix2D#size()
     */
@@ -241,7 +229,6 @@ public class DenseDoubleMatrix2DNamed extends AbstractNamedMatrix {
    }
 
    /**
-    *
     * @return double[][]
     */
    public double[][] toArray() {

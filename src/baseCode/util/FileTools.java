@@ -15,11 +15,16 @@ public class FileTools {
    protected final static String PNG_EXTENSION = "png";
    protected final static String GIF_EXTENSION = "gif";
    protected final static String TXT_EXTENSION = "txt";
-   protected final static String[] XML_EXTENSIONS = { "XML", "xml" };
+   protected final static String[] XML_EXTENSIONS = {
+         "XML", "xml"
+   };
 
-   protected final static String[] IMAGE_EXTENSIONS = { PNG_EXTENSION,
-         GIF_EXTENSION, "PNG", "GIF" };
-   protected final static String[] DATA_EXTENSIONS = { TXT_EXTENSION, "TXT" };
+   protected final static String[] IMAGE_EXTENSIONS = {
+         PNG_EXTENSION, GIF_EXTENSION, "PNG", "GIF"
+   };
+   protected final static String[] DATA_EXTENSIONS = {
+         TXT_EXTENSION, "TXT"
+   };
    // default values
    public final static String DEFAULT_DATA_EXTENSION = TXT_EXTENSION;
    public final static String DEFAULT_IMAGE_EXTENSION = PNG_EXTENSION;

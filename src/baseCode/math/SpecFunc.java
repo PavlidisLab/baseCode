@@ -3,13 +3,11 @@ package baseCode.math;
 import cern.jet.math.Arithmetic;
 
 /**
- * Assorted special functions, primarily concerning probability distributions.
- * For cumBinomial use cern.jet.stat.Probability.binomial.
+ * Assorted special functions, primarily concerning probability distributions. For cumBinomial use
+ * cern.jet.stat.Probability.binomial.
  * <p>
  * 
- * @see <a
- *      href="http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/cern/jet/stat/Gamma.html">cern.jet.stat.gamma
- *      </a>
+ * @see <a href="http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/cern/jet/stat/Gamma.html">cern.jet.stat.gamma </a>
  * @see <a
  *      href="http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/cern/jet/math/Arithmetic.html">cern.jet.math.arithmetic
  *      </a>
@@ -41,8 +39,8 @@ public class SpecFunc {
    }
 
    /**
-    * Cumulative hypergeometric probability ( for over-represented and
-    * uner-reprsented categories ). Gives same pvalues as phyper in R.
+    * Cumulative hypergeometric probability ( for over-represented and uner-reprsented categories ). Gives same pvalues
+    * as phyper in R.
     * 
     * @param positives Number of positives in the data
     * @param successes Number of 'successes'

@@ -19,7 +19,6 @@ import baseCode.dataStructure.graph.DirectedGraphNode;
 
 /**
  * Read in the GO XML file provided by the Gene Ontology Consortium.
- * 
  * <p>
  * Copyright (c) Columbia University
  * 
@@ -40,9 +39,8 @@ public class GOParser {
    }
 
    /**
-    * Get a simple Map that contains keys that are the GO ids, values are the
-    * names. This can replace the functionality of the GONameReader in
-    * classScore.
+    * Get a simple Map that contains keys that are the GO ids, values are the names. This can replace the functionality
+    * of the GONameReader in classScore.
     * 
     * @return Map
     */

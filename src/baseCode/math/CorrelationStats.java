@@ -5,7 +5,6 @@ import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 import cern.jet.stat.Probability;
 
 /**
- * 
  * Statistical evaluation and transformation tools for correlations.
  * <p>
  * Copyright (c) 2004
@@ -39,10 +38,8 @@ public class CorrelationStats {
    }
 
    /**
-    * 
     * @param correl Pearson correlation.
-    * @param count Number of items used to calculate the correlation. NOT the
-    *        degrees of freedom.
+    * @param count Number of items used to calculate the correlation. NOT the degrees of freedom.
     * @return double
     */
    public static double pvalue( double correl, int count ) {
@@ -78,7 +75,6 @@ public class CorrelationStats {
    }
 
    /**
-    * 
     * @param correl double
     * @return int
     */
@@ -101,9 +97,8 @@ public class CorrelationStats {
    }
 
    /**
-    * Conver a correlation p value into a value between 0 and 255 inclusive.
-    * This is done by taking the log, multiplying it by a fixed value (currently
-    * 8). This means that pvalues less than 10^-32 are rounded to 10^-32.
+    * Conver a correlation p value into a value between 0 and 255 inclusive. This is done by taking the log, multiplying
+    * it by a fixed value (currently 8). This means that pvalues less than 10^-32 are rounded to 10^-32.
     * 
     * @param correl double
     * @param count int
@@ -122,7 +117,6 @@ public class CorrelationStats {
    }
 
    /**
-    * 
     * @param pvalByte int
     * @return double
     */
@@ -131,7 +125,6 @@ public class CorrelationStats {
    }
 
    /**
-    * 
     * @param correlByte int
     * @return double
     */
@@ -151,9 +144,8 @@ public class CorrelationStats {
    }
 
    /**
-    * Statistical comparison of two correlations. Assumes data are bivariate
-    * normal. Null hypothesis is that the two correlations are equal. See Zar
-    * (Biostatistics)
+    * Statistical comparison of two correlations. Assumes data are bivariate normal. Null hypothesis is that the two
+    * correlations are equal. See Zar (Biostatistics)
     * 
     * @param correl1 First correlation
     * @param n1 Number of values used to compute correl1
@@ -181,8 +173,7 @@ public class CorrelationStats {
    }
 
    /**
-    * Find the approximate correlation required to meet a particular pvalue.
-    * This works by simple gradient descent.
+    * Find the approximate correlation required to meet a particular pvalue. This works by simple gradient descent.
     * 
     * @param pval double
     * @param count int

@@ -4,8 +4,7 @@ import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.matrix.NamedMatrix;
 
 /**
- * Filter that remove individual values that are outside of a range. Removed
- * values are set to NaN.
+ * Filter that remove individual values that are outside of a range. Removed values are set to NaN.
  * <p>
  * Copyright (c) 2004 Columbia University
  * 

@@ -13,8 +13,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
- * Reads a tab-delimited file with lines of the format Key Value. If there are
- * multiple values, then a Set is created for each key containing its values.
+ * Reads a tab-delimited file with lines of the format Key Value. If there are multiple values, then a Set is created
+ * for each key containing its values.
  * </p>
  * <p>
  * Copyright (c) 2004
@@ -22,14 +22,13 @@ import java.util.StringTokenizer;
  * <p>
  * Institution: Columbia University
  * </p>
- *
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
 public class MapReader {
 
    /**
-    *
     * @param filename String
     * @throws IOException
     * @return Map
@@ -39,7 +38,6 @@ public class MapReader {
    }
 
    /**
-    *
     * @param stream InputStream
     * @return @throws IOException
     * @throws IOException
@@ -49,7 +47,6 @@ public class MapReader {
    }
 
    /**
-    *
     * @param filename name of the tab-delimited file
     * @param hasHeader boolean
     * @return Map from the file.
@@ -66,7 +63,6 @@ public class MapReader {
    }
 
    /**
-    *
     * @param stream InputStream
     * @param hasHeader boolean
     * @return @throws IOException

@@ -65,7 +65,6 @@ public interface NamedMatrix {
    public String getColName( int i );
 
    /**
-    * 
     * @return boolean
     */
    public boolean hasRowNames();
@@ -78,38 +77,32 @@ public interface NamedMatrix {
    public boolean hasColNames();
 
    /**
-    * 
     * @param v Vector a vector of Strings.
     */
    public void setRowNames( Vector v );
 
    /**
-    * 
     * @param v Vector a vector of Strings.
     */
    public void setColumnNames( Vector v );
 
    /**
-    * 
     * @return Vector of Strings
     */
    public Vector getColNames();
 
    /**
-    * 
     * @return Vector of Strings
     */
    public Vector getRowNames();
 
    /**
-    * 
     * @param r String
     * @return boolean
     */
    public boolean hasRow( String r );
 
    /**
-    * 
     * @return java.util.Iterator
     */
    public Iterator getRowNameMapIterator();
@@ -138,8 +131,7 @@ public interface NamedMatrix {
    public void set( int i, int j, Object val );
 
    /**
-    * Get a row in the matrix as a generic Object[]. This exists so
-    * NamedMatrices can be used more generically.
+    * Get a row in the matrix as a generic Object[]. This exists so NamedMatrices can be used more generically.
     * 
     * @param i int row
     * @return Object[]
@@ -147,7 +139,6 @@ public interface NamedMatrix {
    public Object[] getRowObj( int i );
 
    /**
-    * 
     * @param i int column
     * @return Object[]
     */
@@ -170,14 +161,12 @@ public interface NamedMatrix {
    public int numMissing();
 
    /**
-    * 
     * @param rowName
     * @return
     */
    public boolean containsRowName( String rowName );
 
    /**
-    * 
     * @param columnName
     * @return
     */

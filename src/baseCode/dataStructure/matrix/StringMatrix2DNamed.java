@@ -25,7 +25,6 @@ public class StringMatrix2DNamed extends AbstractNamedMatrix {
    }
 
    /**
-    * 
     * @return java.lang.String
     */
    public String toString() {

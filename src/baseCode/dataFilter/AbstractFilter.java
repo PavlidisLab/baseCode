@@ -8,9 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import baseCode.dataStructure.matrix.NamedMatrix;
 
 /**
- * Base implementation of the filter class. Subclasses must implement the
- * filter() method.
- * 
+ * Base implementation of the filter class. Subclasses must implement the filter() method.
  * <p>
  * Copyright (c) 2004 Columbia University
  * </p>
@@ -29,10 +27,12 @@ public abstract class AbstractFilter implements Filter {
 
       Constructor cr;
       try {
-         cr = data.getClass().getConstructor(
-               new Class[] { int.class, int.class } );
+         cr = data.getClass().getConstructor( new Class[] {
+               int.class, int.class
+         } );
          returnval = ( NamedMatrix ) cr.newInstance( new Object[] {
-               new Integer( numRows ), new Integer( numCols ) } );
+               new Integer( numRows ), new Integer( numCols )
+         } );
       } catch ( Exception e ) {
          e.printStackTrace();
       }

@@ -3,10 +3,8 @@ package baseCode.dataFilter;
 import baseCode.math.Stats;
 
 /**
- * Abstract class representing a filter that removes things from matrices based
- * on the values themselves.
- * 
- * Copyright (c) 2004 Columbia University
+ * Abstract class representing a filter that removes things from matrices based on the values themselves. Copyright (c)
+ * 2004 Columbia University
  * 
  * @author Owner
  * @version $Id$
@@ -28,7 +26,6 @@ public abstract class AbstractLevelFilter extends AbstractFilter {
    }
 
    /**
-    * 
     * @param lowCut
     * @param isFraction
     */
@@ -48,7 +45,6 @@ public abstract class AbstractLevelFilter extends AbstractFilter {
    }
 
    /**
-    * 
     * @param highCut
     * @param isFraction
     */
@@ -59,7 +55,6 @@ public abstract class AbstractLevelFilter extends AbstractFilter {
    }
 
    /**
-    * 
     * @param setting
     */
    public void setUseHighCutAsFraction( boolean setting ) {
@@ -72,7 +67,6 @@ public abstract class AbstractLevelFilter extends AbstractFilter {
    }
 
    /**
-    * 
     * @param setting
     */
    public void setUseLowCutAsFraction( boolean setting ) {
@@ -85,9 +79,8 @@ public abstract class AbstractLevelFilter extends AbstractFilter {
    }
 
    /**
-    * Set the filter to interpret the low and high cuts as fractions; that is,
-    * if true, lowcut 0.1 means remove 0.1 of the rows with the lowest values.
-    * Otherwise the cuts are interpeted as actual values. Default = false.
+    * Set the filter to interpret the low and high cuts as fractions; that is, if true, lowcut 0.1 means remove 0.1 of
+    * the rows with the lowest values. Otherwise the cuts are interpeted as actual values. Default = false.
     * 
     * @param setting boolean
     */

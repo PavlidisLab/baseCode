@@ -55,14 +55,14 @@ public abstract class AppDialog extends JDialog {
    JPanel bottomPanel = new JPanel();
    protected JButton actionButton = new JButton();
    protected JButton cancelButton = new JButton();
-protected JButton helpButton = new JButton();
-   
+   protected JButton helpButton = new JButton();
+
    protected Container callingframe;
 
    public AppDialog() {
-      
+
    }
-   
+
    public AppDialog( JFrame callingframe, int width, int height ) {
       this.callingframe = callingframe;
       setModal( true );
@@ -86,10 +86,11 @@ protected JButton helpButton = new JButton();
             this ) );
       actionButton.addActionListener( new AppDialog_actionButton_actionAdapter(
             this ) );
-      
-      helpButton.addActionListener( new AppDialog_helpButton_actionAdapter( this ));
-      helpButton.setText("Help");
-      
+
+      helpButton.addActionListener( new AppDialog_helpButton_actionAdapter(
+            this ) );
+      helpButton.setText( "Help" );
+
       bottomPanel.add( helpButton, null );
       bottomPanel.add( cancelButton, null );
       bottomPanel.add( actionButton, null );
@@ -177,17 +178,17 @@ protected JButton helpButton = new JButton();
    protected void setCancelButtonText( String val ) {
       cancelButton.setText( val );
    }
-   
+
    protected void setHelpButtonText( String val ) {
-      helpButton.setText ( val );
+      helpButton.setText( val );
    }
 
    protected abstract void cancelButton_actionPerformed( ActionEvent e );
 
    protected abstract void actionButton_actionPerformed( ActionEvent e );
 
-   protected abstract void helpButton_actionPerformed(ActionEvent e );
-   
+   protected abstract void helpButton_actionPerformed( ActionEvent e );
+
    /**
     * @param e
     */
@@ -195,13 +196,12 @@ protected JButton helpButton = new JButton();
       // TODO Auto-generated method stub
    }
 
-
-
 }
 
-class AppDialog_helpButton_actionAdapter  implements
-java.awt.event.ActionListener {
+class AppDialog_helpButton_actionAdapter implements
+      java.awt.event.ActionListener {
    AppDialog adaptee;
+
    AppDialog_helpButton_actionAdapter( AppDialog adaptee ) {
       this.adaptee = adaptee;
    }
@@ -210,7 +210,6 @@ java.awt.event.ActionListener {
       adaptee.helpButton_actionPerformed( e );
    }
 }
-
 
 class AppDialog_cancelButton_actionAdapter implements
       java.awt.event.ActionListener {

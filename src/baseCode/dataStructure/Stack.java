@@ -76,7 +76,6 @@ public class Stack {
    }
 
    /**
-    * 
     * @return boolean
     */
    public boolean isEmpty() {
@@ -84,7 +83,6 @@ public class Stack {
    }
 
    /**
-    * 
     * @return boolean
     */
    public boolean isFull() {

@@ -12,14 +12,13 @@ import cern.colt.list.DoubleArrayList;
  * </p>
  * 
  * @author Paul Pavlidis
- * @version $Id: MultipleTestCorrection.java,v 1.3 2004/06/17 21:21:28 pavlidis
- *          Exp $
+ * @version $Id$
  */
 public class MultipleTestCorrection {
 
    /**
-    * Determine the Bonferroni pvalue threshold to maintain the family wise
-    * error rate (assuming pvalues are independent).
+    * Determine the Bonferroni pvalue threshold to maintain the family wise error rate (assuming pvalues are
+    * independent).
     * 
     * @param pvalues The pvalues
     * @param fwe The family wise error rate
@@ -27,13 +26,12 @@ public class MultipleTestCorrection {
     */
    public static double BonferroniCut( DoubleArrayList pvalues, double fwe ) {
       int numpvals = pvalues.size();
-      return fwe /  numpvals;
+      return fwe / numpvals;
    }
 
    /**
-    * 
-    * Benjamini-Hochberg method. Determines the maximum p value to maintain the
-    * false discovery rate. (Assuming pvalues are independent);
+    * Benjamini-Hochberg method. Determines the maximum p value to maintain the false discovery rate. (Assuming pvalues
+    * are independent);
     * 
     * @param pvalues list of pvalues. Need not be sorted.
     * @param fdr false discovery rate

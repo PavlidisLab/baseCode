@@ -1,7 +1,5 @@
 package baseCode.gui;
 
-import java.io.File;
-
 import javax.swing.JOptionPane;
 
 import org.apache.commons.logging.Log;
@@ -44,7 +42,7 @@ public class GuiUtil {
     * @return @see baseCode.util.FileTools#checkPathIsReadableFile(String)
     */
    public static boolean testFile( String filename ) {
-      if (!FileTools.testFile(filename)) {
+      if ( !FileTools.testFile( filename ) ) {
          error( "A required file field is not valid." );
          return false;
       }
@@ -55,8 +53,8 @@ public class GuiUtil {
     * @param text
     * @return
     */
-   public static boolean testDir( String filename ) {   
-      if (!FileTools.testDir(filename)) {     
+   public static boolean testDir( String filename ) {
+      if ( !FileTools.testDir( filename ) ) {
          error( "A required directory field is not valid." );
          return false;
       }
