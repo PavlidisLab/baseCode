@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.StringWriter;
+import java.io.Writer;
 
 import baseCode.dataStructure.writer.HistogramWriter;
 import baseCode.util.RegressionTesting;
@@ -53,13 +55,12 @@ public class TestHistogramWriter extends TestCase {
    public final void testWrite() {
       String expectedReturn = "";
       String actualReturn = "";
-      PrintStream k;
+      Writer k;
       try {
-         k = new PrintStream(new FileOutputStream("C:/jbproject/baseCode/test/data/atest.txt"));
- //        k = new PrintStream(new FileOutputStream("C:/jbproject/baseCode/test/data/histogramwritertestoutput.txt"));
-         w.write(m, k);
+         k = new StringWriter();
+          w.write(m, k);
          k.close();
-        actualReturn = RegressionTesting.readTestResult( "/data/atest.txt" );
+        actualReturn = k.toString();
       } catch ( Exception e ) {
          e.printStackTrace();
       }

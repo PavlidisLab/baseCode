@@ -1,6 +1,7 @@
 package baseCode.dataStructure.writer;
 
-import java.io.PrintStream;
+import java.io.IOException;
+import java.io.Writer;
 
 import corejava.Format;
 import hep.aida.IHistogram1D;
@@ -20,12 +21,12 @@ public class HistogramWriter {
     * @param h IHistogram1D to be printed.
     * @param s PrintStream to be printed to.
     */
-   public void write( IHistogram1D h, PrintStream s ) {
+   public void write( IHistogram1D h, Writer s ) throws IOException {
       Format k = new Format( "%1.5g" );
       int total = h.entries();
-      s.print( "Bin\tCount\tFraction\n" );
+      s.write( "Bin\tCount\tFraction\n" );
       for ( int i = 0; i < h.xAxis().bins(); i++ ) {
-         s.print( k.form( h.xAxis().binLowerEdge( i ) ) + "\t" + h.binEntries( i ) + "\t" +
+         s.write( k.form( h.xAxis().binLowerEdge( i ) ) + "\t" + h.binEntries( i ) + "\t" +
                   k.form( ( double ) h.binEntries( i ) / ( double ) total ) + "\n" );
       }
    }
