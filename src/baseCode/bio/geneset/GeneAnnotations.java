@@ -43,12 +43,14 @@ import baseCode.util.StatusViewer;
  *        
  *         
  *          
- *                                                   probe-&gt;Classes -- each value is a Set of the Classes that a probe belongs to.
- *                                                   Classes-&gt;probe -- each value is a Set of the probes that belong to a class
- *                                                   probe-&gt;gene -- each value is the gene name corresponding to the probe.
- *                                                   gene-&gt;list of probes -- each value is a list of probes corresponding to a gene
- *                                                   probe-&gt;description -- each value is a text description of the probe (actually...of the gene)
- *               
+ *           
+ *                                                    probe-&gt;Classes -- each value is a Set of the Classes that a probe belongs to.
+ *                                                    Classes-&gt;probe -- each value is a Set of the probes that belong to a class
+ *                                                    probe-&gt;gene -- each value is the gene name corresponding to the probe.
+ *                                                    gene-&gt;list of probes -- each value is a list of probes corresponding to a gene
+ *                                                    probe-&gt;description -- each value is a text description of the probe (actually...of the gene)
+ *                
+ *            
  *           
  *          
  *         
@@ -113,6 +115,7 @@ public class GeneAnnotations {
       this.messenger = messenger;
 
       this.read( filename );
+
       setUp();
    }
 
@@ -625,7 +628,8 @@ public class GeneAnnotations {
     */
    public int numAnnotatedGenes() {
       int count = 0;
-      for ( Iterator iter = probeToGeneSetMap.keySet().iterator(); iter.hasNext(); ) {
+      for ( Iterator iter = probeToGeneSetMap.keySet().iterator(); iter
+            .hasNext(); ) {
          List element = ( ArrayList ) probeToGeneSetMap.get( iter.next() );
          if ( element.size() > 0 ) {
             count++;
@@ -662,7 +666,6 @@ public class GeneAnnotations {
       resetSelectedProbes();
       resetSelectedSets();
       sortGeneSets();
-
    }
 
    /**
@@ -678,7 +681,8 @@ public class GeneAnnotations {
             if ( probeToGeneSetMap.containsKey( probe )
                   && ( ( ArrayList ) probeToGeneSetMap.get( probe ) )
                         .contains( id ) ) {
-               if ( !( ( ArrayList ) probeToGeneSetMap.get( probe ) ).remove( id ) ) {
+               if ( !( ( ArrayList ) probeToGeneSetMap.get( probe ) )
+                     .remove( id ) ) {
                   System.err.println( "Couldn't remove " + id
                         + " from probe to class map for" + probe );
                }
@@ -782,7 +786,7 @@ public class GeneAnnotations {
          }
 
          String group = st.nextToken().intern();
-         
+
          if ( activeGenes != null && !activeGenes.contains( group ) ) {
             continue;
          }
@@ -833,6 +837,7 @@ public class GeneAnnotations {
                   geneSetToProbeMap.put( go, new ArrayList() );
                }
                ( ( ArrayList ) geneSetToProbeMap.get( go ) ).add( probe );
+
             }
          }
          if ( messenger != null && n % 500 == 0 ) {
@@ -844,6 +849,11 @@ public class GeneAnnotations {
       /* Fill in the genegroupreader and the classmap */
       dis.close();
       resetSelectedProbes();
+      
+      if (probeToGeneName.size() == 0 || geneSetToProbeMap.size() == 0) {
+         throw new IllegalArgumentException("The gene annotations had invalid information. Please check the format.");
+      }
+      
    }
 
    //read in from a file.
