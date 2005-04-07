@@ -97,7 +97,7 @@ public class TestCorrelationEffectMetaAnalysis extends TestCase {
 
       double actualReturn = uf.getZ();
 
-      double expectedReturn = 11.58;
+      double expectedReturn = 11.56;
       assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
    }
    
