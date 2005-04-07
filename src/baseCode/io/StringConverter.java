@@ -1,6 +1,6 @@
 package baseCode.io;
 
-import org.apache.commons.lang.time.StopWatch;
+//import org.apache.commons.lang.time.StopWatch;
 
 /**
  * @author Kiran Keshav *
@@ -21,18 +21,18 @@ public class StringConverter {
     */
    public double[] StringToDoubles( String stringToParse ) {
       
-      StopWatch stopWatch = new StopWatch();
-      stopWatch.start();
+//      StopWatch stopWatch = new StopWatch();
+//      stopWatch.start();
       String[]  sArray = stringToParse.split( delimiter );
       double[] result = new double[sArray.length];
       for ( int i = 0; i < sArray.length; i++ ) {
          result[i] = Double.parseDouble( sArray[i] );
       }
 
-      stopWatch.stop();
-
-      System.err.println( "StringToDoubles: Total doubles processed = " + result.length + " Time taken = "
-            + stopWatch.getTime() + " ms" );
+//      stopWatch.stop();
+//
+//      System.err.println( "StringToDoubles: Total doubles processed = " + result.length + " Time taken = "
+//            + stopWatch.getTime() + " ms" );
 
       return result;
    }
@@ -46,18 +46,18 @@ public class StringConverter {
    public String DoubleArrayToString( double[] arrayToConvert ) {
       StringBuffer buf = new StringBuffer();
 
-      StopWatch stopWatch = new StopWatch();
-      stopWatch.start();
+//      StopWatch stopWatch = new StopWatch();
+//      stopWatch.start();
 
       for ( int i = 0; i < arrayToConvert.length; i++ ) {
          buf.append( arrayToConvert[i] );
          if ( i > 0 ) buf.append( delimiter );
       }
-
-      stopWatch.stop();
-
-      System.err.println( "DoubleArrayToString: Total doubles processed = " + arrayToConvert.length + " Time taken = "
-            + stopWatch.getTime() + " ms" );
+//
+//      stopWatch.stop();
+//
+//      System.err.println( "DoubleArrayToString: Total doubles processed = " + arrayToConvert.length + " Time taken = "
+//            + stopWatch.getTime() + " ms" );
 
       return buf.toString();
    }

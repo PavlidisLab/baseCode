@@ -6,7 +6,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.apache.commons.lang.time.StopWatch;
+//import org.apache.commons.lang.time.StopWatch;
 
 /**
  * <p>
@@ -30,8 +30,8 @@ public class ByteArrayConverter {
    public byte[] DoubleArrayToBytes( double[] darray ) {
       ByteArrayOutputStream bos = new ByteArrayOutputStream();
       DataOutputStream dos = new DataOutputStream( bos );
-      StopWatch stopWatch = new StopWatch();
-      stopWatch.start();
+//      StopWatch stopWatch = new StopWatch();
+//      stopWatch.start();
       try {
 
          for ( int i = 0; i < darray.length; i++ ) {
@@ -41,9 +41,9 @@ public class ByteArrayConverter {
       } catch ( IOException e ) {
          e.printStackTrace();
       }
-      stopWatch.stop();
-      System.err.println( "DoubleArrayToBytes: Total doubles processed = " + darray.length + " Time taken = "
-            + stopWatch.getTime() + " ms" );
+//      stopWatch.stop();
+//      System.err.println( "DoubleArrayToBytes: Total doubles processed = " + darray.length + " Time taken = "
+//            + stopWatch.getTime() + " ms" );
       return bos.toByteArray();
    }
 
@@ -58,8 +58,8 @@ public class ByteArrayConverter {
       double[] darray = new double[barray.length / DOUBLE_SIZE];
       int i = 0;
 
-      StopWatch stopWatch = new StopWatch();
-      stopWatch.start();
+//      StopWatch stopWatch = new StopWatch();
+//      stopWatch.start();
 
       try {
          while ( true ) {
@@ -78,9 +78,9 @@ public class ByteArrayConverter {
          e1.printStackTrace();
       }
 
-      stopWatch.stop();
-      System.err.println( "ByteArrayToDoubles: Total doubles processed = " + i + " Time taken = " + stopWatch.getTime()
-            + " ms" );
+//      stopWatch.stop();
+//      System.err.println( "ByteArrayToDoubles: Total doubles processed = " + i + " Time taken = " + stopWatch.getTime()
+//            + " ms" );
       return darray;
    }
 
