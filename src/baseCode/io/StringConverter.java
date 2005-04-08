@@ -20,7 +20,7 @@ public class StringConverter {
      * @return double[]
      */
     public double[] StringToDoubles( String stringToParse ) {
-
+        if ( stringToParse == null ) return null;
         String[] sArray = stringToParse.split( delimiter );
         double[] result = new double[sArray.length];
         for ( int i = 0; i < sArray.length; i++ ) {
