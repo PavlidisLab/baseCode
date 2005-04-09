@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 //import org.apache.commons.lang.time.StopWatch;
 
@@ -12,218 +13,209 @@ import java.io.IOException;
  * <p>
  * Class to convert byte arrays (e.g., Blobs) to and from other types of arrays.
  * <hr>
+ * TODO this could be optimized, and errors are not handled well.
  * 
  * @author Kiran Keshav
  * @author Paul Pavlidis
  * @version $Id$
  */
 public class ByteArrayConverter {
+    private static final int CHAR_SIZE = 2;
 
-   private static final int DOUBLE_SIZE = 8;
-   private static final int INT_SIZE = 4;
-   private static final int CHAR_SIZE = 2;
+    private static final int DOUBLE_SIZE = 8;
+    private static final int INT_SIZE = 4;
+    private static final int LONG_SIZE = 8;
 
-   /**
-    * @param darray
-    * @return byte[]
-    */
-   public byte[] DoubleArrayToBytes( double[] darray ) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream();
-      DataOutputStream dos = new DataOutputStream( bos );
-//      StopWatch stopWatch = new StopWatch();
-//      stopWatch.start();
-      try {
+    /**
+     * Convert a byte array with one-byte-per-character ASCII encoding (aka ISO-8859-1).
+     * 
+     * @param barray
+     * @return
+     */
+    public String byteArrayToAsciiString( byte[] barray ) {
+        try {
+            return new String( barray, "ISO-8859-1" );
+        } catch ( UnsupportedEncodingException e ) {
+            e.printStackTrace();
+        }
+        return null;
 
-         for ( int i = 0; i < darray.length; i++ ) {
-            dos.writeDouble( darray[i] );
-         }
+    }
 
-      } catch ( IOException e ) {
-         e.printStackTrace();
-      }
-//      stopWatch.stop();
-//      System.err.println( "DoubleArrayToBytes: Total doubles processed = " + darray.length + " Time taken = "
-//            + stopWatch.getTime() + " ms" );
-      return bos.toByteArray();
-   }
+    /**
+     * @param barray
+     * @return char[]
+     */
+    public char[] byteArrayToChars( byte[] barray ) {
+        ByteArrayInputStream bis = new ByteArrayInputStream( barray );
+        DataInputStream dis = new DataInputStream( bis );
+        char[] carray = new char[barray.length / CHAR_SIZE];
 
-   /**
-    * @param barray
-    * @return double[]
-    */
-   public double[] ByteArrayToDoubles( byte[] barray ) {
-      ByteArrayInputStream bis = new ByteArrayInputStream( barray );
-      DataInputStream dis = new DataInputStream( bis );
+        int i = 0;
+        try {
+            while ( true ) {
+                carray[i] = dis.readChar();
+                i++;
+            }
+        } catch ( IOException e ) {
+            // do nothing. e.printStackTrace();
+        }
 
-      double[] darray = new double[barray.length / DOUBLE_SIZE];
-      int i = 0;
+        try {
+            dis.close();
+            bis.close();
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
 
-//      StopWatch stopWatch = new StopWatch();
-//      stopWatch.start();
+        return carray;
+    }
 
-      try {
-         while ( true ) {
-            darray[i] = dis.readDouble();
-            i++;
-         }
+    /**
+     * @param barray
+     * @return double[]
+     */
+    public double[] byteArrayToDoubles( byte[] barray ) {
+        ByteArrayInputStream bis = new ByteArrayInputStream( barray );
+        DataInputStream dis = new DataInputStream( bis );
 
-      } catch ( IOException e ) {
-         // do nothing.
-      }
+        double[] darray = new double[barray.length / DOUBLE_SIZE];
+        int i = 0;
+        try {
+            while ( true ) {
+                darray[i] = dis.readDouble();
+                i++;
+            }
+        } catch ( IOException e ) {
+            // do nothing.
+        }
 
-      try {
-         bis.close();
-      } catch ( IOException e1 ) {
-         // TODO Auto-generated catch block
-         e1.printStackTrace();
-      }
+        try {
+            bis.close();
+        } catch ( IOException e1 ) {
+            e1.printStackTrace();
+        }
+        return darray;
+    }
 
-//      stopWatch.stop();
-//      System.err.println( "ByteArrayToDoubles: Total doubles processed = " + i + " Time taken = " + stopWatch.getTime()
-//            + " ms" );
-      return darray;
-   }
+    /**
+     * @param barray
+     * @return int[]
+     */
+    public int[] byteArrayToInts( byte[] barray ) {
+        ByteArrayInputStream bis = new ByteArrayInputStream( barray );
+        DataInputStream dis = new DataInputStream( bis );
+        int[] iarray = new int[barray.length / INT_SIZE];
+        int i = 0;
 
-   /**
-    * @param iarray
-    * @return byte[]
-    */
-   public byte[] IntArrayToBytes( int[] iarray ) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream();
-      DataOutputStream dos = new DataOutputStream( bos );
-      try {
-         for ( int i = 0; i < iarray.length; i++ ) {
-            dos.writeInt( iarray[i] );
-         }
-         dos.close();
-         bos.close();
-      } catch ( IOException e ) {
-         // do nothing
-      }
-      return bos.toByteArray();
-   }
+        try {
+            while ( true ) {
+                iarray[i] = dis.readInt();
+                i++;
+            }
+        } catch ( IOException e ) {
+            // do nothing.
+        }
 
-   /**
-    * @param barray
-    * @return int[]
-    */
-   public int[] ByteArrayToInts( byte[] barray ) {
-      ByteArrayInputStream bis = new ByteArrayInputStream( barray );
-      DataInputStream dis = new DataInputStream( bis );
-      int[] iarray = new int[barray.length / INT_SIZE];
-      int i = 0;
+        try {
+            dis.close();
+            bis.close();
+        } catch ( IOException e1 ) {
+            e1.printStackTrace();
+        }
 
-      try {
-         while ( true ) {
-            iarray[i] = dis.readInt();
-            i++;
-         }
+        return iarray;
+    }
 
-      } catch ( IOException e ) {
-         // do nothing.
-      }
+    /**
+     * @param barray
+     * @return long[] resulting from parse of the bytes.
+     */
+    public long[] byteArrayToLongs( byte[] barray ) {
+        ByteArrayInputStream bis = new ByteArrayInputStream( barray );
+        DataInputStream dis = new DataInputStream( bis );
+        long[] iarray = new long[barray.length / LONG_SIZE];
+        int i = 0;
 
-      try {
-         dis.close();
-         bis.close();
-      } catch ( IOException e1 ) {
-         // TODO Auto-generated catch block
-         e1.printStackTrace();
-      }
+        try {
+            while ( true ) {
+                iarray[i] = dis.readLong();
+                i++;
+            }
+        } catch ( IOException e ) {
+            // do nothing.
+        }
 
-      return iarray;
-   }
+        try {
+            dis.close();
+            bis.close();
+        } catch ( IOException e1 ) {
+            e1.printStackTrace();
+        }
 
-   /**
-    * @param carray
-    * @return byte[]
-    */
-   public byte[] CharArrayToBytes( char[] carray ) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream();
-      DataOutputStream dos = new DataOutputStream( bos );
+        return iarray;
+    }
 
-      try {
+    /**
+     * @param carray
+     * @return byte[]
+     */
+    public byte[] charArrayToBytes( char[] carray ) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream( bos );
 
-         for ( int i = 0; i < carray.length; i++ ) {
-            dos.writeChar( carray[i] );
-         }
+        try {
 
-         dos.close();
-         bos.close();
+            for ( int i = 0; i < carray.length; i++ ) {
+                dos.writeChar( carray[i] );
+            }
 
-      } catch ( IOException e ) {
-         // do nothing.
-      }
+            dos.close();
+            bos.close();
 
-      return bos.toByteArray();
-   }
+        } catch ( IOException e ) {
+            // do nothing.
+        }
 
-   /**
-    * @param barray
-    * @return char[]
-    */
-   public char[] ByteArrayToChars( byte[] barray ) {
-      ByteArrayInputStream bis = new ByteArrayInputStream( barray );
-      DataInputStream dis = new DataInputStream( bis );
-      char[] carray = new char[barray.length / CHAR_SIZE];
+        return bos.toByteArray();
+    }
 
-      int i = 0;
-      try {
-         while ( true ) {
-            carray[i] = dis.readChar();
-            i++;
-         }
+    /**
+     * @param darray
+     * @return byte[]
+     */
+    public byte[] doubleArrayToBytes( double[] darray ) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream( bos );
+        try {
 
-      } catch ( IOException e ) {
-         e.printStackTrace();
-      }
+            for ( int i = 0; i < darray.length; i++ ) {
+                dos.writeDouble( darray[i] );
+            }
 
-      try {
-         dis.close();
-         bis.close();
-      } catch ( IOException e ) {
-         e.printStackTrace();
-      }
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        return bos.toByteArray();
+    }
 
-      return carray;
-   }
-
-   //   public String BytesToFile( byte[] barray, String outfile ) {
-   //      int count = 0;
-   //      int barraylength = barray.length;
-   //      try {
-   //         File file = new File( outfile );
-   //         FileOutputStream fos = new FileOutputStream( file );
-   //         //while ( count < barray.length) {
-   //         fos.write( barray );
-   //         //System.err.println("barray:["+count+"]"+ barray[count]);
-   //         //count++;
-   //         //}
-   //         fos.flush();
-   //         fos.close();
-   //      } catch ( Exception e ) {
-   //         e.printStackTrace();
-   //      }
-   //      return outfile;
-   //   }
-   //
-   //   public byte[] FileToBytes( String outfile ) {
-   //      byte[] barray = new byte[barraylength];
-   //      try {
-   //         File file = new File( outfile );
-   //         FileInputStream fis = new FileInputStream( file );
-   //         StopWatch stopWatch = new StopWatch();
-   //         stopWatch.start();
-   //         fis.read( barray );
-   //         stopWatch.stop();
-   //         fis.close();
-   //         System.out.println( "\n *** Reading File of Bytes *** " );
-   //         System.out.println( "Add this to the time taken for ByteArrayToDoubles." );
-   //         System.out.println( "Time taken = " + stopWatch.getTime() + " ms" );
-   //      } catch ( Exception e ) {
-   //         e.printStackTrace();
-   //      }
-   //      return barray;
-   //   }
+    /**
+     * @param iarray
+     * @return byte[]
+     */
+    public byte[] intArrayToBytes( int[] iarray ) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream( bos );
+        try {
+            for ( int i = 0; i < iarray.length; i++ ) {
+                dos.writeInt( iarray[i] );
+            }
+            dos.close();
+            bos.close();
+        } catch ( IOException e ) {
+            // do nothing
+        }
+        return bos.toByteArray();
+    }
 
 }
