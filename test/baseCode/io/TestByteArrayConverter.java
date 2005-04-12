@@ -110,7 +110,7 @@ public class TestByteArrayConverter extends TestCase {
     */
    public void testDoubleArrayToBytes() {
       //System.err.println(" CONVERTING DOUBLES TO BYTES ");
-      byte[] actualReturn = bac.DoubleArrayToBytes( testD );
+      byte[] actualReturn = bac.doubleArrayToBytes( testD );
       byte[] expectedValue = expectedBfD;
       for ( int i = 0; i < expectedValue.length; i++ ) {
          assertEquals( "return value", expectedValue[i], actualReturn[i] );
@@ -123,7 +123,7 @@ public class TestByteArrayConverter extends TestCase {
     */
       public void testByteArrayToDoubles() {
          System.err.println(" CONVERTING BYTES TO DOUBLES ");
-         double[] actualReturn = bac.ByteArrayToDoubles( bac.DoubleArrayToBytes(testD) );
+         double[] actualReturn = bac.byteArrayToDoubles( bac.doubleArrayToBytes(testD) );
          double[] expectedValue = testD;
          for (int i=0;i<actualReturn.length;i++){
            assertEquals( "return value", expectedValue[i], actualReturn[i], 0);
@@ -202,9 +202,9 @@ public class TestByteArrayConverter extends TestCase {
 
    // test blob -> double[]
    public void testByteArrayToDoubleConversionSpeed() {
-      byte[] lottaBytes = bac.DoubleArrayToBytes( wholeBunchOfDoubles );
+      byte[] lottaBytes = bac.doubleArrayToBytes( wholeBunchOfDoubles );
       System.err.print("Benchmark: ");
-      bac.ByteArrayToDoubles( lottaBytes );
+      bac.byteArrayToDoubles( lottaBytes );
    }
 
    // test string -> double[]
@@ -216,7 +216,7 @@ public class TestByteArrayConverter extends TestCase {
    // test double[] -> blob.
    public void testDoubleArrayToByteArrayConversionSpeed() {
       System.err.print("Benchmark: ");
-      bac.DoubleArrayToBytes( wholeBunchOfDoubles );
+      bac.doubleArrayToBytes( wholeBunchOfDoubles );
    }
 
    // test double[] -> delimited string.
