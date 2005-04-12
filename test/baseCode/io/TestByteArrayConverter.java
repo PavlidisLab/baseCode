@@ -85,9 +85,6 @@ public class TestByteArrayConverter extends TestCase {
       }
 
       wholeBunchOfDoubles = sc.StringToDoubles( longDoubleString );
-
-      System.err.println( "Setup done" );
-
       br.close();
       is.close();
 
@@ -109,7 +106,6 @@ public class TestByteArrayConverter extends TestCase {
     *
     */
    public void testDoubleArrayToBytes() {
-      //System.err.println(" CONVERTING DOUBLES TO BYTES ");
       byte[] actualReturn = bac.doubleArrayToBytes( testD );
       byte[] expectedValue = expectedBfD;
       for ( int i = 0; i < expectedValue.length; i++ ) {
@@ -122,7 +118,6 @@ public class TestByteArrayConverter extends TestCase {
     *
     */
       public void testByteArrayToDoubles() {
-         System.err.println(" CONVERTING BYTES TO DOUBLES ");
          double[] actualReturn = bac.byteArrayToDoubles( bac.doubleArrayToBytes(testD) );
          double[] expectedValue = testD;
          for (int i=0;i<actualReturn.length;i++){
@@ -203,25 +198,21 @@ public class TestByteArrayConverter extends TestCase {
    // test blob -> double[]
    public void testByteArrayToDoubleConversionSpeed() {
       byte[] lottaBytes = bac.doubleArrayToBytes( wholeBunchOfDoubles );
-      System.err.print("Benchmark: ");
       bac.byteArrayToDoubles( lottaBytes );
    }
 
    // test string -> double[]
    public void testStringToDoubleArrayConversionSpeed() {
-      System.err.print("Benchmark: ");
       sc.StringToDoubles( longDoubleString );
    }
 
    // test double[] -> blob.
    public void testDoubleArrayToByteArrayConversionSpeed() {
-      System.err.print("Benchmark: ");
       bac.doubleArrayToBytes( wholeBunchOfDoubles );
    }
 
    // test double[] -> delimited string.
    public void testDoubleArrayToDelimitedStringConversionSpeed() {
-      System.err.print("Benchmark: ");
       sc.DoubleArrayToString( wholeBunchOfDoubles );
    }
 
