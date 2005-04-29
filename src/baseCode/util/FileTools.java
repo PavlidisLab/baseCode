@@ -178,7 +178,7 @@ public class FileTools {
    }
    
    /**
-    * 
+    * Test whether a File is writeable.
     * @param file
     * @return
     */

@@ -27,7 +27,7 @@ public class StatusJlabel extends StatusDebugLogger {
         this.jlabel = l;
     }
 
-    public void setStatus( String s ) {
+    public void setStatus( String s, boolean callSuper ) {
         final String m = s;
 
         if ( SwingUtilities.isEventDispatchThread() ) {
@@ -46,8 +46,14 @@ public class StatusJlabel extends StatusDebugLogger {
                 e.printStackTrace();
             }
         }
-        super.setStatus( s );
 
+        if ( callSuper ) {
+            super.setStatus( s );
+        }
+    }
+
+    public void setStatus( String s ) {
+        this.setStatus( s, true );
     }
 
     /*
