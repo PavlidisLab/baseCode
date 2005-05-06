@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+project.properties<?xml version="1.0"?>
 
 <project 
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -105,7 +105,12 @@ xmlns:jnlp="http://www.w3.org/2001/XMLSchema-instance">
             <type>jar</type>
             <url>http://www.braju.com/download/sure/index.html</url>
         </dependency>
-        
+        <dependency>
+            <groupId>ostermiller</groupId>
+            <artifactId>ostermillerutils</artifactId>
+            <type>jar</type>
+            <jar>ostermillerutils_1_04_03_for_java_1_4</jar>
+        </dependency>
     </dependencies>
     <build>
         <sourceDirectory>src</sourceDirectory>
