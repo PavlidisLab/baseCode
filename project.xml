@@ -108,7 +108,7 @@ xmlns:jnlp="http://www.w3.org/2001/XMLSchema-instance">
             <groupId>ostermiller</groupId>
             <artifactId>ostermillerutils</artifactId>
             <type>jar</type>
-            <jar>ostermillerutils_1_04_03_for_java_1_4</jar>
+            <jar>ostermillerutils_1_04_03_for_java_1_4.jar</jar>
         </dependency>
     </dependencies>
     <build>
