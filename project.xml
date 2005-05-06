@@ -1,5 +1,4 @@
-project.properties<?xml version="1.0"?>
-
+<?xml version="1.0"?>
 <project 
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://maven.apache.org/xsd/ http://maven.apache.org/xsd/maven-project-3.0.0.xsd"
