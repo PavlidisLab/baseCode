@@ -3,6 +3,7 @@ package baseCode;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import baseCode.bio.geneset.TestGeneAnnotations;
 import baseCode.dataStructure.TestQueue;
 import baseCode.dataStructure.TestStack;
 import baseCode.dataStructure.graph.TestDirectedGraph;
@@ -18,59 +19,63 @@ import baseCode.io.writer.TestHistogramWriter;
 import baseCode.math.TestCorrelationStats;
 import baseCode.math.metaanalysis.TestCorrelationEffectMetaAnalysis;
 import baseCode.math.metaanalysis.TestMeanDifferenceMetaAnalysis;
+import baseCode.util.TestStringUtil;
 import baseCode.xml.TestGOParser;
 
 public class AllTests extends TestCase {
 
-   public AllTests( String s ) {
-      super( s );
-   }
+    public AllTests( String s ) {
+        super( s );
+    }
 
-   public static Test suite() {
-      TestSuite suite = new TestSuite();
+    public static Test suite() {
+        TestSuite suite = new TestSuite();
 
-      suite.addTestSuite( TestByteArrayConverter.class );
-      
-      /* File reading/writing tests */
-      suite.addTestSuite( TestStringMatrixReader.class );
-      suite.addTestSuite( TestDoubleMatrixReader.class );
-      suite.addTestSuite( TestSparseDoubleMatrixReader.class );
-      suite.addTestSuite( TestSparseRaggedDouble2DNamedMatrixReader.class );
-      suite.addTestSuite( TestHistogramWriter.class );
-      suite.addTestSuite( TestMapReader.class );
+        suite.addTestSuite( TestByteArrayConverter.class );
 
-      /* data structure tests */
-      suite.addTestSuite( TestDirectedGraph.class );
-      suite.addTestSuite( TestSparseRaggedDoubleMatrix2DNamed.class );
-      suite.addTestSuite( TestRCDoubleMatrix1D.class );
-      suite.addTestSuite( TestQueue.class );
-      suite.addTestSuite( TestStack.class );
+        /* File reading/writing tests */
+        suite.addTestSuite( TestStringMatrixReader.class );
+        suite.addTestSuite( TestDoubleMatrixReader.class );
+        suite.addTestSuite( TestSparseDoubleMatrixReader.class );
+        suite.addTestSuite( TestSparseRaggedDouble2DNamedMatrixReader.class );
+        suite.addTestSuite( TestHistogramWriter.class );
+        suite.addTestSuite( TestMapReader.class );
+        suite.addTestSuite( TestGeneAnnotations.class );
 
-      /* data filter tests */
-      suite.addTestSuite( baseCode.dataFilter.TestRowAffyNameFilter.class );
-      suite.addTestSuite( baseCode.dataFilter.TestRowNameFilter.class );
-      suite.addTestSuite( baseCode.dataFilter.TestRowAbsentFilter.class );
-      suite.addTestSuite( baseCode.dataFilter.TestRowMissingFilter.class );
-      suite.addTestSuite( baseCode.dataFilter.TestRowLevelFilter.class );
-      suite.addTestSuite( baseCode.dataFilter.TestItemLevelFilter.class );
+        /* data structure tests */
+        suite.addTestSuite( TestDirectedGraph.class );
+        suite.addTestSuite( TestSparseRaggedDoubleMatrix2DNamed.class );
+        suite.addTestSuite( TestRCDoubleMatrix1D.class );
+        suite.addTestSuite( TestQueue.class );
+        suite.addTestSuite( TestStack.class );
 
-      /* math tests */
-      suite.addTestSuite( baseCode.math.TestDescriptiveWithMissing.class );
-      suite.addTestSuite( baseCode.math.TestKSTest.class );
-      suite.addTestSuite( TestCorrelationStats.class );
-      suite.addTestSuite( baseCode.math.TestRank.class );
-      suite.addTestSuite( baseCode.math.TestMatrixRowStats.class );
-      suite.addTestSuite( baseCode.math.TestMatrixStats.class );
-      suite.addTestSuite( baseCode.math.TestStats.class );
-      suite.addTestSuite( baseCode.math.TestSpecFunc.class );
-      suite.addTestSuite( baseCode.math.TestROC.class );
-      suite.addTestSuite( TestCorrelationEffectMetaAnalysis.class );
-      suite.addTestSuite( TestMeanDifferenceMetaAnalysis.class );
+        /* data filter tests */
+        suite.addTestSuite( baseCode.dataFilter.TestRowAffyNameFilter.class );
+        suite.addTestSuite( baseCode.dataFilter.TestRowNameFilter.class );
+        suite.addTestSuite( baseCode.dataFilter.TestRowAbsentFilter.class );
+        suite.addTestSuite( baseCode.dataFilter.TestRowMissingFilter.class );
+        suite.addTestSuite( baseCode.dataFilter.TestRowLevelFilter.class );
+        suite.addTestSuite( baseCode.dataFilter.TestItemLevelFilter.class );
 
-      /* XML tests */
-      suite.addTestSuite( TestGOParser.class );
+        /* math tests */
+        suite.addTestSuite( baseCode.math.TestDescriptiveWithMissing.class );
+        suite.addTestSuite( baseCode.math.TestKSTest.class );
+        suite.addTestSuite( TestCorrelationStats.class );
+        suite.addTestSuite( baseCode.math.TestRank.class );
+        suite.addTestSuite( baseCode.math.TestMatrixRowStats.class );
+        suite.addTestSuite( baseCode.math.TestMatrixStats.class );
+        suite.addTestSuite( baseCode.math.TestStats.class );
+        suite.addTestSuite( baseCode.math.TestSpecFunc.class );
+        suite.addTestSuite( baseCode.math.TestROC.class );
+        suite.addTestSuite( TestCorrelationEffectMetaAnalysis.class );
+        suite.addTestSuite( TestMeanDifferenceMetaAnalysis.class );
 
-      return suite;
-   }
+        /* XML tests */
+        suite.addTestSuite( TestGOParser.class );
+
+        suite.addTestSuite( TestStringUtil.class );
+
+        return suite;
+    }
 
 }
