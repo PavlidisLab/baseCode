@@ -37,124 +37,15 @@ import baseCode.util.StringUtil;
  * Reads tab-delimited file to create maps of probes to classes, classes to probes, probes to genes, genes to probes.
  * <p>
  * Maintains the following important data structures, all derived from the input file:
- * 
- * <pre>
- * 
- *  
- *   
- *    
- *     
- *      
- *       
- *        
- *         
- *          
- *           
- *            
- *             
- *              
- *               
- *                
- *                 
- *                  
- *                   
- *                    
- *                     
- *                      
- *                       
- *                        
- *                         
- *                          
- *                           
- *                            
- *                             
- *                              
- *                               
- *                                
- *                                 
- *                                  
- *                                   
- *                                    
- *                                     
- *                                      
- *                                       
- *                                        
- *                                         
- *                                          
- *                                           
- *                                            
- *                                             
- *                                              
- *                                               
- *                                                
- *                                                 
- *                                                  
- *                                                   
- *                                                    
- *                                                     
- *                                                                                              probe-&gt;Classes -- each value is a Set of the Classes that a probe belongs to.
- *                                                                                              Classes-&gt;probe -- each value is a Set of the probes that belong to a class
- *                                                                                              probe-&gt;gene -- each value is the gene name corresponding to the probe.
- *                                                                                              gene-&gt;list of probes -- each value is a list of probes corresponding to a gene
- *                                                                                              probe-&gt;description -- each value is a text description of the probe (actually...of the gene)
- *                                                          
- *                                                      
- *                                                     
- *                                                    
- *                                                   
- *                                                  
- *                                                 
- *                                                
- *                                               
- *                                              
- *                                             
- *                                            
- *                                           
- *                                          
- *                                         
- *                                        
- *                                       
- *                                      
- *                                     
- *                                    
- *                                   
- *                                  
- *                                 
- *                                
- *                               
- *                              
- *                             
- *                            
- *                           
- *                          
- *                         
- *                        
- *                       
- *                      
- *                     
- *                    
- *                   
- *                  
- *                 
- *                
- *               
- *              
- *             
- *            
- *           
- *          
- *         
- *        
- *       
- *      
- *     
- *    
- *   
- *  
- * </pre>
- * 
+ * <ol>
+ * <li>probe-&gt;Classes -- each value is a Set of the Classes that a probe belongs to.
+ * <li> Classes-&gt;probe -- each value is a Set of the probes that belong to a class
+ * <li>probe-&gt;gene -- each value is the gene name corresponding to the probe.
+ * <li>gene-&gt;list of probes -- each value is a list of probes corresponding to a gene
+ * <li>probe-&gt;description -- each value is a text description of the probe (actually...of the gene)
+ * </ol>
  * <p>
- * Copyright (c) 2004 Columbia University
+ * Copyright (c) 2004-2005 Columbia University
  * </p>
  * 
  * @author Paul Pavlidis
@@ -698,6 +589,53 @@ public class GeneAnnotations {
             if ( !candidate.toUpperCase().startsWith( searchOnUp ) && candidateN.indexOf( searchOnUp ) < 0 ) {
                 removeUs.add( candidate );
             }
+        }
+
+        for ( Iterator it = removeUs.iterator(); it.hasNext(); ) {
+            selectedSets.remove( it.next() );
+        }
+    }
+
+    /**
+     * Identify gene sets that contain a particular gene or probe.
+     * 
+     * @param searchOn
+     * @param goData
+     */
+    public void selectSetsByGene( String searchOn ) {
+
+        String searchOnUp = searchOn.toUpperCase();
+        resetSelectedSets();
+        Set removeUs = new HashSet();
+
+        for ( Iterator it = geneSetToProbeMap.keySet().iterator(); it.hasNext(); ) {
+            boolean found = false;
+            String candidateGeneSet = ( String ) it.next();
+            Collection probes = ( Collection ) geneSetToProbeMap.get( candidateGeneSet );
+
+            for ( Iterator iter = probes.iterator(); iter.hasNext(); ) {
+                String candidate = ( String ) iter.next();
+                if ( candidate.toUpperCase().startsWith( searchOnUp ) ) {
+                    found = true;
+                    log.debug( "Found " + candidate + " in " + candidateGeneSet );
+                    break;
+                }
+            }
+
+            if ( found ) continue;
+
+            Collection genes = ( Collection ) geneSetToGeneMap.get( candidateGeneSet );
+            for ( Iterator iter = genes.iterator(); iter.hasNext(); ) {
+                String candidate = ( String ) iter.next();
+                if ( candidate.toUpperCase().startsWith( searchOnUp ) ) {
+                    found = true;
+                    log.debug( "Found " + candidate + " in " + candidateGeneSet );
+                    break;
+                }
+            }
+
+            if ( !found ) removeUs.add( candidateGeneSet );
+
         }
 
         for ( Iterator it = removeUs.iterator(); it.hasNext(); ) {
