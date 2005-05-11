@@ -55,7 +55,19 @@ import baseCode.util.StringUtil;
  */
 
 public class GeneAnnotations {
+    /**
+     * String used to indicate a gene has no description associated with it.
+     */
+    private static final String NO_DESCRIPTION = "[No description]";
+
+    /**
+     * 
+     */
     public static final int AFFYCSV = 1;
+
+    /**
+     * 
+     */
     public static final int DEFAULT = 0;
 
     /**
@@ -159,7 +171,7 @@ public class GeneAnnotations {
     }
 
     /**
-     * This is for creating GeneAnnotations by reading from a file
+     * Create GeneAnnotations by reading from a file
      * 
      * @param goNames
      * @param filename String
@@ -170,6 +182,15 @@ public class GeneAnnotations {
         this( filename, messenger, goNames, DEFAULT );
     }
 
+    /**
+     * Create GeneAnnotations by reading from a file, with a selected input file format.
+     * 
+     * @param filename
+     * @param messenger
+     * @param goNames
+     * @param format
+     * @throws IOException
+     */
     public GeneAnnotations( String filename, StatusViewer messenger, GONames goNames, int format ) throws IOException {
 
         this();
@@ -1011,10 +1032,10 @@ public class GeneAnnotations {
                     // terms.
                     probeToDescription.put( probe.intern(), description.intern() );
                 } else {
-                    probeToDescription.put( probe.intern(), "[No description]" );
+                    probeToDescription.put( probe.intern(), NO_DESCRIPTION );
                 }
             } else {
-                probeToDescription.put( probe.intern(), "[No description]" );
+                probeToDescription.put( probe.intern(), NO_DESCRIPTION );
             }
 
             /* read GO data */
@@ -1127,7 +1148,7 @@ public class GeneAnnotations {
             if ( !description.startsWith( "GO:" ) ) {
                 probeToDescription.put( probe.intern(), description.intern() );
             } else {
-                probeToDescription.put( probe.intern(), "[No description]" );
+                probeToDescription.put( probe.intern(), NO_DESCRIPTION );
             }
 
             classIds = " // " + fields[goBpIndex] + " // " + fields[goMfIndex] + " // " + fields[goCcIndex];
