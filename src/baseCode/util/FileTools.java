@@ -16,7 +16,7 @@ public class FileTools {
    protected final static String GIF_EXTENSION = "gif";
    protected final static String TXT_EXTENSION = "txt";
    protected final static String[] XML_EXTENSIONS = {
-         "XML", "xml"
+         "XML", "xml", "rdf-xml"
    };
 
    protected final static String[] IMAGE_EXTENSIONS = {
@@ -108,7 +108,7 @@ public class FileTools {
       String extension = getExtension( filename );
       if ( extension != null ) {
          for ( int i = 0; i < FileTools.XML_EXTENSIONS.length; i++ ) {
-            if ( FileTools.XML_EXTENSIONS[i].equals( extension ) ) {
+            if ( FileTools.XML_EXTENSIONS[i].equalsIgnoreCase( extension ) ) {
                return true;
             }
          }
