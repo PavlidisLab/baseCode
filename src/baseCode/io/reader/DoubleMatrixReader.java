@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -59,7 +60,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
     *         true.
     * @throws IOException
     */
-   public NamedMatrix read( InputStream stream, Set wantedRowNames )
+   public NamedMatrix read( InputStream stream, Collection wantedRowNames )
          throws IOException {
       return read( stream, wantedRowNames, true );
    }
@@ -72,7 +73,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
     * @return matrix
     * @throws IOException
     */
-   public NamedMatrix read( InputStream stream, Set wantedRowNames,
+   public NamedMatrix read( InputStream stream, Collection wantedRowNames,
          boolean createEmptyRows ) throws IOException {
 
       BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
@@ -91,7 +92,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
       // because will want to add empty rows for each row name we didn't find
       // (if createEmptyRows == true).
       //
-      Set wantedRowsFound = null;
+      Collection wantedRowsFound = null;
       if ( wantedRowNames != null && createEmptyRows ) {
          wantedRowsFound = new HashSet();
       }
@@ -168,8 +169,8 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
     * @param row
     * @return name of the row
     */
-   private String parseRow( String row, List rowNames, List MTemp,
-         Set wantedRowNames ) throws IOException {
+   private String parseRow( String row, Collection rowNames, List MTemp,
+           Collection wantedRowNames ) throws IOException {
 
       StringTokenizer st = new StringTokenizer( row, "\t", true );
 
@@ -250,7 +251,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
     * @return NamedMatrix object constructed from the data file
     * @throws IOException
     */
-   public NamedMatrix read( String filename, Set wantedRowNames )
+   public NamedMatrix read( String filename, Collection wantedRowNames )
          throws IOException {
       File infile = new File( filename );
       if ( !infile.exists() || !infile.canRead() ) {
