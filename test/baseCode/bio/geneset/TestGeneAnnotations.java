@@ -2,7 +2,6 @@ package baseCode.bio.geneset;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,10 +23,9 @@ public class TestGeneAnnotations extends TestCase {
      * @see TestCase#setUp()
      */
     protected void setUp() throws Exception {
-
+        super.setUp();
         is = TestGeneAnnotations.class.getResourceAsStream( "/data/HG-U133_Plus_2_annot_sample.csv" );
         if ( is == null ) throw new IllegalStateException();
-        super.setUp();
     }
 
     /*
