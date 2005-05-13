@@ -29,6 +29,7 @@ import javax.swing.table.TableModel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import baseCode.util.CancellationException;
 import baseCode.util.FileTools;
 import baseCode.util.StatusViewer;
 import baseCode.util.StringUtil;
@@ -209,6 +210,8 @@ public class GeneAnnotations {
 
     /**
      * Add a class
+     * <p>
+     * FIXME - update tree as well.
      * 
      * @param id String class to be added
      * @param probesForNew ArrayList user-defined list of members.
@@ -512,6 +515,8 @@ public class GeneAnnotations {
 
     /**
      * Remove a gene set (class) from all the maps that reference it.
+     * <p>
+     * FIXME need to update tree as well.?
      * 
      * @param id
      */
@@ -869,8 +874,11 @@ public class GeneAnnotations {
     }
 
     /**
-     * remove classes that have too few members todo this doesn't affect the tree representation of the genesets. todo
-     * this overlaps with functionality in GeneSetMapTools
+     * remove classes that have too few members
+     * <p>
+     * FIXME this doesn't affect the tree representation of the genesets.
+     * <p>
+     * FIXME this overlaps with functionality in GeneSetMapTools
      * 
      * @param lowThreshold
      * @param highThreshold
@@ -987,7 +995,7 @@ public class GeneAnnotations {
 
             if ( Thread.currentThread().isInterrupted() ) {
                 dis.close();
-                throw new RuntimeException( "Interrupted" );
+                throw new CancellationException( );
             }
 
             if ( line.startsWith( "#" ) ) continue;
@@ -1115,7 +1123,7 @@ public class GeneAnnotations {
 
             if ( Thread.currentThread().isInterrupted() ) {
                 dis.close();
-                throw new RuntimeException( "Interrupted" );
+                throw new CancellationException( );
             }
 
             String[] fields = StringUtil.csvSplit( numFields, line );
