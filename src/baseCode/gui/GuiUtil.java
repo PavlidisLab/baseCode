@@ -21,7 +21,7 @@ public class GuiUtil {
      * @param message
      * @param e
      */
-    public static void error( String message, Exception e ) {
+    public static void error( String message, Throwable e ) {
         JOptionPane.showMessageDialog( null, "Error: " + message + "\n" + e, "Error", JOptionPane.ERROR_MESSAGE );
         log.error( e );
         e.printStackTrace();
