@@ -84,6 +84,29 @@ public class StatusJlabel extends StatusDebugLogger {
         super.setError( s );
     }
 
+    /**
+     * 
+     */
+    public void setError( Throwable e ) {
+        final String m = "There was an error: see logs for details";
+        if ( SwingUtilities.isEventDispatchThread() ) {
+            setLabel( m, errorIcon );
+        } else {
+            try {
+                SwingUtilities.invokeAndWait( new Runnable() {
+                    public void run() {
+                        setLabel( m, errorIcon );
+                    }
+                } );
+            } catch ( InterruptedException ex ) {
+                ex.printStackTrace();
+            } catch ( InvocationTargetException ex ) {
+                ex.printStackTrace();
+            }
+        }
+        super.setError( e );
+    }
+
     /*
      * (non-Javadoc)
      * 

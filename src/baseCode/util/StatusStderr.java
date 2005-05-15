@@ -11,20 +11,30 @@ package baseCode.util;
  */
 public class StatusStderr implements StatusViewer {
 
-	public StatusStderr () {}
-	
-   public void setStatus( String s ) {
-      if (s.equals("")) return;
-      System.err.println( s );
-   }
+    public StatusStderr() {
+    }
 
-   public void setError( String s ) {
-      if (s.equals("")) return;
-      System.err.println( "Error:" + s );
-   }
+    public void setStatus( String s ) {
+        if ( s.equals( "" ) ) return;
+        System.err.println( s );
+    }
 
-   public void clear() {
-      // don't need to do anything.
-   }
+    public void setError( String s ) {
+        if ( s.equals( "" ) ) return;
+        System.err.println( "Error:" + s );
+    }
+
+    public void clear() {
+        // don't need to do anything.
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see baseCode.util.StatusViewer#setError(java.lang.Throwable)
+     */
+    public void setError( Throwable e ) {
+        e.printStackTrace();
+    }
 
 }

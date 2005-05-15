@@ -9,22 +9,27 @@ package baseCode.util;
  */
 public interface StatusViewer {
 
-   /**
-    * Print the status to the location appropriate for this application.
-    * 
-    * @param s
-    */
-   public abstract void setStatus( String s );
+    /**
+     * Print the status to the location appropriate for this application.
+     * 
+     * @param s
+     */
+    public abstract void setStatus( String s );
 
-   /**
-    * Print an error status messge.
-    * 
-    * @param s
-    */
-   public abstract void setError( String s );
+    /**
+     * Print an error status messge.
+     * 
+     * @param s
+     */
+    public abstract void setError( String s );
 
-   /**
-    * Clear the status dislay. Implementers that do not write to GUI elements probably don't need to do anything.
-    */
-   public abstract void clear();
+    /**
+     * @param e
+     */
+    public abstract void setError( Throwable e );
+
+    /**
+     * Clear the status dislay. Implementers that do not write to GUI elements probably don't need to do anything.
+     */
+    public abstract void clear();
 }

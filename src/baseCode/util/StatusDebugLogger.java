@@ -33,6 +33,10 @@ public class StatusDebugLogger implements StatusViewer {
         log.error( s );
     }
 
+    public void setError( Throwable e ) {
+        log.error( e, e );
+    }
+
     public void clear() {
         // don't need to do anything.
     }
