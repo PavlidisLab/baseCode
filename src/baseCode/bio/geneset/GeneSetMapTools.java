@@ -347,7 +347,6 @@ public class GeneSetMapTools {
         Set removeUs = new HashSet();
         for ( Iterator iter = geneSetToGeneMap.keySet().iterator(); iter.hasNext(); ) {
             String geneSet = ( String ) iter.next();
-
             if ( gon.getAspectForId( geneSet ).equals( aspect ) ) {
                 removeUs.add( geneSet );
             }
@@ -487,22 +486,8 @@ public class GeneSetMapTools {
 
             for ( Iterator iterator = geneSets.iterator(); iterator.hasNext(); ) {
                 String geneSet = ( String ) iterator.next();
-
-                Set parents;
-                if ( parentCache.containsKey( geneSet ) ) {
-                    parents = ( Set ) parentCache.get( geneSet );
-                } else {
-                    parents = gon.getParents( geneSet );
-                    parentCache.put( geneSet, parents );
-                }
-
-                if ( parents.size() == 0 ) continue;
-
-                if ( !toBeAdded.containsKey( gene ) ) {
-                    toBeAdded.put( gene, new HashSet() );
-                }
-                ( ( Set ) toBeAdded.get( gene ) ).addAll( parents );
-
+                Set parents = getParents( gon, parentCache, geneSet );
+                setParentsToBeAdded( toBeAdded, gene, parents );
                 log.debug( "Added " + parents + " to " + geneSet + " for " + gene );
             }
             count++;
@@ -521,10 +506,38 @@ public class GeneSetMapTools {
         ga.sortGeneSets();
 
         if ( messenger != null ) {
-            messenger.setStatus( "Added parents to all terms" );
+            messenger.setStatus( "Added parents to all terms - now have " + ga.numGeneSets() + " usable gene sets." );
         }
+    }
 
-        log.info( ga.numGeneSets() + " gene sets after adding parents" );
+    /**
+     * @param toBeAdded
+     * @param gene
+     * @param parents
+     */
+    private static void setParentsToBeAdded( Map toBeAdded, String gene, Set parents ) {
+        if ( parents.size() == 0 ) return;
+        if ( !toBeAdded.containsKey( gene ) ) {
+            toBeAdded.put( gene, new HashSet() );
+        }
+        ( ( Set ) toBeAdded.get( gene ) ).addAll( parents );
+    }
+
+    /**
+     * @param gon
+     * @param parentCache
+     * @param geneSet
+     * @return
+     */
+    private static Set getParents( GONames gon, Map parentCache, String geneSet ) {
+        Set parents;
+        if ( parentCache.containsKey( geneSet ) ) {
+            parents = ( Set ) parentCache.get( geneSet );
+        } else {
+            parents = gon.getParents( geneSet );
+            parentCache.put( geneSet, parents );
+        }
+        return parents;
     }
 
     /**

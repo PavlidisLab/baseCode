@@ -1045,22 +1045,16 @@ public class GeneAnnotations {
             /* read GO data */
             if ( st.hasMoreTokens() ) {
                 classIds = st.nextToken();
+                String[] classIdAry = classIds.split( "\\|" );
+                for ( int i = 0; i < classIdAry.length; i++ ) {
+                    String go = classIdAry[i].intern();
 
-                // another tokenizer is required since the ClassesID's are
-                // seperated by the | character
-                StringTokenizer st1 = new StringTokenizer( classIds, "|" );
-                while ( st1.hasMoreTokens() ) {
-                    String go = st1.nextToken().intern();
-
-                    // add this go to the probe->go map.
                     ( ( Collection ) probeToGeneSetMap.get( probe ) ).add( go );
 
-                    // add this probe this go->probe map.
                     if ( !geneSetToProbeMap.containsKey( go ) ) {
                         geneSetToProbeMap.put( go, new HashSet() );
                     }
                     ( ( Collection ) geneSetToProbeMap.get( go ) ).add( probe );
-
                 }
             }
 
@@ -1070,7 +1064,7 @@ public class GeneAnnotations {
                     Thread.sleep( 10 );
                 } catch ( InterruptedException e ) {
                     dis.close();
-                    throw new RuntimeException( "Interrupted" );
+                    throw new CancellationException();
                 }
             }
             n++;
