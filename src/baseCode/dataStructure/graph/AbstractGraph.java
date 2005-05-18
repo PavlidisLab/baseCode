@@ -94,7 +94,7 @@ public abstract class AbstractGraph implements Graph {
         for ( Iterator it = items.keySet().iterator(); it.hasNext(); ) {
             Object item = it.next();
             if ( !( item instanceof Visitable ) ) {
-                log.error( "Got " + item.getClass().getName() );
+                log.debug( "Got " + item.getClass().getName() );
                 break;
             }
             ( ( Visitable ) item ).unMark();
