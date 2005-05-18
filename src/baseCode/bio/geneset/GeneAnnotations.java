@@ -231,7 +231,6 @@ public class GeneAnnotations {
             genes.add( probeToGeneName.get( probe_it2.next() ) );
         }
         geneSetToGeneMap.put( id, genes );
-
         geneToGeneSetMap.put( id, probeToGeneSetMap.get( id ) );
 
         resetSelectedSets();
@@ -527,15 +526,14 @@ public class GeneAnnotations {
                 if ( probeToGeneSetMap.containsKey( probe )
                         && ( ( Collection ) probeToGeneSetMap.get( probe ) ).contains( id ) ) {
                     if ( !( ( Collection ) probeToGeneSetMap.get( probe ) ).remove( id ) ) {
-                        System.err.println( "Couldn't remove " + id + " from probe to class map for" + probe );
+                        log.error( "Couldn't remove " + id + " from probe to class map for" + probe );
                     }
                 }
             }
             if ( geneSetToProbeMap.remove( id ) == null )
-                System.err.println( "Couldn't remove " + id + " from classToProbeMap" );
+                log.error( "Couldn't remove " + id + " from classToProbeMap" );
 
-            if ( geneSetToGeneMap.remove( id ) == null )
-                System.err.println( "Couldn't remove " + id + " from classToGeneMap" );
+            if ( geneSetToGeneMap.remove( id ) == null ) log.error( "Couldn't remove " + id + " from classToGeneMap" );
         }
         if ( geneSetToRedundantMap.containsKey( id ) ) geneSetToRedundantMap.remove( id );
     }
@@ -874,9 +872,7 @@ public class GeneAnnotations {
     }
 
     /**
-     * remove classes that have too few members
-     * <p>
-     * FIXME this doesn't affect the tree representation of the genesets.
+     * Remove classes that have too few members
      * <p>
      * FIXME this overlaps with functionality in GeneSetMapTools
      * 
@@ -995,7 +991,7 @@ public class GeneAnnotations {
 
             if ( Thread.currentThread().isInterrupted() ) {
                 dis.close();
-                throw new CancellationException( );
+                throw new CancellationException();
             }
 
             if ( line.startsWith( "#" ) ) continue;
@@ -1123,7 +1119,7 @@ public class GeneAnnotations {
 
             if ( Thread.currentThread().isInterrupted() ) {
                 dis.close();
-                throw new CancellationException( );
+                throw new CancellationException();
             }
 
             String[] fields = StringUtil.csvSplit( numFields, line );
