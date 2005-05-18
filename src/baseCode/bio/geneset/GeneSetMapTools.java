@@ -478,6 +478,7 @@ public class GeneSetMapTools {
             messenger.setStatus( "Adding parent terms (" + ga.numGeneSets() + " gene sets now)" );
         }
         Map toBeAdded = new HashMap();
+        Map parentCache = new HashMap();
         int count = 0;
         for ( Iterator iter = geneToGeneSetMap.keySet().iterator(); iter.hasNext(); ) {
             String gene = ( String ) iter.next();
@@ -487,21 +488,29 @@ public class GeneSetMapTools {
             for ( Iterator iterator = geneSets.iterator(); iterator.hasNext(); ) {
                 String geneSet = ( String ) iterator.next();
 
-                Set parents = gon.getParents( geneSet );
+                Set parents;
+                if ( parentCache.containsKey( geneSet ) ) {
+                    parents = ( Set ) parentCache.get( geneSet );
+                } else {
+                    parents = gon.getParents( geneSet );
+                    parentCache.put( geneSet, parents );
+                }
+
                 if ( parents.size() == 0 ) continue;
 
                 if ( !toBeAdded.containsKey( gene ) ) {
                     toBeAdded.put( gene, new HashSet() );
                 }
                 ( ( Set ) toBeAdded.get( gene ) ).addAll( parents );
+
                 log.debug( "Added " + parents + " to " + geneSet + " for " + gene );
             }
             count++;
-            if (count % 1000 == 0 && messenger != null)     {
-                messenger.setStatus(count + " genes examined");
+            if ( count % 1000 == 0 && messenger != null ) {
+                messenger.setStatus( count + " genes examined" );
             }
         }
-
+        parentCache = null;
         for ( Iterator iter = toBeAdded.keySet().iterator(); iter.hasNext(); ) {
             String gene = ( String ) iter.next();
             Set parents = ( Set ) toBeAdded.get( gene );
