@@ -211,7 +211,6 @@ public class GeneAnnotations {
     /**
      * Add a class
      * <p>
-     * FIXME - update tree as well.
      * 
      * @param id String class to be added
      * @param probesForNew ArrayList user-defined list of members.
@@ -232,7 +231,7 @@ public class GeneAnnotations {
         }
         geneSetToGeneMap.put( id, genes );
         geneToGeneSetMap.put( id, probeToGeneSetMap.get( id ) );
-
+   
         resetSelectedSets();
     }
 

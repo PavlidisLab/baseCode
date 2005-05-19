@@ -1,7 +1,6 @@
 package baseCode.dataStructure.graph;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,7 +12,7 @@ import java.util.Set;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +31,8 @@ import baseCode.dataStructure.Queue;
  */
 public class DirectedGraph extends AbstractGraph {
     private static Log log = LogFactory.getLog( DirectedGraph.class.getName() );
+    protected DefaultTreeModel dtm;
+    private JTree treeView;
 
     public DirectedGraph() {
         super();
@@ -232,25 +233,28 @@ public class DirectedGraph extends AbstractGraph {
      */
     public JTree treeView( Class nodeClass ) {
         log.debug( "Constructing tree view of graph" );
-        this.topoSort();
-        List nodes = new ArrayList( items.values() );
-        Collections.sort( nodes );
-        DirectedGraphNode root = ( DirectedGraphNode ) nodes.get( 0 );
+        DirectedGraphNode root = getRoot();
         Constructor constructor;
         DefaultMutableTreeNode top = null;
-        JTree tree = null;
+      treeView = null;
         try {
             constructor = nodeClass.getConstructor( new Class[] { root.getClass() } );
             top = ( DefaultMutableTreeNode ) constructor.newInstance( new Object[] { root } );
             log.debug( "Starting tree with: " + top.getClass().getName() );
             root.mark();
             addJTreeNode( top, root, constructor );
-            tree = new JTree( top );
+            dtm = new DefaultTreeModel( top );
+            treeView = new JTree( dtm );
 
         } catch ( Exception e ) {
             log.error( e, e );
         }
-        return tree;
+        return treeView;
+    }
+
+    public DefaultTreeModel getTreeModel() {
+        if (treeView == null ) this.treeView();
+        return dtm;
     }
 
     /**
@@ -259,7 +263,10 @@ public class DirectedGraph extends AbstractGraph {
      * @return javax.swing.JTree
      */
     public JTree treeView() {
+        if (treeView == null ) {
         return this.treeView( DefaultMutableTreeNode.class );
+        } 
+        return treeView;
     }
 
     private void addJTreeNode( DefaultMutableTreeNode startJTreeNode, DirectedGraphNode startNode,
@@ -281,6 +288,16 @@ public class DirectedGraph extends AbstractGraph {
                 this.addJTreeNode( newJTreeNode, nextNode, constructor );
             }
         }
+    }
+
+    /**
+     * @return root of the tree.
+     */
+    public DirectedGraphNode getRoot() {
+        this.topoSort();
+        List nodes = new ArrayList( items.values() );
+        Collections.sort( nodes );
+        return ( DirectedGraphNode ) nodes.get( 0 );
     }
 
 }

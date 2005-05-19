@@ -145,7 +145,7 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
     /**
      * @return int how many children this node has, determined recursively.
      */
-    public int numChildren() {
+    public int getChildCount() {
         return getAllChildNodes( null ).size();
     }
 

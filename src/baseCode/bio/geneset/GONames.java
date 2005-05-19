@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.tree.DefaultTreeModel;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
@@ -18,7 +20,7 @@ import baseCode.dataStructure.graph.DirectedGraphNode;
 import baseCode.xml.GOParser;
 
 /**
- * Rea data from GO XML file, store in easy-to-use data structure.
+ * Read data from GO XML file, store in easy-to-use data structure.
  * <p>
  * Copyright (c) 2004 Columbia University
  * 
@@ -27,7 +29,24 @@ import baseCode.xml.GOParser;
  * @version $Id$
  */
 public class GONames {
+
+    /**
+     * 
+     */
+    private static final String NO_DESCRIPTION_AVAILABLE = "<no description available>";
+
     protected static final Log log = LogFactory.getLog( GONames.class );
+
+    /**
+     * Name for root of tree representing user-defined gene sets.
+     */
+    public static final String USER_DEFINED = "User-defined";
+
+    /**
+     * Name for aspect when none is defined.
+     */
+    private static final String NO_ASPECT_AVAILABLE = "<no aspect available>";
+
     private static Map goNameMap;
     private Set newGeneSets = new HashSet();
     private GOParser parser;
@@ -44,8 +63,7 @@ public class GONames {
         }
 
         InputStream i = new FileInputStream( filename );
-        parser = new GOParser( i );
-        goNameMap = parser.getGONameMap();
+        this.initialize( i );
     }
 
     /**
@@ -57,18 +75,35 @@ public class GONames {
         if ( inputStream == null ) {
             throw new IOException( "Input stream was null" );
         }
-
-        parser = new GOParser( inputStream );
-        goNameMap = parser.getGONameMap();
+        this.initialize( inputStream );
     }
 
     /**
-     * Get the graph representation of the GO hierarchy. This can be used to support JTree representations.
      * 
-     * @return
+     */
+    private void initialize( InputStream inputStream ) throws IOException, SAXException {
+        this.parser = new GOParser( inputStream );
+        goNameMap = parser.getGONameMap();
+        DirectedGraphNode root = this.getGraph().getRoot();
+        this.getGraph().addChildTo(
+                root.getKey(),
+                USER_DEFINED,
+                new DirectedGraphNode( USER_DEFINED,
+                        new GOEntry( USER_DEFINED, "", USER_DEFINED, NO_ASPECT_AVAILABLE ), this.getGraph() ) );
+    }
+
+    /**
+     * @return graph representation of the GO hierarchy
      */
     public DirectedGraph getGraph() {
         return parser.getGraph();
+    }
+
+    /*
+     * 
+     */
+    public DefaultTreeModel getTreeModel() {
+        return getGraph().getTreeModel();
     }
 
     /**
@@ -108,36 +143,31 @@ public class GONames {
     }
 
     /**
-     * Get the Map representation of the GO id - name associations.
-     * 
-     * @return Map
+     * @return Map representation of the GO id - name associations.
      */
     public Map getMap() {
         return goNameMap;
     }
 
     /**
-     * @param go_ID String
-     * @return String
+     * @param go_ID
+     * @return name of gene set
      */
     public String getNameForId( String go_ID ) {
-
         if ( !goNameMap.containsKey( go_ID ) ) {
-            return "<no description available>";
+            return NO_DESCRIPTION_AVAILABLE;
         }
 
         return ( ( String ) ( goNameMap.get( go_ID ) ) ).intern();
     }
 
     /**
-     * Get the aspect (molecular_function etc) for an id.
-     * 
      * @param go_ID
-     * @return
+     * @return the aspect (molecular_function etc) for an id.
      */
     public String getAspectForId( String go_ID ) {
         if ( !goNameMap.containsKey( go_ID ) ) {
-            return "<no aspect available>";
+            return NO_ASPECT_AVAILABLE;
         }
         return ( ( GOEntry ) getGraph().getNodeContents( go_ID ) ).getAspect();
     }
@@ -145,21 +175,33 @@ public class GONames {
     /**
      * @param id String
      * @param name String
-     * @todo this should modify the tree representation too.
      */
     public void addClass( String id, String name ) {
         goNameMap.put( id, name );
         newGeneSets.add( id );
+        addClassToUserDefined( id, name );
     }
 
     /**
+     * @param id
+     * @param name
+     */
+    private void addClassToUserDefined( String id, String name ) {
+        log.debug( "Adding user-defined gene set to graph" );
+        if ( this.getGraph().get( USER_DEFINED ) == null ) log.error( "No user-defined root node!" );
+        this.getGraph().addChildTo( USER_DEFINED, id, new GOEntry( id, name, name, NO_ASPECT_AVAILABLE ) );
+    }
+
+    /**
+     * FIXME this is the same as addClass.
+     * 
      * @param id String
      * @param name String
-     * @todo this should modify the tree representation too.
      */
     public void modifyClass( String id, String name ) {
         goNameMap.put( id, name );
         newGeneSets.add( id );
+        addClassToUserDefined( id, name );
     }
 
     /**
@@ -173,7 +215,7 @@ public class GONames {
     }
 
     /**
-     * Return the Set of all new gene sets (ones which were added after loading the file)
+     * Return the Set of all new gene sets (ones which were added/modified after loading the file)
      * 
      * @return
      */
