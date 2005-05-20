@@ -76,6 +76,14 @@ public class DirectedGraph extends AbstractGraph {
     }
 
     /**
+     * @param user_defined
+     * @param classID
+     */
+    public void deleteChildFrom( Object parent, Object childKey ) {
+        items.remove( childKey ); // minor memory leak danger.
+    }
+
+    /**
      * Add a child to a particular node identified by key; if the node is not in the graph, an exception is thrown.
      * 
      * @param key Object
@@ -236,7 +244,7 @@ public class DirectedGraph extends AbstractGraph {
         DirectedGraphNode root = getRoot();
         Constructor constructor;
         DefaultMutableTreeNode top = null;
-      treeView = null;
+        treeView = null;
         try {
             constructor = nodeClass.getConstructor( new Class[] { root.getClass() } );
             top = ( DefaultMutableTreeNode ) constructor.newInstance( new Object[] { root } );
@@ -253,7 +261,7 @@ public class DirectedGraph extends AbstractGraph {
     }
 
     public DefaultTreeModel getTreeModel() {
-        if (treeView == null ) this.treeView();
+        if ( treeView == null ) this.treeView();
         return dtm;
     }
 
@@ -263,9 +271,9 @@ public class DirectedGraph extends AbstractGraph {
      * @return javax.swing.JTree
      */
     public JTree treeView() {
-        if (treeView == null ) {
-        return this.treeView( DefaultMutableTreeNode.class );
-        } 
+        if ( treeView == null ) {
+            return this.treeView( DefaultMutableTreeNode.class );
+        }
         return treeView;
     }
 

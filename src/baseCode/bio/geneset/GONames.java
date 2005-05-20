@@ -193,12 +193,11 @@ public class GONames {
     }
 
     /**
-     * FIXME this is the same as addClass.
-     * 
      * @param id String
      * @param name String
      */
     public void modifyClass( String id, String name ) {
+        if ( newGeneSets.contains( id ) ) return;
         goNameMap.put( id, name );
         newGeneSets.add( id );
         addClassToUserDefined( id, name );
@@ -210,7 +209,7 @@ public class GONames {
      * @param id
      * @return
      */
-    public boolean newSet( String id ) {
+    public boolean isUserDefined( String id ) {
         return newGeneSets.contains( id );
     }
 
@@ -219,8 +218,16 @@ public class GONames {
      * 
      * @return
      */
-    public Set getNewGeneSets() {
+    public Set getUserDefinedGeneSets() {
         return newGeneSets;
+    }
+
+    /**
+     * @param classID
+     */
+    public void deleteGeneSet( String classID ) {
+        newGeneSets.remove( classID );
+        this.getGraph().deleteChildFrom( USER_DEFINED, classID );
     }
 
 }
