@@ -181,7 +181,10 @@ class GOHandler extends DefaultHandler {
 
             if ( currentName.equalsIgnoreCase( "molecular_function" )
                     || currentName.equalsIgnoreCase( "biological_process" )
-                    || currentName.equalsIgnoreCase( "cellular_component" ) ) {
+                    || currentName.equalsIgnoreCase( "cellular_component" )
+                    || currentName.equalsIgnoreCase( "obsolete_molecular_function" )
+                    || currentName.equalsIgnoreCase( "obsolete_biological_process" )
+                    || currentName.equalsIgnoreCase( "obsolete_cellullar_component" ) ) {
                 currentAspect = currentName;
                 ( ( GOEntry ) m.getNodeContents( currentTerm ) ).setAspect( currentAspect );
             }
