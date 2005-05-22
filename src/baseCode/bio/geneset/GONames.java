@@ -45,11 +45,13 @@ public class GONames {
     /**
      * Name for aspect when none is defined.
      */
-    private static final String NO_ASPECT_AVAILABLE = "<no aspect available>";
+    static public final String NO_ASPECT_AVAILABLE = "[No aspect available]";
 
     private Map goNameMap;
     private Set newGeneSets = new HashSet();
     private GOParser parser;
+
+    private String NO_DEFINITION_AVAILABLE = "[No definition available]";
 
     /**
      * @param filename <code>String</code> The XML file containing class to name mappings. First column is the class
@@ -169,7 +171,21 @@ public class GONames {
         if ( !goNameMap.containsKey( go_ID ) ) {
             return NO_ASPECT_AVAILABLE;
         }
-        return ( ( GOEntry ) getGraph().getNodeContents( go_ID ) ).getAspect();
+
+        if ( getGraph().getNodeContents( go_ID ) == null ) {
+            log.debug( "No node for " + go_ID );
+            return NO_ASPECT_AVAILABLE;
+        }
+
+        GOEntry node = ( GOEntry ) getGraph().getNodeContents( go_ID );
+        if ( node.getAspect() == null ) {
+            Set parents = getParents( go_ID );
+            for ( Iterator iter = parents.iterator(); iter.hasNext(); ) {
+                String parent = ( String ) iter.next();
+                return getAspectForId( parent );
+            }
+        }
+        return node.getAspect();
     }
 
     /**
@@ -229,6 +245,23 @@ public class GONames {
         newGeneSets.remove( classID );
         goNameMap.remove( classID );
         this.getGraph().deleteChildFrom( USER_DEFINED, classID );
+    }
+
+    /**
+     * @param classid
+     * @return
+     */
+    public String getDefinitionForId( String classid ) {
+        if ( !goNameMap.containsKey( classid ) ) {
+            return NO_DEFINITION_AVAILABLE;
+        }
+
+        if ( getGraph().getNodeContents( classid ) == null ) {
+            log.debug( "No node for " + classid );
+            return NO_DEFINITION_AVAILABLE;
+        }
+        GOEntry node = ( GOEntry ) getGraph().getNodeContents( classid );
+        return node.getDefinition();
     }
 
 }
