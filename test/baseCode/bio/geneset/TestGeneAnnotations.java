@@ -48,7 +48,7 @@ public class TestGeneAnnotations extends TestCase {
         ( ( Collection ) goIds.get( 2 ) ).add( "1" );
         ( ( Collection ) goIds.get( 0 ) ).add( "2" );
         ( ( Collection ) goIds.get( 1 ) ).add( "2" );
-       // ( ( Collection ) goIds.get( 2 ) ).add( "2" );
+        // ( ( Collection ) goIds.get( 2 ) ).add( "2" );
         is = TestGeneAnnotations.class.getResourceAsStream( "/data/HG-U133_Plus_2_annot_sample.csv" );
         if ( is == null ) throw new IllegalStateException();
     }
@@ -72,14 +72,14 @@ public class TestGeneAnnotations extends TestCase {
     public void testGeneAnnotationsApiA() throws Exception {
         GeneAnnotations val = new GeneAnnotations( probes, geneIds, null, goIds );
         int actualValue = val.numGenes();
-        int expectedValue = 2;
+        int expectedValue = 3;
         assertEquals( expectedValue, actualValue );
     }
 
     public void testGeneAnnotationsApiB() throws Exception {
         GeneAnnotations val = new GeneAnnotations( probes, geneIds, null, goIds );
         int actualValue = val.numProbesForGene( "aGene" );
-        int expectedValue = 2;
+        int expectedValue = 1;
         assertEquals( expectedValue, actualValue );
     }
 

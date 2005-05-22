@@ -104,6 +104,7 @@ public class GONames {
     private void initialize( InputStream inputStream ) throws IOException, SAXException {
         this.parser = new GOParser( inputStream );
         goNameMap = parser.getGONameMap();
+        if ( this.getGraph() == null ) return;
         DirectedGraphNode root = this.getGraph().getRoot();
         this.getGraph().addChildTo(
                 root.getKey(),
@@ -194,11 +195,12 @@ public class GONames {
             return NO_ASPECT_AVAILABLE;
         }
 
+        if ( getGraph() == null ) return NO_ASPECT_AVAILABLE;
         if ( getGraph().getNodeContents( go_ID ) == null ) {
             log.debug( "No node for " + go_ID );
             return NO_ASPECT_AVAILABLE;
         }
-        if ( getGraph() == null ) return NO_ASPECT_AVAILABLE;
+
         GOEntry node = ( GOEntry ) getGraph().getNodeContents( go_ID );
         if ( node.getAspect() == null ) {
             Set parents = getParents( go_ID );
@@ -267,6 +269,7 @@ public class GONames {
     public void deleteGeneSet( String classID ) {
         newGeneSets.remove( classID );
         goNameMap.remove( classID );
+        if ( this.getGraph() == null ) return;
         this.getGraph().deleteChildFrom( USER_DEFINED, classID );
     }
 
