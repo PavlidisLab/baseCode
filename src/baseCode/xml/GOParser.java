@@ -124,7 +124,7 @@ class GOHandler extends DefaultHandler {
             String parent = res.substring( res.lastIndexOf( '#' ) + 1, res.length() );
 
             if ( !m.containsKey( parent ) ) {
-                m.addNode( parent, new GOEntry( parent, "no name yet", "no definition yet", "no aspect yet" ) );
+                initializeNewNode( parent );
             }
             String currentTerm = accBuf.toString();
             m.addParentTo( currentTerm, parent );
@@ -135,7 +135,7 @@ class GOHandler extends DefaultHandler {
             String parent = res.substring( res.lastIndexOf( '#' ) + 1, res.length() );
 
             if ( !m.containsKey( parent ) ) {
-                m.addNode( parent, new GOEntry( parent, "no name yet", "no definition yet", "no aspect yet" ) );
+                initializeNewNode( parent );
             }
             String currentTerm = accBuf.toString();
             m.addParentTo( currentTerm, parent );
@@ -147,13 +147,20 @@ class GOHandler extends DefaultHandler {
         }
     }
 
+    /**
+     * @param parent
+     */
+    private void initializeNewNode( String parent ) {
+        m.addNode( parent, new GOEntry( parent, "No name yet", "No definition found", null ) );
+    }
+
     public void endElement( String uri, String name, String qName ) {
         if ( name.equals( "term" ) ) {
             inTerm = false;
         } else if ( name.equals( "accession" ) ) {
             inAcc = false;
             String currentTerm = accBuf.toString();
-            m.addNode( currentTerm, new GOEntry( currentTerm, "no name yet", "no definition yet", "no aspect yet" ) );
+            initializeNewNode( currentTerm );
         } else if ( name.equals( "definition" ) ) {
             String currentTerm = accBuf.toString();
             ( ( GOEntry ) m.getNodeContents( currentTerm ) ).setDefinition( defBuf.toString().intern() );
@@ -176,9 +183,8 @@ class GOHandler extends DefaultHandler {
                     || currentName.equalsIgnoreCase( "biological_process" )
                     || currentName.equalsIgnoreCase( "cellular_component" ) ) {
                 currentAspect = currentName;
+                ( ( GOEntry ) m.getNodeContents( currentTerm ) ).setAspect( currentAspect );
             }
-
-            ( ( GOEntry ) m.getNodeContents( currentTerm ) ).setAspect( currentAspect );
 
         }
     }
