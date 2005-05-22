@@ -127,6 +127,7 @@ xmlns:jnlp="http://www.w3.org/2001/XMLSchema-instance">
                     <includes>
                         <include>**/data/*.txt</include>
                         <include>**/data/*.xml</include>
+                        <include>**/data/*.csv</include>
                     </includes>
                     <filtering>false</filtering>
                 </resource>
