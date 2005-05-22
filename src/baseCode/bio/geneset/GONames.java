@@ -47,7 +47,7 @@ public class GONames {
      */
     private static final String NO_ASPECT_AVAILABLE = "<no aspect available>";
 
-    private static Map goNameMap;
+    private Map goNameMap;
     private Set newGeneSets = new HashSet();
     private GOParser parser;
 
@@ -227,6 +227,7 @@ public class GONames {
      */
     public void deleteGeneSet( String classID ) {
         newGeneSets.remove( classID );
+        goNameMap.remove( classID );
         this.getGraph().deleteChildFrom( USER_DEFINED, classID );
     }
 

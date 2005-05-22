@@ -231,7 +231,7 @@ public class GeneAnnotations {
         }
         geneSetToGeneMap.put( id, genes );
         geneToGeneSetMap.put( id, probeToGeneSetMap.get( id ) );
-   
+
         resetSelectedSets();
     }
 
@@ -457,7 +457,7 @@ public class GeneAnnotations {
         if ( !geneSetToGeneMap.containsKey( id ) ) {
             return 0;
         }
-        return ( ( Collection ) geneSetToGeneMap.get( id ) ).size();
+        return ( ( Collection ) geneSetToGeneMap .get( id ) ).size();
     }
 
     /**
@@ -535,6 +535,7 @@ public class GeneAnnotations {
             if ( geneSetToGeneMap.remove( id ) == null ) log.error( "Couldn't remove " + id + " from classToGeneMap" );
         }
         if ( geneSetToRedundantMap.containsKey( id ) ) geneSetToRedundantMap.remove( id );
+        if ( this.getSelectedSets() != null ) this.getSelectedSets().remove( id );
     }
 
     /**
