@@ -3,8 +3,10 @@ package baseCode.bio.geneset;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -53,6 +55,8 @@ public class GONames {
 
     private String NO_DEFINITION_AVAILABLE = "[No definition available]";
 
+    private String USER_DEFINED_ASPECT = "User-defined";
+
     /**
      * @param filename <code>String</code> The XML file containing class to name mappings. First column is the class
      *        id, second is a description that will be used int program output.
@@ -66,6 +70,20 @@ public class GONames {
 
         InputStream i = new FileInputStream( filename );
         this.initialize( i );
+    }
+
+    /**
+     * @param goIds
+     * @param goTerms
+     */
+    public GONames( List goIds, List goTerms ) {
+        if ( goIds == null || goTerms == null || goIds.size() != goTerms.size() ) {
+            throw new IllegalArgumentException( "Invalid arguments" );
+        }
+        goNameMap = new HashMap();
+        for ( int i = 0; i < goIds.size(); i++ ) {
+            goNameMap.put( goIds.get( i ), goTerms.get( i ) );
+        }
     }
 
     /**
@@ -98,6 +116,7 @@ public class GONames {
      * @return graph representation of the GO hierarchy
      */
     public DirectedGraph getGraph() {
+        if ( parser == null ) return null;
         return parser.getGraph();
     }
 
@@ -105,6 +124,7 @@ public class GONames {
      * 
      */
     public DefaultTreeModel getTreeModel() {
+        if ( getGraph() == null ) return null;
         return getGraph().getTreeModel();
     }
 
@@ -113,6 +133,7 @@ public class GONames {
      * @return a Set containing the ids of geneSets which are immediately below the selected one in the hierarchy.
      */
     public Set getChildren( String id ) {
+        if ( getGraph() == null ) return null;
         Set returnVal = new HashSet();
         Set children = ( ( DirectedGraphNode ) getGraph().get( id ) ).getChildNodes();
         for ( Iterator it = children.iterator(); it.hasNext(); ) {
@@ -128,6 +149,7 @@ public class GONames {
      * @return a Set containing the ids of geneSets which are immediately above the selected one in the hierarchy.
      */
     public Set getParents( String id ) {
+        if ( getGraph() == null ) return null;
         Set returnVal = new HashSet();
 
         if ( !getGraph().containsKey( id ) ) {
@@ -176,7 +198,7 @@ public class GONames {
             log.debug( "No node for " + go_ID );
             return NO_ASPECT_AVAILABLE;
         }
-
+        if ( getGraph() == null ) return NO_ASPECT_AVAILABLE;
         GOEntry node = ( GOEntry ) getGraph().getNodeContents( go_ID );
         if ( node.getAspect() == null ) {
             Set parents = getParents( go_ID );
@@ -203,9 +225,10 @@ public class GONames {
      * @param name
      */
     private void addClassToUserDefined( String id, String name ) {
+        if ( getGraph() == null ) return;
         log.debug( "Adding user-defined gene set to graph" );
         if ( this.getGraph().get( USER_DEFINED ) == null ) log.error( "No user-defined root node!" );
-        this.getGraph().addChildTo( USER_DEFINED, id, new GOEntry( id, name, name, NO_ASPECT_AVAILABLE ) );
+        this.getGraph().addChildTo( USER_DEFINED, id, new GOEntry( id, name, name, USER_DEFINED_ASPECT ) );
     }
 
     /**
@@ -255,7 +278,7 @@ public class GONames {
         if ( !goNameMap.containsKey( classid ) ) {
             return NO_DEFINITION_AVAILABLE;
         }
-
+        if ( getGraph() == null ) return NO_DEFINITION_AVAILABLE;
         if ( getGraph().getNodeContents( classid ) == null ) {
             log.debug( "No node for " + classid );
             return NO_DEFINITION_AVAILABLE;

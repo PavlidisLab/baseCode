@@ -57,11 +57,6 @@ import baseCode.util.StringUtil;
 
 public class GeneAnnotations {
     /**
-     * String used to indicate a gene has no description associated with it.
-     */
-    private static final String NO_DESCRIPTION = "[No description]";
-
-    /**
      * 
      */
     public static final int AFFYCSV = 1;
@@ -77,9 +72,15 @@ public class GeneAnnotations {
     private static final int ABSOLUTE_MINIMUM_GENESET_SIZE = 2;
 
     /**
+     * String used to indicate a gene has no description associated with it.
+     */
+    private static final String NO_DESCRIPTION = "[No description]";
+
+    /**
      * The maximum size of gene sets ever considered.
      */
-    private static final int PRACTICAL_MAXIMUM_GENESET_SIZE = 1000;
+    private static final int PRACTICAL_MAXIMUM_GENESET_SIZE = 2000;
+
     protected static final Log log = LogFactory.getLog( GeneAnnotations.class );
     private Map geneSetToGeneMap; // stores Classes->genes map
     private Map geneSetToProbeMap; // stores Classes->probes map
@@ -110,9 +111,7 @@ public class GeneAnnotations {
         if ( activeProbes == null || geneData == null )
             throw new IllegalArgumentException( "GeneAnnotations can't be constructed from null data" );
 
-        // FIXME - shallow copies here could cause problems.
-
-        // CAREFUL this is a shallow copy! This is okay?
+        // CAREFUL this is a shallow copy! This is okay? (apparently, so far)
         probeToGeneSetMap = new LinkedHashMap( geneData.probeToGeneSetMap );
 
         // make a deep copy of the classToProbeMap, which is a map of sets. Shallow copy is BAD.
@@ -136,11 +135,6 @@ public class GeneAnnotations {
             }
         }
         setUp( null ); // creates the classToGene map.
-
-        // log.debug( "Orig: GO:0019058 has probes: "
-        // + geneData.numProbesInGeneSet( "GO:0019058" ) );
-        // log.debug( "New: GO:0019058 has probes: "
-        // + this.numProbesInGeneSet( "GO:0019058" ) );
     }
 
     /**
@@ -155,6 +149,56 @@ public class GeneAnnotations {
         setUpDataStructures();
         this.read( stream, activeGenes );
         setUp( goNames );
+    }
+
+    /**
+     * Constructor designed for use when a file is not the immediate input of the data.
+     * 
+     * @param probes A List of probes
+     * @param geneSymbols A List of gene symbols (e.g., ACTB), corresponding to the probes (in the same order)
+     * @param geneNames A List of gene names (e.g., "Actin"), corresponding to the probes (in the same order). This can
+     *        be null.
+     * @param goTerms A List of Collections of Strings corresponding to the GO terms for each probe.
+     * @throws IllegaArgumentException if any of the required arguments are null, don't have sizes that match, etc.
+     */
+    public GeneAnnotations( List probes, List geneSymbols, List geneNames, List goTerms ) {
+        checkValidData( probes, geneSymbols, geneNames, goTerms );
+        setUpDataStructures();
+        Collection probeIds = new ArrayList();
+        Pattern pat = Pattern.compile( "[0-9]+" );
+        for ( int i = 0; i < probes.size(); i++ ) {
+            String probe = ( String ) probes.get( i );
+            String geneSymbol = ( String ) geneSymbols.get( i );
+            String geneName = null;
+            if ( geneNames != null ) {
+                geneName = ( String ) geneNames.get( i );
+            }
+            Collection goTermsForProbe = ( Collection ) goTerms.get( i );
+
+            storeProbeAndGene( probeIds, probe, geneSymbol );
+
+            if ( geneName != null ) {
+                probeToDescription.put( probe.intern(), geneName.intern() );
+            } else {
+                probeToDescription.put( probe.intern(), NO_DESCRIPTION );
+            }
+
+            for ( Iterator iter = goTermsForProbe.iterator(); iter.hasNext(); ) {
+                String goi = ( ( String ) iter.next() ).intern();
+                parseGoTerm( probe, pat, goi );
+            }
+
+            if ( messenger != null && i % 500 == 0 ) {
+                messenger.setStatus( "Read " + i + " probes" );
+                try {
+                    Thread.sleep( 10 );
+                } catch ( InterruptedException e ) {
+                    throw new RuntimeException( "Interrupted" );
+                }
+            }
+        }
+        resetSelectedProbes();
+        this.setUp( null );
     }
 
     /**
@@ -457,7 +501,7 @@ public class GeneAnnotations {
         if ( !geneSetToGeneMap.containsKey( id ) ) {
             return 0;
         }
-        return ( ( Collection ) geneSetToGeneMap .get( id ) ).size();
+        return ( ( Collection ) geneSetToGeneMap.get( id ) ).size();
     }
 
     /**
@@ -688,10 +732,6 @@ public class GeneAnnotations {
         }
     }
 
-    /*******************************************************************************************************************
-     * Private or protected methods
-     ******************************************************************************************************************/
-
     /**
      * @return
      */
@@ -749,6 +789,42 @@ public class GeneAnnotations {
 
         };
     }
+
+    /**
+     * @param probes
+     * @param geneSymbols
+     * @param geneNames
+     * @param goTerms
+     */
+    private void checkValidData( List probes, List geneSymbols, List geneNames, List goTerms ) {
+        if ( probes == null || geneSymbols == null || goTerms == null ) {
+            throw new IllegalArgumentException( "Probes, gene symbols, GO terms and GO data must not be null" );
+        }
+        int size = probes.size();
+        if ( size == 0 ) {
+            throw new IllegalArgumentException( "Empty list" );
+        }
+        if ( size != geneSymbols.size() && size != geneNames.size() && size != goTerms.size() ) {
+            throw new IllegalArgumentException( "All lists must have same number of elements" );
+        }
+        Object test = goTerms.get( 0 );
+        if ( !( test instanceof Collection ) ) {
+            throw new IllegalArgumentException( "GO terms must be a list of java.util.Collection's" );
+        }
+        if ( !( probes.get( 0 ) instanceof String ) ) {
+            throw new IllegalArgumentException( "Probes must be a list of java.lang.String's" );
+        }
+        if ( !( geneSymbols.get( 0 ) instanceof String ) ) {
+            throw new IllegalArgumentException( "Gene symbols must be a list of java.lang.String's" );
+        }
+        if ( geneNames != null && !( geneNames.get( 0 ) instanceof String ) ) {
+            throw new IllegalArgumentException( "Gene names must be a list of java.lang.String's" );
+        }
+    }
+
+    /*******************************************************************************************************************
+     * Private or protected methods
+     ******************************************************************************************************************/
 
     /**
      * @param limit
@@ -872,6 +948,28 @@ public class GeneAnnotations {
     }
 
     /**
+     * @param probe
+     * @param pat
+     * @param goi
+     */
+    private void parseGoTerm( String probe, Pattern pat, String goi ) {
+        Matcher mat = pat.matcher( goi );
+        if ( mat.find() ) {
+            int start = mat.start();
+            int end = mat.end();
+            String go = goi.substring( start, end );
+
+            go = padGoTerm( go );
+            ( ( Collection ) probeToGeneSetMap.get( probe ) ).add( go );
+
+            if ( !geneSetToProbeMap.containsKey( go ) ) {
+                geneSetToProbeMap.put( go, new HashSet() );
+            }
+            ( ( Collection ) geneSetToProbeMap.get( go ) ).add( probe );
+        }
+    }
+
+    /**
      * Remove classes that have too few members
      * <p>
      * FIXME this overlaps with functionality in GeneSetMapTools
@@ -973,6 +1071,25 @@ public class GeneAnnotations {
         geneSetToRedundantMap = new HashMap();
     }
 
+    /**
+     * @param probeIds
+     * @param probe
+     * @param geneSymbol
+     */
+    private void storeProbeAndGene( Collection probeIds, String probe, String geneSymbol ) {
+        probeToGeneName.put( probe.intern(), geneSymbol.intern() );
+
+        // create the list if need be.
+        if ( geneToProbeList.get( geneSymbol ) == null ) {
+            geneToProbeList.put( geneSymbol.intern(), new HashSet() );
+        }
+        ( ( Collection ) geneToProbeList.get( geneSymbol ) ).add( probe.intern() );
+
+        probeIds.add( probe );
+        probeToGeneSetMap.put( probe.intern(), new HashSet() );
+        geneToGeneSetMap.put( geneSymbol, probeToGeneSetMap.get( probe ) );
+    }
+
     protected void read( InputStream bis, Set activeGenes ) throws IOException {
         if ( bis == null ) {
             throw new IOException( "Inputstream was null" );
@@ -1014,17 +1131,7 @@ public class GeneAnnotations {
                 continue;
             }
 
-            probeToGeneName.put( probe.intern(), gene.intern() );
-
-            // create the list if need be.
-            if ( geneToProbeList.get( gene ) == null ) {
-                geneToProbeList.put( gene.intern(), new HashSet() );
-            }
-            ( ( Collection ) geneToProbeList.get( gene ) ).add( probe.intern() );
-
-            probeIds.add( probe );
-            probeToGeneSetMap.put( probe.intern(), new HashSet() );
-            geneToGeneSetMap.put( gene, probeToGeneSetMap.get( probe ) );
+            storeProbeAndGene( probeIds, probe, gene );
 
             /* read gene description */
             if ( st.hasMoreTokens() ) {
@@ -1104,7 +1211,7 @@ public class GeneAnnotations {
         int geneSymbolIndex = getAffyGeneSymbolIndex( header );
 
         assert ( numFields > probeIndex + 1 && numFields > geneSymbolIndex + 1 );
-
+        Pattern pat = Pattern.compile( "[0-9]+" );
         // loop through rows. Makes hash map of probes to go, and map of go to
         // probes.
         int n = 0;
@@ -1128,17 +1235,7 @@ public class GeneAnnotations {
                 continue;
             }
 
-            probeToGeneName.put( probe.intern(), gene.intern() );
-
-            // create the list if need be.
-            if ( geneToProbeList.get( gene ) == null ) {
-                geneToProbeList.put( gene.intern(), new HashSet() );
-            }
-            ( ( Collection ) geneToProbeList.get( gene ) ).add( probe.intern() );
-
-            probeIds.add( probe );
-            probeToGeneSetMap.put( probe.intern(), new HashSet() );
-            geneToGeneSetMap.put( gene, probeToGeneSetMap.get( probe ) );
+            storeProbeAndGene( probeIds, probe, gene );
 
             /* read gene description */
 
@@ -1151,31 +1248,9 @@ public class GeneAnnotations {
 
             classIds = " // " + fields[goBpIndex] + " // " + fields[goMfIndex] + " // " + fields[goCcIndex];
             String[] goinfo = classIds.split( "/+" );
-            Pattern pat = Pattern.compile( "[0-9]+" );
-            // log.debug( "Probe: " + probe );
-            // log.debug( goBpIndex + "BP: " + fields[goBpIndex] );
-            // log.debug( goCcIndex + "CC: " + fields[goCcIndex] );
-            // log.debug( goMfIndex + "MF: " + fields[goMfIndex] );
-
             for ( int i = 0; i < goinfo.length; i++ ) {
                 String goi = goinfo[i].intern();
-                // log.debug(probe + " ---> " + goi);
-                Matcher mat = pat.matcher( goi );
-                if ( mat.find() ) {
-                    int start = mat.start();
-                    int end = mat.end();
-                    String go = goi.substring( start, end );
-                    go = padGoTerm( go );
-
-                    // add this go to the probe->go map.
-                    ( ( Collection ) probeToGeneSetMap.get( probe ) ).add( go );
-
-                    // add this probe this go->probe map.
-                    if ( !geneSetToProbeMap.containsKey( go ) ) {
-                        geneSetToProbeMap.put( go, new HashSet() );
-                    }
-                    ( ( Collection ) geneSetToProbeMap.get( go ) ).add( probe );
-                }
+                parseGoTerm( probe, pat, goi );
             }
 
             if ( messenger != null && n % 500 == 0 ) {
