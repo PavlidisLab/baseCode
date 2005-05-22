@@ -43,6 +43,5 @@ public class TestGeneAnnotations extends TestCase {
         List geneSets = new ArrayList( ga.getGeneSetToGeneMap().keySet() );
         Collections.sort( geneSets );
         assertTrue( geneSets.size() > 0 );
-       
     }
 }

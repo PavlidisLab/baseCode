@@ -121,9 +121,13 @@ public abstract class Wizard extends JDialog {
         statusMessenger.setStatus( "" );
     }
 
-    protected void addStep( int step, WizardStep panel ) {
-        steps.add( step - 1, panel );
-        if ( step == 1 ) mainPanel.add( ( JPanel ) steps.get( 0 ), BorderLayout.CENTER );
+    protected void addStep( WizardStep panel, boolean first ) {
+        this.addStep( panel );
+        if ( first ) mainPanel.add( ( JPanel ) steps.get( 0 ), BorderLayout.CENTER );
+    }
+
+    protected void addStep( WizardStep panel ) {
+        steps.add( panel );
     }
 
     public void showWizard() {
