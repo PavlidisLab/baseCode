@@ -10,23 +10,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
+ * <hr>
  * <p>
- * Title:
- * </p>
- * <p>
- * Description:
- * </p>
- * <p>
- * Copyright: Copyright (c) 2003
- * </p>
- * <p>
- * Company:
- * </p>
+ * Copyright (c) 2004-2005 Columbia University
  * 
- * @author not attributable
+ * @author Homin Lee
+ * @author pavlidis
  * @version $Id$
  */
-
 public abstract class WizardStep extends JPanel {
     protected static Log log = LogFactory.getLog( WizardStep.class.getName() );
     Wizard owner;
@@ -39,7 +30,7 @@ public abstract class WizardStep extends JPanel {
         owner = wiz;
         try {
             this.setLayout( new BorderLayout() );
-      //      jbInit();
+            // jbInit();
         } catch ( Exception e ) {
             e.printStackTrace();
         }
@@ -56,7 +47,6 @@ public abstract class WizardStep extends JPanel {
 
     /**
      * @param text
-     * @todo why the spaces for layout?
      */
     protected void addHelp( String text ) {
         JLabel label = new JLabel( text );
@@ -64,10 +54,9 @@ public abstract class WizardStep extends JPanel {
         JLabel jLabel2 = new JLabel( " " );
         JLabel jLabel3 = new JLabel( " " );
         JLabel jLabel4 = new JLabel( "      " );
-        BorderLayout borderLayout1 = new BorderLayout();
         JPanel labelPanel = new JPanel();
         labelPanel.setBackground( Color.WHITE );
-        labelPanel.setLayout( borderLayout1 );
+        labelPanel.setLayout( new BorderLayout() );
         labelPanel.add( label, BorderLayout.CENTER );
         labelPanel.add( jLabel1, BorderLayout.WEST );
         labelPanel.add( jLabel2, BorderLayout.NORTH );
@@ -79,7 +68,7 @@ public abstract class WizardStep extends JPanel {
     /**
      * Print a message to the status bar.
      * 
-     * @param a
+     * @param a message to show.
      */
     public void showStatus( String a ) {
         owner.showStatus( a );
@@ -88,7 +77,7 @@ public abstract class WizardStep extends JPanel {
     /**
      * Print an error message to the status bar.
      * 
-     * @param a
+     * @param a error message to show.
      */
     public void showError( String a ) {
         owner.showError( a );
