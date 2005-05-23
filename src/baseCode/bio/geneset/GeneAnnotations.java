@@ -633,6 +633,15 @@ public class GeneAnnotations {
     }
 
     /**
+     * Select a given set of gene sets.
+     * @param selectedGeneSets
+     */
+    public void setSelectedSets( Collection selectedGeneSets ) {
+        this.selectedSets.clear();
+        this.selectedSets.addAll( selectedGeneSets );
+    }
+
+    /**
      * @param searchOn
      * @param goData
      */
