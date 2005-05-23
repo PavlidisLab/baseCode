@@ -237,7 +237,6 @@ public class GeneAnnotations {
      * @throws IOException
      */
     public GeneAnnotations( String filename, StatusViewer messenger, GONames goNames, int format ) throws IOException {
-
         this();
         this.messenger = messenger;
 
@@ -248,7 +247,6 @@ public class GeneAnnotations {
         } else {
             throw new IllegalArgumentException( "Unknown format" );
         }
-
         setUp( goNames );
     }
 
@@ -261,21 +259,15 @@ public class GeneAnnotations {
      */
     public void addClass( String id, Collection probesForNew ) {
         geneSetToProbeMap.put( id, probesForNew );
-
-        Iterator probe_it = probesForNew.iterator();
-        while ( probe_it.hasNext() ) {
+        Collection genes = new HashSet();
+        for ( Iterator probe_it = probesForNew.iterator(); probe_it.hasNext(); ) {
             String probe = new String( ( String ) probe_it.next() );
             ( ( Collection ) probeToGeneSetMap.get( probe ) ).add( id );
+            genes.add( probeToGeneName.get( probe ) );
         }
 
-        Collection genes = new HashSet();
-        Iterator probe_it2 = probesForNew.iterator();
-        while ( probe_it2.hasNext() ) {
-            genes.add( probeToGeneName.get( probe_it2.next() ) );
-        }
         geneSetToGeneMap.put( id, genes );
         geneToGeneSetMap.put( id, probeToGeneSetMap.get( id ) );
-
         resetSelectedSets();
     }
 
@@ -289,7 +281,6 @@ public class GeneAnnotations {
             String id = ( String ) iter.next();
 
             if ( !geneSetToGeneMap.containsKey( id ) ) geneSetToGeneMap.put( id, new HashSet() );
-
             if ( !geneSetToProbeMap.containsKey( id ) ) geneSetToProbeMap.put( id, new HashSet() );
 
             ( ( Collection ) geneSetToGeneMap.get( id ) ).add( gene );
@@ -430,10 +421,14 @@ public class GeneAnnotations {
      * Redefine a class.
      * 
      * @param classId String class to be modified
-     * @param probesForNew ArrayList current user-defined list of members. The "real" version of the class is modified
+     * @param probesForNew Collection current user-defined list of members. The "real" version of the class is modified
      *        to look like this one.
      */
     public void modifyClass( String classId, Collection probesForNew ) {
+        if ( !geneSetToProbeMap.containsKey( classId ) ) {
+            log.warn( "No such class to modify: " + classId );
+            return;
+        }
         Collection orig_probes = ( Collection ) geneSetToProbeMap.get( classId );
         Iterator orig_probe_it = orig_probes.iterator();
         while ( orig_probe_it.hasNext() ) {
@@ -525,8 +520,6 @@ public class GeneAnnotations {
         if ( !geneSetToProbeMap.containsKey( id ) ) {
             return 0;
         }
-        // System.err.println( "GO:0019058 has probes: "
-        // + ( ( ArrayList ) classToProbeMap.get( "GO:0019058" ) ).size() );
         return ( ( Collection ) geneSetToProbeMap.get( id ) ).size();
     }
 
@@ -725,7 +718,7 @@ public class GeneAnnotations {
             sortedGeneSets = new Vector();
         }
 
-        Vector vec = new Vector( geneSetToProbeMap.keySet() );
+        List vec = new Vector( geneSetToProbeMap.keySet() );
         Collections.sort( vec );
         for ( Iterator iter = vec.iterator(); iter.hasNext(); ) {
             sortedGeneSets.add( iter.next() );

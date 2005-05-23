@@ -33,11 +33,9 @@ import baseCode.xml.GOParser;
 public class GONames {
 
     /**
-     * 
+     * Name for aspect when none is defined.
      */
-    private static final String NO_DESCRIPTION_AVAILABLE = "<no description available>";
-
-    protected static final Log log = LogFactory.getLog( GONames.class );
+    static public final String NO_ASPECT_AVAILABLE = "[No aspect available]";
 
     /**
      * Name for root of tree representing user-defined gene sets.
@@ -45,31 +43,30 @@ public class GONames {
     public static final String USER_DEFINED = "User-defined";
 
     /**
-     * Name for aspect when none is defined.
+     * 
      */
-    static public final String NO_ASPECT_AVAILABLE = "[No aspect available]";
+    private static final String NO_DESCRIPTION_AVAILABLE = "[No description available]";
+
+    protected static final Log log = LogFactory.getLog( GONames.class );
 
     private Map goNameMap;
     private Set newGeneSets = new HashSet();
-    private GOParser parser;
-
     private String NO_DEFINITION_AVAILABLE = "[No definition available]";
+
+    private GOParser parser;
 
     private String USER_DEFINED_ASPECT = "User-defined";
 
     /**
-     * @param filename <code>String</code> The XML file containing class to name mappings. First column is the class
-     *        id, second is a description that will be used int program output.
+     * @param inputStream
      * @throws IOException
      * @throws SAXException
      */
-    public GONames( String filename ) throws SAXException, IOException {
-        if ( filename == null || filename.length() == 0 ) {
-            throw new IllegalArgumentException( "Invalid filename " + filename + " or no filename was given" );
+    public GONames( InputStream inputStream ) throws IOException, SAXException {
+        if ( inputStream == null ) {
+            throw new IOException( "Input stream was null" );
         }
-
-        InputStream i = new FileInputStream( filename );
-        this.initialize( i );
+        this.initialize( inputStream );
     }
 
     /**
@@ -87,103 +84,38 @@ public class GONames {
     }
 
     /**
-     * @param inputStream
+     * @param filename <code>String</code> The XML file containing class to name mappings. First column is the class
+     *        id, second is a description that will be used int program output.
      * @throws IOException
      * @throws SAXException
      */
-    public GONames( InputStream inputStream ) throws IOException, SAXException {
-        if ( inputStream == null ) {
-            throw new IOException( "Input stream was null" );
+    public GONames( String filename ) throws SAXException, IOException {
+        if ( filename == null || filename.length() == 0 ) {
+            throw new IllegalArgumentException( "Invalid filename " + filename + " or no filename was given" );
         }
-        this.initialize( inputStream );
+
+        InputStream i = new FileInputStream( filename );
+        this.initialize( i );
     }
 
     /**
-     * 
+     * @param id String
+     * @param name String
      */
-    private void initialize( InputStream inputStream ) throws IOException, SAXException {
-        this.parser = new GOParser( inputStream );
-        goNameMap = parser.getGONameMap();
+    public void addClass( String id, String name ) {
+        goNameMap.put( id, name );
+        newGeneSets.add( id );
+        addClassToUserDefined( id, name );
+    }
+
+    /**
+     * @param classID
+     */
+    public void deleteGeneSet( String classID ) {
+        newGeneSets.remove( classID );
+        goNameMap.remove( classID );
         if ( this.getGraph() == null ) return;
-        DirectedGraphNode root = this.getGraph().getRoot();
-        this.getGraph().addChildTo(
-                root.getKey(),
-                USER_DEFINED,
-                new DirectedGraphNode( USER_DEFINED,
-                        new GOEntry( USER_DEFINED, "", USER_DEFINED, NO_ASPECT_AVAILABLE ), this.getGraph() ) );
-    }
-
-    /**
-     * @return graph representation of the GO hierarchy
-     */
-    public DirectedGraph getGraph() {
-        if ( parser == null ) return null;
-        return parser.getGraph();
-    }
-
-    /*
-     * 
-     */
-    public DefaultTreeModel getTreeModel() {
-        if ( getGraph() == null ) return null;
-        return getGraph().getTreeModel();
-    }
-
-    /**
-     * @param id
-     * @return a Set containing the ids of geneSets which are immediately below the selected one in the hierarchy.
-     */
-    public Set getChildren( String id ) {
-        if ( getGraph() == null ) return null;
-        Set returnVal = new HashSet();
-        Set children = ( ( DirectedGraphNode ) getGraph().get( id ) ).getChildNodes();
-        for ( Iterator it = children.iterator(); it.hasNext(); ) {
-            DirectedGraphNode child = ( DirectedGraphNode ) it.next();
-            String childKey = ( ( GOEntry ) child.getItem() ).getId().intern();
-            returnVal.add( childKey.intern() );
-        }
-        return returnVal;
-    }
-
-    /**
-     * @param id
-     * @return a Set containing the ids of geneSets which are immediately above the selected one in the hierarchy.
-     */
-    public Set getParents( String id ) {
-        if ( getGraph() == null ) return null;
-        Set returnVal = new HashSet();
-
-        if ( !getGraph().containsKey( id ) ) {
-            log.debug( "GeneSet " + id + " doesn't exist in graph" ); // this is not really a problem.
-            return returnVal;
-        }
-
-        Set parents = ( ( DirectedGraphNode ) getGraph().get( id ) ).getParentNodes();
-        for ( Iterator it = parents.iterator(); it.hasNext(); ) {
-            DirectedGraphNode parent = ( DirectedGraphNode ) it.next();
-            String parentKey = ( ( GOEntry ) parent.getItem() ).getId().intern();
-            returnVal.add( parentKey.intern() );
-        }
-        return returnVal;
-    }
-
-    /**
-     * @return Map representation of the GO id - name associations.
-     */
-    public Map getMap() {
-        return goNameMap;
-    }
-
-    /**
-     * @param go_ID
-     * @return name of gene set
-     */
-    public String getNameForId( String go_ID ) {
-        if ( !goNameMap.containsKey( go_ID ) ) {
-            return NO_DESCRIPTION_AVAILABLE;
-        }
-
-        return ( ( String ) ( goNameMap.get( go_ID ) ) ).intern();
+        this.getGraph().deleteChildFrom( USER_DEFINED, classID );
     }
 
     /**
@@ -213,64 +145,19 @@ public class GONames {
     }
 
     /**
-     * @param id String
-     * @param name String
-     */
-    public void addClass( String id, String name ) {
-        goNameMap.put( id, name );
-        newGeneSets.add( id );
-        addClassToUserDefined( id, name );
-    }
-
-    /**
      * @param id
-     * @param name
+     * @return a Set containing the ids of geneSets which are immediately below the selected one in the hierarchy.
      */
-    private void addClassToUserDefined( String id, String name ) {
-        if ( getGraph() == null ) return;
-        log.debug( "Adding user-defined gene set to graph" );
-        if ( this.getGraph().get( USER_DEFINED ) == null ) log.error( "No user-defined root node!" );
-        this.getGraph().addChildTo( USER_DEFINED, id, new GOEntry( id, name, name, USER_DEFINED_ASPECT ) );
-    }
-
-    /**
-     * @param id String
-     * @param name String
-     */
-    public void modifyClass( String id, String name ) {
-        if ( newGeneSets.contains( id ) ) return;
-        goNameMap.put( id, name );
-        newGeneSets.add( id );
-        addClassToUserDefined( id, name );
-    }
-
-    /**
-     * Check if a gene set is already defined.
-     * 
-     * @param id
-     * @return
-     */
-    public boolean isUserDefined( String id ) {
-        return newGeneSets.contains( id );
-    }
-
-    /**
-     * Return the Set of all new gene sets (ones which were added/modified after loading the file)
-     * 
-     * @return
-     */
-    public Set getUserDefinedGeneSets() {
-        return newGeneSets;
-    }
-
-    /**
-     * @param classID
-     */
-    public void deleteGeneSet( String classID ) {
-        newGeneSets.remove( classID );
-        goNameMap.remove( classID );
-        if ( this.getGraph() == null ) return;
-        this.getGraph().deleteChildFrom( USER_DEFINED, classID );
+    public Set getChildren( String id ) {
+        if ( getGraph() == null ) return null;
+        Set returnVal = new HashSet();
+        Set children = ( ( DirectedGraphNode ) getGraph().get( id ) ).getChildNodes();
+        for ( Iterator it = children.iterator(); it.hasNext(); ) {
+            DirectedGraphNode child = ( DirectedGraphNode ) it.next();
+            String childKey = ( ( GOEntry ) child.getItem() ).getId().intern();
+            returnVal.add( childKey.intern() );
+        }
+        return returnVal;
     }
 
     /**
@@ -288,6 +175,123 @@ public class GONames {
         }
         GOEntry node = ( GOEntry ) getGraph().getNodeContents( classid );
         return node.getDefinition();
+    }
+
+    /**
+     * @return graph representation of the GO hierarchy
+     */
+    public DirectedGraph getGraph() {
+        if ( parser == null ) return null;
+        return parser.getGraph();
+    }
+
+    /**
+     * @return Map representation of the GO id - name associations.
+     */
+    public Map getMap() {
+        return goNameMap;
+    }
+
+    /**
+     * @param go_ID
+     * @return name of gene set
+     */
+    public String getNameForId( String go_ID ) {
+        if ( !goNameMap.containsKey( go_ID ) ) {
+            return NO_DESCRIPTION_AVAILABLE;
+        }
+
+        return ( ( String ) ( goNameMap.get( go_ID ) ) ).intern();
+    }
+
+    /**
+     * @param id
+     * @return a Set containing the ids of geneSets which are immediately above the selected one in the hierarchy.
+     */
+    public Set getParents( String id ) {
+        if ( getGraph() == null ) return null;
+        Set returnVal = new HashSet();
+
+        if ( !getGraph().containsKey( id ) ) {
+            log.debug( "GeneSet " + id + " doesn't exist in graph" ); // this is not really a problem.
+            return returnVal;
+        }
+
+        Set parents = ( ( DirectedGraphNode ) getGraph().get( id ) ).getParentNodes();
+        for ( Iterator it = parents.iterator(); it.hasNext(); ) {
+            DirectedGraphNode parent = ( DirectedGraphNode ) it.next();
+            String parentKey = ( ( GOEntry ) parent.getItem() ).getId().intern();
+            returnVal.add( parentKey.intern() );
+        }
+        return returnVal;
+    }
+
+    /*
+     * 
+     */
+    public DefaultTreeModel getTreeModel() {
+        if ( getGraph() == null ) return null;
+        return getGraph().getTreeModel();
+    }
+
+    /**
+     * Return the Set of all new gene sets (ones which were added/modified after loading the file)
+     * 
+     * @return
+     */
+    public Set getUserDefinedGeneSets() {
+        return newGeneSets;
+    }
+
+    /**
+     * Check if a gene set is already defined.
+     * 
+     * @param id
+     * @return
+     */
+    public boolean isUserDefined( String id ) {
+        return newGeneSets.contains( id );
+    }
+
+    /**
+     * @param id String
+     * @param name String
+     */
+    public void modifyClass( String id, String name ) {
+        log.debug( "Modifying " + id );
+        if ( newGeneSets.contains( id ) ) {
+            log.warn( "There is already a user-defined gene set " + id );
+            return;
+        }
+        goNameMap.put( id, name );
+        newGeneSets.add( id );
+        addClassToUserDefined( id, name );
+    }
+
+    /**
+     * @param id
+     * @param name
+     */
+    private void addClassToUserDefined( String id, String name ) {
+        if ( getGraph() == null ) return;
+        log.debug( "Adding user-defined gene set to graph" );
+        if ( this.getGraph().get( USER_DEFINED ) == null ) {
+            log.error( "No user-defined root node!" );
+            return;
+        }
+        this.getGraph().addChildTo( USER_DEFINED, id, new GOEntry( id, name, name, USER_DEFINED_ASPECT ) );
+    }
+
+    /**
+     * 
+     */
+    private void initialize( InputStream inputStream ) throws IOException, SAXException {
+        this.parser = new GOParser( inputStream );
+        goNameMap = parser.getGONameMap();
+        if ( this.getGraph() == null ) return;
+        DirectedGraphNode root = this.getGraph().getRoot();
+        this.getGraph().addChildTo( root.getKey(), USER_DEFINED,
+                new GOEntry( USER_DEFINED, "", USER_DEFINED, NO_ASPECT_AVAILABLE ) );
     }
 
 }
