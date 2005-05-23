@@ -551,7 +551,6 @@ public class GeneAnnotations {
     /**
      * Remove a gene set (class) from all the maps that reference it.
      * <p>
-     * FIXME need to update tree as well.?
      * 
      * @param id
      */
@@ -634,6 +633,7 @@ public class GeneAnnotations {
 
     /**
      * Select a given set of gene sets.
+     * 
      * @param selectedGeneSets
      */
     public void setSelectedSets( Collection selectedGeneSets ) {

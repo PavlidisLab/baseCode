@@ -13,7 +13,6 @@ import java.io.UnsupportedEncodingException;
  * <p>
  * Class to convert byte arrays (e.g., Blobs) to and from other types of arrays.
  * <hr>
- * TODO this could be optimized, and errors are not handled well.
  * 
  * @author Kiran Keshav
  * @author Paul Pavlidis
@@ -58,7 +57,7 @@ public class ByteArrayConverter {
                 i++;
             }
         } catch ( IOException e ) {
-            // do nothing. e.printStackTrace();
+            // do nothing.
         }
 
         try {

@@ -35,7 +35,6 @@ public class BinaryTree {
     */
    public BinaryTree() {
       super();
-      // TODO Auto-generated constructor stub
    }
 
    public void insertLeft( BinaryTreeNode p, Object o ) {

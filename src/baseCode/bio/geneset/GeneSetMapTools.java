@@ -58,7 +58,7 @@ public class GeneSetMapTools {
                 // throw new IllegalStateException(classId + " contains null.");
             }
 
-            // @todo - hack : Skip classes that are huge. It's too slow
+            // This is a bit of a hack : Skip classes that are huge. It's too slow
             // otherwise. This is a total heuristic. Note that this
             // doesn't mean the class won't get analyzed, it just
             // means we don't bother looking for redundancies. Big
