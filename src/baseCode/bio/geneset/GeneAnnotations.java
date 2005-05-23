@@ -1,8 +1,6 @@
 package baseCode.bio.geneset;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -208,10 +206,10 @@ public class GeneAnnotations {
     public GeneAnnotations( String fileName, Set activeGenes, StatusViewer messenger, GONames goNames )
             throws IOException {
         this.messenger = messenger;
-        FileInputStream fis = new FileInputStream( fileName );
-        BufferedInputStream bis = new BufferedInputStream( fis );
+
         setUpDataStructures();
-        this.read( bis, activeGenes );
+        InputStream i = FileTools.getInputStreamFromPlainOrCompressedFile( fileName );
+        this.read( i, activeGenes );
         setUp( goNames );
     }
 
@@ -262,6 +260,7 @@ public class GeneAnnotations {
         Collection genes = new HashSet();
         for ( Iterator probe_it = probesForNew.iterator(); probe_it.hasNext(); ) {
             String probe = new String( ( String ) probe_it.next() );
+            if ( !probeToGeneSetMap.containsKey( probe ) ) continue;
             ( ( Collection ) probeToGeneSetMap.get( probe ) ).add( id );
             genes.add( probeToGeneName.get( probe ) );
         }
@@ -1003,15 +1002,9 @@ public class GeneAnnotations {
     }
 
     // read in from a file.
-    private void read( String filename ) throws IOException {
-
-        if ( !FileTools.testFile( filename ) ) {
-            throw new IOException( "Could not read from " + filename );
-        }
-
-        FileInputStream fis = new FileInputStream( filename );
-        BufferedInputStream bis = new BufferedInputStream( fis );
-        read( bis );
+    private void read( String fileName ) throws IOException {
+        InputStream i = FileTools.getInputStreamFromPlainOrCompressedFile( fileName );
+        read( i );
     }
 
     /**
@@ -1024,14 +1017,9 @@ public class GeneAnnotations {
     /**
      * @param filename
      */
-    private void readAffyCsv( String filename ) throws IOException {
-        if ( !FileTools.testFile( filename ) ) {
-            throw new IOException( "Could not read from " + filename );
-        }
-
-        FileInputStream fis = new FileInputStream( filename );
-        BufferedInputStream bis = new BufferedInputStream( fis );
-        readAffyCsv( bis );
+    private void readAffyCsv( String fileName ) throws IOException {
+        InputStream i = FileTools.getInputStreamFromPlainOrCompressedFile( fileName );
+        readAffyCsv( i );
     }
 
     /**
@@ -1092,9 +1080,19 @@ public class GeneAnnotations {
         geneToGeneSetMap.put( geneSymbol, probeToGeneSetMap.get( probe ) );
     }
 
+    /**
+     * @param bis
+     * @param activeGenes
+     * @throws IOException
+     */
     protected void read( InputStream bis, Set activeGenes ) throws IOException {
+        log.debug( "Entering GeneAnnotations.read" );
         if ( bis == null ) {
             throw new IOException( "Inputstream was null" );
+        }
+
+        if ( bis.available() == 0 ) {
+            throw new IOException( "No bytes to read from the annotation file." );
         }
 
         BufferedReader dis = new BufferedReader( new InputStreamReader( bis ) );
@@ -1107,7 +1105,6 @@ public class GeneAnnotations {
         String line = "";
 
         while ( ( line = dis.readLine() ) != null ) {
-
             if ( Thread.currentThread().isInterrupted() ) {
                 dis.close();
                 throw new CancellationException();

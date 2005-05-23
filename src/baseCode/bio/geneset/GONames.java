@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipInputStream;
 
 import javax.swing.tree.DefaultTreeModel;
 
@@ -19,6 +21,7 @@ import org.xml.sax.SAXException;
 import baseCode.bio.GOEntry;
 import baseCode.dataStructure.graph.DirectedGraph;
 import baseCode.dataStructure.graph.DirectedGraphNode;
+import baseCode.util.FileTools;
 import baseCode.xml.GOParser;
 
 /**
@@ -89,12 +92,12 @@ public class GONames {
      * @throws IOException
      * @throws SAXException
      */
-    public GONames( String filename ) throws SAXException, IOException {
-        if ( filename == null || filename.length() == 0 ) {
-            throw new IllegalArgumentException( "Invalid filename " + filename + " or no filename was given" );
+    public GONames( String fileName ) throws SAXException, IOException {
+        if ( fileName == null || fileName.length() == 0 ) {
+            throw new IllegalArgumentException( "Invalid filename " + fileName + " or no filename was given" );
         }
 
-        InputStream i = new FileInputStream( filename );
+        InputStream i = FileTools.getInputStreamFromPlainOrCompressedFile( fileName );
         this.initialize( i );
     }
 
