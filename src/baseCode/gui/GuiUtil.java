@@ -1,6 +1,8 @@
 package baseCode.gui;
 
+import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.Toolkit;
 
 import javax.swing.JFrame;
@@ -69,7 +71,7 @@ public class GuiUtil {
      * 
      * @param frame
      */
-    public static void centerFrame( JFrame frame ) {
+    public static void centerContainer( Container frame ) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension frameSize = frame.getSize();
         if ( frameSize.height > screenSize.height ) {
@@ -79,6 +81,18 @@ public class GuiUtil {
             frameSize.width = screenSize.width;
         }
         frame.setLocation( ( screenSize.width - frameSize.width ) / 2, ( screenSize.height - frameSize.height ) / 2 );
+    }
+
+    /**
+     * @return
+     */
+    public static Point chooseChildLocation( Container child, Container parent ) {
+        Dimension childSize = child.getPreferredSize();
+        Dimension parentSize = parent.getSize();
+        Point loc = parent.getLocation();
+        Point childLoc = new Point( ( parentSize.width - childSize.width ) / 2 + loc.x,
+                ( parentSize.height - childSize.height ) / 2 + loc.y );
+        return childLoc;
     }
 
 }

@@ -97,14 +97,15 @@ public abstract class AppDialog extends JDialog {
     }
 
     public void showDialog() {
-        Dimension dlgSize = getPreferredSize();
-        Dimension frmSize = callingframe.getSize();
-        Point loc = callingframe.getLocation();
-        setLocation( ( frmSize.width - dlgSize.width ) / 2 + loc.x, ( frmSize.height - dlgSize.height ) / 2 + loc.y );
+        this.setResizable( true );
+        Point center = GuiUtil.chooseChildLocation( this, callingframe );
+        setLocation( center );
         pack();
         actionButton.requestFocusInWindow();
         show();
     }
+
+ 
 
     // helper to respond to links.
     class LinkFollower implements HyperlinkListener {
