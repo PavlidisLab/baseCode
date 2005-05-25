@@ -18,7 +18,7 @@ public class StatusDebugLogger implements StatusViewer {
      * 
      * @see baseCode.util.StatusViewer#setStatus(java.lang.String)
      */
-    public void setStatus( String s ) {
+    public void showStatus( String s ) {
         if ( s.length() == 0 ) return;
         log.info( s );
     }
@@ -28,12 +28,12 @@ public class StatusDebugLogger implements StatusViewer {
      * 
      * @see baseCode.util.StatusViewer#setError(java.lang.String)
      */
-    public void setError( String s ) {
+    public void showError( String s ) {
         if ( s.length() == 0 ) return;
         log.error( s );
     }
 
-    public void setError( Throwable e ) {
+    public void showError( Throwable e ) {
         log.error( e, e );
     }
 
@@ -46,7 +46,7 @@ public class StatusDebugLogger implements StatusViewer {
      * 
      * @see baseCode.util.StatusViewer#setError(java.lang.String, java.lang.Throwable)
      */
-    public void setError( String message, Throwable e ) {
+    public void showError( String message, Throwable e ) {
         log.error( message, e );
     }
 

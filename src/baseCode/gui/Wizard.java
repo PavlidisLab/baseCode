@@ -102,7 +102,7 @@ public abstract class Wizard extends JDialog {
      * @param a
      */
     public void showStatus( String a ) {
-        statusMessenger.setStatus( a );
+        statusMessenger.showStatus( a );
     }
 
     /**
@@ -111,14 +111,14 @@ public abstract class Wizard extends JDialog {
      * @param a
      */
     public void showError( String a ) {
-        statusMessenger.setError( a );
+        statusMessenger.showError( a );
     }
 
     /**
      * Make the status bar empty.
      */
     public void clearStatus() {
-        statusMessenger.setStatus( "" );
+        statusMessenger.showStatus( "" );
     }
 
     protected void addStep( WizardStep panel, boolean first ) {

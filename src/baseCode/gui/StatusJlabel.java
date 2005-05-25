@@ -48,17 +48,17 @@ public class StatusJlabel extends StatusDebugLogger {
         }
 
         if ( callSuper ) {
-            super.setStatus( s );
+            super.showStatus( s );
         }
     }
 
-    public void setStatus( String s ) {
+    public void showStatus( String s ) {
         this.setStatus( s, true );
     }
 
-    public void setError( String message, Throwable e ) {
-        this.setError( message );
-        super.setError( message, e );
+    public void showError( String message, Throwable e ) {
+        this.showError( message );
+        super.showError( message, e );
     }
 
     /*
@@ -67,7 +67,7 @@ public class StatusJlabel extends StatusDebugLogger {
      * @see baseCode.util.StatusViewer#setError(java.lang.String)
      */
 
-    public void setError( String s ) {
+    public void showError( String s ) {
 
         final String m = s;
 
@@ -86,13 +86,13 @@ public class StatusJlabel extends StatusDebugLogger {
                 e.printStackTrace();
             }
         }
-        super.setError( s );
+        super.showError( s );
     }
 
     /**
      * 
      */
-    public void setError( Throwable e ) {
+    public void showError( Throwable e ) {
         final String m = "There was an error: see logs for details";
         if ( SwingUtilities.isEventDispatchThread() ) {
             setLabel( m, errorIcon );
@@ -109,7 +109,7 @@ public class StatusJlabel extends StatusDebugLogger {
                 ex.printStackTrace();
             }
         }
-        super.setError( e );
+        super.showError( e );
     }
 
     /*

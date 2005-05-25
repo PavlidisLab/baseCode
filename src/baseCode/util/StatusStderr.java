@@ -14,12 +14,12 @@ public class StatusStderr implements StatusViewer {
     public StatusStderr() {
     }
 
-    public void setStatus( String s ) {
+    public void showStatus( String s ) {
         if ( s.equals( "" ) ) return;
         System.err.println( s );
     }
 
-    public void setError( String s ) {
+    public void showError( String s ) {
         if ( s.equals( "" ) ) return;
         System.err.println( "Error:" + s );
     }
@@ -33,7 +33,7 @@ public class StatusStderr implements StatusViewer {
      * 
      * @see baseCode.util.StatusViewer#setError(java.lang.Throwable)
      */
-    public void setError( Throwable e ) {
+    public void showError( Throwable e ) {
         e.printStackTrace();
     }
 
@@ -42,8 +42,8 @@ public class StatusStderr implements StatusViewer {
      * 
      * @see baseCode.util.StatusViewer#setError(java.lang.String, java.lang.Throwable)
      */
-    public void setError( String message, Throwable e ) {
-        this.setError( message );
+    public void showError( String message, Throwable e ) {
+        this.showError( message );
         e.printStackTrace();
     }
 

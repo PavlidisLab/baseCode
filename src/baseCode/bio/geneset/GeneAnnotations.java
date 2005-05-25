@@ -191,7 +191,7 @@ public class GeneAnnotations {
             }
 
             if ( messenger != null && i % 500 == 0 ) {
-                messenger.setStatus( "Read " + i + " probes" );
+                messenger.showStatus( "Read " + i + " probes" );
                 try {
                     Thread.sleep( 10 );
                 } catch ( InterruptedException e ) {
@@ -1169,7 +1169,7 @@ public class GeneAnnotations {
             }
 
             if ( messenger != null && n % 500 == 0 ) {
-                messenger.setStatus( "Read " + n + " probes" );
+                messenger.showStatus( "Read " + n + " probes" );
                 try {
                     Thread.sleep( 10 );
                 } catch ( InterruptedException e ) {
@@ -1257,7 +1257,7 @@ public class GeneAnnotations {
             }
 
             if ( messenger != null && n % 500 == 0 ) {
-                messenger.setStatus( "Read " + n + " probes" );
+                messenger.showStatus( "Read " + n + " probes" );
                 try {
                     Thread.sleep( 10 );
                 } catch ( InterruptedException e ) {

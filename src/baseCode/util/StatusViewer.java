@@ -14,24 +14,24 @@ public interface StatusViewer {
      * 
      * @param s
      */
-    public abstract void setStatus( String s );
+    public abstract void showStatus( String s );
 
     /**
      * Print an error status messge.
      * 
      * @param s
      */
-    public abstract void setError( String s );
+    public abstract void showError( String s );
 
     /**
      * @param e
      */
-    public abstract void setError( Throwable e );
+    public abstract void showError( Throwable e );
 
     /**
      * @param e
      */
-    public abstract void setError( String message, Throwable e );
+    public abstract void showError( String message, Throwable e );
 
     /**
      * Clear the status dislay. Implementers that do not write to GUI elements probably don't need to do anything.

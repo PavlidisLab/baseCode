@@ -43,7 +43,7 @@ public class GeneSetMapTools {
         Map seenit = new HashMap();
 
         if ( messenger != null ) {
-            messenger.setStatus( "There are " + geneData.numGeneSets()
+            messenger.showStatus( "There are " + geneData.numGeneSets()
                     + " classes represented on the chip (of any size). Redundant classes are being removed..." );
         }
 
@@ -113,7 +113,7 @@ public class GeneSetMapTools {
         geneData.sortGeneSets();
 
         if ( messenger != null ) {
-            messenger.setStatus( "There are now " + geneData.numGeneSets() + " classes represented on the chip ("
+            messenger.showStatus( "There are now " + geneData.numGeneSets() + " classes represented on the chip ("
                     + ignored + " were removed)" );
         }
     }
@@ -190,7 +190,7 @@ public class GeneSetMapTools {
         Set deleteUs = new HashSet();
 
         if ( messenger != null ) {
-            messenger.setStatus( "...Highly (" + fractionSameThreshold * 100
+            messenger.showStatus( "...Highly (" + fractionSameThreshold * 100
                     + "%)  similar classes are being removed..." + ga.numGeneSets() + " to start..." );
         }
 
@@ -261,7 +261,7 @@ public class GeneSetMapTools {
         ga.sortGeneSets();
 
         if ( messenger != null ) {
-            messenger.setStatus( "There are now " + ga.numGeneSets() + " classes represented on the chip ("
+            messenger.showStatus( "There are now " + ga.numGeneSets() + " classes represented on the chip ("
                     + deleteUs.size() + " were ignored)" );
         }
     }
@@ -361,7 +361,7 @@ public class GeneSetMapTools {
         ga.sortGeneSets();
 
         if ( messenger != null ) {
-            messenger.setStatus( "There are now " + ga.numGeneSets() + " sets remaining after removing aspect "
+            messenger.showStatus( "There are now " + ga.numGeneSets() + " sets remaining after removing aspect "
                     + aspect );
         }
     }
@@ -399,7 +399,7 @@ public class GeneSetMapTools {
         ga.sortGeneSets();
 
         if ( messenger != null ) {
-            messenger.setStatus( "There are now " + ga.numGeneSets()
+            messenger.showStatus( "There are now " + ga.numGeneSets()
                     + " sets remaining after removing sets with excluded sizes." );
         }
     }
@@ -474,7 +474,7 @@ public class GeneSetMapTools {
         Map geneToGeneSetMap = ga.getGeneToGeneSetMap();
 
         if ( messenger != null ) {
-            messenger.setStatus( "Adding parent terms (" + ga.numGeneSets() + " gene sets now)" );
+            messenger.showStatus( "Adding parent terms (" + ga.numGeneSets() + " gene sets now)" );
         }
         Map toBeAdded = new HashMap();
         Map parentCache = new HashMap();
@@ -492,7 +492,7 @@ public class GeneSetMapTools {
             }
             count++;
             if ( count % 1000 == 0 && messenger != null ) {
-                messenger.setStatus( count + " genes examined" );
+                messenger.showStatus( count + " genes examined" );
             }
         }
         parentCache = null;
@@ -506,7 +506,7 @@ public class GeneSetMapTools {
         ga.sortGeneSets();
 
         if ( messenger != null ) {
-            messenger.setStatus( "Added parents to all terms - now have " + ga.numGeneSets() + " usable gene sets." );
+            messenger.showStatus( "Added parents to all terms - now have " + ga.numGeneSets() + " usable gene sets." );
         }
     }
 
