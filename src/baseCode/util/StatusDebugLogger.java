@@ -41,4 +41,13 @@ public class StatusDebugLogger implements StatusViewer {
         // don't need to do anything.
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see baseCode.util.StatusViewer#setError(java.lang.String, java.lang.Throwable)
+     */
+    public void setError( String message, Throwable e ) {
+        log.error( message, e );
+    }
+
 }

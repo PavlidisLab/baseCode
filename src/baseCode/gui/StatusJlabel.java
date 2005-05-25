@@ -56,6 +56,11 @@ public class StatusJlabel extends StatusDebugLogger {
         this.setStatus( s, true );
     }
 
+    public void setError( String message, Throwable e ) {
+        this.setError( message );
+        super.setError( message, e );
+    }
+
     /*
      * (non-Javadoc)
      * 

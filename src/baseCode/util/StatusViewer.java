@@ -29,6 +29,11 @@ public interface StatusViewer {
     public abstract void setError( Throwable e );
 
     /**
+     * @param e
+     */
+    public abstract void setError( String message, Throwable e );
+
+    /**
      * Clear the status dislay. Implementers that do not write to GUI elements probably don't need to do anything.
      */
     public abstract void clear();

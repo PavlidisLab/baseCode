@@ -37,4 +37,14 @@ public class StatusStderr implements StatusViewer {
         e.printStackTrace();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see baseCode.util.StatusViewer#setError(java.lang.String, java.lang.Throwable)
+     */
+    public void setError( String message, Throwable e ) {
+        this.setError( message );
+        e.printStackTrace();
+    }
+
 }
