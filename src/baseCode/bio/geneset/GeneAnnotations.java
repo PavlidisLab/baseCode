@@ -38,7 +38,7 @@ import baseCode.util.StringUtil;
  * Maintains the following important data structures, all derived from the input file:
  * <ol>
  * <li>probe-&gt;Classes -- each value is a Set of the Classes that a probe belongs to.
- * <li> Classes-&gt;probe -- each value is a Set of the probes that belong to a class
+ * <li>Classes-&gt;probe -- each value is a Set of the probes that belong to a class
  * <li>probe-&gt;gene -- each value is the gene name corresponding to the probe.
  * <li>gene-&gt;list of probes -- each value is a list of probes corresponding to a gene
  * <li>probe-&gt;description -- each value is a text description of the probe (actually...of the gene)
@@ -52,7 +52,6 @@ import baseCode.util.StringUtil;
  * @author Homin Lee
  * @version $Id$
  */
-
 public class GeneAnnotations {
     /**
      * 
@@ -94,6 +93,8 @@ public class GeneAnnotations {
 
     private List selectedSets;
     private List sortedGeneSets;
+    private Map oldGeneSets;
+    private int tick = 0;
 
     public GeneAnnotations() {
         setUpDataStructures();
@@ -117,6 +118,13 @@ public class GeneAnnotations {
         for ( Iterator iter = geneData.geneSetToProbeMap.keySet().iterator(); iter.hasNext(); ) {
             String key = ( String ) iter.next();
             this.geneSetToProbeMap.put( key, new HashSet( ( Collection ) geneData.geneSetToProbeMap.get( key ) ) );
+        }
+
+        // make a deep copy of the old gene sets.
+        this.oldGeneSets = new LinkedHashMap();
+        for ( Iterator iter = geneData.oldGeneSets.keySet().iterator(); iter.hasNext(); ) {
+            String key = ( String ) iter.next();
+            this.oldGeneSets.put( key, new HashSet( ( Collection ) geneData.oldGeneSets.get( key ) ) );
         }
 
         probeToGeneName = new HashMap( geneData.probeToGeneName ); // shallow copy, okay
@@ -260,6 +268,15 @@ public class GeneAnnotations {
      * @param probesForNew ArrayList user-defined list of members.
      */
     public void addClass( String id, Collection probesForNew ) {
+
+        if ( probesForNew == null ) throw new IllegalArgumentException( "Null probes for new gene set" );
+
+        if ( geneSetToProbeMap.containsKey( id ) ) {
+            // then we should save a backup.
+            log.info( "Saving backup version of " + id );
+            oldGeneSets.put( id, new HashSet( ( Collection ) geneSetToProbeMap.get( id ) ) );
+        }
+
         geneSetToProbeMap.put( id, probesForNew );
         Collection genes = new HashSet();
         for ( Iterator probe_it = probesForNew.iterator(); probe_it.hasNext(); ) {
@@ -272,6 +289,17 @@ public class GeneAnnotations {
         geneSetToGeneMap.put( id, genes );
         geneToGeneSetMap.put( id, probeToGeneSetMap.get( id ) );
         resetSelectedSets();
+    }
+
+    /**
+     * Restore the previous version of a gene set. If no previous version is found, then nothing is done.
+     * 
+     * @param id
+     */
+    public void restoreGeneSet( String id ) {
+        if ( !oldGeneSets.containsKey( id ) ) return;
+        log.info( "Restoring " + id );
+        addClass( id, ( Collection ) oldGeneSets.get( id ) );
     }
 
     /**
@@ -432,24 +460,51 @@ public class GeneAnnotations {
             log.warn( "No such class to modify: " + classId );
             return;
         }
-        Collection orig_probes = ( Collection ) geneSetToProbeMap.get( classId );
-        Iterator orig_probe_it = orig_probes.iterator();
-        while ( orig_probe_it.hasNext() ) {
-            String orig_probe = new String( ( String ) orig_probe_it.next() );
-            if ( !probesForNew.contains( orig_probe ) ) {
-                Set ptc = new HashSet( ( Collection ) probeToGeneSetMap.get( orig_probe ) );
+
+        log.info( "Saving backup version of " + classId );
+        oldGeneSets.put( classId, new HashSet( ( Collection ) geneSetToProbeMap.get( classId ) ) );
+
+        Collection originalProbes = ( Collection ) geneSetToProbeMap.get( classId );
+        for ( Iterator iter = originalProbes.iterator(); iter.hasNext(); ) {
+            String originalProbe = new String( ( String ) iter.next() );
+            if ( !probesForNew.contains( originalProbe ) ) {
+                Set ptc = new HashSet( ( Collection ) probeToGeneSetMap.get( originalProbe ) );
                 ptc.remove( classId );
-                probeToGeneSetMap.remove( orig_probe );
-                probeToGeneSetMap.put( orig_probe, new HashSet( ptc ) );
+                probeToGeneSetMap.remove( originalProbe );
+                probeToGeneSetMap.put( originalProbe, new HashSet( ptc ) );
+
+                String gene = ( String ) probeToGeneName.get( originalProbe );
+                ( ( Collection ) geneToGeneSetMap.get( gene ) ).add( classId );
+                ( ( Collection ) geneSetToGeneMap.get( classId ) ).add( gene );
             }
         }
-        Iterator probe_it = probesForNew.iterator();
-        while ( probe_it.hasNext() ) {
-            String probe = ( String ) probe_it.next();
-            if ( !orig_probes.contains( probe ) ) {
+
+        for ( Iterator iter = probesForNew.iterator(); iter.hasNext(); ) {
+            String probe = ( String ) iter.next();
+            if ( !originalProbes.contains( probe ) ) {
                 ( ( Collection ) probeToGeneSetMap.get( probe ) ).add( classId );
             }
         }
+
+        // remove genes, but only if they are no longer referred to in the gene set.
+        Collection originalGenes = new HashSet( ( Collection ) geneSetToGeneMap.get( classId ) );
+        for ( Iterator iter = originalGenes.iterator(); iter.hasNext(); ) {
+            String gene = ( String ) iter.next();
+            boolean removeGene = true;
+            Collection geneProbes = ( Collection ) geneToProbeList.get( gene );
+            for ( Iterator iterator = geneProbes.iterator(); iterator.hasNext(); ) {
+                String probe = ( String ) iterator.next();
+                if ( probesForNew.contains( probe ) ) {
+                    removeGene = false;
+                    break;
+                }
+            }
+            if ( removeGene ) {
+                ( ( Collection ) geneSetToGeneMap.get( classId ) ).remove( gene );
+                ( ( Collection ) geneToGeneSetMap.get( gene ) ).remove( classId );
+            }
+        }
+
         geneSetToProbeMap.put( classId, probesForNew );
         resetSelectedSets();
     }
@@ -1063,6 +1118,7 @@ public class GeneAnnotations {
         geneToProbeList = new HashMap();
         geneToGeneSetMap = new HashMap();
         geneSetToRedundantMap = new HashMap();
+        oldGeneSets = new HashMap();
     }
 
     /**
@@ -1107,7 +1163,7 @@ public class GeneAnnotations {
         // probes.
         int n = 0;
         String line = "";
-
+        tick();
         while ( ( line = dis.readLine() ) != null ) {
             if ( Thread.currentThread().isInterrupted() ) {
                 dis.close();
@@ -1213,6 +1269,7 @@ public class GeneAnnotations {
         int geneNameIndex = getAffyGeneNameIndex( header );
         int geneSymbolIndex = getAffyGeneSymbolIndex( header );
 
+        tick();
         assert ( numFields > probeIndex + 1 && numFields > geneSymbolIndex + 1 );
         Pattern pat = Pattern.compile( "[0-9]+" );
         // loop through rows. Makes hash map of probes to go, and map of go to
@@ -1271,6 +1328,7 @@ public class GeneAnnotations {
 
         /* Fill in the genegroupreader and the classmap */
         dis.close();
+        tick();
         resetSelectedProbes();
 
         if ( probeToGeneName.size() == 0 || geneSetToProbeMap.size() == 0 ) {
@@ -1278,6 +1336,17 @@ public class GeneAnnotations {
                     "The gene annotations had invalid information. Please check the format." );
         }
 
+    }
+
+    /**
+     * 
+     */
+    private void tick() {
+        tick++;
+    }
+
+    public int ticks() {
+        return tick;
     }
 
     /**
@@ -1290,6 +1359,7 @@ public class GeneAnnotations {
         if ( goNames != null ) GeneSetMapTools.addParents( this, goNames, messenger );
         GeneSetMapTools.collapseGeneSets( this, messenger );
         prune( ABSOLUTE_MINIMUM_GENESET_SIZE, PRACTICAL_MAXIMUM_GENESET_SIZE );
+        tick();
         resetSelectedProbes();
         resetSelectedSets();
         sortGeneSets();

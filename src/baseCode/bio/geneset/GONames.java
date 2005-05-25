@@ -122,6 +122,14 @@ public class GONames {
     }
 
     /**
+     * @param classID
+     */
+    public void resetGeneSet( String classID ) {
+        newGeneSets.remove( classID );
+        removeClassFromUserDefined( classID );
+    }
+
+    /**
      * @param go_ID
      * @return the aspect (molecular_function etc) for an id.
      */
@@ -283,6 +291,19 @@ public class GONames {
             return;
         }
         this.getGraph().addChildTo( USER_DEFINED, id, new GOEntry( id, name, name, USER_DEFINED_ASPECT ) );
+    }
+
+    /**
+     * @param id
+     */
+    private void removeClassFromUserDefined( String id ) {
+        if ( getGraph() == null ) return;
+        log.debug( "Removing user-defined gene set from graph" );
+        if ( this.getGraph().get( USER_DEFINED ) == null ) {
+            log.error( "No user-defined root node!" );
+            return;
+        }
+        this.getGraph().deleteChildFrom( USER_DEFINED, id );
     }
 
     /**

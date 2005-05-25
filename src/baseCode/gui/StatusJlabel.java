@@ -57,8 +57,8 @@ public class StatusJlabel extends StatusDebugLogger {
     }
 
     public void showError( String message, Throwable e ) {
-        this.showError( message );
         super.showError( message, e );
+        this.showError( message );
     }
 
     /*
