@@ -36,3 +36,5 @@ baseCode.jpx.local
 javadoc.xml
 .settings
 junit*.properties
+.hibernateSynchronizer
+.xdoclet
