@@ -163,7 +163,6 @@ public class GeneAnnotations {
         checkValidData( probes, geneSymbols, geneNames, goTerms );
         setUpDataStructures();
         Collection probeIds = new ArrayList();
-        Pattern pat = Pattern.compile( "[0-9]+" );
         for ( int i = 0; i < probes.size(); i++ ) {
             String probe = ( String ) probes.get( i );
             String geneSymbol = ( String ) geneSymbols.get( i );
@@ -182,8 +181,13 @@ public class GeneAnnotations {
             }
 
             for ( Iterator iter = goTermsForProbe.iterator(); iter.hasNext(); ) {
-                String goi = ( ( String ) iter.next() ).intern();
-                parseGoTerm( probe, pat, goi );
+                String go = ( ( String ) iter.next() ).intern();
+                ( ( Collection ) probeToGeneSetMap.get( probe ) ).add( go );
+
+                if ( !geneSetToProbeMap.containsKey( go ) ) {
+                    geneSetToProbeMap.put( go, new HashSet() );
+                }
+                ( ( Collection ) geneSetToProbeMap.get( go ) ).add( probe );
             }
 
             if ( messenger != null && i % 500 == 0 ) {
