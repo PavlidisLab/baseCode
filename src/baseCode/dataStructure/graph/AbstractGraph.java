@@ -76,6 +76,7 @@ public abstract class AbstractGraph implements Graph {
      * @return The object contained by a node, not the node itself.
      */
     public Object getNodeContents( Object key ) {
+        if ( !items.containsKey( key ) ) return null;
         return ( ( GraphNode ) items.get( key ) ).getItem();
     }
 
