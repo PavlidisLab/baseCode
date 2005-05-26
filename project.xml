@@ -1,27 +1,28 @@
 <?xml version="1.0"?>
-<project 
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://maven.apache.org/xsd/ http://maven.apache.org/xsd/maven-project-3.0.0.xsd"
-xmlns:jnlp="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/xsd/ http://maven.apache.org/xsd/maven-project-3.0.0.xsd"
+    xmlns:jnlp="http://www.w3.org/2001/XMLSchema-instance">
     <pomVersion>3</pomVersion>
-        <id>baseCode</id>
+    <id>baseCode</id>
     <name>baseCode</name>
     <groupId>baseCode</groupId>
-
+    
     <currentVersion>0.2.8</currentVersion>
     <organization>
         <name>Columbia University</name>
         <url>http://www.columbia.edu</url>
     </organization>
     <inceptionYear>2003</inceptionYear>
-    <description>Data structures, math and statistics tools, and utilities that are often needed across projects.</description>
+    <description>Data structures, math and statistics tools, and utilities that are often
+        needed across projects.</description>
     <shortDescription>General-purpose code</shortDescription>
     <siteAddress>microarray</siteAddress>
     <siteDirectory>/proj/pavlidis/protected/baseCode</siteDirectory>
     <repository>
-        <connection>scm:cvs:ext:${maven.username}@adgate.cu-genome.org:/fsnode/projects/cvs/pavlab:baseCode</connection>
+        <connection>
+            scm:cvs:ext:${maven.username}@adgate.cu-genome.org:/fsnode/projects/cvs/pavlab:baseCode</connection>
     </repository>
-
+    
     <developers>
         <developer>
             <name>Paul Pavlidis</name>
@@ -45,15 +46,15 @@ xmlns:jnlp="http://www.w3.org/2001/XMLSchema-instance">
             <roles/>
         </developer>
     </developers>
-        <licenses>
+    <licenses>
         <license><name>GPL</name></license>
     </licenses>
     <dependencies>
-    
-              <dependency>
+        
+        <dependency>
             <groupId>colt</groupId>
             <artifactId>colt</artifactId>
-              <version>1.2.0</version>
+            <version>1.2.0</version>
             <type>jar</type>
             <url>http://dsd.lbl.gov/~hoschek/colt/</url>
             <properties>
@@ -67,7 +68,7 @@ xmlns:jnlp="http://www.w3.org/2001/XMLSchema-instance">
             <artifactId>mysql-connector-java</artifactId>
             <version>3.1.6-bin</version>
             <type>jar</type>
-             <jnlp.jar>true</jnlp.jar>
+            <jnlp.jar>true</jnlp.jar>
             <properties/>
         </dependency>
         
@@ -75,11 +76,11 @@ xmlns:jnlp="http://www.w3.org/2001/XMLSchema-instance">
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
             <version>1.0.3</version>
-             <jnlp.jar>true</jnlp.jar>
+            <jnlp.jar>true</jnlp.jar>
             <type>jar</type>
             <properties/>
         </dependency>
-           <dependency>
+        <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.8</version>
@@ -92,11 +93,11 @@ xmlns:jnlp="http://www.w3.org/2001/XMLSchema-instance">
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
             <version>2.6.2</version>
-             <jnlp.jar>true</jnlp.jar>
+            <jnlp.jar>true</jnlp.jar>
             <type>jar</type>
             <properties/>
         </dependency>
-      
+        
         <dependency>
             <groupId>hb</groupId>
             <artifactId>hb</artifactId>
