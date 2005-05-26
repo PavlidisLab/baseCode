@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -44,9 +45,9 @@ public class StringMatrixReader extends AbstractNamedMatrixReader {
     */
    public NamedMatrix read( InputStream stream ) throws IOException {
       StringMatrix2DNamed matrix = null;
-      Vector MTemp = new Vector();
-      Vector rowNames = new Vector();
-      Vector columnNames;
+      List MTemp = new Vector();
+      List rowNames = new Vector();
+      List columnNames;
       BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
       //    BufferedReader dis = new BufferedReader( new FileReader( filename ) );
       int columnNumber = 0;
