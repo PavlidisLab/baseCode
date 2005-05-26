@@ -11,82 +11,80 @@ import baseCode.math.Stats;
  */
 public abstract class AbstractLevelFilter extends AbstractFilter {
 
-   protected double lowCut = -Double.MAX_VALUE;
-   protected double highCut = Double.MAX_VALUE;
-   protected boolean useLowAsFraction = false;
-   protected boolean useHighAsFraction = false;
+    protected double lowCut = -Double.MAX_VALUE;
+    protected double highCut = Double.MAX_VALUE;
+    protected boolean useLowAsFraction = false;
+    protected boolean useHighAsFraction = false;
 
-   /**
-    * Set the low threshold for removal.
-    * 
-    * @param lowCut the threshold
-    */
-   public void setLowCut( double lowCut ) {
-      this.lowCut = lowCut;
-   }
+    /**
+     * Set the low threshold for removal.
+     * 
+     * @param lowCut the threshold
+     */
+    public void setLowCut( double lowCut ) {
+        this.lowCut = lowCut;
+    }
 
-   /**
-    * @param lowCut
-    * @param isFraction
-    */
-   public void setLowCut( double lowCut, boolean isFraction ) {
-      setLowCut( lowCut );
-      setUseLowCutAsFraction( isFraction );
-      useLowAsFraction = isFraction;
-   }
+    /**
+     * @param lowCut
+     * @param isFraction
+     */
+    public void setLowCut( double lowCut, boolean isFraction ) {
+        setLowCut( lowCut );
+        setUseLowCutAsFraction( isFraction );
+        useLowAsFraction = isFraction;
+    }
 
-   /**
-    * Set the high threshold for removal. If not set, no filtering will occur.
-    * 
-    * @param h the threshold
-    */
-   public void setHighCut( double h ) {
-      highCut = h;
-   }
+    /**
+     * Set the high threshold for removal. If not set, no filtering will occur.
+     * 
+     * @param h the threshold
+     */
+    public void setHighCut( double h ) {
+        highCut = h;
+    }
 
-   /**
-    * @param highCut
-    * @param isFraction
-    */
-   public void setHighCut( double highCut, boolean isFraction ) {
-      setHighCut( highCut );
-      setUseHighCutAsFraction( isFraction );
-      useHighAsFraction = isFraction;
-   }
+    /**
+     * @param highCut
+     * @param isFraction
+     */
+    public void setHighCut( double highCut, boolean isFraction ) {
+        setHighCut( highCut );
+        setUseHighCutAsFraction( isFraction );
+        useHighAsFraction = isFraction;
+    }
 
-   /**
-    * @param setting
-    */
-   public void setUseHighCutAsFraction( boolean setting ) {
-      if ( setting == true && !Stats.isValidFraction( highCut ) ) {
-         throw new IllegalArgumentException(
-               "Value for cut(s) are invalid for using "
-                     + "as fractions, must be >0.0 and <1.0," );
-      }
-      useHighAsFraction = setting;
-   }
+    /**
+     * @param setting
+     */
+    public void setUseHighCutAsFraction( boolean setting ) {
+        if ( setting == true && !Stats.isValidFraction( highCut ) ) {
+            throw new IllegalArgumentException( "Value for cut(s) are invalid for using "
+                    + "as fractions, must be >0.0 and <1.0," );
+        }
+        useHighAsFraction = setting;
+    }
 
-   /**
-    * @param setting
-    */
-   public void setUseLowCutAsFraction( boolean setting ) {
-      if ( setting == true && !Stats.isValidFraction( lowCut ) ) {
-         throw new IllegalArgumentException(
-               "Value for cut(s) are invalid for using "
-                     + "as fractions, must be >0.0 and <1.0," );
-      }
-      useLowAsFraction = setting;
-   }
+    /**
+     * @param setting
+     */
+    public void setUseLowCutAsFraction( boolean setting ) {
+        if ( setting == true && !Stats.isValidFraction( lowCut ) ) {
+            throw new IllegalArgumentException( "Value for cut(s) are invalid for using "
+                    + "as fractions, must be >0.0 and <1.0," );
+        }
+        useLowAsFraction = setting;
+    }
 
-   /**
-    * Set the filter to interpret the low and high cuts as fractions; that is, if true, lowcut 0.1 means remove 0.1 of
-    * the rows with the lowest values. Otherwise the cuts are interpeted as actual values. Default = false.
-    * 
-    * @param setting boolean
-    */
-   public void setUseAsFraction( boolean setting ) {
-      setUseHighCutAsFraction( setting );
-      setUseLowCutAsFraction( setting );
-   }
+    /**
+     * Set the filter to interpret the low and high cuts as fractions; that is, if true, lowcut 0.1 means remove 0.1 of
+     * the rows with the lowest values. Otherwise the cuts are interpeted as actual values. Default = false.
+     * 
+     * @param setting boolean
+     */
+    public void setUseAsFraction( boolean setting ) {
+        setUseHighCutAsFraction( setting );
+        setUseLowCutAsFraction( setting );
+    }
 
 }

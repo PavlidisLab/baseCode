@@ -1,5 +1,6 @@
 package baseCode.dataFilter;
 
+import java.util.List;
 import java.util.Vector;
 
 import baseCode.dataStructure.matrix.NamedMatrix;
@@ -114,8 +115,8 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
          return data;
       }
 
-      Vector MTemp = new Vector();
-      Vector rowNames = new Vector();
+      List MTemp = new Vector();
+      List rowNames = new Vector();
 
       int kept = 0;
       for ( int i = 0; i < numRows; i++ ) {

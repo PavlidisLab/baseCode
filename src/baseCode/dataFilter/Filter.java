@@ -13,12 +13,12 @@ import baseCode.dataStructure.matrix.NamedMatrix;
  */
 public interface Filter {
 
-   /**
-    * Filter the data
-    * 
-    * @param data a NamedMatrix. Some types of filters require that this be of a particular type of implementation of
-    *        the Filter interface.
-    * @return The resulting filtered matrix
-    */
-   public NamedMatrix filter( NamedMatrix data );
+    /**
+     * Filter the data
+     * 
+     * @param data a NamedMatrix. Some types of filters require that this be of a particular type of implementation of
+     *        the Filter interface.
+     * @return The resulting filtered matrix
+     */
+    public NamedMatrix filter( NamedMatrix data );
 }
