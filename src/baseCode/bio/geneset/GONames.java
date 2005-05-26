@@ -231,7 +231,10 @@ public class GONames {
         Set parents = ( ( DirectedGraphNode ) getGraph().get( id ) ).getParentNodes();
         for ( Iterator it = parents.iterator(); it.hasNext(); ) {
             DirectedGraphNode parent = ( DirectedGraphNode ) it.next();
-            String parentKey = ( ( GOEntry ) parent.getItem() ).getId().intern();
+            if ( parent == null ) continue;
+            GOEntry goEntry = ( GOEntry ) parent.getItem();
+            if ( goEntry == null ) continue;
+            String parentKey = ( goEntry ).getId();
             returnVal.add( parentKey.intern() );
         }
         return returnVal;
