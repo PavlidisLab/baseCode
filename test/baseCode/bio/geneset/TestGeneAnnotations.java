@@ -89,8 +89,4 @@ public class TestGeneAnnotations extends TestCase {
         assertEquals( expectedValue, actualValue );
     }
 
-    public void testGeneAnnotationsSpeed() throws Exception {
-        GeneAnnotations val = new GeneAnnotations( null, null, null );
-    }
-
 }
