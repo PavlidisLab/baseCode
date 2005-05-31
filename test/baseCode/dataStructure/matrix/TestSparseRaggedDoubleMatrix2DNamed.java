@@ -3,8 +3,6 @@ package baseCode.dataStructure.matrix;
 import java.io.InputStream;
 
 import junit.framework.TestCase;
-import baseCode.dataStructure.matrix.RCDoubleMatrix1D;
-import baseCode.dataStructure.matrix.SparseRaggedDoubleMatrix2DNamed;
 import baseCode.io.reader.SparseRaggedDouble2DNamedMatrixReader;
 import baseCode.io.reader.TestSparseDoubleMatrixReader;
 import cern.colt.list.DoubleArrayList;

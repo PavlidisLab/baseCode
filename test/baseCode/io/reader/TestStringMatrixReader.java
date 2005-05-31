@@ -5,7 +5,6 @@ import java.io.InputStream;
 
 import junit.framework.TestCase;
 import baseCode.dataStructure.matrix.StringMatrix2DNamed;
-import baseCode.io.reader.StringMatrixReader;
 
 /**
  * 

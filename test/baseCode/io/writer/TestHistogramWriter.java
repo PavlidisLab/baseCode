@@ -7,7 +7,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 import junit.framework.TestCase;
-import baseCode.io.writer.HistogramWriter;
 import baseCode.util.RegressionTesting;
 
 /**

@@ -1,7 +1,6 @@
 package baseCode.math;
 
 import junit.framework.TestCase;
-import baseCode.math.KSTest;
 import baseCode.math.distribution.ProbabilityComputer;
 import baseCode.math.distribution.UniformProbabilityComputer;
 import cern.colt.list.DoubleArrayList;

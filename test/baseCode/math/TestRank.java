@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
-import baseCode.math.Rank;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
 

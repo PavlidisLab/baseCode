@@ -16,7 +16,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import baseCode.bio.GOEntry;
-import baseCode.bio.geneset.GONames;
 import baseCode.dataStructure.graph.DirectedGraph;
 import baseCode.dataStructure.graph.DirectedGraphNode;
 

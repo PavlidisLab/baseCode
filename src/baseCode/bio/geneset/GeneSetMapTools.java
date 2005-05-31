@@ -518,9 +518,10 @@ public class GeneSetMapTools {
     private static void setParentsToBeAdded( Map toBeAdded, String gene, Set parents ) {
         if ( parents.size() == 0 ) return;
         if ( !toBeAdded.containsKey( gene ) ) {
-            toBeAdded.put( gene, new HashSet() );
+            toBeAdded.put( gene, new HashSet( parents ) );
+        } else {
+            ( ( Set ) toBeAdded.get( gene ) ).addAll( parents );
         }
-        ( ( Set ) toBeAdded.get( gene ) ).addAll( parents );
     }
 
     /**

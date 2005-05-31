@@ -13,7 +13,6 @@ import javax.swing.UIManager;
 
 import org.xml.sax.SAXException;
 
-import baseCode.gui.TreePanel;
 import baseCode.xml.GOParser;
 
 /**

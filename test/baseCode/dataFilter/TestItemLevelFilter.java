@@ -1,6 +1,5 @@
 package baseCode.dataFilter;
 
-import baseCode.dataFilter.ItemLevelFilter;
 import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 
 /**

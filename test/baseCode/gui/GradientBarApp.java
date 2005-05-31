@@ -8,9 +8,6 @@ import java.awt.Toolkit;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
-import baseCode.gui.ColorMap;
-import baseCode.gui.JGradientBar;
-
 /**
  * 
  * @author Will Braynen

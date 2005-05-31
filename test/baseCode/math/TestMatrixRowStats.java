@@ -4,7 +4,6 @@ import junit.framework.TestCase;
 import baseCode.dataFilter.AbstractTestFilter;
 import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import baseCode.io.reader.DoubleMatrixReader;
-import baseCode.math.MatrixRowStats;
 import baseCode.util.RegressionTesting;
 import cern.colt.list.DoubleArrayList;
 

@@ -1,6 +1,5 @@
 package baseCode.dataFilter;
 
-import baseCode.dataFilter.RowAffyNameFilter;
 import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.matrix.StringMatrix2DNamed;
 

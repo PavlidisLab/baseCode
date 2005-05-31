@@ -1,7 +1,6 @@
 package baseCode.math;
 
 import junit.framework.TestCase;
-import baseCode.math.Stats;
 import baseCode.util.RegressionTesting;
 import cern.colt.list.DoubleArrayList;
 

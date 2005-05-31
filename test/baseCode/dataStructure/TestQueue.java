@@ -1,7 +1,6 @@
 package baseCode.dataStructure;
 
 import junit.framework.TestCase;
-import baseCode.dataStructure.Queue;
 
 /**
  * <p>

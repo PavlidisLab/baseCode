@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import junit.framework.TestCase;
-import baseCode.io.ByteArrayConverter;
-import baseCode.io.StringConverter;
 
 //import javax.sql.rowset.serial;
 

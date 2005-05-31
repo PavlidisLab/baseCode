@@ -4,8 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import junit.framework.TestCase;
-import baseCode.math.ROC;
-import baseCode.math.Rank;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
 

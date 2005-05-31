@@ -1,8 +1,6 @@
 package baseCode.io;
 
 import junit.framework.TestCase;
-import baseCode.io.StringConverter;
-import baseCode.io.ByteArrayConverter;
 
 //import javax.sql.rowset.serial;
 

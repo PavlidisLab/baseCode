@@ -5,7 +5,6 @@ import java.io.InputStream;
 
 import junit.framework.TestCase;
 import baseCode.dataStructure.matrix.SparseRaggedDoubleMatrix2DNamed;
-import baseCode.io.reader.SparseRaggedDouble2DNamedMatrixReader;
 import baseCode.util.RegressionTesting;
 
 /**

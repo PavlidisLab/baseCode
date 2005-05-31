@@ -1,3 +1,23 @@
+/*
+ * The baseCode project
+ * 
+ * Copyright (c) 2005 Columbia University
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ */
 package baseCode.bio.geneset;
 
 import java.io.BufferedReader;
@@ -6,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,7 +37,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,6 +73,7 @@ import baseCode.util.StringUtil;
  * @version $Id$
  */
 public class GeneAnnotations {
+
     /**
      * 
      */
@@ -95,6 +116,8 @@ public class GeneAnnotations {
     private List sortedGeneSets;
     private Map oldGeneSets;
     private int tick = 0;
+
+    private Pattern pipePattern = Pattern.compile( "\\|" );
 
     public GeneAnnotations() {
         setUpDataStructures();
@@ -1165,27 +1188,15 @@ public class GeneAnnotations {
         String line = "";
         tick();
         while ( ( line = dis.readLine() ) != null ) {
-            if ( Thread.currentThread().isInterrupted() ) {
-                dis.close();
-                throw new CancellationException();
-            }
 
             if ( line.startsWith( "#" ) ) continue;
-            StringTokenizer st = new StringTokenizer( line, "\t" );
 
-            if ( !st.hasMoreTokens() ) {
-                continue; // blank line
-            }
+            String[] tokens = line.split( "\t" );
+            int length = tokens.length;
+            if ( length < 2 ) continue;
 
-            String probe = st.nextToken().intern();
-
-            /* read gene name */
-            if ( !st.hasMoreTokens() ) {
-                continue; // no gene name or anything else.
-            }
-
-            String gene = st.nextToken().intern();
-
+            String probe = tokens[0].intern();
+            String gene = tokens[1].intern();
             if ( activeGenes != null && !activeGenes.contains( gene ) ) {
                 continue;
             }
@@ -1193,41 +1204,28 @@ public class GeneAnnotations {
             storeProbeAndGene( probeIds, probe, gene );
 
             /* read gene description */
-            if ( st.hasMoreTokens() ) {
-                String description = st.nextToken().intern();
-                if ( !description.startsWith( "GO:" ) ) { // this happens when
-                    // there is no
-                    // desription and we
-                    // skip to the GO
-                    // terms.
+            if ( length >= 3 ) {
+                String description = tokens[2].intern();
+                if ( description.length() == 0 ) {
                     probeToDescription.put( probe.intern(), description.intern() );
                 } else {
                     probeToDescription.put( probe.intern(), NO_DESCRIPTION );
                 }
             } else {
                 probeToDescription.put( probe.intern(), NO_DESCRIPTION );
+                continue;
             }
 
             /* read GO data */
-            if ( st.hasMoreTokens() ) {
-                classIds = st.nextToken();
-                String[] classIdAry = classIds.split( "\\|" );
-                for ( int i = 0; i < classIdAry.length; i++ ) {
-                    String go = classIdAry[i].intern();
-
-                    ( ( Collection ) probeToGeneSetMap.get( probe ) ).add( go );
-
-                    if ( !geneSetToProbeMap.containsKey( go ) ) {
-                        geneSetToProbeMap.put( go, new HashSet() );
-                    }
-                    ( ( Collection ) geneSetToProbeMap.get( go ) ).add( probe );
-                }
+            if ( length >= 4 ) {
+                classIds = tokens[3];
+                extractPipeDelimitedGoIds( classIds, probe );
             }
 
             if ( messenger != null && n % 500 == 0 ) {
                 messenger.showStatus( "Read " + n + " probes" );
                 try {
-                    Thread.sleep( 10 );
+                    Thread.sleep( 2 );
                 } catch ( InterruptedException e ) {
                     dis.close();
                     throw new CancellationException();
@@ -1246,6 +1244,27 @@ public class GeneAnnotations {
                     "The gene annotations had invalid information. Please check the format." );
         }
 
+    }
+
+    /**
+     * @param classIds
+     * @param probe
+     */
+    private void extractPipeDelimitedGoIds( String classIds, String probe ) {
+        String[] classIdAry = pipePattern.split( classIds );
+        if ( classIdAry.length == 0 ) return;
+
+        Collection probeCol = ( Collection ) probeToGeneSetMap.get( probe );
+        probeCol.addAll( Arrays.asList( classIdAry ) );
+
+        for ( int i = 0; i < classIdAry.length; i++ ) {
+            String go = classIdAry[i].intern();
+
+            if ( !geneSetToProbeMap.containsKey( go ) ) {
+                geneSetToProbeMap.put( go, new HashSet() );
+            }
+            ( ( Collection ) geneSetToProbeMap.get( go ) ).add( probe );
+        }
     }
 
     /**

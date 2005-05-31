@@ -1,7 +1,6 @@
 package baseCode.dataStructure.matrix;
 
 import junit.framework.TestCase;
-import baseCode.dataStructure.matrix.RCDoubleMatrix1D;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
 import cern.colt.matrix.DoubleMatrix1D;

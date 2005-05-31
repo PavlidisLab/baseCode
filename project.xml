@@ -47,7 +47,7 @@
         </developer>
     </developers>
     <licenses>
-        <license><name>GPL</name></license>
+        <license><name>LGPL</name></license>
     </licenses>
     <dependencies>
         

@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Vector;
 
 import junit.framework.TestCase;
 
@@ -88,6 +87,10 @@ public class TestGeneAnnotations extends TestCase {
         int actualValue = ( ( Collection ) val.getGeneToGeneSetMap().get( "aGene" ) ).size();
         int expectedValue = 2;
         assertEquals( expectedValue, actualValue );
+    }
+
+    public void testGeneAnnotationsSpeed() throws Exception {
+        GeneAnnotations val = new GeneAnnotations( null, null, null );
     }
 
 }

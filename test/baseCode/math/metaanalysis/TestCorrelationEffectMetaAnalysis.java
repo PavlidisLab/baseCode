@@ -1,7 +1,6 @@
 package baseCode.math.metaanalysis;
 
 import junit.framework.TestCase;
-import baseCode.math.metaanalysis.CorrelationEffectMetaAnalysis;
 import cern.colt.list.DoubleArrayList;
 
 /**

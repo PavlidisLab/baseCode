@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -212,6 +211,8 @@ public class FileTools {
         }
         return false;
     }
+    
+    
 
     /**
      * @param fileName. If Zipped, this only works if there is just one file in the archive.

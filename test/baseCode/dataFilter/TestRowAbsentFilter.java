@@ -1,6 +1,5 @@
 package baseCode.dataFilter;
 
-import baseCode.dataFilter.RowAbsentFilter;
 import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.matrix.StringMatrix2DNamed;
 import baseCode.io.reader.StringMatrixReader;

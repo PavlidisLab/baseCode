@@ -1,12 +1,10 @@
 package baseCode.math.distribution;
 
+import junit.framework.TestCase;
+import baseCode.util.RegressionTesting;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
-import cern.jet.random.engine.DRand;
 import cern.jet.random.engine.MersenneTwister;
-import baseCode.math.distribution.Wishart;
-import baseCode.util.RegressionTesting;
-import junit.framework.TestCase;
 
 /**
  * <hr>
