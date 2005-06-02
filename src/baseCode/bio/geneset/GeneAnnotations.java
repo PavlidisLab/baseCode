@@ -1206,7 +1206,7 @@ public class GeneAnnotations {
             /* read gene description */
             if ( length >= 3 ) {
                 String description = tokens[2].intern();
-                if ( description.length() == 0 ) {
+                if ( description.length() > 0 ) {
                     probeToDescription.put( probe.intern(), description.intern() );
                 } else {
                     probeToDescription.put( probe.intern(), NO_DESCRIPTION );
