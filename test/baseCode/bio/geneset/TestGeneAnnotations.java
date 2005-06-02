@@ -20,6 +20,7 @@ import junit.framework.TestCase;
 public class TestGeneAnnotations extends TestCase {
 
     InputStream is;
+    InputStream im;
     List probes;
     List geneIds;
     List goIds;
@@ -49,6 +50,7 @@ public class TestGeneAnnotations extends TestCase {
         ( ( Collection ) goIds.get( 1 ) ).add( "2" );
         // ( ( Collection ) goIds.get( 2 ) ).add( "2" );
         is = TestGeneAnnotations.class.getResourceAsStream( "/data/HG-U133_Plus_2_annot_sample.csv" );
+        im = TestGeneAnnotations.class.getResourceAsStream( "/data/geneAnnotation.sample.txt" );
         if ( is == null ) throw new IllegalStateException();
     }
 
@@ -86,6 +88,14 @@ public class TestGeneAnnotations extends TestCase {
         GeneAnnotations val = new GeneAnnotations( probes, geneIds, null, goIds );
         int actualValue = ( ( Collection ) val.getGeneToGeneSetMap().get( "aGene" ) ).size();
         int expectedValue = 2;
+        assertEquals( expectedValue, actualValue );
+    }
+
+    public void testReadDescription() throws Exception {
+        GeneAnnotations ga = new GeneAnnotations();
+        ga.read( im, null );
+        String actualValue = ga.getProbeDescription( "32304_at" );
+        String expectedValue = "protein kinase C, alpha";
         assertEquals( expectedValue, actualValue );
     }
 
