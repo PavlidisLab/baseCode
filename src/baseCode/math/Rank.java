@@ -1,9 +1,30 @@
+/*
+ * The baseCode project
+ * 
+ * Copyright (c) 2005 Columbia University
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ */
 package baseCode.math;
 
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
@@ -51,6 +72,19 @@ public class Rank {
 
         }
         return order;
+    }
+
+    /**
+     * @param ranks
+     * @return
+     */
+    public static int rankSum( Set ranks ) {
+        int sum = 0;
+        for ( Iterator iter = ranks.iterator(); iter.hasNext(); ) {
+            Integer rank = ( Integer ) iter.next();
+            sum += rank.intValue();
+        }
+        return sum;
     }
 
     /**
@@ -133,40 +167,6 @@ public class Rank {
  * Helper class for rankTransform.
  */
 
-class rankData implements Comparable {
-
-    private int index;
-    private double value;
-
-    public rankData( int tindex, double tvalue ) {
-        index = tindex;
-        value = tvalue;
-    }
-
-    public int compareTo( Object a ) {
-        rankData other = ( rankData ) ( a );
-        if ( this.value < other.getValue() ) {
-            return -1;
-        } else if ( this.value > other.getValue() ) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public double getValue() {
-        return value;
-    }
-}
-
-/*
- * Helper class for rankTransform map.
- */
-
 class keyAndValueData implements Comparable {
     private Object key;
 
@@ -191,6 +191,40 @@ class keyAndValueData implements Comparable {
 
     public Object getKey() {
         return key;
+    }
+
+    public double getValue() {
+        return value;
+    }
+}
+
+/*
+ * Helper class for rankTransform map.
+ */
+
+class rankData implements Comparable {
+
+    private int index;
+    private double value;
+
+    public rankData( int tindex, double tvalue ) {
+        index = tindex;
+        value = tvalue;
+    }
+
+    public int compareTo( Object a ) {
+        rankData other = ( rankData ) ( a );
+        if ( this.value < other.getValue() ) {
+            return -1;
+        } else if ( this.value > other.getValue() ) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    public int getIndex() {
+        return index;
     }
 
     public double getValue() {

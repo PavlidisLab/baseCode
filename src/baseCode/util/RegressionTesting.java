@@ -28,207 +28,222 @@ import cern.colt.matrix.DoubleMatrix2D;
  */
 public class RegressionTesting {
 
-   private RegressionTesting() { /* block instantiation */
-   }
+    private RegressionTesting() { /* block instantiation */
+    }
 
-   //  private String resourcePath = "";
+    // private String resourcePath = "";
 
-   public static void writeTestResult( String result, String fileName ) throws IOException {
+    public static void writeTestResult( String result, String fileName ) throws IOException {
 
-      BufferedWriter buf = new BufferedWriter( new OutputStreamWriter( new FileOutputStream( new File( fileName ) ) ) );
-      BufferedReader resultBuf = new BufferedReader( new StringReader( result ) );
+        BufferedWriter buf = new BufferedWriter( new OutputStreamWriter( new FileOutputStream( new File( fileName ) ) ) );
+        BufferedReader resultBuf = new BufferedReader( new StringReader( result ) );
 
-      String line = null;
-      while ( ( line = resultBuf.readLine() ) != null ) {
-         buf.write( line + "\n" );
-      }
-      buf.close();
-      resultBuf.close();
-   }
+        String line = null;
+        while ( ( line = resultBuf.readLine() ) != null ) {
+            buf.write( line + "\n" );
+        }
+        buf.close();
+        resultBuf.close();
+    }
 
-   /**
-    * @param istream
-    * @return
-    * @throws IOException
-    */
-   public static String readTestResult( InputStream istream ) throws IOException {
-      if ( istream == null ) {
-         throw new IllegalStateException( "Null stream" );
-      }
+    /**
+     * @param istream
+     * @return
+     * @throws IOException
+     */
+    public static String readTestResult( InputStream istream ) throws IOException {
+        if ( istream == null ) {
+            throw new IllegalStateException( "Null stream" );
+        }
 
-      BufferedReader buf = new BufferedReader( new InputStreamReader( istream ) );
-      String line = "";
-      StringBuffer testOutput = new StringBuffer( line );
-      while ( ( line = buf.readLine() ) != null ) {
-         testOutput.append( line + "\n" );
-      }
-      buf.close();
-      return testOutput.toString();
-   }
+        BufferedReader buf = new BufferedReader( new InputStreamReader( istream ) );
+        String line = "";
+        StringBuffer testOutput = new StringBuffer( line );
+        while ( ( line = buf.readLine() ) != null ) {
+            testOutput.append( line + "\n" );
+        }
+        buf.close();
+        return testOutput.toString();
+    }
 
-   /**
-    * @param resourceName
-    * @return the contents of the resource as a String
-    * @throws IOException
-    */
-   public static String readTestResult( String resourceName ) throws IOException {
-      InputStream istream = RegressionTesting.class.getResourceAsStream( resourceName );
+    /**
+     * @param resourceName
+     * @return the contents of the resource as a String
+     * @throws IOException
+     */
+    public static String readTestResult( String resourceName ) throws IOException {
+        InputStream istream = RegressionTesting.class.getResourceAsStream( resourceName );
 
-      if ( istream == null ) return null;
+        if ( istream == null ) return null;
 
-      String result = readTestResult( istream );
-      istream.close();
-      return result;
+        String result = readTestResult( istream );
+        istream.close();
+        return result;
 
-   }
+    }
 
-   /**
-    * @throws IOException
-    * @param fileName - the full path of the file to be read.
-    * @return
-    */
-   public static String readTestResultFromFile( String fileName ) throws IOException {
-      InputStream is = new FileInputStream( fileName );
-      return readTestResult( is );
-   }
+    /**
+     * @throws IOException
+     * @param fileName - the full path of the file to be read.
+     * @return
+     */
+    public static String readTestResultFromFile( String fileName ) throws IOException {
+        InputStream is = new FileInputStream( fileName );
+        return readTestResult( is );
+    }
 
-   /**
-    * Test whether two DoubleArrayLists are 'close enough' to call equal.
-    * 
-    * @param a
-    * @param b
-    * @param tolerance
-    * @return
-    */
-   public static boolean closeEnough( DoubleArrayList a, DoubleArrayList b, double tolerance ) {
-      if ( a.size() != b.size() ) return false;
+    /**
+     * Test whether two DoubleArrayLists are 'close enough' to call equal.
+     * 
+     * @param a
+     * @param b
+     * @param tolerance
+     * @return
+     */
+    public static boolean closeEnough( DoubleArrayList a, DoubleArrayList b, double tolerance ) {
+        if ( a.size() != b.size() ) return false;
 
-      for ( int i = 0; i < a.size(); i++ ) {
-         if ( Math.abs( a.getQuick( i ) - b.getQuick( i ) ) > tolerance ) return false;
-      }
-      return true;
-   }
+        for ( int i = 0; i < a.size(); i++ ) {
+            if ( Math.abs( a.getQuick( i ) - b.getQuick( i ) ) > tolerance ) return false;
+        }
+        return true;
+    }
 
-   /**
-    * Test whether two AbstractNamedDoubleMatrix are 'close enough' to call equal.
-    * 
-    * @param a
-    * @param b
-    * @param tolerance
-    * @return try if all the values in both matrices are within 'tolerance' of each other.
-    */
-   public static boolean closeEnough( AbstractNamedDoubleMatrix a, AbstractNamedDoubleMatrix b, double tolerance ) {
-      if ( a.rows() != b.rows() || a.columns() != b.columns() ) return false;
+    /**
+     * Test whether two AbstractNamedDoubleMatrix are 'close enough' to call equal.
+     * 
+     * @param a
+     * @param b
+     * @param tolerance
+     * @return try if all the values in both matrices are within 'tolerance' of each other.
+     */
+    public static boolean closeEnough( AbstractNamedDoubleMatrix a, AbstractNamedDoubleMatrix b, double tolerance ) {
+        if ( a.rows() != b.rows() || a.columns() != b.columns() ) return false;
 
-      for ( int i = 0; i < a.rows(); i++ ) {
-         for ( int j = 0; j < a.columns(); j++ ) {
-            if ( Math.abs( a.getQuick( i, j ) - b.getQuick( i, j ) ) > tolerance ) return false;
-         }
-      }
-      return true;
-   }
+        for ( int i = 0; i < a.rows(); i++ ) {
+            for ( int j = 0; j < a.columns(); j++ ) {
+                if ( Math.abs( a.getQuick( i, j ) - b.getQuick( i, j ) ) > tolerance ) return false;
+            }
+        }
+        return true;
+    }
 
-   public static boolean closeEnough( DoubleMatrix2D a, DoubleMatrix2D b, double tolerance ) {
-      if ( a.rows() != b.rows() || a.columns() != b.columns() ) return false;
+    public static boolean closeEnough( DoubleMatrix2D a, DoubleMatrix2D b, double tolerance ) {
+        if ( a.rows() != b.rows() || a.columns() != b.columns() ) return false;
 
-      for ( int i = 0; i < a.rows(); i++ ) {
-         for ( int j = 0; j < a.columns(); j++ ) {
-            if ( Math.abs( a.getQuick( i, j ) - b.getQuick( i, j ) ) > tolerance ) return false;
-         }
-      }
-      return true;
-   }
+        for ( int i = 0; i < a.rows(); i++ ) {
+            for ( int j = 0; j < a.columns(); j++ ) {
+                if ( Math.abs( a.getQuick( i, j ) - b.getQuick( i, j ) ) > tolerance ) return false;
+            }
+        }
+        return true;
+    }
 
-   /**
-    * Test whether two object arrays are the same.
-    * 
-    * @param a
-    * @param b
-    * @return
-    */
-   public static boolean closeEnough( Object[] a, Object[] b ) {
-      if ( a.length != b.length ) {
-         return false;
-      }
-
-      for ( int i = 0; i < a.length; i++ ) {
-         if ( !a[i].equals( b[i] ) ) {
+    /**
+     * Test whether two object arrays are the same.
+     * 
+     * @param a
+     * @param b
+     * @return
+     */
+    public static boolean closeEnough( Object[] a, Object[] b ) {
+        if ( a.length != b.length ) {
             return false;
-         }
-      }
-      return true;
-   }
+        }
 
-   /**
-    * Test whether two collections contain the same items.
-    * 
-    * @param a
-    * @param b
-    * @return
-    */
-   public static boolean containsSame( Collection a, Collection b ) {
-      if ( a.size() != b.size() ) return false;
+        for ( int i = 0; i < a.length; i++ ) {
+            if ( !a[i].equals( b[i] ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-      if ( !a.containsAll( b ) ) return false;
+    /**
+     * Test whether two collections contain the same items.
+     * 
+     * @param a
+     * @param b
+     * @return
+     */
+    public static boolean containsSame( Collection a, Collection b ) {
+        if ( a.size() != b.size() ) return false;
 
-      return true;
-   }
+        if ( !a.containsAll( b ) ) return false;
 
-   /**
-    * Test whether two object arrays contain the same items. The arrays are treated as Sets - repeats are not
-    * considered.
-    * 
-    * @param a
-    * @param b
-    * @return
-    */
-   public static boolean containsSame( Object[] a, Object[] b ) {
-      if ( a.length != b.length ) return false;
+        return true;
+    }
 
-      Vector av = new Vector( a.length );
-      Vector bv = new Vector( b.length );
+    /**
+     * Test whether two object arrays contain the same items. The arrays are treated as Sets - repeats are not
+     * considered.
+     * 
+     * @param a
+     * @param b
+     * @return
+     */
+    public static boolean containsSame( Object[] a, Object[] b ) {
+        if ( a.length != b.length ) return false;
 
-      for ( int i = 0; i < b.length; i++ ) {
-         av.add( a[i] );
-         bv.add( b[i] );
-      }
+        Vector av = new Vector( a.length );
+        Vector bv = new Vector( b.length );
 
-      return av.containsAll( bv );
+        for ( int i = 0; i < b.length; i++ ) {
+            av.add( a[i] );
+            bv.add( b[i] );
+        }
 
-   }
+        return av.containsAll( bv );
 
-   /**
-    * Test whether two double arrays contain the same items in any order (tolerance is ZERO)
-    * 
-    * @param a
-    * @param b
-    * @return
-    */
-   public static boolean containsSame( double[] a, double[] b ) {
-      if ( a.length != b.length ) return false;
+    }
 
-      Vector av = new Vector( a.length );
-      Vector bv = new Vector( b.length );
-      for ( int i = 0; i < b.length; i++ ) {
-         av.add( new Double( a[i] ) );
-         bv.add( new Double( b[i] ) );
-      }
+    /**
+     * Test whether two double arrays contain the same items in any order (tolerance is ZERO)
+     * 
+     * @param a
+     * @param b
+     * @return
+     */
+    public static boolean containsSame( double[] a, double[] b ) {
+        if ( a.length != b.length ) return false;
 
-      return av.containsAll( bv );
-   }
+        Vector av = new Vector( a.length );
+        Vector bv = new Vector( b.length );
+        for ( int i = 0; i < b.length; i++ ) {
+            av.add( new Double( a[i] ) );
+            bv.add( new Double( b[i] ) );
+        }
 
-   /**
-    * Convenience for using Stuart D. Gathman's Diff.
-    * 
-    * @param expected String
-    * @param actual String
-    * @return String edit list
-    */
-   /**
-    * public static String regress( String expected, String actual ) { Diff diff = new Diff( new Object[] {expected} ,
-    * new Object[] {actual} ); Diff.change script = diff.diff_2( false ); DiffPrint.Base p = new DiffPrint.UnifiedPrint(
-    * new Object[] {expected} , new Object[] {actual} ); StringWriter wtr = new StringWriter(); p.setOutput( wtr );
-    * p.print_script( script ); return wtr.toString(); }
-    */
+        return av.containsAll( bv );
+    }
+
+    /**
+     * Test whether two double arrays contain the same items in the same order
+     * 
+     * @param a
+     * @param b
+     * @return
+     */
+    public static boolean sameArray( int[] a, int[] b ) {
+        if ( a.length != b.length ) return false;
+        for ( int i = 0; i < b.length; i++ ) {
+            if ( b[i] != a[i] ) return false;
+        }
+        return true;
+    }
+
+    /**
+     * Convenience for using Stuart D. Gathman's Diff.
+     * 
+     * @param expected String
+     * @param actual String
+     * @return String edit list
+     */
+    /**
+     * public static String regress( String expected, String actual ) { Diff diff = new Diff( new Object[] {expected} ,
+     * new Object[] {actual} ); Diff.change script = diff.diff_2( false ); DiffPrint.Base p = new
+     * DiffPrint.UnifiedPrint( new Object[] {expected} , new Object[] {actual} ); StringWriter wtr = new StringWriter();
+     * p.setOutput( wtr ); p.print_script( script ); return wtr.toString(); }
+     */
 
 }
