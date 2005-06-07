@@ -22,6 +22,7 @@ package baseCode.math;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -155,7 +156,7 @@ public class Rank {
 
         /* sort it */
         Arrays.sort( values );
-        Map result = new LinkedHashMap();
+        Map result = new HashMap();
         /* put the sorted items back into a hashmap with the rank */
         for ( int i = 0; i < m.size(); i++ ) {
             result.put( values[i].getKey(), new Integer( i ) );

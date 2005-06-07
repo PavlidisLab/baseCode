@@ -101,14 +101,6 @@ public class ROC {
     public static double rocpval( int totalSize, Collection ranks ) {
         if ( totalSize == 0 && ( ranks == null || ranks.size() == 0 ) ) return 1.0;
         return Wilcoxon.wilcoxonP( totalSize, ranks );
-        // double stdev = Math.exp( -0.5 * ( Math.log( numpos ) + 1 ) );
-        // double z = ( aroc - 0.5 ) / stdev;
-        //
-        // /* We are only interested in the upper tails. */
-        // if ( z < 0.0 ) {
-        // z = 0.0;
-        // }
-        // return 1.0 - Probability.normal( z );
     }
 
 }
