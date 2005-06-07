@@ -93,22 +93,22 @@ public class ROC {
     }
 
     /**
-     * For an AROC value, calculates a p value based on approximation for calculating the stanadard deviation. Highly
-     * approximate!
+     * For an AROC value, calculates a p value. Uses fact that ROC is equivalent to the Wilcoxon rank.
      * 
      * @param numpos How many positives are in the data.
-     * @param aroc The AROC
+     * @param Ranks of objects in the class.
      * @return The p value.
      */
-    public static double rocpval( int numpos, double aroc ) {
-        double stdev = Math.exp( -0.5 * ( Math.log( numpos ) + 1 ) );
-        double z = ( aroc - 0.5 ) / stdev;
-
-        /* We are only interested in the upper tails. */
-        if ( z < 0.0 ) {
-            z = 0.0;
-        }
-        return 1.0 - Probability.normal( z );
+    public static double rocpval( int totalSize, Set ranks ) {
+        return Wilcoxon.wilcoxonP( totalSize, ranks );
+        // double stdev = Math.exp( -0.5 * ( Math.log( numpos ) + 1 ) );
+        // double z = ( aroc - 0.5 ) / stdev;
+        //
+        // /* We are only interested in the upper tails. */
+        // if ( z < 0.0 ) {
+        // z = 0.0;
+        // }
+        // return 1.0 - Probability.normal( z );
     }
 
 }
