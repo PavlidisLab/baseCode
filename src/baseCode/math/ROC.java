@@ -93,7 +93,7 @@ public class ROC {
     }
 
     /**
-     * For an AROC value, calculates a p value. Uses fact that ROC is equivalent to the Wilcoxon rank.
+     * For an AROC value, calculates a p value. Uses fact that ROC is equivalent to the Wilcoxon rank sum test.
      * 
      * @param numpos How many positives are in the data.
      * @param Ranks of objects in the class.
