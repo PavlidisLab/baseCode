@@ -21,6 +21,7 @@
 package baseCode.math;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -78,7 +79,7 @@ public class Rank {
      * @param ranks
      * @return
      */
-    public static int rankSum( Set ranks ) {
+    public static int rankSum( Collection ranks ) {
         int sum = 0;
         for ( Iterator iter = ranks.iterator(); iter.hasNext(); ) {
             Integer rank = ( Integer ) iter.next();
@@ -125,7 +126,7 @@ public class Rank {
 
     /**
      * Rank transform a map, where the values are numerical (java.lang.Double) values we wish to rank. Ties are not
-     * handled specially.
+     * handled specially. Ranks are zero-based.
      * 
      * @param m java.util.Map with keys Objects, values Doubles.
      * @return A java.util.Map keys=old keys, values=java.lang.Integer rank of the key.

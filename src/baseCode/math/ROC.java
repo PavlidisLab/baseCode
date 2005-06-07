@@ -20,9 +20,8 @@
  */
 package baseCode.math;
 
+import java.util.Collection;
 import java.util.Set;
-
-import cern.jet.stat.Probability;
 
 /**
  * Functions for calculating Receiver operator characteristics.
@@ -42,7 +41,7 @@ public class ROC {
      * @param ranks Map
      * @return AROC
      */
-    public static double aroc( int totalSize, Set ranks ) {
+    public static double aroc( int totalSize, Collection ranks ) {
         return ROC.aroc( totalSize, ranks, -1 );
     }
 
@@ -57,7 +56,7 @@ public class ROC {
      *        If maxFP <= 0, it is ignored.
      * @return AROC
      */
-    public static double aroc( int totalSize, Set ranks, int maxFP ) {
+    public static double aroc( int totalSize, Collection ranks, int maxFP ) {
         int numPosSeen = 0;
         int numNegSeen = 0;
         int targetSize = ranks.size();
@@ -99,7 +98,8 @@ public class ROC {
      * @param Ranks of objects in the class.
      * @return The p value.
      */
-    public static double rocpval( int totalSize, Set ranks ) {
+    public static double rocpval( int totalSize, Collection ranks ) {
+        if ( totalSize == 0 && ( ranks == null || ranks.size() == 0 ) ) return 1.0;
         return Wilcoxon.wilcoxonP( totalSize, ranks );
         // double stdev = Math.exp( -0.5 * ( Math.log( numpos ) + 1 ) );
         // double z = ( aroc - 0.5 ) / stdev;

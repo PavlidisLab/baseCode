@@ -60,7 +60,9 @@ public class Wilcoxon {
      */
     public static double wilcoxonP( int N, int n, int R ) {
 
-        if ( n >= N ) throw new IllegalArgumentException( "n must be less than N" );
+        if ( n > N ) throw new IllegalArgumentException( "n must be less than N (n=" + n + ", N=" + N + ")" );
+
+        if ( n == 0 && N == 0 ) return 1.0;
 
         if ( ( long ) N * n * R <= 1e6 || ( R < N && n * Math.pow( R, 2 ) <= 1e6 ) ) {
             log.debug( "Using exact method (" + N * n * R + ")" );
@@ -83,7 +85,7 @@ public class Wilcoxon {
      * @param ranks of items in the class
      * @return
      */
-    public static double wilcoxonP( int N, Set ranks ) {
+    public static double wilcoxonP( int N, Collection ranks ) {
         return wilcoxonP( N, ranks.size(), Rank.rankSum( ranks ) );
     }
 
@@ -123,6 +125,8 @@ public class Wilcoxon {
         if ( cacheContains( N0, n0, R0 ) ) {
             return getFromCache( N0, n0, R0 );
         }
+
+        if ( N0 == 0 && n0 == 0 ) return BigInteger.ONE;
 
         for ( int N = 1; N <= N0; N++ ) {
             if ( N > 2 ) removeFromCache( N - 2 );
@@ -170,9 +174,9 @@ public class Wilcoxon {
                 }
             }
         }
-//        if ( log.isErrorEnabled() ) {
-//            printCache();
-//        }
+        // if ( log.isErrorEnabled() ) {
+        // printCache();
+        // }
         return getFromCache( N0, n0, R0 );
     }
 
@@ -220,6 +224,11 @@ public class Wilcoxon {
     }
 
     private static BigInteger getFromCache( int N, int n, int R ) {
+
+        if ( !cacheContains( N, n, R ) ) {
+            throw new IllegalStateException( "No value stored for N=" + N + ", n=" + n + ", R=" + R );
+        }
+
         Integer N_i = new Integer( N );
         Integer n_i = new Integer( n );
         Integer R_i = new Integer( R );
