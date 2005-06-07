@@ -23,7 +23,8 @@ package baseCode.math;
 import junit.framework.TestCase;
 
 /**
- * Gold standard (?) is the exactRankTests (http://cran.r-project.org/src/contrib/Descriptions/exactRankTests.html)
+ * Gold standard (?) is the exactRankTests (http://cran.r-project.org/src/contrib/Descriptions/exactRankTests.html) or
+ * on Catmap.
  * <hr>
  * <p>
  * Copyright (c) 2004-2005 Columbia University
@@ -107,8 +108,8 @@ public class TestWilcoxon extends TestCase {
          */
 
         double actualValue = Wilcoxon.wilcoxonP( 90, 58, 2291 );
-        double expectedValue = 0.001677;
-        assertEquals( expectedValue, actualValue, 0.001 );
+        double expectedValue = 0.0535181722243048;
+        assertEquals( expectedValue, actualValue, 1e-10 );
     }
 
     public final void testWilxcoxonPExactD() throws Exception {
@@ -116,7 +117,7 @@ public class TestWilcoxon extends TestCase {
         /*
          * y<-c(1:10, 69:90); x<-c(11:68); wilcox.exact(x,y, alternative="less")
          */
-        double expectedValue = 0.001677;
+        double expectedValue = 0.0015292342536034;
         double actualValue = Wilcoxon.exactWilcoxonP( 90, 58, 2291 );
         assertEquals( expectedValue, actualValue, 0.001 );
     }
@@ -133,6 +134,49 @@ public class TestWilcoxon extends TestCase {
         double expectedValue = 0.66667;
 
         assertEquals( expectedValue, actualValue, 0.001 );
+    }
+
+    /* tests based on catmap */
+    public void testAExact() throws Exception {
+        /* kinetochore */
+        double actualValue = Wilcoxon.wilcoxonP( 5224, 2, 184 );
+        double expectedValue = 0.000613671594516244;
+        assertEquals( expectedValue, actualValue, 1e-10 );
+    }
+
+    public void testBGaussian() throws Exception {
+        /* mitotic cell cycle */
+        double actualValue = Wilcoxon.wilcoxonP( 5224, 97, 176069 );
+        double expectedValue = 7.36188216415985e-08;
+        assertEquals( expectedValue, actualValue, 1e-10 );
+    }
+
+    public void testCGaussian() throws Exception {
+        /* nucleus */
+        double actualValue = Wilcoxon.wilcoxonP( 5224, 618, 1499756 );
+        double expectedValue = 0.000557086593133454;
+        assertEquals( expectedValue, actualValue, 1e-6 );
+    }
+
+    public void testDVolume() throws Exception {
+        /* nuclear division */
+        double actualValue = Wilcoxon.wilcoxonP( 5224, 41, 59721 );
+        double expectedValue = 2.23181930573246e-07;
+        assertEquals( expectedValue, actualValue, 1e-10 );
+    }
+
+    public void testEVolume() throws Exception {
+        /* DNA replicatoin */
+        double actualValue = Wilcoxon.wilcoxonP( 5224, 48, 89794 );
+        double expectedValue = 0.000293433699059724;
+        assertEquals( expectedValue, actualValue, 1e-6 );
+    }
+
+    public void testFVolume() throws Exception {
+        /* Mphase */
+        double actualValue = Wilcoxon.wilcoxonP( 5224, 42, 60490 );
+        double expectedValue = 1.06593257987108e-07;
+        assertEquals( expectedValue, actualValue, 1e-10 );
     }
 
 }

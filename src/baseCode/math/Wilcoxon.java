@@ -20,7 +20,10 @@
  */
 package baseCode.math;
 
+import java.math.BigInteger;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,6 +36,9 @@ import cern.jet.stat.Probability;
 /**
  * Implements methods from supplementary file I of "Comparing functional annotation analyses with Catmap", Thomas
  * Breslin, Patrik Edén and Morten Krogh, BMC Bioinformatics 2004, 5:193 doi:10.1186/1471-2105-5-193
+ * <p>
+ * Note that in the Catmap code, zero-based ranks are used, but these are converted to one-based before computation of
+ * pvalues. Therefore this code uses one-based ranks throughout.
  * <hr>
  * <p>
  * Copyright (c) 2004-2005 Columbia University
@@ -49,7 +55,7 @@ public class Wilcoxon {
     /**
      * @param N number of all Items
      * @param n number of class Items
-     * @param R rankSum for items in the class.
+     * @param R rankSum for items in the class. (one-based)
      * @return
      */
     public static double wilcoxonP( int N, int n, int R ) {
@@ -81,7 +87,8 @@ public class Wilcoxon {
         return wilcoxonP( N, ranks.size(), Rank.rankSum( ranks ) );
     }
 
-    private static void addToCache( int N, int n, int R, int value ) {
+    private static void addToCache( int N, int n, int R, BigInteger value ) {
+        // assert value. >= 0 : "N=" + N + " n=" + n + " R=" + R + " val=" + value;
         Integer N_i = new Integer( N );
         Integer n_i = new Integer( n );
         Integer R_i = new Integer( R );
@@ -98,78 +105,140 @@ public class Wilcoxon {
 
         Map rVals = ( Map ) nVals.get( n_i );
 
-        rVals.put( R_i, new Integer( value ) );
+        rVals.put( R_i, value );
     }
 
     /**
-     * Direct port from catmap code.
+     * Direct port from catmap code. Exact computation of the number of ways n items can be drawn from a total of N
+     * items with a rank sum of R or better (lower).
      * 
-     * @param N_0
-     * @param n_0
-     * @param R_0 rank sum, 1-based (best rank is 1)
+     * @param N0
+     * @param n0
+     * @param R0 rank sum, 1-based (best rank is 1)
      * @return
      */
-    private static int computeA__( int N_0, int n_0, int R_0 ) {
-        if ( R_0 < N_0 ) {
-            N_0 = R_0;
+    private static BigInteger computeA__( int N0, int n0, int R0 ) {
+        if ( R0 < N0 ) N0 = R0;
+
+        if ( cacheContains( N0, n0, R0 ) ) {
+            return getFromCache( N0, n0, R0 );
         }
 
-        for ( int N = 1; N <= N_0; N++ ) {
-            if ( N > 2 ) {
-                removeFromCache( N - 2 );
-            }
-            int min_n = 0 > n_0 + N - N_0 ? 0 : n_0 + N - N_0;
-            int max_n = n_0 < N ? n_0 : N;
+        for ( int N = 1; N <= N0; N++ ) {
+            if ( N > 2 ) removeFromCache( N - 2 );
+
+            /* n has to be less than N */
+            int min_n = Math.max( 0, n0 + N - N0 );
+            int max_n = Math.min( n0, N );
+
+            assert min_n >= 0;
+            assert max_n >= min_n;
 
             for ( int n = min_n; n <= max_n; n++ ) {
-                int min_r = R_0 - ( N_0 + N + 1 ) * ( N_0 - N ) / 2 > n * ( n + 1 ) / 2 ? R_0 - ( N_0 + N + 1 )
-                        * ( N_0 - N ) / 2 : n * ( n + 1 ) / 2;
-                int max_r = n * ( 2 * N - n + 1 ) / 2 < R_0 ? n * ( 2 * N - n + 1 ) / 2 : R_0;
+
+                /* The rank sum is in the interval n(n+1)/2 to n(2N-n+1)/2. Other values need not be looked at. */
+                int bestPossibleRankSum = n * ( n + 1 ) / 2;
+                int worstPossibleRankSum = n * ( 2 * N - n + 1 ) / 2;
+
+                /* Ensure value looked at is valid for the original set of parameters. */
+                int min_r = Math.max( R0 - ( N0 + N + 1 ) * ( N0 - N ) / 2, bestPossibleRankSum );
+                int max_r = Math.min( worstPossibleRankSum, R0 );
+
+                assert min_r >= 0;
+                assert max_r >= min_r;
+
+                /* R greater than this, have already computed it in parts */
+                int foo = n * ( 2 * N - n - 1 ) / 2;
+
+                /* R less than this, we have already computed it in parts */
+                int bar = N + ( n - 1 ) * n / 2;
+
                 for ( int r = min_r; r <= max_r; r++ ) {
 
-                    if ( n == 0 || n == N || r == n * ( n + 1 ) / 2.0 ) {
-                        addToCache( N, n, r, 1 );
-                        continue;
-                    }
+                    if ( n == 0 || n == N || r == bestPossibleRankSum ) {
+                        addToCache( N, n, r, BigInteger.ONE );
 
-                    if ( r > n * ( 2.0 * N - n - 1 ) / 2.0 ) {
-                        addToCache( N, n, r, getFromCache( N - 1, n, n * ( 2 * N - n - 1 ) / 2 )
-                                + getFromCache( N - 1, n - 1, r - N ) );
-                        continue;
-                    }
+                    } else if ( r > foo ) {
+                        addToCache( N, n, r, getFromCache( N - 1, n, foo ).add( getFromCache( N - 1, n - 1, r - N ) ) );
 
-                    if ( r < N + ( n - 1 ) * n / 2.0 ) {
+                    } else if ( r < bar ) {
                         addToCache( N, n, r, getFromCache( N - 1, n, r ) );
-                        continue;
+
+                    } else {
+                        addToCache( N, n, r, getFromCache( N - 1, n, r ).add( getFromCache( N - 1, n - 1, r - N ) ) );
                     }
+                }
+            }
+        }
+//        if ( log.isErrorEnabled() ) {
+//            printCache();
+//        }
+        return getFromCache( N0, n0, R0 );
+    }
 
-                    addToCache( N, n, r, getFromCache( N - 1, n, r ) + getFromCache( N - 1, n - 1, r - N ) );
+    /**
+     * @param n0
+     * @param n02
+     * @param r0
+     * @return
+     */
+    private static boolean cacheContains( int N, int n, int R ) {
+        Integer N_i = new Integer( N );
+        Integer n_i = new Integer( n );
+        Integer R_i = new Integer( R );
+        if ( !cache.containsKey( N_i ) ) return false;
 
+        Map nVals = ( Map ) cache.get( N_i );
+
+        if ( !nVals.containsKey( n_i ) ) return false;
+
+        Map rVals = ( Map ) nVals.get( n_i );
+
+        if ( !rVals.containsKey( R_i ) ) return false;
+
+        return true;
+    }
+
+    /**
+     * Purely for debugging.
+     */
+    private static void printCache() {
+        for ( Iterator iter = cache.keySet().iterator(); iter.hasNext(); ) {
+            Integer N = ( Integer ) iter.next();
+            Map nToRs = ( Map ) cache.get( N );
+            for ( Iterator iterator = nToRs.keySet().iterator(); iterator.hasNext(); ) {
+                Integer n = ( Integer ) iterator.next();
+                Map rs = ( Map ) nToRs.get( n );
+                for ( Iterator itc = rs.keySet().iterator(); itc.hasNext(); ) {
+                    Integer r = ( Integer ) itc.next();
+                    BigInteger a = ( BigInteger ) rs.get( r );
+                    log.debug( N + ", " + n + ", " + r + "=" + a );
                 }
             }
         }
 
-        return getFromCache( N_0, n_0, R_0 );
     }
 
-    private static int getFromCache( int N, int n, int R ) {
+    private static BigInteger getFromCache( int N, int n, int R ) {
         Integer N_i = new Integer( N );
         Integer n_i = new Integer( n );
         Integer R_i = new Integer( R );
 
-        assert ( cache.containsKey( N_i ) );
+        // if ( !cache.containsKey( N_i ) ) return -1;
 
         Map nVals = ( Map ) cache.get( N_i );
 
-        assert ( nVals.containsKey( n_i ) );
+        // if ( !nVals.containsKey( n_i ) ) return -1;
 
         Map rVals = ( Map ) nVals.get( n_i );
 
-        assert ( rVals.containsKey( R_i ) );
+        // if ( !rVals.containsKey( R_i ) ) return -1;
 
-        Integer result = ( Integer ) rVals.get( R_i );
+        return ( BigInteger ) rVals.get( R_i );
 
-        return result.intValue();
+        // assert result.longValue() >= 0 : "N=" + N + " n=" + n + " R=" + R + " val=" + result.longValue();
+
+        // return result.longValue();
     }
 
     /**
@@ -179,7 +248,7 @@ public class Wilcoxon {
      * @return
      */
     private static double pExact( int N, int n, int R ) {
-        return computeA__( N, n, R ) / Arithmetic.binomial( N, n );
+        return computeA__( N, n, R ).doubleValue() / Arithmetic.binomial( N, n );
     }
 
     /**
@@ -188,11 +257,12 @@ public class Wilcoxon {
      * @param R
      * @return Upper-tail probability for Wilcoxon rank-sum test.
      */
-    private static double pGaussian( int N, int n, int R ) {
+    private static double pGaussian( long N, long n, long R ) {
+        if ( n > N ) throw new IllegalArgumentException( "n must be smaller than N" );
         double mean = n * ( N + 1 ) / 2;
         double var = n * ( N - n ) * ( N + 1 ) / 12.0;
         log.debug( "Mean=" + mean + " Var=" + var + " R=" + R );
-        return 1.0 - 0.5 * Probability.errorFunctionComplemented( ( R - mean ) / Math.sqrt( 2.0 * var ) );
+        return Probability.normal( 0.0, var, R - mean );
     }
 
     /**
@@ -236,7 +306,6 @@ public class Wilcoxon {
 
         double result = 0.0;
         for ( int a = 0; a <= n; a++ ) {
-            log.debug( Math.pow( t - kMax, a ) + " * " + C[kMax][a] );
             result += C[kMax][a] * ( Math.pow( t - kMax, a ) );
         }
         return result;
