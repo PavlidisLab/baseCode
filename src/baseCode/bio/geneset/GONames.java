@@ -60,7 +60,7 @@ public class GONames {
     /**
      * Name for root of tree representing user-defined gene sets.
      */
-    public static final String USER_DEFINED = "User-defined";
+    public static final String USER_DEFINED = "User-defined or modified";
 
     /**
      * 
@@ -76,6 +76,8 @@ public class GONames {
     private GOParser parser;
 
     private String USER_DEFINED_ASPECT = "User-defined";
+
+    private Map oldNameMap;
 
     /**
      * @param inputStream
@@ -122,7 +124,7 @@ public class GONames {
      * @param id String
      * @param name String
      */
-    public void addClass( String id, String name ) {
+    public void addGeneSet( String id, String name ) {
         goNameMap.put( id, name );
         newGeneSets.add( id );
         addClassToUserDefined( id, name );
@@ -142,31 +144,37 @@ public class GONames {
      * @param classID
      */
     public void resetGeneSet( String classID ) {
+        goNameMap.put( classID, oldNameMap.get( classID ) );
         newGeneSets.remove( classID );
-        removeClassFromUserDefined( classID );
+        // removeClassFromUserDefined( classID );
     }
 
     /**
      * @param go_ID
      * @return the aspect (molecular_function etc) for an id.
      */
-    public String getAspectForId( String go_ID ) {
-        if ( !goNameMap.containsKey( go_ID ) ) {
+    public String getAspectForId( String geneSetId ) {
+        if ( !goNameMap.containsKey( geneSetId ) ) {
             return NO_ASPECT_AVAILABLE;
         }
 
         if ( getGraph() == null ) return NO_ASPECT_AVAILABLE;
-        if ( getGraph().getNodeContents( go_ID ) == null ) {
-            log.debug( "No node for " + go_ID );
+        if ( getGraph().getNodeContents( geneSetId ) == null ) {
+            log.debug( "No node for " + geneSetId );
             return NO_ASPECT_AVAILABLE;
         }
 
-        GOEntry node = ( GOEntry ) getGraph().getNodeContents( go_ID );
-        if ( node.getAspect() == null ) {
-            Set parents = getParents( go_ID );
+        GOEntry node = ( GOEntry ) getGraph().getNodeContents( geneSetId );
+        if ( node.getAspect() == null || node.getAspect().equals( NO_ASPECT_AVAILABLE ) ) {
+            Set parents = getParents( geneSetId );
+            if ( parents == null ) return NO_ASPECT_AVAILABLE;
             for ( Iterator iter = parents.iterator(); iter.hasNext(); ) {
                 String parent = ( String ) iter.next();
-                return getAspectForId( parent );
+                String aspect = getAspectForId( parent );
+                if ( aspect != null && !aspect.equals( NO_ASPECT_AVAILABLE ) ) {
+                    node.setAspect( aspect );
+                    return aspect;
+                }
             }
         }
         return node.getAspect();
@@ -225,11 +233,12 @@ public class GONames {
      * @return name of gene set
      */
     public String getNameForId( String go_ID ) {
+        assert goNameMap != null;
         if ( !goNameMap.containsKey( go_ID ) ) {
             return NO_DESCRIPTION_AVAILABLE;
         }
 
-        return ( ( String ) ( goNameMap.get( go_ID ) ) ).intern();
+        return ( String ) goNameMap.get( go_ID );
     }
 
     /**
@@ -288,15 +297,12 @@ public class GONames {
      * @param id String
      * @param name String
      */
-    public void modifyClass( String id, String name ) {
-        log.debug( "Modifying " + id );
-        if ( newGeneSets.contains( id ) ) {
-            log.warn( "There is already a user-defined gene set " + id );
-            return;
-        }
-        goNameMap.put( id, name );
+    public void modifyGeneSet( String id, String newName ) {
+        oldNameMap.put( id, goNameMap.get( id ) );
+        log.debug( "Old description is '" + oldNameMap.get( id ) + "'" );
+        goNameMap.put( id, newName );
+        addClassToUserDefined( id, newName );
         newGeneSets.add( id );
-        addClassToUserDefined( id, name );
     }
 
     /**
@@ -305,12 +311,16 @@ public class GONames {
      */
     private void addClassToUserDefined( String id, String name ) {
         if ( getGraph() == null ) return;
-        log.debug( "Adding user-defined gene set to graph" );
         if ( this.getGraph().get( USER_DEFINED ) == null ) {
             log.error( "No user-defined root node!" );
             return;
         }
-        this.getGraph().addChildTo( USER_DEFINED, id, new GOEntry( id, name, name, USER_DEFINED_ASPECT ) );
+        goNameMap.put( USER_DEFINED, USER_DEFINED ); // make sure this is set up.
+        String definition = getDefinitionForId( id ) == null ? "No definition" : getDefinitionForId( id );
+        String aspect = getAspectForId( id ) == null ? USER_DEFINED_ASPECT : getAspectForId( id );
+        log.debug( "Adding user-defined gene set to graph: " + id + ", Name:" + name + ", Definition: "
+                + definition.substring( 0, Math.min( definition.length(), 30 ) ) + "..., Aspect: " + aspect );
+        this.getGraph().addChildTo( USER_DEFINED, id, new GOEntry( id, name, definition, aspect ) );
     }
 
     /**
@@ -318,11 +328,11 @@ public class GONames {
      */
     private void removeClassFromUserDefined( String id ) {
         if ( getGraph() == null ) return;
-        log.debug( "Removing user-defined gene set from graph" );
         if ( this.getGraph().get( USER_DEFINED ) == null ) {
             log.error( "No user-defined root node!" );
             return;
         }
+        log.debug( "Removing user-defined gene set from graph" );
         this.getGraph().deleteChildFrom( USER_DEFINED, id );
     }
 
@@ -332,10 +342,11 @@ public class GONames {
     private void initialize( InputStream inputStream ) throws IOException, SAXException {
         this.parser = new GOParser( inputStream );
         goNameMap = parser.getGONameMap();
+        oldNameMap = new HashMap();
         if ( this.getGraph() == null ) return;
         DirectedGraphNode root = this.getGraph().getRoot();
         this.getGraph().addChildTo( root.getKey(), USER_DEFINED,
-                new GOEntry( USER_DEFINED, "", USER_DEFINED, NO_ASPECT_AVAILABLE ) );
+                new GOEntry( USER_DEFINED, "", "Gene sets modified or created by the user", USER_DEFINED_ASPECT ) );
     }
 
 }

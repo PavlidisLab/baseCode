@@ -300,12 +300,14 @@ public class GeneAnnotations {
             oldGeneSets.put( id, new HashSet( ( Collection ) geneSetToProbeMap.get( id ) ) );
         }
 
-        geneSetToProbeMap.put( id, probesForNew );
+        geneSetToProbeMap.put( id, new HashSet( probesForNew ) );
         Collection genes = new HashSet();
         for ( Iterator probe_it = probesForNew.iterator(); probe_it.hasNext(); ) {
             String probe = new String( ( String ) probe_it.next() );
             if ( !probeToGeneSetMap.containsKey( probe ) ) continue;
             ( ( Collection ) probeToGeneSetMap.get( probe ) ).add( id );
+
+            if ( !probeToGeneName.containsKey( probe ) ) continue;
             genes.add( probeToGeneName.get( probe ) );
         }
 
@@ -322,6 +324,7 @@ public class GeneAnnotations {
     public void restoreGeneSet( String id ) {
         if ( !oldGeneSets.containsKey( id ) ) return;
         log.info( "Restoring " + id );
+        removeClassFromMaps( id );
         addClass( id, ( Collection ) oldGeneSets.get( id ) );
     }
 
@@ -475,61 +478,69 @@ public class GeneAnnotations {
      * Redefine a class.
      * 
      * @param classId String class to be modified
-     * @param probesForNew Collection current user-defined list of members. The "real" version of the class is modified
-     *        to look like this one.
+     * @param probesForNew Collection current user-defined list of members. The gene set is recreated to look like this
+     *        one.
      */
-    public void modifyClass( String classId, Collection probesForNew ) {
+    public void modifyGeneSet( String classId, Collection probesForNew ) {
         if ( !geneSetToProbeMap.containsKey( classId ) ) {
             log.warn( "No such class to modify: " + classId );
             return;
         }
 
-        log.info( "Saving backup version of " + classId );
+        log.debug( "Saving backup version of " + classId + ", replacing with new version that has "
+                + probesForNew.size() + " probes." );
         oldGeneSets.put( classId, new HashSet( ( Collection ) geneSetToProbeMap.get( classId ) ) );
 
-        Collection originalProbes = ( Collection ) geneSetToProbeMap.get( classId );
-        for ( Iterator iter = originalProbes.iterator(); iter.hasNext(); ) {
-            String originalProbe = new String( ( String ) iter.next() );
-            if ( !probesForNew.contains( originalProbe ) ) {
-                Set ptc = new HashSet( ( Collection ) probeToGeneSetMap.get( originalProbe ) );
-                ptc.remove( classId );
-                probeToGeneSetMap.remove( originalProbe );
-                probeToGeneSetMap.put( originalProbe, new HashSet( ptc ) );
+        removeClassFromMaps( classId );
+        addClass( classId, probesForNew );
 
-                String gene = ( String ) probeToGeneName.get( originalProbe );
-                ( ( Collection ) geneToGeneSetMap.get( gene ) ).add( classId );
-                ( ( Collection ) geneSetToGeneMap.get( classId ) ).add( gene );
-            }
-        }
-
-        for ( Iterator iter = probesForNew.iterator(); iter.hasNext(); ) {
-            String probe = ( String ) iter.next();
-            if ( !originalProbes.contains( probe ) ) {
-                ( ( Collection ) probeToGeneSetMap.get( probe ) ).add( classId );
-            }
-        }
-
-        // remove genes, but only if they are no longer referred to in the gene set.
-        Collection originalGenes = new HashSet( ( Collection ) geneSetToGeneMap.get( classId ) );
-        for ( Iterator iter = originalGenes.iterator(); iter.hasNext(); ) {
-            String gene = ( String ) iter.next();
-            boolean removeGene = true;
-            Collection geneProbes = ( Collection ) geneToProbeList.get( gene );
-            for ( Iterator iterator = geneProbes.iterator(); iterator.hasNext(); ) {
-                String probe = ( String ) iterator.next();
-                if ( probesForNew.contains( probe ) ) {
-                    removeGene = false;
-                    break;
-                }
-            }
-            if ( removeGene ) {
-                ( ( Collection ) geneSetToGeneMap.get( classId ) ).remove( gene );
-                ( ( Collection ) geneToGeneSetMap.get( gene ) ).remove( classId );
-            }
-        }
-
-        geneSetToProbeMap.put( classId, probesForNew );
-        resetSelectedSets();
+        // Collection originalProbes = ( Collection ) geneSetToProbeMap.get( classId );
+        //
+        // for ( Iterator iter = originalProbes.iterator(); iter.hasNext(); ) {
+        // String originalProbe = new String( ( String ) iter.next() );
+        // if ( !probesForNew.contains( originalProbe ) ) {
+        // Set ptc = new HashSet( ( Collection ) probeToGeneSetMap.get( originalProbe ) );
+        // ptc.remove( classId );
+        // probeToGeneSetMap.remove( originalProbe );
+        // probeToGeneSetMap.put( originalProbe, new HashSet( ptc ) );
+        //
+        // String gene = ( String ) probeToGeneName.get( originalProbe );
+        // ( ( Collection ) geneToGeneSetMap.get( gene ) ).add( classId );
+        // ( ( Collection ) geneSetToGeneMap.get( classId ) ).add( gene );
+        // }
+        // }
+        //
+        // for ( Iterator iter = probesForNew.iterator(); iter.hasNext(); ) {
+        // String probe = ( String ) iter.next();
+        // if ( !originalProbes.contains( probe ) ) {
+        // ( ( Collection ) probeToGeneSetMap.get( probe ) ).add( classId );
+        // String gene = ( String ) probeToGeneName.get( probe );
+        // ( ( Collection ) geneToGeneSetMap.get( gene ) ).add( classId );
+        // ( ( Collection ) geneSetToGeneMap.get( classId ) ).add( gene );
+        // }
+        // }
+        //
+        // // remove genes, but only if they are no longer referred to in the gene set.
+        // Collection originalGenes = new HashSet( ( Collection ) geneSetToGeneMap.get( classId ) );
+        // for ( Iterator iter = originalGenes.iterator(); iter.hasNext(); ) {
+        // String gene = ( String ) iter.next();
+        // boolean removeGene = true;
+        // Collection geneProbes = ( Collection ) geneToProbeList.get( gene );
+        // for ( Iterator iterator = geneProbes.iterator(); iterator.hasNext(); ) {
+        // String probe = ( String ) iterator.next();
+        // if ( probesForNew.contains( probe ) ) {
+        // removeGene = false;
+        // break;
+        // }
+        // }
+        // if ( removeGene ) {
+        // ( ( Collection ) geneSetToGeneMap.get( classId ) ).remove( gene );
+        // ( ( Collection ) geneToGeneSetMap.get( gene ) ).remove( classId );
+        // }
+        // }
+        //
+        // geneSetToProbeMap.put( classId, probesForNew );
+        // resetSelectedSets();
     }
 
     /**
@@ -599,6 +610,7 @@ public class GeneAnnotations {
      */
     public int numProbesInGeneSet( String id ) {
         if ( !geneSetToProbeMap.containsKey( id ) ) {
+            log.debug( "No such gene set " + id );
             return 0;
         }
         return ( ( Collection ) geneSetToProbeMap.get( id ) ).size();
@@ -735,6 +747,7 @@ public class GeneAnnotations {
             String candidate = ( String ) it.next();
 
             // look in the name too
+            if ( goData.getNameForId( candidate ) == null ) continue;
             String candidateN = goData.getNameForId( candidate ).toUpperCase();
 
             if ( !candidate.toUpperCase().startsWith( searchOnUp ) && candidateN.indexOf( searchOnUp ) < 0 ) {
