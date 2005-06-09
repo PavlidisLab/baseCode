@@ -300,9 +300,7 @@ public class GONames {
     public void modifyGeneSet( String id, String newName ) {
         oldNameMap.put( id, goNameMap.get( id ) );
         log.debug( "Old description is '" + oldNameMap.get( id ) + "'" );
-        goNameMap.put( id, newName );
-        addClassToUserDefined( id, newName );
-        newGeneSets.add( id );
+        this.addGeneSet( id, newName );
     }
 
     /**
