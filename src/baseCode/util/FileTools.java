@@ -134,7 +134,7 @@ public class FileTools {
      * @return the new filename with the added extension, but does not modify the <code>filename</code> parameter.
      */
     public static String addImageExtension( String filename ) {
-        return ( filename + "." + FileTools.DEFAULT_IMAGE_EXTENSION );
+        return ( filename + ( FileTools.DEFAULT_IMAGE_EXTENSION.startsWith( "." ) ? "" : "." ) + FileTools.DEFAULT_IMAGE_EXTENSION );
     }
 
     /**
@@ -142,7 +142,7 @@ public class FileTools {
      * @return the new filename with the added extension, but does not modify the <code>filename</code> parameter.
      */
     public static String addDataExtension( String filename ) {
-        return ( filename + "." + FileTools.DEFAULT_DATA_EXTENSION );
+        return ( filename + ( FileTools.DEFAULT_DATA_EXTENSION.startsWith( "." ) ? "" : "." ) + FileTools.DEFAULT_DATA_EXTENSION );
     }
 
     /**
@@ -211,8 +211,6 @@ public class FileTools {
         }
         return false;
     }
-    
-    
 
     /**
      * @param fileName. If Zipped, this only works if there is just one file in the archive.
