@@ -164,11 +164,9 @@ public class ByteArrayConverter {
         DataOutputStream dos = new DataOutputStream( bos );
 
         try {
-
             for ( int i = 0; i < carray.length; i++ ) {
                 dos.writeChar( carray[i] );
             }
-
             dos.close();
             bos.close();
 
@@ -187,13 +185,11 @@ public class ByteArrayConverter {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream( bos );
         try {
-
             for ( int i = 0; i < darray.length; i++ ) {
                 dos.writeDouble( darray[i] );
             }
-
         } catch ( IOException e ) {
-            e.printStackTrace();
+            // do nothing
         }
         return bos.toByteArray();
     }

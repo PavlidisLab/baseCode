@@ -1,5 +1,8 @@
 package baseCode.io;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 //import org.apache.commons.lang.time.StopWatch;
 
 /**
@@ -8,7 +11,7 @@ package baseCode.io;
  * @version $Id$
  */
 public class StringConverter {
-
+    private static Log log = LogFactory.getLog( StringConverter.class.getName() );
     private String delimiter = "\t"; // it's a regexp.
 
     public void setDelimiter( String delimiter ) {
@@ -19,7 +22,7 @@ public class StringConverter {
      * @param stringToParse
      * @return double[]
      */
-    public double[] StringToDoubles( String stringToParse ) {
+    public double[] stringToDoubles( String stringToParse ) {
         if ( stringToParse == null ) return null;
         String[] sArray = stringToParse.split( delimiter );
         double[] result = new double[sArray.length];
@@ -36,7 +39,7 @@ public class StringConverter {
      * @param arrayToConvert
      * @return
      */
-    public String DoubleArrayToString( double[] arrayToConvert ) {
+    public String doubleArrayToString( double[] arrayToConvert ) {
         if ( arrayToConvert == null ) return null;
         StringBuffer buf = new StringBuffer();
         for ( int i = 0; i < arrayToConvert.length; i++ ) {
@@ -47,17 +50,17 @@ public class StringConverter {
         return buf.toString();
     }
 
-    /**
-     * FIXME this is broken.
-     * 
-     * @param stringToConvert
-     * @return byte[]
-     */
-    public byte[] StringArrayToBytes( String[] stringsToConvert ) {
-        if ( stringsToConvert == null ) return null;
-        for ( int i = 0; i < stringsToConvert.length; i++ ) {
-            String s = stringsToConvert[i];
-        }
-        return null;
-    }
+    // /**
+    // * FIXME this is broken.
+    // *
+    // * @param stringToConvert
+    // * @return byte[]
+    // */
+    // public byte[] stringArrayToBytes( String[] stringsToConvert ) {
+    // if ( stringsToConvert == null ) return null;
+    // for ( int i = 0; i < stringsToConvert.length; i++ ) {
+    // String s = stringsToConvert[i];
+    // }
+    // return null;
+    // }
 }

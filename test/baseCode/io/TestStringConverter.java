@@ -31,33 +31,34 @@ public class TestStringConverter extends TestCase {
     * 
     *
     */
-   public void testStringToBytes() {
-      //System.err.println(" CONVERTING STRING TO BYTES ");
+     public void testStringToBytes() {
+     //System.err.println(" CONVERTING STRING TO BYTES ");
+    
 
-      byte[] actualReturn = sc.StringArrayToBytes( null );
-      byte[] expectedValue = actualReturn;
-//      for ( int i = 0; i < actualReturn.length; i++ ) {
-//         //System.err.println("actualReturn:["+i+"]"+ actualReturn[i]);//new
-//         // Integer(actualReturn[i]).toBinaryString(actualReturn[i]));
-//         assertEquals( "return value", expectedValue[i], actualReturn[i], 0 );
-//      }
-   }
+        // byte[] actualReturn = sc.stringArrayToBytes( null );
+        // byte[] expectedValue = actualReturn;
+     // for ( int i = 0; i < actualReturn.length; i++ ) {
+     // //System.err.println("actualReturn:["+i+"]"+ actualReturn[i]);//new
+     // // Integer(actualReturn[i]).toBinaryString(actualReturn[i]));
+     // assertEquals( "return value", expectedValue[i], actualReturn[i], 0 );
+    //      }
+       }
 
-   /**
-    * 
-    *
-    */
-   public void testStringToDoubles() {
-      //System.err.println(" CONVERTING STRING TO DOUBLES ");
+    // /**
+    // *
+    // *
+    // */
+     public void testStringToDoubles() {
+        // System.err.println(" CONVERTING STRING TO DOUBLES ");
 
-      double[] actualReturn = sc.StringToDoubles( null );
-      double[] expectedValue = actualReturn;
-//      for ( int i = 0; i < actualReturn.length; i++ ) {
-//         //System.err.println("actualReturn:["+i+"]"+ actualReturn[i]);//new
-//         // Integer(actualReturn[i]).toBinaryString(actualReturn[i]));
-//         //assertEquals( "return value", expectedValue[i], actualReturn[i], 0);
-//      }
-   }
+        double[] actualReturn = sc.stringToDoubles( null );
+        double[] expectedValue = actualReturn;
+        // for ( int i = 0; i < actualReturn.length; i++ ) {
+        // //System.err.println("actualReturn:["+i+"]"+ actualReturn[i]);//new
+        // // Integer(actualReturn[i]).toBinaryString(actualReturn[i]));
+        // //assertEquals( "return value", expectedValue[i], actualReturn[i], 0);
+        //      }
+    }
    /**
     * 
     *
