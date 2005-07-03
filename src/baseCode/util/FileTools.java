@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -213,6 +214,8 @@ public class FileTools {
     }
 
     /**
+     * Open a non-compresed, zipped, or gzipped file. Uses the file name pattern to figure this out.
+     * 
      * @param fileName. If Zipped, this only works if there is just one file in the archive.
      * @return
      * @throws IOException

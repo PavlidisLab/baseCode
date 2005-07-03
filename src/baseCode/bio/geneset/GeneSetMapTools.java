@@ -35,7 +35,7 @@ public class GeneSetMapTools {
      * classes are actually relevant in the data.
      */
     public static void collapseGeneSets( GeneAnnotations geneData, StatusViewer messenger ) {
-        Map setToGeneMap = geneData.getGeneSetToGeneMap();
+        Collection geneSets = geneData.getGeneSets();
         Map classesToRedundantMap = geneData.geneSetToRedundantMap();
         Map seenClasses = new LinkedHashMap();
         Map sigs = new LinkedHashMap();
@@ -49,10 +49,10 @@ public class GeneSetMapTools {
 
         // sort each arraylist in for each go and create a string that is a signature for this class.
         int ignored = 0;
-        for ( Iterator iter = setToGeneMap.keySet().iterator(); iter.hasNext(); ) {
+        for ( Iterator iter = geneSets.iterator(); iter.hasNext(); ) {
             String classId = ( String ) iter.next();
-            Set classMembers = ( Set ) setToGeneMap.get( classId );
-
+            Collection classMembers = geneData.getActiveGeneSetGenes( classId );
+            if ( classMembers.size() == 0 ) continue;
             if ( classMembers.contains( null ) ) {
                 classMembers.remove( null ); // FIXME why do we need to do this?
                 // throw new IllegalStateException(classId + " contains null.");
@@ -121,14 +121,11 @@ public class GeneSetMapTools {
     public static IHistogram1D geneSetSizeDistribution( GeneAnnotations ga, int numBins, int minSize, int maxSize ) {
         Histogram1D hist = new Histogram1D( "Distribution of gene set sizes", numBins, minSize, maxSize );
 
-        Map geneSetToGeneMap = ga.getGeneSetToGeneMap();
-
-        for ( Iterator iter = geneSetToGeneMap.keySet().iterator(); iter.hasNext(); ) {
+        Collection geneSets = ga.getGeneSets();
+        for ( Iterator iter = geneSets.iterator(); iter.hasNext(); ) {
             String geneSet = ( String ) iter.next();
 
-            Collection element;
-
-            element = ( Collection ) geneSetToGeneMap.get( geneSet );
+            Collection element = ga.getActiveGeneSetGenes( geneSet );
             hist.fill( element.size() );
         }
         return hist;
@@ -196,15 +193,15 @@ public class GeneSetMapTools {
 
         // iterate over all the classes, starting from the smallest one.
         // List sortedList = ga.sortGeneSetsBySize();
-        List sortedList = new ArrayList( ga.getGeneSetToGeneMap().keySet() );
+        List sortedList = new ArrayList( ga.getGeneSets() );
         Collections.shuffle( sortedList );
 
         // OUTER - compare all classes to each other.
         for ( Iterator iter = sortedList.iterator(); iter.hasNext(); ) {
             String queryClassId = ( String ) iter.next();
-            Set queryClass = ( Set ) ga.getGeneSetToGeneMap().get( queryClassId );
+            Collection queryClassMembers = ga.getActiveGeneSetGenes( queryClassId );
 
-            int querySize = queryClass.size();
+            int querySize = queryClassMembers.size();
 
             if ( seenit.contains( queryClassId ) || querySize > maxClassSize || querySize < minClassSize ) {
                 continue;
@@ -221,7 +218,7 @@ public class GeneSetMapTools {
                     continue;
                 }
 
-                Set targetClass = ( Set ) ga.getGeneSetToGeneMap().get( targetClassId );
+                Collection targetClass = ga.getActiveGeneSetGenes( targetClassId );
 
                 int targetSize = targetClass.size();
                 if ( targetSize < querySize || targetSize > maxClassSize || targetSize < minClassSize ) {
@@ -230,9 +227,10 @@ public class GeneSetMapTools {
 
                 double sizeScore;
 
-                if ( areSimilarClasses( targetClass, queryClass, fractionSameThreshold, bigClassPenalty ) ) {
+                if ( areSimilarClasses( targetClass, queryClassMembers, fractionSameThreshold, bigClassPenalty ) ) {
 
-                    sizeScore = ( ( double ) targetClass.size() / ( double ) queryClass.size() ) / bigClassPenalty;
+                    sizeScore = ( ( double ) targetClass.size() / ( double ) queryClassMembers.size() )
+                            / bigClassPenalty;
 
                     if ( sizeScore < 1.0 ) { // delete the larget class.
                         deleteUs.add( targetClassId );
@@ -275,14 +273,12 @@ public class GeneSetMapTools {
         double sum = 0.0;
         int n = 0;
 
-        Map geneSetToGeneMap = ga.getGeneSetToGeneMap();
+        Collection geneSets = ga.getGeneSets();
 
-        for ( Iterator iter = geneSetToGeneMap.keySet().iterator(); iter.hasNext(); ) {
+        for ( Iterator iter = geneSets.iterator(); iter.hasNext(); ) {
             String geneSet = ( String ) iter.next();
 
-            Collection element;
-
-            element = ( Collection ) geneSetToGeneMap.get( geneSet );
+            Collection element = ga.getActiveGeneSetGenes( geneSet );
 
             if ( !countEmpty && element.size() == 0 ) {
                 continue;
@@ -342,10 +338,10 @@ public class GeneSetMapTools {
             throw new IllegalArgumentException( "Unknown aspect requested" );
         }
 
-        Map geneSetToGeneMap = ga.getGeneSetToGeneMap();
+        Collection geneSets = ga.getGeneSets();
 
         Set removeUs = new HashSet();
-        for ( Iterator iter = geneSetToGeneMap.keySet().iterator(); iter.hasNext(); ) {
+        for ( Iterator iter = geneSets.iterator(); iter.hasNext(); ) {
             String geneSet = ( String ) iter.next();
             if ( gon.getAspectForId( geneSet ).equals( aspect ) ) {
                 removeUs.add( geneSet );
@@ -376,14 +372,13 @@ public class GeneSetMapTools {
      */
     public static void removeBySize( GeneAnnotations ga, StatusViewer messenger, int minClassSize, int maxClassSize ) {
 
-        Map geneSetToGeneMap = ga.getGeneSetToGeneMap();
+        Collection geneSets = ga.getGeneSets();
 
         Set removeUs = new HashSet();
-        for ( Iterator iter = geneSetToGeneMap.keySet().iterator(); iter.hasNext(); ) {
+        for ( Iterator iter = geneSets.iterator(); iter.hasNext(); ) {
             String geneSet = ( String ) iter.next();
 
-            Set element;
-            element = ( Set ) geneSetToGeneMap.get( geneSet );
+            Collection element = ga.getActiveGeneSetGenes( geneSet );
             if ( element.size() < minClassSize || element.size() > maxClassSize ) {
                 removeUs.add( geneSet );
             }
@@ -407,8 +402,8 @@ public class GeneSetMapTools {
     /**
      * Helper function for ignoreSimilar.
      */
-    private static boolean areSimilarClasses( Set biggerClass, Set smallerClass, double fractionSameThreshold,
-            double bigClassPenalty ) {
+    private static boolean areSimilarClasses( Collection biggerClass, Collection smallerClass,
+            double fractionSameThreshold, double bigClassPenalty ) {
 
         if ( biggerClass.size() < smallerClass.size() ) {
             throw new IllegalArgumentException( "Invalid sizes" );
@@ -471,18 +466,17 @@ public class GeneSetMapTools {
      * @param goNames
      */
     public static void addParents( GeneAnnotations ga, GONames gon, StatusViewer messenger ) {
-        Map geneToGeneSetMap = ga.getGeneToGeneSetMap();
-
+        Collection genes = ga.getGenes();
         if ( messenger != null ) {
             messenger.showStatus( "Adding parent terms (" + ga.numGeneSets() + " gene sets now)" );
         }
         Map toBeAdded = new HashMap();
         Map parentCache = new HashMap();
         int count = 0;
-        for ( Iterator iter = geneToGeneSetMap.keySet().iterator(); iter.hasNext(); ) {
+        for ( Iterator iter = genes.iterator(); iter.hasNext(); ) {
             String gene = ( String ) iter.next();
 
-            Collection geneSets = ( Collection ) geneToGeneSetMap.get( gene );
+            Collection geneSets = ga.getGeneGeneSets( gene );
 
             for ( Iterator iterator = geneSets.iterator(); iterator.hasNext(); ) {
                 String geneSet = ( String ) iterator.next();
