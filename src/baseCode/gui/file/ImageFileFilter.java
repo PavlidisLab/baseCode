@@ -16,18 +16,32 @@ import baseCode.util.FileTools;
  */
 public class ImageFileFilter extends FileFilter {
 
-   public boolean accept( File f ) {
+    private String description = "image files";
 
-      if ( f.isDirectory() ) {
-         return true;
-      }
+    /**
+     * 
+     */
+    public boolean accept( File f ) {
 
-      return FileTools.hasImageExtension( f.getName() );
+        if ( f.isDirectory() ) {
+            return true;
+        }
 
-   } // end accept
+        return FileTools.hasImageExtension( f.getName() );
 
-   public String getDescription() {
+    } // end accept
 
-      return "PNG or GIF images";
-   }
+    /**
+     * 
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description
+     */
+    public void setDescription( String description ) {
+        this.description = description;
+    }
 }
