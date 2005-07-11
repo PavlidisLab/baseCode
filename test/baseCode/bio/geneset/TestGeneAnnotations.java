@@ -65,7 +65,7 @@ public class TestGeneAnnotations extends TestCase {
         GeneAnnotations ga = new GeneAnnotations();
         ga.readAffyCsv( is, null );
         ga.setUp( null );
-        List geneSets = new ArrayList( ga.getGeneSetToGeneMap().keySet() );
+        List geneSets = new ArrayList( ga.getGeneSets() );
         Collections.sort( geneSets );
         assertTrue( geneSets.size() > 0 );
     }
@@ -86,7 +86,7 @@ public class TestGeneAnnotations extends TestCase {
 
     public void testGeneAnnotationsApiC() throws Exception {
         GeneAnnotations val = new GeneAnnotations( probes, geneIds, null, goIds );
-        int actualValue = ( ( Collection ) val.getGeneToGeneSetMap().get( "aGene" ) ).size();
+        int actualValue = val.getGeneGeneSets( "aGene" ).size();
         int expectedValue = 2;
         assertEquals( expectedValue, actualValue );
     }
