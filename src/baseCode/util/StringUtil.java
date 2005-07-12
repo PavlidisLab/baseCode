@@ -63,4 +63,24 @@ public class StringUtil {
         return buf.toString();
     }
 
+    /**
+     * Convert "Property" to "property"
+     * 
+     * @param input
+     * @return the input with the first character in lowercase.
+     */
+    public static String lowerCaseFirstLetter( String input ) {
+        return ( new String( new char[] { input.charAt( 0 ) } ) ).toLowerCase() + input.substring( 1 );
+    }
+
+    /**
+     * Convert "property" to "Property"
+     * 
+     * @param input
+     * @return the input with the first character in upper case..
+     */
+    public static String upperCaseFirstLetter( String input ) {
+        return ( new String( new char[] { input.charAt( 0 ) } ) ).toUpperCase() + input.substring( 1 );
+    }
+
 }
