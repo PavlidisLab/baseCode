@@ -1,12 +1,9 @@
-<?xml version="1.0"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/xsd/ http://maven.apache.org/xsd/maven-project-3.0.0.xsd"
-    xmlns:jnlp="http://www.w3.org/2001/XMLSchema-instance">
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
     <pomVersion>3</pomVersion>
-    <id>baseCode</id>
+    <id>baseCode:null</id>
     <name>baseCode</name>
     <groupId>baseCode</groupId>
-    
     <currentVersion>0.2.11</currentVersion>
     <organization>
         <name>Columbia University</name>
@@ -19,38 +16,34 @@
     <siteAddress>microarray</siteAddress>
     <siteDirectory>/proj/pavlidis/protected/baseCode</siteDirectory>
     <repository>
-        <connection>
-            scm:cvs:ext:${maven.username}@adgate.cu-genome.org:/fsnode/projects/cvs/pavlab:baseCode</connection>
+        <connection>scm:cvs:ext:${maven.username}@adgate.cu-genome.org:/fsnode/projects/cvs/pavlab:baseCode</connection>
     </repository>
-    
     <developers>
         <developer>
             <name>Paul Pavlidis</name>
             <id>pavlidis</id>
             <email>pavlidis@dbmi.columbia.edu</email>
             <organization>Columbia University</organization>
-            <roles/>
         </developer>
         <developer>
             <name>William Braynen</name>
             <id>wbraynen</id>
             <email>wbraynen@ic.sunysb.edu</email>
             <organization>Columbia University</organization>
-            <roles/>
         </developer>
         <developer>
             <name>Homin Lee</name>
             <id>hkl7</id>
             <email>hkl7@cs.columbia.edu</email>
             <organization>Columbia University</organization>
-            <roles/>
         </developer>
     </developers>
     <licenses>
-        <license><name>LGPL</name></license>
+        <license>
+            <name>LGPL</name>
+        </license>
     </licenses>
     <dependencies>
-        
         <dependency>
             <groupId>colt</groupId>
             <artifactId>colt</artifactId>
@@ -62,23 +55,17 @@
                 <jnlp.jar>true</jnlp.jar>
             </properties>
         </dependency>
-        
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>3.1.6-bin</version>
             <type>jar</type>
-            <jnlp.jar>true</jnlp.jar>
-            <properties/>
         </dependency>
-        
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
             <version>1.0.3</version>
-            <jnlp.jar>true</jnlp.jar>
             <type>jar</type>
-            <properties/>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
@@ -93,11 +80,8 @@
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
             <version>2.6.2</version>
-            <jnlp.jar>true</jnlp.jar>
             <type>jar</type>
-            <properties/>
         </dependency>
-        
         <dependency>
             <groupId>hb</groupId>
             <artifactId>hb</artifactId>
@@ -108,8 +92,39 @@
         <dependency>
             <groupId>ostermiller</groupId>
             <artifactId>ostermillerutils</artifactId>
-            <type>jar</type>
             <jar>ostermillerutils_1_04_03_for_java_1_4.jar</jar>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>oro</groupId>
+            <artifactId>oro</artifactId>
+            <version>2.0.7</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>jena</groupId>
+            <artifactId>jena</artifactId>
+            <jar>jena.jar</jar>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>icu4j</groupId>
+            <artifactId>icu4j</artifactId>
+            <jar>icu4j.jar</jar>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>concurrent</groupId>
+            <artifactId>concurrent</artifactId>
+            <version>1.3.4</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>1.3.0</version>
+            <jar>commons-net-1.3.0.jar</jar>
+            <type>jar</type>
         </dependency>
     </dependencies>
     <build>
@@ -140,6 +155,7 @@
                 <includes>
                     <include>**/alert.gif</include>
                 </includes>
+                <filtering>false</filtering>
             </resource>
         </resources>
     </build>
@@ -155,5 +171,5 @@
         <report>maven-tasklist-plugin</report>
         <report>maven-clover-plugin</report>
     </reports>
-    <properties/>
 </project>
+
