@@ -2,7 +2,6 @@
 <project>
     <pomVersion>3</pomVersion>
     <id>baseCode:null</id>
-    <name>baseCode</name>
     <groupId>baseCode</groupId>
     <currentVersion>0.2.11</currentVersion>
     <organization>
