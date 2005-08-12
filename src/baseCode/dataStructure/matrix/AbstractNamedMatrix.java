@@ -1,10 +1,10 @@
 package baseCode.dataStructure.matrix;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * <p>
@@ -15,8 +15,8 @@ import java.util.Vector;
  */
 public abstract class AbstractNamedMatrix implements NamedMatrix {
 
-    private Vector rowNames;
-    private Vector colNames;
+    private List rowNames;
+    private List colNames;
     private Map rowMap; // contains a map of each row and elements in the row
     private Map colMap;
 
@@ -31,8 +31,8 @@ public abstract class AbstractNamedMatrix implements NamedMatrix {
         rowMap = new LinkedHashMap(); // contains a map of each row name to index
         // of the row.
         colMap = new LinkedHashMap();
-        rowNames = new Vector();
-        colNames = new Vector();
+        rowNames = new ArrayList();
+        colNames = new ArrayList();
     }
 
     /**
@@ -102,7 +102,7 @@ public abstract class AbstractNamedMatrix implements NamedMatrix {
      * @return int
      */
     public final int getRowIndexByName( String s ) {
-        if ( !rowNames.contains( s ) ) {
+        if ( !rowMap.containsKey( s ) ) {
             throw new IllegalArgumentException( s + " not found" );
         }
 
@@ -114,7 +114,7 @@ public abstract class AbstractNamedMatrix implements NamedMatrix {
      * @return int
      */
     public final int getColIndexByName( String r ) {
-        if ( !colNames.contains( r ) ) {
+        if ( !colMap.containsKey( r ) ) {
             throw new IllegalArgumentException( r + " not found" );
         }
 
