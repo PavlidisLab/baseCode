@@ -102,11 +102,9 @@ public abstract class AbstractNamedMatrix implements NamedMatrix {
      * @return int
      */
     public final int getRowIndexByName( String s ) {
-        if ( !rowMap.containsKey( s ) ) {
-            throw new IllegalArgumentException( s + " not found" );
-        }
-
-        return ( ( Integer ) rowMap.get( s ) ).intValue();
+        Integer r = ( ( Integer ) rowMap.get( s ) );
+        if ( r == null ) throw new IllegalArgumentException( s + " not found" );
+        return r.intValue();
     }
 
     /**
@@ -114,11 +112,9 @@ public abstract class AbstractNamedMatrix implements NamedMatrix {
      * @return int
      */
     public final int getColIndexByName( String r ) {
-        if ( !colMap.containsKey( r ) ) {
-            throw new IllegalArgumentException( r + " not found" );
-        }
-
-        return ( ( Integer ) this.colMap.get( r ) ).intValue();
+        Integer c = ( ( Integer ) colMap.get( r ) );
+        if ( c == null ) throw new IllegalArgumentException( r + " not found" );
+        return c.intValue();
     }
 
     /**
