@@ -1,5 +1,9 @@
 package baseCode.util;
 
+import org.apache.commons.lang.time.StopWatch;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import junit.framework.TestCase;
 
 /**
@@ -11,6 +15,8 @@ import junit.framework.TestCase;
  * @version $Id$
  */
 public class TestStringUtil extends TestCase {
+
+    private static Log log = LogFactory.getLog( TestStringUtil.class.getName() );
 
     /*
      * @see TestCase#setUp()
@@ -70,7 +76,7 @@ public class TestStringUtil extends TestCase {
         assertEquals( expectedReturn[1], actualReturn[1] );
         assertEquals( expectedReturn[0], actualReturn[0] );
     }
-    
+
     // empty quoted field
     public void testCsvSplitF() {
         String i = "foo,\"\",aloo,balloo";
@@ -78,6 +84,53 @@ public class TestStringUtil extends TestCase {
         String[] expectedReturn = new String[] { "foo", "\"\"", "aloo", "balloo" };
         assertEquals( expectedReturn[3], actualReturn[3] );
     }
-    
 
+    public void testTwoStringHashKey() throws Exception {
+        String i = "foo";
+        String j = "bar";
+
+        Long icode = new Long( i.hashCode() );
+        Long jcode = new Long( j.hashCode() );
+
+        log.debug( Long.toBinaryString( jcode.longValue() ) + " " + Long.toBinaryString( icode.longValue() << 32 ) );
+
+        long expectedResult = jcode.longValue() | ( icode.longValue() << 32 );
+
+        Long result = ( Long ) StringUtil.twoStringHashKey( j, i );
+
+        log.debug( Long.toBinaryString( expectedResult ) );
+
+        assertEquals( Long.toBinaryString( expectedResult ), Long.toBinaryString( result.longValue() ) );
+
+    }
+
+    public void testTwoStringHashKeyB() {
+        String i = "foo";
+        String j = "bar";
+        assertEquals( StringUtil.twoStringHashKey( i, j ), StringUtil.twoStringHashKey( j, i ) );
+    }
+
+    public void testSpeedTwoStringHashKey() {
+        String a = "barblyfoo";
+        String b = "fooblybar";
+        StopWatch timer = new StopWatch();
+        timer.start();
+        int iters = 100000;
+        for ( int i = 0; i < iters; i++ ) {
+            StringUtil.twoStringHashKey( a, b );
+        }
+        timer.stop();
+        log.debug( "Bitwise hash took " + timer.getTime() + " milliseconds" );
+        timer.reset();
+        timer.start();
+        for ( int i = 0; i < iters; i++ ) {
+            if ( a.hashCode() < b.hashCode() ) {
+                String r = b + "___" + a;
+            } else {
+                String r = a + "___" + b;
+            }
+        }
+        timer.stop();
+        log.debug( "String concat " + timer.getTime() + " milliseconds" );
+    }
 }
