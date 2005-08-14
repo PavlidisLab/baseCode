@@ -39,7 +39,7 @@ import cern.jet.stat.Descriptive;
 public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
 
     private static Log log = LogFactory.getLog( DescriptiveWithMissing.class.getName() );
-    
+
     private DescriptiveWithMissing() {
     }
 
@@ -132,9 +132,9 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * 
      * @param x
      * @param y
-     * @param selfSquaredX
+     * @param selfSquaredX double array containing values of x_i^2 for each x.
      * @param selfSquaredY
-     * @param nanStatusX
+     * @param nanStatusX boolean array containing value of Double.isNaN() for each X.
      * @param nanStatusY
      * @return
      */
@@ -170,7 +170,7 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
             ax = sx / numused;
             return ( sxy - sx * ay ) / Math.sqrt( ( sxx - sx * ax ) * ( syy - sy * ay ) );
         }
-        log.debug("Could not compute correlation");
+        log.debug( "Could not compute correlation" );
         return Double.NaN; // signifies that it could not be calculated.
     }
 
