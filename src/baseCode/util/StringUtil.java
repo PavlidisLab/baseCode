@@ -83,4 +83,18 @@ public class StringUtil {
         return ( new String( new char[] { input.charAt( 0 ) } ) ).toUpperCase() + input.substring( 1 );
     }
 
+    /**
+     * @param stringi
+     * @param stringj
+     * @return
+     */
+    public static Object twoStringHashKey( String stringi, String stringj ) {
+        // use arbitrary but consistent method for ordering.
+        if ( stringi.hashCode() < stringj.hashCode() ) {
+            return new Long( stringi.hashCode() | ( long ) stringj.hashCode() << 32 );
+        }
+        return new Long( stringj.hashCode() | ( long ) stringi.hashCode() << 32 );
+
+    }
+
 }

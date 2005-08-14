@@ -10,8 +10,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.Vector;
+
+import org.apache.commons.lang.StringUtils;
 
 import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.matrix.NamedMatrix;
@@ -156,37 +157,32 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
     }
 
     /**
-     * @param wantedRowNames
-     * @throws IOException
-     * @param numHeadings
-     * @param MTemp
-     * @param rowNames
-     * @param rowNumber
-     * @param wantedRowNames
      * @param row
-     * @return name of the row
+     * @param rowNames
+     * @param MTemp
+     * @param wantedRowNames
+     * @return
+     * @throws IOException
      */
     private String parseRow( String row, Collection rowNames, List MTemp, Collection wantedRowNames )
             throws IOException {
 
-        StringTokenizer st = new StringTokenizer( row, "\t", true );
+        String[] tokens = StringUtils.split( row, "\t" );
 
         DoubleArrayList rowTemp = new DoubleArrayList();
         int columnNumber = 0;
         String previousToken = "";
         String s = null;
 
-        while ( st.hasMoreTokens() ) {
-            // Iterate through the row, parsing it into row name and values
-
-            s = st.nextToken();
+        for ( int i = 0; i < tokens.length; i++ ) {
+            s = tokens[i];
             boolean missing = false;
 
             if ( s.compareTo( "\t" ) == 0 ) {
                 /* two tabs in a row */
                 if ( previousToken.compareTo( "\t" ) == 0 ) {
                     missing = true;
-                } else if ( !st.hasMoreTokens() ) { // at end of line.
+                } else if ( i == tokens.length - 1 ) { // at end of line.
                     missing = true;
                 } else {
                     previousToken = s;
@@ -199,7 +195,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
                     throw new IOException( "Spaces not allowed after values" );
                     // bad, not allowed.
                 }
-            } else if ( s.compareToIgnoreCase( "NaN" ) == 0 || s.compareToIgnoreCase( "NA" ) == 0 ) {
+            } else if ( s.compareTo( "NaN" ) == 0 || s.compareTo( "NA" ) == 0 ) {
                 if ( previousToken.compareTo( "\t" ) == 0 ) {
                     missing = true;
                 } else {

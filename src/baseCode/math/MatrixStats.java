@@ -185,4 +185,37 @@ public class MatrixStats {
         }
     }
 
+    /**
+     * @param input raw double 2-d matrix
+     * @return the element-by-element product (not matrix product) of the matrix.
+     */
+    public static double[][] selfSquaredMatrix( double[][] input ) {
+        double[][] returnValue = new double[input.length][];
+        for ( int i = 0; i < returnValue.length; i++ ) {
+            returnValue[i] = new double[input[i].length];
+
+            for ( int j = 0; j < returnValue[i].length; j++ ) {
+                returnValue[i][j] = input[i][j] * input[i][j];
+            }
+
+        }
+        return returnValue;
+    }
+
+    /**
+     * @param data
+     * @return matrix indicating whether each value in the input matix is NaN.
+     */
+    public static boolean[][] nanStatusMatrix( double[][] data ) {
+        boolean[][] result = new boolean[data.length][];
+        for ( int i = 0; i < data.length; i++ ) {
+            double[] row = data[i];
+            result[i] = new boolean[data[i].length];
+            for ( int j = 0; j < row.length; j++ ) {
+                result[i][j] = Double.isNaN( data[i][j] );
+            }
+        }
+        return result;
+    }
+
 }
