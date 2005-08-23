@@ -1,14 +1,16 @@
 package baseCode.util;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -242,4 +244,49 @@ public class FileTools {
         }
         return i;
     }
+
+    /**
+     * Given a File object representing a directory, return a collection of File objects representing the files
+     * contained in that directory.
+     * 
+     * @param directory
+     * @return
+     */
+    public static Collection listDirectoryFiles( File directory ) {
+
+        if ( !directory.isDirectory() ) throw new IllegalArgumentException( "Must be a directory" );
+
+        File[] files = directory.listFiles();
+
+        FileFilter fileFilter = new FileFilter() {
+            public boolean accept( File file ) {
+                return file.isFile();
+            }
+        };
+        files = directory.listFiles( fileFilter );
+        return Arrays.asList( files );
+    }
+
+    /**
+     * Given a File object representing a directory, return a collection of File objects representing the directories
+     * contained in that directory.
+     * 
+     * @param directory
+     * @return
+     */
+    public static Collection listSubDirectories( File directory ) {
+
+        if ( !directory.isDirectory() ) throw new IllegalArgumentException( "Must be a directory" );
+
+        File[] files = directory.listFiles();
+
+        FileFilter fileFilter = new FileFilter() {
+            public boolean accept( File file ) {
+                return file.isDirectory();
+            }
+        };
+        files = directory.listFiles( fileFilter );
+        return Arrays.asList( files );
+    }
+
 }
