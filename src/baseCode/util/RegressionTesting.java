@@ -33,82 +33,6 @@ public class RegressionTesting {
 
     // private String resourcePath = "";
 
-    public static void writeTestResult( String result, String fileName ) throws IOException {
-
-        BufferedWriter buf = new BufferedWriter( new OutputStreamWriter( new FileOutputStream( new File( fileName ) ) ) );
-        BufferedReader resultBuf = new BufferedReader( new StringReader( result ) );
-
-        String line = null;
-        while ( ( line = resultBuf.readLine() ) != null ) {
-            buf.write( line + "\n" );
-        }
-        buf.close();
-        resultBuf.close();
-    }
-
-    /**
-     * @param istream
-     * @return
-     * @throws IOException
-     */
-    public static String readTestResult( InputStream istream ) throws IOException {
-        if ( istream == null ) {
-            throw new IllegalStateException( "Null stream" );
-        }
-
-        BufferedReader buf = new BufferedReader( new InputStreamReader( istream ) );
-        String line = "";
-        StringBuffer testOutput = new StringBuffer( line );
-        while ( ( line = buf.readLine() ) != null ) {
-            testOutput.append( line + "\n" );
-        }
-        buf.close();
-        return testOutput.toString();
-    }
-
-    /**
-     * @param resourceName
-     * @return the contents of the resource as a String
-     * @throws IOException
-     */
-    public static String readTestResult( String resourceName ) throws IOException {
-        InputStream istream = RegressionTesting.class.getResourceAsStream( resourceName );
-
-        if ( istream == null ) return null;
-
-        String result = readTestResult( istream );
-        istream.close();
-        return result;
-
-    }
-
-    /**
-     * @throws IOException
-     * @param fileName - the full path of the file to be read.
-     * @return
-     */
-    public static String readTestResultFromFile( String fileName ) throws IOException {
-        InputStream is = new FileInputStream( fileName );
-        return readTestResult( is );
-    }
-
-    /**
-     * Test whether two DoubleArrayLists are 'close enough' to call equal.
-     * 
-     * @param a
-     * @param b
-     * @param tolerance
-     * @return
-     */
-    public static boolean closeEnough( DoubleArrayList a, DoubleArrayList b, double tolerance ) {
-        if ( a.size() != b.size() ) return false;
-
-        for ( int i = 0; i < a.size(); i++ ) {
-            if ( Math.abs( a.getQuick( i ) - b.getQuick( i ) ) > tolerance ) return false;
-        }
-        return true;
-    }
-
     /**
      * Test whether two AbstractNamedDoubleMatrix are 'close enough' to call equal.
      * 
@@ -124,6 +48,38 @@ public class RegressionTesting {
             for ( int j = 0; j < a.columns(); j++ ) {
                 if ( Math.abs( a.getQuick( i, j ) - b.getQuick( i, j ) ) > tolerance ) return false;
             }
+        }
+        return true;
+    }
+
+    /**
+     * @param a
+     * @param b
+     * @param tolerance
+     */
+    public static boolean closeEnough( double[] a, double[] b, double tolerance ) {
+        if ( a.length != b.length ) return false;
+
+        for ( int i = 0; i < a.length; i++ ) {
+            if ( Math.abs( a[i] - b[i] ) > tolerance ) return false;
+        }
+        return true;
+
+    }
+
+    /**
+     * Test whether two DoubleArrayLists are 'close enough' to call equal.
+     * 
+     * @param a
+     * @param b
+     * @param tolerance
+     * @return
+     */
+    public static boolean closeEnough( DoubleArrayList a, DoubleArrayList b, double tolerance ) {
+        if ( a.size() != b.size() ) return false;
+
+        for ( int i = 0; i < a.size(); i++ ) {
+            if ( Math.abs( a.getQuick( i ) - b.getQuick( i ) ) > tolerance ) return false;
         }
         return true;
     }
@@ -175,6 +131,26 @@ public class RegressionTesting {
     }
 
     /**
+     * Test whether two double arrays contain the same items in any order (tolerance is ZERO)
+     * 
+     * @param a
+     * @param b
+     * @return
+     */
+    public static boolean containsSame( double[] a, double[] b ) {
+        if ( a.length != b.length ) return false;
+
+        Vector av = new Vector( a.length );
+        Vector bv = new Vector( b.length );
+        for ( int i = 0; i < b.length; i++ ) {
+            av.add( new Double( a[i] ) );
+            bv.add( new Double( b[i] ) );
+        }
+
+        return av.containsAll( bv );
+    }
+
+    /**
      * Test whether two object arrays contain the same items. The arrays are treated as Sets - repeats are not
      * considered.
      * 
@@ -198,23 +174,49 @@ public class RegressionTesting {
     }
 
     /**
-     * Test whether two double arrays contain the same items in any order (tolerance is ZERO)
-     * 
-     * @param a
-     * @param b
+     * @param istream
      * @return
+     * @throws IOException
      */
-    public static boolean containsSame( double[] a, double[] b ) {
-        if ( a.length != b.length ) return false;
-
-        Vector av = new Vector( a.length );
-        Vector bv = new Vector( b.length );
-        for ( int i = 0; i < b.length; i++ ) {
-            av.add( new Double( a[i] ) );
-            bv.add( new Double( b[i] ) );
+    public static String readTestResult( InputStream istream ) throws IOException {
+        if ( istream == null ) {
+            throw new IllegalStateException( "Null stream" );
         }
 
-        return av.containsAll( bv );
+        BufferedReader buf = new BufferedReader( new InputStreamReader( istream ) );
+        String line = "";
+        StringBuffer testOutput = new StringBuffer( line );
+        while ( ( line = buf.readLine() ) != null ) {
+            testOutput.append( line + "\n" );
+        }
+        buf.close();
+        return testOutput.toString();
+    }
+
+    /**
+     * @param resourceName
+     * @return the contents of the resource as a String
+     * @throws IOException
+     */
+    public static String readTestResult( String resourceName ) throws IOException {
+        InputStream istream = RegressionTesting.class.getResourceAsStream( resourceName );
+
+        if ( istream == null ) return null;
+
+        String result = readTestResult( istream );
+        istream.close();
+        return result;
+
+    }
+
+    /**
+     * @throws IOException
+     * @param fileName - the full path of the file to be read.
+     * @return
+     */
+    public static String readTestResultFromFile( String fileName ) throws IOException {
+        InputStream is = new FileInputStream( fileName );
+        return readTestResult( is );
     }
 
     /**
@@ -230,6 +232,19 @@ public class RegressionTesting {
             if ( b[i] != a[i] ) return false;
         }
         return true;
+    }
+
+    public static void writeTestResult( String result, String fileName ) throws IOException {
+
+        BufferedWriter buf = new BufferedWriter( new OutputStreamWriter( new FileOutputStream( new File( fileName ) ) ) );
+        BufferedReader resultBuf = new BufferedReader( new StringReader( result ) );
+
+        String line = null;
+        while ( ( line = resultBuf.readLine() ) != null ) {
+            buf.write( line + "\n" );
+        }
+        buf.close();
+        resultBuf.close();
     }
 
     /**
