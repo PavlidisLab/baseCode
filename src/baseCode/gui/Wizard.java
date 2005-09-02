@@ -136,7 +136,7 @@ public abstract class Wizard extends JDialog {
         setLocation( ( frmSize.width - dlgSize.width ) / 2 + loc.x, ( frmSize.height - dlgSize.height ) / 2 + loc.y );
         pack();
         nextButton.requestFocusInWindow();
-        show();
+        this.setVisible( true );
     }
 
     /**

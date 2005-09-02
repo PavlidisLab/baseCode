@@ -75,8 +75,6 @@ public class GONames {
 
     private GOParser parser;
 
-    private String USER_DEFINED_ASPECT = "User-defined";
-
     private Map oldNameMap;
 
     /**
@@ -315,7 +313,7 @@ public class GONames {
         }
         goNameMap.put( USER_DEFINED, USER_DEFINED ); // make sure this is set up.
         String definition = getDefinitionForId( id ) == null ? "No definition" : getDefinitionForId( id );
-        String aspect = getAspectForId( id ) == null ? USER_DEFINED_ASPECT : getAspectForId( id );
+        String aspect = getAspectForId( id ) == null ? USER_DEFINED : getAspectForId( id );
         log.debug( "Adding user-defined gene set to graph: " + id + ", Name:" + name + ", Definition: "
                 + definition.substring( 0, Math.min( definition.length(), 30 ) ) + "..., Aspect: " + aspect );
         this.getGraph().addChildTo( USER_DEFINED, id, new GOEntry( id, name, definition, aspect ) );
@@ -344,7 +342,7 @@ public class GONames {
         if ( this.getGraph() == null ) return;
         DirectedGraphNode root = this.getGraph().getRoot();
         this.getGraph().addChildTo( root.getKey(), USER_DEFINED,
-                new GOEntry( USER_DEFINED, "", "Gene sets modified or created by the user", USER_DEFINED_ASPECT ) );
+                new GOEntry( USER_DEFINED, "", "Gene sets modified or created by the user", USER_DEFINED ) );
     }
 
 }

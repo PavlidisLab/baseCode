@@ -150,8 +150,12 @@ public class GeneAnnotations {
         this.activeProbes = activeProbes;
         activeProbesDirty();
 
-        // CAREFUL this is a shallow copy! This is okay? (apparently, so far)
-        probeToGeneSetMap = new LinkedHashMap( geneData.probeToGeneSetMap );
+        // make a deep copy of the probeToGeneSetMap
+        this.probeToGeneSetMap = new LinkedHashMap();
+        for ( Iterator iter = geneData.probeToGeneSetMap.keySet().iterator(); iter.hasNext(); ) {
+            String key = ( String ) iter.next();
+            this.probeToGeneSetMap.put( key, new HashSet( ( Collection ) geneData.probeToGeneSetMap.get( key ) ) );
+        }
 
         // make a deep copy of the classToProbeMap, which is a map of sets. Shallow copy is BAD.
         this.geneSetToProbeMap = new LinkedHashMap();
@@ -325,35 +329,50 @@ public class GeneAnnotations {
     }
 
     /**
-     * Add a class
+     * Add a new gene set. Used to set up user-defined gene sets.
      * <p>
      * 
      * @param id String class to be added
-     * @param probesForNew ArrayList user-defined list of members.
+     * @param probesForNew collection of members.
      */
-    public void addClass( String id, Collection probesForNew ) {
+    public void addGeneSet( String geneSetId, Collection probesForNew ) {
 
         if ( probesForNew == null ) throw new IllegalArgumentException( "Null probes for new gene set" );
 
-        if ( geneSetToProbeMap.containsKey( id ) ) {
-            // then we should save a backup.
-            log.info( "Saving backup version of " + id );
-            oldGeneSets.put( id, new HashSet( ( Collection ) geneSetToProbeMap.get( id ) ) );
+        if ( probesForNew.size() == 0 ) {
+            log.debug( "No probes to add for " + geneSetId );
+            return;
         }
 
-        geneSetToProbeMap.put( id, new HashSet( probesForNew ) );
+        if ( geneSetToProbeMap.containsKey( geneSetId ) ) {
+            // then we should save a backup.
+            log.info( "Saving backup version of " + geneSetId );
+            oldGeneSets.put( geneSetId, new HashSet( ( Collection ) geneSetToProbeMap.get( geneSetId ) ) );
+        }
+
+        geneSetToProbeMap.put( geneSetId, new HashSet( probesForNew ) );
         Collection genes = new HashSet();
         for ( Iterator probe_it = probesForNew.iterator(); probe_it.hasNext(); ) {
             String probe = new String( ( String ) probe_it.next() );
-            if ( !probeToGeneSetMap.containsKey( probe ) ) continue;
-            ( ( Collection ) probeToGeneSetMap.get( probe ) ).add( id );
+            if ( !probeToGeneSetMap.containsKey( probe ) ) {
+                probeToGeneSetMap.put( probe, new HashSet() );
+            }
+            ( ( Collection ) probeToGeneSetMap.get( probe ) ).add( geneSetId );
 
             if ( !probeToGeneName.containsKey( probe ) ) continue;
             genes.add( probeToGeneName.get( probe ) );
         }
 
-        geneSetToGeneMap.put( id, genes );
-        geneToGeneSetMap.put( id, probeToGeneSetMap.get( id ) );
+        for ( Iterator iter = genes.iterator(); iter.hasNext(); ) {
+            String gene = ( String ) iter.next();
+            if ( !geneToGeneSetMap.containsKey( gene ) ) geneToGeneSetMap.put( gene, new HashSet() );
+            ( ( Collection ) geneToGeneSetMap.get( gene ) ).add( geneSetId );
+        }
+        geneSetToGeneMap.put( geneSetId, genes );
+
+        log.debug( "Added new gene set: " + genes.size() + " genes to gene set id " + geneSetId + " with "
+                + probesForNew.size() + " probes" );
+
         resetSelectedSets();
     }
 
@@ -366,7 +385,7 @@ public class GeneAnnotations {
         if ( !oldGeneSets.containsKey( id ) ) return;
         log.info( "Restoring " + id );
         removeClassFromMaps( id );
-        addClass( id, ( Collection ) oldGeneSets.get( id ) );
+        addGeneSet( id, ( Collection ) oldGeneSets.get( id ) );
     }
 
     /**
@@ -466,16 +485,16 @@ public class GeneAnnotations {
      * @param g String a gene name
      * @return Collection of the probes for gene g
      */
-    public Collection getGeneProbeList( String g ) {
+    public Collection getGeneProbeList( String gene ) {
         if ( activeProbes == null ) {
-            return ( Collection ) geneToProbeMap.get( g );
+            return ( Collection ) geneToProbeMap.get( gene );
         }
 
-        if ( !geneToActiveProbesCache.containsKey( g ) ) {
+        if ( !geneToActiveProbesCache.containsKey( gene ) ) {
             Collection finalList = new HashSet();
-            Collection probes = ( Collection ) geneToProbeMap.get( g );
+            Collection probes = ( Collection ) geneToProbeMap.get( gene );
             if ( probes == null ) {
-                log.debug( "No probes for " + g );
+                log.debug( "No probes for " + gene );
                 return null;
             }
             for ( Iterator iter = probes.iterator(); iter.hasNext(); ) {
@@ -484,10 +503,10 @@ public class GeneAnnotations {
                     finalList.add( probe );
                 }
             }
-            geneToActiveProbesCache.put( g, finalList );
+            geneToActiveProbesCache.put( gene, finalList );
             return finalList;
         }
-        return ( Collection ) geneToActiveProbesCache.get( g );
+        return ( Collection ) geneToActiveProbesCache.get( gene );
     }
 
     /**
@@ -640,7 +659,7 @@ public class GeneAnnotations {
         oldGeneSets.put( classId, new HashSet( ( Collection ) geneSetToProbeMap.get( classId ) ) );
 
         removeClassFromMaps( classId );
-        addClass( classId, probesForNew );
+        addGeneSet( classId, probesForNew );
     }
 
     /**
@@ -1331,7 +1350,9 @@ public class GeneAnnotations {
         ( ( Collection ) geneToProbeMap.get( geneSymbol ) ).add( probe.intern() );
 
         probeIds.add( probe );
-        probeToGeneSetMap.put( probe.intern(), new HashSet() );
+        if ( !probeToGeneSetMap.containsKey( probe ) ) {
+            probeToGeneSetMap.put( probe.intern(), new HashSet() );
+        }
         geneToGeneSetMap.put( geneSymbol, probeToGeneSetMap.get( probe ) );
     }
 
