@@ -12,28 +12,29 @@ import junit.framework.TestCase;
  */
 public class RCommandTest extends TestCase {
 
+    RCommand rc = null;
+
     public void setUp() {
-        RCommand.startServer();
-        RCommand.connect();
+        rc = RCommand.newInstance();
     }
 
     public void tearDown() {
-        RCommand.disconnect();
-        RCommand.stopServer();
+        rc.disconnect();
+        rc.stopServer();
     }
 
     /*
      * Test method for 'edu.columbia.gemma.tools.RCommand.exec(String)'
      */
     public void testExec() throws Exception {
-        assertTrue( RCommand.exec( "R.version.string" ).asString().startsWith( "R version 2" ) );
+        assertTrue( rc.eval( "R.version.string" ).asString().startsWith( "R version 2" ) );
     }
 
     /*
      * Test method for 'edu.columbia.gemma.tools.RCommand.exec(String)'
      */
     public void testExecDoubleArray() throws Exception {
-        assertTrue( RegressionTesting.closeEnough( new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, RCommand
+        assertTrue( RegressionTesting.closeEnough( new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, rc
                 .execDoubleArray( "rep(1, 10)" ), 0.001 ) );
     }
 }

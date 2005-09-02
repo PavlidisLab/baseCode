@@ -43,9 +43,9 @@ import org.rosuda.JRclient.Rconnection;
  */
 public class RCommand {
 
-    private static String os = System.getProperty( "os.name" ).toLowerCase();
+    private final static String os = System.getProperty( "os.name" ).toLowerCase();
 
-    private static Rconnection connection;
+    private Rconnection connection = null;
 
     private static Process serverProcess;
 
@@ -56,65 +56,42 @@ public class RCommand {
     private static final boolean QUIET = true;
 
     /**
-     * 
-     *
+     * This class cannot be directly instantiated.
      */
-    public static void startServer() {
+    private RCommand() {
+        if ( serverProcess == null ) this.startServer();
+        log.debug( "Trying to connect...." );
+        this.connect();
+    }
+
+    public static RCommand newInstance() {
+        return new RCommand();
+    }
+
+    /**
+     * Starts the RServe server, unless one is already running.
+     */
+    public void startServer() {
 
         try {
             connect( QUIET );
-            log.info( "RServer is already running" );
-            return;
+            if ( connection.isConnected() ) {
+                log.info( "RServer is already running" );
+                return;
+            }
+            log.error( "Server is running but can't connect?" ); // shouldn't hit this, but just in case.
         } catch ( RuntimeException e1 ) {
             // okay, not running
         }
 
         try {
 
-            URL userSpecificConfigFileLocation = ConfigurationUtils.locate( "build.properties" );
-
-            Configuration userConfig = null;
-            if ( userSpecificConfigFileLocation != null ) {
-                userConfig = new PropertiesConfiguration( userSpecificConfigFileLocation );
-            }
-            String rserveExecutable = userConfig.getString( "rserve.start.command" );
-            if ( rserveExecutable == null || rserveExecutable.length() == 0 ) {
-                log.info( "Rserve command not configured, trying fallbacks" );
-                if ( os.startsWith( "windows" ) ) {
-                    rserveExecutable = "C:/Program Files/R/rw2001/bin/Rserve.exe";
-                } else {
-                    rserveExecutable = "R CMD Rserve";
-                }
-            }
+            String rserveExecutable = findRserveCommand();
 
             log.info( "Starting Rserve with command " + rserveExecutable );
             serverProcess = Runtime.getRuntime().exec( rserveExecutable );
 
-            try {
-                boolean waiting = true;
-                int tries = 0;
-                while ( waiting ) {
-                    try {
-                        connect( QUIET );
-                        waiting = false;
-                        return;
-                    } catch ( RuntimeException e1 ) {
-                        // not running, keep trying
-                        tries++;
-                        Thread.sleep( 100 );
-                    }
-                    if ( tries > MAX_TRIES ) {
-                        throw new RuntimeException( "Could not get a connection to server: timed out" );
-                    }
-                }
-
-                serverProcess.exitValue();
-                log.error( "Could not start the Rserver" );
-            } catch ( IllegalThreadStateException e ) {
-                log.info( "Rserver seems to have started" );
-            } catch ( InterruptedException e ) {
-                ;
-            }
+            waitForServerStart();
 
         } catch ( IOException e ) {
             log.error( "Could not start Rserver" );
@@ -129,13 +106,69 @@ public class RCommand {
     }
 
     /**
+     * @return
+     * @throws ConfigurationException
+     */
+    private String findRserveCommand() throws ConfigurationException {
+        URL userSpecificConfigFileLocation = ConfigurationUtils.locate( "build.properties" );
+
+        Configuration userConfig = null;
+        if ( userSpecificConfigFileLocation != null ) {
+            userConfig = new PropertiesConfiguration( userSpecificConfigFileLocation );
+        }
+        String rserveExecutable = userConfig.getString( "rserve.start.command" );
+        if ( rserveExecutable == null || rserveExecutable.length() == 0 ) {
+            log.info( "Rserve command not configured, trying fallbacks" );
+            if ( os.startsWith( "windows" ) ) {
+                rserveExecutable = "C:/Program Files/R/rw2001/bin/Rserve.exe";
+            } else {
+                rserveExecutable = "R CMD Rserve";
+            }
+        }
+        return rserveExecutable;
+    }
+
+    /**
+     * Wait until we can get a connection to the server - if there is a better way to monitor when the server is up, we
+     * should us it.
+     */
+    private void waitForServerStart() {
+        try {
+
+            boolean waiting = true;
+            int tries = 0;
+            while ( waiting ) {
+                try {
+                    connect( QUIET );
+                    waiting = false;
+                    return;
+                } catch ( RuntimeException e1 ) {
+                    // not running, keep trying
+                    tries++;
+                    Thread.sleep( 100 );
+                }
+                if ( tries > MAX_TRIES ) {
+                    throw new RuntimeException( "Could not get a connection to server: timed out" );
+                }
+            }
+
+            serverProcess.exitValue();
+            log.error( "Could not start the Rserver" );
+        } catch ( IllegalThreadStateException e ) {
+            log.info( "Rserver seems to have started" );
+        } catch ( InterruptedException e ) {
+            ;
+        }
+    }
+
+    /**
      * @param beQuiet
      */
-    private static void connect( boolean beQuiet ) {
+    private void connect( boolean beQuiet ) {
         if ( connection != null && connection.isConnected() ) return;
         try {
             connection = new Rconnection();
-            if ( !beQuiet ) log.debug( "Connected to server" );
+            if ( !beQuiet ) log.info( "Connected to server" );
         } catch ( RSrvException e ) {
             if ( !beQuiet ) log.error( "Could not connect to RServe", e );
             throw new RuntimeException( e );
@@ -145,7 +178,7 @@ public class RCommand {
     /**
      * Stop the server, if it was started by this.
      */
-    public static void stopServer() {
+    public void stopServer() {
         if ( serverProcess != null ) {
             log.info( "Stopping server by killing it." );
             serverProcess.destroy();
@@ -156,7 +189,8 @@ public class RCommand {
      * 
      *
      */
-    public static void connect() {
+    public void connect() {
+        log.debug( "Entering connect()" );
         connect( false );
     }
 
@@ -165,7 +199,7 @@ public class RCommand {
      * 
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, int[])
      */
-    public static void assign( String arg0, int[] arg1 ) {
+    public void assign( String arg0, int[] arg1 ) {
         checkConnection();
         try {
             connection.assign( arg0, arg1 );
@@ -180,7 +214,7 @@ public class RCommand {
      * 
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, org.rosuda.JRclient.REXP)
      */
-    public static void assign( String arg0, REXP arg1 ) {
+    public void assign( String arg0, REXP arg1 ) {
         checkConnection();
         try {
             connection.assign( arg0, arg1 );
@@ -195,7 +229,7 @@ public class RCommand {
      * 
      * @see org.rosuda.JRclient.Rconnection#voidEval(java.lang.String)
      */
-    public static void voidEval( String arg0 ) {
+    public void voidEval( String arg0 ) {
         checkConnection();
         try {
             connection.voidEval( arg0 );
@@ -209,7 +243,7 @@ public class RCommand {
      * @param argName
      * @param arg
      */
-    public static void assign( String argName, double[] arg ) {
+    public void assign( String argName, double[] arg ) {
         try {
             connection.assign( argName, arg );
         } catch ( RSrvException e ) {
@@ -224,7 +258,7 @@ public class RCommand {
      * @param arg
      * @return
      */
-    public static double[] doubleArrayDoubleArrayExec( String command, String argName, double[] arg ) {
+    public double[] doubleArrayDoubleArrayExec( String command, String argName, double[] arg ) {
         try {
             connection.assign( argName, arg );
             RList l = connection.eval( command ).asList();
@@ -243,8 +277,8 @@ public class RCommand {
      * @param arg2
      * @return
      */
-    public static double[] doubleArrayTwoDoubleArrayExec( String command, String argName, double[] arg,
-            String argName2, double[] arg2 ) {
+    public double[] doubleArrayTwoDoubleArrayExec( String command, String argName, double[] arg, String argName2,
+            double[] arg2 ) {
         checkConnection();
         try {
             connection.assign( argName, arg );
@@ -259,7 +293,8 @@ public class RCommand {
     /**
      * @param commmand
      */
-    public static REXP exec( String commmand ) {
+    public REXP eval( String commmand ) {
+        log.debug( "Entering RCommand.eval" );
         checkConnection();
         try {
             return connection.eval( commmand );
@@ -273,7 +308,7 @@ public class RCommand {
      * @param command
      * @return
      */
-    public static double[] execDoubleArray( String command ) {
+    public double[] execDoubleArray( String command ) {
         checkConnection();
         try {
             return ( double[] ) connection.eval( command ).getContent();
@@ -286,15 +321,20 @@ public class RCommand {
     /**
      * 
      */
-    private static void checkConnection() {
+    private void checkConnection() {
+        log.debug( "Checking connection" );
         assert connection != null && connection.isConnected();
     }
 
     /**
      * 
      */
-    public static void disconnect() {
+    public void disconnect() {
         if ( connection != null && connection.isConnected() ) connection.close();
+    }
+
+    public void finalize() {
+        this.disconnect();
     }
 
 }
