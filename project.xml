@@ -3,7 +3,7 @@
     <pomVersion>3</pomVersion>
     <id>baseCode</id>
     <groupId>baseCode</groupId>
-    <currentVersion>0.2.12</currentVersion>
+    <currentVersion>0.2.13</currentVersion>
     <organization>
         <name>Columbia University</name>
         <url>http://www.columbia.edu</url>
@@ -132,6 +132,12 @@
             <jar>commons-lang-2.0.jar</jar>
             <type>jar</type>
         </dependency>
+            <dependency>
+                <groupId>rserve</groupId>
+                <artifactId>JRclient</artifactId>
+                <version>RE817</version>
+                <type>jar</type>
+            </dependency>
     </dependencies>
     <build>
         <sourceDirectory>src</sourceDirectory>
