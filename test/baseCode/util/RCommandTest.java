@@ -35,6 +35,6 @@ public class RCommandTest extends TestCase {
      */
     public void testExecDoubleArray() throws Exception {
         assertTrue( RegressionTesting.closeEnough( new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, rc
-                .execDoubleArray( "rep(1, 10)" ), 0.001 ) );
+                .doubleArrayEval( "rep(1, 10)" ), 0.001 ) );
     }
 }

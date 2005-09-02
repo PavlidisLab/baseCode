@@ -20,15 +20,12 @@
  */
 package baseCode.math;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
+import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import baseCode.util.RCommand;
 import baseCode.util.RegressionTesting;
-import junit.framework.TestCase;
 
 /**
  * <hr>

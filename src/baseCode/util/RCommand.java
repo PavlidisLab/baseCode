@@ -28,6 +28,7 @@ import org.apache.commons.configuration.ConfigurationUtils;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.rosuda.JRclient.RBool;
 import org.rosuda.JRclient.REXP;
 import org.rosuda.JRclient.RList;
 import org.rosuda.JRclient.RSrvException;
@@ -253,12 +254,14 @@ public class RCommand {
     }
 
     /**
+     * Run a command that has a single double array parameter, and returns a double array.
+     * 
      * @param command
      * @param argName
      * @param arg
      * @return
      */
-    public double[] doubleArrayDoubleArrayExec( String command, String argName, double[] arg ) {
+    public double[] doubleArrayDoubleArrayEval( String command, String argName, double[] arg ) {
         try {
             connection.assign( argName, arg );
             RList l = connection.eval( command ).asList();
@@ -270,6 +273,8 @@ public class RCommand {
     }
 
     /**
+     * Run a command that takes two double array arguments and returns a double array.
+     * 
      * @param command
      * @param argName
      * @param arg
@@ -277,7 +282,7 @@ public class RCommand {
      * @param arg2
      * @return
      */
-    public double[] doubleArrayTwoDoubleArrayExec( String command, String argName, double[] arg, String argName2,
+    public double[] doubleArrayTwoDoubleArrayEval( String command, String argName, double[] arg, String argName2,
             double[] arg2 ) {
         checkConnection();
         try {
@@ -291,6 +296,52 @@ public class RCommand {
     }
 
     /**
+     * Run a command that takes two double arrays as arguments and returns a double value.
+     * 
+     * @param command
+     * @param argName
+     * @param arg
+     * @param argName2
+     * @param arg2
+     * @return
+     */
+    public double doubleTwoDoubleArrayEval( String command, String argName, double[] arg, String argName2, double[] arg2 ) {
+        checkConnection();
+        try {
+            connection.assign( argName, arg );
+            connection.assign( argName2, arg2 );
+            REXP x = connection.eval( command );
+            return x.asDouble();
+        } catch ( RSrvException e ) {
+            log.error( e, e );
+            throw new RuntimeException( e );
+        }
+    }
+
+    /**
+     * Run a command that takes a double array as an argument and returns a boolean.
+     * 
+     * @param command
+     * @param argName
+     * @param arg
+     * @return
+     */
+    public boolean booleanDoubleArrayEval( String command, String argName, double[] arg ) {
+        checkConnection();
+        try {
+            connection.assign( argName, arg );
+            REXP x = connection.eval( command );
+            RBool b = x.asBool();
+            return b.isTRUE();
+        } catch ( RSrvException e ) {
+            log.error( e, e );
+            throw new RuntimeException( e );
+        }
+    }
+
+    /**
+     * Evaluate any command.
+     * 
      * @param commmand
      */
     public REXP eval( String commmand ) {
@@ -305,10 +356,12 @@ public class RCommand {
     }
 
     /**
+     * Run a command that returns a double array with no arguments.
+     * 
      * @param command
      * @return
      */
-    public double[] execDoubleArray( String command ) {
+    public double[] doubleArrayEval( String command ) {
         checkConnection();
         try {
             return ( double[] ) connection.eval( command ).getContent();

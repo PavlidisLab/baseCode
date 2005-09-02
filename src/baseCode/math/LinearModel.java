@@ -44,7 +44,6 @@ public class LinearModel {
         rc.assign( "y", variable );
         rc.assign( "a", a );
         rc.assign( "b", b );
-
     }
 
     public void fitNoInteractions() {
