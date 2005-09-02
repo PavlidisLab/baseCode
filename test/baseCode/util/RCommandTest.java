@@ -1,7 +1,6 @@
 package baseCode.util;
 
 import junit.framework.TestCase;
-import baseCode.util.*;
 
 /**
  * <hr>
@@ -12,6 +11,16 @@ import baseCode.util.*;
  * @version $Id$
  */
 public class RCommandTest extends TestCase {
+
+    public void setUp() {
+        RCommand.startServer();
+        RCommand.connect();
+    }
+
+    public void tearDown() {
+        RCommand.disconnect();
+        RCommand.stopServer();
+    }
 
     /*
      * Test method for 'edu.columbia.gemma.tools.RCommand.exec(String)'
