@@ -154,9 +154,11 @@
         <unitTestSourceDirectory>test</unitTestSourceDirectory>
         <unitTest>
             <includes>
-                <include>**/*Test*.java</include>
+                <include>**/Test*.java</include>
+                <include>**/*Test.java</include>
             </includes>
             <excludes>
+                <exclude>**/AllTests.java</exclude>
                 <exclude>**/gui/Test*.java</exclude>
                 <exclude>**/AbstractTest*.java</exclude>
             </excludes>
