@@ -97,6 +97,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
         }
 
         colNames = readHeader( dis );
+       
         numHeadings = colNames.size();
 
         while ( ( row = dis.readLine() ) != null ) {
