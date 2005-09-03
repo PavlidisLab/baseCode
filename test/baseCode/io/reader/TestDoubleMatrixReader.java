@@ -7,134 +7,126 @@ import junit.framework.TestCase;
 import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 
 /**
- * 
  * <p>
  * Copyright (c) 2004 Columbia University
  * 
  * @author pavlidis
- * @version $Id: TestDoubleMatrixReader.java,v 1.2 2004/06/24 17:48:03 pavlidis
- *          Exp $
+ * @version $Id$
  */
 public class TestDoubleMatrixReader extends TestCase {
 
-   DenseDoubleMatrix2DNamed matrix = null;
-   InputStream is = null;
-   DoubleMatrixReader reader = null;
-   InputStream ism = null;
-   InputStream ismb = null; // missing, with bad rows.
-   InputStream isbig = null; // missing, with bad rows.
-   /*
-    * @see TestCase#setUp()
-    */
-   protected void setUp() throws Exception {
-      super.setUp();
-      reader = new DoubleMatrixReader();
-      is = TestStringMatrixReader.class
-            .getResourceAsStream( "/data/testdata.txt" );
+    DenseDoubleMatrix2DNamed matrix = null;
+    InputStream is = null;
+    DoubleMatrixReader reader = null;
+    InputStream ism = null;
+    InputStream ismb = null; // missing, with bad rows.
+    InputStream isbig = null; // missing, with bad rows.
 
-      ism = TestStringMatrixReader.class
-            .getResourceAsStream( "/data/testdatamissing.txt" );
+    /*
+     * @see TestCase#setUp()
+     */
+    protected void setUp() throws Exception {
+        super.setUp();
+        reader = new DoubleMatrixReader();
+        is = TestStringMatrixReader.class.getResourceAsStream( "/data/testdata.txt" );
 
-      ismb = TestStringMatrixReader.class
-            .getResourceAsStream( "/data/testdatamissing-badrows.txt" );
-      
-      isbig = TestStringMatrixReader.class
-      .getResourceAsStream( "/data/melanoma_and_sarcomaMAS5.txt" );
-   }
+        ism = TestStringMatrixReader.class.getResourceAsStream( "/data/testdatamissing.txt" );
 
-   /*
-    * @see TestCase#tearDown()
-    */
-   protected void tearDown() throws Exception {
-      super.tearDown();
-      is.close();
-      ism.close();
-      ismb.close();
-      isbig.close();
-      matrix = null;
-   }
+        ismb = TestStringMatrixReader.class.getResourceAsStream( "/data/testdatamissing-badrows.txt" );
 
-   public void testReadInputStreamMissing() {
-      try {
-         matrix = ( DenseDoubleMatrix2DNamed ) reader.read( ism );
-         int actualReturn = matrix.rows();
-         int expectedReturn = 30;
-         assertEquals( "return value", expectedReturn, actualReturn );
-      } catch ( IOException e ) {
-         e.printStackTrace();
-      }
-   }
+        isbig = TestStringMatrixReader.class.getResourceAsStream( "/data/melanoma_and_sarcomaMAS5.txt" );
+    }
 
-   public void testReadInputStreamMissingBad() {
-      try {
-         matrix = ( DenseDoubleMatrix2DNamed ) reader.read( ismb );
-         fail( "Should have gotten an IO error" );
-      } catch ( IOException e ) {
-      }
-   }
+    /*
+     * @see TestCase#tearDown()
+     */
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        is.close();
+        ism.close();
+        ismb.close();
+        isbig.close();
+        matrix = null;
+    }
 
-   /*
-    * Class under test for NamedMatrix read(InputStream)
-    */
-   public void testReadInputStreamRowCount() {
-      try {
-         matrix = ( DenseDoubleMatrix2DNamed ) reader.read( is );
-         int actualReturn = matrix.rows();
-         int expectedReturn = 30;
-         assertEquals( "return value", expectedReturn, actualReturn );
-      } catch ( IOException e ) {
-         e.printStackTrace();
-      }
-   }
+    public void testReadInputStreamMissing() {
+        try {
+            matrix = ( DenseDoubleMatrix2DNamed ) reader.read( ism );
+            int actualReturn = matrix.rows();
+            int expectedReturn = 30;
+            assertEquals( "return value", expectedReturn, actualReturn );
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+    }
 
-   public void testReadInputStreamColumnCount() {
-      try {
-         matrix = ( DenseDoubleMatrix2DNamed ) reader.read( is );
-         int actualReturn = matrix.columns();
-         int expectedReturn = 12;
-         assertEquals( "return value", expectedReturn, actualReturn );
-      } catch ( IOException e ) {
-         e.printStackTrace();
-      }
-   }
+    public void testReadInputStreamMissingBad() {
+        try {
+            matrix = ( DenseDoubleMatrix2DNamed ) reader.read( ismb );
+            fail( "Should have gotten an IO error" );
+        } catch ( IOException e ) {
+        }
+    }
 
-   public void testReadInputStreamGotRowName() {
-      try {
-         matrix = ( DenseDoubleMatrix2DNamed ) reader.read( is );
-         boolean actualReturn = matrix.containsRowName( "gene1_at" )
-               && matrix.containsRowName( "AFFXgene30_at" );
-         boolean expectedReturn = true;
-         assertEquals( "return value", expectedReturn, actualReturn );
-      } catch ( IOException e ) {
-         e.printStackTrace();
-      }
-   }
+    /*
+     * Class under test for NamedMatrix read(InputStream)
+     */
+    public void testReadInputStreamRowCount() {
+        try {
+            matrix = ( DenseDoubleMatrix2DNamed ) reader.read( is );
+            int actualReturn = matrix.rows();
+            int expectedReturn = 30;
+            assertEquals( "return value", expectedReturn, actualReturn );
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+    }
 
-   public void testReadInputStreamGotColName() {
-      try {
-         matrix = ( DenseDoubleMatrix2DNamed ) reader.read( is );
-         boolean actualReturn = matrix.containsColumnName( "sample1" )
-               && matrix.containsColumnName( "sample12" );
-         boolean expectedReturn = true;
-         assertEquals( "return value (for sample1 and sample12)",
-               expectedReturn, actualReturn );
-      } catch ( IOException e ) {
-         e.printStackTrace();
-      }
-   }
-   
-//   public void testReadInputStreamBig() {
-//      try {
-//         matrix = ( DenseDoubleMatrix2DNamed ) reader.read( isbig );
-//         int actualReturn = matrix.rows();
-//         int expectedReturn = 12533;
-//         assertEquals( "return value ",
-//               expectedReturn, actualReturn );
-//      } catch ( IOException e ) {
-//         e.printStackTrace();
-//      } catch ( OutOfMemoryError e) {
-//         e.printStackTrace();
-//      }
-//   }
+    public void testReadInputStreamColumnCount() {
+        try {
+            matrix = ( DenseDoubleMatrix2DNamed ) reader.read( is );
+            int actualReturn = matrix.columns();
+            int expectedReturn = 12;
+            assertEquals( "return value", expectedReturn, actualReturn );
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    public void testReadInputStreamGotRowName() {
+        try {
+            matrix = ( DenseDoubleMatrix2DNamed ) reader.read( is );
+            boolean actualReturn = matrix.containsRowName( "gene1_at" ) && matrix.containsRowName( "AFFXgene30_at" );
+            boolean expectedReturn = true;
+            assertEquals( "return value", expectedReturn, actualReturn );
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    public void testReadInputStreamGotColName() {
+        try {
+            matrix = ( DenseDoubleMatrix2DNamed ) reader.read( is );
+            boolean actualReturn = matrix.containsColumnName( "sample1" ) && matrix.containsColumnName( "sample12" );
+            boolean expectedReturn = true;
+            assertEquals( "return value (for sample1 and sample12)", expectedReturn, actualReturn );
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    // public void testReadInputStreamBig() {
+    // try {
+    // matrix = ( DenseDoubleMatrix2DNamed ) reader.read( isbig );
+    // int actualReturn = matrix.rows();
+    // int expectedReturn = 12533;
+    // assertEquals( "return value ",
+    // expectedReturn, actualReturn );
+    // } catch ( IOException e ) {
+    // e.printStackTrace();
+    // } catch ( OutOfMemoryError e) {
+    // e.printStackTrace();
+    // }
+    // }
 
 }

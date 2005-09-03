@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PushbackInputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.zip.GZIPInputStream;
@@ -58,7 +59,6 @@ public class FileTools {
      * @return
      */
     public static String getExtension( String filename ) {
-
         String extension = null;
         int i = filename.lastIndexOf( '.' );
 
@@ -73,14 +73,12 @@ public class FileTools {
      * @return
      */
     public static String getWithoutExtension( String filename ) {
-
-        String[] s = filename.split( "." );
-        String extension = s[s.length - 1];
-        String filenameWithoutExtension = filename.substring( filename.length() - extension.length() - 1, filename
-                .length() - 1 );
-
-        return filenameWithoutExtension;
-    } // end getFilenameWithoutExtension
+        String[] s = filename.split( "\\." );
+        if ( s.length < 2 ) {
+            return filename;
+        }
+        return s[0];
+    }
 
     /**
      * @param filename
@@ -90,7 +88,7 @@ public class FileTools {
     public static String changeExtension( String filename, String newExtension ) {
 
         String filenameWithoutExtension = getWithoutExtension( filename );
-        return ( filenameWithoutExtension + newExtension );
+        return ( filenameWithoutExtension + "." + newExtension );
     } // end getWithChangedExtension
 
     /**
@@ -119,20 +117,6 @@ public class FileTools {
         }
         return false;
     }
-
-    /**
-     * @param filename
-     * @return
-     */
-    public static boolean hasDataExtension( String filename ) {
-        // for ( int i = 0; i < FileTools.DATA_EXTENSIONS.length; i++ ) {
-        // if ( filename.toUpperCase().endsWith( FileTools.DATA_EXTENSIONS[i].toUpperCase() ) ) {
-        // return true;
-        // }
-        // }
-        // return false;
-        return true;
-    } // end hasImageExtension
 
     /**
      * @param filename
@@ -245,44 +229,6 @@ public class FileTools {
             i = new FileInputStream( fileName );
         }
         return i;
-    }
-
-    /**
-     * @param clazz The class which is requesting the resource
-     * @param resource The name of the resource.
-     * @return
-     */
-    public static InputStream getInputStreamFromPlainOrCompressedResource( Class clazz, String resource )
-            throws IOException {
-
-        InputStream i = clazz.getResourceAsStream( resource );
-
-        if ( i == null )
-            throw new IllegalArgumentException( "Could not locate " + resource + " for " + clazz.getName() );
-
-        if ( i.available() == 0 ) throw new IOException( "No bytes available from stream" );
-
-        InputStream result = null;
-        try {
-            result = new GZIPInputStream( i );
-            log.debug( "GZIP stream" );
-        } catch ( IOException e ) {
-            log.debug( "Not gzip", e );
-            // not in gzip format, try zip.
-            ZipInputStream zis = null;
-            try {
-                zis = new ZipInputStream( i );
-                if ( zis != null ) zis.getNextEntry();
-                result = zis;
-                log.debug( "ZIP stream" );
-            } catch ( IOException e1 ) {
-                // not in Zip format either, just open it.
-                log.debug( "Plain stream" );
-                result = i;
-            }
-
-        }
-        return result;
     }
 
     /**

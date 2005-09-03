@@ -61,7 +61,7 @@ public class RCommand {
      */
     private RCommand() {
         if ( serverProcess == null ) this.startServer();
-        log.debug( "Trying to connect...." );
+        log.info( "Trying to connect...." );
         this.connect();
     }
 
@@ -230,12 +230,13 @@ public class RCommand {
      * 
      * @see org.rosuda.JRclient.Rconnection#voidEval(java.lang.String)
      */
-    public void voidEval( String arg0 ) {
+    public void voidEval( String arg ) {
+        if ( arg == null ) throw new IllegalArgumentException( "Null command" );
         checkConnection();
         try {
-            connection.voidEval( arg0 );
+            connection.voidEval( arg );
         } catch ( RSrvException e ) {
-            log.error( e, e );
+            log.error( "R failure with command " + arg, e );
             throw new RuntimeException( e );
         }
     }
@@ -388,6 +389,24 @@ public class RCommand {
 
     public void finalize() {
         this.disconnect();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, java.lang.String)
+     */
+    public void assign( String sym, String ct ) throws RSrvException {
+        this.connection.assign( sym, ct );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.rosuda.JRclient.Rconnection#getLastError()
+     */
+    public String getLastError() {
+        return this.connection.getLastError();
     }
 
 }
