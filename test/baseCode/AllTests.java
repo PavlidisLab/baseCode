@@ -19,6 +19,8 @@ import baseCode.io.writer.TestHistogramWriter;
 import baseCode.math.TestCorrelationStats;
 import baseCode.math.metaanalysis.TestCorrelationEffectMetaAnalysis;
 import baseCode.math.metaanalysis.TestMeanDifferenceMetaAnalysis;
+import baseCode.util.FileToolsTest;
+import baseCode.util.RCommandTest;
 import baseCode.util.TestStringUtil;
 import baseCode.xml.TestGOParser;
 
@@ -73,8 +75,10 @@ public class AllTests extends TestCase {
         /* XML tests */
         suite.addTestSuite( TestGOParser.class );
 
+        /* util */
         suite.addTestSuite( TestStringUtil.class );
-
+        suite.addTestSuite( FileToolsTest.class );
+        suite.addTestSuite( RCommandTest.class );
         return suite;
     }
 
