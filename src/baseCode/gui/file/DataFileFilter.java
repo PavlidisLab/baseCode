@@ -4,8 +4,6 @@ import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
-import baseCode.util.FileTools;
-
 /**
  * <hr>
  * <p>
@@ -22,7 +20,7 @@ public class DataFileFilter extends FileFilter {
          return true;
       }
 
-      return FileTools.hasDataExtension( f.getName() );
+      return true;
 
    } // end accept
 
