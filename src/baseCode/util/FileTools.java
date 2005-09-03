@@ -1,5 +1,6 @@
 package baseCode.util;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -11,6 +12,7 @@ import java.util.Collection;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -243,6 +245,44 @@ public class FileTools {
             i = new FileInputStream( fileName );
         }
         return i;
+    }
+
+    /**
+     * @param clazz The class which is requesting the resource
+     * @param resource The name of the resource.
+     * @return
+     */
+    public static InputStream getInputStreamFromPlainOrCompressedResource( Class clazz, String resource )
+            throws IOException {
+
+        InputStream i = clazz.getResourceAsStream( resource );
+
+        if ( i == null )
+            throw new IllegalArgumentException( "Could not locate " + resource + " for " + clazz.getName() );
+
+        if ( i.available() == 0 ) throw new IOException( "No bytes available from stream" );
+
+        InputStream result = null;
+        try {
+            result = new GZIPInputStream( i );
+            log.debug( "GZIP stream" );
+        } catch ( IOException e ) {
+            log.debug( "Not gzip", e );
+            // not in gzip format, try zip.
+            ZipInputStream zis = null;
+            try {
+                zis = new ZipInputStream( i );
+                if ( zis != null ) zis.getNextEntry();
+                result = zis;
+                log.debug( "ZIP stream" );
+            } catch ( IOException e1 ) {
+                // not in Zip format either, just open it.
+                log.debug( "Plain stream" );
+                result = i;
+            }
+
+        }
+        return result;
     }
 
     /**
