@@ -24,6 +24,7 @@ public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
     protected void setUp() throws Exception {
         testdata = ( DoubleMatrixNamed ) f.read( FastRowAccessDoubleMatrix2DNamedTest.class
                 .getResourceAsStream( "/data/testdata.txt" ) );
+        assert ( testdata instanceof FastRowAccessDoubleMatrix2DNamed );
         super.setUp();
     }
 
@@ -81,8 +82,8 @@ public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
      * Test method for 'baseCode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamed.getRow(int)'
      */
     public void testGetRow() {
-        double[] f = testdata.getRow( 2 );
-        assertEquals( 27873.8, f[4], 0.001 );
+        double[] res = testdata.getRow( 2 );
+        assertEquals( 27873.8, res[4], 0.001 );
     }
 
     /*
