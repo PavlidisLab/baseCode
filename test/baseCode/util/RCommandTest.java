@@ -23,6 +23,9 @@ package baseCode.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.io.reader.DoubleMatrixReader;
+
 import junit.framework.TestCase;
 
 /**
@@ -38,19 +41,25 @@ public class RCommandTest extends TestCase {
 
     RCommand rc = null;
     boolean connected = false;
+    DenseDoubleMatrix2DNamed tester;
 
-    public void setUp() {
+    public void setUp() throws Exception {
         try {
             rc = RCommand.newInstance();
             connected = true;
         } catch ( RuntimeException e ) {
             connected = false;
         }
+
+        DoubleMatrixReader reader = new DoubleMatrixReader();
+
+        tester = ( DenseDoubleMatrix2DNamed ) reader.read( this.getClass().getResourceAsStream( "/data/testdata.txt" ) );
     }
 
-    public void tearDown() {
+    public void tearDown() throws Exception {
         rc.disconnect();
         rc.stopServer();
+        tester = null;
     }
 
     /*
@@ -75,4 +84,10 @@ public class RCommandTest extends TestCase {
         assertTrue( RegressionTesting.closeEnough( new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, rc
                 .doubleArrayEval( "rep(1, 10)" ), 0.001 ) );
     }
+
+    public void testAssignAndRetrieveMatrix() throws Exception {
+        DenseDoubleMatrix2DNamed result = rc.retrieveMatrix( rc.assignMatrix( tester ) );
+        assertTrue( result.equals( tester ) );
+    }
+
 }
