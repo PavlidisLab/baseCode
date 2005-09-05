@@ -23,7 +23,7 @@ import cern.colt.matrix.impl.SparseDoubleMatrix2D;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class SparseDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix implements
+public class SparseDoubleMatrix2DNamed extends DoubleMatrixNamed implements
       NamedMatrix {
 
    private SparseDoubleMatrix2D matrix;

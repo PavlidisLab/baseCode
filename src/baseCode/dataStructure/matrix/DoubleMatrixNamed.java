@@ -34,7 +34,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public abstract class AbstractNamedDoubleMatrix extends AbstractNamedMatrix {
+public abstract class DoubleMatrixNamed extends AbstractNamedMatrix {
 
     protected static Log log = LogFactory.getLog( DenseDoubleMatrix2DNamed.class.getName() );
 

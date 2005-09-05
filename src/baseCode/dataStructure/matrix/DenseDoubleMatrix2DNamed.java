@@ -38,7 +38,7 @@ import corejava.Format;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class DenseDoubleMatrix2DNamed extends AbstractNamedDoubleMatrix {
+public class DenseDoubleMatrix2DNamed extends DoubleMatrixNamed {
 
     /**
      * Value used to compare values in equals. This is used largely for testing and sanity checking.
