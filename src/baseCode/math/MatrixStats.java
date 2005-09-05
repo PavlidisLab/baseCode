@@ -1,6 +1,6 @@
 package baseCode.math;
 
-import baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix;
+import baseCode.dataStructure.matrix.DoubleMatrixNamed;
 import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.matrix.SparseDoubleMatrix2DNamed;
 import cern.colt.function.DoubleFunction;
@@ -22,7 +22,7 @@ public class MatrixStats {
      * @param data DenseDoubleMatrix2DNamed
      * @return DenseDoubleMatrix2DNamed
      */
-    public static DenseDoubleMatrix2DNamed correlationMatrix( AbstractNamedDoubleMatrix data ) {
+    public static DenseDoubleMatrix2DNamed correlationMatrix( DoubleMatrixNamed data ) {
         DenseDoubleMatrix2DNamed result = new DenseDoubleMatrix2DNamed( data.rows(), data.rows() );
 
         for ( int i = 0; i < data.rows(); i++ ) {
@@ -45,7 +45,7 @@ public class MatrixStats {
      * @param threshold only correlations with absolute values above this level are stored.
      * @return SparseDoubleMatrix2DNamed
      */
-    public static SparseDoubleMatrix2DNamed correlationMatrix( AbstractNamedDoubleMatrix data, double threshold ) {
+    public static SparseDoubleMatrix2DNamed correlationMatrix( DoubleMatrixNamed data, double threshold ) {
         SparseDoubleMatrix2DNamed result = new SparseDoubleMatrix2DNamed( data.rows(), data.rows() );
 
         for ( int i = 0; i < data.rows(); i++ ) {
@@ -71,7 +71,7 @@ public class MatrixStats {
      * @param matrix DenseDoubleMatrix2DNamed
      * @return the smallest value in the matrix
      */
-    public static double min( AbstractNamedDoubleMatrix matrix ) {
+    public static double min( DoubleMatrixNamed matrix ) {
 
         int totalRows = matrix.rows();
         int totalColumns = matrix.columns();
@@ -104,7 +104,7 @@ public class MatrixStats {
      * @param matrix DenseDoubleMatrix2DNamed
      * @return the largest value in the matrix
      */
-    public static double max( AbstractNamedDoubleMatrix matrix ) {
+    public static double max( DoubleMatrixNamed matrix ) {
 
         int totalRows = matrix.rows();
         int totalColumns = matrix.columns();
@@ -142,7 +142,7 @@ public class MatrixStats {
      * @param matrixToNormalize
      * @param sigma a scaling factor for the input values.
      */
-    public static void rbfNormalize( AbstractNamedDoubleMatrix matrixToNormalize, final double sigma ) {
+    public static void rbfNormalize( DoubleMatrixNamed matrixToNormalize, final double sigma ) {
 
         // define the function we will use.
         DoubleFunction f = new DoubleFunction() {
@@ -168,7 +168,7 @@ public class MatrixStats {
      * @param matrixToNormalize
      * @param sigma
      */
-    public static void countsNormalize( AbstractNamedDoubleMatrix matrixToNormalize, final double sigma ) {
+    public static void countsNormalize( DoubleMatrixNamed matrixToNormalize, final double sigma ) {
 
         final double min = MatrixStats.min( matrixToNormalize );
         DoubleFunction f = new DoubleFunction() {

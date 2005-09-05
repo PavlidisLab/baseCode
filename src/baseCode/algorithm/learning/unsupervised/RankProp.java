@@ -21,7 +21,7 @@
 package baseCode.algorithm.learning.unsupervised;
 
 import baseCode.algorithm.Algorithm;
-import baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix;
+import baseCode.dataStructure.matrix.DoubleMatrixNamed;
 import baseCode.dataStructure.matrix.DenseDoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix1D;
 
@@ -48,7 +48,7 @@ public class RankProp extends Algorithm {
      * @param k
      * @return
      */
-    public DoubleMatrix1D computeRanking( AbstractNamedDoubleMatrix matrix, AbstractNamedDoubleMatrix query, int k ) {
+    public DoubleMatrix1D computeRanking( DoubleMatrixNamed matrix, DoubleMatrixNamed query, int k ) {
 
         DoubleMatrix1D yorig = new DenseDoubleMatrix1D( query.viewRow( 0 ).toArray() );
 
@@ -62,7 +62,7 @@ public class RankProp extends Algorithm {
      * @param k
      * @return
      */
-    public DoubleMatrix1D computeRanking( AbstractNamedDoubleMatrix matrix, DoubleMatrix1D query, int indexOfQuery ) {
+    public DoubleMatrix1D computeRanking( DoubleMatrixNamed matrix, DoubleMatrix1D query, int indexOfQuery ) {
         int dim = query.size();
         DoubleMatrix1D y = new DenseDoubleMatrix1D( dim ); // we use own implementation for performance.s
         DoubleMatrix1D yold = new DenseDoubleMatrix1D( dim );

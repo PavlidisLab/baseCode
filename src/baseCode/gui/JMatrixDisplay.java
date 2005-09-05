@@ -12,7 +12,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
-import baseCode.dataStructure.matrix.AbstractNamedDoubleMatrix;
+import baseCode.dataStructure.matrix.DoubleMatrixNamed;
 import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import baseCode.graphics.text.Util;
 
@@ -344,7 +344,7 @@ public class JMatrixDisplay extends JPanel {
       return m_matrix;
    }
 
-   public AbstractNamedDoubleMatrix getMatrix() {
+   public DoubleMatrixNamed getMatrix() {
       return m_matrix.m_matrix;
    }
 
