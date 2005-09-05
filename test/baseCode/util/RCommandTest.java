@@ -23,7 +23,8 @@ package baseCode.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.matrix.DoubleMatrixNamed;
+import baseCode.dataStructure.matrix.DoubleMatrixNamed;
 import baseCode.io.reader.DoubleMatrixReader;
 
 import junit.framework.TestCase;
@@ -41,7 +42,7 @@ public class RCommandTest extends TestCase {
 
     RCommand rc = null;
     boolean connected = false;
-    DenseDoubleMatrix2DNamed tester;
+    DoubleMatrixNamed tester;
 
     public void setUp() throws Exception {
         try {
@@ -53,7 +54,7 @@ public class RCommandTest extends TestCase {
 
         DoubleMatrixReader reader = new DoubleMatrixReader();
 
-        tester = ( DenseDoubleMatrix2DNamed ) reader.read( this.getClass().getResourceAsStream( "/data/testdata.txt" ) );
+        tester = ( DoubleMatrixNamed ) reader.read( this.getClass().getResourceAsStream( "/data/testdata.txt" ) );
     }
 
     public void tearDown() throws Exception {
@@ -86,8 +87,8 @@ public class RCommandTest extends TestCase {
     }
 
     public void testAssignAndRetrieveMatrix() throws Exception {
-        DenseDoubleMatrix2DNamed result = rc.retrieveMatrix( rc.assignMatrix( tester ) );
-        assertTrue( result.equals( tester ) );
+        DoubleMatrixNamed result = rc.retrieveMatrix( rc.assignMatrix( tester ) );
+        assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
     }
 
 }

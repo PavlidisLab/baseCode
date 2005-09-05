@@ -1,6 +1,6 @@
 package baseCode.dataFilter;
 
-import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.matrix.DoubleMatrixNamed;
 import baseCode.dataStructure.matrix.StringMatrix2DNamed;
 
 /**
@@ -23,7 +23,7 @@ public class TestRowAffyNameFilter extends AbstractTestFilter {
       RowAffyNameFilter fi = new RowAffyNameFilter( new int[] {
             RowAffyNameFilter.AFFX, RowAffyNameFilter.X, RowAffyNameFilter.ST,
             RowAffyNameFilter.F } );
-      DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) fi
+      DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) fi
             .filter( testdata );
       int expectedReturn = teststringdata.rows() - 5; // file contains on AFFX,
       // and two _f_ tags.

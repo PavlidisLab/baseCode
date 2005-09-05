@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import junit.framework.TestCase;
-import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.matrix.DoubleMatrixNamed;
 
 /**
  * <p>
@@ -15,7 +15,7 @@ import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
  */
 public class TestDoubleMatrixReader extends TestCase {
 
-    DenseDoubleMatrix2DNamed matrix = null;
+    DoubleMatrixNamed matrix = null;
     InputStream is = null;
     DoubleMatrixReader reader = null;
     InputStream ism = null;
@@ -51,7 +51,7 @@ public class TestDoubleMatrixReader extends TestCase {
 
     public void testReadInputStreamMissing() {
         try {
-            matrix = ( DenseDoubleMatrix2DNamed ) reader.read( ism );
+            matrix = ( DoubleMatrixNamed ) reader.read( ism );
             int actualReturn = matrix.rows();
             int expectedReturn = 30;
             assertEquals( "return value", expectedReturn, actualReturn );
@@ -62,7 +62,7 @@ public class TestDoubleMatrixReader extends TestCase {
 
     public void testReadInputStreamMissingBad() {
         try {
-            matrix = ( DenseDoubleMatrix2DNamed ) reader.read( ismb );
+            matrix = ( DoubleMatrixNamed ) reader.read( ismb );
             fail( "Should have gotten an IO error" );
         } catch ( IOException e ) {
         }
@@ -73,7 +73,7 @@ public class TestDoubleMatrixReader extends TestCase {
      */
     public void testReadInputStreamRowCount() {
         try {
-            matrix = ( DenseDoubleMatrix2DNamed ) reader.read( is );
+            matrix = ( DoubleMatrixNamed ) reader.read( is );
             int actualReturn = matrix.rows();
             int expectedReturn = 30;
             assertEquals( "return value", expectedReturn, actualReturn );
@@ -84,7 +84,7 @@ public class TestDoubleMatrixReader extends TestCase {
 
     public void testReadInputStreamColumnCount() {
         try {
-            matrix = ( DenseDoubleMatrix2DNamed ) reader.read( is );
+            matrix = ( DoubleMatrixNamed ) reader.read( is );
             int actualReturn = matrix.columns();
             int expectedReturn = 12;
             assertEquals( "return value", expectedReturn, actualReturn );
@@ -95,7 +95,7 @@ public class TestDoubleMatrixReader extends TestCase {
 
     public void testReadInputStreamGotRowName() {
         try {
-            matrix = ( DenseDoubleMatrix2DNamed ) reader.read( is );
+            matrix = ( DoubleMatrixNamed ) reader.read( is );
             boolean actualReturn = matrix.containsRowName( "gene1_at" ) && matrix.containsRowName( "AFFXgene30_at" );
             boolean expectedReturn = true;
             assertEquals( "return value", expectedReturn, actualReturn );
@@ -106,7 +106,7 @@ public class TestDoubleMatrixReader extends TestCase {
 
     public void testReadInputStreamGotColName() {
         try {
-            matrix = ( DenseDoubleMatrix2DNamed ) reader.read( is );
+            matrix = ( DoubleMatrixNamed ) reader.read( is );
             boolean actualReturn = matrix.containsColumnName( "sample1" ) && matrix.containsColumnName( "sample12" );
             boolean expectedReturn = true;
             assertEquals( "return value (for sample1 and sample12)", expectedReturn, actualReturn );
@@ -117,7 +117,7 @@ public class TestDoubleMatrixReader extends TestCase {
 
     // public void testReadInputStreamBig() {
     // try {
-    // matrix = ( DenseDoubleMatrix2DNamed ) reader.read( isbig );
+    // matrix = ( DoubleMatrixNamed ) reader.read( isbig );
     // int actualReturn = matrix.rows();
     // int expectedReturn = 12533;
     // assertEquals( "return value ",

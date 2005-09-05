@@ -1,5 +1,6 @@
 package baseCode.math;
 
+import baseCode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
 import baseCode.dataStructure.matrix.DoubleMatrixNamed;
 import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import baseCode.dataStructure.matrix.SparseDoubleMatrix2DNamed;
@@ -22,8 +23,8 @@ public class MatrixStats {
      * @param data DenseDoubleMatrix2DNamed
      * @return DenseDoubleMatrix2DNamed
      */
-    public static DenseDoubleMatrix2DNamed correlationMatrix( DoubleMatrixNamed data ) {
-        DenseDoubleMatrix2DNamed result = new DenseDoubleMatrix2DNamed( data.rows(), data.rows() );
+    public static DoubleMatrixNamed correlationMatrix( DoubleMatrixNamed data ) {
+        DoubleMatrixNamed result = DoubleMatrix2DNamedFactory.dense( data.rows(), data.rows() );
 
         for ( int i = 0; i < data.rows(); i++ ) {
             DoubleArrayList irow = new DoubleArrayList( data.getRow( i ) );

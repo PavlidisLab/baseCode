@@ -1,9 +1,30 @@
+/*
+ * The baseCode project
+ * 
+ * Copyright (c) 2005 Columbia University
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ */
 package baseCode.dataFilter;
 
 import java.util.List;
 import java.util.Vector;
 
-import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
+import baseCode.dataStructure.matrix.DoubleMatrixNamed;
 import baseCode.dataStructure.matrix.NamedMatrix;
 import baseCode.math.DescriptiveWithMissing;
 import baseCode.math.Stats;
@@ -113,8 +134,8 @@ public class RowLevelFilter extends AbstractLevelFilter {
      */
     public NamedMatrix filter( NamedMatrix data ) {
 
-        if ( !( data instanceof DenseDoubleMatrix2DNamed ) ) {
-            throw new IllegalArgumentException( "Only valid for DenseDoubleMatrix2DNamed" );
+        if ( !( data instanceof DoubleMatrixNamed ) ) {
+            throw new IllegalArgumentException( "Only valid for DoubleMatrixNamed" );
         }
 
         if ( lowCut == -Double.MAX_VALUE && highCut == Double.MAX_VALUE ) {
@@ -230,7 +251,7 @@ public class RowLevelFilter extends AbstractLevelFilter {
             }
         }
 
-        DenseDoubleMatrix2DNamed returnval = new DenseDoubleMatrix2DNamed( rowsToKeep.size(), numCols );
+        DoubleMatrixNamed returnval = DoubleMatrix2DNamedFactory.fastrow( rowsToKeep.size(), numCols );
         for ( int i = 0; i < kept; i++ ) {
             Double[] row = ( Double[] ) rowsToKeep.get( i );
             for ( int j = 0; j < numCols; j++ ) {

@@ -1,6 +1,7 @@
 package baseCode.dataFilter;
 
-import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
+import baseCode.dataStructure.matrix.DoubleMatrixNamed;
 import baseCode.dataStructure.matrix.NamedMatrix;
 
 /**
@@ -14,8 +15,8 @@ import baseCode.dataStructure.matrix.NamedMatrix;
 public class ItemLevelFilter extends AbstractLevelFilter {
 
     public NamedMatrix filter( NamedMatrix data ) {
-        if ( !( data instanceof DenseDoubleMatrix2DNamed ) ) {
-            throw new IllegalArgumentException( "Only valid for DenseDoubleMatrix2DNamed" );
+        if ( !( data instanceof DoubleMatrixNamed ) ) {
+            throw new IllegalArgumentException( "Only valid for DoubleMatrixNamed" );
         }
 
         if ( lowCut == -Double.MAX_VALUE && highCut == Double.MAX_VALUE ) {
@@ -25,12 +26,12 @@ public class ItemLevelFilter extends AbstractLevelFilter {
 
         int numRows = data.rows();
         int numCols = data.columns();
-        DenseDoubleMatrix2DNamed returnval = new DenseDoubleMatrix2DNamed( numRows, numCols );
+        DoubleMatrixNamed returnval = DoubleMatrix2DNamedFactory.dense( numRows, numCols );
         for ( int i = 0; i < numRows; i++ ) {
 
             for ( int j = 0; j < numCols; j++ ) {
 
-                double newVal = ( ( DenseDoubleMatrix2DNamed ) data ).get( i, j );
+                double newVal = ( ( DoubleMatrixNamed ) data ).get( i, j );
                 if ( newVal < lowCut || newVal > highCut ) {
                     newVal = Double.NaN;
                 }

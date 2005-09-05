@@ -1,6 +1,6 @@
 package baseCode.math;
 
-import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.matrix.DoubleMatrixNamed;
 import cern.colt.list.DoubleArrayList;
 
 /**
@@ -25,10 +25,10 @@ public class MatrixRowStats {
     /**
      * Calculates the sum of squares for each row of a matrix
      * 
-     * @param M DenseDoubleMatrix2DNamed
+     * @param M DoubleMatrixNamed
      * @return DoubleArrayList
      */
-    public static DoubleArrayList sumOfSquares( DenseDoubleMatrix2DNamed M ) {
+    public static DoubleArrayList sumOfSquares( DoubleMatrixNamed M ) {
         DoubleArrayList r = new DoubleArrayList();
 
         for ( int i = 0; i < M.rows(); i++ ) {
@@ -42,10 +42,10 @@ public class MatrixRowStats {
     /**
      * Calculates the means of a matrix's rows.
      * 
-     * @param M DenseDoubleMatrix2DNamed
+     * @param M DoubleMatrixNamed
      * @return DoubleArrayList
      */
-    public static DoubleArrayList means( DenseDoubleMatrix2DNamed M ) {
+    public static DoubleArrayList means( DoubleMatrixNamed M ) {
         DoubleArrayList r = new DoubleArrayList();
         for ( int i = 0; i < M.rows(); i++ ) {
             r.add( DescriptiveWithMissing.mean( new DoubleArrayList( M.getRow( i ) ) ) );
@@ -56,10 +56,10 @@ public class MatrixRowStats {
     /**
      * Calculate the sums of a matrix's rows.
      * 
-     * @param M DenseDoubleMatrix2DNamed
+     * @param M DoubleMatrixNamed
      * @return DoubleArrayList
      */
-    public static DoubleArrayList sums( DenseDoubleMatrix2DNamed M ) {
+    public static DoubleArrayList sums( DoubleMatrixNamed M ) {
         DoubleArrayList r = new DoubleArrayList();
         for ( int i = 0; i < M.rows(); i++ ) {
             r.add( DescriptiveWithMissing.sum( new DoubleArrayList( M.getRow( i ) ) ) );
@@ -70,10 +70,10 @@ public class MatrixRowStats {
     /**
      * Calculates the sample standard deviation of each row of a matrix
      * 
-     * @param M DenseDoubleMatrix2DNamed
+     * @param M DoubleMatrixNamed
      * @return DoubleArrayList
      */
-    public static DoubleArrayList sampleStandardDeviations( DenseDoubleMatrix2DNamed M ) {
+    public static DoubleArrayList sampleStandardDeviations( DoubleMatrixNamed M ) {
         DoubleArrayList r = new DoubleArrayList();
         for ( int i = 0; i < M.rows(); i++ ) {
             DoubleArrayList row = new DoubleArrayList( M.getRow( i ) );

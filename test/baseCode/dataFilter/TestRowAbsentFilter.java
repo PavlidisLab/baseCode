@@ -1,6 +1,6 @@
 package baseCode.dataFilter;
 
-import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.matrix.DoubleMatrixNamed;
 import baseCode.dataStructure.matrix.StringMatrix2DNamed;
 import baseCode.io.reader.StringMatrixReader;
 
@@ -39,13 +39,13 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
    }
 
    /*
-    * Class under test for DenseDoubleMatrix2DNamed
-    * filter(DenseDoubleMatrix2DNamed)
+    * Class under test for DoubleMatrixNamed
+    * filter(DoubleMatrixNamed)
     */
    public void testFilter() {
       f.setFlagMatrix( testpdata );
       f.setMinPresentCount( 12 );
-      DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) f
+      DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f
             .filter( testdata );
       int expectedReturn = testdata.rows() - 7; // 7 rows have some absent or
       // marginal.
@@ -56,7 +56,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
    public void testFilterWithMissing() {
       f.setFlagMatrix( testpdata );
       f.setMinPresentCount( 12 );
-      DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) f
+      DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f
             .filter( testmissingdata );
       int expectedReturn = 17;
       int actualReturn = filtered.rows();
@@ -66,7 +66,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
    public void testFilterWithMissingLessStringent() {
       f.setFlagMatrix( testpdata );
       f.setMinPresentCount( 8 );
-      DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) f
+      DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f
             .filter( testmissingdata );
       int expectedReturn = 24;
       int actualReturn = filtered.rows();
@@ -88,7 +88,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
       f.setFlagMatrix( testpdata );
       f.setKeepMarginal( true );
       f.setMinPresentCount( 12 );
-      DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) f
+      DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f
             .filter( testdata );
       int expectedReturn = testdata.rows() - 6; // 6 rows have some absent
       int actualReturn = filtered.rows();
@@ -98,7 +98,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
    public void testFilterFraction() {
       f.setFlagMatrix( testpdata );
       f.setMinPresentFraction( 1.0 );
-      DenseDoubleMatrix2DNamed filtered = ( DenseDoubleMatrix2DNamed ) f
+      DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f
             .filter( testdata );
       int expectedReturn = testdata.rows() - 7; // 7 rows have some missing or
       // marginal.

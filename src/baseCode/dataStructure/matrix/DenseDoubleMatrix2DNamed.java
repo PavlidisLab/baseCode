@@ -167,7 +167,7 @@ public class DenseDoubleMatrix2DNamed extends DoubleMatrixNamed {
     }
 
     /**
-     * Make a copy of a matrix.
+     * Make a copy of a matrix. FIXME move to superclass.
      * 
      * @return baseCode.dataStructure.DenseDoubleMatrix2DNamed
      */
@@ -283,39 +283,6 @@ public class DenseDoubleMatrix2DNamed extends DoubleMatrixNamed {
      */
     public DoubleArrayList getRowArrayList( int i ) {
         return new DoubleArrayList( getRow( i ) );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    public boolean equals( Object o ) {
-        if ( !( o instanceof DenseDoubleMatrix2DNamed ) ) return false;
-        DenseDoubleMatrix2DNamed d = ( DenseDoubleMatrix2DNamed ) o;
-        if ( d.rows() != this.rows() || d.columns() != this.columns() ) return false;
-
-        for ( int i = 0; i < this.columns(); i++ ) {
-            if ( !this.getColName( i ).equals( d.getColName( i ) ) ) {
-                log.info( "unequal column name" );
-                return false;
-            }
-        }
-
-        for ( int i = 0; i < this.rows(); i++ ) {
-            if ( !this.getRowName( i ).equals( d.getRowName( i ) ) ) {
-                log.info( "unequal row name " );
-                return false;
-            }
-            for ( int j = 0; j < this.columns(); j++ ) {
-                if ( Math.abs( d.getQuick( i, j ) - this.getQuick( i, j ) ) > TOLERANCE ) {
-                    log.info( "Unequal values " + d.getQuick( i, j ) + " and " + this.getQuick( i, j ) );
-                    return false;
-                }
-            }
-        }
-
-        return true;
     }
 
 }

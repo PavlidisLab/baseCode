@@ -27,6 +27,7 @@ import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 
 /**
+ * Abstract base class for 2D matrices of double values with named columns and rows.
  * <hr>
  * <p>
  * Copyright (c) 2004 Columbia University
@@ -36,7 +37,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  */
 public abstract class DoubleMatrixNamed extends AbstractNamedMatrix {
 
-    protected static Log log = LogFactory.getLog( DenseDoubleMatrix2DNamed.class.getName() );
+    protected static Log log = LogFactory.getLog( DoubleMatrixNamed.class.getName() );
 
     /*
      * (non-Javadoc)
@@ -108,5 +109,12 @@ public abstract class DoubleMatrixNamed extends AbstractNamedMatrix {
     public double[] getRowByName( String s ) {
         return getRow( getRowIndexByName( s ) );
     }
+
+    /**
+     * @param j
+     * @param i
+     * @param c
+     */
+    public abstract void setQuick( int j, int i, double c );
 
 }

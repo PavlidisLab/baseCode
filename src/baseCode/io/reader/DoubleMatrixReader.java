@@ -14,12 +14,13 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
-import baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import baseCode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
+import baseCode.dataStructure.matrix.DoubleMatrixNamed;
 import baseCode.dataStructure.matrix.NamedMatrix;
 import cern.colt.list.DoubleArrayList;
 
 /**
- * Reader for {@link baseCode.dataStructure.matrix.DenseDoubleMatrix2DNamed}.
+ * Reader for {@link baseCode.dataStructure.matrix.DoubleMatrixNamed}.
  * <p>
  * Copyright (c) 2004
  * </p>
@@ -97,7 +98,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
         }
 
         colNames = readHeader( dis );
-       
+
         numHeadings = colNames.size();
 
         while ( ( row = dis.readLine() ) != null ) {
@@ -257,24 +258,23 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
     // protected methods
     // -----------------------------------------------------------------
 
-    protected DenseDoubleMatrix2DNamed createMatrix( List MTemp, int rowCount, int colCount, List rowNames,
-            List colNames ) {
+    protected DoubleMatrixNamed createMatrix( List MTemp, int rowCount, int colCount, List rowNames, List colNames1 ) {
 
-        DenseDoubleMatrix2DNamed matrix = new DenseDoubleMatrix2DNamed( rowCount, colCount );
+        DoubleMatrixNamed matrix = DoubleMatrix2DNamedFactory.fastrow( rowCount, colCount );
 
         for ( int i = 0; i < matrix.rows(); i++ ) {
             for ( int j = 0; j < matrix.columns(); j++ ) {
                 if ( ( ( DoubleArrayList ) MTemp.get( i ) ).size() < j + 1 ) {
-                    matrix.set( i, j, Double.NaN );
+                    matrix.setQuick( i, j, Double.NaN );
                     // this allows the input file to have ragged ends.
                     // todo I'm not sure allowing ragged inputs is a good idea -PP
                 } else {
-                    matrix.set( i, j, ( ( DoubleArrayList ) MTemp.get( i ) ).elements()[j] );
+                    matrix.setQuick( i, j, ( ( DoubleArrayList ) MTemp.get( i ) ).elements()[j] );
                 }
             }
         }
         matrix.setRowNames( rowNames );
-        matrix.setColumnNames( colNames );
+        matrix.setColumnNames( colNames1 );
         return matrix;
 
     } // end createMatrix
