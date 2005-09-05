@@ -7,6 +7,7 @@ import baseCode.bio.geneset.TestGeneAnnotations;
 import baseCode.dataStructure.TestQueue;
 import baseCode.dataStructure.TestStack;
 import baseCode.dataStructure.graph.TestDirectedGraph;
+import baseCode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamedTest;
 import baseCode.dataStructure.matrix.TestRCDoubleMatrix1D;
 import baseCode.dataStructure.matrix.TestSparseRaggedDoubleMatrix2DNamed;
 import baseCode.io.TestByteArrayConverter;
@@ -46,6 +47,7 @@ public class AllTests extends TestCase {
 
         /* data structure tests */
         suite.addTestSuite( TestDirectedGraph.class );
+        suite.addTestSuite( FastRowAccessDoubleMatrix2DNamedTest.class );
         suite.addTestSuite( TestSparseRaggedDoubleMatrix2DNamed.class );
         suite.addTestSuite( TestRCDoubleMatrix1D.class );
         suite.addTestSuite( TestQueue.class );
