@@ -122,8 +122,12 @@ public class RCommand {
      * 
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, java.lang.String)
      */
-    public void assign( String sym, String ct ) throws RSrvException {
-        this.connection.assign( sym, ct );
+    public void assign( String sym, String ct ) {
+        try {
+            this.connection.assign( sym, ct );
+        } catch ( RSrvException e ) {
+            throw new RuntimeException( "Assignment failed: " + sym + " value " + ct, e );
+        }
     }
 
     /**
