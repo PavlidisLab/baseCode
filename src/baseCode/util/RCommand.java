@@ -33,13 +33,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.rosuda.JRclient.RBool;
 import org.rosuda.JRclient.REXP;
-import org.rosuda.JRclient.RFactor;
 import org.rosuda.JRclient.RList;
 import org.rosuda.JRclient.RSrvException;
 import org.rosuda.JRclient.Rconnection;
 
 import baseCode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
-import baseCode.dataStructure.matrix.DoubleMatrixNamed;
 import baseCode.dataStructure.matrix.DoubleMatrixNamed;
 
 /**
@@ -68,7 +66,9 @@ public class RCommand {
      * This class cannot be directly instantiated.
      */
     private RCommand() {
-        if ( serverProcess == null ) this.startServer();
+        if ( serverProcess == null ) {
+            this.startServer();
+        }
         log.info( "Trying to connect...." );
         this.connect();
         log.info( "Connected!" );
@@ -100,6 +100,13 @@ public class RCommand {
             log.error( e, e );
             throw new RuntimeException( e );
         }
+    }
+
+    /**
+     * 
+     */
+    private void checkConnection() {
+        if ( !this.isConnected() ) throw new RuntimeException( "Not connected" );
     }
 
     /*
@@ -137,7 +144,7 @@ public class RCommand {
      * @return the name of the variable by which the R matrix can be referred.
      */
     public String assignMatrix( DoubleMatrixNamed matrix ) {
-        String matrixVarName = "Matrix_" + Integer.toString( matrix.hashCode() );
+        String matrixVarName = "Matrix_" + variableIdentityNumber( matrix );
         log.debug( "Assigning matrix with variable name " + matrixVarName );
         int rows = matrix.rows();
         int cols = matrix.columns();
@@ -150,8 +157,34 @@ public class RCommand {
         this.voidEval( "rm(U" + matrixVarName + ")" ); // maybe this saves memory...
 
         assignRowAndColumnNames( matrix, matrixVarName );
-        double[][] f = this.eval( matrixVarName ).asDoubleMatrix();
         return matrixVarName;
+    }
+
+    /**
+     * @param ob
+     * @return
+     */
+    public static String variableIdentityNumber( Object ob ) {
+        return Integer.toString( Math.abs( ob.hashCode() ) );
+    }
+
+    /**
+     * Define a variable corresponding to a character array in the R context, given a List of Strings.
+     * 
+     * @param strings
+     * @return the name of the variable in the R context.
+     */
+    public String assignStringList( List strings ) {
+        String variableName = "stringList." + variableIdentityNumber( strings );
+
+        Object[] stringOA = strings.toArray();
+        String[] stringSA = new String[stringOA.length];
+        for ( int i = 0; i < stringOA.length; i++ ) {
+            stringSA[i] = ( String ) stringOA[i];
+        }
+        REXP stringRexp = new REXP( stringSA );
+        assign( variableName, stringRexp );
+        return variableName;
     }
 
     /**
@@ -160,26 +193,11 @@ public class RCommand {
      * @return
      */
     private void assignRowAndColumnNames( DoubleMatrixNamed matrix, String matrixVarName ) {
-        Object[] rowNamesOA = matrix.getRowNames().toArray();
-        String[] rowNamesSA = new String[matrix.rows()];
-        for ( int i = 0; i < rowNamesOA.length; i++ ) {
-            rowNamesSA[i] = ( String ) rowNamesOA[i];
-        }
 
-        Object[] colNamesOA = matrix.getColNames().toArray();
-        String[] colNamesSA = new String[matrix.columns()];
-        for ( int i = 0; i < colNamesOA.length; i++ ) {
-            colNamesSA[i] = ( String ) colNamesOA[i];
-        }
+        String rowNameVar = assignStringList( matrix.getRowNames() );
+        String colNameVar = assignStringList( matrix.getColNames() );
 
-        REXP rowNames = new REXP( rowNamesSA );
-        REXP colNames = new REXP( colNamesSA );
-
-        this.assign( matrixVarName + "_rowNames", rowNames );
-        this.assign( matrixVarName + "_colNames", colNames );
-
-        String dimcmd = "dimnames(" + matrixVarName + ")<-list(" + matrixVarName + "_rowNames, " + matrixVarName
-                + "_colNames)";
+        String dimcmd = "dimnames(" + matrixVarName + ")<-list(" + rowNameVar + ", " + colNameVar + ")";
         this.voidEval( dimcmd );
     }
 
@@ -190,7 +208,7 @@ public class RCommand {
      * @return the name of the variable by which the R matrix can be referred.
      */
     public String assignMatrix( double[][] matrix ) {
-        String matrixVarName = "Matrix_" + Integer.toString( matrix.hashCode() );
+        String matrixVarName = "Matrix_" + variableIdentityNumber( matrix );
         log.debug( "Assigning matrix with variable name " + matrixVarName );
         int rows = matrix.length;
         int cols = matrix[0].length;
@@ -235,6 +253,7 @@ public class RCommand {
      */
     public void disconnect() {
         if ( connection != null && connection.isConnected() ) connection.close();
+        connection = null;
     }
 
     /**
@@ -354,7 +373,9 @@ public class RCommand {
 
         double[][] results = r.asDoubleMatrix();
 
-        if ( results == null ) throw new RuntimeException( "Failed to get back matrix for variable " + variableName );
+        if ( results == null )
+            throw new RuntimeException( "Failed to get back matrix for variable " + variableName
+                    + ", object has length " + r.getBinaryLength() + " bytes." );
 
         DoubleMatrixNamed resultObject = DoubleMatrix2DNamedFactory.dense( results );
 
@@ -450,11 +471,14 @@ public class RCommand {
      */
     public void voidEval( String command ) {
         if ( command == null ) throw new IllegalArgumentException( "Null command" );
-        checkConnection();
+        this.checkConnection();
         try {
             log.debug( "voidEval: " + command );
             connection.voidEval( command );
         } catch ( RSrvException e ) {
+            log.error( "R failure with command " + command, e );
+            throw new RuntimeException( e );
+        } catch ( Exception e ) {
             log.error( "R failure with command " + command, e );
             throw new RuntimeException( e );
         }
@@ -463,16 +487,18 @@ public class RCommand {
     /**
      * 
      */
-    private void checkConnection() {
-        if ( connection != null && connection.isConnected() ) return;
-        throw new RuntimeException( "No connection" );
+    public boolean isConnected() {
+        if ( connection != null && connection.isConnected() ) return true;
+        return false;
     }
 
     /**
      * @param beQuiet
      */
     private void connect( boolean beQuiet ) {
-        if ( connection != null && connection.isConnected() ) return;
+        if ( connection != null && connection.isConnected() ) {
+            return;
+        }
         try {
             connection = new Rconnection();
             if ( !beQuiet ) log.info( "Connected to server" );
