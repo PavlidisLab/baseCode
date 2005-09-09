@@ -1,5 +1,10 @@
 package baseCode.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.ArrayUtils;
+
 import com.Ostermiller.util.CSVParser;
 
 /**
@@ -97,4 +102,49 @@ public class StringUtil {
 
     }
 
+    /**
+     * Borrowed from apache commons-lang-2.1, which clashes with something in our build environment (this is
+     * "splitworker")
+     * 
+     * @param str the String to parse, may be <code>null</code>
+     * @param separatorChar the separate character
+     * @param preserveAllTokens if <code>true</code>, adjacent separators are treated as empty token separators; if
+     *        <code>false</code>, adjacent separators are treated as one separator.
+     * @return an array of parsed Strings, <code>null</code> if null String input
+     */
+    public static String[] splitPreserveAllTokens( String str, char separatorChar ) {
+        boolean preserveAllTokens = true;
+        // Performance tuned for 2.0 (JDK1.4)
+
+        if ( str == null ) {
+            return null;
+        }
+        int len = str.length();
+        if ( len == 0 ) {
+            return ArrayUtils.EMPTY_STRING_ARRAY;
+        }
+        List list = new ArrayList();
+        int i = 0, start = 0;
+        boolean match = false;
+        boolean lastMatch = false;
+        while ( i < len ) {
+            if ( str.charAt( i ) == separatorChar ) {
+                if ( match || preserveAllTokens ) {
+                    list.add( str.substring( start, i ) );
+                    match = false;
+                    lastMatch = true;
+                }
+                start = ++i;
+                continue;
+            }
+            lastMatch = false;
+
+            match = true;
+            i++;
+        }
+        if ( match || ( preserveAllTokens && lastMatch ) ) {
+            list.add( str.substring( start, i ) );
+        }
+        return ( String[] ) list.toArray( new String[list.size()] );
+    }
 }
