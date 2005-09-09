@@ -87,6 +87,10 @@ public class RCommandTest extends TestCase {
     }
 
     public void testAssignAndRetrieveMatrix() throws Exception {
+        if ( !connected ) {
+            log.warn( "Could not connect to RServe, skipping test." );
+            return;
+        }
         DoubleMatrixNamed result = rc.retrieveMatrix( rc.assignMatrix( tester ) );
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
     }
