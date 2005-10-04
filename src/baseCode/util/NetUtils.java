@@ -94,7 +94,7 @@ public class NetUtils {
 
         long expectedSize = allfilesInGroup[0].getSize();
         if ( outputFile.exists() && outputFile.length() == expectedSize && !force ) {
-            log.warn( "Output file" + outputFileName + " already exists with correct size. Will not re-download" );
+            log.warn( "Output file " + outputFileName + " already exists with correct size. Will not re-download" );
             return true;
         }
 
