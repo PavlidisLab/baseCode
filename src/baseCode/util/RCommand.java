@@ -523,7 +523,7 @@ public class RCommand {
         if ( rserveExecutable == null || rserveExecutable.length() == 0 ) {
             log.info( "Rserve command not configured, trying fallbacks" );
             if ( os.startsWith( "windows" ) ) {
-                rserveExecutable = "C:/Program Files/R/rw2001/bin/Rserve.exe";
+                rserveExecutable = "C:/Program Files/R/rw2011pat/bin/Rserve.exe";
             } else {
                 rserveExecutable = "R CMD Rserve";
             }

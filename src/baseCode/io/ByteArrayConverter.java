@@ -195,6 +195,23 @@ public class ByteArrayConverter {
     }
 
     /**
+     * @param boolarray
+     * @return byte[]
+     */
+    public byte[] booleanArrayToBytes( boolean[] boolarray ) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream( bos );
+        try {
+            for ( int i = 0; i < boolarray.length; i++ ) {
+                dos.writeBoolean( boolarray[i] );
+            }
+        } catch ( IOException e ) {
+            // do nothing
+        }
+        return bos.toByteArray();
+    }
+
+    /**
      * @param iarray
      * @return byte[]
      */
@@ -211,6 +228,48 @@ public class ByteArrayConverter {
             // do nothing
         }
         return bos.toByteArray();
+    }
+
+    /**
+     * @param array
+     * @return
+     */
+    public byte[] toBytes( Object[] array ) {
+        if ( array == null ) return null;
+        if ( array.length == 0 ) return new byte[] {};
+
+        if ( array[0] instanceof Boolean ) {
+            boolean[] toConvert = new boolean[array.length];
+            for ( int i = 0; i < array.length; i++ ) {
+                boolean object = ( ( Boolean ) array[i] ).booleanValue();
+                toConvert[i] = object;
+            }
+            return booleanArrayToBytes( toConvert );
+        } else if ( array[0] instanceof Double ) {
+            double[] toConvert = new double[array.length];
+            for ( int i = 0; i < array.length; i++ ) {
+                double object = ( ( Double ) array[i] ).doubleValue();
+                toConvert[i] = object;
+            }
+            return doubleArrayToBytes( toConvert );
+        } else if ( array[0] instanceof String ) {
+            StringBuffer buf = new StringBuffer();
+            for ( int i = 0; i < array.length; i++ ) {
+                buf.append( array[i] );
+            }
+            return charArrayToBytes( buf.toString().toCharArray() );
+
+        } else if ( array[0] instanceof Integer ) {
+            int[] toConvert = new int[array.length];
+            for ( int i = 0; i < array.length; i++ ) {
+                int object = ( ( Integer ) array[i] ).intValue();
+                toConvert[i] = object;
+            }
+            return intArrayToBytes( toConvert );
+        } else {
+            throw new UnsupportedOperationException( "Can't convert " + array[0].getClass() + " to bytes" );
+        }
+
     }
 
 }
