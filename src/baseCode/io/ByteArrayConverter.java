@@ -238,6 +238,9 @@ public class ByteArrayConverter {
         if ( array == null ) return null;
         if ( array.length == 0 ) return new byte[] {};
 
+        // sanity check, catches obvious errors.
+        if ( array[0] == null ) throw new IllegalArgumentException( "Null values cannot be converted" );
+
         if ( array[0] instanceof Boolean ) {
             boolean[] toConvert = new boolean[array.length];
             for ( int i = 0; i < array.length; i++ ) {
