@@ -17,7 +17,11 @@ import baseCode.io.reader.TestSparseDoubleMatrixReader;
 import baseCode.io.reader.TestSparseRaggedDouble2DNamedMatrixReader;
 import baseCode.io.reader.TestStringMatrixReader;
 import baseCode.io.writer.TestHistogramWriter;
+import baseCode.math.LinearModelTest;
+import baseCode.math.StringDistanceTest;
 import baseCode.math.TestCorrelationStats;
+import baseCode.math.TestWilcoxon;
+import baseCode.math.distribution.TestWishart;
 import baseCode.math.metaanalysis.TestCorrelationEffectMetaAnalysis;
 import baseCode.math.metaanalysis.TestMeanDifferenceMetaAnalysis;
 import baseCode.util.FileToolsTest;
@@ -62,6 +66,9 @@ public class AllTests extends TestCase {
         suite.addTestSuite( baseCode.dataFilter.TestItemLevelFilter.class );
 
         /* math tests */
+        suite.addTestSuite( StringDistanceTest.class );
+        suite.addTestSuite( LinearModelTest.class );
+        suite.addTestSuite( TestWilcoxon.class );
         suite.addTestSuite( baseCode.math.TestDescriptiveWithMissing.class );
         suite.addTestSuite( baseCode.math.TestKSTest.class );
         suite.addTestSuite( TestCorrelationStats.class );
@@ -73,6 +80,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite( baseCode.math.TestROC.class );
         suite.addTestSuite( TestCorrelationEffectMetaAnalysis.class );
         suite.addTestSuite( TestMeanDifferenceMetaAnalysis.class );
+        suite.addTestSuite( TestWishart.class );
 
         /* XML tests */
         suite.addTestSuite( TestGOParser.class );
