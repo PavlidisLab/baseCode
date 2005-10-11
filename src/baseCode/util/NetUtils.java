@@ -86,12 +86,8 @@ public class NetUtils {
         boolean success = false;
 
         assert f != null && f.isConnected() : "No FTP connection is available";
-        FTPFile[] allfilesInGroup = f.listFiles( seekFile );
-        if ( allfilesInGroup.length == 0 ) {
-            throw new IOException( "File " + seekFile + " does not seem to exist on the remote host" );
-        }
+        long expectedSize = checkForFile( f, seekFile );
 
-        long expectedSize = allfilesInGroup[0].getSize();
         if ( outputFile.exists() && outputFile.length() == expectedSize && !force ) {
             log.warn( "Output file " + outputFile + " already exists with correct size. Will not re-download" );
             return true;
@@ -106,6 +102,23 @@ public class NetUtils {
             throw new IOException( "Failed to complete download of " + seekFile );
         }
         return success;
+    }
+
+    /**
+     * determine if a file exists on the remote server.
+     * 
+     * @param f
+     * @param seekFile
+     * @return the size of the file
+     * @throws FileNotFoundException if the file does not exist.
+     * @throws IOException on other IO errors.
+     */
+    public static long checkForFile( FTPClient f, String seekFile ) throws IOException {
+        FTPFile[] allfilesInGroup = f.listFiles( seekFile );
+        if ( allfilesInGroup.length == 0 ) {
+            throw new FileNotFoundException( "File " + seekFile + " does not seem to exist on the remote host" );
+        }
+        return allfilesInGroup[0].getSize();
     }
 
     /**
