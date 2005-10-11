@@ -74,38 +74,51 @@ public class NetUtils {
     }
 
     /**
-     * @param accession
-     * @param outputFileName
-     * @param outputFile
+     * @param f
      * @param seekFile
+     * @param outputFile
+     * @param force
+     * @return boolean indicating success or failure.
      * @throws IOException
-     * @throws FileNotFoundException
      */
-    public static boolean ftpDownloadFile( FTPClient f, String seekFile, String outputFileName, boolean force )
-            throws IOException, FileNotFoundException {
+    public static boolean ftpDownloadFile( FTPClient f, String seekFile, File outputFile, boolean force )
+            throws IOException {
         boolean success = false;
-        File outputFile = new File( outputFileName );
+
         assert f != null && f.isConnected() : "No FTP connection is available";
         FTPFile[] allfilesInGroup = f.listFiles( seekFile );
         if ( allfilesInGroup.length == 0 ) {
-            log.error( "File " + seekFile + " does not seem to exist on the remote host" );
-            return false;
+            throw new IOException( "File " + seekFile + " does not seem to exist on the remote host" );
         }
 
         long expectedSize = allfilesInGroup[0].getSize();
         if ( outputFile.exists() && outputFile.length() == expectedSize && !force ) {
-            log.warn( "Output file " + outputFileName + " already exists with correct size. Will not re-download" );
+            log.warn( "Output file " + outputFile + " already exists with correct size. Will not re-download" );
             return true;
         }
 
-        OutputStream os = new FileOutputStream( outputFileName );
+        OutputStream os = new FileOutputStream( outputFile );
 
         log.info( "Seeking file " + seekFile + " with size " + expectedSize + " bytes" );
         success = f.retrieveFile( seekFile, os );
         os.close();
         if ( !success ) {
-            log.error( "Failed to complete download of " + seekFile );
+            throw new IOException( "Failed to complete download of " + seekFile );
         }
         return success;
+    }
+
+    /**
+     * @param accession
+     * @param outputFileName
+     * @param outputFile
+     * @param seekFile
+     * @return boolean indicating success or failure.
+     * @throws IOException
+     * @throws FileNotFoundException
+     */
+    public static boolean ftpDownloadFile( FTPClient f, String seekFile, String outputFileName, boolean force )
+            throws IOException, FileNotFoundException {
+        return ftpDownloadFile( f, seekFile, new File( outputFileName ), force );
     }
 }
