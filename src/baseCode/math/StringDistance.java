@@ -103,8 +103,6 @@ public class StringDistance {
             for ( int row = 1; row <= m; row++ ) {
                 char tc = t.charAt( row - 1 );
 
-                System.err.println( sc + " " + tc );
-
                 // minimum of: cell directly above + 1, the cell to the left + 1 and the cell above to the left + cost.
                 int p = mat[row - 1][col] + 1; // above
                 int q = mat[row][col - 1] + 1; // to the left
