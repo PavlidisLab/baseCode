@@ -564,6 +564,7 @@ public class GeneAnnotations {
         if ( !geneSetActiveProbesCache.containsKey( geneSetId ) ) {
             Collection finalList = new HashSet();
             Collection probes = ( Collection ) geneSetToProbeMap.get( geneSetId );
+            if ( probes == null ) return finalList;
             for ( Iterator iter = probes.iterator(); iter.hasNext(); ) {
                 String probe = ( String ) iter.next();
                 if ( activeProbes.contains( probe ) ) {
