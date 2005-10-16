@@ -439,6 +439,7 @@ public class GeneAnnotations {
             return ( Collection ) geneSetToProbeMap.get( id );
         }
 
+        assert classToActiveProbeCache != null;
         if ( !classToActiveProbeCache.containsKey( id ) ) {
             Collection finalList = new HashSet();
             Collection startingList = ( Collection ) geneSetToProbeMap.get( id );
