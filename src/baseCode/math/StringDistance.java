@@ -55,7 +55,7 @@ public class StringDistance {
      * For a string s, let s(i) stand for its ith character. For two characters a and b, define r(a, b) = 0 if a = b.
      * Let r(a, b) = 1, otherwise.
      * <p>
-     * Assume we are given two strings s and t of length n and m, respectively. We are going to fill an (n+1)×(m+1)
+     * Assume we are given two strings s and t of length n and m, respectively. We are going to fill an (n+1) x (m+1)
      * array d with integers such that the low right corner element d(n+1, m+1) will furnish the required values of the
      * Levenshtein distance L(s, t).
      * <p>
@@ -68,7 +68,7 @@ public class StringDistance {
      * b. The cell immediately to the left plus 1: d[i,j-1] + 1.<br>
      * c. The cell diagonally above and to the left plus the cost: d[i-1,j-1] + cost.<br>
      * <p>
-     * (Description cribbed from http://www.cut-the-knot.org/do_you_know/Strings.shtml and
+     * (Description partly cribbed from http://www.cut-the-knot.org/do_you_know/Strings.shtml and
      * http://www.merriampark.com/ld.htm)
      * </p>
      * 
