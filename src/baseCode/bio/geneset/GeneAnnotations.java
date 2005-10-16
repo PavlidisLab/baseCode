@@ -193,10 +193,10 @@ public class GeneAnnotations {
     private void activeProbesDirty() {
         genesForActiveProbesCache = null;
         activeGeneSetCache = null;
-        geneToActiveProbesCache.clear();
-        classToActiveProbeCache.clear();
-        geneSetActiveGenesCache.clear();
-        geneSetActiveProbesCache.clear();
+        if ( geneToActiveProbesCache != null ) geneToActiveProbesCache.clear();
+        if ( classToActiveProbeCache != null ) classToActiveProbeCache.clear();
+        if ( geneSetActiveGenesCache != null ) geneSetActiveGenesCache.clear();
+        if ( geneSetActiveProbesCache != null ) geneSetActiveProbesCache.clear();
     }
 
     /**
