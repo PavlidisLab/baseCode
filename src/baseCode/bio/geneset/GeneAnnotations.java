@@ -121,15 +121,15 @@ public class GeneAnnotations {
 
     private Collection activeProbes = null;
 
-    private Map classToActiveProbeCache;
+    private Map classToActiveProbeCache = new HashMap();
 
     private Collection genesForActiveProbesCache;
 
-    private Map geneToActiveProbesCache;
+    private Map geneToActiveProbesCache = new HashMap();
 
-    private Map geneSetActiveGenesCache;
+    private Map geneSetActiveGenesCache = new HashMap();
 
-    private Map geneSetActiveProbesCache;
+    private Map geneSetActiveProbesCache = new HashMap();
 
     private Collection activeGeneSetCache;
 
