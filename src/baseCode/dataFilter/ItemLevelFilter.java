@@ -7,7 +7,7 @@ import baseCode.dataStructure.matrix.NamedMatrix;
 /**
  * Filter that removes individual values that are outside of a range. Removed values are set to NaN.
  * <p>
- * Copyright (c) 2004 Columbia University
+ * Copyright (c) 2006 University of British Columbia
  * 
  * @author Pavlidis
  * @version $Id$

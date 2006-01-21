@@ -1,7 +1,7 @@
 /*
  * The baseCode project
  * 
- * Copyright (c) 2005 Columbia University
+ * Copyright (c) 2006 University of British Columbia
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,7 +28,7 @@ import java.util.Map;
 
 /**
  * <p>
- * Copyright (c) 2004 Columbia University
+ * Copyright (c) 2006 University of British Columbia
  * 
  * @author pavlidis
  * @version $Id$

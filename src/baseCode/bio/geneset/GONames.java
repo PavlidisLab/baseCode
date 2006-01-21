@@ -1,7 +1,7 @@
 /*
  * The baseCode project
  * 
- * Copyright (c) 2005 Columbia University
+ * Copyright (c) 2006 University of British Columbia
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -44,7 +44,7 @@ import baseCode.xml.GOParser;
 /**
  * Read data from GO XML file, store in easy-to-use data structure.
  * <p>
- * Copyright (c) 2004 Columbia University
+ * Copyright (c) 2006 University of British Columbia
  * 
  * @author Paul Pavlidis
  * @author Homin Lee

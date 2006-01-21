@@ -3,7 +3,7 @@ package baseCode.dataStructure.tree;
 /**
  * <hr>
  * <p>
- * Copyright (c) 2004 Columbia University
+ * Copyright (c) 2006 University of British Columbia
  * 
  * @author Paul Pavlidis
  * @version $Id$

@@ -27,23 +27,11 @@ import corejava.Format;
 
 /**
  * A matrix of doubles that knows about row and column names.
- * </p>
- * <p>
- * Copyright (c) 2004
- * </p>
- * <p>
- * Columbia University
- * </p>
  * 
  * @author Paul Pavlidis
  * @version $Id$
  */
 public class DenseDoubleMatrix2DNamed extends DoubleMatrixNamed {
-
-    /**
-     * Value used to compare values in equals. This is used largely for testing and sanity checking.
-     */
-    private static final double TOLERANCE = 0.0001;
 
     private DenseDoubleMatrix2D matrix;
 

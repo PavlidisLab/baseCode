@@ -10,7 +10,7 @@ import baseCode.dataStructure.matrix.NamedMatrix;
 /**
  * Base implementation of the filter class. Subclasses must implement the filter() method.
  * <p>
- * Copyright (c) 2004 Columbia University
+ * Copyright (c) 2006 University of British Columbia
  * </p>
  * 
  * @author Paul Pavlidis

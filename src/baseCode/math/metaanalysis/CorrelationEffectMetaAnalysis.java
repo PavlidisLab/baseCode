@@ -11,7 +11,7 @@ import cern.jet.stat.Probability;
  * correlations.
  * <hr>
  * <p>
- * Copyright (c) 2004 Columbia University
+ * Copyright (c) 2006 University of British Columbia
  * 
  * @author pavlidis
  * @version $Id$

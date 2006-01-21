@@ -9,7 +9,7 @@ import cern.colt.list.DoubleArrayList;
  * 
  * <hr>
  * <p>
- * Copyright (c) 2004 Columbia University
+ * Copyright (c) 2006 University of British Columbia
  * 
  * @author pavlidis
  * @version $Id$

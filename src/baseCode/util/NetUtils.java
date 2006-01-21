@@ -34,10 +34,6 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
 /**
- * <hr>
- * <p>
- * Copyright (c) 2004-2005 Columbia University
- * 
  * @author pavlidis
  * @version $Id$
  */
@@ -115,7 +111,7 @@ public class NetUtils {
      */
     public static long checkForFile( FTPClient f, String seekFile ) throws IOException {
         FTPFile[] allfilesInGroup = f.listFiles( seekFile );
-        if ( allfilesInGroup.length == 0 ) {
+        if ( allfilesInGroup == null || allfilesInGroup.length == 0 ) {
             throw new FileNotFoundException( "File " + seekFile + " does not seem to exist on the remote host" );
         }
         return allfilesInGroup[0].getSize();
