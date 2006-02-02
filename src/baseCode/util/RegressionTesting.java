@@ -1,3 +1,23 @@
+/*
+ * The baseCode project
+ * 
+ * Copyright (c) 2006 University of British Columbia
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ */
 package baseCode.util;
 
 import java.io.BufferedReader;
@@ -11,17 +31,16 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.util.Collection;
-import java.util.Vector;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
 
 import baseCode.dataStructure.matrix.DoubleMatrixNamed;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix2D;
 
 /**
- * Tools to help make regression testing easier.
- * <hr>
- * <p>
- * Copyright (c) 2006 University of British Columbia
+ * Tools to help make regression testing easier, but also useful for other purposes.
  * 
  * @author pavlidis
  * @version $Id$
@@ -131,6 +150,27 @@ public class RegressionTesting {
     }
 
     /**
+     * Test whether two lists contain the same items in the <em>same</em> order
+     * 
+     * @param a
+     * @param b
+     * @return
+     */
+    public static boolean containsSame( List a, List b ) {
+        if ( a.size() != b.size() ) return false;
+
+        Iterator ita = a.iterator();
+        for ( Iterator iter = b.iterator(); iter.hasNext(); ) {
+            Object elb = iter.next();
+            Object ela = ita.next();
+            if ( !ela.equals( elb ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Test whether two double arrays contain the same items in any order (tolerance is ZERO)
      * 
      * @param a
@@ -140,8 +180,8 @@ public class RegressionTesting {
     public static boolean containsSame( double[] a, double[] b ) {
         if ( a.length != b.length ) return false;
 
-        Vector av = new Vector( a.length );
-        Vector bv = new Vector( b.length );
+        ArrayList av = new ArrayList( a.length );
+        ArrayList bv = new ArrayList( b.length );
         for ( int i = 0; i < b.length; i++ ) {
             av.add( new Double( a[i] ) );
             bv.add( new Double( b[i] ) );
@@ -151,8 +191,8 @@ public class RegressionTesting {
     }
 
     /**
-     * Test whether two object arrays contain the same items. The arrays are treated as Sets - repeats are not
-     * considered.
+     * Test whether two object arrays contain the same items in any order. The arrays are treated as Sets - repeats are
+     * not considered.
      * 
      * @param a
      * @param b
@@ -161,8 +201,8 @@ public class RegressionTesting {
     public static boolean containsSame( Object[] a, Object[] b ) {
         if ( a.length != b.length ) return false;
 
-        Vector av = new Vector( a.length );
-        Vector bv = new Vector( b.length );
+        ArrayList av = new ArrayList( a.length );
+        ArrayList bv = new ArrayList( b.length );
 
         for ( int i = 0; i < b.length; i++ ) {
             av.add( a[i] );
