@@ -150,27 +150,6 @@ public class RegressionTesting {
     }
 
     /**
-     * Test whether two lists contain the same items in the <em>same</em> order
-     * 
-     * @param a
-     * @param b
-     * @return
-     */
-    public static boolean containsSame( List a, List b ) {
-        if ( a.size() != b.size() ) return false;
-
-        Iterator ita = a.iterator();
-        for ( Iterator iter = b.iterator(); iter.hasNext(); ) {
-            Object elb = iter.next();
-            Object ela = ita.next();
-            if ( !ela.equals( elb ) ) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
      * Test whether two double arrays contain the same items in any order (tolerance is ZERO)
      * 
      * @param a
