@@ -21,6 +21,7 @@ public class TestGeneAnnotations extends TestCase {
 
     InputStream is;
     InputStream im;
+    InputStream imb;
     List probes;
     List geneIds;
     List goIds;
@@ -51,6 +52,7 @@ public class TestGeneAnnotations extends TestCase {
         // ( ( Collection ) goIds.get( 2 ) ).add( "2" );
         is = TestGeneAnnotations.class.getResourceAsStream( "/data/HG-U133_Plus_2_annot_sample.csv" );
         im = TestGeneAnnotations.class.getResourceAsStream( "/data/geneAnnotation.sample.txt" );
+        imb = TestGeneAnnotations.class.getResourceAsStream( "/data/geneAnnotation.sample-goidddelimittest.txt" );
         if ( is == null ) throw new IllegalStateException();
     }
 
@@ -95,8 +97,23 @@ public class TestGeneAnnotations extends TestCase {
         GeneAnnotations ga = new GeneAnnotations();
         ga.read( im, null );
         String actualValue = ga.getProbeDescription( "32304_at" );
-        String expectedValue = "protein kinase C, alpha";
+        String expectedValue = "protein kinase C alpha";
         assertEquals( expectedValue, actualValue );
     }
 
+    public void testReadPipeDelimited() throws Exception {
+        GeneAnnotations ga = new GeneAnnotations();
+        ga.read( im, null );
+        int actualValue = ( ( Collection ) ga.getProbeToGeneSetMap().get( "32304_at" ) ).size();
+        int expectedValue = 31;
+        assertEquals( expectedValue, actualValue );
+    }
+
+    public void testReadCommaDelimited() throws Exception {
+        GeneAnnotations ga = new GeneAnnotations();
+        ga.read( imb, null );
+        int actualValue = ( ( Collection ) ga.getProbeToGeneSetMap().get( "32304_at" ) ).size();
+        int expectedValue = 31;
+        assertEquals( expectedValue, actualValue );
+    }
 }

@@ -117,7 +117,7 @@ public class GeneAnnotations {
     private Map oldGeneSets;
     private int tick = 0;
 
-    private Pattern pipePattern = Pattern.compile( "\\|" );
+    private Pattern pipePattern = Pattern.compile( "\\s*[\\s\\|,]\\s*" );
 
     private Collection activeProbes = null;
 
