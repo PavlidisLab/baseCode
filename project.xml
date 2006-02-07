@@ -3,7 +3,7 @@
     <pomVersion>3</pomVersion>
     <id>baseCode</id>
     <groupId>baseCode</groupId>
-    <currentVersion>0.2.15</currentVersion>
+    <currentVersion>0.2.16</currentVersion>
     <organization>
         <name>Columbia University</name>
         <url>http://www.columbia.edu</url>
