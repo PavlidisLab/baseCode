@@ -97,7 +97,7 @@ public class TestGeneAnnotations extends TestCase {
         GeneAnnotations ga = new GeneAnnotations();
         ga.read( im, null );
         String actualValue = ga.getProbeDescription( "32304_at" );
-        String expectedValue = "protein kinase C alpha";
+        String expectedValue = "protein kinase C, alpha";
         assertEquals( expectedValue, actualValue );
     }
 
