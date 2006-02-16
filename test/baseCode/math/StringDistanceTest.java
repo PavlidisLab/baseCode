@@ -89,4 +89,13 @@ public class StringDistanceTest extends TestCase {
     public void testEditDistanceH() {
         assertEquals( 6, StringDistance.editDistance( "GAMBOL", "" ) );
     }
+
+    public void testBadMatch() {
+        String sa = "HCC1954Cy3vsHMECCy5r2; src: MDA-MB436 Breast Cancer cell line; src: Human Mammary Epithelial Cells";
+        String sb = "Normal Breast Epithelium Control replicate 2 133B; src: Human Mammary Epithelial Cells";
+        int distance = StringDistance.editDistance( sa, sb );
+        double normalizedDistance = ( double ) distance / Math.max( sa.length(), sb.length() );
+        assertEquals( 0.5208, normalizedDistance, 0.001 );
+    }
+
 }
