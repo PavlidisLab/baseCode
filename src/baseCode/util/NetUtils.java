@@ -31,7 +31,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPListParseEngine;
 import org.apache.commons.net.ftp.FTPReply;
+
+import sun.net.ftp.FtpProtocolException;
 
 /**
  * @author pavlidis
@@ -130,4 +133,22 @@ public class NetUtils {
             throws IOException, FileNotFoundException {
         return ftpDownloadFile( f, seekFile, new File( outputFileName ), force );
     }
+
+    /**
+     * Get the size of a remote file.
+     * 
+     * @param f FTPClient
+     * @param seekFile
+     * @return
+     * @throws IOException
+     */
+    public static long ftpFileSize( FTPClient f, String seekFile ) throws IOException {
+        FTPListParseEngine parse = f.initiateListParsing( seekFile );
+        FTPFile[] files = parse.getFiles();
+        if ( files.length > 0 ) {
+            return files[0].getSize();
+        }
+        throw new IllegalStateException( "Didn't get expected file information" );
+    }
+
 }
