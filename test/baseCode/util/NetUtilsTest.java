@@ -20,6 +20,7 @@
  */
 package baseCode.util;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
@@ -48,6 +49,23 @@ public class NetUtilsTest extends TestCase {
         long actualValue = NetUtils.ftpFileSize( f, "genomes/Pan_troglodytes/WGS_12Dec2003/WIBR.seq007.fa" );
         long expectedValue = 131446617;
         assertEquals( expectedValue, actualValue, 100000 ); // don't really care if they change the file size....
+    }
+
+    final public void testFtpFileSizeDoesntExist() throws Exception {
+        FTPClient f;
+        try {
+            f = NetUtils.connect( FTP.BINARY_FILE_TYPE, "ftp.ncbi.nlm.nih.gov", "anonymous", "paul@ubic.ca" );
+        } catch ( IOException ignore ) {
+            log.warn( "Could not connect to ftp.ncbi.nlm.nih.gov, skipping test" );
+            return;
+        }
+        try {
+            NetUtils.ftpFileSize( f, "genomes/Pan_trogl_____odytes/WGS_12Dec2003/WIBR.seq007.fa" );
+            fail( "Should have gotten a FileNotFoundException" );
+        } catch ( FileNotFoundException e ) {
+            // ok
+        }
+
     }
 
 }

@@ -34,8 +34,6 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPListParseEngine;
 import org.apache.commons.net.ftp.FTPReply;
 
-import sun.net.ftp.FtpProtocolException;
-
 /**
  * @author pavlidis
  * @version $Id$
@@ -145,10 +143,13 @@ public class NetUtils {
     public static long ftpFileSize( FTPClient f, String seekFile ) throws IOException {
         FTPListParseEngine parse = f.initiateListParsing( seekFile );
         FTPFile[] files = parse.getFiles();
-        if ( files.length > 0 ) {
+        if ( files.length == 1 ) {
             return files[0].getSize();
         }
-        throw new IllegalStateException( "Didn't get expected file information" );
+        if ( files.length == 0 ) {
+            throw new FileNotFoundException( "Didn't get expected file information for " + seekFile );
+        }
+        throw new IOException( files.length + " files found when expecting one" );
     }
 
 }
