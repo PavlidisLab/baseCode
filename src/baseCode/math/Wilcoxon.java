@@ -1,7 +1,7 @@
 /*
  * The baseCode project
  * 
- * Copyright (c) 2005 Columbia University
+ * Copyright (c) 2006 University of British Columbia
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,8 +39,6 @@ import cern.jet.stat.Probability;
  * Note that in the Catmap code, zero-based ranks are used, but these are converted to one-based before computation of
  * pvalues. Therefore this code uses one-based ranks throughout.
  * <hr>
- * <p>
- * Copyright (c) 2004-2005 Columbia University
  * 
  * @author pavlidis
  * @version Id

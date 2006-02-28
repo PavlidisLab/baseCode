@@ -1,7 +1,7 @@
 /*
  * The baseCode project
  * 
- * Copyright (c) 2005 Columbia University
+ * Copyright (c) 2006 University of British Columbia
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,10 +29,6 @@ import baseCode.io.reader.DoubleMatrixReader;
 import baseCode.util.RegressionTesting;
 
 /**
- * <hr>
- * <p>
- * Copyright (c) 2004 Columbia University
- * 
  * @author pavlidis
  * @version $Id$
  */
@@ -63,19 +59,19 @@ public class TestMatrixStats extends TestCase {
         testdatahuge = null;
     }
 
-    public final void testMin() {
+    public final void testMin() throws Exception {
         double expectedReturn = -965.3;
         double actualReturn = MatrixStats.min( testdata );
         assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
     }
 
-    public final void testMax() {
+    public final void testMax() throws Exception {
         double expectedReturn = 44625.7;
         double actualReturn = MatrixStats.max( testdata );
         assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
     }
 
-    public final void testCorrelationMatrix() {
+    public final void testCorrelationMatrix() throws Exception {
         DoubleMatrixNamed actualReturn = MatrixStats.correlationMatrix( testdata );
         DoubleMatrixReader f = new DoubleMatrixReader();
         DoubleMatrixNamed expectedReturn = null;
@@ -88,7 +84,7 @@ public class TestMatrixStats extends TestCase {
         assertEquals( true, RegressionTesting.closeEnough( expectedReturn, actualReturn, 0.001 ) );
     }
 
-    public final void testRbfNormalize() {
+    public final void testRbfNormalize() throws Exception {
         MatrixStats.rbfNormalize( testdata, 100 );
 
         // System.err.println(testdata);
