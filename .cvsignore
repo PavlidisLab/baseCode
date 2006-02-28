@@ -38,3 +38,4 @@ javadoc.xml
 junit*.properties
 .hibernateSynchronizer
 .xdoclet
+surefire*
