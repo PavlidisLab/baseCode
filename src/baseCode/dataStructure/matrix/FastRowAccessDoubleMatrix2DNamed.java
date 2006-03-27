@@ -28,9 +28,6 @@ import cern.colt.matrix.DoubleMatrix1D;
  * <p>
  * Implementation note: The key difference between this and the DenseDouble2DMatrixNamed is that this delegates to a
  * DoubleArrayList[], while DenseDouble2DMatrixNamed delegates to a DenseDoubleMatrix2D.
- * <hr>
- * <p>
- * Copyright (c) 2004-2005 Columbia University
  * 
  * @author pavlidis
  * @version $Id$
@@ -193,6 +190,19 @@ public class FastRowAccessDoubleMatrix2DNamed extends DoubleMatrixNamed {
      */
     public void setQuick( int j, int i, double c ) {
         data[j].set( i, c );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see baseCode.dataStructure.matrix.DoubleMatrixNamed#getColumn(int)
+     */
+    public double[] getColumn( int col ) {
+        double[] result = new double[rows()];
+        for ( int i = 0; i < rows(); i++ ) {
+            result[i] = get( i, col );
+        }
+        return result;
     }
 
 }

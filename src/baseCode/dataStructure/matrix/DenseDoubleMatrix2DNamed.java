@@ -273,4 +273,17 @@ public class DenseDoubleMatrix2DNamed extends DoubleMatrixNamed {
         return new DoubleArrayList( getRow( i ) );
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see baseCode.dataStructure.matrix.DoubleMatrixNamed#getColumn(int)
+     */
+    public double[] getColumn( int col ) {
+        double[] result = new double[rows()];
+        for ( int i = 0; i < rows(); i++ ) {
+            result[i] = get( i, col );
+        }
+        return result;
+    }
+
 }

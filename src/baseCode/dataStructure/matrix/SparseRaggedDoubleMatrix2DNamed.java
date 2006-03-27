@@ -10,9 +10,6 @@ import cern.colt.matrix.DoubleMatrix1D;
 
 /**
  * A sparse matrix class where the rows are ragged and compressed.
- * <hr>
- * <p>
- * Copyright (c) 2004 Columbia University
  * 
  * @author pavlidis
  * @version $Id$
@@ -239,6 +236,19 @@ public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed {
      */
     public void setQuick( int j, int i, double c ) {
         ( ( DoubleMatrix1D ) matrix.get( i ) ).set( j, c );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see baseCode.dataStructure.matrix.DoubleMatrixNamed#getColumn(int)
+     */
+    public double[] getColumn( int col ) {
+        double[] result = new double[rows()];
+        for ( int i = 0; i < rows(); i++ ) {
+            result[i] = get( i, col );
+        }
+        return result;
     }
 
 }

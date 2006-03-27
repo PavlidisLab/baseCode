@@ -28,9 +28,6 @@ import cern.colt.matrix.DoubleMatrix1D;
 
 /**
  * Abstract base class for 2D matrices of double values with named columns and rows.
- * <hr>
- * <p>
- * Copyright (c) 2004 Columbia University
  * 
  * @author pavlidis
  * @version $Id$
@@ -83,6 +80,8 @@ public abstract class DoubleMatrixNamed extends AbstractNamedMatrix {
 
     public abstract double[] getRow( int i );
 
+    public abstract double[] getColumn( int i );
+
     public abstract DoubleArrayList getRowArrayList( int i );
 
     public abstract double get( int x, int y );
@@ -108,6 +107,14 @@ public abstract class DoubleMatrixNamed extends AbstractNamedMatrix {
      */
     public double[] getRowByName( String s ) {
         return getRow( getRowIndexByName( s ) );
+    }
+
+    /**
+     * @param s String
+     * @return double[]
+     */
+    public double[] getColumnByName( String s ) {
+        return getColumn( getColIndexByName( s ) );
     }
 
     /**
