@@ -1,33 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <name>baseCode</name>
     <groupId>baseCode</groupId>
     <artifactId>baseCode</artifactId>
-    <version>0.2.17-SNAPSHOT</version>
+    <version>0.2.2</version>
     <inceptionYear>2003</inceptionYear>
-    <description>Data structures, math and statistics tools, and utilities that are often needed across projects.</description>
+    <description>
+        Data structures, math and statistics tools, and utilities that are often needed across
+        projects.
+    </description>
     <organization>
         <name>UBC Bioinformatics Centre</name>
         <url>http://bioinformatics.ubc.ca/</url>
     </organization>
     <packaging>jar</packaging>
     <scm>
-        <connection>scm:cvs:ext:${maven.username}@adgate.cu-genome.org:/fsnode/projects/cvs/pavlab:baseCode</connection>
+        <connection>scm:cvs:ext:paul@luria.cmmt.ubc.ca:/raid/cvs/pavlidis:baseCode</connection>
+        <developerConnection>
+            scm:cvs:ext:paul@luria.cmmt.ubc.ca:/raid/cvs/pavlidis:baseCode
+        </developerConnection>
     </scm>
     <issueManagement>
         <system>Bugzilla</system>
-        <url>http://microarray.cu-genome.org/bugzilla/buglist.cgi?cmdtype=runnamed&amp;namedcmd=baseCode</url>
+        <url>http://benzer.ubc.ca/bugzilla/buglist.cgi?cmdtype=runnamed&amp;namedcmd=baseCode</url>
     </issueManagement>
     <ciManagement>
-        <system>Cruise Control</system>
-        <url />
-        <notifiers />
+        <system>continuum</system>
+        <url>http://benzer.ubic.ca:8081/continuum/</url>
+        <notifiers>
+            <notifier>
+                <type>mail</type>
+                <sendOnError>true</sendOnError>
+                <sendOnFailure>true</sendOnFailure>
+                <sendOnSuccess>true</sendOnSuccess>
+                <sendOnWarning>true</sendOnWarning>
+                <configuration>
+                    <address>paul@bioinformatics.ubc.ca</address>
+                </configuration>
+            </notifier>
+        </notifiers>
     </ciManagement>
     <licenses>
         <license>
-            <name>LGPL</name>
+            <name>GPL</name>
         </license>
     </licenses>
     <developers>
@@ -38,32 +56,6 @@
             <organization>University of British Columbia</organization>
         </developer>
     </developers>
-    <repositories>
-        <repository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <id>central</id>
-            <name>Maven Repository Switchboard</name>
-            <url>http://repo1.maven.org/maven2</url>
-        </repository>
-        <repository>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <id>apache.snapshots</id>
-            <name>Apache Development Repository</name>
-            <url>http://cvs.apache.org/maven-snapshot-repository</url>
-        </repository>
-        <repository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <id>local</id>
-            <name>PavLab repository</name>
-            <url>http://microarray.cu-genome.org/maven2</url>
-        </repository>
-    </repositories>
     <pluginRepositories>
         <pluginRepository>
             <releases>
@@ -286,4 +278,16 @@
         </plugin>
         </plugins>
         </reporting> -->
+    <distributionManagement>
+        <repository>
+            <id>repo</id>
+            <name>Benzer</name>
+            <url>scp://benzer.ubic.ca:/disk2/WWW/proj/pavlidis/maven2</url>
+        </repository>
+        <snapshotRepository>
+            <id>repo</id>
+            <name>Benzer</name>
+            <url>scp://benzer.ubic.ca:/disk2/WWW/proj/pavlidis/maven2</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
