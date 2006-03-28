@@ -1,3 +1,21 @@
+/*
+ * The baseCode project
+ * 
+ * Copyright (c) 2006 University of British Columbia
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package ubic.basecode.io;
 
 import java.io.BufferedReader;
@@ -6,10 +24,9 @@ import java.util.zip.ZipInputStream;
 
 import junit.framework.TestCase;
 
-//import javax.sql.rowset.serial;
-
 /**
- * $Id$
+ * @version $Id$
+ * @author pavlidsi
  */
 public class TestByteArrayConverter extends TestCase {
     ByteArrayConverter bac;
@@ -97,7 +114,7 @@ public class TestByteArrayConverter extends TestCase {
      * 
      *
      */
-    public void testDoubleArrayToBytes() {
+    public void testDoubleArrayToBytes() throws Exception {
         byte[] actualReturn = bac.doubleArrayToBytes( testD );
         byte[] expectedValue = expectedBfD;
         for ( int i = 0; i < expectedValue.length; i++ ) {
@@ -109,7 +126,7 @@ public class TestByteArrayConverter extends TestCase {
      * 
      *
      */
-    public void testByteArrayToDoubles() {
+    public void testByteArrayToDoubles() throws Exception {
         double[] actualReturn = bac.byteArrayToDoubles( bac.doubleArrayToBytes( testD ) );
         double[] expectedValue = testD;
         for ( int i = 0; i < actualReturn.length; i++ ) {
@@ -118,23 +135,23 @@ public class TestByteArrayConverter extends TestCase {
     }
 
     // test blob -> double[]
-    public void testByteArrayToDoubleConversionSpeed() {
+    public void testByteArrayToDoubleConversionSpeed() throws Exception {
         byte[] lottaBytes = bac.doubleArrayToBytes( wholeBunchOfDoubles );
         bac.byteArrayToDoubles( lottaBytes );
     }
 
     // test string -> double[]
-    public void testStringToDoubleArrayConversionSpeed() {
+    public void testStringToDoubleArrayConversionSpeed() throws Exception {
         sc.stringToDoubles( longDoubleString );
     }
 
     // test double[] -> blob.
-    public void testDoubleArrayToByteArrayConversionSpeed() {
+    public void testDoubleArrayToByteArrayConversionSpeed() throws Exception {
         bac.doubleArrayToBytes( wholeBunchOfDoubles );
     }
 
     // test double[] -> delimited string.
-    public void testDoubleArrayToDelimitedStringConversionSpeed() {
+    public void testDoubleArrayToDelimitedStringConversionSpeed() throws Exception {
         sc.doubleArrayToString( wholeBunchOfDoubles );
     }
 

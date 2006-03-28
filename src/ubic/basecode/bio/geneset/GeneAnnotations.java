@@ -1494,7 +1494,7 @@ public class GeneAnnotations {
                 throw new CancellationException();
             }
 
-            String[] fields = StringUtil.csvSplit( numFields, line );
+            String[] fields = StringUtil.csvSplit( line );
             if ( fields.length < probeIndex + 1 || fields.length < geneSymbolIndex + 1 ) {
                 continue; // skip lines that don't meet criteria.
             }

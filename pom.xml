@@ -45,7 +45,9 @@
     </ciManagement>
     <licenses>
         <license>
-            <name>GPL</name>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
         </license>
     </licenses>
     <developers>
@@ -56,36 +58,6 @@
             <organization>University of British Columbia</organization>
         </developer>
     </developers>
-    <pluginRepositories>
-        <pluginRepository>
-            <releases>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>central</id>
-            <name>Maven Plugin Repository</name>
-            <url>http://repo1.maven.org/maven2</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>mojo</id>
-            <name>Mojo</name>
-            <url>http://snapshots.maven.codehaus.org/maven2/</url>
-            <layout>default</layout>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <id>apache.snapshots</id>
-            <name>Apache Development Repository</name>
-            <url>http://cvs.apache.org/maven-snapshot-repository</url>
-        </pluginRepository>
-    </pluginRepositories>
     <dependencies>
         <dependency>
             <groupId>colt</groupId>
@@ -120,12 +92,6 @@
             <groupId>hb</groupId>
             <artifactId>hb</artifactId>
             <version>beta2</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>ostermiller</groupId>
-            <artifactId>ostermillerutils</artifactId>
-            <version>1.04.03</version>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -204,9 +170,10 @@
             <testResource>
                 <directory>test</directory>
                 <includes>
-                    <include>**/data/*.txt</include>
-                    <include>**/data/*.xml</include>
-                    <include>**/data/*.csv</include>
+                    <include>**/*.txt</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.csv</include>
+                    <include>**/*.zip</include>
                 </includes>
                 <filtering>false</filtering>
             </testResource>
