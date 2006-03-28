@@ -1,17 +1,30 @@
+/*
+ * The baseCode project
+ * 
+ * Copyright (c) 2006 University of British Columbia
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package ubic.basecode.util;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.io.StringReader;
 
-import org.apache.commons.lang.ArrayUtils;
-
-import com.Ostermiller.util.CSVParser;
+import org.apache.commons.lang.StringUtils;
+import au.com.bytecode.opencsv.CSVReader;
 
 /**
- * <hr>
- * <p>
- * Copyright (c) 2004-2005 Columbia University
- * 
  * @author pavlidis
  * @version $Id$
  */
@@ -22,9 +35,15 @@ public class StringUtil {
      * @param line
      * @return
      */
-    public static String[] csvSplit( int numFields, String line ) {
-        String[][] parsedFields = CSVParser.parse( line );
-        return parsedFields[0];
+    public static String[] csvSplit( String line ) {
+
+        CSVReader reader = new CSVReader( new StringReader( line ) );
+
+        try {
+            return reader.readNext();
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     /**
@@ -103,48 +122,12 @@ public class StringUtil {
     }
 
     /**
-     * Borrowed from apache commons-lang-2.1, which clashes with something in our build environment (this is
-     * "splitworker")
-     * 
      * @param str the String to parse, may be <code>null</code>
      * @param separatorChar the separate character
-     * @param preserveAllTokens if <code>true</code>, adjacent separators are treated as empty token separators; if
-     *        <code>false</code>, adjacent separators are treated as one separator.
      * @return an array of parsed Strings, <code>null</code> if null String input
      */
     public static String[] splitPreserveAllTokens( String str, char separatorChar ) {
-        boolean preserveAllTokens = true;
-        // Performance tuned for 2.0 (JDK1.4)
 
-        if ( str == null ) {
-            return null;
-        }
-        int len = str.length();
-        if ( len == 0 ) {
-            return ArrayUtils.EMPTY_STRING_ARRAY;
-        }
-        List list = new ArrayList();
-        int i = 0, start = 0;
-        boolean match = false;
-        boolean lastMatch = false;
-        while ( i < len ) {
-            if ( str.charAt( i ) == separatorChar ) {
-                if ( match || preserveAllTokens ) {
-                    list.add( str.substring( start, i ) );
-                    match = false;
-                    lastMatch = true;
-                }
-                start = ++i;
-                continue;
-            }
-            lastMatch = false;
-
-            match = true;
-            i++;
-        }
-        if ( match || ( preserveAllTokens && lastMatch ) ) {
-            list.add( str.substring( start, i ) );
-        }
-        return ( String[] ) list.toArray( new String[list.size()] );
+        return StringUtils.splitPreserveAllTokens( str, separatorChar );
     }
 }
