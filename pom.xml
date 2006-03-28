@@ -26,7 +26,9 @@
     </scm>
     <issueManagement>
         <system>Bugzilla</system>
-        <url>http://benzer.ubic.ca/bugzilla/buglist.cgi?product=baseCode&amp;bug_status=__open__</url>
+        <url>
+            http://benzer.ubic.ca/bugzilla/buglist.cgi?product=baseCode&amp;bug_status=__open__
+        </url>
     </issueManagement>
     <ciManagement>
         <system>continuum</system>
@@ -258,6 +260,11 @@
         </plugins>
     </reporting>
     <distributionManagement>
+        <site>
+            <id>benzer</id>
+            <name>benzer</name>
+            <url>file:///disk2/WWW/proj/pavlidis/projectpages/basecode/devsite</url>
+        </site>
         <repository>
             <id>repo</id>
             <name>Benzer</name>
