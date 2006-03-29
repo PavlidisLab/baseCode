@@ -1,3 +1,21 @@
+/*
+ * The baseCode project
+ * 
+ * Copyright (c) 2006 University of British Columbia
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package ubic.basecode.io.reader;
 
 import java.io.BufferedReader;
@@ -27,10 +45,6 @@ import com.braju.beta.lang.IntegerVariable;
 import com.braju.beta.lang.NumberVariable;
 
 /**
- * <hr>
- * <p>
- * Copyright (c) 2004 Columbia University
- * 
  * @author pavlidis
  * @version $Id$
  */
@@ -75,13 +89,13 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
      * Read a sparse matrix in "JW" (Jason Weston) format. The format is like this:
      * 
      * <pre>
-     *                        2          &lt;--- number of items - the first line of the file only. NOTE - this line is often blank or not present.
-     *                        1 2        &lt;--- items 1 has 2 edges
-     *                        1 2        &lt;--- edge indices are to items 1 &amp; 2
-     *                        0.1 100    &lt;--- with the following weights
-     *                        2 2        &lt;--- items 2 also has 2 edges
-     *                        1 2        &lt;--- edge indices are also to items 1 &amp; 2 (fully connected)
-     *                        100 0.1    &lt;--- with the following weights
+     *                         2          &lt;--- number of items - the first line of the file only. NOTE - this line is often blank or not present.
+     *                         1 2        &lt;--- items 1 has 2 edges
+     *                         1 2        &lt;--- edge indices are to items 1 &amp; 2
+     *                         0.1 100    &lt;--- with the following weights
+     *                         2 2        &lt;--- items 2 also has 2 edges
+     *                         1 2        &lt;--- edge indices are also to items 1 &amp; 2 (fully connected)
+     *                         100 0.1    &lt;--- with the following weights
      * </pre>
      * 
      * <p>
@@ -152,10 +166,10 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
      * Read a sparse matrix that is expressed as an adjacency list in a tab-delimited file:
      * 
      * <pre>
-     *     
-     *       item1 item2 weight
-     *       item1 item5 weight
      *      
+     *        item1 item2 weight
+     *        item1 item5 weight
+     *       
      * </pre>
      * 
      * <p>

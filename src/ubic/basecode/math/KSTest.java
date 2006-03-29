@@ -1,21 +1,19 @@
 /*
- * The basecode project
+ * The baseCode project
  * 
- * Copyright (c) 2005 Columbia University
+ * Copyright (c) 2006 University of British Columbia
  * 
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 package ubic.basecode.math;
@@ -27,9 +25,6 @@ import cern.jet.stat.Descriptive;
 
 /**
  * Class to perform the Kolmogorov-Smirnov test. Ported from R.
- * <hr>
- * <p>
- * Copyright (c) 2004 Columbia University
  * 
  * @author pavlidis
  * @version $Id$
@@ -42,8 +37,6 @@ public class KSTest {
         if ( ny < 1 || nx < 1 ) {
             throw new IllegalStateException( "Can't do test" );
         }
-
-        double n = nx * ny / ( nx + ny );
 
         DoubleArrayList w = new DoubleArrayList( x.elements() );
         w.addAllOf( y );
@@ -117,15 +110,15 @@ public class KSTest {
      * From R code.
      * 
      * <pre>
-     * 
-     *  
-     *      Compute
-     *                     \sum_{k=-\infty}&circ;\infty (-1)&circ;k e&circ;{-2 k&circ;2 x&circ;2}
-     *                     = 1 + 2 \sum_{k=1}&circ;\infty (-1)&circ;k e&circ;{-2 k&circ;2 x&circ;2}
-     *                     = \sqrt{2\pi/x} \sum_{k=1}&circ;\infty \exp(-(2k-1)&circ;2\pi&circ;2/(8x&circ;2))
-     *  
      *   
-     *  
+     *    
+     *        Compute
+     *                       \sum_{k=-\infty}&circ;\infty (-1)&circ;k e&circ;{-2 k&circ;2 x&circ;2}
+     *                       = 1 + 2 \sum_{k=1}&circ;\infty (-1)&circ;k e&circ;{-2 k&circ;2 x&circ;2}
+     *                       = \sqrt{2\pi/x} \sum_{k=1}&circ;\infty \exp(-(2k-1)&circ;2\pi&circ;2/(8x&circ;2))
+     *    
+     *     
+     *    
      * </pre>
      * 
      * <p>

@@ -1,3 +1,21 @@
+/*
+ * The baseCode project
+ * 
+ * Copyright (c) 2006 University of British Columbia
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package ubic.basecode.io.reader;
 
 import java.io.BufferedReader;
@@ -15,121 +33,115 @@ import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
 
 /**
  * Reader for {@link basecode.dataStructure.matrix.StringMatrix2DNamed}
- * <p>
- * Copyright (c) 2004
- * </p>
- * <p>
- * Institution:: Columbia University
- * </p>
  * 
  * @author Paul Pavlidis
  * @version $Id$
  */
 public class StringMatrixReader extends AbstractNamedMatrixReader {
 
-   public NamedMatrix read( String filename ) throws IOException {
-      File infile = new File( filename );
-      if ( !infile.exists() || !infile.canRead() ) {
-         throw new IllegalArgumentException( "Could not read from " + filename );
-      }
-      FileInputStream stream = new FileInputStream( infile );
-      return read( stream );
-   }
+    public NamedMatrix read( String filename ) throws IOException {
+        File infile = new File( filename );
+        if ( !infile.exists() || !infile.canRead() ) {
+            throw new IllegalArgumentException( "Could not read from " + filename );
+        }
+        FileInputStream stream = new FileInputStream( infile );
+        return read( stream );
+    }
 
-   /**
-    * Missing values are entered as an empty string.
-    * 
-    * @param stream InputStream
-    * @return NamedMatrix
-    * @throws IOException
-    */
-   public NamedMatrix read( InputStream stream ) throws IOException {
-      StringMatrix2DNamed matrix = null;
-      List MTemp = new Vector();
-      List rowNames = new Vector();
-      List columnNames;
-      BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
-      //    BufferedReader dis = new BufferedReader( new FileReader( filename ) );
-      int columnNumber = 0;
-      int rowNumber = 0;
-      String row;
+    /**
+     * Missing values are entered as an empty string.
+     * 
+     * @param stream InputStream
+     * @return NamedMatrix
+     * @throws IOException
+     */
+    public NamedMatrix read( InputStream stream ) throws IOException {
+        StringMatrix2DNamed matrix = null;
+        List MTemp = new Vector();
+        List rowNames = new Vector();
+        List columnNames;
+        BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
+        // BufferedReader dis = new BufferedReader( new FileReader( filename ) );
+        int columnNumber = 0;
+        int rowNumber = 0;
+        String row;
 
-      columnNames = readHeader( dis );
-      int numHeadings = columnNames.size();
+        columnNames = readHeader( dis );
+        int numHeadings = columnNames.size();
 
-      while ( ( row = dis.readLine() ) != null ) {
-         StringTokenizer st = new StringTokenizer( row, "\t", true );
-         Vector rowTemp = new Vector();
-         columnNumber = 0;
-         String previousToken = "";
+        while ( ( row = dis.readLine() ) != null ) {
+            StringTokenizer st = new StringTokenizer( row, "\t", true );
+            Vector rowTemp = new Vector();
+            columnNumber = 0;
+            String previousToken = "";
 
-         while ( st.hasMoreTokens() ) {
-            String s = st.nextToken();
+            while ( st.hasMoreTokens() ) {
+                String s = st.nextToken();
 
-            boolean missing = false;
+                boolean missing = false;
 
-            if ( s.compareTo( "\t" ) == 0 ) {
-               /* two tabs in a row */
-               if ( previousToken.compareTo( "\t" ) == 0 ) {
-                  missing = true;
-               } else if ( !st.hasMoreTokens() ) { // at end of line.
-                  missing = true;
-               } else {
-                  previousToken = s;
-                  continue;
-               }
+                if ( s.compareTo( "\t" ) == 0 ) {
+                    /* two tabs in a row */
+                    if ( previousToken.compareTo( "\t" ) == 0 ) {
+                        missing = true;
+                    } else if ( !st.hasMoreTokens() ) { // at end of line.
+                        missing = true;
+                    } else {
+                        previousToken = s;
+                        continue;
+                    }
+                }
+
+                if ( columnNumber > 0 ) {
+                    if ( missing ) {
+                        // rowTemp.add(Double.toString(Double.NaN));
+                        rowTemp.add( "" );
+                    } else {
+                        rowTemp.add( s );
+                    }
+                } else {
+                    if ( missing ) {
+                        throw new IOException( "Missing values not allowed for row labels" );
+                    }
+                    rowNames.add( s );
+                }
+
+                columnNumber++;
+                previousToken = s;
             }
-
-            if ( columnNumber > 0 ) {
-               if ( missing ) {
-                  //rowTemp.add(Double.toString(Double.NaN));
-                  rowTemp.add( "" );
-               } else {
-                  rowTemp.add( s );
-               }
-            } else {
-               if ( missing ) {
-                  throw new IOException(
-                        "Missing values not allowed for row labels" );
-               }
-               rowNames.add( s );
+            MTemp.add( rowTemp );
+            if ( rowTemp.size() > numHeadings ) {
+                throw new IOException( "Warning: too many values (" + rowTemp.size() + ") in row " + rowNumber
+                        + " (based on headings count of " + numHeadings + ")" );
             }
+            rowNumber++;
+        }
 
-            columnNumber++;
-            previousToken = s;
-         }
-         MTemp.add( rowTemp );
-         if ( rowTemp.size() > numHeadings ) {
-            throw new IOException( "Warning: too many values ("
-                  + rowTemp.size() + ") in row " + rowNumber
-                  + " (based on headings count of " + numHeadings + ")" );
-         }
-         rowNumber++;
-      }
+        matrix = new StringMatrix2DNamed( rowNumber, numHeadings );
+        matrix.setColumnNames( columnNames );
+        matrix.setRowNames( rowNames );
 
-      matrix = new StringMatrix2DNamed( rowNumber, numHeadings );
-      matrix.setColumnNames( columnNames );
-      matrix.setRowNames( rowNames );
-
-      for ( int i = 0; i < matrix.rows(); i++ ) {
-         for ( int j = 0; j < matrix.columns(); j++ ) {
-            if ( ( ( Vector ) MTemp.get( i ) ).size() < j + 1 ) {
-               matrix.set( i, j, "" );
-               // this allows the input file to have ragged ends.
-            } else {
-               matrix.set( i, j, ( ( Vector ) MTemp.get( i ) ).get( j ) );
+        for ( int i = 0; i < matrix.rows(); i++ ) {
+            for ( int j = 0; j < matrix.columns(); j++ ) {
+                if ( ( ( Vector ) MTemp.get( i ) ).size() < j + 1 ) {
+                    matrix.set( i, j, "" );
+                    // this allows the input file to have ragged ends.
+                } else {
+                    matrix.set( i, j, ( ( Vector ) MTemp.get( i ) ).get( j ) );
+                }
             }
-         }
-      }
-      stream.close();
-      return matrix;
+        }
+        stream.close();
+        return matrix;
 
-   }
+    }
 
-   /* (non-Javadoc)
-    * @see basecode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
-    */
-   public NamedMatrix readOneRow( BufferedReader dis ) throws IOException {
-     throw new UnsupportedOperationException();
-   }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
+     */
+    public NamedMatrix readOneRow( BufferedReader dis ) throws IOException {
+        throw new UnsupportedOperationException();
+    }
 }

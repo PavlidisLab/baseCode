@@ -1,4 +1,21 @@
-// package edu.stanford.ejalbert;
+/*
+ * The baseCode project
+ * 
+ * Copyright (c) 2006 University of British Columbia
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package ubic.basecode.util;
 
 import java.io.File;
@@ -117,11 +134,12 @@ public class BrowserLauncher {
     /** The kAnyTransactionID AppleEvent code */
     private static Integer kAnyTransactionID;
 
-    /** The linkage object required for JDirect 3 on Mac OS X. */
-    private static Object linkage;
+//    /** The linkage object required for JDirect 3 on Mac OS X. */
+//    private static Object linkage;
 
-    /** The framework to reference on Mac OS X */
-    private static final String JDirect_MacOSX = "/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/HIToolbox";
+    // /** The framework to reference on Mac OS X */
+    // private static final String JDirect_MacOSX =
+    // "/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/HIToolbox";
 
     /** JVM constant for MRJ 2.0 */
     private static final int MRJ_2_0 = 0;
@@ -310,28 +328,28 @@ public class BrowserLauncher {
                     return false;
                 }
                 break;
-            case MRJ_3_0:
-                try {
-                    Class linker = Class.forName( "com.apple.mrj.jdirect.Linker" );
-                    Constructor constructor = linker.getConstructor( new Class[] { Class.class } );
-                    linkage = constructor.newInstance( new Object[] { BrowserLauncher.class } );
-                } catch ( ClassNotFoundException cnfe ) {
-                    errorMessage = cnfe.getMessage();
-                    return false;
-                } catch ( NoSuchMethodException nsme ) {
-                    errorMessage = nsme.getMessage();
-                    return false;
-                } catch ( InvocationTargetException ite ) {
-                    errorMessage = ite.getMessage();
-                    return false;
-                } catch ( InstantiationException ie ) {
-                    errorMessage = ie.getMessage();
-                    return false;
-                } catch ( IllegalAccessException iae ) {
-                    errorMessage = iae.getMessage();
-                    return false;
-                }
-                break;
+//            case MRJ_3_0:
+//                try {
+//                    Class linker = Class.forName( "com.apple.mrj.jdirect.Linker" );
+//                    Constructor constructor = linker.getConstructor( new Class[] { Class.class } );
+//                    linkage = constructor.newInstance( new Object[] { BrowserLauncher.class } );
+//                } catch ( ClassNotFoundException cnfe ) {
+//                    errorMessage = cnfe.getMessage();
+//                    return false;
+//                } catch ( NoSuchMethodException nsme ) {
+//                    errorMessage = nsme.getMessage();
+//                    return false;
+//                } catch ( InvocationTargetException ite ) {
+//                    errorMessage = ite.getMessage();
+//                    return false;
+//                } catch ( InstantiationException ie ) {
+//                    errorMessage = ie.getMessage();
+//                    return false;
+//                } catch ( IllegalAccessException iae ) {
+//                    errorMessage = iae.getMessage();
+//                    return false;
+//                }
+//                break;
             case MRJ_3_1:
                 try {
                     mrjFileUtilsClass = Class.forName( "com.apple.mrj.MRJFileUtils" );

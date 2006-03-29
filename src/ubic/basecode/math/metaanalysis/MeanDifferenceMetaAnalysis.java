@@ -1,3 +1,21 @@
+/*
+ * The baseCode project
+ * 
+ * Copyright (c) 2006 University of British Columbia
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package ubic.basecode.math.metaanalysis;
 
 import cern.colt.list.DoubleArrayList;
@@ -16,160 +34,144 @@ import cern.jet.stat.Probability;
  * where X <sub>i </sub> <sup>t </sup> is the mean of the treatment group in the ith study, X <sub>i </sub> <sup>ct
  * </sup> is the mean of the control group in the treatment group in the ith study, and s <sub>i </sub> is the pooled
  * standard deviation of the two groups. Essentially this is a t statistic.
- * <hr>
- * <p>
- * Copyright (c) 2004 Columbia University
  * 
  * @author pavlidis
  * @version $Id$
  */
 public class MeanDifferenceMetaAnalysis extends MetaAnalysis {
 
-   private boolean fixed = true;
+    private boolean fixed = true;
 
-   private double z; // z score
-   private double p; // probability
-   private double q; // q-score;
-   private double e; // unconditional effect;
-   private double v; // unconditional variance;
-   private double n; // total sample size
-   private double bsv; // between-studies variance component;
+    private double z; // z score
+    private double p; // probability
+    private double q; // q-score;
+    private double e; // unconditional effect;
+    private double v; // unconditional variance;
+    private double n; // total sample size
+    private double bsv; // between-studies variance component;
 
-   /**
-    * @param b
-    */
-   public MeanDifferenceMetaAnalysis( boolean fixed ) {
-      this.fixed = fixed;
-   }
+    /**
+     * @param b
+     */
+    public MeanDifferenceMetaAnalysis( boolean fixed ) {
+        this.fixed = fixed;
+    }
 
-   public double run( DoubleArrayList effects, DoubleArrayList controlSizes,
-         DoubleArrayList testSizes ) {
-      DoubleArrayList weights;
-      DoubleArrayList conditionalVariances;
-      this.n = Descriptive.sum( controlSizes ) + Descriptive.sum( testSizes );
+    public double run( DoubleArrayList effects, DoubleArrayList controlSizes, DoubleArrayList testSizes ) {
+        DoubleArrayList weights;
+        DoubleArrayList conditionalVariances;
+        this.n = Descriptive.sum( controlSizes ) + Descriptive.sum( testSizes );
 
-      conditionalVariances = samplingVariances( effects, controlSizes, testSizes );
-      weights = metaFEWeights( conditionalVariances );
-      this.q = super.qStatistic( effects, conditionalVariances, super
-            .weightedMean( effects, weights ) );
+        conditionalVariances = samplingVariances( effects, controlSizes, testSizes );
+        weights = metaFEWeights( conditionalVariances );
+        this.q = super.qStatistic( effects, conditionalVariances, super.weightedMean( effects, weights ) );
 
-      if ( !fixed ) { // adjust the conditional variances and weights.
-         this.bsv = metaREVariance( effects, conditionalVariances, weights );
+        if ( !fixed ) { // adjust the conditional variances and weights.
+            this.bsv = metaREVariance( effects, conditionalVariances, weights );
 
-         for ( int i = 0; i < conditionalVariances.size(); i++ ) {
-            conditionalVariances.setQuick( i, conditionalVariances.getQuick( i )
-                  + bsv );
-         }
+            for ( int i = 0; i < conditionalVariances.size(); i++ ) {
+                conditionalVariances.setQuick( i, conditionalVariances.getQuick( i ) + bsv );
+            }
 
-         weights = metaFEWeights( conditionalVariances );
-      }
+            weights = metaFEWeights( conditionalVariances );
+        }
 
-      this.e = super.weightedMean( effects, weights );
-      this.v = super.metaVariance( conditionalVariances );
-      this.z = Math.abs( e ) / Math.sqrt( v );
-      this.p = Probability.errorFunctionComplemented( z );
-      return p;
-   }
-   
-   
-   /**
-    * 
-    * @param effects
-    * @param cvar Conditional variances.
-    * @return
-    */
-   public double run( DoubleArrayList effects, 
-         DoubleArrayList cvar ) {
-      DoubleArrayList weights;
-      DoubleArrayList conditionalVariances;
-   //   this.n = Descriptive.sum( controlSizes ) + Descriptive.sum( testSizes );
+        this.e = super.weightedMean( effects, weights );
+        this.v = super.metaVariance( conditionalVariances );
+        this.z = Math.abs( e ) / Math.sqrt( v );
+        this.p = Probability.errorFunctionComplemented( z );
+        return p;
+    }
 
-      conditionalVariances = cvar.copy();
-      weights = metaFEWeights( conditionalVariances );
-      this.q = super.qStatistic( effects, conditionalVariances, super
-            .weightedMean( effects, weights ) );
-      
-      if ( !fixed ) { // adjust the conditional variances and weights.
-         this.bsv = metaREVariance( effects, conditionalVariances, weights );
+    /**
+     * @param effects
+     * @param cvar Conditional variances.
+     * @return
+     */
+    public double run( DoubleArrayList effects, DoubleArrayList cvar ) {
+        DoubleArrayList weights;
+        DoubleArrayList conditionalVariances;
+        // this.n = Descriptive.sum( controlSizes ) + Descriptive.sum( testSizes );
 
-         for ( int i = 0; i < conditionalVariances.size(); i++ ) {
-            conditionalVariances.setQuick( i, conditionalVariances.getQuick( i )
-                  + bsv );
-         }
+        conditionalVariances = cvar.copy();
+        weights = metaFEWeights( conditionalVariances );
+        this.q = super.qStatistic( effects, conditionalVariances, super.weightedMean( effects, weights ) );
 
-         weights = metaFEWeights( conditionalVariances );
-      }
+        if ( !fixed ) { // adjust the conditional variances and weights.
+            this.bsv = metaREVariance( effects, conditionalVariances, weights );
 
-      this.e = super.weightedMean( effects, weights );
-      this.v = super.metaVariance( conditionalVariances );
-      this.z = Math.abs( e ) / Math.sqrt( v );
-      this.p = Probability.errorFunctionComplemented( z );
-      return p;
-   }
-   
-   
+            for ( int i = 0; i < conditionalVariances.size(); i++ ) {
+                conditionalVariances.setQuick( i, conditionalVariances.getQuick( i ) + bsv );
+            }
 
-   /**
-    * CH eqn 18-7
-    * 
-    * @param d effect size
-    * @param nC number of samples in control group
-    * @param nT number of samples in test group
-    * @return
-    */
-   public double samplingVariance( double d, double nC, double nT ) {
-      return ( nT + nC ) / ( nT * nC ) + d * d / 2 * ( nT + nC );
-   }
+            weights = metaFEWeights( conditionalVariances );
+        }
 
-   /**
-    * Run eqn 18-7 on a set of effect sizes.
-    * 
-    * @param effects
-    * @param controlSizes
-    * @param testSizes
-    * @return
-    */
-   public DoubleArrayList samplingVariances( DoubleArrayList effects,
-         DoubleArrayList controlSizes, DoubleArrayList testSizes ) {
-      if ( effects.size() != controlSizes.size()
-            || controlSizes.size() != testSizes.size() )
+        this.e = super.weightedMean( effects, weights );
+        this.v = super.metaVariance( conditionalVariances );
+        this.z = Math.abs( e ) / Math.sqrt( v );
+        this.p = Probability.errorFunctionComplemented( z );
+        return p;
+    }
+
+    /**
+     * CH eqn 18-7
+     * 
+     * @param d effect size
+     * @param nC number of samples in control group
+     * @param nT number of samples in test group
+     * @return
+     */
+    public double samplingVariance( double d, double nC, double nT ) {
+        return ( nT + nC ) / ( nT * nC ) + d * d / 2 * ( nT + nC );
+    }
+
+    /**
+     * Run eqn 18-7 on a set of effect sizes.
+     * 
+     * @param effects
+     * @param controlSizes
+     * @param testSizes
+     * @return
+     */
+    public DoubleArrayList samplingVariances( DoubleArrayList effects, DoubleArrayList controlSizes,
+            DoubleArrayList testSizes ) {
+        if ( effects.size() != controlSizes.size() || controlSizes.size() != testSizes.size() )
             throw new IllegalArgumentException( "Unequal sample sizes." );
 
-      DoubleArrayList answer = new DoubleArrayList( controlSizes.size() );
-      for ( int i = 0; i < controlSizes.size(); i++ ) {
-         answer.add( samplingVariance( effects.getQuick( i ), controlSizes
-               .getQuick( i ), testSizes.getQuick( i ) ) );
-      }
-      return answer;
-   }
-   
-   
-   public double getP() {
-      return p;
-   }
+        DoubleArrayList answer = new DoubleArrayList( controlSizes.size() );
+        for ( int i = 0; i < controlSizes.size(); i++ ) {
+            answer.add( samplingVariance( effects.getQuick( i ), controlSizes.getQuick( i ), testSizes.getQuick( i ) ) );
+        }
+        return answer;
+    }
 
-   public double getQ() {
-      return q;
-   }
+    public double getP() {
+        return p;
+    }
 
-   public double getZ() {
-      return z;
-   }
+    public double getQ() {
+        return q;
+    }
 
-   public double getE() {
-      return e;
-   }
+    public double getZ() {
+        return z;
+    }
 
-   public double getV() {
-      return v;
-   }
+    public double getE() {
+        return e;
+    }
 
-   public double getN() {
-      return n;
-   }
+    public double getV() {
+        return v;
+    }
 
-   public double getBsv() {
-      return bsv;
-   }
+    public double getN() {
+        return n;
+    }
+
+    public double getBsv() {
+        return bsv;
+    }
 
 }

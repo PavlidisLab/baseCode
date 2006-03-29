@@ -1,3 +1,21 @@
+/*
+ * The baseCode project
+ * 
+ * Copyright (c) 2006 University of British Columbia
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package ubic.basecode.math;
 
 import cern.jet.stat.Gamma;
@@ -7,14 +25,11 @@ import cern.jet.stat.Gamma;
  * cern.jet.stat.Probability.binomial.
  * <p>
  * Mostly ported from the R source tree (dhyper.c etc.), much due to Catherine Loader.
- * <p>
  * 
  * @see <a href="http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/cern/jet/stat/Gamma.html">cern.jet.stat.gamma </a>
  * @see <a
  *      href="http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/cern/jet/math/Arithmetic.html">cern.jet.math.arithmetic
  *      </a>
- *      <p>
- *      Copyright (c) 2004 Columbia University
  * @author Paul Pavlidis
  * @version $Id$
  */
