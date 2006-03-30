@@ -89,9 +89,9 @@
             <url>http://www.braju.com/download/sure/index.html</url>
         </dependency>
         <dependency>
-            <groupId>ostermiller</groupId>
-            <artifactId>ostermillerutils</artifactId>
-            <jar>ostermillerutils_1_04_03_for_java_1_4.jar</jar>
+            <groupId>opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>1.3</version>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -104,12 +104,6 @@
             <groupId>jena</groupId>
             <artifactId>jena</artifactId>
             <jar>jena.jar</jar>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>icu4j</groupId>
-            <artifactId>icu4j</artifactId>
-            <jar>icu4j.jar</jar>
             <type>jar</type>
         </dependency>
         <dependency>
