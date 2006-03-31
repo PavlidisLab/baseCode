@@ -1,3 +1,21 @@
+/*
+ * The baseCode project
+ * 
+ * Copyright (c) 2006 University of British Columbia
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package ubic.basecode.math;
 
 import junit.framework.TestCase;
@@ -6,23 +24,9 @@ import cern.colt.list.DoubleArrayList;
 import cern.jet.stat.Descriptive;
 
 /**
- * <p>
- * Title:
- * </p>
- * <p>
- * Description:
- * </p>
- * <p>
- * Copyright: Copyright (c) 2004
- * </p>
- * <p>
- * Institution:: Columbia University
- * </p>
- * 
  * @author Paul Pavlidis
  * @version $Id$
  */
-
 public class TestDescriptiveWithMissing extends TestCase {
 
     private DoubleArrayList data1missing;
@@ -34,7 +38,6 @@ public class TestDescriptiveWithMissing extends TestCase {
 
     private DoubleArrayList datacortest1Nomissing;
     private DoubleArrayList datacortest2Nomissing;
-    private DoubleArrayList dataAcortest1Nomissing;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -48,7 +51,6 @@ public class TestDescriptiveWithMissing extends TestCase {
         data3shortNomissing = new DoubleArrayList( new double[] { 3.0 } );
 
         datacortest1Nomissing = new DoubleArrayList( new double[] { 3.0, 5.0, 6.0 } );
-        dataAcortest1Nomissing = new DoubleArrayList( new double[] { 1.0, 3.0, 5.0, 6.0 } );
         datacortest2Nomissing = new DoubleArrayList( new double[] { 3.0, 3.5, 4.0 } );
 
     }

@@ -18,31 +18,21 @@
  */
 package ubic.basecode.dataStructure;
 
+import java.util.LinkedList;
+
 /**
  * @author Paul Pavlidis
  * @version $Id$
- * @deprecated -- use java.util.List instead.
  */
 public class Stack {
 
-    private Object[] stack;
-    private int top;
-    private final static int DEFAULTCAPACITY = 10000;
+    private LinkedList stack;
 
     /**
      * Build a stack with the default capacity.
      */
     public Stack() {
-        this( DEFAULTCAPACITY );
-    }
-
-    /**
-     * Build a stack with a given capacity.
-     * 
-     * @param capacity int
-     */
-    public Stack( int capacity ) {
-        stack = new Object[capacity];
+        stack = new LinkedList();
     }
 
     /**
@@ -54,10 +44,7 @@ public class Stack {
         if ( isEmpty() ) {
             return null;
         }
-        Object topObj = top();
-        stack[top--] = null;
-        return topObj;
-
+        return stack.removeFirst();
     }
 
     /**
@@ -66,10 +53,7 @@ public class Stack {
      * @param obj Object
      */
     public void push( Object obj ) {
-        if ( isFull() ) {
-            throw new IndexOutOfBoundsException( "Stack overflow" );
-        }
-        stack[++top] = obj;
+        stack.addFirst( obj );
     }
 
     /**
@@ -81,21 +65,14 @@ public class Stack {
         if ( isEmpty() ) {
             return null;
         }
-        return stack[top];
+        return stack.getFirst();
     }
 
     /**
      * @return boolean
      */
     public boolean isEmpty() {
-        return top == -1;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean isFull() {
-        return top == stack.length - 1;
+        return stack.size() == 0;
     }
 
 }

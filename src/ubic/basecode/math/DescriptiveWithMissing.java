@@ -56,6 +56,14 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
     private DescriptiveWithMissing() {
     }
 
+    public static double min( DoubleArrayList input ) {
+        return Descriptive.min( input );
+    }
+
+    public static double max( DoubleArrayList input ) {
+        return Descriptive.max( input );
+    }
+
     /**
      * <b>Not supported. </b>
      * 
@@ -981,6 +989,13 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      */
     public static double variance( DoubleArrayList data ) {
         return variance( sizeWithoutMissingValues( data ), sum( data ), sumOfSquares( data ) );
+    }
+
+    /**
+     * 
+     */
+    public static double variance( int sizeWithoutMissing, double sum, double sumOfSquares ) {
+        return Descriptive.variance( sizeWithoutMissing, sum, sumOfSquares );
     }
 
     /**

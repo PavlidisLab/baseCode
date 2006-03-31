@@ -1,26 +1,31 @@
+/*
+ * The baseCode project
+ * 
+ * Copyright (c) 2006 University of British Columbia
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package ubic.basecode.dataStructure;
 
 import junit.framework.TestCase;
 
 /**
- * <p>
- * </p>
- * <p>
- * </p>
- * <p>
- * Copyright (c) 2004
- * </p>
- * <p>
- * Institution: Columbia University
- * </p>
- * 
  * @author Paul Pavlidis
  * @version $Id$
  */
-
 public class TestQueue extends TestCase {
     private Queue queue = null;
-    private Queue shortQueue = null;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -31,7 +36,6 @@ public class TestQueue extends TestCase {
         queue.enqueue( new Integer( 4 ) );
         queue.enqueue( new Integer( 5 ) );
 
-        shortQueue = new Queue();
     }
 
     protected void tearDown() throws Exception {
@@ -85,8 +89,8 @@ public class TestQueue extends TestCase {
     // fail( "Should raise an IndexOutOfBoundsException" );
     // } catch ( IndexOutOfBoundsException success ) {
     //
-    //        }
+    // }
     //
-    //    }
+    // }
 
 }

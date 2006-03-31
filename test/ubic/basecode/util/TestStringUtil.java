@@ -133,11 +133,13 @@ public class TestStringUtil extends TestCase {
         timer.reset();
         timer.start();
         for ( int i = 0; i < iters; i++ ) {
+            String r;
             if ( a.hashCode() < b.hashCode() ) {
-                String r = b + "___" + a;
+                r = b + "___" + a;
             } else {
-                String r = a + "___" + b;
+                r = a + "___" + b;
             }
+            if ( log.isFatalEnabled() ) log.fatal( r ); // avoid compiler warning about r not being used - no big time.
         }
         timer.stop();
         log.debug( "String concat " + timer.getTime() + " milliseconds" );
