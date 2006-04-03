@@ -24,14 +24,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import junit.framework.TestCase;
-import cern.colt.list.DoubleArrayList;
-import cern.colt.list.IntArrayList;
 
 /**
- * <hr>
- * <p>
- * Copyright (c) 2004 Columbia University
- * 
  * @author pavlidis
  * @version $Id$
  */
@@ -44,9 +38,6 @@ public class TestROC extends TestCase {
      */
     protected void setUp() throws Exception {
         super.setUp();
-        DoubleArrayList m = new DoubleArrayList( new double[] {} );
-
-        IntArrayList ranks = Rank.rankTransform( m );
 
         // set up the ranks of the opsitives
         ranksOfPositives = new HashSet();

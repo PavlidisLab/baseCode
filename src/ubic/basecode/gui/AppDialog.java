@@ -45,14 +45,6 @@ import ubic.basecode.util.BrowserLauncher;
  * @version $Id$
  */
 public abstract class AppDialog extends JDialog {
-    /**
-     * <hr>
-     * <p>
-     * Copyright (c) 2004 Columbia University
-     * 
-     * @author pavlidis
-     * @version $Id$
-     */
 
     JPanel mainPanel;
     BorderLayout borderLayout1 = new BorderLayout();

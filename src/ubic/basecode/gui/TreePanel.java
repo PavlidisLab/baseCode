@@ -77,15 +77,7 @@ public class TreePanel extends JPanel implements TreeSelectionListener {
         if ( node == null ) return;
 
         DirectedGraphNode nodeInfo = ( DirectedGraphNode ) node.getUserObject();
-        // if (node.isLeaf()) {
-        // System.out.println(nodeInfo); // debugging
-
         detailPane.setText( nodeInfo.toString() );
-
-        // }
-
-        // System.out.println(nodeInfo); // debugging
-
     }
 
 }
