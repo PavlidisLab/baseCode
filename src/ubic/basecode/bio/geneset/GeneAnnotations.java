@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -77,6 +78,11 @@ public class GeneAnnotations {
     /**
      * 
      */
+    public static final int AGILENT = 2;
+
+    /**
+     * 
+     */
     public static final int DEFAULT = 0;
 
     /**
@@ -94,7 +100,7 @@ public class GeneAnnotations {
      */
     private static final int PRACTICAL_MAXIMUM_GENESET_SIZE = 2000;
 
-    protected static final Log log = LogFactory.getLog( GeneAnnotations.class );
+    private static Log log = LogFactory.getLog( GeneAnnotations.class.getName() );
     private Map geneSetToGeneMap; // stores Classes->genes map
     private Map geneSetToProbeMap; // stores Classes->probes map
     private Map geneSetToRedundantMap;
@@ -316,6 +322,8 @@ public class GeneAnnotations {
             this.read( filename );
         } else if ( format == AFFYCSV ) {
             this.readAffyCsv( filename );
+        } else if ( format == AGILENT ) {
+            this.readAgilent( filename );
         } else {
             throw new IllegalArgumentException( "Unknown format" );
         }
@@ -1098,8 +1106,8 @@ public class GeneAnnotations {
      * @param header
      * @param pattern
      */
-    private int findField( String header, String pattern ) throws IOException {
-        String[] fields = header.split( "," );
+    private int findField( String header, String sep, String pattern ) throws IOException {
+        String[] fields = header.split( sep );
         if ( fields == null || fields.length == 0 ) throw new IllegalArgumentException( "No header!" );
         for ( int i = 0; i < fields.length; i++ ) {
             if ( fields[i].replaceAll( "\"", "" ).compareToIgnoreCase( pattern ) == 0 ) {
@@ -1116,7 +1124,7 @@ public class GeneAnnotations {
      */
     private int getAffyBpIndex( String header ) throws IOException {
         String pattern = "Gene Ontology Biological Process";
-        return findField( header, pattern );
+        return findField( header, ",", pattern );
     }
 
     /**
@@ -1126,7 +1134,7 @@ public class GeneAnnotations {
      */
     private int getAffyCcIndex( String header ) throws IOException {
         String pattern = "Gene Ontology Cellular Component";
-        return findField( header, pattern );
+        return findField( header, ",", pattern );
     }
 
     /**
@@ -1136,7 +1144,7 @@ public class GeneAnnotations {
      */
     private int getAffyGeneNameIndex( String header ) throws IOException {
         String pattern = "Gene Title";
-        return findField( header, pattern );
+        return findField( header, ",", pattern );
     }
 
     /**
@@ -1146,7 +1154,7 @@ public class GeneAnnotations {
      */
     private int getAffyGeneSymbolIndex( String header ) throws IOException {
         String pattern = "Gene Symbol";
-        return findField( header, pattern );
+        return findField( header, ",", pattern );
     }
 
     /**
@@ -1156,7 +1164,7 @@ public class GeneAnnotations {
      */
     private int getAffyMfIndex( String header ) throws IOException {
         String pattern = "Gene Ontology Molecular Function";
-        return findField( header, pattern );
+        return findField( header, ",", pattern );
     }
 
     /**
@@ -1175,7 +1183,7 @@ public class GeneAnnotations {
      */
     private int getAffyProbeIndex( String header ) throws IOException {
         String pattern = "Probe Set ID";
-        return findField( header, pattern );
+        return findField( header, ",", pattern );
     }
 
     /**
@@ -1271,6 +1279,18 @@ public class GeneAnnotations {
     private void read( String fileName ) throws IOException {
         InputStream i = FileTools.getInputStreamFromPlainOrCompressedFile( fileName );
         read( i );
+    }
+
+    private void readAgilent( InputStream bis ) throws IOException {
+        this.readAgilent( bis, null );
+    }
+
+    /**
+     * @param filename
+     */
+    private void readAgilent( String fileName ) throws IOException {
+        InputStream i = FileTools.getInputStreamFromPlainOrCompressedFile( fileName );
+        readAgilent( i );
     }
 
     /**
@@ -1545,6 +1565,147 @@ public class GeneAnnotations {
                     "The gene annotations had invalid information. Please check the format." );
         }
 
+    }
+
+    /**
+     * @param bis
+     * @param activeGenes
+     * @throws IOException
+     */
+    protected void readAgilent( InputStream bis, Set activeGenes ) throws IOException {
+        if ( bis == null ) {
+            throw new IOException( "Inputstream was null" );
+        }
+        BufferedReader dis = new BufferedReader( new InputStreamReader( bis ) );
+        Collection probeIds = new ArrayList();
+        String classIds = null;
+
+        String header = dis.readLine();
+        int numFields = getAgilentNumFields( header );
+        int probeIndex = getAgilentProbeIndex( header );
+        int goIndex = getAgilentGoIndex( header );
+        int geneNameIndex = getAgilentGeneNameIndex( header );
+        int geneSymbolIndex = getAgilentGeneSymbolIndex( header );
+
+        tick();
+        assert ( numFields > probeIndex + 1 && numFields > geneSymbolIndex + 1 );
+        Pattern pat = Pattern.compile( "[0-9]+" );
+        // loop through rows. Makes hash map of probes to go, and map of go to
+        // probes.
+        int n = 0;
+        String line = "";
+        while ( ( line = dis.readLine() ) != null ) {
+
+            if ( Thread.currentThread().isInterrupted() ) {
+                dis.close();
+                throw new CancellationException();
+            }
+
+            String[] fields = StringUtil.splitPreserveAllTokens( line, '\t' );
+            if ( fields.length < probeIndex + 1 || fields.length < geneSymbolIndex + 1 ) {
+                continue; // skip lines that don't meet criteria.
+            }
+
+            String probe = fields[probeIndex];
+            String gene = fields[geneSymbolIndex];
+
+            if ( activeGenes != null && !activeGenes.contains( gene ) ) {
+                continue;
+            }
+
+            storeProbeAndGene( probeIds, probe, gene );
+
+            /* read gene description */
+
+            String description = fields[geneNameIndex].intern();
+            if ( !description.startsWith( "GO:" ) ) {
+                probeToDescription.put( probe.intern(), description.intern() );
+            } else {
+                probeToDescription.put( probe.intern(), NO_DESCRIPTION );
+            }
+
+            if ( fields.length < goIndex + 1 ) {
+                continue;
+            }
+
+            classIds = fields[goIndex];
+
+            if ( StringUtils.isNotBlank( classIds ) ) {
+                String[] goinfo = classIds.split( "\\|" );
+                for ( int i = 0; i < goinfo.length; i++ ) {
+                    String goi = goinfo[i].intern();
+                    parseGoTerm( probe, pat, goi );
+                }
+            }
+
+            if ( messenger != null && n % 500 == 0 ) {
+                messenger.showStatus( "Read " + n + " probes" );
+                try {
+                    Thread.sleep( 10 );
+                } catch ( InterruptedException e ) {
+                    dis.close();
+                    throw new RuntimeException( "Interrupted" );
+                }
+            }
+            n++;
+
+        }
+
+        /* Fill in the genegroupreader and the classmap */
+        dis.close();
+        tick();
+        resetSelectedProbes();
+
+        if ( probeToGeneName.size() == 0 || geneSetToProbeMap.size() == 0 ) {
+            throw new IllegalArgumentException(
+                    "The gene annotations had invalid information. Please check the format." );
+        }
+
+    }
+
+    /**
+     * @param header
+     * @return
+     */
+    private int getAgilentGeneSymbolIndex( String header ) throws IOException {
+        String pattern = "GeneSymbol";
+        return findField( header, "\t", pattern );
+    }
+
+    /**
+     * @param header
+     * @return
+     */
+    private int getAgilentGeneNameIndex( String header ) throws IOException {
+        String pattern = "GeneName";
+        return findField( header, "\t", pattern );
+    }
+
+    /**
+     * @param header
+     * @return
+     */
+    private int getAgilentGoIndex( String header ) throws IOException {
+        String pattern = "GO";
+        return findField( header, "\t", pattern );
+    }
+
+    /**
+     * @param header
+     * @return
+     */
+    private int getAgilentProbeIndex( String header ) throws IOException {
+        String pattern = "ProbeID";
+        return findField( header, "\t", pattern );
+    }
+
+    /**
+     * @param header
+     * @return
+     */
+    private int getAgilentNumFields( String header ) {
+        String[] fields = header.split( "\t" );
+        return fields.length;
     }
 
     /**

@@ -6,7 +6,7 @@
     <name>baseCode</name>
     <groupId>baseCode</groupId>
     <artifactId>baseCode</artifactId>
-    <version>0.2.2</version>
+    <version>0.3</version>
     <inceptionYear>2003</inceptionYear>
     <description>
         Data structures, math and statistics tools, and utilities that are often needed across
@@ -165,6 +165,7 @@
                 <directory>src</directory>
                 <includes>
                     <include>**/alert.gif</include>
+                    <include>**/*.properties</include>
                 </includes>
                 <filtering>false</filtering>
             </resource>

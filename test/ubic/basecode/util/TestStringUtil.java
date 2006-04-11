@@ -139,7 +139,7 @@ public class TestStringUtil extends TestCase {
             } else {
                 r = a + "___" + b;
             }
-            if ( log.isFatalEnabled() ) log.fatal( r ); // avoid compiler warning about r not being used - no big time.
+            if ( log.isTraceEnabled() ) log.trace( r ); // avoid compiler warning about r not being used - no big time.
         }
         timer.stop();
         log.debug( "String concat " + timer.getTime() + " milliseconds" );
