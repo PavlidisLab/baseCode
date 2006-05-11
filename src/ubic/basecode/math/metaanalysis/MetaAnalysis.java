@@ -39,7 +39,7 @@ public abstract class MetaAnalysis {
      * @param pvals DoubleArrayList
      * @return double
      */
-    protected double fisherCombinePvalues( DoubleArrayList pvals ) {
+    public static double fisherCombinePvalues( DoubleArrayList pvals ) {
         double r = 0.0;
         for ( int i = 0, n = pvals.size(); i < n; i++ ) {
             r += Math.log( pvals.getQuick( i ) );
