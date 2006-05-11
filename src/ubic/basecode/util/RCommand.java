@@ -97,6 +97,12 @@ public class RCommand {
             throw new RuntimeException( e );
         }
     }
+    
+    public void assign(String argName, String[] array)
+    {
+        REXP stringRexp = new REXP(array);
+        assign(argName, stringRexp);
+    }
 
     /**
      * 
@@ -182,7 +188,7 @@ public class RCommand {
         assign( variableName, stringRexp );
         return variableName;
     }
-
+    
     /**
      * @param matrix
      * @param matrixVarName
