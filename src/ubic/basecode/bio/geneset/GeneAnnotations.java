@@ -315,6 +315,7 @@ public class GeneAnnotations {
      * @throws IOException
      */
     public GeneAnnotations( String filename, StatusViewer messenger, GONames goNames, int format ) throws IOException {
+        log.debug( "Entering GeneAnnotations constructor" );
         setUpdataStructures();
         this.messenger = messenger;
 
@@ -1498,6 +1499,8 @@ public class GeneAnnotations {
         int geneNameIndex = getAffyGeneNameIndex( header );
         int geneSymbolIndex = getAffyGeneSymbolIndex( header );
 
+        log.debug( "Read header" );
+
         tick();
         assert ( numFields > probeIndex + 1 && numFields > geneSymbolIndex + 1 );
         Pattern pat = Pattern.compile( "[0-9]+" );
@@ -1505,6 +1508,9 @@ public class GeneAnnotations {
         // probes.
         int n = 0;
         String line = "";
+
+        log.debug( "File opened okay, parsing Affy CSV" );
+
         while ( ( line = dis.readLine() ) != null ) {
 
             if ( Thread.currentThread().isInterrupted() ) {
@@ -1523,6 +1529,8 @@ public class GeneAnnotations {
             if ( activeGenes != null && !activeGenes.contains( gene ) ) {
                 continue;
             }
+
+            // log.debug("Probe=" + probe + " Gene=" + gene); // PP temporary for user problems.
 
             storeProbeAndGene( probeIds, probe, gene );
 
