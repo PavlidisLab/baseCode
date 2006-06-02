@@ -48,15 +48,16 @@ public class RandomChooser {
      * @param randomvals answers go here.
      * @param sourcedata Data to be randomly selected
      * @param deck an array pre-filled with integers from 0 to max, but they don't have to be in order.
-     * @param max how many values we need.
+     * @param numNeeded how many values we need.
      * @param n int
      */
-    public static void chooserandom( double[] randomvals, double[] sourcedata, int[] deck, int max, int n ) {
+    public static void chooserandom( double[] randomvals, double[] sourcedata, int[] deck, int numNeeded, int n ) {
+        if (numNeeded <= 0) throw new IllegalArgumentException("numNeeded must be greater than zero");
         int rand;
         int i;
         int temp;
         for ( i = 0; i < n; i++ ) {
-            rand = generator.nextInt( max - i ) + i; // a value between i and max.
+            rand = generator.nextInt( numNeeded - i ) + i; // a value between i and max.
             temp = deck[rand];
             deck[rand] = deck[i];
             deck[i] = temp;
