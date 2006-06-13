@@ -37,6 +37,14 @@ public class StringConverter {
     public double[] stringToDoubles( String stringToParse ) {
         if ( stringToParse == null ) return null;
         String[] sArray = stringToParse.split( delimiter );
+        return stringArrayToDoubles( sArray );
+    }
+
+    /**
+     * @param sArray
+     * @return double[]
+     */
+    public double[] stringArrayToDoubles( String[] sArray ) {
         double[] result = new double[sArray.length];
         for ( int i = 0; i < sArray.length; i++ ) {
             result[i] = Double.parseDouble( sArray[i] );
