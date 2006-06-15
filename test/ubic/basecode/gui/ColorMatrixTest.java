@@ -52,14 +52,14 @@ public class ColorMatrixTest extends TestCase {
         array[3] = row3;
         array[4] = row4;
 
-        List<String> rowNames = new ArrayList();
+        List  rowNames = new ArrayList();
         rowNames.add( "A" );
         rowNames.add( "B" );
         rowNames.add( "C" );
         rowNames.add( "D" );
         rowNames.add( "E" );
 
-        List<String> colNames = new ArrayList();
+        List  colNames = new ArrayList();
         colNames.add( "0_at" );
         colNames.add( "1_at" );
         colNames.add( "2_at" );
