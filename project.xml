@@ -5,8 +5,8 @@
     <groupId>baseCode</groupId>
     <currentVersion>0.3.1-RC1</currentVersion>
     <organization>
-        <name>Columbia University</name>
-        <url>http://www.columbia.edu</url>
+        <name>University of British Columbia Bioinformatics Centre</name>
+        <url>http://bioinformatics.ubc.ca</url>
     </organization>
     <inceptionYear>2003</inceptionYear>
     <description>Data structures, math and statistics tools, and utilities that are often
@@ -15,26 +15,20 @@
     <siteAddress>microarray</siteAddress>
     <siteDirectory>/proj/pavlidis/protected/baseCode</siteDirectory>
     <repository>
-        <connection>scm:cvs:ext:${maven.username}@adgate.cu-genome.org:/fsnode/projects/cvs/pavlab:baseCode</connection>
+        <connection>scm:cvs:ext:${maven.username}@lurai.cmmt.ubc.ca:/raid/cvs/pavlidis:baseCode</connection>
     </repository>
     <developers>
         <developer>
             <name>Paul Pavlidis</name>
             <id>pavlidis</id>
-            <email>pavlidis@dbmi.columbia.edu</email>
+            <email>paul@bioinformatics.ubc.ca</email>
             <organization>Columbia University</organization>
         </developer>
         <developer>
-            <name>William Braynen</name>
-            <id>wbraynen</id>
-            <email>wbraynen@ic.sunysb.edu</email>
-            <organization>Columbia University</organization>
-        </developer>
-        <developer>
-            <name>Homin Lee</name>
-            <id>hkl7</id>
-            <email>hkl7@cs.columbia.edu</email>
-            <organization>Columbia University</organization>
+        	<name>Kiran Keshav</name>
+        	<id>keshav</id>
+        	<email>keshav@cu-genome.org</email>
+        	<organization>Columbia University</organization>
         </developer>
     </developers>
     <licenses>
