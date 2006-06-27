@@ -73,10 +73,8 @@ public class ByteArrayConverter {
         try {
             return new String( barray, "ISO-8859-1" );
         } catch ( UnsupportedEncodingException e ) {
-            e.printStackTrace();
+            throw new RuntimeException( "Conversion error", e );
         }
-        return null;
-
     }
 
     /**
@@ -103,7 +101,7 @@ public class ByteArrayConverter {
             dis.close();
             bis.close();
         } catch ( IOException e ) {
-            e.printStackTrace();
+            throw new RuntimeException( "Conversion error", e );
         }
 
         return carray;
@@ -132,7 +130,7 @@ public class ByteArrayConverter {
         try {
             bis.close();
         } catch ( IOException e1 ) {
-            e1.printStackTrace();
+            throw new RuntimeException( "Conversion error", e1 );
         }
         return darray;
     }
@@ -161,7 +159,7 @@ public class ByteArrayConverter {
             dis.close();
             bis.close();
         } catch ( IOException e1 ) {
-            e1.printStackTrace();
+            throw new RuntimeException( "Conversion error", e1 );
         }
 
         return iarray;
@@ -191,7 +189,7 @@ public class ByteArrayConverter {
             dis.close();
             bis.close();
         } catch ( IOException e1 ) {
-            e1.printStackTrace();
+            throw new RuntimeException( "Conversion error", e1 );
         }
 
         return iarray;
@@ -221,7 +219,7 @@ public class ByteArrayConverter {
             dis.close();
             bis.close();
         } catch ( IOException e1 ) {
-            e1.printStackTrace();
+            throw new RuntimeException( "Conversion error", e1 );
         }
 
         return iarray;
