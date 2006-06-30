@@ -28,7 +28,7 @@ import java.util.Map;
  * @author pavlidis
  * @version $Id$
  */
-public abstract class AbstractNamedMatrix implements NamedMatrix {
+public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serializable {
 
     private List rowNames;
     private List colNames;
