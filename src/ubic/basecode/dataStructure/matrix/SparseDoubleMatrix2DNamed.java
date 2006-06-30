@@ -50,6 +50,19 @@ public class SparseDoubleMatrix2DNamed extends DoubleMatrixNamed implements Name
         super();
         matrix = new SparseDoubleMatrix2D( rows, cols );
     }
+    
+    /**
+     * @param rows int
+     * @param cols int
+     * @param initlalCapacity int
+     * @param minLoadFactor double
+     * @param maxLoadFactor double
+     */
+    public SparseDoubleMatrix2DNamed( int rows, int cols, int initialCapacity, double minLoadFactor, double maxLoadFactor)  {
+        super();
+        matrix = new SparseDoubleMatrix2D( rows, cols, initialCapacity, minLoadFactor, maxLoadFactor );
+    }
+
 
     public void set( int row, int col, Object value ) {
         set( row, col, ( ( Double ) value ).doubleValue() );
