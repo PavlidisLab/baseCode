@@ -24,10 +24,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -222,7 +225,14 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
                 if ( missing ) {
                     rowTemp.add( Double.NaN );
                 } else {
-                    rowTemp.add( Double.parseDouble( s ) );
+                    NumberFormat nf = NumberFormat.getInstance( Locale.getDefault() );
+                    try {
+                        log.debug( nf.parse( s ).doubleValue() );
+                        rowTemp.add( ( nf.parse( s ) ).doubleValue() );
+                        // rowTemp.add( Double.parseDouble( s ) );
+                    } catch ( ParseException e ) {
+                        e.printStackTrace();
+                    }
                 }
             } else {
                 if ( missing ) {
