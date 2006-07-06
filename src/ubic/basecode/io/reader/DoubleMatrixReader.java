@@ -227,7 +227,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
                 } else {
                     NumberFormat nf = NumberFormat.getInstance( Locale.getDefault() );
                     try {
-                        log.debug( nf.parse( s ).doubleValue() );
+                        log.debug( "" + nf.parse( s ).doubleValue() );
                         rowTemp.add( ( nf.parse( s ) ).doubleValue() );
                         // rowTemp.add( Double.parseDouble( s ) );
                     } catch ( ParseException e ) {
