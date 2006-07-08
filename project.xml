@@ -33,7 +33,7 @@
     </developers>
     <licenses>
         <license>
-            <name>LGPL</name>
+            <name>The Apache Software License, Version 2.0</name>
         </license>
     </licenses>
     <dependencies>
