@@ -34,7 +34,7 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
  * @version $Id$
  */
 public class JMatrixDisplayTest extends BaseTestCase {
-    private Log log = LogFactory.getLog(this.getClass());
+    private Log log = LogFactory.getLog( this.getClass() );
 
     double[][] array = new double[5][5];
 
@@ -48,11 +48,10 @@ public class JMatrixDisplayTest extends BaseTestCase {
 
     List colNames = new ArrayList();
 
-    @Override
     protected void setUp() throws Exception {
-        
-        log.warn("setup");
-        
+
+        log.warn( "setup" );
+
         array[0] = row0;
         array[1] = row1;
         array[2] = row2;
@@ -72,7 +71,6 @@ public class JMatrixDisplayTest extends BaseTestCase {
         colNames.add( "4_at" );
     }
 
-    @Override
     protected void tearDown() throws Exception {
 
         rowNames = null;
@@ -99,7 +97,7 @@ public class JMatrixDisplayTest extends BaseTestCase {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * 
      *
@@ -119,7 +117,6 @@ public class JMatrixDisplayTest extends BaseTestCase {
             e.printStackTrace();
         }
     }
-    
 
     // public void testColorMatrixHtmlLabels() {
     //
@@ -134,7 +131,7 @@ public class JMatrixDisplayTest extends BaseTestCase {
     // // display.saveImage( "test/ubic/basecode/gui/outfile.png" );
     // display.cacheImage( "test/ubic/basecode/gui/outfile2.png", true, true );
     // } catch ( IOException e ) {
-    //            e.printStackTrace();
-    //        }
-    //    }
+    // e.printStackTrace();
+    // }
+    // }
 }
