@@ -26,6 +26,8 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -64,6 +66,9 @@ public class JMatrixDisplay extends JPanel {
 
     protected Dimension m_cellSize = new Dimension( 10, 10 ); // in pixels
 
+    protected Map<String, Integer> rowNameYCoords = null;
+    protected int rowNameXCoord = 0;
+
     public JMatrixDisplay( String filename ) throws IOException {
 
         ColorMatrix matrix = new ColorMatrix( filename );
@@ -86,6 +91,7 @@ public class JMatrixDisplay extends JPanel {
         // create a standardized copy of the matrix
         m_standardizedMatrix = ( ColorMatrix ) matrix.clone();
         m_standardizedMatrix.standardize();
+        rowNameYCoords = new HashMap();
 
     }
 
@@ -217,7 +223,13 @@ public class JMatrixDisplay extends JPanel {
             if ( null == rowName ) {
                 rowName = "Undefined";
             }
+
+            // keshav
+            rowNameYCoords.put( rowName, yRatio );
+            if ( rowNameXCoord == 0 ) rowNameXCoord = xRatio;
+
             g.drawString( rowName, xRatio, yRatio );
+
         } // end drawing row names
     } // end rawRowName
 
@@ -473,6 +485,20 @@ public class JMatrixDisplay extends JPanel {
      */
     public Color getMissingColor() {
         return m_matrix.m_missingColor;
+    }
+
+    /**
+     * @return int
+     */
+    public int getRowNameXCoord() {
+        return rowNameXCoord;
+    }
+
+    /**
+     * @return Map
+     */
+    public Map<String, Integer> getRowNameYCoords() {
+        return rowNameYCoords;
     }
 
 } // end class JMatrixDisplay
