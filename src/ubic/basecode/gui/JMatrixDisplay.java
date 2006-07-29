@@ -66,7 +66,7 @@ public class JMatrixDisplay extends JPanel {
 
     protected Dimension m_cellSize = new Dimension( 10, 10 ); // in pixels
 
-    protected Map<String, Integer> rowNameYCoords = null;
+    protected Map rowNameYCoords = null;
     protected int rowNameXCoord = 0;
 
     public JMatrixDisplay( String filename ) throws IOException {
@@ -224,8 +224,9 @@ public class JMatrixDisplay extends JPanel {
                 rowName = "Undefined";
             }
 
-            // keshav
-            rowNameYCoords.put( rowName, yRatio );
+            // keshav - TODO java 5 can autobox the int and make use of the map
+            rowNameYCoords.put( rowName, new Integer( yRatio ) );
+
             if ( rowNameXCoord == 0 ) rowNameXCoord = xRatio;
 
             g.drawString( rowName, xRatio, yRatio );
@@ -497,7 +498,7 @@ public class JMatrixDisplay extends JPanel {
     /**
      * @return Map
      */
-    public Map<String, Integer> getRowNameYCoords() {
+    public Map getRowNameYCoords() {
         return rowNameYCoords;
     }
 
