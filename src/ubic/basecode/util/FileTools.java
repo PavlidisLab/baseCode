@@ -32,11 +32,11 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
+ * @author keshav
  * @author Pavlidis
  * @author Will Braynen
  * @version $Id$
@@ -323,4 +323,17 @@ public class FileTools {
         return Arrays.asList( files );
     }
 
+    /**
+     * Creates the directory if it does not exist.
+     * 
+     * @param directory
+     * @return
+     */
+    public static File createDir( String directory ) {
+        File dirPath = new File( directory );
+        if ( !dirPath.exists() ) {
+            dirPath.mkdirs();
+        }
+        return dirPath;
+    }
 }
