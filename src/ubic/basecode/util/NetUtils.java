@@ -29,7 +29,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
-import org.apache.commons.net.ftp.FTPListParseEngine;
 import org.apache.commons.net.ftp.FTPReply;
 
 /**
@@ -139,15 +138,17 @@ public class NetUtils {
      * @throws IOException
      */
     public static long ftpFileSize( FTPClient f, String seekFile ) throws IOException {
-        FTPListParseEngine parse = f.initiateListParsing( seekFile );
-        FTPFile[] files = parse.getFiles();
+        FTPFile[] files = f.listFiles( seekFile );
+
         if ( files.length == 1 ) {
             return files[0].getSize();
         }
+
         if ( files.length == 0 ) {
             throw new FileNotFoundException( "Didn't get expected file information for " + seekFile );
         }
         throw new IOException( files.length + " files found when expecting one" );
+
     }
 
 }
