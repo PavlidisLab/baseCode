@@ -74,7 +74,7 @@ public class FileToolsTest extends TestCase {
      * Test method for 'basecode.util.FileTools.getWithoutExtension(String)'
      */
     public void testGetWithoutExtension() throws Exception {
-        assertFalse( FileTools.getWithoutExtension( plain.getPath() ).endsWith( ".bar" ) );
+        assertFalse( FileTools.chompExtension( plain.getPath() ).endsWith( ".bar" ) );
     }
 
     /*

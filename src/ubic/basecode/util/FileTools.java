@@ -22,14 +22,17 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -85,7 +88,7 @@ public class FileTools {
      * @param filename
      * @return
      */
-    public static String getWithoutExtension( String filename ) {
+    public static String chompExtension( String filename ) {
         String[] s = filename.split( "\\." );
         if ( s.length < 2 ) {
             return filename;
@@ -100,7 +103,7 @@ public class FileTools {
      */
     public static String changeExtension( String filename, String newExtension ) {
 
-        String filenameWithoutExtension = getWithoutExtension( filename );
+        String filenameWithoutExtension = chompExtension( filename );
         return ( filenameWithoutExtension + "." + newExtension );
     } // end getWithChangedExtension
 
@@ -212,6 +215,38 @@ public class FileTools {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Given the path to a gzipped-file, unzips it into the same directory.
+     * 
+     * @param seekFile
+     * @throws IOException
+     * @return path to the unzipped file.
+     */
+    public static String unGzipFile( final String seekFile ) throws IOException {
+
+        if ( !isGZipped( seekFile ) ) {
+            throw new IllegalArgumentException();
+        }
+
+        checkPathIsReadableFile( seekFile );
+
+        InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile( seekFile );
+
+        File outputFile = new File( chompExtension( seekFile ) );
+
+        OutputStream out = new FileOutputStream( outputFile );
+
+        byte[] buf = new byte[1024];
+        int len;
+        while ( ( len = is.read( buf ) ) > 0 ) {
+            out.write( buf, 0, len );
+        }
+        is.close();
+        out.close();
+
+        return outputFile.getAbsolutePath();
     }
 
     /**
