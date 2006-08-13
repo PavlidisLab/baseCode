@@ -18,6 +18,7 @@
  */
 package ubic.basecode.gui;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,11 +46,11 @@ public class JMatrixDisplayTest extends BaseTestCase {
     double[] row4 = { 13, 2, 9, 7, 0 };
 
     List rowNames = new ArrayList();
-
+    File tmp;
     List colNames = new ArrayList();
 
     protected void setUp() throws Exception {
-
+        tmp = File.createTempFile( "testimage", ".png" );
         log.warn( "setup" );
 
         array[0] = row0;
@@ -72,7 +73,7 @@ public class JMatrixDisplayTest extends BaseTestCase {
     }
 
     protected void tearDown() throws Exception {
-
+        tmp.delete();
         rowNames = null;
         colNames = null;
 
@@ -82,7 +83,7 @@ public class JMatrixDisplayTest extends BaseTestCase {
      * 
      *
      */
-    public void testSaveImage() {
+    public void testSaveImage() throws Exception {
 
         // DoubleMatrix2D matrix = new DenseDoubleMatrix2D( array );
         DoubleMatrixNamed matrix = new DenseDoubleMatrix2DNamed( array );
@@ -90,19 +91,16 @@ public class JMatrixDisplayTest extends BaseTestCase {
         matrix.setColumnNames( colNames );
         ColorMatrix colorMatrix = new ColorMatrix( matrix );
         JMatrixDisplay display = new JMatrixDisplay( colorMatrix );
-        try {
-            display.setLabelsVisible( true );
-            display.saveImage( "test/ubic/basecode/gui/outfile.png" );
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
+        display.setLabelsVisible( true );
+        display.saveImage( tmp.getAbsolutePath() );
+        // FIXME - no fail condition other than exception
     }
 
     /**
      * 
      *
      */
-    public void testSaveImageStandardize() {
+    public void testSaveImageStandardize() throws Exception {
 
         // DoubleMatrix2D matrix = new DenseDoubleMatrix2D( array );
         DoubleMatrixNamed matrix = new DenseDoubleMatrix2DNamed( array );
@@ -110,12 +108,9 @@ public class JMatrixDisplayTest extends BaseTestCase {
         matrix.setColumnNames( colNames );
         ColorMatrix colorMatrix = new ColorMatrix( matrix );
         JMatrixDisplay display = new JMatrixDisplay( colorMatrix );
-        try {
-            display.setLabelsVisible( true );
-            display.saveImage( "test/ubic/basecode/gui/outfile1.png", true );
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
+        display.setLabelsVisible( true );
+        display.saveImage( tmp.getAbsolutePath() );
+        // FIXME no fail condition other than exception.
     }
 
     // public void testColorMatrixHtmlLabels() {
