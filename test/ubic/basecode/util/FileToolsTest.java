@@ -78,6 +78,20 @@ public class FileToolsTest extends TestCase {
     }
 
     /*
+     * Test method for 'basecode.util.FileTools.getWithoutExtension(String)'
+     */
+    public void testGetWithoutExtensionB() throws Exception {
+        assertEquals( "a.b", FileTools.chompExtension( "a.b.jar" ) );
+    }
+
+    /*
+     * Test method for 'basecode.util.FileTools.getWithoutExtension(String)'
+     */
+    public void testGetWithoutExtensionC() throws Exception {
+        assertEquals( "a.b.", FileTools.chompExtension( "a.b..jar" ) );
+    }
+
+    /*
      * Test method for 'basecode.util.FileTools.changeExtension(String, String)'
      */
     public void testChangeExtension() throws Exception {

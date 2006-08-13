@@ -89,11 +89,11 @@ public class FileTools {
      * @return
      */
     public static String chompExtension( String filename ) {
-        String[] s = filename.split( "\\." );
-        if ( s.length < 2 ) {
-            return filename;
+        int j = filename.lastIndexOf( '.' );
+        if ( j > 1 ) {
+            return filename.substring( 0, filename.lastIndexOf( '.' ) );
         }
-        return s[0];
+        return filename;
     }
 
     /**
