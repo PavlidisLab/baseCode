@@ -18,8 +18,15 @@
  */
 package ubic.basecode.math;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import junit.framework.TestCase;
 
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.io.reader.DoubleMatrixReader;
+import ubic.basecode.util.RCommand;
+import ubic.basecode.util.RCommandTest;
 import ubic.basecode.util.RegressionTesting;
 
 /**
@@ -27,11 +34,41 @@ import ubic.basecode.util.RegressionTesting;
  * @version $Id$
  */
 public class LinearModelTest extends TestCase {
+    private static final Log log = LogFactory.getLog( RCommandTest.class.getName() );
+
+    RCommand rc = null;
+    boolean connected = false;
+    DoubleMatrixNamed tester;
+
+    public void setUp() throws Exception {
+        try {
+            rc = RCommand.newInstance();
+            connected = true;
+        } catch ( RuntimeException e ) {
+            connected = false;
+        }
+
+        DoubleMatrixReader reader = new DoubleMatrixReader();
+
+        tester = ( DoubleMatrixNamed ) reader.read( this.getClass().getResourceAsStream( "/data/testdata.txt" ) );
+    }
+
+    public void tearDown() throws Exception {
+        if ( rc != null ) {
+            rc.disconnect();
+            rc.stopServer();
+        }
+        tester = null;
+    }
 
     /*
      * Test method for 'basecode.math.LinearModel.fitNoInteractions()'
      */
     public void testFitNoInteractions() {
+        if ( !connected ) {
+            log.warn( "Could not connect to RServe, skipping test." );
+            return;
+        }
         double[] x = new double[] { 2, 1, 2, 4, 6, 4 };
         double[] a = new double[] { 0, 0, 0, 1, 1, 1 };
         double[] b = new double[] { 1, 0, 1, 0, 1, 0 };
