@@ -38,7 +38,6 @@ public class LinearModelTest extends TestCase {
 
     RCommand rc = null;
     boolean connected = false;
-    DoubleMatrixNamed tester;
 
     public void setUp() throws Exception {
         try {
@@ -48,9 +47,6 @@ public class LinearModelTest extends TestCase {
             connected = false;
         }
 
-        DoubleMatrixReader reader = new DoubleMatrixReader();
-
-        tester = ( DoubleMatrixNamed ) reader.read( this.getClass().getResourceAsStream( "/data/testdata.txt" ) );
     }
 
     public void tearDown() throws Exception {
@@ -58,7 +54,6 @@ public class LinearModelTest extends TestCase {
             rc.disconnect();
             rc.stopServer();
         }
-        tester = null;
     }
 
     /*
