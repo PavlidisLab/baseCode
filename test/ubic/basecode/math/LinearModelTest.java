@@ -23,8 +23,6 @@ import org.apache.commons.logging.LogFactory;
 
 import junit.framework.TestCase;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
-import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.util.RCommand;
 import ubic.basecode.util.RCommandTest;
 import ubic.basecode.util.RegressionTesting;
