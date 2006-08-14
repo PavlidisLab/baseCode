@@ -24,12 +24,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.SocketException;
+import java.net.URISyntaxException;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
+import org.apache.commons.httpclient.URI;
+import org.apache.commons.httpclient.URIException;
 
 /**
  * @author pavlidis
@@ -148,6 +153,27 @@ public class NetUtils {
             throw new FileNotFoundException( "Didn't get expected file information for " + seekFile );
         }
         throw new IOException( files.length + " files found when expecting one" );
+
+    }
+
+    /**
+     * Generates, if possible, an escaped URI.
+     * 
+     * @param uriString
+     * @return
+     */
+    public static java.net.URI getURI( String uriString ) {
+
+        try {
+            URI uri = new URI( uriString, false );
+            return new java.net.URI( uri.toString() );
+        } catch ( URIException e ) {
+            throw new RuntimeException( e );
+        } catch ( NullPointerException e ) {
+            throw new RuntimeException( e );
+        } catch ( URISyntaxException e ) {
+            throw new RuntimeException( e );
+        }
 
     }
 
