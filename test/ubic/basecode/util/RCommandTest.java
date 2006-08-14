@@ -51,8 +51,10 @@ public class RCommandTest extends TestCase {
     }
 
     public void tearDown() throws Exception {
-        rc.disconnect();
-        rc.stopServer();
+        if ( rc != null ) {
+            rc.disconnect();
+            rc.stopServer();
+        }
         tester = null;
     }
 
