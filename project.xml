@@ -144,7 +144,7 @@
         <dependency>
             <groupId>rserve</groupId>
             <artifactId>JRclient</artifactId>
-            <version>RE817</version>
+            <version>RF503</version>
             <type>jar</type>
         </dependency>
     </dependencies>
