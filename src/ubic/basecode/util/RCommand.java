@@ -24,6 +24,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -46,7 +49,7 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
  */
 public class RCommand {
 
-    private final static Log log = LogFactory.getLog( RCommand.class.getName() );
+    final static Log log = LogFactory.getLog( RCommand.class.getName() );
 
     private static final int MAX_TRIES = 10;
 
@@ -54,20 +57,51 @@ public class RCommand {
 
     private static final boolean QUIET = true;
 
-    private static Process serverProcess;
+    static Process serverProcess;
 
     private Rconnection connection = null;
 
     /**
-     * This class cannot be directly instantiated.
+     * How long we should wait for a connection before giving up.
      */
-    private RCommand() {
-        if ( serverProcess == null ) {
-            this.startServer();
+    private static final int TIMEOUT_MILLISECONDS = 2000;
+
+    /**
+     * This class cannot be directly instantiated
+     * 
+     * @param timeoutSeconds How many seconds we should wait for the server before giving up.
+     */
+    private RCommand( int timeoutMilliseconds ) {
+
+        FutureTask future = new FutureTask( new Callable() {
+            public Object call() {
+                if ( serverProcess == null ) {
+                    startServer();
+                    log.info( "Trying to connect...." );
+                    connect();
+                    log.info( "Connected!" );
+                }
+                return Boolean.TRUE;
+            }
+        } );
+
+        long start = System.currentTimeMillis();
+        Executors.newSingleThreadExecutor().execute( future );
+
+        while ( !future.isDone() ) {
+            try {
+                Thread.sleep( 200 );
+            } catch ( InterruptedException ie ) {
+                ;
+            }
+
+            if ( ( System.currentTimeMillis() - start ) > timeoutMilliseconds ) {
+                log.warn( "Timeout while waiting for Rserver" );
+                return;
+            }
+
         }
-        log.info( "Trying to connect...." );
-        this.connect();
-        log.info( "Connected!" );
+
     }
 
     /**
@@ -75,6 +109,7 @@ public class RCommand {
      * @param arg
      */
     public void assign( String argName, double[] arg ) {
+        checkConnection();
         try {
             connection.assign( argName, arg );
         } catch ( RSrvException e ) {
@@ -97,11 +132,10 @@ public class RCommand {
             throw new RuntimeException( e );
         }
     }
-    
-    public void assign(String argName, String[] array)
-    {
-        REXP stringRexp = new REXP(array);
-        assign(argName, stringRexp);
+
+    public void assign( String argName, String[] array ) {
+        REXP stringRexp = new REXP( array );
+        assign( argName, stringRexp );
     }
 
     /**
@@ -188,7 +222,7 @@ public class RCommand {
         assign( variableName, stringRexp );
         return variableName;
     }
-    
+
     /**
      * @param matrix
      * @param matrixVarName
@@ -547,7 +581,7 @@ public class RCommand {
                     connect( QUIET );
                     waiting = false;
                     return;
-                } catch ( RuntimeException e1 ) {
+                } catch ( RuntimeException e ) {
                     // not running, keep trying
                     tries++;
                     Thread.sleep( 100 );
@@ -568,7 +602,11 @@ public class RCommand {
     }
 
     public static RCommand newInstance() {
-        return new RCommand();
+        return new RCommand( TIMEOUT_MILLISECONDS );
+    }
+
+    public static RCommand newInstance( int timeOutMilliseconds ) {
+        return new RCommand( timeOutMilliseconds );
     }
 
     /**

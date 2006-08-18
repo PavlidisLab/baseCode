@@ -39,8 +39,8 @@ public class RCommandTest extends TestCase {
 
     public void setUp() throws Exception {
         try {
-            rc = RCommand.newInstance();
-            connected = true;
+            rc = RCommand.newInstance( 20000 );
+            connected = rc == null;
         } catch ( RuntimeException e ) {
             connected = false;
         }

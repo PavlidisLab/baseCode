@@ -39,8 +39,8 @@ public class LinearModelTest extends TestCase {
 
     public void setUp() throws Exception {
         try {
-            rc = RCommand.newInstance();
-            connected = true;
+            rc = RCommand.newInstance( 2000 );
+            connected = rc == null && rc.isConnected();
         } catch ( RuntimeException e ) {
             connected = false;
         }

@@ -236,6 +236,10 @@ public class FileTools {
 
         File outputFile = new File( chompExtension( seekFile ) );
 
+        if ( outputFile.isDirectory() ) {
+            throw new UnsupportedOperationException( "Don't know how to handle Gzipped directories" );
+        }
+
         OutputStream out = new FileOutputStream( outputFile );
 
         byte[] buf = new byte[1024];

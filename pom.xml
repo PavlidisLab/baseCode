@@ -201,6 +201,7 @@
 					<include>**/*.xml</include>
 					<include>**/*.csv</include>
 					<include>**/*.zip</include>
+					<include>**/*.properties</include>
 				</includes>
 				<filtering>false</filtering>
 			</testResource>

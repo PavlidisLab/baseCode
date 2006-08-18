@@ -28,7 +28,9 @@ import ubic.basecode.dataStructure.graph.TestDirectedGraph;
 import ubic.basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamedTest;
 import ubic.basecode.dataStructure.matrix.TestRCDoubleMatrix1D;
 import ubic.basecode.dataStructure.matrix.TestSparseRaggedDoubleMatrix2DNamed;
+import ubic.basecode.gui.JMatrixDisplayTest;
 import ubic.basecode.io.TestByteArrayConverter;
+import ubic.basecode.io.TestStringConverter;
 import ubic.basecode.io.reader.TestDoubleMatrixReader;
 import ubic.basecode.io.reader.TestMapReader;
 import ubic.basecode.io.reader.TestSparseDoubleMatrixReader;
@@ -36,14 +38,17 @@ import ubic.basecode.io.reader.TestSparseRaggedDouble2DNamedMatrixReader;
 import ubic.basecode.io.reader.TestStringMatrixReader;
 import ubic.basecode.io.writer.TestHistogramWriter;
 import ubic.basecode.math.LinearModelTest;
+import ubic.basecode.math.MathUtil;
 import ubic.basecode.math.MultipleTestCorrectionTest;
 import ubic.basecode.math.StringDistanceTest;
 import ubic.basecode.math.TestCorrelationStats;
+import ubic.basecode.math.TestMathUtil;
 import ubic.basecode.math.TestWilcoxon;
 import ubic.basecode.math.distribution.TestWishart;
 import ubic.basecode.math.metaanalysis.TestCorrelationEffectMetaAnalysis;
 import ubic.basecode.math.metaanalysis.TestMeanDifferenceMetaAnalysis;
 import ubic.basecode.util.FileToolsTest;
+import ubic.basecode.util.NetUtilsTest;
 import ubic.basecode.util.RCommandTest;
 import ubic.basecode.util.TestStringUtil;
 import ubic.basecode.xml.TestGOParser;
@@ -57,7 +62,8 @@ public class AllTests extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
 
-        suite.addTestSuite( TestByteArrayConverter.class );
+        /* gui tests */
+        suite.addTestSuite( JMatrixDisplayTest.class );
 
         /* File reading/writing tests */
         suite.addTestSuite( TestStringMatrixReader.class );
@@ -67,6 +73,8 @@ public class AllTests extends TestCase {
         suite.addTestSuite( TestHistogramWriter.class );
         suite.addTestSuite( TestMapReader.class );
         suite.addTestSuite( TestGeneAnnotations.class );
+        suite.addTestSuite( TestByteArrayConverter.class );
+        suite.addTestSuite( TestStringConverter.class );
 
         /* data structure tests */
         suite.addTestSuite( TestDirectedGraph.class );
@@ -85,22 +93,27 @@ public class AllTests extends TestCase {
         suite.addTestSuite( ubic.basecode.datafilter.TestItemLevelFilter.class );
 
         /* math tests */
-        suite.addTestSuite( StringDistanceTest.class );
+        suite.addTestSuite( TestWishart.class );
+        suite.addTestSuite( TestCorrelationEffectMetaAnalysis.class );
+        suite.addTestSuite( TestMeanDifferenceMetaAnalysis.class );
+
         suite.addTestSuite( LinearModelTest.class );
-        suite.addTestSuite( TestWilcoxon.class );
-        suite.addTestSuite( ubic.basecode.math.TestDescriptiveWithMissing.class );
         suite.addTestSuite( MultipleTestCorrectionTest.class );
-        suite.addTestSuite( ubic.basecode.math.TestKSTest.class );
+        suite.addTestSuite( StringDistanceTest.class );
         suite.addTestSuite( TestCorrelationStats.class );
+
+        suite.addTestSuite( ubic.basecode.math.TestDescriptiveWithMissing.class );
+
+        suite.addTestSuite( ubic.basecode.math.TestKSTest.class );
+        suite.addTestSuite( TestMathUtil.class );
+
         suite.addTestSuite( ubic.basecode.math.TestRank.class );
         suite.addTestSuite( ubic.basecode.math.TestMatrixRowStats.class );
         suite.addTestSuite( ubic.basecode.math.TestMatrixStats.class );
         suite.addTestSuite( ubic.basecode.math.TestStats.class );
         suite.addTestSuite( ubic.basecode.math.TestSpecFunc.class );
         suite.addTestSuite( ubic.basecode.math.TestROC.class );
-        suite.addTestSuite( TestCorrelationEffectMetaAnalysis.class );
-        suite.addTestSuite( TestMeanDifferenceMetaAnalysis.class );
-        suite.addTestSuite( TestWishart.class );
+        suite.addTestSuite( TestWilcoxon.class );
 
         /* XML tests */
         suite.addTestSuite( TestGOParser.class );
@@ -109,7 +122,10 @@ public class AllTests extends TestCase {
         suite.addTestSuite( TestStringUtil.class );
         suite.addTestSuite( FileToolsTest.class );
         suite.addTestSuite( RCommandTest.class );
+        suite.addTestSuite( NetUtilsTest.class );
+
+        System.out.print( "-----------\nBasecode: running " + suite.countTestCases() + " tests.\n-----------\n" );
+
         return suite;
     }
-
 }
