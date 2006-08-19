@@ -227,8 +227,7 @@ public class FileToolsTest extends TestCase {
     public void testCopyFileFailOnDirectoryInput() throws Exception {
         try {
 
-            FileTools.copyPlainOrCompressedFile( System.getProperty( "user.dir" ), tempoutput.getAbsolutePath() );
-            tempoutput.delete();
+            FileTools.copyPlainOrCompressedFile( System.getProperty( "java.io.tmpdir" ), tempoutput.getAbsolutePath() );
             fail( "Should have gotten an exception" );
         } catch ( UnsupportedOperationException e ) {
             ; // expected
