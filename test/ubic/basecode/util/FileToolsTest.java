@@ -19,8 +19,16 @@
 package ubic.basecode.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.nio.CharBuffer;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import junit.framework.TestCase;
 
@@ -31,6 +39,9 @@ import junit.framework.TestCase;
 public class FileToolsTest extends TestCase {
 
     File plain;
+    File compressed;
+    File tempoutput;
+    File tempdir;
 
     /*
      * @see TestCase#setUp()
@@ -42,6 +53,23 @@ public class FileToolsTest extends TestCase {
         FileOutputStream tmp = new FileOutputStream( plain );
         tmp.write( "fooblydoobly\n".getBytes() );
         tmp.close();
+
+        compressed = new File( plain.getAbsolutePath() + ".gz" );
+        OutputStream fos = new FileOutputStream( compressed );
+        OutputStream cos = new GZIPOutputStream( fos );
+
+        InputStream input = new FileInputStream( plain );
+
+        byte[] buf = new byte[1024];
+        int len;
+        while ( ( len = input.read( buf ) ) > 0 ) {
+            cos.write( buf, 0, len );
+        }
+        input.close();
+        cos.close();
+        tempoutput = File.createTempFile( "junkme", ".txt" );
+
+        tempdir = FileTools.createDir( System.getProperty( "java.io.tmpdir" ) + "junk" );
     }
 
     /*
@@ -49,7 +77,10 @@ public class FileToolsTest extends TestCase {
      */
     protected void tearDown() throws Exception {
         super.tearDown();
-        plain.delete();
+        if ( plain != null ) plain.delete();
+        if ( compressed != null ) compressed.delete();
+        if ( tempoutput != null ) tempoutput.delete();
+        if ( tempdir != null ) tempdir.delete();
     }
 
     /*
@@ -165,7 +196,55 @@ public class FileToolsTest extends TestCase {
      * Test method for 'basecode.util.FileTools.getInputStreamFromPlainOrCompressedFile(String)'
      */
     public void testGetInputStreamFromPlainOrCompressedFile() throws Exception {
-        FileTools.getInputStreamFromPlainOrCompressedFile( plain.getPath() );
+        InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile( plain.getPath() );
+        assertTrue( is != null && is.available() > 0 );
+        is.close();
     }
 
+    public void testCopyFile() throws Exception {
+        InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream( "/data/testdata.gz" ) );
+        File testout = File.createTempFile( "testcopy", ".txt" );
+        testout.deleteOnExit();
+        OutputStream output = new FileOutputStream( testout );
+        FileTools.copy( is, output );
+        InputStream inout = new FileInputStream( testout );
+        assertTrue( inout.available() > 0 );
+        long expected = 2736;
+        long actual = testout.length();
+        assertEquals( "Output file had the wrong size", expected, actual );
+        inout.close();
+        testout.delete();
+    }
+
+    public void testUnzipFile() throws Exception {
+        String result = FileTools.unGzipFile( compressed.getAbsolutePath() );
+        Reader r = new FileReader( new File( result ) );
+        char[] buf = new char[1024];
+        int j = r.read( buf );
+        assertEquals( "unexpected character count", 13, j );
+    }
+
+    public void testCopyFileFailOnDirectoryInput() throws Exception {
+        try {
+
+            FileTools.copyPlainOrCompressedFile( System.getProperty( "user.dir" ), tempoutput.getAbsolutePath() );
+            tempoutput.delete();
+            fail( "Should have gotten an exception" );
+        } catch ( UnsupportedOperationException e ) {
+            ; // expected
+        }
+    }
+
+    public void testCopyFileFailOnDirectoryOutput() throws Exception {
+
+        try {
+            FileTools.copyPlainOrCompressedFile( File.createTempFile( "junkme", ".txt" ).getAbsolutePath(), tempdir
+                    .getAbsolutePath() );
+
+            fail( "Should have gotten an exception" );
+        } catch ( UnsupportedOperationException e ) {
+            ; // expected
+        }
+
+    }
 }

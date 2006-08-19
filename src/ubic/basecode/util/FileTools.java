@@ -218,7 +218,8 @@ public class FileTools {
     }
 
     /**
-     * Given the path to a gzipped-file, unzips it into the same directory.
+     * Given the path to a gzipped-file, unzips it into the same directory. If the file already exists it will be
+     * overwritten.
      * 
      * @param seekFile
      * @throws IOException
@@ -232,25 +233,60 @@ public class FileTools {
 
         checkPathIsReadableFile( seekFile );
 
-        InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile( seekFile );
+        String outputFilePath = chompExtension( seekFile );
+        File outputFile = copyPlainOrCompressedFile( seekFile, outputFilePath );
 
-        File outputFile = new File( chompExtension( seekFile ) );
+        return outputFile.getAbsolutePath();
+    }
 
-        if ( outputFile.isDirectory() ) {
-            throw new UnsupportedOperationException( "Don't know how to handle Gzipped directories" );
+    /**
+     * @param sourcePath
+     * @param outputFilePath
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    public static File copyPlainOrCompressedFile( final String sourcePath, String outputFilePath )
+            throws FileNotFoundException, IOException {
+        File sourceFile = new File( sourcePath );
+        if ( !sourceFile.exists() ) {
+            throw new IllegalArgumentException( "Source file (" + sourcePath + ") does not exist" );
+        }
+        if ( sourceFile.exists() && sourceFile.isDirectory() ) {
+            throw new UnsupportedOperationException( "Don't know how to copy directories (" + sourceFile + ")" );
+        }
+
+        File outputFile = new File( outputFilePath );
+        if ( outputFile.exists() && outputFile.isDirectory() ) {
+            throw new UnsupportedOperationException( "Don't know how to copy to directories (" + outputFile + ")" );
         }
 
         OutputStream out = new FileOutputStream( outputFile );
 
+        InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile( sourcePath );
+
+        copy( is, out );
+        return outputFile;
+    }
+
+    /**
+     * On completion streams are closed.
+     * 
+     * @param input
+     * @param output
+     * @throws IOException
+     */
+    public static void copy( InputStream input, OutputStream output ) throws IOException {
+
+        if ( input.available() == 0 ) return;
+
         byte[] buf = new byte[1024];
         int len;
-        while ( ( len = is.read( buf ) ) > 0 ) {
-            out.write( buf, 0, len );
+        while ( ( len = input.read( buf ) ) > 0 ) {
+            output.write( buf, 0, len );
         }
-        is.close();
-        out.close();
-
-        return outputFile.getAbsolutePath();
+        input.close();
+        output.close();
     }
 
     /**
