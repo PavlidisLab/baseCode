@@ -69,7 +69,7 @@ public class FileToolsTest extends TestCase {
         cos.close();
         tempoutput = File.createTempFile( "junkme", ".txt" );
 
-        tempdir = FileTools.createDir( System.getProperty( "java.io.tmpdir" ) + "junk" );
+        tempdir = FileTools.createDir( System.getProperty( "java.io.tmpdir" ) + File.separatorChar + "junk.tmpdir" );
     }
 
     /*
