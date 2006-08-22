@@ -387,13 +387,13 @@ public class FileTools {
     public static void deleteDir( File directory ) {
         log.warn( "deleting " + directory.getAbsoluteFile() );
 
-        File[] files = directory.getAbsoluteFile().listFiles();// FIXME does not delete the directory
-        for ( File file : files ) {
-            if ( file.isDirectory() )
-                deleteDir( file ); // recurse
+        File[] files = directory.getAbsoluteFile().listFiles();
+        for ( int i = 0; i < files.length; i++ ) {
+            if ( files[i].isDirectory() )
+                deleteDir( files[i] ); // recurse
 
             else
-                file.getAbsoluteFile().delete();
+                files[i].getAbsoluteFile().delete();
         }
 
         directory.getAbsoluteFile().delete(); // delete the directory itself
