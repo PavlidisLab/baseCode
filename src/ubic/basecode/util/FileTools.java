@@ -376,4 +376,26 @@ public class FileTools {
         }
         return dirPath;
     }
+
+    /**
+     * Similar to java.io.File.delete but deletes all files in the given directory, all subdirectories, and the
+     * directory itself.
+     * 
+     * @param directory
+     * @return
+     */
+    public static void deleteDir( File directory ) {
+        log.warn( "deleting " + directory.getAbsoluteFile() );
+
+        File[] files = directory.getAbsoluteFile().listFiles();// FIXME does not delete the directory
+        for ( File file : files ) {
+            if ( file.isDirectory() )
+                deleteDir( file ); // recurse
+
+            else
+                file.getAbsoluteFile().delete();
+        }
+
+        directory.getAbsoluteFile().delete(); // delete the directory itself
+    }
 }

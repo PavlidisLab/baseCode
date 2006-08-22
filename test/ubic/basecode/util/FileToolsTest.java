@@ -26,17 +26,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.nio.CharBuffer;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
+ * @author keshav
  * @author pavlidis
  * @version $Id$
  */
 public class FileToolsTest extends TestCase {
+    private Log log = LogFactory.getLog( this.getClass() );
 
     File plain;
     File compressed;
@@ -245,5 +249,30 @@ public class FileToolsTest extends TestCase {
             ; // expected
         }
 
+    }
+
+    /**
+     * Tests deleting a directory and all subdirectories.
+     */
+    public void testDeleteDir() {
+        log.warn( "tempdir " + tempdir );
+        File dir = FileTools.createDir( tempdir.getAbsolutePath() + ".dir" );
+        File subdir = FileTools.createDir( dir.getAbsolutePath() + "/subdir" );
+
+        boolean fail = false;
+        try {
+            File.createTempFile( "junk", ".txt", dir.getAbsoluteFile() );
+            File.createTempFile( "junk", ".txt", dir.getAbsoluteFile() );
+            File.createTempFile( "junk", ".txt", subdir.getAbsoluteFile() );
+
+        } catch ( IOException e ) {
+            fail = true;
+            log.error( "Test failure.  Stacktrace is: " );
+            e.printStackTrace();
+        } finally {
+            assertFalse( fail );
+        }
+
+        FileTools.deleteDir( dir );
     }
 }
