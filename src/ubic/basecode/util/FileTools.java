@@ -382,7 +382,7 @@ public class FileTools {
      * directory itself.
      * 
      * @param directory
-     * @return
+     * @see java.io.File#delete()
      */
     public static void deleteDir( File directory ) {
         log.warn( "deleting " + directory.getAbsoluteFile() );
