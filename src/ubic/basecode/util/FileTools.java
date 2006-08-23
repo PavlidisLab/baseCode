@@ -379,7 +379,8 @@ public class FileTools {
 
     /**
      * Similar to java.io.File.delete but deletes all files in the given directory, all subdirectories, and the
-     * directory itself.
+     * directory itself. THIS METHOD SHOULD BE USED WITH EXTREME CARE ... MAKE SURE YOU ARE ABSOLUTELY CERTAIN OF TOP
+     * LEVEL DIRECTORY YOU ARE TRYING TO DELETE.
      * 
      * @param directory
      * @see java.io.File#delete()
