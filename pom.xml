@@ -302,4 +302,27 @@
 			<url>scp://benzer.ubic.ca:/disk2/WWW/proj/pavlidis/maven2</url>
 		</snapshotRepository>
 	</distributionManagement>
+	<profiles>
+		<profile>
+			<id>local-deploy</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+				<property>
+					<name>deploy.local</name>
+				</property>
+			</activation>
+			<distributionManagement>
+				<repository>
+					<id>repo</id>
+					<name>Benzer</name>
+					<url>file:///disk2/WWW/proj/pavlidis/maven2</url>
+				</repository>
+				<snapshotRepository>
+					<id>repo</id>
+					<name>Benzer</name>
+					<url>file:///disk2/WWW/proj/pavlidis/maven2</url>
+				</snapshotRepository>
+			</distributionManagement>
+		</profile>
+	</profiles>
 </project>
