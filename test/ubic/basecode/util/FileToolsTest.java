@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -252,18 +254,27 @@ public class FileToolsTest extends TestCase {
     }
 
     /**
-     * Tests deleting a directory and all subdirectories.
+     * Tests trying to delete a directory without first deleting the files. The expected result is the directory (and
+     * subdirectories) should not be deleted.
      */
     public void testDeleteDir() {
-        log.warn( "tempdir " + tempdir );
-        File dir = FileTools.createDir( tempdir.getAbsolutePath() + ".dir" );
-        File subdir = FileTools.createDir( dir.getAbsolutePath() + "/subdir" );
+        File dir = FileTools.createDir( tempdir.getAbsolutePath() + "/testdir" );
 
+        File subdir = FileTools.createDir( dir.getAbsolutePath() + "/testsubdir" );
+
+        int numDeleted = 0;
         boolean fail = false;
         try {
-            File.createTempFile( "junk", ".txt", dir.getAbsoluteFile() );
-            File.createTempFile( "junk", ".txt", dir.getAbsoluteFile() );
-            File.createTempFile( "junk", ".txt", subdir.getAbsoluteFile() );
+            File file0 = File.createTempFile( "junk", ".txt", dir.getAbsoluteFile() );
+            File file1 = File.createTempFile( "junk", ".txt", dir.getAbsoluteFile() );
+            File file2 = File.createTempFile( "junk", ".txt", subdir.getAbsoluteFile() );
+
+            Collection files = new HashSet();
+            files.add( file0 );
+            files.add( file1 );
+            files.add( file2 );
+
+            numDeleted = FileTools.deleteDir( dir );
 
         } catch ( IOException e ) {
             fail = true;
@@ -271,8 +282,40 @@ public class FileToolsTest extends TestCase {
             e.printStackTrace();
         } finally {
             assertFalse( fail );
+            assertTrue( numDeleted == 0 );
         }
+    }
 
-        FileTools.deleteDir( dir );
+    /**
+     * Tests deleting files in a directory tree, then the directories.
+     */
+    public void testDeleteFilesAndDir() {
+        File dir = FileTools.createDir( tempdir.getAbsolutePath() + "/dir" );
+
+        File subdir = FileTools.createDir( dir.getAbsolutePath() + "/subdir" );
+
+        int numDeleted = 0;
+        boolean fail = false;
+        try {
+            File file0 = File.createTempFile( "junk", ".txt", dir.getAbsoluteFile() );
+            File file1 = File.createTempFile( "junk", ".txt", dir.getAbsoluteFile() );
+            File file2 = File.createTempFile( "junk", ".txt", subdir.getAbsoluteFile() );
+
+            Collection files = new HashSet();
+            files.add( file0 );
+            files.add( file1 );
+            files.add( file2 );
+
+            FileTools.deleteFiles( files );
+            numDeleted = FileTools.deleteDir( dir );
+
+        } catch ( IOException e ) {
+            fail = true;
+            log.error( "Test failure.  Stacktrace is: " );
+            e.printStackTrace();
+        } finally {
+            assertFalse( fail );
+            assertTrue( numDeleted == 2 );
+        }
     }
 }

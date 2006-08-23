@@ -26,8 +26,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -378,25 +380,72 @@ public class FileTools {
     }
 
     /**
-     * Similar to java.io.File.delete but deletes all files in the given directory, all subdirectories, and the
-     * directory itself. THIS METHOD SHOULD BE USED WITH EXTREME CARE ... MAKE SURE YOU ARE ABSOLUTELY CERTAIN OF TOP
-     * LEVEL DIRECTORY YOU ARE TRYING TO DELETE.
+     * Deletes the specified <link>Collection<link> of files.
      * 
-     * @param directory
+     * @param files
+     * @return int The number of files deleted.
      * @see java.io.File#delete()
      */
-    public static void deleteDir( File directory ) {
-        log.warn( "deleting " + directory.getAbsoluteFile() );
+    public static int deleteFiles( Collection files ) {
 
-        File[] files = directory.getAbsoluteFile().listFiles();
-        for ( int i = 0; i < files.length; i++ ) {
-            if ( files[i].isDirectory() )
-                deleteDir( files[i] ); // recurse
+        int numDeleted = 0;
 
-            else
-                files[i].getAbsoluteFile().delete();
+        // TODO when basecode moves to java 5, use for:each here
+        Iterator iter = files.iterator();
+        while ( iter.hasNext() ) {
+
+            File file = ( File ) iter.next();
+            if ( file.isDirectory() ) {
+                log.warn( "Cannot delete a directory." );
+                continue;
+            }
+
+            else {
+                log.warn( "Deleting file " + file.getAbsolutePath() + "." );
+                file.getAbsoluteFile().delete();
+                numDeleted++;
+            }
+        }
+        log.info( "Deleted " + numDeleted + " files." );
+        return numDeleted;
+    }
+
+    /**
+     * Deletes the directory and subdirectories if empty.
+     * 
+     * @param directory
+     * @return int The number of directories deleted.
+     * @see java.io.File#delete()
+     */
+    public static int deleteDir( File directory ) {
+        int numDeleted = 0;
+        Collection directories = listSubDirectories( directory );
+
+        // TODO when basecode moves to java 5, use for:each here
+        Iterator iter = directories.iterator();
+        while ( iter.hasNext() ) {
+            File dir = ( File ) iter.next();
+
+            if ( dir.listFiles().length == 0 ) {
+                dir.getAbsoluteFile().delete();
+                numDeleted++;
+            } else {
+                log.info( "Directory not empty.  Skipping deletion of " + dir.getAbsolutePath() + "." );
+            }
         }
 
-        directory.getAbsoluteFile().delete(); // delete the directory itself
+        /* The top level directory */
+        if ( directory.listFiles().length == 0 ) {
+            log.warn( "Deleting top level directory." );
+            directory.getAbsoluteFile().delete();
+            numDeleted++;
+        }
+
+        else {
+            log.info( "Top level directory " + directory.getAbsolutePath() + " not empty.  Will not delete." );
+        }
+
+        log.info( "Deleted " + numDeleted + "." );
+        return numDeleted;
     }
 }
