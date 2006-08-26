@@ -490,8 +490,8 @@ public class BrowserLauncher {
         if ( !loadedWithoutErrors ) {
             throw new IOException( "Exception in finding browser: " + errorMessage );
         }
-        Object browser = locateBrowser();
-        if ( browser == null ) {
+        Object localBrowser = locateBrowser();
+        if ( localBrowser == null ) {
             throw new IOException( "Unable to locate browser: " + errorMessage );
         }
 
@@ -500,8 +500,8 @@ public class BrowserLauncher {
                 Object aeDesc = null;
                 try {
                     aeDesc = aeDescConstructor.newInstance( new Object[] { url } );
-                    putParameter.invoke( browser, new Object[] { keyDirectObject, aeDesc } );
-                    sendNoReply.invoke( browser, new Object[] {} );
+                    putParameter.invoke( localBrowser, new Object[] { keyDirectObject, aeDesc } );
+                    sendNoReply.invoke( localBrowser, new Object[] {} );
                 } catch ( InvocationTargetException ite ) {
                     throw new IOException( "InvocationTargetException while creating AEDesc: " + ite.getMessage() );
                 } catch ( IllegalAccessException iae ) {
@@ -510,11 +510,11 @@ public class BrowserLauncher {
                     throw new IOException( "InstantiationException while creating AEDesc: " + ie.getMessage() );
                 } finally {
                     aeDesc = null; // Encourage it to get disposed if it was created
-                    browser = null; // Ditto
+                    localBrowser = null; // Ditto
                 }
                 break;
             case MRJ_2_1:
-                Runtime.getRuntime().exec( new String[] { ( String ) browser, url } );
+                Runtime.getRuntime().exec( new String[] { ( String ) localBrowser, url } );
                 break;
             case MRJ_3_0:
                 int[] instance = new int[1];
@@ -550,7 +550,7 @@ public class BrowserLauncher {
                 // Add quotes around the URL to allow ampersands and other special
                 // characters to work.
                 Process process = Runtime.getRuntime().exec(
-                        new String[] { ( String ) browser, FIRST_WINDOWS_PARAMETER, SECOND_WINDOWS_PARAMETER,
+                        new String[] { ( String ) localBrowser, FIRST_WINDOWS_PARAMETER, SECOND_WINDOWS_PARAMETER,
                                 THIRD_WINDOWS_PARAMETER, '"' + url + '"' } );
                 // This avoids a memory leak on some versions of Java on Windows.
                 // That's hinted at in <http://developer.java.sun.com/developer/qow/archive/68/>.
@@ -566,12 +566,12 @@ public class BrowserLauncher {
 
                 // First, attempt to open the URL in a currently running session of Netscape
                 process = Runtime.getRuntime().exec(
-                        new String[] { ( String ) browser, NETSCAPE_REMOTE_PARAMETER,
+                        new String[] { ( String ) localBrowser, NETSCAPE_REMOTE_PARAMETER,
                                 NETSCAPE_OPEN_PARAMETER_START + url + NETSCAPE_OPEN_PARAMETER_END } );
                 try {
                     int exitCode = process.waitFor();
                     if ( exitCode != 0 ) { // if Netscape was not open
-                        Runtime.getRuntime().exec( new String[] { ( String ) browser, url } );
+                        Runtime.getRuntime().exec( new String[] { ( String ) localBrowser, url } );
                     }
                 } catch ( InterruptedException ie ) {
                     throw new IOException( "InterruptedException while launching browser: " + ie.getMessage() );
@@ -579,7 +579,7 @@ public class BrowserLauncher {
                 break;
             default:
                 // This should never occur, but if it does, we'll try the simplest thing possible
-                Runtime.getRuntime().exec( new String[] { ( String ) browser, url } );
+                Runtime.getRuntime().exec( new String[] { ( String ) localBrowser, url } );
                 break;
         }
     }
