@@ -38,7 +38,6 @@ import ubic.basecode.io.reader.TestSparseRaggedDouble2DNamedMatrixReader;
 import ubic.basecode.io.reader.TestStringMatrixReader;
 import ubic.basecode.io.writer.TestHistogramWriter;
 import ubic.basecode.math.LinearModelTest;
-import ubic.basecode.math.MathUtil;
 import ubic.basecode.math.MultipleTestCorrectionTest;
 import ubic.basecode.math.StringDistanceTest;
 import ubic.basecode.math.TestCorrelationStats;

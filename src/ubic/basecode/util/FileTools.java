@@ -26,7 +26,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -390,7 +389,6 @@ public class FileTools {
 
         int numDeleted = 0;
 
-        // TODO when basecode moves to java 5, use for:each here
         Iterator iter = files.iterator();
         while ( iter.hasNext() ) {
 
@@ -400,11 +398,11 @@ public class FileTools {
                 continue;
             }
 
-            else {
-                log.warn( "Deleting file " + file.getAbsolutePath() + "." );
-                file.getAbsoluteFile().delete();
-                numDeleted++;
-            }
+            if ( log.isDebugEnabled() ) log.debug( "Deleting file " + file.getAbsolutePath() + "." );
+
+            file.getAbsoluteFile().delete();
+            numDeleted++;
+
         }
         log.info( "Deleted " + numDeleted + " files." );
         return numDeleted;
@@ -421,7 +419,6 @@ public class FileTools {
         int numDeleted = 0;
         Collection directories = listSubDirectories( directory );
 
-        // TODO when basecode moves to java 5, use for:each here
         Iterator iter = directories.iterator();
         while ( iter.hasNext() ) {
             File dir = ( File ) iter.next();
@@ -445,7 +442,7 @@ public class FileTools {
             log.info( "Top level directory " + directory.getAbsolutePath() + " not empty.  Will not delete." );
         }
 
-        log.info( "Deleted " + numDeleted + "." );
+        log.info( "Deleted " + numDeleted + " directories." );
         return numDeleted;
     }
 }
