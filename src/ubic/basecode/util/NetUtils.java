@@ -25,8 +25,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.SocketException;
 import java.net.URISyntaxException;
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
