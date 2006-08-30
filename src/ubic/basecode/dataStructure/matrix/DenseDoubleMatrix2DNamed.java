@@ -116,6 +116,38 @@ public class DenseDoubleMatrix2DNamed extends DoubleMatrixNamed {
     }
 
     /**
+     * Converts to a String that can be read by read.table in R, using default parameters
+     * @return java.lang.String
+     */
+  /*  public String toRReadTableString() {
+        Format nf = new Format( "%.4g" );
+        StringBuffer result = new StringBuffer( this.rows() * this.columns() );
+
+        if ( this.hasColNames() ) {
+            for ( int i = 0; i < this.columns(); i++ ) {
+                result.append( "\"" + this.getColName( i ) +"\" ");
+                System.out.println("\"" + this.getColName( i ) +"\" ");
+            }
+            result.append( "\n" );
+        }
+
+        for ( int i = 0; i < this.rows(); i++ ) {
+            if ( this.hasRowNames() ) {
+                result.append("\"" + this.getRowName( i ) + "\"" );
+            }
+            for ( int j = 0; j < this.columns(); j++ ) {
+                if ( Double.isNaN( this.get( i, j ) ) ) {
+                    result.append( " NA" );
+                } else {
+                    result.append( " " + nf.format( this.get( i, j ) ) );
+                }
+            }
+            result.append( "\n" );
+        }
+        return result.toString();
+    }*/
+    
+    /**
      * @return java.lang.String
      */
     public String toString() {
