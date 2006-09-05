@@ -141,7 +141,6 @@ public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed {
 
         StringBuffer buf = new StringBuffer();
 
-        String result = "";
         if ( this.hasColNames() || this.hasRowNames() ) {
             buf.append( "label" );
         }

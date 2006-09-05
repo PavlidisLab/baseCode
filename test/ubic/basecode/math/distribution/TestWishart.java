@@ -1,5 +1,8 @@
 package ubic.basecode.math.distribution;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import junit.framework.TestCase;
 import ubic.basecode.util.RegressionTesting;
 import cern.colt.matrix.DoubleMatrix2D;
@@ -7,14 +10,12 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import cern.jet.random.engine.MersenneTwister;
 
 /**
- * <hr>
- * <p>
- * Copyright (c) 2004 Columbia University
- * 
  * @author pavlidis
  * @version $Id$
  */
 public class TestWishart extends TestCase {
+
+    private static Log log = LogFactory.getLog( TestWishart.class.getName() );
 
     Wishart t1;
     Wishart t2;
@@ -34,7 +35,7 @@ public class TestWishart extends TestCase {
 
     public void testNextDoubleMatrix() {
         DoubleMatrix2D actualReturn = t1.nextDoubleMatrix();
-        System.err.println( actualReturn );
+        log.debug( actualReturn );
         DoubleMatrix2D expectedReturn = new DenseDoubleMatrix2D( new double[][] { { 1.426553, 4.848117 },
                 { 4.848117, 16.9009 } } );
         assertTrue( RegressionTesting.closeEnough( expectedReturn, actualReturn, 0.0001 ) );

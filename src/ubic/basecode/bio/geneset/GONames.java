@@ -41,8 +41,6 @@ import ubic.basecode.xml.GOParser;
 
 /**
  * Read data from GO XML file, store in easy-to-use data structure.
- * <p>
- * Copyright (c) 2006 University of British Columbia
  * 
  * @author Paul Pavlidis
  * @author Homin Lee
@@ -319,8 +317,9 @@ public class GONames {
 
     /**
      * @param id
+     * @deprecated
      */
-    private void removeClassFromUserDefined( String id ) {
+    void removeClassFromUserDefined( String id ) {
         if ( getGraph() == null ) return;
         if ( this.getGraph().get( USER_DEFINED ) == null ) {
             log.error( "No user-defined root node!" );

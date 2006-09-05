@@ -67,9 +67,4 @@ public class NetUtilsTest extends TestCase {
 
     }
 
-    final public void testGetURIA() throws Exception {
-        URI foo = NetUtils.getURI( "http://www.i.am.an.idiot/bla bla bla" );
-        assertEquals( "http://www.i.am.an.idiot/bla%20bla%20bla", foo.toString() );
-    }
-
 }

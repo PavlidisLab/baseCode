@@ -18,6 +18,9 @@
  */
 package ubic.basecode.datafilter;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
 import ubic.basecode.io.reader.StringMatrixReader;
@@ -25,10 +28,12 @@ import ubic.basecode.io.reader.StringMatrixReader;
 /**
  * See the file test/data/matrix-testing.xls for the validation.
  * 
- * @author Owner
+ * @author paul
  * @version $Id$
  */
 public class TestRowAbsentFilter extends AbstractTestFilter {
+
+    private static Log log = LogFactory.getLog( TestRowAbsentFilter.class.getName() );
 
     StringMatrix2DNamed testpdata = null;
 
@@ -122,7 +127,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
             f.filter( testdata );
             fail( "Should have gotten an exception" );
         } catch ( IllegalArgumentException e ) {
-            System.err.println( e );
+            log.debug( "As expected, got " + e );
         }
 
     }
@@ -134,7 +139,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
             f.filter( testdata );
             fail( "Should have gotten an exception" );
         } catch ( IllegalStateException e ) {
-            System.err.println( e );
+            log.debug( "As expected, got " + e );
         }
 
     }
@@ -145,10 +150,8 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
             f.setMinPresentCount( 10 );
             f.filter( testdata );
             fail( "Should have gotten an exception" );
-        } catch ( IllegalStateException success ) {
-            System.err.println( success );
         } catch ( IllegalArgumentException success ) {
-            System.err.println( success );
+            log.debug( "As expected, got " + success );
         }
     }
 
