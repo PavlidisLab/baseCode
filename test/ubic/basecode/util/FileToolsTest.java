@@ -278,6 +278,8 @@ public class FileToolsTest extends TestCase {
 
         } catch ( IOException e ) {
             fail = true;
+            log.error("Tried to create directory (" + dir.getAbsolutePath() + ")");
+            log.error("Tried to create subdirectory (" + subdir.getAbsolutePath() + ")");
             log.error( "Test failure.  Stacktrace is: " );
             e.printStackTrace();
         } finally {
@@ -293,7 +295,7 @@ public class FileToolsTest extends TestCase {
         File dir = FileTools.createDir( tempdir.getAbsolutePath() + "/dir" );
 
         File subdir = FileTools.createDir( dir.getAbsolutePath() + "/subdir" );
-
+        
         int numDeleted = 0;
         boolean fail = false;
         try {
