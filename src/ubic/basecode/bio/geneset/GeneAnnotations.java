@@ -1408,7 +1408,7 @@ public class GeneAnnotations {
 
             String probe = tokens[0].intern();
             String gene = tokens[1].intern();
-            if ( activeGenes != null && !activeGenes.contains( gene ) ) {
+            if ( activeGenes != null && !activeGenes.contains( probe ) ) {
                 continue;
             }
 
