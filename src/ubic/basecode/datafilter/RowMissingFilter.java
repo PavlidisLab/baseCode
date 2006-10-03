@@ -111,6 +111,7 @@ public class RowMissingFilter extends AbstractFilter implements Filter {
             if ( missingCount >= ABSOLUTEMINPRESENT && missingCount >= minPresentCount ) {
                 kept++;
                 MTemp.add( data.getRowObj( i ) );
+                rowNames.add(data.getRowName( i ));
             }
         }
 
@@ -133,6 +134,7 @@ public class RowMissingFilter extends AbstractFilter implements Filter {
                 if ( present.get( i ) >= minPresentCount && present.get( i ) >= ABSOLUTEMINPRESENT ) {
                     kept++;
                     MTemp.add( data.getRowObj( i ) );
+                    rowNames.add(data.getRowName( i ));
                 }
             }
 
