@@ -19,6 +19,9 @@
 package ubic.basecode.gui;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +51,9 @@ public class JMatrixDisplayTest extends BaseTestCase {
     File tmp;
     List colNames = new ArrayList();
 
+    /**
+     * 
+     */
     protected void setUp() throws Exception {
         tmp = File.createTempFile( "testimage", ".png" );
         log.warn( "setup" );
@@ -58,6 +64,7 @@ public class JMatrixDisplayTest extends BaseTestCase {
         array[3] = row3;
         array[4] = row4;
 
+        // TODO use java 5
         rowNames.add( "A" );
         rowNames.add( "B" );
         rowNames.add( "C" );
@@ -71,6 +78,9 @@ public class JMatrixDisplayTest extends BaseTestCase {
         colNames.add( "4_at" );
     }
 
+    /**
+     * 
+     */
     protected void tearDown() throws Exception {
         tmp.delete();
         rowNames = null;
@@ -82,7 +92,7 @@ public class JMatrixDisplayTest extends BaseTestCase {
      * 
      *
      */
-    public void testSaveImage() throws Exception {
+    public void testSaveImage() {
 
         // DoubleMatrix2D matrix = new DenseDoubleMatrix2D( array );
         DoubleMatrixNamed matrix = new DenseDoubleMatrix2DNamed( array );
@@ -91,15 +101,23 @@ public class JMatrixDisplayTest extends BaseTestCase {
         ColorMatrix colorMatrix = new ColorMatrix( matrix );
         JMatrixDisplay display = new JMatrixDisplay( colorMatrix );
         display.setLabelsVisible( true );
-        display.saveImage( tmp.getAbsolutePath() );
-        // FIXME - no fail condition other than exception
+
+        boolean fail = false;
+        try {
+            display.saveImage( tmp.getAbsolutePath() );
+        } catch ( IOException e ) {
+            fail = true;
+            e.printStackTrace();
+        } finally {
+            assertFalse( fail );
+        }
     }
 
     /**
      * 
      *
      */
-    public void testSaveImageStandardize() throws Exception {
+    public void testSaveImageStandardize() {
 
         // DoubleMatrix2D matrix = new DenseDoubleMatrix2D( array );
         DoubleMatrixNamed matrix = new DenseDoubleMatrix2DNamed( array );
@@ -108,8 +126,40 @@ public class JMatrixDisplayTest extends BaseTestCase {
         ColorMatrix colorMatrix = new ColorMatrix( matrix );
         JMatrixDisplay display = new JMatrixDisplay( colorMatrix );
         display.setLabelsVisible( true );
-        display.saveImage( tmp.getAbsolutePath() );
-        // FIXME no fail condition other than exception.
+
+        boolean fail = false;
+        try {
+            display.saveImage( tmp.getAbsolutePath() );
+        } catch ( IOException e ) {
+            fail = true;
+            e.printStackTrace();
+        } finally {
+            assertFalse( fail );
+        }
+    }
+
+    /**
+     * 
+     *
+     */
+    public void testWriteOutAsPNG() {
+        DoubleMatrixNamed matrix = new DenseDoubleMatrix2DNamed( array );
+        matrix.setRowNames( rowNames );
+        matrix.setColumnNames( colNames );
+        ColorMatrix colorMatrix = new ColorMatrix( matrix );
+        JMatrixDisplay display = new JMatrixDisplay( colorMatrix );
+        display.setLabelsVisible( true );
+
+        boolean fail = false;
+        try {
+            OutputStream stream = new FileOutputStream( File.createTempFile( "testOuputStream", ".out" ) );
+            display.writeOutAsPNG( stream, true, true );
+        } catch ( IOException e ) {
+            fail = true;
+            e.printStackTrace();
+        } finally {
+            assertFalse( fail );
+        }
     }
 
     // public void testColorMatrixHtmlLabels() {
