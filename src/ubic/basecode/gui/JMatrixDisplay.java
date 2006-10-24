@@ -26,11 +26,15 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import ubic.basecode.gui.graphics.text.Util;
@@ -42,6 +46,7 @@ import ubic.basecode.gui.graphics.text.Util;
  * @version $Id$
  */
 public class JMatrixDisplay extends JPanel {
+    private Log log = LogFactory.getLog( JMatrixDisplay.class );
 
     // data fields
     ColorMatrix m_matrix; // reference to standardized or unstandardized matrix
@@ -331,6 +336,49 @@ public class JMatrixDisplay extends JPanel {
 
         // Write the image to a png file
         ImageIO.write( m_image, "png", new File( outPngFilename ) );
+
+        // Restore state: make the image as it was before
+        if ( !wereLabelsShown ) {
+            // Labels weren't visible to begin with, so hide them
+            setLabelsVisible( false );
+            initSize();
+        }
+    } // end saveImage
+
+    /**
+     * @param stream
+     * @param showLabels
+     * @param standardize
+     */
+    public void writeOutAsPNG( OutputStream stream, boolean showLabels, boolean standardize ) {
+        // TODO move me
+        Graphics2D g = null;
+
+        // Include row and column labels?
+        boolean wereLabelsShown = m_isShowLabels;
+        if ( !wereLabelsShown ) {
+            // Labels aren't visible, so make them visible
+            setLabelsVisible( true );
+            initSize();
+        }
+
+        // Draw the image to a buffer
+        Dimension d = getSize( showLabels ); // how big is the image with row and
+        // column labels
+        m_image = new BufferedImage( d.width, d.height, BufferedImage.TYPE_INT_RGB );
+        g = m_image.createGraphics();
+        drawMatrix( g, showLabels );
+        if ( showLabels ) {
+            drawRowNames( g );
+            drawColumnNames( g );
+        }
+
+        // Write the buffered image to the output steam.
+        try {
+            ImageIO.write( m_image, "png", stream );
+        } catch ( IOException e ) {
+            log.error( "Error writing image to output stream.  Stacktrace is: " + e.toString() );
+        }
 
         // Restore state: make the image as it was before
         if ( !wereLabelsShown ) {
