@@ -20,5 +20,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="var" path="M2_REPO/oro/oro/2.0.8/oro-2.0.8.jar"/>
+	<classpathentry kind="var" path="M2_REPO/mtj/mtj/0.9.8/mtj-0.9.8.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
