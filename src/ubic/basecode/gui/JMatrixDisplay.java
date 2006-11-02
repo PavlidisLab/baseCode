@@ -369,7 +369,7 @@ public class JMatrixDisplay extends JPanel {
         g = m_image.createGraphics();
         drawMatrix( g, showLabels );
         if ( showLabels ) {
-            drawRowNames( g );
+            // drawRowNames( g );
             drawColumnNames( g );
         }
 
