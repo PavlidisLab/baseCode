@@ -171,7 +171,7 @@ public class ColorMatrix implements Cloneable {
         m_colors[row][column] = newColor;
     }
 
-    public String getRowName( int row ) throws ArrayIndexOutOfBoundsException {
+    public Object getRowName( int row ) throws ArrayIndexOutOfBoundsException {
 
         if ( row >= m_totalRows )
             throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalRows
@@ -182,7 +182,7 @@ public class ColorMatrix implements Cloneable {
         return m_matrix.getRowName( row );
     }
 
-    public String getColumnName( int column ) throws ArrayIndexOutOfBoundsException {
+    public Object getColumnName( int column ) throws ArrayIndexOutOfBoundsException {
 
         if ( column >= m_totalColumns )
             throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalColumns
