@@ -110,7 +110,7 @@ public class AffymetrixProbeNameFilter extends AbstractFilter implements Filter 
 
         int kept = 0;
         for ( int i = 0; i < numRows; i++ ) {
-            String name = data.getRowName( i );
+            String name = data.getRowName( i ).toString();
 
             // apply the rules.
             if ( skip_ST && name.endsWith( "_st" ) ) { // 'st' means sense strand.

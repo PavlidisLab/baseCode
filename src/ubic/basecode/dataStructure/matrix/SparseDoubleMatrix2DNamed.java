@@ -30,7 +30,7 @@ import cern.colt.matrix.impl.SparseDoubleMatrix2D;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class SparseDoubleMatrix2DNamed extends DoubleMatrixNamed implements NamedMatrix {
+public class SparseDoubleMatrix2DNamed extends DoubleMatrixNamed {
 
     private SparseDoubleMatrix2D matrix;
 
@@ -50,7 +50,7 @@ public class SparseDoubleMatrix2DNamed extends DoubleMatrixNamed implements Name
         super();
         matrix = new SparseDoubleMatrix2D( rows, cols );
     }
-    
+
     /**
      * @param rows int
      * @param cols int
@@ -58,11 +58,11 @@ public class SparseDoubleMatrix2DNamed extends DoubleMatrixNamed implements Name
      * @param minLoadFactor double
      * @param maxLoadFactor double
      */
-    public SparseDoubleMatrix2DNamed( int rows, int cols, int initialCapacity, double minLoadFactor, double maxLoadFactor)  {
+    public SparseDoubleMatrix2DNamed( int rows, int cols, int initialCapacity, double minLoadFactor,
+            double maxLoadFactor ) {
         super();
         matrix = new SparseDoubleMatrix2D( rows, cols, initialCapacity, minLoadFactor, maxLoadFactor );
     }
-
 
     public void set( int row, int col, Object value ) {
         set( row, col, ( ( Double ) value ).doubleValue() );

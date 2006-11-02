@@ -56,7 +56,7 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
      * 
      * @param s
      */
-    public final void addColumnName( String s ) {
+    public final void addColumnName( Object s ) {
 
         if ( colMap.containsKey( s ) ) {
             throw new IllegalArgumentException( "Duplicate column name " + s );
@@ -68,7 +68,7 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
 
     }
 
-    public final void addColumnName( String s, int i ) {
+    public final void addColumnName( Object s, int i ) {
 
         if ( colMap.containsKey( s ) ) {
             throw new IllegalArgumentException( "Duplicate column name " + s );
@@ -84,7 +84,7 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
      * 
      * @param s
      */
-    public final void addRowName( String s ) {
+    public final void addRowName( Object s ) {
 
         if ( rowMap.containsKey( s ) ) {
             // throw new IllegalArgumentException("Duplicate row name " + s);
@@ -101,7 +101,7 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
      * 
      * @see basecode.dataStructure.NamedMatrix#addRowName(java.lang.String, int)
      */
-    public final void addRowName( String s, int i ) {
+    public final void addRowName( Object s, int i ) {
 
         if ( rowMap.containsKey( s ) ) {
             // throw new IllegalArgumentException("Duplicate row name " + s);
@@ -116,7 +116,7 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
      * @param s String
      * @return int
      */
-    public final int getRowIndexByName( String s ) {
+    public final int getRowIndexByName( Object s ) {
         Integer r = ( ( Integer ) rowMap.get( s ) );
         if ( r == null ) throw new IllegalArgumentException( s + " not found" );
         return r.intValue();
@@ -126,7 +126,7 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
      * @param r String
      * @return int
      */
-    public final int getColIndexByName( String r ) {
+    public final int getColIndexByName( Object r ) {
         Integer c = ( ( Integer ) colMap.get( r ) );
         if ( c == null ) throw new IllegalArgumentException( r + " not found" );
         return c.intValue();
@@ -136,16 +136,16 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
      * @param i int
      * @return java.lang.String
      */
-    public final String getRowName( int i ) {
-        return ( String ) rowNames.get( i );
+    public final Object getRowName( int i ) {
+        return rowNames.get( i );
     }
 
     /**
      * @param i int
      * @return java.lang.String
      */
-    public final String getColName( int i ) {
-        return ( String ) colNames.get( i );
+    public final Object getColName( int i ) {
+        return colNames.get( i );
     }
 
     public final boolean hasRowNames() {
@@ -158,13 +158,13 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
 
     public final void setRowNames( List v ) {
         for ( int i = 0; i < v.size(); i++ ) {
-            addRowName( ( String ) v.get( i ), i );
+            addRowName( v.get( i ), i );
         }
     }
 
     public void setColumnNames( List v ) {
         for ( int i = 0; i < v.size(); i++ ) {
-            addColumnName( ( String ) v.get( i ), i );
+            addColumnName( v.get( i ), i );
         }
     }
 
@@ -176,7 +176,7 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
         return rowNames;
     }
 
-    public final boolean hasRow( String r ) {
+    public final boolean hasRow( Object r ) {
         return this.rowMap.containsKey( r );
     }
 
@@ -196,11 +196,11 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
 
     public abstract boolean isMissing( int i, int j );
 
-    public final boolean containsRowName( String rowName ) {
+    public final boolean containsRowName( Object rowName ) {
         return rowNames.contains( rowName );
     }
 
-    public final boolean containsColumnName( String columnName ) {
+    public final boolean containsColumnName( Object columnName ) {
         return colNames.contains( columnName );
     }
 

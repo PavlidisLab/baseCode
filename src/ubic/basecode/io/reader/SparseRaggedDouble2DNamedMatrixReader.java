@@ -54,10 +54,10 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
      * Read a sparse symmetric square matrix that is expressed as an adjacency list in a tab-delimited file:
      * 
      * <pre>
-     *         
-     *                                     item1 item2 weight
-     *                                     item1 item5 weight
-     *          
+     *           
+     *                                       item1 item2 weight
+     *                                       item1 item5 weight
+     *            
      * </pre>
      * 
      * <p>
@@ -81,9 +81,9 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
      *         tab-delimited file:
      * 
      * <pre>
-     *           
-     *                        item1 item2 weight
-     *                        item1 item5 weight
+     *             
+     *                          item1 item2 weight
+     *                          item1 item5 weight
      * </pre>
      * 
      * <p>
@@ -111,7 +111,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
         while ( ( row = dis.readLine() ) != null ) {
             StringTokenizer st = new StringTokenizer( row, " \t", false );
 
-            String itemA = "";
+            Object itemA = null;
             if ( st.hasMoreTokens() ) {
                 itemA = st.nextToken();
                 if ( !itemNames.contains( itemA ) ) {
@@ -126,7 +126,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
             } else
                 continue;
 
-            String itemB = "";
+            Object itemB = null;
             if ( st.hasMoreTokens() ) {
                 itemB = st.nextToken();
                 if ( !itemNames.contains( itemB ) ) {
@@ -166,7 +166,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
         SparseRaggedDoubleMatrix2DNamed matrix = new SparseRaggedDoubleMatrix2DNamed();
 
         for ( int i = 0; i < indexNameMap.size(); i++ ) {
-            String itemName = ( String ) indexNameMap.get( i );
+            Object itemName = indexNameMap.get( i );
 
             OpenIntDoubleHashMap arow = ( OpenIntDoubleHashMap ) rows.get( itemName );
 

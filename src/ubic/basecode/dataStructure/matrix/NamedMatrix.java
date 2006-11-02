@@ -32,50 +32,50 @@ public interface NamedMatrix {
     /**
      * Add a column name associated with an index.
      * 
-     * @param s String a column name
+     * @param s Object a column name
      * @param index int the column index associated with this name
      */
-    public void addColumnName( String s, int index );
+    public void addColumnName( Object s, int index );
 
     /**
      * Add a row name associated with a row index.
      * 
-     * @param s String
+     * @param s Object
      * @param index int
      */
-    public void addRowName( String s, int index );
+    public void addRowName( Object s, int index );
 
     /**
      * Get the index of a row by name..
      * 
-     * @param s String
+     * @param s Object
      * @return int
      */
-    public int getRowIndexByName( String s );
+    public int getRowIndexByName( Object s );
 
     /**
      * Get the index of a column by name.
      * 
-     * @param s String
+     * @param s Object
      * @return int
      */
-    public int getColIndexByName( String s );
+    public int getColIndexByName( Object s );
 
     /**
      * Get the row name for an index
      * 
      * @param i int
-     * @return java.lang.String
+     * @return java.lang.Object
      */
-    public String getRowName( int i );
+    public Object getRowName( int i );
 
     /**
      * Gte the column name for an index.
      * 
      * @param i int
-     * @return java.lang.String
+     * @return java.lang.Object
      */
-    public String getColName( int i );
+    public Object getColName( int i );
 
     /**
      * @return boolean
@@ -100,20 +100,20 @@ public interface NamedMatrix {
     public void setColumnNames( List v );
 
     /**
-     * @return List of Strings
+     * @return List of Object
      */
     public List getColNames();
 
     /**
-     * @return List of Strings
+     * @return List of Object
      */
     public List getRowNames();
 
     /**
-     * @param r String
+     * @param r Object
      * @return boolean
      */
-    public boolean hasRow( String r );
+    public boolean hasRow( Object r );
 
     /**
      * @return java.util.Iterator
@@ -177,13 +177,13 @@ public interface NamedMatrix {
      * @param rowName
      * @return
      */
-    public boolean containsRowName( String rowName );
+    public boolean containsRowName( Object rowName );
 
     /**
      * @param columnName
      * @return
      */
-    public boolean containsColumnName( String columnName );
+    public boolean containsColumnName( Object columnName );
 
     /**
      * @return

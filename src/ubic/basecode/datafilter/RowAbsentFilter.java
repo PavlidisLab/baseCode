@@ -128,7 +128,7 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
 
         int kept = 0;
         for ( int i = 0; i < numRows; i++ ) {
-            String rowName = data.getRowName( i );
+            Object rowName = data.getRowName( i );
 
             if ( !flags.containsRowName( rowName ) ) {
                 log.debug( "Row " + rowName + " not found in flags, skipping." );
@@ -137,7 +137,7 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
 
             int numPresent = 0;
             for ( int j = 0; j < numCols; j++ ) {
-                String colName = data.getColName( j );
+                Object colName = data.getColName( j );
 
                 if ( !flags.containsColumnName( colName ) ) {
                     log.debug( "Column " + colName + " not found in flags, skipping." );

@@ -23,9 +23,6 @@ import cern.colt.matrix.impl.DenseObjectMatrix2D;
 
 /**
  * Very closely related to the StringMatrix2DNamed, but holds ay objects.
- * <hr>
- * <p>
- * Copyright (c) 2004-2005 Columbia University
  * 
  * @author pavlidis
  * @version $Id$

@@ -66,7 +66,7 @@ public class DenseDoubleMatrix2DNamed extends DoubleMatrixNamed {
      * @param s String
      * @return double[]
      */
-    public double[] getRowByName( String s ) {
+    public double[] getRowByName( Object s ) {
         return getRow( getRowIndexByName( s ) );
     }
 
@@ -90,7 +90,7 @@ public class DenseDoubleMatrix2DNamed extends DoubleMatrixNamed {
      * @param col int
      * @return double[]
      */
-    public double[] getColByName( String s ) {
+    public double[] getColByName( Object s ) {
         int col = getColIndexByName( s );
         double[] result = new double[rows()];
         for ( int i = 0; i < rows(); i++ ) {

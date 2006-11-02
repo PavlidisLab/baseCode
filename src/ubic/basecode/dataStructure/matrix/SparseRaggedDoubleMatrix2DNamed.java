@@ -218,7 +218,7 @@ public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed {
      * @param indexes
      * @param values
      */
-    public void addRow( String name, IntArrayList indexes, DoubleArrayList values ) {
+    public void addRow( Object name, IntArrayList indexes, DoubleArrayList values ) {
         DoubleMatrix1D rowToAdd = new RCDoubleMatrix1D( indexes, values );
 
         matrix.add( rowToAdd );
@@ -230,7 +230,7 @@ public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed {
     /**
      * @param matrix1D
      */
-    public void addRow( String name, DoubleMatrix1D matrix1D ) {
+    public void addRow( Object name, DoubleMatrix1D matrix1D ) {
         matrix.add( matrix1D );
         this.addColumnName( name, matrix.size() - 1 );
         this.addRowName( name, matrix.size() - 1 );

@@ -74,7 +74,7 @@ public class RowNameFilter extends AbstractFilter implements Filter {
         int numNeeded = filterNames.size();
         int kept = 0;
         for ( int i = 0; i < numRows; i++ ) {
-            String name = data.getRowName( i );
+            String name = data.getRowName( i ).toString();
 
             // apply the rules.
             if ( filterNames.contains( name ) ) {
