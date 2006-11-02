@@ -34,6 +34,10 @@ public class DoubleMatrix2DNamedFactory {
         return new SparseDoubleMatrix2DNamed( rows, cols );
     }
 
+    public static CompressedSparseDoubleMatrix2DNamed compressedsparse( int rows, int cols ) {
+        return new CompressedSparseDoubleMatrix2DNamed( rows, cols );
+    }
+
     public static DenseDoubleMatrix2DNamed dense( double T[][] ) {
         return new DenseDoubleMatrix2DNamed( T );
     }
