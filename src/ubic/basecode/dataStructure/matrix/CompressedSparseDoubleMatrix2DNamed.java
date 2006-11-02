@@ -19,7 +19,7 @@ public class CompressedSparseDoubleMatrix2DNamed extends DoubleMatrixNamed imple
         super();
         matrix = new FlexCompRowMatrix( rows, cols );
     }
-    
+
     public void set( int row, int col, Object value ) {
         set( row, col, ( ( Double ) value ).doubleValue() );
     }
@@ -181,10 +181,10 @@ public class CompressedSparseDoubleMatrix2DNamed extends DoubleMatrixNamed imple
      * @return
      */
     public DoubleMatrix1D viewColumn( int column ) {
-    	double[] oneColumn = new double[this.rows()];
-    	for(int i = 0; i < matrix.numRows(); i++)
-    		oneColumn[i] = this.get(i,column);
-    	return new DenseDoubleMatrix1D(oneColumn);
+        double[] oneColumn = new double[this.rows()];
+        for ( int i = 0; i < matrix.numRows(); i++ )
+            oneColumn[i] = this.get( i, column );
+        return new DenseDoubleMatrix1D( oneColumn );
     }
 
     /**
@@ -192,19 +192,18 @@ public class CompressedSparseDoubleMatrix2DNamed extends DoubleMatrixNamed imple
      * @return
      */
     public DoubleMatrix1D viewRow( int row ) {
-    	return new DenseDoubleMatrix1D(matrix.getRow(row).getData());
+        return new DenseDoubleMatrix1D( matrix.getRow( row ).getData() );
     }
 
     /**
      * @return
      */
     public int cardinality() {
-    	int total = 0;
-    	for(int i = 0; i < matrix.numRows(); i++)
-    	{
-    		total = total + matrix.getRow(i).getUsed();
-    		//System.err.println(matrix.getRow(i).getUsed());
-    	}
+        int total = 0;
+        for ( int i = 0; i < matrix.numRows(); i++ ) {
+            total = total + matrix.getRow( i ).getUsed();
+            // System.err.println(matrix.getRow(i).getUsed());
+        }
 
         return total;
     }
@@ -213,21 +212,21 @@ public class CompressedSparseDoubleMatrix2DNamed extends DoubleMatrixNamed imple
      * @param minNonZeros
      */
     public void ensureCapacity( int minNonZeros ) {
-        
+
     }
 
     /**
      * @return
      */
     public int size() {
-        return matrix.numColumns()*matrix.numRows();
+        return matrix.numColumns() * matrix.numRows();
     }
 
     /**
      * 
      */
     public void trimToSize() {
-        
+
     }
 
     /*
@@ -238,6 +237,5 @@ public class CompressedSparseDoubleMatrix2DNamed extends DoubleMatrixNamed imple
     public DoubleArrayList getRowArrayList( int i ) {
         return new DoubleArrayList( getRow( i ) );
     }
-
 
 }
