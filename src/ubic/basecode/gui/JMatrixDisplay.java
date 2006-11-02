@@ -224,7 +224,7 @@ public class JMatrixDisplay extends JPanel {
             int y = ( i * m_cellSize.height ) + m_columnLabelHeight + m_labelGutter;
             int xRatio = ( m_matrix.getColumnCount() * m_cellSize.width ) + m_labelGutter;
             int yRatio = y + m_cellSize.height - m_fontGutter;
-            String rowName = m_matrix.getRowName( i );
+            Object rowName = m_matrix.getRowName( i );
             if ( null == rowName ) {
                 rowName = "Undefined";
             }
@@ -234,7 +234,7 @@ public class JMatrixDisplay extends JPanel {
 
             if ( rowNameXCoord == 0 ) rowNameXCoord = xRatio;
 
-            g.drawString( rowName, xRatio, yRatio );
+            g.drawString( rowName.toString(), xRatio, yRatio );
 
         } // end drawing row names
     } // end rawRowName
@@ -255,7 +255,7 @@ public class JMatrixDisplay extends JPanel {
             int y = m_columnLabelHeight;
 
             // get column name
-            String columnName = m_matrix.getColumnName( j );
+            Object columnName = m_matrix.getColumnName( j );
             if ( null == columnName ) {
                 columnName = "Undefined";
             }
@@ -265,7 +265,7 @@ public class JMatrixDisplay extends JPanel {
             g.setFont( m_labelFont );
 
             // print the text vertically
-            Util.drawVerticalString( g, columnName, m_labelFont, x, y );
+            Util.drawVerticalString( g, columnName.toString(), m_labelFont, x, y );
 
         } // end for column
     } // end drawColumnNames
@@ -454,11 +454,11 @@ public class JMatrixDisplay extends JPanel {
         return m_matrix.getColumnCount();
     }
 
-    public String getColumnName( int column ) {
+    public Object getColumnName( int column ) {
         return m_matrix.getColumnName( column );
     }
 
-    public String getRowName( int row ) {
+    public Object getRowName( int row ) {
         return m_matrix.getRowName( row );
     }
 

@@ -196,7 +196,7 @@ public class ColorMatrix implements Cloneable {
         String[] rowNames = new String[m_totalRows];
         for ( int i = 0; i < m_totalRows; i++ ) {
             int row = getTrueRowIndex( i );
-            rowNames[i] = getRowName( row );
+            rowNames[i] = getRowName( row ).toString();
         }
         return rowNames;
     }
@@ -204,7 +204,7 @@ public class ColorMatrix implements Cloneable {
     public String[] getColumnNames() {
         String[] columnNames = new String[m_totalColumns];
         for ( int i = 0; i < m_totalColumns; i++ ) {
-            columnNames[i] = getColumnName( i );
+            columnNames[i] = getColumnName( i ).toString();
         }
         return columnNames;
     }
