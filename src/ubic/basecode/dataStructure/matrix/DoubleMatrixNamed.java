@@ -103,7 +103,7 @@ public abstract class DoubleMatrixNamed extends AbstractNamedMatrix {
      * @param s String
      * @return double[]
      */
-    public double[] getRowByName( String s ) {
+    public double[] getRowByName( Object s ) {
         return getRow( getRowIndexByName( s ) );
     }
 
@@ -111,7 +111,7 @@ public abstract class DoubleMatrixNamed extends AbstractNamedMatrix {
      * @param s String
      * @return double[]
      */
-    public double[] getColumnByName( String s ) {
+    public double[] getColumnByName( Object s ) {
         return getColumn( getColIndexByName( s ) );
     }
 
@@ -122,4 +122,29 @@ public abstract class DoubleMatrixNamed extends AbstractNamedMatrix {
      */
     public abstract void setQuick( int j, int i, double c );
 
+    public String toString() {
+        int rows = this.rows();
+        int columns = this.columns();
+        StringBuffer buf = new StringBuffer();
+        int stop = 0;
+        buf.append( "Row\\Col" );
+        for ( int i = 0; i < columns; i++ ) {
+            buf.append( "\t" + this.getColName( i ) );
+        }
+        buf.append( "\n" );
+        for ( int j = 0; j < rows; j++ ) {
+
+            buf.append( this.getRowName( j ) );
+            for ( int i = 0; i < columns; i++ ) {
+                buf.append( "\t" + this.get( j, i ) );
+            }
+            buf.append( "\n" );
+            if ( stop > MAX_ROWS_TO_PRINT ) {
+                buf.append( "...\n" );
+                break;
+            }
+            stop++;
+        }
+        return buf.toString();
+    }
 }

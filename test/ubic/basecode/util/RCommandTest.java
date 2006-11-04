@@ -66,7 +66,11 @@ public class RCommandTest extends TestCase {
             log.warn( "Could not connect to RServe, skipping test." );
             return;
         }
-        assertTrue( rc.eval( "R.version.string" ).asString().startsWith( "R version 2" ) );
+        String actualValue = rc.eval( "R.version.string" ).asString();
+        String expectedValue = "R version 2";
+
+        assertTrue( "rc.eval() return version " + actualValue + ", expected something starting with R version 2",
+                actualValue.startsWith( expectedValue ) );
     }
 
     /*

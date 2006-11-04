@@ -30,6 +30,7 @@ import java.util.Map;
  */
 public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serializable {
 
+    protected static final int MAX_ROWS_TO_PRINT = 20;
     private List rowNames;
     private List colNames;
     private Map rowMap; // contains a map of each row and elements in the row
