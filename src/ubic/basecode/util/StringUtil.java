@@ -47,6 +47,20 @@ public class StringUtil {
     }
 
     /**
+     * @param appendee The string to be added to
+     * @param appendant The string to add to the end of the appendee
+     * @param separator The string to put between the joined strings, if necessary.
+     * @return appendee + separator + separator unless appendee is empty, in which case the appendant is returned.
+     */
+    public static String append( String appendee, String appendant, String separator ) {
+        if ( StringUtils.isBlank( appendee ) ) {
+            return appendant;
+        }
+        return appendee + separator + appendant;
+
+    }
+
+    /**
      * Method to wrap lines. It attempts to wrap on whitespace - it will not break within a word.
      * 
      * @param string
@@ -118,16 +132,15 @@ public class StringUtil {
             return new Long( stringi.hashCode() | ( long ) stringj.hashCode() << 32 );
         }
         return new Long( stringj.hashCode() | ( long ) stringi.hashCode() << 32 );
-
     }
 
     /**
      * @param str the String to parse, may be <code>null</code>
      * @param separatorChar the separate character
      * @return an array of parsed Strings, <code>null</code> if null String input
+     * @deprecated Directly use {@link org.apache.commons.lang.StringUtils.splitPreserveAllTokens} instead.
      */
     public static String[] splitPreserveAllTokens( String str, char separatorChar ) {
-
         return StringUtils.splitPreserveAllTokens( str, separatorChar );
     }
 }
