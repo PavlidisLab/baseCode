@@ -3,10 +3,6 @@ package ubic.basecode.math;
 import junit.framework.TestCase;
 
 /**
- * <hr>
- * <p>
- * Copyright (c) 2004-2005 Columbia University
- * 
  * @author pavlidis
  * @version $Id$
  */
@@ -96,6 +92,54 @@ public class StringDistanceTest extends TestCase {
         int distance = StringDistance.editDistance( sa, sb );
         double normalizedDistance = ( double ) distance / Math.max( sa.length(), sb.length() );
         assertEquals( 0.5208, normalizedDistance, 0.001 );
+    }
+
+    public void testWeightedHammingA() {
+        String a = "AAAAAAAAAAAA";
+        String b = "AAAAAABBBBBB";
+        double actualValue = StringDistance.prefixWeightedHammingDistance( a, b, 0.5 );
+        double expectedValue = 0.0; // suffix should be ignored.
+        assertEquals( expectedValue, actualValue, 0.000001 );
+    }
+
+    public void testWeightedHammingB() {
+        String a = "AAAA";
+        String b = "ABAA";
+        double actualValue = StringDistance.prefixWeightedHammingDistance( a, b, 0.5 );
+        double expectedValue = 0.0 + 0.5;
+        assertEquals( expectedValue, actualValue, 0.000001 );
+    }
+
+    public void testWeightedHammingC() {
+        String a = "AAAA";
+        String b = "BBBB";
+        double actualValue = StringDistance.prefixWeightedHammingDistance( a, b, 1.0 );
+        double expectedValue = 1.0 + 0.75 + 0.50 + 0.25;
+        assertEquals( expectedValue, actualValue, 0.000001 );
+    }
+
+    public void testWeightedSuffixHammingA() {
+        String a = "AAAA";
+        String b = "BBBB";
+        double actualValue = StringDistance.suffixWeightedHammingDistance( a, b, 1.0 );
+        double expectedValue = 0.0 + 0.25 + 0.5 + 0.75;
+        assertEquals( expectedValue, actualValue, 0.000001 );
+    }
+
+    public void testWeightedSuffixHammingB() {
+        String a = "AAAA";
+        String b = "BBBB";
+        double actualValue = StringDistance.suffixWeightedHammingDistance( a, b, 0.5 );
+        double expectedValue = 0.0 + 0.0 + 0.5 + 1.0;
+        assertEquals( expectedValue, actualValue, 0.000001 );
+    }
+
+    public void testWeightedSuffixHammingC() {
+        String a = "AAAA";
+        String b = "BAAB";
+        double actualValue = StringDistance.suffixWeightedHammingDistance( a, b, 0.5 );
+        double expectedValue = 0.0 + 0.0 + 0.0 + 1.0;
+        assertEquals( expectedValue, actualValue, 0.000001 );
     }
 
 }

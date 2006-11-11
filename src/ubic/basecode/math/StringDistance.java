@@ -100,7 +100,8 @@ public class StringDistance {
                 // minimum of: cell directly above + 1, the cell to the left + 1 and the cell above to the left + cost.
                 int p = mat[row - 1][col] + 1; // above
                 int q = mat[row][col - 1] + 1; // to the left
-                int r = mat[row - 1][col - 1] + ( sc == tc ? 0 : 1 ); // above left + cost
+                int r = mat[row - 1][col - 1] + ( sc == tc ? 0 : 1 ); // above left +
+                // cost
 
                 mat[row][col] = Math.min( Math.min( p, q ), r );
             }
@@ -116,5 +117,74 @@ public class StringDistance {
         }
 
         return mat[m][n];
+    }
+
+    /**
+     * Compute the Hamming distance between two strings of equal length (if they are of unequal length the longer one is
+     * trimmed), giving higher weight to characters at the start of the strings, so strings that are similar at the
+     * starts are given higher scores (shorter distances) than strings that are similar at the ends.
+     * 
+     * @param s
+     * @param t
+     * @param weight Controls how quickly (normalized by the length of the string) the bias towards the front drops off.
+     *        The penalty for mismatches drops off linearly for the fraction of the String represented by
+     *        <code>weight</code>. A weight of 1.0 indicates the bias should be linear across the length of the
+     *        string. Intermediate values (e.g., 0.25) mean that differences beyond the first 1/4 of the string results
+     *        in no penalty.
+     * @return
+     */
+    public static double prefixWeightedHammingDistance( String s, String t, double weight ) {
+
+        if ( weight <= 0.0 || weight > 1.0 )
+            throw new IllegalArgumentException( "weight must be between zero and one" );
+
+        String trimmedS = s;
+        String trimmedT = t;
+        if ( s.length() != t.length() ) {
+            if ( s.length() > t.length() ) {
+                trimmedS = s.substring( 0, t.length() );
+            } else {
+                trimmedT = t.substring( 0, s.length() );
+            }
+        }
+
+        double result = 0;
+        for ( int i = 0; i < trimmedS.length(); i++ ) {
+            double penalty = Math.max( 0.0, ( 1.0 - ( double ) i / ( weight * trimmedS.length() ) ) );
+            result += trimmedT.charAt( i ) == trimmedS.charAt( i ) ? 0 : penalty;
+        }
+        return result;
+    }
+
+    /**
+     * @param s
+     * @param t
+     * @param weight
+     * @return
+     * @see prefixWeightedHammingDistance
+     */
+    public static double suffixWeightedHammingDistance( String s, String t, double weight ) {
+
+        if ( weight <= 0.0 || weight > 1.0 )
+            throw new IllegalArgumentException( "weight must be between zero and one" );
+
+        String trimmedS = s;
+        String trimmedT = t;
+        if ( s.length() != t.length() ) {
+            if ( s.length() > t.length() ) {
+                trimmedS = s.substring( 0, t.length() );
+            } else {
+                trimmedT = t.substring( 0, s.length() );
+            }
+        }
+
+        double result = 0;
+        for ( int i = 0; i < trimmedS.length(); i++ ) {
+            double rawpen = ( ( double ) i / ( double ) trimmedS.length() / weight ) - ( 1.0 - weight );
+            double penalty = Math.max( 0.0, rawpen );
+            // / System.err.println( rawpen + " " + penalty );
+            result += trimmedT.charAt( i ) == trimmedS.charAt( i ) ? 0 : penalty;
+        }
+        return result;
     }
 }
