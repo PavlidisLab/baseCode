@@ -113,27 +113,27 @@ public class AffymetrixProbeNameFilter extends AbstractFilter implements Filter 
             String name = data.getRowName( i ).toString();
 
             // apply the rules.
-            if ( skip_ST && name.endsWith( "_st" ) ) { // 'st' means sense strand.
+            if ( skip_ST && name.contains( "_st" ) ) { // 'st' means sense strand.
                 continue;
             }
 
-            if ( skip_AFFX && name.startsWith( "AFFX" ) ) {
+            if ( skip_AFFX && name.contains( "AFFX" ) ) {
                 continue;
             }
 
-            if ( skip_F && name.endsWith( "_f_at" ) ) { // gene family. We don't
+            if ( skip_F && name.contains( "_f_at" ) ) { // gene family. We don't
                 // like.
                 continue;
             }
 
-            if ( skip_X && name.endsWith( "_x_at" ) ) {
+            if ( skip_X && name.contains( "_x_at" ) ) {
                 continue;
             }
-            if ( skip_G && name.endsWith( "_g_at" ) ) {
+            if ( skip_G && name.contains( "_g_at" ) ) {
                 continue;
             }
             MTemp.add( data.getRowObj( i ) );
-            rowNames.add( name );
+            rowNames.add( data.getRowName(i) );
             kept++;
         }
 
