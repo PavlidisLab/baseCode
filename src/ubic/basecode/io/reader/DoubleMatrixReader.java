@@ -184,7 +184,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
     private String parseRow( String row, Collection rowNames, List MTemp, Collection wantedRowNames )
             throws IOException {
 
-        String[] tokens = StringUtils.split( row, "\t" );
+        String[] tokens = StringUtils.splitPreserveAllTokens( row, "\t" );
 
         DoubleArrayList rowTemp = new DoubleArrayList();
         int columnNumber = 0;
@@ -205,20 +205,10 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
                     previousToken = s;
                     continue;
                 }
-            } else if ( s.compareTo( " " ) == 0 ) {
-                if ( previousToken.compareTo( "\t" ) == 0 ) {
-                    missing = true;
-                } else {
-                    throw new IOException( "Spaces not allowed after values" );
-                    // bad, not allowed.
-                }
+            } else if ( s.compareTo( " " ) == 0 || s.compareTo( "" ) == 0 ) {
+                missing = true;
             } else if ( s.compareTo( "NaN" ) == 0 || s.compareTo( "NA" ) == 0 ) {
-                if ( previousToken.compareTo( "\t" ) == 0 ) {
-                    missing = true;
-                } else {
-                    throw new IOException( "NaN found where it isn't supposed to be" );
-                    // bad, not allowed - missing a tab?
-                }
+                missing = true;
             }
 
             if ( columnNumber > 0 ) {
@@ -227,11 +217,11 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
                 } else {
                     NumberFormat nf = NumberFormat.getInstance( Locale.getDefault() );
                     try {
-                        log.debug( "" + nf.parse( s ).doubleValue() );
+                        if ( log.isDebugEnabled() ) log.debug( "" + nf.parse( s ).doubleValue() );
                         rowTemp.add( ( nf.parse( s ) ).doubleValue() );
                         // rowTemp.add( Double.parseDouble( s ) );
                     } catch ( ParseException e ) {
-                        e.printStackTrace();
+                        throw new RuntimeException( e );
                     }
                 }
             } else {

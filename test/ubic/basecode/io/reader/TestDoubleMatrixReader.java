@@ -67,11 +67,22 @@ public class TestDoubleMatrixReader extends TestCase {
         matrix = null;
     }
 
+    public void testReadInputStreamMissingSpaces() throws Exception {
+        InputStream isl = this.getClass().getResourceAsStream( "/data/luo-prostate.sample.txt" );
+        matrix = ( DoubleMatrixNamed ) reader.read( isl );
+        int actualReturn = matrix.rows();
+        int expectedReturn = 173;
+        assertEquals( 25, matrix.getRow( 3 ).length );
+        assertEquals( "return value", expectedReturn, actualReturn );
+
+    }
+
     public void testReadInputStreamMissing() throws Exception {
 
         matrix = ( DoubleMatrixNamed ) reader.read( ism );
         int actualReturn = matrix.rows();
         int expectedReturn = 30;
+        assertEquals( 12, matrix.getRow( 3 ).length );
         assertEquals( "return value", expectedReturn, actualReturn );
 
     }
