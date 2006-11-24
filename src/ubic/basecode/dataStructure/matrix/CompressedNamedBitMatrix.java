@@ -3,6 +3,12 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+
 import no.uib.cipr.matrix.sparse.FlexCompRowMatrix;
 
 /**
@@ -103,5 +109,47 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
 		// TODO Auto-generated method stub
 
 	}
-
+    public boolean set(int i, int j, double[] val) {
+        // TODO Auto-generated method stub
+        if(val.length != this.matrix.length || i >= this.rows || j >= this.cols) return false;
+        for(int mi = 0; mi < val.length; mi++)
+            this.matrix[mi].set( i,j,val[mi] );
+        return true;
+    }
+	public boolean toFile(String fileName){
+        try{
+            FileWriter out = new FileWriter(new File(fileName));
+            out.write(this.rows+"\t"+this.cols+"\t"+this.total_bits_per_item+"\n");
+            Object [] rowNames = this.getRowNames().toArray();
+            for(int i = 0; i < rowNames.length; i++){
+                out.write( rowNames[i].toString() );
+                if(i != rowNames.length - 1) out.write( "\t" );
+            }
+            out.write( "\n" );
+            Object [] colNames = this.getColNames().toArray();
+            for(int i = 0; i < colNames.length; i++){
+                out.write( colNames[i].toString() );
+                if(i != colNames.length - 1) out.write( "\t" );
+            }
+            out.write( "\n" );
+            for(int i = 0; i < this.rows; i++)
+                for(int j = 0; j < this.cols; j++){
+                    if(this.bitCount( i, j ) != 0){
+                        out.write(i+"\t"+j);
+                        for(int k = 0; k < this.matrix.length; k++){
+                            long binVal = Double.doubleToRawLongBits(this.matrix[k].get(i,j));
+                            /*Long.parseLong( hexString, 16) to get it back;*/
+                            String hexString = Long.toHexString( binVal );
+                            out.write( "\t"+ hexString);
+                        }
+                        out.write( "\n" );
+                    }
+                }
+            out.close();
+        }catch(Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 }
