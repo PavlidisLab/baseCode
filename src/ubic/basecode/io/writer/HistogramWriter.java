@@ -52,6 +52,7 @@ public class HistogramWriter {
             s.write( k.format( h.xAxis().binLowerEdge( i ) ) + "\t" + h.binEntries( i ) + "\t"
                     + k.format( ( double ) h.binEntries( i ) / ( double ) total ) + "\n" );
         }
+        s.flush();
     }
 
     /**
