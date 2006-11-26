@@ -71,9 +71,6 @@ public class JMatrixDisplay extends JPanel {
 
     protected Dimension m_cellSize = new Dimension( 10, 10 ); // in pixels
 
-    protected Map rowNameYCoords = null;
-    protected int rowNameXCoord = 0;
-
     public JMatrixDisplay( String filename ) throws IOException {
 
         ColorMatrix matrix = new ColorMatrix( filename );
@@ -96,8 +93,6 @@ public class JMatrixDisplay extends JPanel {
         // create a standardized copy of the matrix
         m_standardizedMatrix = ( ColorMatrix ) matrix.clone();
         m_standardizedMatrix.standardize();
-        rowNameYCoords = new HashMap();
-
     }
 
     /**
@@ -228,11 +223,6 @@ public class JMatrixDisplay extends JPanel {
             if ( null == rowName ) {
                 rowName = "Undefined";
             }
-
-            // keshav - TODO java 5 can autobox the int and make use of the map
-            rowNameYCoords.put( rowName, new Integer( yRatio ) );
-
-            if ( rowNameXCoord == 0 ) rowNameXCoord = xRatio;
 
             g.drawString( rowName.toString(), xRatio, yRatio );
 
@@ -534,20 +524,6 @@ public class JMatrixDisplay extends JPanel {
      */
     public Color getMissingColor() {
         return m_matrix.m_missingColor;
-    }
-
-    /**
-     * @return int
-     */
-    public int getRowNameXCoord() {
-        return rowNameXCoord;
-    }
-
-    /**
-     * @return Map
-     */
-    public Map getRowNameYCoords() {
-        return rowNameYCoords;
     }
 
 } // end class JMatrixDisplay
