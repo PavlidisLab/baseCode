@@ -56,24 +56,42 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
     	if(res == 0) return false;
     	return true;
     }
-    private int countBits(double val){
-    	int bits = 0;
-    	long binVal = Double.doubleToRawLongBits(val);
-    	for(int i = 0; i < CompressedNamedBitMatrix.DOUBLE_LENGTH; i++){
-    		long res = binVal & CompressedNamedBitMatrix.BIT1 << i;
-        	if(res != 0) bits++;    		
-    	}
-    	return bits;
+    public int countBits(double val){
+        long binVal = Double.doubleToRawLongBits(val);
+        return countBits(binVal);
     }
+    public int countBits(long val){
+        int bitCount = 0;
+        for(int i = 0; i <CompressedNamedBitMatrix.DOUBLE_LENGTH; i++){
+            long res = val & CompressedNamedBitMatrix.BIT1 << i;
+            if(res != 0) bitCount ++;
+        }
+        return bitCount;
+    }
+
     public int bitCount(int rows, int cols){
-    	int bits = 0;
-    	if(rows > this.rows || cols > this.cols) return bits;
-    	for(int i = 0; i < this.matrix.length; i++){
-    		double val = this.matrix[i].get(rows,cols);
-    		if(val != 0)
-    			bits = bits + countBits(val);
-    	}
-    	return bits; 
+        int bits = 0;
+        if(rows > this.rows || cols > this.cols) return bits;
+        for(int i = 0; i < this.matrix.length; i++){
+            double val = this.matrix[i].get(rows,cols);
+            if(val != 0)
+                bits = bits + countBits(val);
+        }
+        return bits; 
+    }
+
+
+    public int overlap(int row1, int col1, int row2, int col2){
+        int bits = 0;
+        for(int i = 0; i < this.matrix.length; i++){
+            double val1 = this.matrix[i].get( row1,col1);
+            double val2 = this.matrix[i].get( row2,col2);
+            if(val1 == 0 || val2 == 0) continue;
+            long binVal1 = Double.doubleToRawLongBits(val1);
+            long binVal2 = Double.doubleToRawLongBits(val2);
+            bits = bits + countBits(binVal1&binVal2);
+        }
+        return bits;
     }
 
 	public int columns() {
