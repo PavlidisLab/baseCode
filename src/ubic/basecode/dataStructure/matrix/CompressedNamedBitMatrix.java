@@ -56,11 +56,22 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
     	if(res == 0) return false;
     	return true;
     }
+    private int countBits(double val){
+    	int bits = 0;
+    	long binVal = Double.doubleToRawLongBits(val);
+    	for(int i = 0; i < CompressedNamedBitMatrix.DOUBLE_LENGTH; i++){
+    		long res = binVal & CompressedNamedBitMatrix.BIT1 << i;
+        	if(res != 0) bits++;    		
+    	}
+    	return bits;
+    }
     public int bitCount(int rows, int cols){
     	int bits = 0;
     	if(rows > this.rows || cols > this.cols) return bits;
-    	for(int i = 0; i < this.total_bits_per_item; i++){
-    		if(check(rows, cols, i)) bits++;
+    	for(int i = 0; i < this.matrix.length; i++){
+    		double val = this.matrix[i].get(rows,cols);
+    		if(val != 0)
+    			bits = bits + countBits(val);
     	}
     	return bits; 
     }
