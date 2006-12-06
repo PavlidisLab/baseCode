@@ -21,11 +21,11 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
 	/* (non-Javadoc)
 	 * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#columns()
 	 */
-    private static int DOUBLE_LENGTH = 64;
+    public static int DOUBLE_LENGTH = 64;
     private int total_bits_per_item;
     private int rows = 0, cols = 0;
     //static long BIT1 = 0x8000000000000000L;
-    static long BIT1 = 0x0000000000000001L;
+    public static long BIT1 = 0x0000000000000001L;
         
     public CompressedNamedBitMatrix(int rows, int cols, int total_bits_per_item){
     	super();
@@ -37,7 +37,15 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
     	this.rows = rows;
     	this.cols = cols;
     }
-    
+    public int getBitNum(){
+    	return this.total_bits_per_item;
+    }
+    public long[] getAllBits(int row, int col){
+    	long[] allBits = new long[this.matrix.length];
+    	for(int i = 0; i < this.matrix.length; i++)
+    		allBits[i] = Double.doubleToRawLongBits(this.matrix[i].get(row,col));
+    	return allBits;
+    }
     public void set(int rows, int cols, int index){
     	if(index >= this.total_bits_per_item || rows > this.rows || cols > this.cols) return;
     	int num = (int)(index/CompressedNamedBitMatrix.DOUBLE_LENGTH);
@@ -56,11 +64,11 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
     	if(res == 0) return false;
     	return true;
     }
-    public int countBits(double val){
+    static public int countBits(double val){
         long binVal = Double.doubleToRawLongBits(val);
         return countBits(binVal);
     }
-    public int countBits(long val){
+    static public int countBits(long val){
         int bitCount = 0;
         for(int i = 0; i <CompressedNamedBitMatrix.DOUBLE_LENGTH; i++){
             long res = val & CompressedNamedBitMatrix.BIT1 << i;
