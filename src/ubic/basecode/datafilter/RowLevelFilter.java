@@ -153,7 +153,10 @@ public class RowLevelFilter extends AbstractLevelFilter {
             /* stupid, copy into a DoubleArrayList so we can do stats */
             for ( int j = 0; j < numCols; j++ ) {
                 double item = row[j].doubleValue();
-                rowAsList.set( j, item );
+                if(Double.isNaN( item ))
+                	rowAsList.set( j, 0 );
+                else
+                	rowAsList.set( j, item );
                 if ( item < 0.0 || Double.isNaN( item ) ) {
                     numNeg++;
                 }
