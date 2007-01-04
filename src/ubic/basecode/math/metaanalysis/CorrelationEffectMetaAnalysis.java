@@ -140,7 +140,7 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
      * @param n
      * @return
      */
-    protected double samplingVariance( double r, double numsamples ) {
+    protected static double samplingVariance( double r, double numsamples ) {
 
         if ( numsamples <= 0 ) throw new IllegalArgumentException( "N must be greater than 0" );
 
@@ -148,7 +148,7 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
             throw new IllegalArgumentException( "r=" + r + " is not a valid Pearson correlation" );
 
         double FUDGE = 0.001;
-        if ( Math.abs( r ) - 1.0 < FUDGE ) {
+        if ( 1.0 - Math.abs( r ) < FUDGE ) {
             r = Math.abs( r ) - FUDGE; // don't care about sign. any more.
         }
 
