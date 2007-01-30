@@ -138,7 +138,7 @@
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.1</version>
-            <jar>commons-lang-2.1.jar</jar>
+            <jar>commons-lang-2.2.jar</jar>
             <type>jar</type>
         </dependency>
         <dependency>
