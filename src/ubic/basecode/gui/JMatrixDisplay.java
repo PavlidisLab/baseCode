@@ -27,12 +27,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -46,6 +45,11 @@ import ubic.basecode.gui.graphics.text.Util;
  * @version $Id$
  */
 public class JMatrixDisplay extends JPanel {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -8078532270193813539L;
+
     private Log log = LogFactory.getLog( JMatrixDisplay.class );
 
     // data fields
@@ -68,6 +72,7 @@ public class JMatrixDisplay extends JPanel {
     protected final int m_defaultResolution = 120;
     protected int m_resolution = m_defaultResolution;
     protected int m_textSize = 0;
+    protected int m_maxColumnLength = 0;
 
     protected Dimension m_cellSize = new Dimension( 10, 10 ); // in pixels
 
@@ -115,10 +120,22 @@ public class JMatrixDisplay extends JPanel {
 
         // row label width and height (font-dependent)
         setFont();
-        m_rowLabelWidth = m_labelGutter + Util.maxStringPixelWidth( m_matrix.getRowNames(), m_labelFont, this );
-        // m_rowLabelWidth += m_labelGutter; // this is optional (leaves some
-        // space on the right)
-        m_columnLabelHeight = Util.maxStringPixelWidth( m_matrix.getColumnNames(), m_labelFont, this );
+        //m_rowLabelWidth = m_labelGutter + Util.maxStringPixelWidth( m_matrix.getRowNames(), m_labelFont, this );
+        //m_rowLabelWidth += m_labelGutter; // this is optional (leaves some  space on the right)
+        if (m_maxColumnLength > 0) {
+            String [] cols = m_matrix.getColumnNames();
+            for (int i = 0; i < cols.length; i++ ) {
+                cols[i] = padColumnString( cols[i] );
+                
+            }
+            // fix column height to ~5 pixels per character. This prevents a slightly different column height
+            // for different letters.
+            m_columnLabelHeight = 5 * m_maxColumnLength;
+        }
+        else {
+            m_columnLabelHeight = Util.maxStringPixelWidth( m_matrix.getColumnNames(), m_labelFont, this );         
+        }
+
         // m_columnLabelHeight += m_labelGutter; // this is optional (leaves some
         // space on top)
 
@@ -249,16 +266,34 @@ public class JMatrixDisplay extends JPanel {
             if ( null == columnName ) {
                 columnName = "Undefined";
             }
-
+            
+            // fix the name length as 20 characters
+            // add ellipses if > 20
+            // spacepad to 20 if < 20
+            String columnNameString = columnName.toString();
+            if (m_maxColumnLength > 0) {
+                columnNameString = padColumnString( columnNameString );
+            }
             // set font and color
             g.setColor( Color.black );
             g.setFont( m_labelFont );
 
             // print the text vertically
-            Util.drawVerticalString( g, columnName.toString(), m_labelFont, x, y );
+            Util.drawVerticalString( g, columnNameString, m_labelFont, x, y );
 
         } // end for column
     } // end drawColumnNames
+
+    /**
+     * Pads a string to the maxColumnLength. If it is over the maxColumnLength, it abbreviates it to the maxColumnLength
+     * @param str
+     * @return
+     */
+    private String padColumnString( String str ) {
+        str = StringUtils.abbreviate( str, m_maxColumnLength );
+        str = StringUtils.rightPad( str, m_maxColumnLength, " " );
+        return str;
+    }
 
     /**
      * Sets the font used for drawing text
@@ -524,6 +559,20 @@ public class JMatrixDisplay extends JPanel {
      */
     public Color getMissingColor() {
         return m_matrix.m_missingColor;
+    }
+    
+    /**
+     * @return the m_maxColumnLength
+     */
+    public int getMaxColumnLength() {
+        return m_maxColumnLength;
+    }
+
+    /**
+     * @param columnLength the m_maxColumnLength to set
+     */
+    public void setMaxColumnLength( int columnLength ) {
+        m_maxColumnLength = columnLength;
     }
 
 } // end class JMatrixDisplay
