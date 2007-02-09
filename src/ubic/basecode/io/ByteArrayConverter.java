@@ -379,6 +379,13 @@ public class ByteArrayConverter {
                 toConvert[i] = object;
             }
             return doubleArrayToBytes( toConvert );
+        } else if ( array[0] instanceof Character ) {
+            char[] toConvert = new char[array.length];
+            for ( int i = 0; i < array.length; i++ ) {
+                char object = ( ( Character ) array[i] ).charValue();
+                toConvert[i] = object;
+            }
+            return charArrayToBytes( toConvert );
         } else if ( array[0] instanceof String ) {
             StringBuffer buf = new StringBuffer();
             for ( int i = 0; i < array.length; i++ ) {
