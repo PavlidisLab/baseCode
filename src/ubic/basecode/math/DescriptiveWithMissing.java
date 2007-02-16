@@ -62,7 +62,7 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
 
         double[] elements = input.elements();
         double min = Double.MAX_VALUE;
-        for ( int i = 0 ; i < size; i++ ) {
+        for ( int i = 0; i < size; i++ ) {
             if ( Double.isNaN( elements[i] ) ) continue;
             if ( elements[i] < min ) min = elements[i];
         }
@@ -76,7 +76,7 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
 
         double[] elements = input.elements();
         double max = Double.MIN_VALUE;
-        for ( int i = 0 ; i < size; i++ ) {
+        for ( int i = 0; i < size; i++ ) {
             if ( Double.isNaN( elements[i] ) ) continue;
             if ( elements[i] > max ) max = elements[i];
         }
@@ -294,11 +294,12 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
 
         for ( int i = firstNotNaN + 1; i < size; i++ ) {
             int gap = 1;
-            while ( Double.isNaN( elements[i] ) ) {
+            while ( i < size && Double.isNaN( elements[i] ) ) {
                 gap++;
                 i++;
                 continue;
             }
+            if ( i >= size ) continue; // missing value at end will cause this.
             double x = elements[i] - elements[i - gap];
             /**  */
             run += x * x;
@@ -700,7 +701,7 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      */
     public static void standardize( DoubleArrayList data, double mean, double standardDeviation ) {
         double[] elements = data.elements();
-        for ( int i = data.size(); --i >= 0; ) {
+        for ( int i = 0; i < elements.length; i++ ) {
             if ( Double.isNaN( elements[i] ) ) {
                 continue;
             }

@@ -42,8 +42,9 @@ public class TestDescriptiveWithMissing extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         data1missing = new DoubleArrayList( new double[] { 1.0, Double.NaN, 3.0, 4.0, 5.0, 6.0, Double.NaN } );
-        data2missing = new DoubleArrayList( new double[] { Double.NaN, Double.NaN, 3.0, Double.NaN, 3.5, 4.0, Double.NaN  } );
-        data3shortmissing = new DoubleArrayList( new double[] { Double.NaN, Double.NaN, 3.0, Double.NaN  } );
+        data2missing = new DoubleArrayList( new double[] { Double.NaN, Double.NaN, 3.0, Double.NaN, 3.5, 4.0,
+                Double.NaN } );
+        data3shortmissing = new DoubleArrayList( new double[] { Double.NaN, Double.NaN, 3.0, Double.NaN } );
 
         /* versions of the above, but without the NaNs */
         data1Nomissing = new DoubleArrayList( new double[] { 1.0, 3.0, 4.0, 5.0, 6.0 } );
@@ -200,7 +201,7 @@ public class TestDescriptiveWithMissing extends TestCase {
         // we use this because Descriptive.standardize does not do exactly the
         // same thing - there is a correction applied.
         DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { -1.4556506857481, Double.NaN,
-                -0.415900195928029, 0.103975048982007, 0.623850293892044, 1.14372553880208 } );
+                -0.415900195928029, 0.103975048982007, 0.623850293892044, 1.14372553880208, Double.NaN } );
 
         DescriptiveWithMissing.standardize( data1missing );
         assertEquals( true, RegressionTesting.closeEnough( data1missing, expectedReturn, 0.0001 ) );
