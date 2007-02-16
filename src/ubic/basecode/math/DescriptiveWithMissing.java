@@ -57,11 +57,31 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
     }
 
     public static double min( DoubleArrayList input ) {
-        return Descriptive.min( input );
+        int size = input.size();
+        if ( size == 0 ) throw new IllegalArgumentException();
+
+        double[] elements = input.elements();
+        double min = Double.MAX_VALUE;
+        for ( int i = 0 ; i < size; i++ ) {
+            if ( Double.isNaN( elements[i] ) ) continue;
+            if ( elements[i] < min ) min = elements[i];
+        }
+
+        return min;
     }
 
     public static double max( DoubleArrayList input ) {
-        return Descriptive.max( input );
+        int size = input.size();
+        if ( size == 0 ) throw new IllegalArgumentException();
+
+        double[] elements = input.elements();
+        double max = Double.MIN_VALUE;
+        for ( int i = 0 ; i < size; i++ ) {
+            if ( Double.isNaN( elements[i] ) ) continue;
+            if ( elements[i] > max ) max = elements[i];
+        }
+
+        return max;
     }
 
     /**

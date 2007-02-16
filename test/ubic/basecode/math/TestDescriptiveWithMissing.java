@@ -41,9 +41,9 @@ public class TestDescriptiveWithMissing extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        data1missing = new DoubleArrayList( new double[] { 1.0, Double.NaN, 3.0, 4.0, 5.0, 6.0 } );
-        data2missing = new DoubleArrayList( new double[] { Double.NaN, Double.NaN, 3.0, Double.NaN, 3.5, 4.0 } );
-        data3shortmissing = new DoubleArrayList( new double[] { Double.NaN, Double.NaN, 3.0 } );
+        data1missing = new DoubleArrayList( new double[] { 1.0, Double.NaN, 3.0, 4.0, 5.0, 6.0, Double.NaN } );
+        data2missing = new DoubleArrayList( new double[] { Double.NaN, Double.NaN, 3.0, Double.NaN, 3.5, 4.0, Double.NaN  } );
+        data3shortmissing = new DoubleArrayList( new double[] { Double.NaN, Double.NaN, 3.0, Double.NaN  } );
 
         /* versions of the above, but without the NaNs */
         data1Nomissing = new DoubleArrayList( new double[] { 1.0, 3.0, 4.0, 5.0, 6.0 } );
