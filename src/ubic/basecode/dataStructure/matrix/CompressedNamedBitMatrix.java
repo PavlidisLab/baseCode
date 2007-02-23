@@ -23,10 +23,9 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
      * 
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#columns()
      */
-    public static int DOUBLE_LENGTH = 64;
+    public static int DOUBLE_LENGTH = 63; //java doesn't support unsigned long.
     private int totalBitsPerItem;
     private int rows = 0, cols = 0;
-    // static long BIT1 = 0x8000000000000000L;
     public static long BIT1 = 0x0000000000000001L;
 
     /**
