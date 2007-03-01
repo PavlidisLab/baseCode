@@ -3,7 +3,7 @@
     <pomVersion>3</pomVersion>
     <id>baseCode</id>
     <groupId>baseCode</groupId>
-    <currentVersion>0.3.1-RC1</currentVersion>
+    <currentVersion>0.3.3-SNAPSHOT</currentVersion>
     <organization>
         <name>University of British Columbia Bioinformatics Centre</name>
         <url>http://bioinformatics.ubc.ca</url>
