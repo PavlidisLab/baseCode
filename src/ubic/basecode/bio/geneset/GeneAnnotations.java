@@ -98,7 +98,7 @@ public class GeneAnnotations {
     /**
      * The maximum size of gene sets ever considered.
      */
-    private static final int PRACTICAL_MAXIMUM_GENESET_SIZE = 2000;
+    private static final int PRACTICAL_MAXIMUM_GENESET_SIZE = 5000;
 
     private static Log log = LogFactory.getLog( GeneAnnotations.class.getName() );
     private Map geneSetToGeneMap; // stores Classes->genes map
@@ -700,7 +700,6 @@ public class GeneAnnotations {
      * @return
      */
     public Collection getGeneSets() {
-        log.debug( "Entering getGeneSets" );
         if ( activeProbes == null ) return geneSetToGeneMap.keySet();
 
         if ( activeGeneSetCache == null ) {
@@ -976,10 +975,12 @@ public class GeneAnnotations {
                     log.debug( "Found " + candidate + " in " + candidateGeneSet );
                     break;
                 }
+
             }
 
-            if ( !found ) removeUs.add( candidateGeneSet );
-
+            if ( !found ) {
+                removeUs.add( candidateGeneSet );
+            }
         }
 
         for ( Iterator it = removeUs.iterator(); it.hasNext(); ) {
@@ -1609,7 +1610,7 @@ public class GeneAnnotations {
                 throw new CancellationException();
             }
 
-            String[] fields = StringUtil.splitPreserveAllTokens( line, '\t' );
+            String[] fields = StringUtils.splitPreserveAllTokens( line, '\t' );
             if ( fields.length < probeIndex + 1 || fields.length < geneSymbolIndex + 1 ) {
                 continue; // skip lines that don't meet criteria.
             }

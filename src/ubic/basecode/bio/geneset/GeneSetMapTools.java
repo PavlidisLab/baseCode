@@ -38,7 +38,6 @@ import org.apache.commons.logging.LogFactory;
 
 import ubic.basecode.util.StatusViewer;
 
-
 /**
  * Methods to 'clean' a set of geneSets - to remove redundancies, for example.
  * 
@@ -499,7 +498,10 @@ public class GeneSetMapTools {
 
             for ( Iterator iterator = geneSets.iterator(); iterator.hasNext(); ) {
                 String geneSet = ( String ) iterator.next();
-                Set parents = getParents( gon, parentCache, geneSet );
+
+                Set parents = new HashSet();
+                getAllParents( gon, parentCache, geneSet, parents );
+
                 setParentsToBeAdded( toBeAdded, gene, parents );
                 log.debug( "Added " + parents + " to " + geneSet + " for " + gene );
             }
@@ -543,15 +545,19 @@ public class GeneSetMapTools {
      * @param geneSet
      * @return
      */
-    private static Set getParents( GONames gon, Map parentCache, String geneSet ) {
-        Set parents;
-        if ( parentCache.containsKey( geneSet ) ) {
-            parents = ( Set ) parentCache.get( geneSet );
-        } else {
-            parents = gon.getParents( geneSet );
-            parentCache.put( geneSet, parents );
+    private static void getAllParents( GONames gon, Map parentCache, String geneSet, Collection parents ) {
+        // if ( parentCache.containsKey( geneSet ) ) {
+        // parents = ( Set ) parentCache.get( geneSet );
+        // } else {
+        // recursively add all the parents.
+        Set newParents = gon.getParents( geneSet );
+        for ( Iterator it = newParents.iterator(); it.hasNext(); ) {
+            String parent = ( String ) it.next();
+            if ( parent.equals( "all" ) ) continue;
+            if ( parents.contains( parent ) ) continue;
+            getAllParents( gon, parentCache, parent, parents );
         }
-        return parents;
+        parents.addAll( newParents );
     }
 
     /**
