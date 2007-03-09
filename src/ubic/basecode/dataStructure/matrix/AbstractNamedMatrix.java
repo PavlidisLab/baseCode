@@ -198,11 +198,11 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
     public abstract boolean isMissing( int i, int j );
 
     public final boolean containsRowName( Object rowName ) {
-        return rowNames.contains( rowName );
+        return hasRow( rowName );
     }
 
     public final boolean containsColumnName( Object columnName ) {
-        return colNames.contains( columnName );
+        return colMap.containsKey( columnName );
     }
 
     /*
