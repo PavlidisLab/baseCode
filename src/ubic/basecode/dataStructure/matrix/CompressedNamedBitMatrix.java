@@ -99,20 +99,7 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
      */
     static public int countBits( double val ) {
         long binVal = Double.doubleToRawLongBits( val );
-        return countBits( binVal );
-    }
-
-    /**
-     * @param val
-     * @return
-     */
-    static public int countBits( long val ) {
-        int bitCount = 0;
-        for ( int i = 0; i < CompressedNamedBitMatrix.DOUBLE_LENGTH; i++ ) {
-            long res = val & CompressedNamedBitMatrix.BIT1 << i;
-            if ( res != 0 ) bitCount++;
-        }
-        return bitCount;
+        return Long.bitCount( binVal );
     }
 
     /**
