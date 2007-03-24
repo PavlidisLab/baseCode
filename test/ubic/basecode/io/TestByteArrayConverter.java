@@ -26,7 +26,7 @@ import junit.framework.TestCase;
 
 /**
  * @version $Id$
- * @author pavlidsi
+ * @author pavlidis
  */
 public class TestByteArrayConverter extends TestCase {
     ByteArrayConverter bac;
@@ -58,6 +58,9 @@ public class TestByteArrayConverter extends TestCase {
     byte[] expectedBfC = new byte[] { 0, 107, 0, 105, 0, 114 };
 
     String longDoubleString = "";
+
+    String[] testStrings = new String[] { "foo", "bar", "profiglio", "schwartz", "000", "0", "" };
+
     double[] wholeBunchOfDoubles;
 
     /*
@@ -119,6 +122,14 @@ public class TestByteArrayConverter extends TestCase {
         byte[] expectedValue = expectedBfD;
         for ( int i = 0; i < expectedValue.length; i++ ) {
             assertEquals( "return value", expectedValue[i], actualReturn[i] );
+        }
+    }
+
+    public void testStringToBytes() throws Exception {
+        String[] actualReturn = bac.byteArrayToStrings( bac.stringArrayToBytes( testStrings ) );
+        for ( int i = 0; i < testStrings.length; i++ ) {
+            assertEquals( testStrings[i], actualReturn[i] );
+            // System.err.println( actualReturn[i] );
         }
     }
 

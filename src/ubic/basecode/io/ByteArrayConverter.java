@@ -24,6 +24,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+
+import cern.colt.list.ByteArrayList;
 
 /**
  * <p>
@@ -249,6 +253,36 @@ public class ByteArrayConverter {
     }
 
     /**
+     * Note that this method cannot differentiate between empty strings and null strings. A string that is empty will be
+     * returned as an empty string, not null, while a null string will be stored as an empty string.
+     * 
+     * @param stringArray
+     * @return byte[]
+     */
+    public byte[] stringArrayToBytes( String[] stringArray ) {
+        if ( stringArray == null ) return null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream( bos );
+
+        try {
+            for ( int i = 0; i < stringArray.length; i++ ) {
+                String string = stringArray[i];
+                if ( string != null ) {
+                    dos.write( string.getBytes() );
+                }
+                dos.write( '\u0000' );
+            }
+            dos.close();
+            bos.close();
+
+        } catch ( IOException e ) {
+            // do nothing.
+        }
+
+        return bos.toByteArray();
+    }
+
+    /**
      * @param darray
      * @return byte[]
      */
@@ -302,6 +336,33 @@ public class ByteArrayConverter {
             // do nothing
         }
         return bos.toByteArray();
+    }
+
+    /**
+     * Convert a byte array into a array of Strings. It is assumed that separate strings are delimited by '\u0000'. Note
+     * that this method cannot differentiate between empty strings and null strings. A string that is empty will be
+     * returned as an empty string, not null.
+     * 
+     * @param bytes
+     * @return
+     */
+    public String[] byteArrayToStrings( byte[] bytes ) {
+        List strings = new ArrayList();
+        ByteArrayList buf = new ByteArrayList();
+        for ( int i = 0; i < bytes.length; i++ ) {
+            if ( bytes[i] == '\u0000' ) {
+                strings.add( new String( buf.elements() ).trim() );
+                buf = new ByteArrayList();
+            } else {
+                buf.add( bytes[i] );
+            }
+        }
+
+        String[] result = new String[strings.size()];
+        for ( int i = 0; i < strings.size(); i++ ) {
+            result[i] = ( String ) strings.get( i );
+        }
+        return result;
     }
 
     /**
@@ -387,13 +448,7 @@ public class ByteArrayConverter {
             }
             return charArrayToBytes( toConvert );
         } else if ( array[0] instanceof String ) {
-            StringBuffer buf = new StringBuffer();
-            for ( int i = 0; i < array.length; i++ ) {
-                buf.append( array[i] );
-                if ( i != array.length - 1 ) buf.append( "\t" ); // so we don't have a trailing tab.
-            }
-            return charArrayToBytes( buf.toString().toCharArray() );
-
+            return stringArrayToBytes( ( String[] ) array );
         } else if ( array[0] instanceof Integer ) {
             int[] toConvert = new int[array.length];
             for ( int i = 0; i < array.length; i++ ) {
