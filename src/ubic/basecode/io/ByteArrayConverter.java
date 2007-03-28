@@ -30,7 +30,6 @@ import java.util.List;
 import cern.colt.list.ByteArrayList;
 
 /**
- * <p>
  * Class to convert byte arrays (e.g., Blobs) to and from other types of arrays.
  * 
  * @author Kiran Keshav
@@ -259,14 +258,14 @@ public class ByteArrayConverter {
      * @param stringArray
      * @return byte[]
      */
-    public byte[] stringArrayToBytes( String[] stringArray ) {
+    public byte[] stringArrayToBytes( Object[] stringArray ) {
         if ( stringArray == null ) return null;
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream( bos );
 
         try {
             for ( int i = 0; i < stringArray.length; i++ ) {
-                String string = stringArray[i];
+                String string = ( String ) stringArray[i];
                 if ( string != null ) {
                     dos.write( string.getBytes() );
                 }
@@ -339,9 +338,9 @@ public class ByteArrayConverter {
     }
 
     /**
-     * Convert a byte array into a array of Strings. It is assumed that separate strings are delimited by '\u0000'. Note
-     * that this method cannot differentiate between empty strings and null strings. A string that is empty will be
-     * returned as an empty string, not null.
+     * Convert a byte array into a array of Strings. It is assumed that separate strings are delimited by '\u0000'
+     * (NUL). Note that this method cannot differentiate between empty strings and null strings. A string that is empty
+     * will be returned as an empty string, not null.
      * 
      * @param bytes
      * @return
@@ -351,7 +350,11 @@ public class ByteArrayConverter {
         ByteArrayList buf = new ByteArrayList();
         for ( int i = 0; i < bytes.length; i++ ) {
             if ( bytes[i] == '\u0000' ) {
-                strings.add( new String( buf.elements() ).trim() );
+                String newString = new String( buf.elements() );
+                // newString = newString.replaceAll( "^\t", "____TAB_____" ); // this was for bkwd compat
+                newString = newString.trim();
+                // newString = newString.replaceAll( "____TAB_____", "\t" );
+                strings.add( newString );
                 buf = new ByteArrayList();
             } else {
                 buf.add( bytes[i] );
@@ -448,7 +451,7 @@ public class ByteArrayConverter {
             }
             return charArrayToBytes( toConvert );
         } else if ( array[0] instanceof String ) {
-            return stringArrayToBytes( ( String[] ) array );
+            return stringArrayToBytes( array );
         } else if ( array[0] instanceof Integer ) {
             int[] toConvert = new int[array.length];
             for ( int i = 0; i < array.length; i++ ) {
