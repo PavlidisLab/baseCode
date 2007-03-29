@@ -61,6 +61,8 @@ public class TestByteArrayConverter extends TestCase {
 
     String[] testStrings = new String[] { "foo", "bar", "profiglio", "schwartz", "000", "0", "" };
 
+    int[] testInts = new int[] { 100, 489102, 45828901, -184381, 949, 0, 0, 1893, -249 };
+
     double[] wholeBunchOfDoubles;
 
     /*
@@ -129,6 +131,14 @@ public class TestByteArrayConverter extends TestCase {
         String[] actualReturn = bac.byteArrayToStrings( bac.stringArrayToBytes( testStrings ) );
         for ( int i = 0; i < testStrings.length; i++ ) {
             assertEquals( testStrings[i], actualReturn[i] );
+            // System.err.println( actualReturn[i] );
+        }
+    }
+
+    public void testIntsToBytes() throws Exception {
+        int[] actualReturn = bac.byteArrayToInts( bac.intArrayToBytes( testInts ) );
+        for ( int i = 0; i < testInts.length; i++ ) {
+            assertEquals( testInts[i], actualReturn[i] );
             // System.err.println( actualReturn[i] );
         }
     }

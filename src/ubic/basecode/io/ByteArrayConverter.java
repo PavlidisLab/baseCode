@@ -37,6 +37,9 @@ import cern.colt.list.ByteArrayList;
  * @version $Id$
  */
 public class ByteArrayConverter {
+
+    // sizes are in bytes.
+
     private static final int CHAR_SIZE = 2;
 
     private static final int DOUBLE_SIZE = 8;
