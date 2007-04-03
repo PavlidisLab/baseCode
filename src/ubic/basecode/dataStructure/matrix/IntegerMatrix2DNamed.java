@@ -58,7 +58,7 @@ public class IntegerMatrix2DNamed extends AbstractNamedMatrix {
         return ( Integer[] ) viewRow( row ).toArray();
     }
 
-    public Integer[] getCol( int col ) {
+    public Integer[] getColumn( int col ) {
         Integer[] result = new Integer[rows()];
         for ( int i = 0; i < rows(); i++ ) {
             result[i] = get( i, col );

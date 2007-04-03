@@ -61,7 +61,7 @@ public class StringMatrix2DNamed extends AbstractNamedMatrix {
         return viewRow( row ).toArray();
     }
 
-    public Object[] getCol( int col ) {
+    public String[] getColumn( int col ) {
         String[] result = new String[rows()];
         for ( int i = 0; i < rows(); i++ ) {
             result[i] = ( String ) get( i, col );
