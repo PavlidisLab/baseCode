@@ -1403,15 +1403,19 @@ public class GeneAnnotations {
 
             if ( line.startsWith( "#" ) ) continue;
 
+            //String[] tokens = StringUtils.splitPreserveAllTokens( line, "\t" );
             String[] tokens = line.split( "\t" );
             int length = tokens.length;
             if ( length < 2 ) continue;
 
             String probe = tokens[0].intern();
             String gene = tokens[1].intern();
+
             if ( activeGenes != null && !activeGenes.contains( probe ) ) {
                 continue;
             }
+
+            log.debug( "probe: " + probe );
 
             storeProbeAndGene( probeIds, probe, gene );
 
