@@ -259,5 +259,47 @@ public class CorrelationStats {
     public static boolean isValidPearsonCorrelation( double r ) {
         return ( r + Constants.SMALL >= -1.0 && r - Constants.SMALL <= 1.0 );
     }
+    /**
+     * @param ival
+     * @param jval
+     * @return
+     */
+    public static double correl( double[] ival, double[] jval ) {
+        /* do it the old fashioned way */
+        int numused = 0;
+        double sxy = 0.0, sxx = 0.0, syy = 0.0, sx = 0.0, sy = 0.0;
+        for ( int k = 0; k < ival.length; k++ ) {
+            double xj = ival[k];
+            double yj = jval[k];
+            if ( !Double.isNaN( ival[k] ) && !Double.isNaN( jval[k] ) ) {
+                sx += xj;
+                sy += yj;
+                sxy += xj * yj;
+                sxx += xj * xj;
+                syy += yj * yj;
+                numused++;
+            }
+        }
+        double denom = ( sxx - sx * sx / numused ) * ( syy - sy * sy / numused );
+        double correl = ( sxy - sx * sy / numused ) / Math.sqrt( denom );
+        return correl;
+    }
+
+    /**
+     * @param ival
+     * @param jval
+     * @param meani
+     * @param meanj
+     * @param sqrti
+     * @param sqrtj
+     * @return
+     */
+    public static double correlFast( double[] ival, double[] jval, double meani, double meanj, double sqrti, double sqrtj ) {
+        double sxy = 0.0;
+        for ( int k = 0, n = ival.length; k < n; k++ ) {
+            sxy += ( ival[k] - meani ) * ( jval[k] - meanj );
+        }
+        return sxy / ( sqrti * sqrtj );
+    }
 
 }
