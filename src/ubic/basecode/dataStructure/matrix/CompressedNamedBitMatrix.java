@@ -76,6 +76,12 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
         double res = Double.longBitsToDouble( binVal | CompressedNamedBitMatrix.BIT1 << bit_index );
         matrix[num].set( rows, cols, res );
     }
+    
+    public void reset( int rows, int cols) {
+        for ( int i = 0; i < this.matrix.length; i++ )
+        	this.matrix[i].set(rows,cols,0);
+    }
+
 
     /**
      * @param rows
