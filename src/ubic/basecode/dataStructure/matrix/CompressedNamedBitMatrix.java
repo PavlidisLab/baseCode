@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileWriter;
 
 import no.uib.cipr.matrix.sparse.FlexCompRowMatrix;
+import no.uib.cipr.matrix.sparse.SparseVector;
 
 /**
  * @author xwan
@@ -104,10 +105,24 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
      * @return
      */
     static public int countBits( double val ) {
+    	if(val == 0.0) return 0;
         long binVal = Double.doubleToRawLongBits( val );
         return Long.bitCount( binVal );
     }
-
+    
+    public int[] getRowBits(int row, int[] bits){
+    	for(int i = 0; i < this.matrix.length; i++){
+    		SparseVector vector = this.matrix[i].getRow(row);
+    		double[] data = vector.getData();
+    		int[] indices = vector.getIndex();
+	    	for(int j = 0; j < data.length; j++){
+	    		if(indices[j] == 0 && j > 0) break;
+	    		if(data[j] != 0.0)
+	    			bits[indices[j]] = bits[indices[j]] + countBits(data[j]);
+	    	}
+    	}
+    	return bits;
+    }
     /**
      * @param rows
      * @param cols
