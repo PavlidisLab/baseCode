@@ -21,6 +21,7 @@ package ubic.basecode.dataStructure.matrix;
 import java.text.NumberFormat;
 
 import no.uib.cipr.matrix.sparse.FlexCompRowMatrix;
+import no.uib.cipr.matrix.sparse.SparseVector;
 
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
@@ -54,7 +55,15 @@ public class CompressedSparseDoubleMatrix2DNamed extends DoubleMatrixNamed {
      * @return double[]
      */
     public double[] getRow( int row ) {
-        return viewRow( row ).toArray();
+		SparseVector vector = this.matrix.getRow(row);
+		double[] data = vector.getData();
+		int[] indices = vector.getIndex();
+		double[] values = new double[columns()];
+    	for(int j = 0; j < data.length; j++){
+    		if(indices[j] == 0 && j > 0) break;
+    		values[indices[j]] = data[j];
+    	}
+    	return values;
     }
 
     /*
@@ -86,8 +95,9 @@ public class CompressedSparseDoubleMatrix2DNamed extends DoubleMatrixNamed {
 
     public Object[] getRowObj( int row ) {
         Double[] result = new Double[columns()];
+        double[] values = getRow(row);
         for ( int i = 0; i < columns(); i++ ) {
-            result[i] = new Double( get( row, i ) );
+            result[i] = new Double( values[i] );
         }
         return result;
     }
@@ -215,7 +225,7 @@ public class CompressedSparseDoubleMatrix2DNamed extends DoubleMatrixNamed {
      * @return
      */
     public DoubleMatrix1D viewRow( int row ) {
-        return new DenseDoubleMatrix1D( matrix.getRow( row ).getData() );
+        return new DenseDoubleMatrix1D( getRow(row) );
     }
 
     /**
