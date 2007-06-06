@@ -17,11 +17,11 @@
 	</organization>
 	<packaging>jar</packaging>
 	<scm>
-		<connection>scm:cvs:ext:continuum@luria.cmmt.ubc.ca:/raid/cvs/pavlidis:baseCode</connection>
+		<connection>scm:cvs:ext:continuum@broca.ubic.ca:/cvs:baseCode</connection>
 		<developerConnection>
-			scm:cvs:ext:continuum@luria.cmmt.ubc.ca:/raid/cvs/pavlidis:baseCode
+			scm:cvs:ext:continuum@broca.ubic.ca:/cvs:baseCode
 		</developerConnection>
-		<url>http://luria.cmmt.ubc.ca:8080/viewrep/Pavlidis/baseCode</url>
+		<url>http://broca.ubic.ca:8081/viewrep/pavlab/baseCode</url>
 	</scm>
 	<issueManagement>
 		<system>Bugzilla</system>
