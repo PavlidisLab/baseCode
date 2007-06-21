@@ -280,7 +280,9 @@ public class CorrelationStats {
                 numused++;
             }
         }
+        if(numused < 2) return Double.NaN;
         double denom = ( sxx - sx * sx / numused ) * ( syy - sy * sy / numused );
+        if(denom <= 0) return Double.NaN;
         double correl = ( sxy - sx * sy / numused ) / Math.sqrt( denom );
         return correl;
     }
