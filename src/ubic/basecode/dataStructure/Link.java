@@ -21,10 +21,13 @@ package ubic.basecode.dataStructure;
 import java.text.NumberFormat;
 
 /**
+ * Implements comparable, which sorts by the 'x' coordinate and then secondarily by the 'y' coordinate. (This behavior
+ * is important for some applications).
+ * 
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class Link extends Point {
+public class Link extends Point implements Comparable {
 
     private double weight;
 
@@ -50,6 +53,23 @@ public class Link extends Point {
      */
     public String toString() {
         return super.toString() + "\t" + NumberFormat.getInstance().format( this.weight );
+    }
+
+    public int compareTo( Object arg ) {
+        Link a = ( Link ) arg;
+
+        if ( a.getx() < this.getx() ) {
+            return -1;
+        } else if ( a.getx() > this.getx() ) {
+            return 1;
+        } else {
+            if ( a.gety() < this.gety() ) {
+                return -1;
+            } else if ( a.gety() > this.gety() ) {
+                return 1;
+            }
+            return 0;
+        }
     }
 
 }
