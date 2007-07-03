@@ -1403,7 +1403,7 @@ public class GeneAnnotations {
 
             if ( line.startsWith( "#" ) ) continue;
 
-            //String[] tokens = StringUtils.splitPreserveAllTokens( line, "\t" );
+            // String[] tokens = StringUtils.splitPreserveAllTokens( line, "\t" );
             String[] tokens = line.split( "\t" );
             int length = tokens.length;
             if ( length < 2 ) continue;
@@ -1415,7 +1415,7 @@ public class GeneAnnotations {
                 continue;
             }
 
-            log.debug( "probe: " + probe );
+            // if ( log.isDebugEnabled() ) log.debug( "probe: " + probe );
 
             storeProbeAndGene( probeIds, probe, gene );
 
