@@ -21,7 +21,7 @@ package ubic.basecode.datafilter;
 import java.util.List;
 import java.util.Vector;
 
-import ubic.basecode.dataStructure.matrix.NamedMatrix;
+import ubic.basecode.dataStructure.matrix.NamedMatrix2D;
 import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
 
 /**
@@ -90,7 +90,7 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
      * @param data The input matrix
      * @return Matrix after filtering.
      */
-    public NamedMatrix filter( NamedMatrix data ) {
+    public NamedMatrix2D filter( NamedMatrix2D data ) {
 
         int numRows = data.rows();
         int numCols = data.columns();
@@ -176,7 +176,7 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
             }
         }
 
-        NamedMatrix returnval = getOutputMatrix( data, MTemp.size(), numCols );
+        NamedMatrix2D returnval = getOutputMatrix( data, MTemp.size(), numCols );
         for ( int i = 0; i < MTemp.size(); i++ ) {
             for ( int j = 0; j < numCols; j++ ) {
                 returnval.set( i, j, ( ( Object[] ) MTemp.get( i ) )[j] );
@@ -194,7 +194,7 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
      * @param data NamedMatrix
      * @todo this should check more carefully - actually test that the rows are all the same.
      */
-    private void validateFlags( NamedMatrix data ) {
+    private void validateFlags( NamedMatrix2D data ) {
         if ( flags == null || flags.rows() < data.rows() || flags.columns() < data.columns() ) {
             throw new IllegalStateException( "Flags do not match data." );
         }

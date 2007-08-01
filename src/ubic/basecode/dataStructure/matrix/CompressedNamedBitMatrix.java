@@ -12,7 +12,7 @@ import no.uib.cipr.matrix.sparse.SparseVector;
  * 
  * @author xwan
  */
-public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
+public class CompressedNamedBitMatrix extends AbstractNamedMatrix2D {
 
     private static final long serialVersionUID = 1775002416710933373L;
     private FlexCompRowMatrix[] matrix;

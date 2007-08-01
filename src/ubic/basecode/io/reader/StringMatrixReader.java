@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import ubic.basecode.dataStructure.matrix.NamedMatrix;
+import ubic.basecode.dataStructure.matrix.NamedMatrix2D;
 import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
 
 /**
@@ -39,7 +39,7 @@ import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
  */
 public class StringMatrixReader extends AbstractNamedMatrixReader {
 
-    public NamedMatrix read( String filename ) throws IOException {
+    public NamedMatrix2D read( String filename ) throws IOException {
         File infile = new File( filename );
         if ( !infile.exists() || !infile.canRead() ) {
             throw new IllegalArgumentException( "Could not read from " + filename );
@@ -55,7 +55,7 @@ public class StringMatrixReader extends AbstractNamedMatrixReader {
      * @return NamedMatrix
      * @throws IOException
      */
-    public NamedMatrix read( InputStream stream ) throws IOException {
+    public NamedMatrix2D read( InputStream stream ) throws IOException {
         StringMatrix2DNamed matrix = null;
         List MTemp = new Vector();
         List rowNames = new Vector();
@@ -141,7 +141,7 @@ public class StringMatrixReader extends AbstractNamedMatrixReader {
      * 
      * @see basecode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
      */
-    public NamedMatrix readOneRow( BufferedReader dis ) throws IOException {
+    public NamedMatrix2D readOneRow( BufferedReader dis ) throws IOException {
         throw new UnsupportedOperationException();
     }
 }

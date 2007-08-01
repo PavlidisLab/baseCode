@@ -27,7 +27,7 @@ import java.util.List;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public interface NamedMatrix {
+public interface NamedMatrix2D {
 
     /**
      * Add a column name associated with an index.
@@ -184,9 +184,5 @@ public interface NamedMatrix {
      * @return
      */
     public boolean containsColumnName( Object columnName );
-
-    /**
-     * @return
-     */
 
 }

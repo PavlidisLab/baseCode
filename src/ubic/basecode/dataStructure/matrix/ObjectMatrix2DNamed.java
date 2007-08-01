@@ -27,7 +27,7 @@ import cern.colt.matrix.impl.DenseObjectMatrix2D;
  * @author pavlidis
  * @version $Id$
  */
-public class ObjectMatrix2DNamed extends AbstractNamedMatrix {
+public class ObjectMatrix2DNamed extends AbstractNamedMatrix2D {
 
     private DenseObjectMatrix2D matrix;
 

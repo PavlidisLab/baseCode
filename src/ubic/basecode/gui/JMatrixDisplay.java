@@ -120,8 +120,8 @@ public class JMatrixDisplay extends JPanel {
 
         // row label width and height (font-dependent)
         setFont();
-        //m_rowLabelWidth = m_labelGutter + Util.maxStringPixelWidth( m_matrix.getRowNames(), m_labelFont, this );
-        //m_rowLabelWidth += m_labelGutter; // this is optional (leaves some  space on the right)
+        m_rowLabelWidth = m_labelGutter + Util.maxStringPixelWidth( m_matrix.getRowNames(), m_labelFont, this );
+        m_rowLabelWidth += m_labelGutter; // this is optional (leaves some  space on the right)
         if (m_maxColumnLength > 0) {
             String [] cols = m_matrix.getColumnNames();
             for (int i = 0; i < cols.length; i++ ) {

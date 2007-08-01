@@ -28,7 +28,7 @@ import java.util.Map;
  * @author pavlidis
  * @version $Id$
  */
-public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serializable {
+public abstract class AbstractNamedMatrix2D implements NamedMatrix2D, java.io.Serializable {
 
     protected static final int MAX_ROWS_TO_PRINT = 20;
     private List rowNames;
@@ -43,7 +43,7 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
      * 
      *  
      */
-    public AbstractNamedMatrix() {
+    public AbstractNamedMatrix2D() {
         rowMap = new LinkedHashMap(); // contains a map of each row name to index
         // of the row.
         colMap = new LinkedHashMap();

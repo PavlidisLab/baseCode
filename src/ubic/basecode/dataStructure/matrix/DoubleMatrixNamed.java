@@ -30,7 +30,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public abstract class DoubleMatrixNamed extends AbstractNamedMatrix {
+public abstract class DoubleMatrixNamed extends AbstractNamedMatrix2D {
 
     protected static Log log = LogFactory.getLog( DoubleMatrixNamed.class.getName() );
 

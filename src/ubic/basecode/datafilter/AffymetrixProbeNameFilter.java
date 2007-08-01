@@ -21,7 +21,7 @@ package ubic.basecode.datafilter;
 import java.util.List;
 import java.util.Vector;
 
-import ubic.basecode.dataStructure.matrix.NamedMatrix;
+import ubic.basecode.dataStructure.matrix.NamedMatrix2D;
 
 /**
  * Remove probes that have names meeting certain rules indicating they may have low reliability. This is targeted at
@@ -102,7 +102,7 @@ public class AffymetrixProbeNameFilter extends AbstractFilter implements Filter 
         }
     }
 
-    public NamedMatrix filter( NamedMatrix data ) {
+    public NamedMatrix2D filter( NamedMatrix2D data ) {
         List MTemp = new Vector();
         List rowNames = new Vector();
         int numRows = data.rows();
@@ -137,7 +137,7 @@ public class AffymetrixProbeNameFilter extends AbstractFilter implements Filter 
             kept++;
         }
 
-        NamedMatrix returnval = getOutputMatrix( data, MTemp.size(), numCols );
+        NamedMatrix2D returnval = getOutputMatrix( data, MTemp.size(), numCols );
 
         for ( int i = 0; i < MTemp.size(); i++ ) {
             for ( int j = 0; j < numCols; j++ ) {

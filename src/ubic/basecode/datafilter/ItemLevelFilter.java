@@ -20,7 +20,7 @@ package ubic.basecode.datafilter;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
-import ubic.basecode.dataStructure.matrix.NamedMatrix;
+import ubic.basecode.dataStructure.matrix.NamedMatrix2D;
 
 /**
  * Filter that removes individual values that are outside of a range. Removed values are set to NaN.
@@ -30,7 +30,7 @@ import ubic.basecode.dataStructure.matrix.NamedMatrix;
  */
 public class ItemLevelFilter extends AbstractLevelFilter {
 
-    public NamedMatrix filter( NamedMatrix data ) {
+    public NamedMatrix2D filter( NamedMatrix2D data ) {
         if ( !( data instanceof DoubleMatrixNamed ) ) {
             throw new IllegalArgumentException( "Only valid for DoubleMatrixNamed" );
         }

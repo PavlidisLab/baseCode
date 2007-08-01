@@ -24,7 +24,7 @@ import cern.colt.matrix.ObjectMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public class IntegerMatrix2DNamed extends AbstractNamedMatrix {
+public class IntegerMatrix2DNamed extends AbstractNamedMatrix2D {
 
     private ObjectMatrix2DNamed matrix;
 

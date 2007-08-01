@@ -33,7 +33,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import ubic.basecode.dataStructure.matrix.NamedMatrix;
+import ubic.basecode.dataStructure.matrix.NamedMatrix2D;
 import ubic.basecode.dataStructure.matrix.SparseDoubleMatrix2DNamed;
 
 import com.braju.beta.format.Format;
@@ -55,7 +55,7 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
      */
-    public NamedMatrix read( String filename ) throws IOException {
+    public NamedMatrix2D read( String filename ) throws IOException {
         return read( filename, null );
     }
 
@@ -64,7 +64,7 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
      */
-    public NamedMatrix read( InputStream stream ) throws IOException {
+    public NamedMatrix2D read( InputStream stream ) throws IOException {
         return read( stream, null );
     }
 
@@ -76,7 +76,7 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
      */
-    public NamedMatrix read( String filename, Set wantedRowNames ) throws IOException {
+    public NamedMatrix2D read( String filename, Set wantedRowNames ) throws IOException {
         File infile = new File( filename );
         if ( !infile.exists() || !infile.canRead() ) {
             throw new IOException( "Could not read from file " + filename );
@@ -109,7 +109,7 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
      * @return
      * @throws IOException
      */
-    public NamedMatrix readJW( InputStream stream ) throws IOException, IllegalAccessException, NoSuchFieldException {
+    public NamedMatrix2D readJW( InputStream stream ) throws IOException, IllegalAccessException, NoSuchFieldException {
 
         BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
         FormatReader ff = new FormatReader( dis );
@@ -183,7 +183,7 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
      * @return NamedMatrix
      * @throws IOException
      */
-    public NamedMatrix read( InputStream stream, Set wantedRowNames ) throws IOException {
+    public NamedMatrix2D read( InputStream stream, Set wantedRowNames ) throws IOException {
 
         Set itemNames = new HashSet();
         Map rows = new HashMap();
@@ -268,7 +268,7 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
      * 
      * @see basecode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
      */
-    public NamedMatrix readOneRow( BufferedReader dis ) throws IOException {
+    public NamedMatrix2D readOneRow( BufferedReader dis ) throws IOException {
         // this is impossible for the pair method.
         throw new UnsupportedOperationException();
     }

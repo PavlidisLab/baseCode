@@ -23,7 +23,7 @@ import java.lang.reflect.Constructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ubic.basecode.dataStructure.matrix.NamedMatrix;
+import ubic.basecode.dataStructure.matrix.NamedMatrix2D;
 
 /**
  * Base implementation of the filter interface. Subclasses must implement the filter() method.
@@ -35,12 +35,12 @@ public abstract class AbstractFilter implements Filter {
 
     protected static final Log log = LogFactory.getLog( AbstractFilter.class );
 
-    protected NamedMatrix getOutputMatrix( NamedMatrix data, int numRows, int numCols ) {
-        NamedMatrix returnval = null;
+    protected NamedMatrix2D getOutputMatrix( NamedMatrix2D data, int numRows, int numCols ) {
+        NamedMatrix2D returnval = null;
 
         try {
             Constructor cr = data.getClass().getConstructor( new Class[] { int.class, int.class } );
-            returnval = ( NamedMatrix ) cr
+            returnval = ( NamedMatrix2D ) cr
                     .newInstance( new Object[] { new Integer( numRows ), new Integer( numCols ) } );
         } catch ( Exception e ) {
             e.printStackTrace();

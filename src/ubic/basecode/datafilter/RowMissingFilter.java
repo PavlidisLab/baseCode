@@ -21,7 +21,7 @@ package ubic.basecode.datafilter;
 import java.util.List;
 import java.util.Vector;
 
-import ubic.basecode.dataStructure.matrix.NamedMatrix;
+import ubic.basecode.dataStructure.matrix.NamedMatrix2D;
 import cern.colt.list.IntArrayList;
 
 /**
@@ -76,7 +76,7 @@ public class RowMissingFilter extends AbstractFilter implements Filter {
         maxFractionRemoved = f;
     }
 
-    public NamedMatrix filter( NamedMatrix data ) {
+    public NamedMatrix2D filter( NamedMatrix2D data ) {
         List MTemp = new Vector();
         List rowNames = new Vector();
         int numRows = data.rows();
@@ -140,7 +140,7 @@ public class RowMissingFilter extends AbstractFilter implements Filter {
 
         }
 
-        NamedMatrix returnval = getOutputMatrix( data, MTemp.size(), numCols );
+        NamedMatrix2D returnval = getOutputMatrix( data, MTemp.size(), numCols );
 
         // Finally fill in the return value.
         for ( int i = 0; i < MTemp.size(); i++ ) {

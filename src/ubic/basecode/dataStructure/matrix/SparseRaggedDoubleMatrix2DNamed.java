@@ -127,7 +127,7 @@ public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed {
     /**
      * (non-Javadoc) Note that in a sparse matrix, zero values are considered "missing"!
      * 
-     * @see basecode.dataStructure.matrix.NamedMatrix#isMissing(int, int)
+     * @see basecode.dataStructure.matrix.NamedMatrix2D#isMissing(int, int)
      */
     public boolean isMissing( int i, int j ) {
         return get( i, j ) == 0.0;
