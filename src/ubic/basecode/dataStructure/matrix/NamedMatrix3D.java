@@ -3,7 +3,7 @@ package ubic.basecode.dataStructure.matrix;
 import java.util.Iterator;
 import java.util.List;
 
-public interface NamedMatrix3D<T> {
+public interface NamedMatrix3D {
 	/**
 	 * Add a slice name
 	 * @param s name of the slice
@@ -18,7 +18,7 @@ public interface NamedMatrix3D<T> {
 	 */
 	public int getSliceIndexByName(Object s);
 	
-	public void setSliceNames(List<Object> v);
+	public void setSliceNames(List v);
 
 	/**
 	 * Get a slice name
@@ -164,7 +164,7 @@ public interface NamedMatrix3D<T> {
 	 * @param value
 	 *            to set
 	 */
-	public void set(int slice, int row, int col, T val);
+	public void set(int slice, int row, int col, Object val);
 
 	/**
 	 * Get a row in the matrix.
@@ -177,8 +177,6 @@ public interface NamedMatrix3D<T> {
 	 */
 	public Object[] getRow(int slice, int row);
 	
-	public T[] getRow(T[] a, int slice, int row);
-
 	/**
 	 * Get a column in the matrix
 	 * 
@@ -190,8 +188,6 @@ public interface NamedMatrix3D<T> {
 	 */
 	public Object[] getCol(int slice, int col);
 	
-	public T[] getCol(T[] a, int slice, int col);
-
 	/**
 	 * Get a slice of the matrix
 	 * 
@@ -201,8 +197,6 @@ public interface NamedMatrix3D<T> {
 	 */
 	public Object[][] getSlice(int slice);
 	
-	public T[][] getSlice(T[][] a, int slice);
-
 	/**
 	 * Check if the value at a given index is missing.
 	 * 
@@ -244,6 +238,6 @@ public interface NamedMatrix3D<T> {
 	 */
 	public boolean containsSliceName(Object sliceName);
 	
-	public T get(int slice, int row, int col);
-
+	public Object get(int slice, int row, int column);
+	
 }

@@ -5,18 +5,18 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public abstract class AbstractNamedMatrix3D<T> implements NamedMatrix3D<T> {
-	private LinkedHashMap<Object, Integer> colMap;
-	private LinkedHashMap<Object, Integer> rowMap;
-	private LinkedHashMap<Object, Integer> sliceMap;
-	private List colNames;
-	private List rowNames;
-	private List sliceNames;
+public abstract class AbstractNamedMatrix3D implements NamedMatrix3D {
+	public LinkedHashMap colMap;
+	public LinkedHashMap rowMap;
+	public LinkedHashMap sliceMap;
+	public List colNames;
+	public List rowNames;
+	public List sliceNames;
 	
 	public AbstractNamedMatrix3D() {
-		colMap = new LinkedHashMap<Object, Integer>();
-		rowMap = new LinkedHashMap<Object, Integer>();
-		sliceMap = new LinkedHashMap<Object, Integer>();
+		colMap = new LinkedHashMap();
+		rowMap = new LinkedHashMap();
+		sliceMap = new LinkedHashMap();
 		colNames = new ArrayList();
 		rowNames = new ArrayList();
 		sliceNames = new ArrayList();
@@ -61,7 +61,7 @@ public abstract class AbstractNamedMatrix3D<T> implements NamedMatrix3D<T> {
 	public abstract Object[] getCol(int slice, int col);
 
 	public final int getColIndexByName(Object s) {
-		Integer index = colMap.get(s);
+		Integer index = (Integer) colMap.get(s);
 		if (index == null)
 			throw new IllegalArgumentException(s + " not found");
 		return index.intValue();
@@ -82,7 +82,7 @@ public abstract class AbstractNamedMatrix3D<T> implements NamedMatrix3D<T> {
 	public abstract Object[] getRow(int slice, int row);
 
 	public int getRowIndexByName(Object s) {
-		Integer index = rowMap.get(s);
+		Integer index = (Integer) rowMap.get(s);
 		if (index == null)
 			throw new IllegalArgumentException(s + " not found");
 		return index.intValue();
@@ -100,13 +100,10 @@ public abstract class AbstractNamedMatrix3D<T> implements NamedMatrix3D<T> {
 		return rowNames;
 	}
 
-	public abstract T[] getCol(T[] a, int slice, int col);
-	public abstract T[] getRow(T[] a, int slice, int row);
-	public abstract T[][] getSlice(T[][] a, int slice);
 	public abstract Object[][] getSlice(int slice);
 
 	public int getSliceIndexByName(Object s) {
-		Integer index = sliceMap.get(s);
+		Integer index = (Integer) sliceMap.get(s);
 		if (index == null)
 			throw new IllegalArgumentException(s + " not found");
 		return index.intValue();
@@ -146,7 +143,7 @@ public abstract class AbstractNamedMatrix3D<T> implements NamedMatrix3D<T> {
 
 	public abstract int rows();
 
-	public abstract void set(int slice, int row, int col, T val);
+	public abstract void set(int slice, int row, int col, Object val);
 	
 	public void setColumnNames(List v) {
 		colNames = v;
@@ -168,6 +165,6 @@ public abstract class AbstractNamedMatrix3D<T> implements NamedMatrix3D<T> {
 
 	public abstract int slices();
 	
-	public abstract T get(int slice, int row, int col);
+	public abstract Object get(int slice, int row, int column);
 
 }
