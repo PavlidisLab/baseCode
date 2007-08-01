@@ -83,12 +83,11 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix2D {
         double res = Double.longBitsToDouble( binVal | CompressedNamedBitMatrix.BIT1 << bit_index );
         matrix[num].set( rows, cols, res );
     }
-    
-    public void reset( int rows, int cols) {
-        for ( int i = 0; i < this.matrix.length; i++ )
-        	this.matrix[i].set(rows,cols,0);
-    }
 
+    public void reset( int rows, int cols ) {
+        for ( int i = 0; i < this.matrix.length; i++ )
+            this.matrix[i].set( rows, cols, 0 );
+    }
 
     /**
      * Checks the bit of the specified element at the specified index.
@@ -115,24 +114,25 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix2D {
      * @return number of bits in val
      */
     static public int countBits( double val ) {
-    	if(val == 0.0) return 0;
+        if ( val == 0.0 ) return 0;
         long binVal = Double.doubleToRawLongBits( val );
         return Long.bitCount( binVal );
     }
-    
-    public int[] getRowBits(int row, int[] bits){
-    	for(int i = 0; i < this.matrix.length; i++){
-    		SparseVector vector = this.matrix[i].getRow(row);
-    		double[] data = vector.getData();
-    		int[] indices = vector.getIndex();
-	    	for(int j = 0; j < data.length; j++){
-	    		if(indices[j] == 0 && j > 0) break;
-	    		if(data[j] != 0.0)
-	    			bits[indices[j]] = bits[indices[j]] + countBits(data[j]);
-	    	}
-    	}
-    	return bits;
+
+    public int[] getRowBitCount( int row ) {
+        int[] bits = new int[columns()];
+        for ( int i = 0; i < this.matrix.length; i++ ) {
+            SparseVector vector = this.matrix[i].getRow( row );
+            double[] data = vector.getData();
+            int[] indices = vector.getIndex();
+            for ( int j = 0; j < data.length; j++ ) {
+                if ( indices[j] == 0 && j > 0 ) break;
+                if ( data[j] != 0.0 ) bits[indices[j]] = bits[indices[j]] + countBits( data[j] );
+            }
+        }
+        return bits;
     }
+
     /**
      * Count the number of bits at the specified element position
      * 
@@ -233,6 +233,7 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix2D {
 
     /**
      * Set the matrix element to the specified bit vector
+     * 
      * @param row
      * @param col
      * @param val
@@ -248,6 +249,7 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix2D {
 
     /**
      * Save the matrix to the specified file
+     * 
      * @param fileName - save file
      */
     public void toFile( String fileName ) throws IOException {
