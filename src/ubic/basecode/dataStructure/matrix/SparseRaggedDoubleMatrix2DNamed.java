@@ -32,7 +32,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed {
+public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed2D {
 
     private Vector matrix; // a vector of DoubleArrayList containing the values of the matrix
 

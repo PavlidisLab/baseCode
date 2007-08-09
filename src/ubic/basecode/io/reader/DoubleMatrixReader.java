@@ -36,12 +36,12 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed2D;
 import ubic.basecode.dataStructure.matrix.NamedMatrix2D;
 import cern.colt.list.DoubleArrayList;
 
 /**
- * Reader for {@link basecode.dataStructure.matrix.DoubleMatrixNamed}.
+ * Reader for {@link basecode.dataStructure.matrix.DoubleMatrixNamed2D}.
  * 
  * @author Paul Pavlidis
  * @version $Id$
@@ -270,9 +270,9 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
     // protected methods
     // -----------------------------------------------------------------
 
-    protected DoubleMatrixNamed createMatrix( List MTemp, int rowCount, int colCount, List rowNames, List colNames1 ) {
+    protected DoubleMatrixNamed2D createMatrix( List MTemp, int rowCount, int colCount, List rowNames, List colNames1 ) {
 
-        DoubleMatrixNamed matrix = DoubleMatrix2DNamedFactory.fastrow( rowCount, colCount );
+        DoubleMatrixNamed2D matrix = DoubleMatrix2DNamedFactory.fastrow( rowCount, colCount );
 
         for ( int i = 0; i < matrix.rows(); i++ ) {
             for ( int j = 0; j < matrix.columns(); j++ ) {

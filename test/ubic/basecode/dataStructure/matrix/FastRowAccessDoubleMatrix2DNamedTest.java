@@ -15,14 +15,14 @@ import cern.colt.matrix.DoubleMatrix1D;
  */
 public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
 
-    DoubleMatrixNamed testdata;
+    DoubleMatrixNamed2D testdata;
     DoubleMatrixReader f = new DoubleMatrixReader();
 
     /*
      * @see TestCase#setUp()
      */
     protected void setUp() throws Exception {
-        testdata = ( DoubleMatrixNamed ) f.read( FastRowAccessDoubleMatrix2DNamedTest.class
+        testdata = ( DoubleMatrixNamed2D ) f.read( FastRowAccessDoubleMatrix2DNamedTest.class
                 .getResourceAsStream( "/data/testdata.txt" ) );
         assert ( testdata instanceof FastRowAccessDoubleMatrix2DNamed );
         super.setUp();

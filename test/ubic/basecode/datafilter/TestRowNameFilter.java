@@ -21,7 +21,7 @@ package ubic.basecode.datafilter;
 import java.util.HashSet;
 import java.util.Set;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed2D;
 import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
 
 /**
@@ -51,7 +51,7 @@ public class TestRowNameFilter extends AbstractTestFilter {
 
     public void testFilter() {
         RowNameFilter fi = new RowNameFilter( testfilterlist );
-        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) fi.filter( testdata );
+        DoubleMatrixNamed2D filtered = ( DoubleMatrixNamed2D ) fi.filter( testdata );
         int expectedReturn = 4;
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );
@@ -59,7 +59,7 @@ public class TestRowNameFilter extends AbstractTestFilter {
 
     public void testFilterExclude() {
         RowNameFilter fi = new RowNameFilter( testfilterlist, true );
-        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) fi.filter( testdata );
+        DoubleMatrixNamed2D filtered = ( DoubleMatrixNamed2D ) fi.filter( testdata );
         int expectedReturn = testdata.rows() - 4;
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );

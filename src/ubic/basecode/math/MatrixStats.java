@@ -19,7 +19,7 @@
 package ubic.basecode.math;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed2D;
 import ubic.basecode.dataStructure.matrix.SparseDoubleMatrix2DNamed;
 import cern.colt.function.DoubleFunction;
 import cern.colt.list.DoubleArrayList;
@@ -36,8 +36,8 @@ public class MatrixStats {
      * @param data DenseDoubleMatrix2DNamed
      * @return DenseDoubleMatrix2DNamed
      */
-    public static DoubleMatrixNamed correlationMatrix( DoubleMatrixNamed data ) {
-        DoubleMatrixNamed result = DoubleMatrix2DNamedFactory.dense( data.rows(), data.rows() );
+    public static DoubleMatrixNamed2D correlationMatrix( DoubleMatrixNamed2D data ) {
+        DoubleMatrixNamed2D result = DoubleMatrix2DNamedFactory.dense( data.rows(), data.rows() );
 
         for ( int i = 0; i < data.rows(); i++ ) {
             DoubleArrayList irow = new DoubleArrayList( data.getRow( i ) );
@@ -59,7 +59,7 @@ public class MatrixStats {
      * @param threshold only correlations with absolute values above this level are stored.
      * @return SparseDoubleMatrix2DNamed
      */
-    public static SparseDoubleMatrix2DNamed correlationMatrix( DoubleMatrixNamed data, double threshold ) {
+    public static SparseDoubleMatrix2DNamed correlationMatrix( DoubleMatrixNamed2D data, double threshold ) {
         SparseDoubleMatrix2DNamed result = new SparseDoubleMatrix2DNamed( data.rows(), data.rows() );
 
         for ( int i = 0; i < data.rows(); i++ ) {
@@ -85,7 +85,7 @@ public class MatrixStats {
      * @param matrix DenseDoubleMatrix2DNamed
      * @return the smallest value in the matrix
      */
-    public static double min( DoubleMatrixNamed matrix ) {
+    public static double min( DoubleMatrixNamed2D matrix ) {
 
         int totalRows = matrix.rows();
         int totalColumns = matrix.columns();
@@ -118,7 +118,7 @@ public class MatrixStats {
      * @param matrix DenseDoubleMatrix2DNamed
      * @return the largest value in the matrix
      */
-    public static double max( DoubleMatrixNamed matrix ) {
+    public static double max( DoubleMatrixNamed2D matrix ) {
 
         int totalRows = matrix.rows();
         int totalColumns = matrix.columns();
@@ -156,7 +156,7 @@ public class MatrixStats {
      * @param matrixToNormalize
      * @param sigma a scaling factor for the input values.
      */
-    public static void rbfNormalize( DoubleMatrixNamed matrixToNormalize, final double sigma ) {
+    public static void rbfNormalize( DoubleMatrixNamed2D matrixToNormalize, final double sigma ) {
 
         // define the function we will use.
         DoubleFunction f = new DoubleFunction() {
@@ -181,7 +181,7 @@ public class MatrixStats {
      * 
      * @param matrixToNormalize
      */
-    public static void countsNormalize( DoubleMatrixNamed matrixToNormalize ) {
+    public static void countsNormalize( DoubleMatrixNamed2D matrixToNormalize ) {
 
         final double min = MatrixStats.min( matrixToNormalize );
         DoubleFunction f = new DoubleFunction() {

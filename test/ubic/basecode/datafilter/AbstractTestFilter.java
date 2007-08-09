@@ -19,7 +19,7 @@
 package ubic.basecode.datafilter;
 
 import junit.framework.TestCase;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed2D;
 import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.io.reader.StringMatrixReader;
@@ -32,9 +32,9 @@ import ubic.basecode.io.reader.StringMatrixReader;
  */
 public abstract class AbstractTestFilter extends TestCase {
 
-    protected DoubleMatrixNamed testdata = null;
+    protected DoubleMatrixNamed2D testdata = null;
     protected StringMatrix2DNamed teststringdata = null;
-    protected DoubleMatrixNamed testmissingdata = null;
+    protected DoubleMatrixNamed2D testmissingdata = null;
     protected StringMatrix2DNamed teststringmissingdata = null;
 
     public AbstractTestFilter() {
@@ -46,9 +46,9 @@ public abstract class AbstractTestFilter extends TestCase {
         DoubleMatrixReader f = new DoubleMatrixReader();
         StringMatrixReader s = new StringMatrixReader();
 
-        testdata = ( DoubleMatrixNamed ) f.read( AbstractTestFilter.class.getResourceAsStream( "/data/testdata.txt" ) );
+        testdata = ( DoubleMatrixNamed2D ) f.read( AbstractTestFilter.class.getResourceAsStream( "/data/testdata.txt" ) );
 
-        testmissingdata = ( DoubleMatrixNamed ) f.read( AbstractTestFilter.class
+        testmissingdata = ( DoubleMatrixNamed2D ) f.read( AbstractTestFilter.class
                 .getResourceAsStream( "/data/testdatamissing.txt" ) );
 
         teststringdata = ( StringMatrix2DNamed ) s.read( AbstractTestFilter.class

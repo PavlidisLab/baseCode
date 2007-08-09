@@ -153,51 +153,6 @@ public interface NamedMatrix3D {
 	public int columns();
 
 	/**
-	 * Set a value in the matrix.
-	 * 
-	 * @param slice
-	 *            index
-	 * @param row
-	 *            index
-	 * @param col
-	 *            index
-	 * @param value
-	 *            to set
-	 */
-	public void set(int slice, int row, int col, Object val);
-
-	/**
-	 * Get a row in the matrix.
-	 * 
-	 * @param slice
-	 *            index
-	 * @param column
-	 *            index
-	 * @return row
-	 */
-	public Object[] getRow(int slice, int row);
-	
-	/**
-	 * Get a column in the matrix
-	 * 
-	 * @param slice
-	 *            index
-	 * @param column
-	 *            index
-	 * @return column
-	 */
-	public Object[] getCol(int slice, int col);
-	
-	/**
-	 * Get a slice of the matrix
-	 * 
-	 * @param slice
-	 *            index
-	 * @return a slice
-	 */
-	public Object[][] getSlice(int slice);
-	
-	/**
 	 * Check if the value at a given index is missing.
 	 * 
 	 * @param slice
@@ -237,7 +192,5 @@ public interface NamedMatrix3D {
 	 * @return true if the matrix contains the slice name
 	 */
 	public boolean containsSliceName(Object sliceName);
-	
-	public Object get(int slice, int row, int column);
 	
 }

@@ -21,7 +21,7 @@ package ubic.basecode.math;
 import java.io.IOException;
 
 import junit.framework.TestCase;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed2D;
 import ubic.basecode.datafilter.AbstractTestFilter;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.util.RegressionTesting;
@@ -32,8 +32,8 @@ import ubic.basecode.util.RegressionTesting;
  */
 public class TestMatrixStats extends TestCase {
 
-    protected DoubleMatrixNamed testdata = null;
-    protected DoubleMatrixNamed testdatahuge = null;
+    protected DoubleMatrixNamed2D testdata = null;
+    protected DoubleMatrixNamed2D testdatahuge = null;
 
     /*
      * @see TestCase#setUp()
@@ -42,7 +42,7 @@ public class TestMatrixStats extends TestCase {
         super.setUp();
         DoubleMatrixReader f = new DoubleMatrixReader();
 
-        testdata = ( DoubleMatrixNamed ) f.read( AbstractTestFilter.class.getResourceAsStream( "/data/testdata.txt" ) );
+        testdata = ( DoubleMatrixNamed2D ) f.read( AbstractTestFilter.class.getResourceAsStream( "/data/testdata.txt" ) );
 
         // testdatahuge = ( DoubleMatrixNamed ) f.read( AbstractTestFilter.class
         // .getResourceAsStream( "/data/melanoma_and_sarcomaMAS5.txt" ) );
@@ -70,11 +70,11 @@ public class TestMatrixStats extends TestCase {
     }
 
     public final void testCorrelationMatrix() throws Exception {
-        DoubleMatrixNamed actualReturn = MatrixStats.correlationMatrix( testdata );
+        DoubleMatrixNamed2D actualReturn = MatrixStats.correlationMatrix( testdata );
         DoubleMatrixReader f = new DoubleMatrixReader();
-        DoubleMatrixNamed expectedReturn = null;
+        DoubleMatrixNamed2D expectedReturn = null;
         try {
-            expectedReturn = ( DoubleMatrixNamed ) f.read( AbstractTestFilter.class
+            expectedReturn = ( DoubleMatrixNamed2D ) f.read( AbstractTestFilter.class
                     .getResourceAsStream( "/data/correlation-matrix-testoutput.txt" ) );
         } catch ( IOException e ) {
             e.printStackTrace();

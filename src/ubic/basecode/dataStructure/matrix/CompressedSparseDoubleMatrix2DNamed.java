@@ -32,7 +32,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @author xwan
  * @version $Id$
  */
-public class CompressedSparseDoubleMatrix2DNamed extends DoubleMatrixNamed {
+public class CompressedSparseDoubleMatrix2DNamed extends DoubleMatrixNamed2D {
     private FlexCompRowMatrix matrix;
 
     /**

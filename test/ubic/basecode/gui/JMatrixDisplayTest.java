@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
 
 import ubic.basecode.BaseTestCase;
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed2D;
 
 /**
  * @author keshav
@@ -95,7 +95,7 @@ public class JMatrixDisplayTest extends BaseTestCase {
     public void testSaveImage() {
 
         // DoubleMatrix2D matrix = new DenseDoubleMatrix2D( array );
-        DoubleMatrixNamed matrix = new DenseDoubleMatrix2DNamed( array );
+        DoubleMatrixNamed2D matrix = new DenseDoubleMatrix2DNamed( array );
         matrix.setRowNames( rowNames );
         matrix.setColumnNames( colNames );
         ColorMatrix colorMatrix = new ColorMatrix( matrix );
@@ -120,7 +120,7 @@ public class JMatrixDisplayTest extends BaseTestCase {
     public void testSaveImageStandardize() {
 
         // DoubleMatrix2D matrix = new DenseDoubleMatrix2D( array );
-        DoubleMatrixNamed matrix = new DenseDoubleMatrix2DNamed( array );
+        DoubleMatrixNamed2D matrix = new DenseDoubleMatrix2DNamed( array );
         matrix.setRowNames( rowNames );
         matrix.setColumnNames( colNames );
         ColorMatrix colorMatrix = new ColorMatrix( matrix );
@@ -143,7 +143,7 @@ public class JMatrixDisplayTest extends BaseTestCase {
      *
      */
     public void testWriteOutAsPNG() {
-        DoubleMatrixNamed matrix = new DenseDoubleMatrix2DNamed( array );
+        DoubleMatrixNamed2D matrix = new DenseDoubleMatrix2DNamed( array );
         matrix.setRowNames( rowNames );
         matrix.setColumnNames( colNames );
         ColorMatrix colorMatrix = new ColorMatrix( matrix );

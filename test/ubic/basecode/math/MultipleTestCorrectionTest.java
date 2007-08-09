@@ -21,7 +21,7 @@
 package ubic.basecode.math;
 
 import junit.framework.TestCase;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed2D;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import cern.colt.list.DoubleArrayList;
 
@@ -41,7 +41,7 @@ public class MultipleTestCorrectionTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         DoubleMatrixReader dmr = new DoubleMatrixReader();
-        DoubleMatrixNamed mat = ( DoubleMatrixNamed ) dmr.read( this.getClass().getResourceAsStream(
+        DoubleMatrixNamed2D mat = ( DoubleMatrixNamed2D ) dmr.read( this.getClass().getResourceAsStream(
                 "/data/multtest.test.txt" ) );
 
         values = new DoubleArrayList( mat.getColumnByName( "rawp" ) );

@@ -18,7 +18,7 @@
  */
 package ubic.basecode.datafilter;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed2D;
 import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
 
 /**
@@ -38,7 +38,7 @@ public class TestRowAffyNameFilter extends AbstractTestFilter {
     public void testFilter() {
         RowAffyNameFilter fi = new RowAffyNameFilter( new int[] { RowAffyNameFilter.AFFX, RowAffyNameFilter.X,
                 RowAffyNameFilter.ST, RowAffyNameFilter.F } );
-        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) fi.filter( testdata );
+        DoubleMatrixNamed2D filtered = ( DoubleMatrixNamed2D ) fi.filter( testdata );
         int expectedReturn = teststringdata.rows() - 5; // file contains on AFFX,
         // and two _f_ tags.
         int actualReturn = filtered.rows();

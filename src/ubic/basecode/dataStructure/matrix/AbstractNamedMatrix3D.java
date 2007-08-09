@@ -58,8 +58,6 @@ public abstract class AbstractNamedMatrix3D implements NamedMatrix3D {
 		return sliceMap.containsKey(sliceName);
 	}
 
-	public abstract Object[] getCol(int slice, int col);
-
 	public final int getColIndexByName(Object s) {
 		Integer index = (Integer) colMap.get(s);
 		if (index == null)
@@ -79,8 +77,6 @@ public abstract class AbstractNamedMatrix3D implements NamedMatrix3D {
 		return colNames;
 	}
 
-	public abstract Object[] getRow(int slice, int row);
-
 	public int getRowIndexByName(Object s) {
 		Integer index = (Integer) rowMap.get(s);
 		if (index == null)
@@ -99,8 +95,6 @@ public abstract class AbstractNamedMatrix3D implements NamedMatrix3D {
 	public List getRowNames() {
 		return rowNames;
 	}
-
-	public abstract Object[][] getSlice(int slice);
 
 	public int getSliceIndexByName(Object s) {
 		Integer index = (Integer) sliceMap.get(s);
@@ -143,8 +137,6 @@ public abstract class AbstractNamedMatrix3D implements NamedMatrix3D {
 
 	public abstract int rows();
 
-	public abstract void set(int slice, int row, int col, Object val);
-	
 	public void setColumnNames(List v) {
 		colNames = v;
 		for (int i = 0 ; i < v.size(); i++)
@@ -165,6 +157,4 @@ public abstract class AbstractNamedMatrix3D implements NamedMatrix3D {
 
 	public abstract int slices();
 	
-	public abstract Object get(int slice, int row, int column);
-
 }
