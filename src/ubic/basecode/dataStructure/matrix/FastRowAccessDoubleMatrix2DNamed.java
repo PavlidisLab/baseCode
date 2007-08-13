@@ -30,7 +30,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public class FastRowAccessDoubleMatrix2DNamed extends DoubleMatrixNamed2D {
+public class FastRowAccessDoubleMatrix2DNamed extends DoubleMatrixNamed {
 
     private DoubleArrayList[] data;
 
@@ -113,6 +113,10 @@ public class FastRowAccessDoubleMatrix2DNamed extends DoubleMatrixNamed2D {
             result[i] = new Double( get( i, col ) );
         }
         return result;
+    }
+    
+    public Object getObj(int row, int col) {
+    	return new Double(get(row, col));
     }
 
     /*

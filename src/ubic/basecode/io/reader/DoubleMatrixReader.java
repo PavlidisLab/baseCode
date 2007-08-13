@@ -36,12 +36,12 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed2D;
-import ubic.basecode.dataStructure.matrix.NamedMatrix2D;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.NamedMatrix;
 import cern.colt.list.DoubleArrayList;
 
 /**
- * Reader for {@link basecode.dataStructure.matrix.DoubleMatrixNamed2D}.
+ * Reader for {@link basecode.dataStructure.matrix.DoubleMatrixNamed}.
  * 
  * @author Paul Pavlidis
  * @version $Id$
@@ -56,7 +56,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
      */
-    public NamedMatrix2D read( String filename ) throws IOException {
+    public NamedMatrix read( String filename ) throws IOException {
         return read( filename, null );
     }
 
@@ -65,7 +65,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
      */
-    public NamedMatrix2D read( InputStream stream ) throws IOException {
+    public NamedMatrix read( InputStream stream ) throws IOException {
         return read( stream, null );
     }
 
@@ -76,7 +76,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
      *         true.
      * @throws IOException
      */
-    public NamedMatrix2D read( InputStream stream, Collection wantedRowNames ) throws IOException {
+    public NamedMatrix read( InputStream stream, Collection wantedRowNames ) throws IOException {
         return read( stream, wantedRowNames, true );
     }
 
@@ -88,7 +88,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
      * @return matrix
      * @throws IOException
      */
-    public NamedMatrix2D read( InputStream stream, Collection wantedRowNames, boolean createEmptyRows )
+    public NamedMatrix read( InputStream stream, Collection wantedRowNames, boolean createEmptyRows )
             throws IOException {
 
         BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
@@ -164,7 +164,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
      * 
      * @see basecode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
      */
-    public NamedMatrix2D readOneRow( BufferedReader dis ) throws IOException {
+    public NamedMatrix readOneRow( BufferedReader dis ) throws IOException {
         String row = dis.readLine();
         List MTemp = new Vector();
 
@@ -257,7 +257,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
      */
-    public NamedMatrix2D read( String filename, Collection wantedRowNames ) throws IOException {
+    public NamedMatrix read( String filename, Collection wantedRowNames ) throws IOException {
         File infile = new File( filename );
         if ( !infile.exists() || !infile.canRead() ) {
             throw new IOException( "Could not read from file " + filename );
@@ -270,9 +270,9 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
     // protected methods
     // -----------------------------------------------------------------
 
-    protected DoubleMatrixNamed2D createMatrix( List MTemp, int rowCount, int colCount, List rowNames, List colNames1 ) {
+    protected DoubleMatrixNamed createMatrix( List MTemp, int rowCount, int colCount, List rowNames, List colNames1 ) {
 
-        DoubleMatrixNamed2D matrix = DoubleMatrix2DNamedFactory.fastrow( rowCount, colCount );
+        DoubleMatrixNamed matrix = DoubleMatrix2DNamedFactory.fastrow( rowCount, colCount );
 
         for ( int i = 0; i < matrix.rows(); i++ ) {
             for ( int j = 0; j < matrix.columns(); j++ ) {

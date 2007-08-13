@@ -22,7 +22,7 @@ import java.awt.Color;
 import java.io.IOException;
 
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed2D;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.math.DescriptiveWithMissing;
 import ubic.basecode.math.MatrixStats;
@@ -52,7 +52,7 @@ public class ColorMatrix implements Cloneable {
     protected Color m_missingColor = Color.lightGray;
     protected Color[] m_colorMap = ColorMap.BLACKBODY_COLORMAP;
 
-    protected DoubleMatrixNamed2D m_matrix;
+    protected DoubleMatrixNamed m_matrix;
     protected DoubleMatrixReader m_matrixReader;
 
     protected int m_totalRows, m_totalColumns;
@@ -70,7 +70,7 @@ public class ColorMatrix implements Cloneable {
         loadMatrixFromFile( filename );
     }
 
-    public ColorMatrix( DoubleMatrixNamed2D matrix ) {
+    public ColorMatrix( DoubleMatrixNamed matrix ) {
         init( matrix );
     }
 
@@ -92,7 +92,7 @@ public class ColorMatrix implements Cloneable {
      * @param colorMap the simplest color map is one with just two colors: { minColor, maxColor }
      * @param missingColor values missing from the matrix or non-numeric entries will be displayed using this color
      */
-    public ColorMatrix( DoubleMatrixNamed2D matrix, Color[] colorMap, Color missingColor ) {
+    public ColorMatrix( DoubleMatrixNamed matrix, Color[] colorMap, Color missingColor ) {
 
         m_missingColor = missingColor;
         m_colorMap = colorMap;
@@ -257,7 +257,7 @@ public class ColorMatrix implements Cloneable {
         }
     }
 
-    public void init( DoubleMatrixNamed2D matrix ) {
+    public void init( DoubleMatrixNamed matrix ) {
 
         m_matrix = matrix; // by reference, or should we clone?
         m_totalRows = m_matrix.rows();
@@ -310,7 +310,7 @@ public class ColorMatrix implements Cloneable {
     /**
      * @return a DenseDoubleMatrix2DNamed object
      */
-    public DoubleMatrixNamed2D getMatrix() {
+    public DoubleMatrixNamed getMatrix() {
         return m_matrix;
     }
 

@@ -32,7 +32,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed2D {
+public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed {
 
     private Vector matrix; // a vector of DoubleArrayList containing the values of the matrix
 
@@ -123,11 +123,15 @@ public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed2D {
     public Object[] getColObj( int i ) {
         throw new UnsupportedOperationException();
     }
+    
+    public Object getObj(int row, int col) {
+    	return new Double(get(row, col));
+    }
 
     /**
      * (non-Javadoc) Note that in a sparse matrix, zero values are considered "missing"!
      * 
-     * @see basecode.dataStructure.matrix.NamedMatrix2D#isMissing(int, int)
+     * @see basecode.dataStructure.matrix.NamedMatrix#isMissing(int, int)
      */
     public boolean isMissing( int i, int j ) {
         return get( i, j ) == 0.0;

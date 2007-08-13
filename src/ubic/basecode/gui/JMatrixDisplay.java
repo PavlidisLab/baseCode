@@ -35,7 +35,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed2D;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import ubic.basecode.gui.graphics.text.Util;
 
 /**
@@ -82,7 +82,7 @@ public class JMatrixDisplay extends JPanel {
         init( matrix );
     }
 
-    public JMatrixDisplay( DoubleMatrixNamed2D matrix ) {
+    public JMatrixDisplay( DoubleMatrixNamed matrix ) {
         this( new ColorMatrix( matrix ) );
     }
 
@@ -427,7 +427,7 @@ public class JMatrixDisplay extends JPanel {
         return m_matrix;
     }
 
-    public DoubleMatrixNamed2D getMatrix() {
+    public DoubleMatrixNamed getMatrix() {
         return m_matrix.m_matrix;
     }
 

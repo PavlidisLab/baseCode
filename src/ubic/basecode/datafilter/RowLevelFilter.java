@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Vector;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed2D;
-import ubic.basecode.dataStructure.matrix.NamedMatrix2D;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.NamedMatrix;
 import ubic.basecode.math.DescriptiveWithMissing;
 import ubic.basecode.math.Stats;
 import cern.colt.list.DoubleArrayList;
@@ -126,9 +126,9 @@ public class RowLevelFilter extends AbstractLevelFilter {
      * @param data
      * @return
      */
-    public NamedMatrix2D filter( NamedMatrix2D data ) {
+    public NamedMatrix filter( NamedMatrix data ) {
 
-        if ( !( data instanceof DoubleMatrixNamed2D ) ) {
+        if ( !( data instanceof DoubleMatrixNamed ) ) {
             throw new IllegalArgumentException( "Only valid for DoubleMatrixNamed" );
         }
 
@@ -248,7 +248,7 @@ public class RowLevelFilter extends AbstractLevelFilter {
             }
         }
 
-        DoubleMatrixNamed2D returnval = DoubleMatrix2DNamedFactory.fastrow( rowsToKeep.size(), numCols );
+        DoubleMatrixNamed returnval = DoubleMatrix2DNamedFactory.fastrow( rowsToKeep.size(), numCols );
         for ( int i = 0; i < kept; i++ ) {
             Double[] row = ( Double[] ) rowsToKeep.get( i );
             for ( int j = 0; j < numCols; j++ ) {

@@ -1,6 +1,6 @@
 package ubic.basecode.datafilter;
 
-import ubic.basecode.dataStructure.matrix.NamedMatrix2D;
+import ubic.basecode.dataStructure.matrix.NamedMatrix;
 
 /**
  * An interface representing the functionality of a class that can filter 2-d matrix-based data by row-oriented
@@ -20,5 +20,5 @@ public interface Filter {
      *        the Filter interface.
      * @return The resulting filtered matrix
      */
-    public NamedMatrix2D filter( NamedMatrix2D data );
+    public NamedMatrix filter( NamedMatrix data );
 }

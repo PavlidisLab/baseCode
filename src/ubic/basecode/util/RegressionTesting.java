@@ -31,7 +31,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed2D;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix2D;
 
@@ -56,7 +56,7 @@ public class RegressionTesting {
      * @param tolerance
      * @return try if all the values in both matrices are within 'tolerance' of each other.
      */
-    public static boolean closeEnough( DoubleMatrixNamed2D a, DoubleMatrixNamed2D b, double tolerance ) {
+    public static boolean closeEnough( DoubleMatrixNamed a, DoubleMatrixNamed b, double tolerance ) {
         if ( a.rows() != b.rows() || a.columns() != b.columns() ) return false;
 
         for ( int i = 0; i < a.rows(); i++ ) {

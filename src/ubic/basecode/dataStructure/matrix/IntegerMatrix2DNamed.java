@@ -24,7 +24,7 @@ import cern.colt.matrix.ObjectMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public class IntegerMatrix2DNamed extends AbstractNamedMatrix2D {
+public class IntegerMatrix2DNamed extends AbstractNamedMatrix {
 
     private ObjectMatrix2DNamed matrix;
 
@@ -80,6 +80,10 @@ public class IntegerMatrix2DNamed extends AbstractNamedMatrix2D {
             result[i] = get( i, col );
         }
         return result;
+    }
+    
+    public Object getObj(int row, int col) {
+    	return get(row, col);
     }
 
     public boolean isMissing( int i, int j ) {

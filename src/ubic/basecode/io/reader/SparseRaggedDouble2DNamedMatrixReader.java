@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import ubic.basecode.dataStructure.matrix.NamedMatrix2D;
+import ubic.basecode.dataStructure.matrix.NamedMatrix;
 import ubic.basecode.dataStructure.matrix.RCDoubleMatrix1D;
 import ubic.basecode.dataStructure.matrix.SparseRaggedDoubleMatrix2DNamed;
 import ubic.basecode.util.FileTools;
@@ -67,7 +67,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
      * @param name of file
      * @return
      */
-    public NamedMatrix2D readFromAdjList( String fileName ) throws IOException {
+    public NamedMatrix readFromAdjList( String fileName ) throws IOException {
         if ( !FileTools.testFile( fileName ) ) {
             throw new IOException( "Could not read from file " + fileName );
         }
@@ -92,7 +92,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
      * @param stream
      * @return
      */
-    public NamedMatrix2D readFromAdjList( InputStream stream ) throws NumberFormatException, IOException {
+    public NamedMatrix readFromAdjList( InputStream stream ) throws NumberFormatException, IOException {
         Set itemNames = new HashSet();
         Map rows = new HashMap();
 
@@ -199,7 +199,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
      * 
      * @see basecode.io.reader.AbstractNamedMatrixReader#read(java.lang.String)
      */
-    public NamedMatrix2D read( String fileName ) throws IOException {
+    public NamedMatrix read( String fileName ) throws IOException {
         if ( !FileTools.testFile( fileName ) ) {
             throw new IOException( "Could not read from file " + fileName );
         }
@@ -207,7 +207,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
         return read( stream );
     }
 
-    public NamedMatrix2D readOneRow( BufferedReader dis ) throws IOException {
+    public NamedMatrix readOneRow( BufferedReader dis ) throws IOException {
         return this.readOneRow( dis, 0 );
     }
 
@@ -221,7 +221,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
      * @return
      * @throws IOException
      */
-    public NamedMatrix2D readOneRow( BufferedReader dis, int offset ) throws IOException {
+    public NamedMatrix readOneRow( BufferedReader dis, int offset ) throws IOException {
         SparseRaggedDoubleMatrix2DNamed returnVal = new SparseRaggedDoubleMatrix2DNamed();
 
         String row = dis.readLine(); // line containing the id and the number of edges.
@@ -241,7 +241,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
      * @return
      * @throws IOException
      */
-    public NamedMatrix2D read( InputStream stream ) throws IOException {
+    public NamedMatrix read( InputStream stream ) throws IOException {
         return this.read( stream, 0 );
     }
 
@@ -254,7 +254,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
      * @return
      * @throws IOException
      */
-    public NamedMatrix2D read( InputStream stream, int offset ) throws IOException {
+    public NamedMatrix read( InputStream stream, int offset ) throws IOException {
         BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
         SparseRaggedDoubleMatrix2DNamed returnVal = new SparseRaggedDoubleMatrix2DNamed();
 

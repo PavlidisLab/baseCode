@@ -18,7 +18,7 @@
  */
 package ubic.basecode.datafilter;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed2D;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
 
 /**
@@ -49,14 +49,14 @@ public class TestRowMissingFilter extends AbstractTestFilter {
 
     public void testFilter() {
         f.setMinPresentCount( 12 );
-        DoubleMatrixNamed2D filtered = ( DoubleMatrixNamed2D ) f.filter( testdata );
+        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f.filter( testdata );
         int expectedReturn = testdata.rows();
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
     public void testFilterNoFiltering() {
-        DoubleMatrixNamed2D filtered = ( DoubleMatrixNamed2D ) f.filter( testdata );
+        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f.filter( testdata );
         int expectedReturn = testdata.rows();
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );
@@ -64,7 +64,7 @@ public class TestRowMissingFilter extends AbstractTestFilter {
 
     public void testFilterWithMissing() {
         f.setMinPresentCount( 12 );
-        DoubleMatrixNamed2D filtered = ( DoubleMatrixNamed2D ) f.filter( testmissingdata );
+        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f.filter( testmissingdata );
         int expectedReturn = 21;
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );
@@ -73,7 +73,7 @@ public class TestRowMissingFilter extends AbstractTestFilter {
     public void testFilterWithMissingLowMaxFraction() {
         f.setMaxFractionRemoved( 0.1 );
         f.setMinPresentCount( 12 );
-        DoubleMatrixNamed2D filtered = ( DoubleMatrixNamed2D ) f.filter( testmissingdata );
+        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f.filter( testmissingdata );
         int expectedReturn = 21;
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );
@@ -82,7 +82,7 @@ public class TestRowMissingFilter extends AbstractTestFilter {
     public void testFilterWithMissingLessStringent() {
 
         f.setMinPresentCount( 10 );
-        DoubleMatrixNamed2D filtered = ( DoubleMatrixNamed2D ) f.filter( testmissingdata );
+        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f.filter( testmissingdata );
         int expectedReturn = 29;
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );
@@ -98,7 +98,7 @@ public class TestRowMissingFilter extends AbstractTestFilter {
 
     public void testFilterFraction() {
         f.setMinPresentFraction( 1.0 );
-        DoubleMatrixNamed2D filtered = ( DoubleMatrixNamed2D ) f.filter( testmissingdata );
+        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f.filter( testmissingdata );
         int expectedReturn = 21;
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );

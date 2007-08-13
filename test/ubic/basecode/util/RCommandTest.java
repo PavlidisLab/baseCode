@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed2D;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 
 /**
@@ -35,7 +35,7 @@ public class RCommandTest extends TestCase {
 
     RCommand rc = null;
     boolean connected = false;
-    DoubleMatrixNamed2D tester;
+    DoubleMatrixNamed tester;
 
     public void setUp() throws Exception {
         try {
@@ -47,7 +47,7 @@ public class RCommandTest extends TestCase {
 
         DoubleMatrixReader reader = new DoubleMatrixReader();
 
-        tester = ( DoubleMatrixNamed2D ) reader.read( this.getClass().getResourceAsStream( "/data/testdata.txt" ) );
+        tester = ( DoubleMatrixNamed ) reader.read( this.getClass().getResourceAsStream( "/data/testdata.txt" ) );
     }
 
     public void tearDown() throws Exception {
@@ -90,7 +90,7 @@ public class RCommandTest extends TestCase {
             log.warn( "Could not connect to RServe, skipping test." );
             return;
         }
-        DoubleMatrixNamed2D result = rc.retrieveMatrix( rc.assignMatrix( tester ) );
+        DoubleMatrixNamed result = rc.retrieveMatrix( rc.assignMatrix( tester ) );
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
     }
 

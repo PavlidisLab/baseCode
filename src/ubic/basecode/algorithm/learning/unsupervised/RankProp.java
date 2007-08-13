@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix1D;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed2D;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import cern.colt.matrix.DoubleMatrix1D;
 
 import com.braju.beta.format.Format;
@@ -46,7 +46,7 @@ public class RankProp {
      * @param k
      * @return
      */
-    public DoubleMatrix1D computeRanking( DoubleMatrixNamed2D matrix, DoubleMatrixNamed2D query, int k ) {
+    public DoubleMatrix1D computeRanking( DoubleMatrixNamed matrix, DoubleMatrixNamed query, int k ) {
 
         DoubleMatrix1D yorig = new DenseDoubleMatrix1D( query.viewRow( 0 ).toArray() );
 
@@ -60,7 +60,7 @@ public class RankProp {
      * @param k
      * @return
      */
-    public DoubleMatrix1D computeRanking( DoubleMatrixNamed2D matrix, DoubleMatrix1D query, int indexOfQuery ) {
+    public DoubleMatrix1D computeRanking( DoubleMatrixNamed matrix, DoubleMatrix1D query, int indexOfQuery ) {
         int dim = query.size();
         DoubleMatrix1D y = new DenseDoubleMatrix1D( dim ); // we use own implementation for performance.s
         DoubleMatrix1D yold = new DenseDoubleMatrix1D( dim );

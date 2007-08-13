@@ -18,7 +18,7 @@
  */
 package ubic.basecode.math;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed2D;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import cern.colt.list.DoubleArrayList;
 
 /**
@@ -40,7 +40,7 @@ public class MatrixRowStats {
      * @param M DoubleMatrixNamed
      * @return DoubleArrayList
      */
-    public static DoubleArrayList sumOfSquares( DoubleMatrixNamed2D M ) {
+    public static DoubleArrayList sumOfSquares( DoubleMatrixNamed M ) {
         DoubleArrayList r = new DoubleArrayList();
 
         for ( int i = 0; i < M.rows(); i++ ) {
@@ -57,7 +57,7 @@ public class MatrixRowStats {
      * @param M DoubleMatrixNamed
      * @return DoubleArrayList
      */
-    public static DoubleArrayList means( DoubleMatrixNamed2D M ) {
+    public static DoubleArrayList means( DoubleMatrixNamed M ) {
         DoubleArrayList r = new DoubleArrayList();
         for ( int i = 0; i < M.rows(); i++ ) {
             r.add( DescriptiveWithMissing.mean( new DoubleArrayList( M.getRow( i ) ) ) );
@@ -71,7 +71,7 @@ public class MatrixRowStats {
      * @param M DoubleMatrixNamed
      * @return DoubleArrayList
      */
-    public static DoubleArrayList sums( DoubleMatrixNamed2D M ) {
+    public static DoubleArrayList sums( DoubleMatrixNamed M ) {
         DoubleArrayList r = new DoubleArrayList();
         for ( int i = 0; i < M.rows(); i++ ) {
             r.add( DescriptiveWithMissing.sum( new DoubleArrayList( M.getRow( i ) ) ) );
@@ -85,7 +85,7 @@ public class MatrixRowStats {
      * @param M DoubleMatrixNamed
      * @return DoubleArrayList
      */
-    public static DoubleArrayList sampleStandardDeviations( DoubleMatrixNamed2D M ) {
+    public static DoubleArrayList sampleStandardDeviations( DoubleMatrixNamed M ) {
         DoubleArrayList r = new DoubleArrayList();
         for ( int i = 0; i < M.rows(); i++ ) {
             DoubleArrayList row = new DoubleArrayList( M.getRow( i ) );

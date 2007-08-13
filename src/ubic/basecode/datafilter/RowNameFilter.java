@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import ubic.basecode.dataStructure.matrix.NamedMatrix2D;
+import ubic.basecode.dataStructure.matrix.NamedMatrix;
 
 /**
  * Remove or retain rows that are on a list.
@@ -66,7 +66,7 @@ public class RowNameFilter extends AbstractFilter implements Filter {
      * @param data
      * @return
      */
-    public NamedMatrix2D filter( NamedMatrix2D data ) {
+    public NamedMatrix filter( NamedMatrix data ) {
         List MTemp = new Vector();
         List rowNames = new Vector();
         int numRows = data.rows();
@@ -96,7 +96,7 @@ public class RowNameFilter extends AbstractFilter implements Filter {
             }
         }
 
-        NamedMatrix2D returnval = getOutputMatrix( data, MTemp.size(), numCols );
+        NamedMatrix returnval = getOutputMatrix( data, MTemp.size(), numCols );
 
         for ( int i = 0; i < MTemp.size(); i++ ) {
             for ( int j = 0; j < numCols; j++ ) {

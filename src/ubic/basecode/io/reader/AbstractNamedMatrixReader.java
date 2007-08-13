@@ -28,21 +28,21 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ubic.basecode.dataStructure.matrix.NamedMatrix2D;
+import ubic.basecode.dataStructure.matrix.NamedMatrix;
 
 /**
- * Abstract class representing an object that can read in a {@link NamedMatrix2D}from a file.
+ * Abstract class representing an object that can read in a {@link NamedMatrix}from a file.
  * 
  * @author Paul Pavlidis
  * @version $Id$
  */
 public abstract class AbstractNamedMatrixReader {
 
-    public abstract NamedMatrix2D read( String filename ) throws IOException;
+    public abstract NamedMatrix read( String filename ) throws IOException;
 
-    public abstract NamedMatrix2D read( InputStream stream ) throws IOException;
+    public abstract NamedMatrix read( InputStream stream ) throws IOException;
 
-    public abstract NamedMatrix2D readOneRow( BufferedReader dis ) throws IOException;
+    public abstract NamedMatrix readOneRow( BufferedReader dis ) throws IOException;
 
     protected static final Log log = LogFactory.getLog( AbstractNamedMatrixReader.class );
 

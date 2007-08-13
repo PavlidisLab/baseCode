@@ -29,7 +29,7 @@ import corejava.Format;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class DenseDoubleMatrix2DNamed extends DoubleMatrixNamed2D {
+public class DenseDoubleMatrix2DNamed extends DoubleMatrixNamed {
 
     private DenseDoubleMatrix2D matrix;
 
@@ -113,6 +113,10 @@ public class DenseDoubleMatrix2DNamed extends DoubleMatrixNamed2D {
             result[i] = new Double( get( i, col ) );
         }
         return result;
+    }
+    
+    public Object getObj(int row, int col) {
+    	return new Double(get(row, col));
     }
 
     /**

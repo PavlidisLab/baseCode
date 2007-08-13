@@ -41,7 +41,7 @@ import org.rosuda.JRclient.RSrvException;
 import org.rosuda.JRclient.Rconnection;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed2D;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 
 /**
  * @author pavlidis
@@ -179,7 +179,7 @@ public class RCommand {
      * @param matrix
      * @return the name of the variable by which the R matrix can be referred.
      */
-    public String assignMatrix( DoubleMatrixNamed2D matrix ) {
+    public String assignMatrix( DoubleMatrixNamed matrix ) {
         String matrixVarName = "Matrix_" + variableIdentityNumber( matrix );
         log.debug( "Assigning matrix with variable name " + matrixVarName );
         int rows = matrix.rows();
@@ -228,7 +228,7 @@ public class RCommand {
      * @param matrixVarName
      * @return
      */
-    private void assignRowAndColumnNames( DoubleMatrixNamed2D matrix, String matrixVarName ) {
+    private void assignRowAndColumnNames( DoubleMatrixNamed matrix, String matrixVarName ) {
 
         String rowNameVar = assignStringList( matrix.getRowNames() );
         String colNameVar = assignStringList( matrix.getColNames() );
@@ -401,7 +401,7 @@ public class RCommand {
      * @param variableName
      * @return
      */
-    public DoubleMatrixNamed2D retrieveMatrix( String variableName ) {
+    public DoubleMatrixNamed retrieveMatrix( String variableName ) {
 
         log.debug( "Retrieving " + variableName );
         REXP r = this.eval( variableName );
@@ -413,7 +413,7 @@ public class RCommand {
             throw new RuntimeException( "Failed to get back matrix for variable " + variableName
                     + ", object has length " + r.getBinaryLength() + " bytes." );
 
-        DoubleMatrixNamed2D resultObject = DoubleMatrix2DNamedFactory.dense( results );
+        DoubleMatrixNamed resultObject = DoubleMatrix2DNamedFactory.dense( results );
 
         retrieveRowAndColumnNames( variableName, resultObject );
         return resultObject;
@@ -424,7 +424,7 @@ public class RCommand {
      * @param variableName
      * @param resultObject
      */
-    private void retrieveRowAndColumnNames( String variableName, DoubleMatrixNamed2D resultObject ) {
+    private void retrieveRowAndColumnNames( String variableName, DoubleMatrixNamed resultObject ) {
         // getting the row names.
         List rowNamesREXP = this.eval( "dimnames(" + variableName + ")[1][[1]]" ).asVector();
 
@@ -616,7 +616,7 @@ public class RCommand {
      * @param matrix
      * @return array representation of the matrix.
      */
-    private static double[] unrollMatrix( DoubleMatrixNamed2D matrix ) {
+    private static double[] unrollMatrix( DoubleMatrixNamed matrix ) {
         // unroll the matrix into an array Unfortunately this makes a
         // copy of the data...and R will probably make yet
         // another copy. If there was a way to get the raw element array from the DoubleMatrixNamed, that would

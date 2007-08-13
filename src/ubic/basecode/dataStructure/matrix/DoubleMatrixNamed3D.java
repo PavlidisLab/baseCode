@@ -8,7 +8,7 @@ import cern.colt.matrix.DoubleMatrix2D;
 public abstract class DoubleMatrixNamed3D extends AbstractNamedMatrix3D {
     protected static final int MAX_ROWS_TO_PRINT = 20;
     protected static final int MAX_SLICES_TO_PRINT = 10;
-    protected static Log log = LogFactory.getLog( DoubleMatrixNamed2D.class.getName() );
+    protected static Log log = LogFactory.getLog( DoubleMatrixNamed.class.getName() );
 
     /*
      * (non-Javadoc)
