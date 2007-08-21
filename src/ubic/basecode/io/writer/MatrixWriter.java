@@ -8,6 +8,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.text.Format;
 import java.util.Iterator;
+import java.util.Map;
 
 import ubic.basecode.dataStructure.matrix.AbstractNamedMatrix;
 
@@ -22,6 +23,9 @@ public class MatrixWriter {
 	protected Writer out;
 	protected Format formatter;
 	protected String sep;
+    
+    protected Map rowNameMap;
+    protected Map colNameMap;
 	private boolean flush;
 
 	public MatrixWriter(Writer out, Format formatter, String sep, boolean flush) {
@@ -65,6 +69,12 @@ public class MatrixWriter {
 	public MatrixWriter(String fileName, Format formatter) throws IOException {
 		this(fileName, formatter, DEFAULT_SEP, false);
 	}
+    
+    public MatrixWriter(String fileName, Format formatter, Map rowNameMap, Map colNameMap) throws IOException {
+        this(fileName, formatter, DEFAULT_SEP, false);
+        setRowNameMap( rowNameMap );
+        setColNameMap( colNameMap );
+    }
 
 	public MatrixWriter(String fileName, Format formatter, String sep,
 			boolean flush) throws IOException {
@@ -87,6 +97,7 @@ public class MatrixWriter {
 	public void writeMatrix(AbstractNamedMatrix matrix) throws IOException {
 		this.writeMatrix(matrix, "\t");
 	}
+    
 
 	public void writeMatrix(AbstractNamedMatrix matrix, String topLeft)
 			throws IOException {
@@ -95,6 +106,8 @@ public class MatrixWriter {
 		for (Iterator it = matrix.getColNames().iterator(); it.hasNext();) {
 			Object colName = it.next();
 			buf.append(sep);
+            if (colNameMap != null && colNameMap.get(colName) != null)
+                colName = colNameMap.get( colName );
 			if (colName != null)
 				buf.append(colName);
 		}
@@ -106,6 +119,8 @@ public class MatrixWriter {
 		for (Iterator rowIt = matrix.getRowNames().iterator(); rowIt.hasNext();) {
 			Object rowName = rowIt.next();
 			int rowIndex = matrix.getRowIndexByName(rowName);
+            if (rowNameMap != null && rowNameMap.get( rowName ) != null)
+                rowName = rowNameMap.get( rowName );
 			buf = new StringBuffer(rowName.toString());
 			for (Iterator colIt = matrix.getColNames().iterator(); colIt
 					.hasNext();) {
@@ -129,4 +144,20 @@ public class MatrixWriter {
 	public void close() throws IOException {
 		out.close();
 	}
+
+    public Map getColNameMap() {
+        return colNameMap;
+    }
+
+    public void setColNameMap( Map colNameMap ) {
+        this.colNameMap = colNameMap;
+    }
+
+    public Map getRowNameMap() {
+        return rowNameMap;
+    }
+
+    public void setRowNameMap(Map rowNameMap) {
+        this.rowNameMap = rowNameMap;
+    }
 }
