@@ -26,6 +26,7 @@ public class MatrixWriter {
     
     protected Map rowNameMap;
     protected Map colNameMap;
+    protected Map valMap;
 	private boolean flush;
 
 	public MatrixWriter(Writer out, Format formatter, String sep, boolean flush) {
@@ -70,10 +71,11 @@ public class MatrixWriter {
 		this(fileName, formatter, DEFAULT_SEP, false);
 	}
     
-    public MatrixWriter(String fileName, Format formatter, Map rowNameMap, Map colNameMap) throws IOException {
+    public MatrixWriter(String fileName, Format formatter, Map rowNameMap, Map colNameMap, Map valMap) throws IOException {
         this(fileName, formatter, DEFAULT_SEP, false);
         setRowNameMap( rowNameMap );
         setColNameMap( colNameMap );
+        setValMap(valMap);
     }
 
 	public MatrixWriter(String fileName, Format formatter, String sep,
@@ -108,8 +110,7 @@ public class MatrixWriter {
 			buf.append(sep);
             if (colNameMap != null && colNameMap.get(colName) != null)
                 colName = colNameMap.get( colName );
-			if (colName != null)
-				buf.append(colName);
+			buf.append(colName);
 		}
 		buf.append("\n");
 		out.write(buf.toString());
@@ -128,11 +129,14 @@ public class MatrixWriter {
 				int colIndex = matrix.getColIndexByName(colName);
 				Object val = matrix.getObj(rowIndex, colIndex);
 				buf.append(sep);
-				if (val != null)
+				if (val != null) {
+					String s = val.toString();
 					if (formatter != null)
-						buf.append(formatter.format(val));
-					else
-						buf.append(val);
+						s = formatter.format(val);
+					if (valMap != null && valMap.get(s) != null)
+						s = valMap.get(s).toString();
+					buf.append(s);
+				}
 			}
 			buf.append("\n");
 			out.write(buf.toString());
@@ -160,4 +164,12 @@ public class MatrixWriter {
     public void setRowNameMap(Map rowNameMap) {
         this.rowNameMap = rowNameMap;
     }
+
+	public Map getValMap() {
+		return valMap;
+	}
+
+	public void setValMap(Map valMap) {
+		this.valMap = valMap;
+	}
 }
