@@ -28,6 +28,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
@@ -238,6 +240,44 @@ public class FileTools {
         File outputFile = copyPlainOrCompressedFile( seekFile, outputFilePath );
 
         return outputFile.getAbsolutePath();
+    }
+
+    /**
+     * @param seekFile
+     * @return Collection of File objects
+     * @throws IOException
+     */
+    public static Collection unZipFiles( final String seekFile ) throws IOException {
+
+        if ( !isZipped( seekFile ) ) {
+            throw new IllegalArgumentException();
+        }
+
+        checkPathIsReadableFile( seekFile );
+
+        String outputFilePath = chompExtension( seekFile );
+
+        Collection result = new HashSet();
+        try {
+            ZipFile f = new ZipFile( seekFile );
+            for ( Enumeration entries = f.entries(); entries.hasMoreElements(); ) {
+                ZipEntry entry = ( ZipEntry ) entries.nextElement();
+                String outputFileTitle = entry.getName();
+                InputStream is = f.getInputStream( entry );
+
+                File out = new File( outputFilePath + outputFileTitle );
+                OutputStream os = new FileOutputStream( out );
+                copy( is, os );
+
+                result.add( out );
+                log.debug( outputFileTitle );
+            }
+
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
+
+        return result;
     }
 
     /**

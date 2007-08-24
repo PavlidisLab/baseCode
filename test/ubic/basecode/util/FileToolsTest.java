@@ -30,6 +30,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import junit.framework.TestCase;
 
@@ -48,6 +50,7 @@ public class FileToolsTest extends TestCase {
     File compressed;
     File tempoutput;
     File tempdir;
+    File zipped;
 
     /*
      * @see TestCase#setUp()
@@ -76,6 +79,7 @@ public class FileToolsTest extends TestCase {
         tempoutput = File.createTempFile( "junkme", ".txt" );
 
         tempdir = FileTools.createDir( System.getProperty( "java.io.tmpdir" ) + File.separatorChar + "junk.tmpdir" );
+
     }
 
     /*
@@ -222,12 +226,26 @@ public class FileToolsTest extends TestCase {
         testout.delete();
     }
 
-    public void testUnzipFile() throws Exception {
+    public void testUnGzipFile() throws Exception {
         String result = FileTools.unGzipFile( compressed.getAbsolutePath() );
         Reader r = new FileReader( new File( result ) );
         char[] buf = new char[1024];
         int j = r.read( buf );
         assertEquals( "unexpected character count", 13, j );
+    }
+
+    public void testUnzipFile() throws Exception {
+        zipped = File.createTempFile( "test", ".zip" );
+        log.info( "Created " + zipped );
+        ZipOutputStream out = new ZipOutputStream( new FileOutputStream( zipped ) );
+        for ( int i = 0; i < 3; i++ ) {
+            out.putNextEntry( new ZipEntry( "foo" + i ) );
+            out.write( ( new Byte( "34" ) ).byteValue() );
+            out.closeEntry();
+        }
+        out.close();
+        Collection result = FileTools.unZipFiles( zipped.getAbsolutePath() );
+        assertEquals( 3, result.size() );
     }
 
     public void testCopyFileFailOnDirectoryInput() throws Exception {
@@ -278,8 +296,8 @@ public class FileToolsTest extends TestCase {
 
         } catch ( IOException e ) {
             fail = true;
-            log.error("Tried to create directory (" + dir.getAbsolutePath() + ")");
-            log.error("Tried to create subdirectory (" + subdir.getAbsolutePath() + ")");
+            log.error( "Tried to create directory (" + dir.getAbsolutePath() + ")" );
+            log.error( "Tried to create subdirectory (" + subdir.getAbsolutePath() + ")" );
             log.error( "Test failure.  Stacktrace is: " );
             e.printStackTrace();
         } finally {
@@ -295,7 +313,7 @@ public class FileToolsTest extends TestCase {
         File dir = FileTools.createDir( tempdir.getAbsolutePath() + "/dir" );
 
         File subdir = FileTools.createDir( dir.getAbsolutePath() + "/subdir" );
-        
+
         int numDeleted = 0;
         boolean fail = false;
         try {
