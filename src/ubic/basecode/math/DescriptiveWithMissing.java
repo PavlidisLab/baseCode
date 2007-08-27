@@ -159,7 +159,7 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
             ax = sx / numused;
             return ( sxy - sx * ay ) / Math.sqrt( ( sxx - sx * ax ) * ( syy - sy * ay ) );
         }
-        return -2.0; // signifies that it could not be calculated.
+        return Double.NaN; // signifies that it could not be calculated.
 
     }
 
