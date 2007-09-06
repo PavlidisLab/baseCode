@@ -131,6 +131,7 @@ public class MatrixWriter {
 				buf.append(sep);
 				if (val != null) {
 					String s = val.toString();
+					// replace using the valMap after formatting
 					if (formatter != null)
 						s = formatter.format(val);
 					if (valMap != null && valMap.get(s) != null)

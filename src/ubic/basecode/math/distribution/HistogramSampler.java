@@ -18,6 +18,9 @@
  */
 package ubic.basecode.math.distribution;
 
+import hep.aida.IAxis;
+import hep.aida.ref.FixedAxis;
+import hep.aida.ref.Histogram1D;
 import cern.jet.random.Uniform;
 
 /**
@@ -28,11 +31,9 @@ import cern.jet.random.Uniform;
  */
 public class HistogramSampler {
 
-    private double min;
-    private double max;
-    private double binWidth;
     private double[] cdf;
     private Uniform uniformDist;
+    private IAxis histogramAxis;
 
     /**
      * @param counts Array of counts of how many events there are for each bin, from min to max.
@@ -40,14 +41,11 @@ public class HistogramSampler {
      * @param max Maximum of range histogram covers (value at the start of the last bin)
      */
     public HistogramSampler( int[] counts, double min, double max ) {
-        this.min = min;
-        this.max = max;
-        this.binWidth = ( max - min ) / ( counts.length - 1 );
+    	histogramAxis = new FixedAxis(counts.length - 1, min, max);
         uniformDist = new Uniform( 0, 1, ( int ) System.currentTimeMillis() );
-
         int sum = 0;
-        for ( int i = 0; i < counts.length; i++ ) {
-            sum += counts[i];
+        for (int i = 0; i < counts.length; i++) {
+        	sum += counts[i];
         }
 
         this.cdf = new double[counts.length];
@@ -59,6 +57,22 @@ public class HistogramSampler {
         }
 
     }
+    
+    /**
+     * @param histogram
+     */
+    public HistogramSampler(Histogram1D histogram) {
+        this.uniformDist = new Uniform( 0, 1, ( int ) System.currentTimeMillis() );
+    	this.histogramAxis = histogram.xAxis();
+    	this.cdf = new double[histogramAxis.bins()];
+    	
+    	double sum = histogram.sumBinHeights();
+    	double prev = 0.0;
+    	for (int i = 0; i < histogramAxis.bins(); i++) {
+    		cdf[i] = (double) histogram.binHeight(i) / sum + prev;
+    		prev = cdf[i];
+    	}
+    }
 
     public double nextSample() {
         /*
@@ -68,10 +82,11 @@ public class HistogramSampler {
         double u = uniformDist.nextDouble();
         for ( int i = 0; i < cdf.length; i++ ) {
             if ( cdf[i] >= u ) {
-                return min + binWidth * i;
+            	double bin = histogramAxis.binLowerEdge(i);
+            	return bin;
             }
         }
-        return max;
+        return histogramAxis.binLowerEdge(cdf.length - 1);
 
     }
 }
