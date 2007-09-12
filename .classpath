@@ -7,7 +7,7 @@
 	<classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4.jar"/>
 	<classpathentry kind="var" path="M2_REPO/mysql/mysql-connector-java/3.1.11/mysql-connector-java-3.1.11.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-lang/commons-lang/2.3/commons-lang-2.3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/rserve/JRclient/RF503/JRclient-RF503.jar"/>
+	<classpathentry kind="var" path="M2_REPO/rserve/JRclient/RF503/JRclient-RF503.jar" sourcepath="/JAR_SOURCE/Rserve-0.5.0"/>
 	<classpathentry kind="var" path="M2_REPO/commons-configuration/commons-configuration/1.1/commons-configuration-1.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/opencsv/opencsv/1.3/opencsv-1.3.jar"/>
