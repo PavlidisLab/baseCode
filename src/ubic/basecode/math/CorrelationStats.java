@@ -264,11 +264,12 @@ public class CorrelationStats {
      * @param jval
      * @return
      */
-    public static double correl( double[] ival, double[] jval ) {
+    public static double correl(double[] ival, double[] jval) {
         /* do it the old fashioned way */
         int numused = 0;
         double sxy = 0.0, sxx = 0.0, syy = 0.0, sx = 0.0, sy = 0.0;
-        for ( int k = 0; k < ival.length; k++ ) {
+        int length = Math.min(ival.length, jval.length);
+        for ( int k = 0; k < length; k++ ) {
             double xj = ival[k];
             double yj = jval[k];
             if ( !Double.isNaN( ival[k] ) && !Double.isNaN( jval[k] ) ) {
