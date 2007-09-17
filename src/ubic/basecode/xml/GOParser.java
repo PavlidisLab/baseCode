@@ -111,9 +111,9 @@ class GOHandler extends DefaultHandler {
     private boolean inDef = false;
     private boolean inAcc = false;
     private boolean inName = false;
-    private boolean inPartOf = false;
-    private boolean inIsa = false;
-    private boolean inSyn = false;
+    // private boolean inPartOf = false;
+    // private boolean inIsa = false;
+    // private boolean inSyn = false;
 
     private String currentAspect;
     private StringBuffer nameBuf;
@@ -131,7 +131,7 @@ class GOHandler extends DefaultHandler {
             defBuf = new StringBuffer();
             inDef = true;
         } else if ( name.equals( "is_a" ) ) {
-            inIsa = true;
+            // inIsa = true;
             String res = atts.getValue( "rdf:resource" );
             String parent = res.substring( res.lastIndexOf( '#' ) + 1, res.length() );
 
@@ -142,7 +142,7 @@ class GOHandler extends DefaultHandler {
             m.addParentTo( currentTerm, parent );
 
         } else if ( name.equals( "part_of" ) ) {
-            inPartOf = true;
+            // inPartOf = true;
             String res = atts.getValue( "rdf:resource" );
             String parent = res.substring( res.lastIndexOf( '#' ) + 1, res.length() );
 
@@ -152,7 +152,7 @@ class GOHandler extends DefaultHandler {
             String currentTerm = accBuf.toString();
             m.addParentTo( currentTerm, parent );
         } else if ( name.equals( "synonym" ) ) {
-            inSyn = true;
+            // inSyn = true;
         } else if ( name.equals( "name" ) ) {
             nameBuf = new StringBuffer();
             inName = true;
@@ -178,11 +178,11 @@ class GOHandler extends DefaultHandler {
             ( ( GOEntry ) m.getNodeContents( currentTerm ) ).setDefinition( defBuf.toString().intern() );
             inDef = false;
         } else if ( name.equals( "is_a" ) ) {
-            inIsa = false;
+            // inIsa = false;
         } else if ( name.equals( "part_of" ) ) {
-            inPartOf = false;
+            // inPartOf = false;
         } else if ( name.equals( "synonym" ) ) {
-            inSyn = false;
+            // inSyn = false;
         } else if ( name.equals( "name" ) ) {
             inName = false;
             String currentTerm = accBuf.toString();

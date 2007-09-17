@@ -24,8 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import cern.colt.matrix.impl.AbstractMatrix2D;
-
 /**
  * @author pavlidis
  * @version $Id$
@@ -196,8 +194,8 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
     public abstract Object[] getRowObj( int i );
 
     public abstract Object[] getColObj( int i );
-    
-    public abstract Object getObj(int i , int j);
+
+    public abstract Object getObj( int i, int j );
 
     public abstract boolean isMissing( int i, int j );
 

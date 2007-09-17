@@ -22,7 +22,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
-import java.awt.image.SampleModel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,8 +45,6 @@ public class BufferedImageApp {
         log.info( "raster: " + r );
         DataBuffer buffer = r.getDataBuffer();
         log.info( "data buffer: " + buffer );
-        SampleModel sm = r.getSampleModel();
-
         log.info( "num data elements to transfer 1 pixel: " + r.getNumDataElements() );
 
         double[] array = new double[10];
