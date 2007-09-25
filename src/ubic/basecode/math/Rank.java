@@ -101,7 +101,7 @@ public class Rank {
 
         // store the ranks in the array.
         for ( int i = 0; i < size; i++ ) {
-            rankData rd = new rankData( i, array.get( i ) );
+            RankData rd = new RankData( i, array.get( i ) );
             ranks.add( rd );
         }
 
@@ -109,7 +109,7 @@ public class Rank {
 
         // fill in the results.
         for ( int i = 0; i < size; i++ ) {
-            result.set( ( ( rankData ) ranks.get( i ) ).getIndex(), i );
+            result.set( ( ( RankData ) ranks.get( i ) ).getIndex(), i );
         }
 
         return result;
@@ -194,18 +194,18 @@ class keyAndValueData implements Comparable {
  * Helper class for rankTransform map.
  */
 
-class rankData implements Comparable {
+class RankData implements Comparable {
 
     private int index;
     private double value;
 
-    public rankData( int tindex, double tvalue ) {
+    public RankData( int tindex, double tvalue ) {
         index = tindex;
         value = tvalue;
     }
 
     public int compareTo( Object a ) {
-        rankData other = ( rankData ) ( a );
+        RankData other = ( RankData ) ( a );
         if ( this.value < other.getValue() ) {
             return -1;
         } else if ( this.value > other.getValue() ) {
