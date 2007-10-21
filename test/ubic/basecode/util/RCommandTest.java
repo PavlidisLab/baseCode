@@ -137,6 +137,7 @@ public class RCommandTest extends TestCase {
 
         /*
          * For a row of length=6, R can handle 4 missing values. For a row of length=8, R can handle 6 missing values.
+         * For a row of length=10, R can handle 8 missing values. allowableMissingValues = rowLength - 2.
          */
 
         String[] rFactorsAsArray = { "a", "a", "b", "b", "a", "b" };
