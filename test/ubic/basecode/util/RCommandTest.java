@@ -135,7 +135,9 @@ public class RCommandTest extends TestCase {
         ddata[5][2] = Double.NaN;
         ddata[5][3] = Double.NaN;
 
-        /* For a row of length=6, R can handle length/2+1 missing values. */
+        /*
+         * For a row of length=6, R can handle 4 missing values. For a row of length=8, R can handle 6 missing values.
+         */
 
         String[] rFactorsAsArray = { "a", "a", "b", "b", "a", "b" };
 
