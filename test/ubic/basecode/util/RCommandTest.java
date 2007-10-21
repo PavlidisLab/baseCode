@@ -142,7 +142,7 @@ public class RCommandTest extends TestCase {
 
         String[] rFactorsAsArray = { "a", "a", "b", "b", "a", "b" };
 
-        List<String> rFactors = Arrays.asList( rFactorsAsArray );
+        List rFactors = Arrays.asList( rFactorsAsArray );
 
         String facts = rc.assignStringList( rFactors );
 
