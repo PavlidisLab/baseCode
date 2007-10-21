@@ -73,7 +73,7 @@ public class RCommandTest extends TestCase {
             return;
         }
         String actualValue = rc.eval( "R.version.string" ).asString();
-        String expectedValue = "R version 2";
+        String expectedValue = "Version 2";
 
         assertTrue( "rc.eval() return version " + actualValue + ", expected something starting with R version 2",
                 actualValue.startsWith( expectedValue ) );
