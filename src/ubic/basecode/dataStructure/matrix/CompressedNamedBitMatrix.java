@@ -16,11 +16,7 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
 
     private static final long serialVersionUID = 1775002416710933373L;
     private FlexCompRowMatrix[] matrix;
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#columns()
-     */
+
     public static int DOUBLE_LENGTH = 63; // java doesn't support unsigned long.
     private int totalBitsPerItem;
     private int rows = 0, cols = 0;
@@ -59,7 +55,7 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
      * 
      * @param row - the element row
      * @param col - the element column
-     * @return all the bits in an array of <code>longs</code>
+     * @return all the bits encoded as an array of <code>longs</code>
      */
     public long[] getAllBits( int row, int col ) {
         long[] allBits = new long[this.matrix.length];
@@ -71,17 +67,19 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
     /**
      * Sets the bit of the specified element at the specified index to 1.
      * 
-     * @param rows - matrix row
-     * @param cols - matrix column
+     * @param row - matrix row
+     * @param col - matrix column
      * @param index - bit vector index
      */
-    public void set( int rows, int cols, int index ) {
-        if ( index >= this.totalBitsPerItem || rows > this.rows || cols > this.cols ) return;
+    public void set( int row, int col, int index ) {
+        if ( index >= this.totalBitsPerItem || row > this.rows || col > this.cols )
+            throw new ArrayIndexOutOfBoundsException( "Attempt to access row=" + row + " col=" + col + " index="
+                    + index );
         int num = ( int ) ( index / CompressedNamedBitMatrix.DOUBLE_LENGTH );
         int bit_index = index % CompressedNamedBitMatrix.DOUBLE_LENGTH;
-        long binVal = Double.doubleToRawLongBits( matrix[num].get( rows, cols ) );
+        long binVal = Double.doubleToRawLongBits( matrix[num].get( row, col ) );
         double res = Double.longBitsToDouble( binVal | CompressedNamedBitMatrix.BIT1 << bit_index );
-        matrix[num].set( rows, cols, res );
+        matrix[num].set( row, col, res );
     }
 
     public void reset( int rows, int cols ) {
@@ -92,23 +90,25 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
     /**
      * Checks the bit of the specified element at the specified index.
      * 
-     * @param rows - matrix row
-     * @param cols - matrix column
+     * @param row - matrix row
+     * @param col - matrix column
      * @param index - bit vector index
      * @return true if bit is 1, false if 0.
      */
-    public boolean check( int rows, int cols, int index ) {
-        if ( index >= this.totalBitsPerItem || rows > this.rows || cols > this.cols ) return false;
+    public boolean check( int row, int col, int index ) {
+        if ( index >= this.totalBitsPerItem || row > this.rows || col > this.cols )
+            throw new ArrayIndexOutOfBoundsException( "Attempt to access row=" + row + " col=" + col + " index="
+                    + index );
         int num = ( int ) ( index / CompressedNamedBitMatrix.DOUBLE_LENGTH );
         int bit_index = index % CompressedNamedBitMatrix.DOUBLE_LENGTH;
-        long binVal = Double.doubleToRawLongBits( matrix[num].get( rows, cols ) );
+        long binVal = Double.doubleToRawLongBits( matrix[num].get( row, col ) );
         long res = binVal & CompressedNamedBitMatrix.BIT1 << bit_index;
         if ( res == 0 ) return false;
         return true;
     }
 
     /**
-     * Count the number of bits of the passed-in <code>double</code>.
+     * Count the number of one-bits of the passed-in <code>double</code>.
      * 
      * @param val
      * @return number of bits in val
@@ -119,22 +119,26 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
         return Long.bitCount( binVal );
     }
 
+    /**
+     * @param row
+     * @return - array of counts of one-bits for each element in the row.
+     */
     public int[] getRowBitCount( int row ) {
         int[] bits = new int[columns()];
-        for ( int i = 0; i < this.matrix.length; i++ ) {
+        for ( int i = 0, k = this.matrix.length; i < k; i++ ) {
             SparseVector vector = this.matrix[i].getRow( row );
             double[] data = vector.getData();
             int[] indices = vector.getIndex();
             for ( int j = 0; j < data.length; j++ ) {
                 if ( indices[j] == 0 && j > 0 ) break;
-                if ( data[j] != 0.0 ) bits[indices[j]] = bits[indices[j]] + countBits( data[j] );
+                if ( data[j] != 0.0 ) bits[indices[j]] += countBits( data[j] );
             }
         }
         return bits;
     }
 
     /**
-     * Count the number of bits at the specified element position
+     * Count the number of one-bits at the specified element position
      * 
      * @param rows
      * @param cols
@@ -151,8 +155,8 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
     }
 
     /**
-     * Counts the number of bits that in common between the two specified elements; i.e. performs an AND operation on
-     * the two bit vectors and counts the remaining 1 bits.
+     * Counts the number of one-bits that are in common between the two specified elements; i.e. performs an AND operation
+     * on the two bit vectors and counts the remaining 1 bits.
      * 
      * @param row1 - element 1 row
      * @param col1 - element 1 column
@@ -188,8 +192,7 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#getColObj(int)
      */
     public Object[] getColObj( int i ) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -198,12 +201,11 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#getRowObj(int)
      */
     public Object[] getRowObj( int i ) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
-    
-    public Object getObj(int row, int col) {
-    	return null;
+
+    public Object getObj( int row, int col ) {
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -212,8 +214,7 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#isMissing(int, int)
      */
     public boolean isMissing( int i, int j ) {
-        // TODO Auto-generated method stub
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -231,8 +232,7 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#set(int, int, java.lang.Object)
      */
     public void set( int i, int j, Object val ) {
-        // TODO Auto-generated method stub
-
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -244,7 +244,6 @@ public class CompressedNamedBitMatrix extends AbstractNamedMatrix {
      * @return true if set successfully
      */
     public boolean set( int row, int col, double[] val ) {
-        // TODO Auto-generated method stub
         if ( val.length != this.matrix.length || row >= this.rows || col >= this.cols ) return false;
         for ( int mi = 0; mi < val.length; mi++ )
             this.matrix[mi].set( row, col, val[mi] );
