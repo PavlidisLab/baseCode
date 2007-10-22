@@ -18,18 +18,12 @@
  */
 package ubic.basecode.util;
 
-import java.util.Arrays;
-import java.util.List;
-
 import junit.framework.TestCase;
 
-import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.rosuda.JRclient.REXP;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
-import ubic.basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamed;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 
 /**
