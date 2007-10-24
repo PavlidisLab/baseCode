@@ -17,9 +17,9 @@
 	</organization>
 	<packaging>jar</packaging>
 	<scm>
-		<connection>scm:cvs:ext:continuum@broca.ubic.ca:/cvs:baseCode</connection>
+		<connection>scm:cvs:local:/cvs:baseCode</connection>
 		<developerConnection>
-			scm:cvs:ext:continuum@broca.ubic.ca:/cvs:baseCode
+			scm:cvs:local:/cvs:baseCode
 		</developerConnection>
 		<url>http://broca.ubic.ca:8081/viewrep/pavlab/baseCode</url>
 	</scm>
@@ -40,7 +40,7 @@
 				<sendOnSuccess>true</sendOnSuccess>
 				<sendOnWarning>true</sendOnWarning>
 				<configuration>
-					<address>joseph@bioinformatics.ubc.ca</address>
+					<address>paul@bioinformatics.ubc.ca</address>
 				</configuration>
 			</notifier>
 		</notifiers>

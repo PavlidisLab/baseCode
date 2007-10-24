@@ -25,6 +25,7 @@ import ubic.basecode.bio.geneset.TestGeneAnnotations;
 import ubic.basecode.dataStructure.TestQueue;
 import ubic.basecode.dataStructure.TestStack;
 import ubic.basecode.dataStructure.graph.TestDirectedGraph;
+import ubic.basecode.dataStructure.matrix.CompressedNamedBitMatrixTest;
 import ubic.basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamedTest;
 import ubic.basecode.dataStructure.matrix.TestRCDoubleMatrix1D;
 import ubic.basecode.dataStructure.matrix.TestSparseRaggedDoubleMatrix2DNamed;
@@ -82,6 +83,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite( TestRCDoubleMatrix1D.class );
         suite.addTestSuite( TestQueue.class );
         suite.addTestSuite( TestStack.class );
+        suite.addTestSuite( CompressedNamedBitMatrixTest.class );
 
         /* data filter tests */
         suite.addTestSuite( ubic.basecode.datafilter.TestRowAffyNameFilter.class );
