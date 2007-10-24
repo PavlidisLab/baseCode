@@ -40,4 +40,18 @@ public class CompressedNamedBitMatrixTest extends TestCase {
         assertEquals( 1, mat.getRowBitCount( 0 )[0] );
         assertEquals( 1, mat.getRowBitCount( 0 )[1] );
     }
+
+    public final void testTotalBitCount() throws Exception {
+        CompressedNamedBitMatrix mat = new CompressedNamedBitMatrix( 2, 2, 2 );
+        mat.set( 0, 0, 0 );
+        mat.set( 0, 1, 1 );
+        mat.set( 1, 1, 0 );
+        mat.set( 1, 1, 1 );
+
+        long actualValue = mat.totalBitCount();
+        long expectedValue = 4; // number of 'sets' we called on different locations.
+
+        assertEquals( expectedValue, actualValue );
+
+    }
 }
