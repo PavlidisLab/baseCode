@@ -216,7 +216,7 @@ public class RCommand {
         Object[] stringOA = strings.toArray();
         String[] stringSA = new String[stringOA.length];
         for ( int i = 0; i < stringOA.length; i++ ) {
-            stringSA[i] = ( String ) stringOA[i];
+            stringSA[i] = String.valueOf( stringOA[i] );
         }
         REXP stringRexp = new REXP( stringSA );
         assign( variableName, stringRexp );
