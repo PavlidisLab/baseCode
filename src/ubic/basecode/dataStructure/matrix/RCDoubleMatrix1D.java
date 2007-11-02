@@ -36,6 +36,7 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
  */
 public class RCDoubleMatrix1D extends DoubleMatrix1D {
 
+    private static final long serialVersionUID = -5883440011745758929L;
     protected IntArrayList indexes;
     protected DoubleArrayList values;
 
