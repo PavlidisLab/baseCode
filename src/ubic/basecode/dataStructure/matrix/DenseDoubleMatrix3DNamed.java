@@ -142,5 +142,8 @@ public class DenseDoubleMatrix3DNamed extends DoubleMatrixNamed3D {
     public double get( int slice, int row, int col ) {
         return matrix.get( slice, row, col );
     }
+    public Object getObj(int slice, int row, int col) {
+    	return new Double(get(slice, row, col));
+    }
 
 }

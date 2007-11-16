@@ -90,5 +90,9 @@ public class DenseObjectMatrix3DNamed extends AbstractNamedMatrix3D {
 	public Object get(int slice, int row, int col) {
 		return matrix.get(slice, row, col);
 	}
+	
+	public Object getObj(int slice, int row, int col) {
+		return get(slice, row, col);
+	}
 
 }

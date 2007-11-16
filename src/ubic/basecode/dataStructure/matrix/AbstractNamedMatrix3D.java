@@ -118,6 +118,8 @@ public abstract class AbstractNamedMatrix3D implements NamedMatrix3D {
 	public boolean hasColNames() {
 		return columns() == colNames.size();
 	}
+	
+	public abstract Object getObj(int i, int j, int k);
 
 	public boolean hasRow(Object r) {
 		return rowMap.containsKey(r);
