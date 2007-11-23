@@ -18,7 +18,6 @@
  */
 package ubic.basecode.gui.graphics.text;
 
-import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -35,24 +34,20 @@ public class Util {
 
     /**
      * @param text the string whose pixel width is to be measured
-     * @param font the pixels width of a string varies from font to font
-     * @param c the parent component; usually <code>this</code>
+     * @param fm FontMetrics object for the Component or Graphics.
      * @return the pixel width of the string for the specified font.
      */
-    public static int stringPixelWidth( String text, Font font, Component c ) {
-
-        FontMetrics fontMetrics = c.getFontMetrics( font );
-        return fontMetrics.charsWidth( text.toCharArray(), 0, text.length() );
+    public static int stringPixelWidth( String text, FontMetrics fm ) {
+        return fm.charsWidth( text.toCharArray(), 0, text.length() );
 
     } // end stringPixelWidth
 
     /**
      * @param strings an array of strings whose pixels widths to compare
-     * @param font the pixels width of a string varies from font to font
-     * @param c the parent component; usually <code>this</code>
+     * @param fm FontMetrics object for the Component or Graphics.
      * @return the largest pixel width of a string in the <code>strings</code> array.
      */
-    public static int maxStringPixelWidth( String[] strings, Font font, Component c ) {
+    public static int maxStringPixelWidth( String[] strings, FontMetrics fm ) {
 
         // the number of chars in the longest string
         int maxWidth = 0;
@@ -60,7 +55,7 @@ public class Util {
         String s;
         for ( int i = 0; i < strings.length; i++ ) {
             s = strings[i];
-            width = stringPixelWidth( s, font, c );
+            width = stringPixelWidth( s, fm );
             if ( maxWidth < width ) {
                 maxWidth = width;
             }
