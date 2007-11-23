@@ -153,7 +153,7 @@ public class JMatrixDisplayTest extends BaseTestCase {
         boolean fail = false;
         try {
             OutputStream stream = new FileOutputStream( File.createTempFile( "testOuputStream", ".out" ) );
-            display.writeOutAsPNG( stream, true, true );
+            display.saveImageToPng( colorMatrix, stream, true, true );
         } catch ( IOException e ) {
             fail = true;
             e.printStackTrace();

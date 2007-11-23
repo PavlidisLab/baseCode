@@ -41,7 +41,11 @@ public class MatrixStats {
 
         for ( int i = 0; i < data.rows(); i++ ) {
             DoubleArrayList irow = new DoubleArrayList( data.getRow( i ) );
-            for ( int j = i + 1; j < data.rows(); j++ ) {
+            for ( int j = i; j < data.rows(); j++ ) {
+                if ( j == i ) {
+                    result.setQuick( i, j, 1.0 );
+                    continue;
+                }
                 DoubleArrayList jrow = new DoubleArrayList( data.getRow( j ) );
                 double c = DescriptiveWithMissing.correlation( irow, jrow );
                 result.setQuick( i, j, c );

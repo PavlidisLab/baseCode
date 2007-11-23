@@ -42,6 +42,24 @@ public class DoubleMatrix2DNamedFactory {
         return new DenseDoubleMatrix2DNamed( T );
     }
 
+    /**
+     * Creates a matrix in which the underlying data is a copy; the row and column labels are not copied.
+     * 
+     * @param T
+     * @return
+     */
+    public static DenseDoubleMatrix2DNamed dense( DoubleMatrixNamed T ) {
+        DenseDoubleMatrix2DNamed copy = new DenseDoubleMatrix2DNamed( T.rows(), T.columns() );
+        copy.setRowNames( T.getRowNames() );
+        copy.setColumnNames( T.getColNames() );
+        for ( int i = 0; i < T.rows(); i++ ) {
+            for ( int j = 0; j < T.columns(); j++ ) {
+                copy.setQuick( i, j, T.getQuick( i, j ) );
+            }
+        }
+        return copy;
+    }
+
     public static DenseDoubleMatrix2DNamed dense( int rows, int cols ) {
         return new DenseDoubleMatrix2DNamed( rows, cols );
     }
