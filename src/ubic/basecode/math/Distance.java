@@ -19,7 +19,6 @@
 package ubic.basecode.math;
 
 import cern.colt.list.DoubleArrayList;
-import cern.colt.list.IntArrayList;
 
 /**
  * Alternative distance and similarity metrics for vectors.
@@ -97,18 +96,19 @@ public class Distance {
     public static double spearmanRankCorrelation( DoubleArrayList x, DoubleArrayList y ) {
         double sum = 0.0;
 
-        if ( x.size() != y.size() ) {
-            throw new ArithmeticException();
+        int n = x.size();
+        if ( n != y.size() ) {
+            throw new ArithmeticException( "Unequal vector lengths" );
         }
 
-        IntArrayList rx = Rank.rankTransform( x );
-        IntArrayList ry = Rank.rankTransform( y );
+        DoubleArrayList rx = Rank.rankTransform( x );
+        DoubleArrayList ry = Rank.rankTransform( y );
 
-        for ( int j = 0; j < x.size(); j++ ) {
+        for ( int j = 0; j < n; j++ ) {
             sum += ( rx.elements()[j] - ry.elements()[j] * ( rx.elements()[j] - ry.elements()[j] ) );
         }
 
-        return 1.0 - 6.0 * sum / ( Math.pow( x.size(), 3 ) - x.size() );
+        return 1.0 - 6.0 * sum / ( Math.pow( n, 3 ) - n );
     }
 
     /**

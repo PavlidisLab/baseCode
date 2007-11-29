@@ -33,6 +33,8 @@ import cern.jet.stat.Probability;
 public class CorrelationStats {
 
     private static DoubleMatrix2D correlationPvalLookup;
+    private static DoubleMatrix2D spearmanPvalLookup;
+
     private static final double BINSIZE = 0.005; // resolution of correlation.
     // Differences smaller than this
     // are considered meaningless.
@@ -45,122 +47,17 @@ public class CorrelationStats {
     // 10^e-256/PVALCHOP are
     // 'clipped'.
 
+    /* Edgeworth coefficients for spearman computation : */
+    private static final double c1 = 0.2274, c2 = 0.2531, c3 = 0.1745, c4 = 0.0758, c5 = 0.1033, c6 = 0.3932,
+            c7 = 0.0879, c8 = 0.0151, c9 = 0.0072, c10 = 0.0831, c11 = 0.0131, c12 = 4.6e-4;
+
+    /* for spearman */
+    final static int n_small = 9;
+
     static {
         int numbins = ( int ) Math.ceil( 1.0 / BINSIZE );
         correlationPvalLookup = new SparseDoubleMatrix2D( numbins, MAXCOUNT + 1 );
-    }
-
-    /**
-     * @param correl Pearson correlation.
-     * @param count Number of items used to calculate the correlation. NOT the degrees of freedom.
-     * @return double
-     */
-    public static double pvalue( double correl, int count ) {
-
-        double acorrel = Math.abs( correl );
-
-        if ( acorrel == 1.0 ) {
-            return 0.0;
-        }
-
-        if ( acorrel == 0.0 ) {
-            return 1.0;
-        }
-
-        int dof = count - 2;
-
-        if ( dof <= 0 ) {
-            return 1.0;
-        }
-
-        int bin = ( int ) Math.ceil( acorrel / BINSIZE );
-        if ( count <= MAXCOUNT && correlationPvalLookup.getQuick( bin, dof ) != 0.0 ) {
-            return correlationPvalLookup.getQuick( bin, dof );
-        }
-        double t = correlationTstat( acorrel, dof );
-        double p = Probability.studentT( dof, -t );
-        if ( count < MAXCOUNT ) {
-            correlationPvalLookup.setQuick( bin, dof, p );
-        }
-        return p;
-
-    }
-
-    /**
-     * @param correl double
-     * @return int
-     */
-    public static int correlAsByte( double correl ) {
-        if ( correl == -1.0 ) {
-            return 0;
-        }
-
-        return ( int ) ( Math.ceil( ( correl + 1.0 ) * 128 ) - 1 );
-    }
-
-    /**
-     * Reverse the Fisher z-transform of correlations.
-     * 
-     * @param r
-     * @return
-     */
-    public static double unFisherTransform( double r ) {
-        return Math.exp( 2.0 * r - 1.0 ) / Math.exp( 2.0 * r + 1.0 );
-    }
-
-    /**
-     * Compute the Fisher z transform of the Pearson correlation.
-     * 
-     * @param r Correlation coefficient.
-     * @return Fisher transform of the Correlation.
-     */
-    public static double fisherTransform( double r ) {
-        if ( !isValidPearsonCorrelation( r ) ) {
-            throw new IllegalArgumentException( "Invalid correlation " + r );
-        }
-
-        return 0.5 * Math.log( ( 1.0 + r ) / ( 1.0 - r ) );
-    }
-
-    /**
-     * Fisher-transform a list of correlations.
-     * 
-     * @param e
-     * @return
-     */
-    public static DoubleArrayList fisherTransform( DoubleArrayList e ) {
-        DoubleArrayList r = new DoubleArrayList( e.size() );
-        for ( int i = 0; i < e.size(); i++ ) {
-            r.add( CorrelationStats.fisherTransform( e.getQuick( i ) ) );
-        }
-        return r;
-    }
-
-    /**
-     * Conver a correlation p value into a value between 0 and 255 inclusive. This is done by taking the log,
-     * multiplying it by a fixed value (currently 8). This means that pvalues less than 10^-32 are rounded to 10^-32.
-     * 
-     * @param correl double
-     * @param count int
-     * @return int
-     */
-    public static int pvalueAsByte( double correl, int count ) {
-        int p = -( int ) Math.floor( PVALCHOP * Arithmetic.log10( pvalue( correl, count ) ) );
-
-        if ( p < 0 ) {
-            return 0;
-        } else if ( p > 255 ) {
-            return 255;
-        }
-        return p;
-    }
-
-    /**
-     * @param pvalByte int
-     * @return double
-     */
-    public static double byteToPvalue( int pvalByte ) {
-        return Math.pow( 10.0, -( double ) pvalByte / PVALCHOP );
+        spearmanPvalLookup = new SparseDoubleMatrix2D( numbins, MAXCOUNT + 1 );
     }
 
     /**
@@ -172,19 +69,16 @@ public class CorrelationStats {
     }
 
     /**
-     * Compute the t-statistic associated with a Pearson correlation.
-     * 
-     * @param correl Pearson correlation
-     * @param dof Degrees of freedom (n - 2)
+     * @param pvalByte int
      * @return double
      */
-    public static double correlationTstat( double correl, int dof ) {
-        return correl / Math.sqrt( ( 1.0 - correl * correl ) / dof );
+    public static double byteToPvalue( int pvalByte ) {
+        return Math.pow( 10.0, -( double ) pvalByte / PVALCHOP );
     }
 
     /**
-     * Statistical comparison of two correlations. Assumes data are bivariate normal. Null hypothesis is that the two
-     * correlations are equal. See Zar (Biostatistics)
+     * Statistical comparison of two Pearson correlations. Assumes data are bivariate normal. Null hypothesis is that
+     * the two correlations are equal. See Zar (Biostatistics)
      * 
      * @param correl1 First correlation
      * @param n1 Number of values used to compute correl1
@@ -211,7 +105,50 @@ public class CorrelationStats {
     }
 
     /**
-     * Find the approximate correlation required to meet a particular pvalue. This works by simple gradient descent.
+     * Compute the Pearson correlation, missing values are permitted.
+     * 
+     * @param ival
+     * @param jval
+     * @return
+     */
+    public static double correl( double[] ival, double[] jval ) {
+        /* do it the old fashioned way */
+        int numused = 0;
+        double sxy = 0.0, sxx = 0.0, syy = 0.0, sx = 0.0, sy = 0.0;
+        int length = Math.min( ival.length, jval.length );
+        for ( int k = 0; k < length; k++ ) {
+            double xj = ival[k];
+            double yj = jval[k];
+            if ( !Double.isNaN( ival[k] ) && !Double.isNaN( jval[k] ) ) {
+                sx += xj;
+                sy += yj;
+                sxy += xj * yj;
+                sxx += xj * xj;
+                syy += yj * yj;
+                numused++;
+            }
+        }
+        if ( numused < 2 ) return Double.NaN;
+        double denom = ( sxx - sx * sx / numused ) * ( syy - sy * sy / numused );
+        if ( denom <= 0 ) return Double.NaN;
+        double correl = ( sxy - sx * sy / numused ) / Math.sqrt( denom );
+        return correl;
+    }
+
+    /**
+     * @param correl double
+     * @return int
+     */
+    public static int correlAsByte( double correl ) {
+        if ( correl == -1.0 ) {
+            return 0;
+        }
+        return ( int ) ( Math.ceil( ( correl + 1.0 ) * 128 ) - 1 );
+    }
+
+    /**
+     * Find the approximate Pearson correlation required to meet a particular pvalue. This works by simple gradient
+     * descent.
      * 
      * @param pval double
      * @param count int
@@ -250,6 +187,65 @@ public class CorrelationStats {
     }
 
     /**
+     * Compute the t-statistic associated with a Pearson correlation.
+     * 
+     * @param correl Pearson correlation
+     * @param dof Degrees of freedom (n - 2)
+     * @return double
+     */
+    public static double correlationTstat( double correl, int dof ) {
+        return correl / Math.sqrt( ( 1.0 - correl * correl ) / dof );
+    }
+
+    /**
+     * Compute Pearson correlation when there are no missing values.
+     * 
+     * @param ival
+     * @param jval
+     * @param meani
+     * @param meanj
+     * @param sqrti
+     * @param sqrtj
+     * @return
+     */
+    public static double correlFast( double[] ival, double[] jval, double meani, double meanj, double sqrti,
+            double sqrtj ) {
+        double sxy = 0.0;
+        for ( int k = 0, n = ival.length; k < n; k++ ) {
+            sxy += ( ival[k] - meani ) * ( jval[k] - meanj );
+        }
+        return sxy / ( sqrti * sqrtj );
+    }
+
+    /**
+     * Compute the Fisher z transform of the Pearson correlation.
+     * 
+     * @param r Correlation coefficient.
+     * @return Fisher transform of the Correlation.
+     */
+    public static double fisherTransform( double r ) {
+        if ( !isValidPearsonCorrelation( r ) ) {
+            throw new IllegalArgumentException( "Invalid correlation " + r );
+        }
+
+        return 0.5 * Math.log( ( 1.0 + r ) / ( 1.0 - r ) );
+    }
+
+    /**
+     * Fisher-transform a list of Pearson correlations.
+     * 
+     * @param e
+     * @return
+     */
+    public static DoubleArrayList fisherTransform( DoubleArrayList e ) {
+        DoubleArrayList r = new DoubleArrayList( e.size() );
+        for ( int i = 0; i < e.size(); i++ ) {
+            r.add( CorrelationStats.fisherTransform( e.getQuick( i ) ) );
+        }
+        return r;
+    }
+
+    /**
      * Test if a value is a reasonable Pearson correlation (in the range -1 to 1; values outside of this range are
      * acceptable within a small roundoff.
      * 
@@ -259,50 +255,206 @@ public class CorrelationStats {
     public static boolean isValidPearsonCorrelation( double r ) {
         return ( r + Constants.SMALL >= -1.0 && r - Constants.SMALL <= 1.0 );
     }
+
     /**
-     * @param ival
-     * @param jval
-     * @return
+     * Compute pvalue for the pearson correlation, using the t distribution method.
+     * 
+     * @param correl Pearson correlation.
+     * @param count Number of items used to calculate the correlation. NOT the degrees of freedom.
+     * @return double
      */
-    public static double correl(double[] ival, double[] jval) {
-        /* do it the old fashioned way */
-        int numused = 0;
-        double sxy = 0.0, sxx = 0.0, syy = 0.0, sx = 0.0, sy = 0.0;
-        int length = Math.min(ival.length, jval.length);
-        for ( int k = 0; k < length; k++ ) {
-            double xj = ival[k];
-            double yj = jval[k];
-            if ( !Double.isNaN( ival[k] ) && !Double.isNaN( jval[k] ) ) {
-                sx += xj;
-                sy += yj;
-                sxy += xj * yj;
-                sxx += xj * xj;
-                syy += yj * yj;
-                numused++;
-            }
+    public static double pvalue( double correl, int count ) {
+
+        double acorrel = Math.abs( correl );
+
+        if ( acorrel == 1.0 ) {
+            return 0.0;
         }
-        if(numused < 2) return Double.NaN;
-        double denom = ( sxx - sx * sx / numused ) * ( syy - sy * sy / numused );
-        if(denom <= 0) return Double.NaN;
-        double correl = ( sxy - sx * sy / numused ) / Math.sqrt( denom );
-        return correl;
+
+        if ( acorrel == 0.0 ) {
+            return 1.0;
+        }
+
+        int dof = count - 2;
+
+        if ( dof <= 0 ) {
+            return 1.0;
+        }
+
+        int bin = ( int ) Math.ceil( acorrel / BINSIZE );
+        if ( count <= MAXCOUNT && correlationPvalLookup.getQuick( bin, dof ) != 0.0 ) {
+            return correlationPvalLookup.getQuick( bin, dof );
+        }
+        double t = correlationTstat( acorrel, dof );
+        double p = Probability.studentT( dof, -t );
+        if ( count < MAXCOUNT ) {
+            correlationPvalLookup.setQuick( bin, dof, p );
+        }
+        return p;
+
     }
 
     /**
-     * @param ival
-     * @param jval
-     * @param meani
-     * @param meanj
-     * @param sqrti
-     * @param sqrtj
+     * Convert a p value into a value between 0 and 255 inclusive. This is done by taking the log, multiplying it by a
+     * fixed value (currently 8). This means that pvalues less than 10^-32 are rounded to 10^-32.
+     * 
+     * @param correl double
+     * @param count int
+     * @return int
+     */
+    public static int pvalueAsByte( double correl, int count ) {
+        int p = -( int ) Math.floor( PVALCHOP * Arithmetic.log10( pvalue( correl, count ) ) );
+
+        if ( p < 0 ) {
+            return 0;
+        } else if ( p > 255 ) {
+            return 255;
+        }
+        return p;
+    }
+
+    /**
+     * @param correl Spearman's correlation
+     * @param count
+     * @return pvalue, two-tailed pvalue, computed using t distribution for large sample sizes or exact computation for
+     *         small sample sizes.
+     */
+    public static double spearmanPvalue( double correl, int count ) {
+        double acorrel = Math.abs( correl );
+        int dof = count - 2;
+
+        if ( dof <= 0 ) {
+            return 1.0;
+        }
+        int bin = ( int ) Math.ceil( acorrel / BINSIZE );
+        if ( count <= MAXCOUNT && spearmanPvalLookup.getQuick( bin, dof ) != 0.0 ) {
+            return spearmanPvalLookup.getQuick( bin, dof );
+        }
+
+        double p;
+        if ( count > 1290 ) { // this is the threshold used by R (cor.test.R), to avoid overflows.
+            double t = correlationTstat( acorrel, dof );
+            p = Probability.studentT( dof, -t );
+            assert p <= 0.5;
+
+        } else {
+            p = spearmanPvalueSmallSample( correl, count );
+        }
+        p = Math.min( 1.0, 2 * p );
+        if ( count < MAXCOUNT ) {
+            spearmanPvalLookup.setQuick( bin, dof, p );
+        }
+        return p;
+    }
+
+    /**
+     * Reverse the Fisher z-transform of Pearson correlations.
+     * 
+     * @param r
      * @return
      */
-    public static double correlFast( double[] ival, double[] jval, double meani, double meanj, double sqrti, double sqrtj ) {
-        double sxy = 0.0;
-        for ( int k = 0, n = ival.length; k < n; k++ ) {
-            sxy += ( ival[k] - meani ) * ( jval[k] - meanj );
+    public static double unFisherTransform( double r ) {
+        return Math.exp( 2.0 * r - 1.0 ) / Math.exp( 2.0 * r + 1.0 );
+    }
+
+    /**
+     * Ported from R prho.c and cor.test.R which is in turn a port of a Fortran method (AS 89, Best and Roberts, Applied
+     * Statistics 1975 p 377-379). We compute exact probabilities for very small values (< 9) and use a special
+     * algorithm for larger values. At very large values the t-distribution can be used, this method will be slow.
+     * <p>
+     * NOTE that for "medium-sized" values of n, we get slightly different values from the R implementation.
+     * 
+     * @param rho Spearman rank correlation
+     * @param n number of sample
+     * @return one-sided pvalue.
+     */
+    private static double spearmanPvalueSmallSample( double rho, int n ) {
+
+        boolean lower_tail = false;
+
+        /*
+         * In R, sStat (is) is the S statistic, and gets computed in cor.test.R and passed into prho(). It's the sum
+         * squared error of the ranks (the usual spearman test stat). We backcompute it here.
+         */
+        double sStat = ( Math.pow( n, 3 ) - n ) * ( 1.0 - rho ) / 6;
+        double pv = 1.0;
+        // pv = lower_tail ? 0.0 : 1.0; // lower_tail is always false.
+
+        if ( n <= 1 ) {
+            throw new IllegalArgumentException();
         }
-        return sxy / ( sqrti * sqrtj );
+
+        if ( sStat <= 0.0 ) {
+            return pv; /* pv = 1 */
+        }
+
+        /*
+         * Exact evaluation of probability
+         */
+        if ( n <= n_small ) {
+            int[] ar = new int[n_small];
+            int ifr;
+            int nfac = 1;
+            double n3 = ( double ) n;
+            n3 *= ( n3 * n3 - 1.0 ) / 3.0;/* = (n^3 - n)/3 */
+            if ( sStat > n3 ) { /* larger than maximal value */
+                pv = 1 - pv;
+                return pv;
+            }
+            for ( int i = 1; i <= n; ++i ) {
+                nfac *= i;
+                ar[i - 1] = i;
+            }
+
+            if ( sStat == n3 ) {
+                ifr = 1;
+            } else {
+                int n1, mt;
+                ifr = 0;
+                for ( int m = 0; m < nfac; ++m ) {
+                    int ise = 0;
+                    for ( int i = 0; i < n; ++i ) {
+                        n1 = i + 1 - ar[i];
+                        ise += n1 * n1;
+                    }
+                    if ( sStat <= ise ) {
+                        ++ifr;
+                    }
+
+                    n1 = n;
+                    do {
+                        mt = ar[0];
+                        for ( int i = 1; i < n1; ++i ) {
+                            ar[i - 1] = ar[i];
+                        }
+                        --n1;
+                        ar[n1] = mt;
+                    } while ( mt == n1 + 1 && n1 > 1 );
+                }
+            }
+            pv = ( lower_tail ? nfac - ifr : ifr ) / ( double ) nfac;
+        } else { /* Evaluation by Edgeworth series expansion */
+
+            double b = 1.0 / n;
+
+            double x = rho * Math.sqrt( n - 1.0 );
+
+            double y = x * x;
+            double u = x
+                    * b
+                    * ( c1 + b * ( c2 + c3 * b ) + y
+                            * ( -c4 + b * ( c5 + c6 * b ) - y * b
+                                    * ( c7 + c8 * b - y * ( c9 - c10 * b + y * b * ( c11 - c12 * y ) ) ) ) );
+            y = u / Math.exp( y / 2.0 );
+
+            double pp = Probability.normal( x ); // mean 0, variance 1.
+
+            pv = y + pp;
+            if ( pv < 0.0 ) pv = 0.0;
+            if ( pv > 1.0 ) pv = 1.0;
+        }
+        return pv;
+
     }
 
 }

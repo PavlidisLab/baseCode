@@ -48,7 +48,7 @@ public class Rank {
 
         // this is easily done, albeit very inefficiently, if we 1) get the ranks and then 2) find the indexes of the
         // ranks.
-        IntArrayList ranks = rankTransform( array );
+        DoubleArrayList ranks = rankTransform( array );
 
         IntArrayList order = new IntArrayList( ranks.size() );
 
@@ -86,7 +86,7 @@ public class Rank {
      * @param array DoubleArrayList
      * @return cern.colt.list.DoubleArrayList
      */
-    public static IntArrayList rankTransform( DoubleArrayList array ) {
+    public static DoubleArrayList rankTransform( DoubleArrayList array ) {
         if ( array == null ) {
             throw new IllegalArgumentException( "Null array" );
         }
@@ -97,7 +97,7 @@ public class Rank {
         }
 
         ObjectArrayList ranks = new ObjectArrayList( size );
-        IntArrayList result = new IntArrayList( new int[size] );
+        DoubleArrayList result = new DoubleArrayList( new double[size] );
 
         // store the ranks in the array.
         for ( int i = 0; i < size; i++ ) {
