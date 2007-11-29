@@ -38,10 +38,10 @@ import ubic.basecode.io.reader.TestSparseDoubleMatrixReader;
 import ubic.basecode.io.reader.TestSparseRaggedDouble2DNamedMatrixReader;
 import ubic.basecode.io.reader.TestStringMatrixReader;
 import ubic.basecode.io.writer.TestHistogramWriter;
+import ubic.basecode.math.CorrelationStatsTest;
 import ubic.basecode.math.LinearModelTest;
 import ubic.basecode.math.MultipleTestCorrectionTest;
 import ubic.basecode.math.StringDistanceTest;
-import ubic.basecode.math.TestCorrelationStats;
 import ubic.basecode.math.TestMathUtil;
 import ubic.basecode.math.TestWilcoxon;
 import ubic.basecode.math.distribution.TestWishart;
@@ -53,6 +53,10 @@ import ubic.basecode.util.RCommandTest;
 import ubic.basecode.util.TestStringUtil;
 import ubic.basecode.xml.TestGOParser;
 
+/**
+ * @author paul
+ * @version $Id$
+ */
 public class AllTests extends TestCase {
 
     public AllTests( String s ) {
@@ -101,7 +105,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite( LinearModelTest.class );
         suite.addTestSuite( MultipleTestCorrectionTest.class );
         suite.addTestSuite( StringDistanceTest.class );
-        suite.addTestSuite( TestCorrelationStats.class );
+        suite.addTestSuite( CorrelationStatsTest.class );
 
         suite.addTestSuite( ubic.basecode.math.TestDescriptiveWithMissing.class );
 
