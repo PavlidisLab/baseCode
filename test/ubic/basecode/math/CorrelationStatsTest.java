@@ -67,4 +67,22 @@ public class CorrelationStatsTest extends TestCase {
         double expected = 3.397260e-5; // our value
         assertEquals( expected, actual, 0.0000001 );
     }
+
+    public void testSpearmanPvalueE() {
+        double actual = CorrelationStats.spearmanPvalue( 0.983333, 9 );
+        double expected = 4.96e-5; // value from R
+        assertEquals( expected, actual, 0.0000001 );
+    }
+
+    public void testSpearmanPvalueEh() {
+        double actual = CorrelationStats.spearmanPvalue( 1, 9 );
+        double expected = 0; // value from R
+        assertEquals( expected, actual, 0.0000001 );
+    }
+
+    public void testSpearmanPvalueEm() {
+        double actual = CorrelationStats.spearmanPvalue( -0.983333, 9 );
+        double expected = 4.96e-5; // value from R
+        assertEquals( expected, actual, 0.0000001 );
+    }
 }

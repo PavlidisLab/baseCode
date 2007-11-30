@@ -51,7 +51,7 @@ public class CorrelationStats {
     private static final double c1 = 0.2274, c2 = 0.2531, c3 = 0.1745, c4 = 0.0758, c5 = 0.1033, c6 = 0.3932,
             c7 = 0.0879, c8 = 0.0151, c9 = 0.0072, c10 = 0.0831, c11 = 0.0131, c12 = 4.6e-4;
 
-    /* for spearman */
+    /* for spearman - for n <= this, we compute exact probabilities. */
     final static int n_small = 9;
 
     static {
@@ -335,11 +335,11 @@ public class CorrelationStats {
         if ( count > 1290 ) { // this is the threshold used by R (cor.test.R), to avoid overflows.
             double t = correlationTstat( acorrel, dof );
             p = Probability.studentT( dof, -t );
-            assert p <= 0.5;
-
         } else {
             p = spearmanPvalueSmallSample( correl, count );
         }
+        assert p <= 0.5 : "Pvalue was " + p + " for correl=" + correl + ", count=" + count
+                + ", expected value less than 0.5";
         p = Math.min( 1.0, 2 * p );
         if ( count < MAXCOUNT ) {
             spearmanPvalLookup.setQuick( bin, dof, p );
@@ -362,15 +362,16 @@ public class CorrelationStats {
      * Statistics 1975 p 377-379). We compute exact probabilities for very small values (< 9) and use a special
      * algorithm for larger values. At very large values the t-distribution can be used, this method will be slow.
      * <p>
-     * NOTE that for "medium-sized" values of n, we get slightly different values from the R implementation.
+     * NOTE that for "medium-sized" values of n, we get slightly different values from the R implementation. This seems
+     * to be due to differences in roundoff.
      * 
      * @param rho Spearman rank correlation
      * @param n number of sample
-     * @return one-sided pvalue.
+     * @return one-sided pvalue. This is the upper tail if rho is positive, lower tail if rho is negative.
      */
     private static double spearmanPvalueSmallSample( double rho, int n ) {
 
-        boolean lower_tail = false;
+        // boolean lower_tail = false;
 
         /*
          * In R, sStat (is) is the S statistic, and gets computed in cor.test.R and passed into prho(). It's the sum
@@ -385,7 +386,11 @@ public class CorrelationStats {
         }
 
         if ( sStat <= 0.0 ) {
-            return pv; /* pv = 1 */
+            if ( rho > 0 ) {
+                return 0.0;
+            } else {
+                return 1.0;
+            }
         }
 
         /*
@@ -398,9 +403,9 @@ public class CorrelationStats {
             double n3 = ( double ) n;
             n3 *= ( n3 * n3 - 1.0 ) / 3.0;/* = (n^3 - n)/3 */
             if ( sStat > n3 ) { /* larger than maximal value */
-                pv = 1 - pv;
-                return pv;
+                return 0.0; // best possible pvalue...
             }
+
             for ( int i = 1; i <= n; ++i ) {
                 nfac *= i;
                 ar[i - 1] = i;
@@ -432,7 +437,8 @@ public class CorrelationStats {
                     } while ( mt == n1 + 1 && n1 > 1 );
                 }
             }
-            pv = ( lower_tail ? nfac - ifr : ifr ) / ( double ) nfac;
+            pv = ifr / ( double ) nfac;
+            if ( pv > 0.5 ) pv = 1.0 - pv;
         } else { /* Evaluation by Edgeworth series expansion */
 
             double b = 1.0 / n;
@@ -448,11 +454,10 @@ public class CorrelationStats {
             y = u / Math.exp( y / 2.0 );
 
             double pp = Probability.normal( x ); // mean 0, variance 1.
-
             pv = y + pp;
-            if ( pv < 0.0 ) pv = 0.0;
-            if ( pv > 1.0 ) pv = 1.0;
         }
+        if ( pv < 0.0 ) pv = 0.0;
+        if ( pv > 1.0 ) pv = 1.0;
         return pv;
 
     }
