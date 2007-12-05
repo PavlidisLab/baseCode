@@ -95,16 +95,19 @@ public class Distance {
      */
     public static double spearmanRankCorrelation( DoubleArrayList x, DoubleArrayList y ) {
         double sum = 0.0;
-
-        int n = x.size();
-        if ( n != y.size() ) {
-            throw new ArithmeticException( "Unequal vector lengths" );
+        
+        int n = 0;
+        for (int i = 0; i < x.size() && i < y.size(); i++) {
+        	if (!Double.isNaN(x.get(i)) && !Double.isNaN(y.get(i)))
+        		n++;
         }
 
         DoubleArrayList rx = Rank.rankTransform( x );
         DoubleArrayList ry = Rank.rankTransform( y );
 
         for ( int j = 0; j < n; j++ ) {
+        	if (!Double.isNaN(x.get(j)) && !Double.isNaN(y.get(j)))
+        		continue;
             sum += ( rx.elements()[j] - ry.elements()[j] * ( rx.elements()[j] - ry.elements()[j] ) );
         }
 
