@@ -22,6 +22,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import ubic.basecode.bio.geneset.TestGeneAnnotations;
+import ubic.basecode.dataStructure.BitUtilTest;
 import ubic.basecode.dataStructure.TestQueue;
 import ubic.basecode.dataStructure.TestStack;
 import ubic.basecode.dataStructure.graph.TestDirectedGraph;
@@ -87,6 +88,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite( TestRCDoubleMatrix1D.class );
         suite.addTestSuite( TestQueue.class );
         suite.addTestSuite( TestStack.class );
+        suite.addTestSuite( BitUtilTest.class );
         suite.addTestSuite( CompressedNamedBitMatrixTest.class );
 
         /* data filter tests */
