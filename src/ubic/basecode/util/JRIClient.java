@@ -42,18 +42,20 @@ public class JRIClient implements RClient<org.rosuda.JRI.REXP> {
 
     static Rengine connection;
 
-    static {
-        log.info( "Loading JRI library, looking in " + System.getProperty( "java.library.path" ) );
-        System.loadLibrary( "jri" );
-
-        connection = new Rengine( new String[] { "--save" }, false, null );
-        if ( !connection.waitForR() ) {
-            throw new UnsatisfiedLinkError( "Cannot load R" );
-        }
-    }
-
     public JRIClient() {
 
+        if ( connection == null ) {
+            log.info( "Loading JRI library, looking in " + System.getProperty( "java.library.path" ) );
+            try {
+                System.loadLibrary( "jri" );
+            } catch ( UnsatisfiedLinkError e ) {
+                throw new RuntimeException( "No jri library, looked in: " + System.getProperty( "java.library.path" ) );
+            }
+            connection = new Rengine( new String[] { "--save" }, false, null );
+            if ( !connection.waitForR() ) {
+                throw new UnsatisfiedLinkError( "Cannot load R" );
+            }
+        }
         /*
          * TODO capture the RConsoleOutputStream.
          */
