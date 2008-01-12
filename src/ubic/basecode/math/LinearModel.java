@@ -18,7 +18,7 @@
  */
 package ubic.basecode.math;
 
-import ubic.basecode.util.RCommand;
+import ubic.basecode.util.JRIClient;
 
 /**
  * @author pavlidis
@@ -31,10 +31,10 @@ public class LinearModel {
     double[][] designMatrix;
     double[] variable;
 
-    private RCommand rc;
+    private JRIClient rc;
 
     public LinearModel( double[] variable, double[] a, double[] b ) {
-        rc = RCommand.newInstance();
+        rc = new JRIClient();
         rc.assign( "y", variable );
         rc.assign( "a", a );
         rc.assign( "b", b );
@@ -42,7 +42,9 @@ public class LinearModel {
 
     public void fitNoInteractions() {
         rc.voidEval( "m<-lm(y~a+b)" );
-        coefficients = ( double[] ) rc.eval( "coefficients(m)" ).getContent();
+
+        coefficients = rc.eval( "coefficients(m)" ).asDoubleArray();
+
     }
 
     public double[] getCoefficients() {

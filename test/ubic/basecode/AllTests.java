@@ -50,7 +50,7 @@ import ubic.basecode.math.metaanalysis.TestCorrelationEffectMetaAnalysis;
 import ubic.basecode.math.metaanalysis.TestMeanDifferenceMetaAnalysis;
 import ubic.basecode.util.FileToolsTest;
 import ubic.basecode.util.NetUtilsTest;
-import ubic.basecode.util.RCommandTest;
+import ubic.basecode.util.RServeClientTest;
 import ubic.basecode.util.TestStringUtil;
 import ubic.basecode.xml.TestGOParser;
 
@@ -128,7 +128,7 @@ public class AllTests extends TestCase {
         /* util */
         suite.addTestSuite( TestStringUtil.class );
         suite.addTestSuite( FileToolsTest.class );
-        suite.addTestSuite( RCommandTest.class );
+        suite.addTestSuite( RServeClientTest.class );
         suite.addTestSuite( NetUtilsTest.class );
 
         System.out.print( "-----------\nBasecode: running " + suite.countTestCases() + " tests.\n-----------\n" );

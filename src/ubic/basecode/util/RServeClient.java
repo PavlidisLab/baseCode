@@ -21,12 +21,10 @@ package ubic.basecode.util;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -34,11 +32,14 @@ import org.apache.commons.configuration.ConfigurationUtils;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.rosuda.JRclient.RBool;
-import org.rosuda.JRclient.REXP;
-import org.rosuda.JRclient.RList;
-import org.rosuda.JRclient.RSrvException;
-import org.rosuda.JRclient.Rconnection;
+import org.rosuda.REngine.Rserve.RConnection;
+import org.rosuda.REngine.Rserve.RserveException;
+import org.rosuda.REngine.REXP;
+import org.rosuda.REngine.REXPList;
+import org.rosuda.REngine.REXPLogical;
+import org.rosuda.REngine.REXPMismatchException;
+import org.rosuda.REngine.REngineException;
+import org.rosuda.REngine.RList;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
@@ -47,9 +48,9 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
  * @author pavlidis
  * @version $Id$
  */
-public class RCommand {
+public class RServeClient implements RClient<org.rosuda.REngine.REXP> {
 
-    final static Log log = LogFactory.getLog( RCommand.class.getName() );
+    final static Log log = LogFactory.getLog( RServeClient.class.getName() );
 
     private static final int MAX_TRIES = 10;
 
@@ -59,7 +60,7 @@ public class RCommand {
 
     static Process serverProcess;
 
-    private Rconnection connection = null;
+    private RConnection connection = null;
 
     /**
      * How long we should wait for a connection before giving up.
@@ -71,51 +72,53 @@ public class RCommand {
      * 
      * @param timeoutSeconds How many seconds we should wait for the server before giving up.
      */
-    private RCommand( int timeoutMilliseconds ) {
+    private RServeClient( int timeoutMilliseconds ) {
 
-        FutureTask future = new FutureTask( new Callable() {
-            public Object call() {
-                if ( serverProcess == null ) {
-                    startServer();
-                    log.info( "Trying to connect...." );
-                    connect();
-                    log.info( "Connected!" );
-                }
-                return Boolean.TRUE;
-            }
-        } );
-
-        long start = System.currentTimeMillis();
-        Executors.newSingleThreadExecutor().execute( future );
-
-        while ( !future.isDone() ) {
-            try {
-                Thread.sleep( 200 );
-            } catch ( InterruptedException ie ) {
-                ;
-            }
-
-            if ( ( System.currentTimeMillis() - start ) > timeoutMilliseconds ) {
-                log.warn( "Timeout while waiting for Rserver" );
-                return;
-            }
-
-        }
+        // FutureTask future = new FutureTask( new Callable() {
+        // public Object call() {
+        // if ( serverProcess == null ) {
+        // startServer();
+        // log.info( "Trying to connect...." );
+        // connect();
+        // log.info( "Connected!" );
+        // }
+        // return Boolean.TRUE;
+        // }
+        // } );
+        //
+        // long start = System.currentTimeMillis();
+        // Executors.newSingleThreadExecutor().execute( future );
+        //
+        // while ( !future.isDone() ) {
+        // try {
+        // Thread.sleep( 200 );
+        // } catch ( InterruptedException ie ) {
+        // ;
+        // }
+        //
+        // if ( ( System.currentTimeMillis() - start ) > timeoutMilliseconds ) {
+        // log.warn( "Timeout while waiting for Rserver" );
+        // return;
+        // }
+        //
+        // }
 
     }
 
-    /**
-     * @param argName
-     * @param arg
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#assign(java.lang.String, double[])
      */
     public void assign( String argName, double[] arg ) {
         checkConnection();
+
         try {
             connection.assign( argName, arg );
-        } catch ( RSrvException e ) {
-            log.error( e, e );
+        } catch ( REngineException e ) {
             throw new RuntimeException( e );
         }
+
     }
 
     /*
@@ -123,18 +126,27 @@ public class RCommand {
      * 
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, int[])
      */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#assign(java.lang.String, int[])
+     */
     public void assign( String arg0, int[] arg1 ) {
         checkConnection();
         try {
             connection.assign( arg0, arg1 );
-        } catch ( RSrvException e ) {
-            log.error( e, e );
+        } catch ( REngineException e ) {
             throw new RuntimeException( e );
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String[])
+     */
     public void assign( String argName, String[] array ) {
-        REXP stringRexp = new REXP( array );
+        REXPList stringRexp = new REXPList( new RList( Arrays.asList( array ) ) );
         assign( argName, stringRexp );
     }
 
@@ -148,16 +160,17 @@ public class RCommand {
     /*
      * (non-Javadoc)
      * 
-     * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, org.rosuda.JRclient.REXP)
+     * @see ubic.basecode.util.RClient#assign(java.lang.String, org.rosuda.REngine.REXP)
      */
-    public void assign( String arg0, REXP arg1 ) {
+    private void assign( String arg0, REXP arg1 ) {
         checkConnection();
+
         try {
             connection.assign( arg0, arg1 );
-        } catch ( RSrvException e ) {
-            log.error( e, e );
+        } catch ( RserveException e ) {
             throw new RuntimeException( e );
         }
+
     }
 
     /*
@@ -165,19 +178,23 @@ public class RCommand {
      * 
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, java.lang.String)
      */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String)
+     */
     public void assign( String sym, String ct ) {
         try {
             this.connection.assign( sym, ct );
-        } catch ( RSrvException e ) {
+        } catch ( RserveException e ) {
             throw new RuntimeException( "Assignment failed: " + sym + " value " + ct, e );
         }
     }
 
-    /**
-     * Assign a 2-d matrix.
+    /*
+     * (non-Javadoc)
      * 
-     * @param matrix
-     * @return the name of the variable by which the R matrix can be referred.
+     * @see ubic.basecode.util.RClient#assignMatrix(ubic.basecode.dataStructure.matrix.DoubleMatrixNamed)
      */
     public String assignMatrix( DoubleMatrixNamed matrix ) {
         String matrixVarName = "Matrix_" + variableIdentityNumber( matrix );
@@ -204,21 +221,21 @@ public class RCommand {
         return Integer.toString( Math.abs( ob.hashCode() ) );
     }
 
-    /**
-     * Define a variable corresponding to a character array in the R context, given a List of Strings.
+    /*
+     * (non-Javadoc)
      * 
-     * @param strings
-     * @return the name of the variable in the R context.
+     * @see ubic.basecode.util.RClient#assignStringList(java.util.List)
      */
     public String assignStringList( List strings ) {
         String variableName = "stringList." + variableIdentityNumber( strings );
 
-        Object[] stringOA = strings.toArray();
-        String[] stringSA = new String[stringOA.length];
-        for ( int i = 0; i < stringOA.length; i++ ) {
-            stringSA[i] = String.valueOf( stringOA[i] );
-        }
-        REXP stringRexp = new REXP( stringSA );
+        // Object[] stringOA = strings.toArray();
+        // String[] stringSA = new String[stringOA.length];
+        // for ( int i = 0; i < stringOA.length; i++ ) {
+        // stringSA[i] = String.valueOf( stringOA[i] );
+        // }
+        REXP stringRexp = new REXPList( new RList( strings ) );
+        ;
         assign( variableName, stringRexp );
         return variableName;
     }
@@ -237,18 +254,17 @@ public class RCommand {
         this.voidEval( dimcmd );
     }
 
-    /**
-     * Assign a 2-d matrix.
+    /*
+     * (non-Javadoc)
      * 
-     * @param matrix
-     * @return the name of the variable by which the R matrix can be referred.
+     * @see ubic.basecode.util.RClient#assignMatrix(double[][])
      */
     public String assignMatrix( double[][] matrix ) {
         String matrixVarName = "Matrix_" + variableIdentityNumber( matrix );
         log.debug( "Assigning matrix with variable name " + matrixVarName );
         int rows = matrix.length;
         int cols = matrix[0].length;
-        double[] unrolledMatrix = RCommand.unrollMatrix( matrix );
+        double[] unrolledMatrix = RServeClient.unrollMatrix( matrix );
         if ( rows == 0 || cols == 0 ) throw new IllegalArgumentException( "Empty matrix?" );
 
         this.voidEval( matrixVarName + "_rows<-" + rows );
@@ -260,20 +276,24 @@ public class RCommand {
         return matrixVarName;
     }
 
-    /**
-     * Run a command that takes a double array as an argument and returns a boolean.
+    /*
+     * (non-Javadoc)
      * 
-     * @param command
-     * @param argName
-     * @param arg
-     * @return
+     * @see ubic.basecode.util.RClient#booleanDoubleArrayEval(java.lang.String, java.lang.String, double[])
      */
     public boolean booleanDoubleArrayEval( String command, String argName, double[] arg ) {
         checkConnection();
         this.assign( argName, arg );
         REXP x = this.eval( command );
-        RBool b = x.asBool();
-        return b.isTRUE();
+        if ( x.isLogical() ) {
+            try {
+                REXPLogical b = new REXPLogical( new boolean[1], new REXPList( x.asList() ) );
+                return b.isTrue()[0];
+            } catch ( REXPMismatchException e ) {
+                throw new RuntimeException( e );
+            }
+        }
+        return false;
     }
 
     /**
@@ -292,76 +312,80 @@ public class RCommand {
         connection = null;
     }
 
-    /**
-     * Run a command that has a single double array parameter, and returns a double array.
+    /*
+     * (non-Javadoc)
      * 
-     * @param command
-     * @param argName
-     * @param arg
-     * @return
+     * @see ubic.basecode.util.RClient#doubleArrayDoubleArrayEval(java.lang.String, java.lang.String, double[])
      */
     public double[] doubleArrayDoubleArrayEval( String command, String argName, double[] arg ) {
-        this.assign( argName, arg );
-        RList l = this.eval( command ).asList();
-        return ( double[] ) l.at( argName ).getContent();
+        try {
+            this.assign( argName, arg );
+            RList l = this.eval( command ).asList();
+            return l.at( argName ).asDoubles();
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
-    /**
-     * Run a command that returns a double array with no arguments.
+    /*
+     * (non-Javadoc)
      * 
-     * @param command
-     * @return
+     * @see ubic.basecode.util.RClient#doubleArrayEval(java.lang.String)
      */
     public double[] doubleArrayEval( String command ) {
-        return ( double[] ) this.eval( command ).getContent();
+        try {
+            return this.eval( command ).asDoubles();
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
-    /**
-     * Run a command that takes two double array arguments and returns a double array.
+    /*
+     * (non-Javadoc)
      * 
-     * @param command
-     * @param argName
-     * @param arg
-     * @param argName2
-     * @param arg2
-     * @return
+     * @see ubic.basecode.util.RClient#doubleArrayTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
+     *      java.lang.String, double[])
      */
     public double[] doubleArrayTwoDoubleArrayEval( String command, String argName, double[] arg, String argName2,
             double[] arg2 ) {
         this.assign( argName, arg );
         this.assign( argName2, arg2 );
-        return ( double[] ) this.eval( command ).getContent();
+        try {
+            return this.eval( command ).asDoubles();
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
-    /**
-     * Run a command that takes two double arrays as arguments and returns a double value.
+    /*
+     * (non-Javadoc)
      * 
-     * @param command
-     * @param argName
-     * @param arg
-     * @param argName2
-     * @param arg2
-     * @return
+     * @see ubic.basecode.util.RClient#doubleTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
+     *      java.lang.String, double[])
      */
     public double doubleTwoDoubleArrayEval( String command, String argName, double[] arg, String argName2, double[] arg2 ) {
         checkConnection();
         this.assign( argName, arg );
         this.assign( argName2, arg2 );
         REXP x = this.eval( command );
-        return x.asDouble();
+        try {
+            return x.asDouble();
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
-    /**
-     * Evaluate any command.
+    /*
+     * (non-Javadoc)
      * 
-     * @param command
+     * @see ubic.basecode.util.RClient#eval(java.lang.String)
      */
     public REXP eval( String command ) {
         log.debug( "eval: " + command );
         checkConnection();
         try {
             return connection.eval( command );
-        } catch ( RSrvException e ) {
+        } catch ( RserveException e ) {
             log.error( "Error excecuting " + command, e );
             throw new RuntimeException( e );
         }
@@ -381,25 +405,28 @@ public class RCommand {
      * 
      * @see org.rosuda.JRclient.Rconnection#getLastError()
      */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#getLastError()
+     */
     public String getLastError() {
         return this.connection.getLastError();
     }
 
-    /**
-     * Remove a variable from the R namespace
+    /*
+     * (non-Javadoc)
      * 
-     * @param variableName
+     * @see ubic.basecode.util.RClient#remove(java.lang.String)
      */
     public void remove( String variableName ) {
         this.voidEval( "rm(" + variableName + ")" );
     }
 
-    /**
-     * Get a matrix back out of the R context. Row and Column names are filled in for the resulting object, if they are
-     * present.
+    /*
+     * (non-Javadoc)
      * 
-     * @param variableName
-     * @return
+     * @see ubic.basecode.util.RClient#retrieveMatrix(java.lang.String)
      */
     public DoubleMatrixNamed retrieveMatrix( String variableName ) {
 
@@ -407,26 +434,32 @@ public class RCommand {
         REXP r = this.eval( variableName );
         if ( r == null ) throw new IllegalArgumentException( variableName + " not found in R context" );
 
-        double[][] results = r.asDoubleMatrix();
+        try {
+            double[][] results = r.asDoubleMatrix();
 
-        if ( results == null )
-            throw new RuntimeException( "Failed to get back matrix for variable " + variableName
-                    + ", object has length " + r.getBinaryLength() + " bytes." );
+            if ( results == null )
+                throw new RuntimeException( "Failed to get back matrix for variable " + variableName
+                        + ", object has length " + r.dim() + " bytes." );
 
-        DoubleMatrixNamed resultObject = DoubleMatrix2DNamedFactory.dense( results );
+            DoubleMatrixNamed resultObject = DoubleMatrix2DNamedFactory.dense( results );
 
-        retrieveRowAndColumnNames( variableName, resultObject );
-        return resultObject;
+            retrieveRowAndColumnNames( variableName, resultObject );
+            return resultObject;
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
 
     }
 
     /**
      * @param variableName
      * @param resultObject
+     * @throws REXPMismatchException
      */
-    private void retrieveRowAndColumnNames( String variableName, DoubleMatrixNamed resultObject ) {
+    private void retrieveRowAndColumnNames( String variableName, DoubleMatrixNamed resultObject )
+            throws REXPMismatchException {
         // getting the row names.
-        List rowNamesREXP = this.eval( "dimnames(" + variableName + ")[1][[1]]" ).asVector();
+        List rowNamesREXP = this.eval( "dimnames(" + variableName + ")[1][[1]]" ).asList();
 
         if ( rowNamesREXP != null ) {
             log.debug( "Got row names" );
@@ -440,7 +473,7 @@ public class RCommand {
         }
 
         // Getting the column names.
-        List colNamesREXP = this.eval( "dimnames(" + variableName + ")[2][[1]]" ).asVector();
+        List colNamesREXP = this.eval( "dimnames(" + variableName + ")[2][[1]]" ).asList();
         if ( colNamesREXP != null ) {
             log.debug( "Got column names" );
             List colNames = new ArrayList();
@@ -505,13 +538,18 @@ public class RCommand {
      * 
      * @see org.rosuda.JRclient.Rconnection#voidEval(java.lang.String)
      */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#voidEval(java.lang.String)
+     */
     public void voidEval( String command ) {
         if ( command == null ) throw new IllegalArgumentException( "Null command" );
         this.checkConnection();
         try {
             log.debug( "voidEval: " + command );
             connection.voidEval( command );
-        } catch ( RSrvException e ) {
+        } catch ( RserveException e ) {
             log.error( "R failure with command " + command, e );
             throw new RuntimeException( e );
         } catch ( Exception e ) {
@@ -536,9 +574,8 @@ public class RCommand {
             return;
         }
         try {
-            connection = new Rconnection();
-            if ( !beQuiet ) log.info( "Connected to server" );
-        } catch ( RSrvException e ) {
+            connection = new RConnection();
+        } catch ( RserveException e ) {
             if ( !beQuiet ) log.error( "Could not connect to RServe", e );
             throw new RuntimeException( e );
         }
@@ -601,12 +638,12 @@ public class RCommand {
         }
     }
 
-    public static RCommand newInstance() {
-        return new RCommand( TIMEOUT_MILLISECONDS );
+    public static RClient newInstance() {
+        return new RServeClient( TIMEOUT_MILLISECONDS );
     }
 
-    public static RCommand newInstance( int timeOutMilliseconds ) {
-        return new RCommand( timeOutMilliseconds );
+    public static RServeClient newInstance( int timeOutMilliseconds ) {
+        return new RServeClient( timeOutMilliseconds );
     }
 
     /**

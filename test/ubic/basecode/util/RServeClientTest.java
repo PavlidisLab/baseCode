@@ -30,16 +30,16 @@ import ubic.basecode.io.reader.DoubleMatrixReader;
  * @author pavlidis
  * @version $Id$
  */
-public class RCommandTest extends TestCase {
-    private static Log log = LogFactory.getLog( RCommandTest.class.getName() );
+public class RServeClientTest extends TestCase {
+    private static Log log = LogFactory.getLog( RServeClientTest.class.getName() );
 
-    RCommand rc = null;
+    RServeClient rc = null;
     boolean connected = false;
     DoubleMatrixNamed tester;
 
     public void setUp() throws Exception {
         try {
-            rc = RCommand.newInstance( 20000 );
+            rc = RServeClient.newInstance( 20000 );
             connected = rc == null;
         } catch ( RuntimeException e ) {
             connected = false;
