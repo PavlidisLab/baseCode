@@ -239,6 +239,7 @@ public class RServeClient implements RClient {
     public String assignStringList( List<String> strings ) {
         String variableName = "stringList." + variableIdentityNumber( strings );
         String[] sar = new String[strings.size()];
+        strings.toArray( sar );
         this.assign( variableName, sar );
         return variableName;
     }
