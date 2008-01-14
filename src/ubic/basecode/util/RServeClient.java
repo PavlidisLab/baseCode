@@ -20,9 +20,7 @@ package ubic.basecode.util;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -32,14 +30,14 @@ import org.apache.commons.configuration.ConfigurationUtils;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.rosuda.REngine.Rserve.RConnection;
-import org.rosuda.REngine.Rserve.RserveException;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPList;
 import org.rosuda.REngine.REXPLogical;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REngineException;
 import org.rosuda.REngine.RList;
+import org.rosuda.REngine.Rserve.RConnection;
+import org.rosuda.REngine.Rserve.RserveException;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
@@ -48,9 +46,11 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
  * @author pavlidis
  * @version $Id$
  */
-public class RServeClient implements RClient<org.rosuda.REngine.REXP> {
+public class RServeClient implements RClient {
 
     final static Log log = LogFactory.getLog( RServeClient.class.getName() );
+
+    static Process serverProcess;
 
     private static final int MAX_TRIES = 10;
 
@@ -58,51 +58,66 @@ public class RServeClient implements RClient<org.rosuda.REngine.REXP> {
 
     private static final boolean QUIET = true;
 
-    static Process serverProcess;
-
-    private RConnection connection = null;
-
     /**
-     * How long we should wait for a connection before giving up.
+     * @param ob
+     * @return
      */
-    private static final int TIMEOUT_MILLISECONDS = 2000;
+    public static String variableIdentityNumber( Object ob ) {
+        return Integer.toString( Math.abs( ob.hashCode() ) );
+    }
 
     /**
-     * This class cannot be directly instantiated
+     * Copy a matrix into an array, so that rows are represented consecutively in the array. (RServe has no interface
+     * for passing a 2-d array).
      * 
-     * @param timeoutSeconds How many seconds we should wait for the server before giving up.
+     * @param matrix
+     * @return
      */
-    private RServeClient( int timeoutMilliseconds ) {
+    private static double[] unrollMatrix( double[][] matrix ) {
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        double[] unrolledMatrix = new double[rows * cols];
 
-        // FutureTask future = new FutureTask( new Callable() {
-        // public Object call() {
-        // if ( serverProcess == null ) {
-        // startServer();
-        // log.info( "Trying to connect...." );
-        // connect();
-        // log.info( "Connected!" );
-        // }
-        // return Boolean.TRUE;
-        // }
-        // } );
-        //
-        // long start = System.currentTimeMillis();
-        // Executors.newSingleThreadExecutor().execute( future );
-        //
-        // while ( !future.isDone() ) {
-        // try {
-        // Thread.sleep( 200 );
-        // } catch ( InterruptedException ie ) {
-        // ;
-        // }
-        //
-        // if ( ( System.currentTimeMillis() - start ) > timeoutMilliseconds ) {
-        // log.warn( "Timeout while waiting for Rserver" );
-        // return;
-        // }
-        //
-        // }
+        int k = 0;
+        for ( int i = 0; i < rows; i++ ) {
+            for ( int j = 0; j < cols; j++ ) {
+                unrolledMatrix[k] = matrix[i][j];
+                k++;
+            }
+        }
+        return unrolledMatrix;
+    }
 
+    /**
+     * Copy a matrix into an array, so that rows are represented consecutively in the array. (RServe has no interface
+     * for passing a 2-d array).
+     * 
+     * @param matrix
+     * @return array representation of the matrix.
+     */
+    private static double[] unrollMatrix( DoubleMatrixNamed matrix ) {
+        // unroll the matrix into an array Unfortunately this makes a
+        // copy of the data...and R will probably make yet
+        // another copy. If there was a way to get the raw element array from the DoubleMatrixNamed, that would
+        // be better.
+        int rows = matrix.rows();
+        int cols = matrix.columns();
+        double[] unrolledMatrix = new double[rows * cols];
+
+        int k = 0;
+        for ( int i = 0; i < rows; i++ ) {
+            for ( int j = 0; j < cols; j++ ) {
+                unrolledMatrix[k] = matrix.getQuick( i, j );
+                k++;
+            }
+        }
+        return unrolledMatrix;
+    }
+
+    private static RConnection connection = null;
+
+    protected RServeClient() {
+        connect();
     }
 
     /*
@@ -143,39 +158,6 @@ public class RServeClient implements RClient<org.rosuda.REngine.REXP> {
     /*
      * (non-Javadoc)
      * 
-     * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String[])
-     */
-    public void assign( String argName, String[] array ) {
-        REXPList stringRexp = new REXPList( new RList( Arrays.asList( array ) ) );
-        assign( argName, stringRexp );
-    }
-
-    /**
-     * 
-     */
-    private void checkConnection() {
-        if ( !this.isConnected() ) throw new RuntimeException( "Not connected" );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.util.RClient#assign(java.lang.String, org.rosuda.REngine.REXP)
-     */
-    private void assign( String arg0, REXP arg1 ) {
-        checkConnection();
-
-        try {
-            connection.assign( arg0, arg1 );
-        } catch ( RserveException e ) {
-            throw new RuntimeException( e );
-        }
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, java.lang.String)
      */
     /*
@@ -189,6 +171,41 @@ public class RServeClient implements RClient<org.rosuda.REngine.REXP> {
         } catch ( RserveException e ) {
             throw new RuntimeException( "Assignment failed: " + sym + " value " + ct, e );
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String[])
+     */
+    public void assign( String argName, String[] array ) {
+        try {
+            connection.assign( argName, array );
+        } catch ( REngineException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#assignMatrix(double[][])
+     */
+    public String assignMatrix( double[][] matrix ) {
+        String matrixVarName = "Matrix_" + variableIdentityNumber( matrix );
+        log.debug( "Assigning matrix with variable name " + matrixVarName );
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        double[] unrolledMatrix = RServeClient.unrollMatrix( matrix );
+        if ( rows == 0 || cols == 0 ) throw new IllegalArgumentException( "Empty matrix?" );
+
+        this.voidEval( matrixVarName + "_rows<-" + rows );
+        this.voidEval( matrixVarName + "_cols<-" + cols );
+        this.assign( "U" + matrixVarName, unrolledMatrix );
+        this.voidEval( matrixVarName + "<-matrix(" + "U" + matrixVarName + ", nrow=rows, ncol=cols, byrow=TRUE)" );
+        this.voidEval( "rm(U" + matrixVarName + ")" ); // maybe this saves memory...
+
+        return matrixVarName;
     }
 
     /*
@@ -213,67 +230,17 @@ public class RServeClient implements RClient<org.rosuda.REngine.REXP> {
         return matrixVarName;
     }
 
-    /**
-     * @param ob
-     * @return
-     */
-    public static String variableIdentityNumber( Object ob ) {
-        return Integer.toString( Math.abs( ob.hashCode() ) );
-    }
-
     /*
      * (non-Javadoc)
      * 
      * @see ubic.basecode.util.RClient#assignStringList(java.util.List)
      */
-    public String assignStringList( List strings ) {
+    @SuppressWarnings("unchecked")
+    public String assignStringList( List<String> strings ) {
         String variableName = "stringList." + variableIdentityNumber( strings );
-
-        // Object[] stringOA = strings.toArray();
-        // String[] stringSA = new String[stringOA.length];
-        // for ( int i = 0; i < stringOA.length; i++ ) {
-        // stringSA[i] = String.valueOf( stringOA[i] );
-        // }
-        REXP stringRexp = new REXPList( new RList( strings ) );
-        ;
-        assign( variableName, stringRexp );
+        String[] sar = new String[strings.size()];
+        this.assign( variableName, sar );
         return variableName;
-    }
-
-    /**
-     * @param matrix
-     * @param matrixVarName
-     * @return
-     */
-    private void assignRowAndColumnNames( DoubleMatrixNamed matrix, String matrixVarName ) {
-
-        String rowNameVar = assignStringList( matrix.getRowNames() );
-        String colNameVar = assignStringList( matrix.getColNames() );
-
-        String dimcmd = "dimnames(" + matrixVarName + ")<-list(" + rowNameVar + ", " + colNameVar + ")";
-        this.voidEval( dimcmd );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.util.RClient#assignMatrix(double[][])
-     */
-    public String assignMatrix( double[][] matrix ) {
-        String matrixVarName = "Matrix_" + variableIdentityNumber( matrix );
-        log.debug( "Assigning matrix with variable name " + matrixVarName );
-        int rows = matrix.length;
-        int cols = matrix[0].length;
-        double[] unrolledMatrix = RServeClient.unrollMatrix( matrix );
-        if ( rows == 0 || cols == 0 ) throw new IllegalArgumentException( "Empty matrix?" );
-
-        this.voidEval( matrixVarName + "_rows<-" + rows );
-        this.voidEval( matrixVarName + "_cols<-" + cols );
-        this.assign( "U" + matrixVarName, unrolledMatrix );
-        this.voidEval( matrixVarName + "<-matrix(" + "U" + matrixVarName + ", nrow=rows, ncol=cols, byrow=TRUE)" );
-        this.voidEval( "rm(U" + matrixVarName + ")" ); // maybe this saves memory...
-
-        return matrixVarName;
     }
 
     /*
@@ -304,9 +271,6 @@ public class RServeClient implements RClient<org.rosuda.REngine.REXP> {
         connect( false );
     }
 
-    /**
-     * 
-     */
     public void disconnect() {
         if ( connection != null && connection.isConnected() ) connection.close();
         connection = null;
@@ -417,6 +381,37 @@ public class RServeClient implements RClient<org.rosuda.REngine.REXP> {
     /*
      * (non-Javadoc)
      * 
+     * @see ubic.basecode.util.RClient#intArrayEval(java.lang.String)
+     */
+    public int[] intArrayEval( String command ) {
+        try {
+            return eval( command ).asIntegers();
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    /**
+     * 
+     */
+    public boolean isConnected() {
+        if ( connection != null && connection.isConnected() ) return true;
+        return false;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#loadLibrary(java.lang.String)
+     */
+    public boolean loadLibrary( String libraryName ) {
+        REXP eval = eval( "library(" + libraryName + ")" );
+        return true;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#remove(java.lang.String)
      */
     public void remove( String variableName ) {
@@ -449,41 +444,6 @@ public class RServeClient implements RClient<org.rosuda.REngine.REXP> {
             throw new RuntimeException( e );
         }
 
-    }
-
-    /**
-     * @param variableName
-     * @param resultObject
-     * @throws REXPMismatchException
-     */
-    private void retrieveRowAndColumnNames( String variableName, DoubleMatrixNamed resultObject )
-            throws REXPMismatchException {
-        // getting the row names.
-        List rowNamesREXP = this.eval( "dimnames(" + variableName + ")[1][[1]]" ).asList();
-
-        if ( rowNamesREXP != null ) {
-            log.debug( "Got row names" );
-            List rowNames = new ArrayList();
-            for ( Iterator iter = rowNamesREXP.iterator(); iter.hasNext(); ) {
-                REXP element = ( REXP ) iter.next();
-                String rowName = element.asString();
-                rowNames.add( rowName );
-            }
-            resultObject.setRowNames( rowNames );
-        }
-
-        // Getting the column names.
-        List colNamesREXP = this.eval( "dimnames(" + variableName + ")[2][[1]]" ).asList();
-        if ( colNamesREXP != null ) {
-            log.debug( "Got column names" );
-            List colNames = new ArrayList();
-            for ( Iterator iter = colNamesREXP.iterator(); iter.hasNext(); ) {
-                REXP element = ( REXP ) iter.next();
-                String rowName = element.asString();
-                colNames.add( rowName );
-            }
-            resultObject.setColumnNames( colNames );
-        }
     }
 
     /**
@@ -536,6 +496,19 @@ public class RServeClient implements RClient<org.rosuda.REngine.REXP> {
     /*
      * (non-Javadoc)
      * 
+     * @see ubic.basecode.util.RClient#stringEval(java.lang.String)
+     */
+    public String stringEval( String command ) {
+        try {
+            return this.eval( command ).asString();
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.rosuda.JRclient.Rconnection#voidEval(java.lang.String)
      */
     /*
@@ -559,11 +532,24 @@ public class RServeClient implements RClient<org.rosuda.REngine.REXP> {
     }
 
     /**
+     * @param matrix
+     * @param matrixVarName
+     * @return
+     */
+    private void assignRowAndColumnNames( DoubleMatrixNamed matrix, String matrixVarName ) {
+
+        String rowNameVar = assignStringList( matrix.getRowNames() );
+        String colNameVar = assignStringList( matrix.getColNames() );
+
+        String dimcmd = "dimnames(" + matrixVarName + ")<-list(" + rowNameVar + ", " + colNameVar + ")";
+        this.voidEval( dimcmd );
+    }
+
+    /**
      * 
      */
-    public boolean isConnected() {
-        if ( connection != null && connection.isConnected() ) return true;
-        return false;
+    private void checkConnection() {
+        if ( !this.isConnected() ) throw new RuntimeException( "Not connected" );
     }
 
     /**
@@ -586,7 +572,7 @@ public class RServeClient implements RClient<org.rosuda.REngine.REXP> {
      * @throws ConfigurationException
      */
     private String findRserveCommand() throws ConfigurationException {
-        URL userSpecificConfigFileLocation = ConfigurationUtils.locate( "build.properties" );
+        URL userSpecificConfigFileLocation = ConfigurationUtils.locate( "Gemma.properties" );
 
         Configuration userConfig = null;
         if ( userSpecificConfigFileLocation != null ) {
@@ -596,12 +582,38 @@ public class RServeClient implements RClient<org.rosuda.REngine.REXP> {
         if ( rserveExecutable == null || rserveExecutable.length() == 0 ) {
             log.info( "Rserve command not configured, trying fallbacks" );
             if ( os.startsWith( "windows" ) ) {
-                rserveExecutable = "C:/Program Files/R/rw2011pat/bin/Rserve.exe";
+                rserveExecutable = System.getenv( "R_HOME" ) + java.io.File.separator + "Rserve.exe";
             } else {
                 rserveExecutable = "R CMD Rserve";
             }
         }
         return rserveExecutable;
+    }
+
+    /**
+     * @param variableName
+     * @param resultObject
+     * @throws REXPMismatchException
+     */
+    private void retrieveRowAndColumnNames( String variableName, DoubleMatrixNamed resultObject )
+            throws REXPMismatchException {
+        // getting the row names.
+        List<String> rowNamesREXP = Arrays.asList( this.eval( "dimnames(" + variableName + ")[1][[1]]" ).asStrings() );
+
+        if ( rowNamesREXP != null ) {
+            log.debug( "Got row names" );
+            resultObject.setRowNames( rowNamesREXP );
+        }
+
+        // Getting
+        // the
+        // column
+        // names.
+        List<String> colNamesREXP = Arrays.asList( this.eval( "dimnames(" + variableName + ")[2][[1]]" ).asStrings() );
+        if ( colNamesREXP != null ) {
+            log.debug( "Got column names" );
+            resultObject.setColumnNames( colNamesREXP );
+        }
     }
 
     /**
@@ -636,62 +648,6 @@ public class RServeClient implements RClient<org.rosuda.REngine.REXP> {
         } catch ( InterruptedException e ) {
             ;
         }
-    }
-
-    public static RClient newInstance() {
-        return new RServeClient( TIMEOUT_MILLISECONDS );
-    }
-
-    public static RServeClient newInstance( int timeOutMilliseconds ) {
-        return new RServeClient( timeOutMilliseconds );
-    }
-
-    /**
-     * Copy a matrix into an array, so that rows are represented consecutively in the array. (RServe has no interface
-     * for passing a 2-d array).
-     * 
-     * @param matrix
-     * @return array representation of the matrix.
-     */
-    private static double[] unrollMatrix( DoubleMatrixNamed matrix ) {
-        // unroll the matrix into an array Unfortunately this makes a
-        // copy of the data...and R will probably make yet
-        // another copy. If there was a way to get the raw element array from the DoubleMatrixNamed, that would
-        // be better.
-        int rows = matrix.rows();
-        int cols = matrix.columns();
-        double[] unrolledMatrix = new double[rows * cols];
-
-        int k = 0;
-        for ( int i = 0; i < rows; i++ ) {
-            for ( int j = 0; j < cols; j++ ) {
-                unrolledMatrix[k] = matrix.getQuick( i, j );
-                k++;
-            }
-        }
-        return unrolledMatrix;
-    }
-
-    /**
-     * Copy a matrix into an array, so that rows are represented consecutively in the array. (RServe has no interface
-     * for passing a 2-d array).
-     * 
-     * @param matrix
-     * @return
-     */
-    private static double[] unrollMatrix( double[][] matrix ) {
-        int rows = matrix.length;
-        int cols = matrix[0].length;
-        double[] unrolledMatrix = new double[rows * cols];
-
-        int k = 0;
-        for ( int i = 0; i < rows; i++ ) {
-            for ( int j = 0; j < cols; j++ ) {
-                unrolledMatrix[k] = matrix[i][j];
-                k++;
-            }
-        }
-        return unrolledMatrix;
     }
 
 }

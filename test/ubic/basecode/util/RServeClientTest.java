@@ -39,8 +39,8 @@ public class RServeClientTest extends TestCase {
 
     public void setUp() throws Exception {
         try {
-            rc = RServeClient.newInstance( 20000 );
-            connected = rc == null;
+            rc = new RServeClient();
+            connected = rc != null;
         } catch ( RuntimeException e ) {
             connected = false;
         }
@@ -59,7 +59,7 @@ public class RServeClientTest extends TestCase {
     }
 
     /*
-     * Test method for 'edu.columbia.gemma.tools.RCommand.exec(String)'
+     * Test method for ' RCommand.exec(String)'
      */
     public void testExec() throws Exception {
         if ( !connected ) {
@@ -67,14 +67,14 @@ public class RServeClientTest extends TestCase {
             return;
         }
         String actualValue = rc.eval( "R.version.string" ).asString();
-        String expectedValue = "Version 2";
+        String expectedValue = "R version 2";
 
         assertTrue( "rc.eval() return version " + actualValue + ", expected something starting with R version 2",
                 actualValue.startsWith( expectedValue ) );
     }
 
     /*
-     * Test method for 'edu.columbia.gemma.tools.RCommand.exec(String)'
+     * Test method for ' RCommand.exec(String)'
      */
     public void testExecDoubleArray() throws Exception {
         if ( !connected ) {

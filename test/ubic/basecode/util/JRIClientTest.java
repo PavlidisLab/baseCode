@@ -59,7 +59,7 @@ public class JRIClientTest extends TestCase {
      */
     public void testExec() throws Exception {
 
-        String actualValue = rc.eval( "R.version.string" ).asString();
+        String actualValue = rc.stringEval( "R.version.string" );
         String expectedValue = "R version 2";
 
         assertTrue( "rc.eval() returned version '" + actualValue + "', expected something starting with R version 2",

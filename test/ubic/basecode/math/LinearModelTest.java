@@ -23,7 +23,6 @@ import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ubic.basecode.util.JRIClient;
 import ubic.basecode.util.RServeClientTest;
 import ubic.basecode.util.RegressionTesting;
 
@@ -33,16 +32,6 @@ import ubic.basecode.util.RegressionTesting;
  */
 public class LinearModelTest extends TestCase {
     private static final Log log = LogFactory.getLog( RServeClientTest.class.getName() );
-
-    JRIClient rc = null;
-
-    public void setUp() throws Exception {
-        rc = new JRIClient();
-    }
-
-    public void tearDown() throws Exception {
-
-    }
 
     /*
      * Test method for 'basecode.math.LinearModel.fitNoInteractions()'

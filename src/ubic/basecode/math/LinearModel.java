@@ -18,7 +18,8 @@
  */
 package ubic.basecode.math;
 
-import ubic.basecode.util.JRIClient;
+import ubic.basecode.util.RClient;
+import ubic.basecode.util.RConnectionFactory;
 
 /**
  * @author pavlidis
@@ -31,10 +32,10 @@ public class LinearModel {
     double[][] designMatrix;
     double[] variable;
 
-    private JRIClient rc;
+    private RClient rc;
 
     public LinearModel( double[] variable, double[] a, double[] b ) {
-        rc = new JRIClient();
+        rc = RConnectionFactory.getRConnection();
         rc.assign( "y", variable );
         rc.assign( "a", a );
         rc.assign( "b", b );
@@ -43,7 +44,7 @@ public class LinearModel {
     public void fitNoInteractions() {
         rc.voidEval( "m<-lm(y~a+b)" );
 
-        coefficients = rc.eval( "coefficients(m)" ).asDoubleArray();
+        coefficients = rc.doubleArrayEval( "coefficients(m)" );
 
     }
 

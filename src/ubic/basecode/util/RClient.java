@@ -1,12 +1,34 @@
+/*
+ * The baseCode project
+ * 
+ * Copyright (c) 2008 Columbia University
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package ubic.basecode.util;
 
 import java.util.List;
 
-import org.rosuda.REngine.REXP;
-
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 
-public interface RClient<T> {
+/**
+ * Abstraction of a connection to R
+ * 
+ * @author Paul
+ * @version $Id$
+ */
+public interface RClient {
 
     /**
      * @param argName
@@ -109,11 +131,16 @@ public interface RClient<T> {
             double[] arg2 );
 
     /**
-     * Evaluate any command.
+     * Evaluate any command and return a string
      * 
      * @param command
+     * @return string
      */
-    public abstract T eval( String command );
+    public abstract String stringEval( String command );
+
+    public int[] intArrayEval( String command );
+
+    public boolean loadLibrary( String libraryName );
 
     /*
      * (non-Javadoc)
@@ -144,5 +171,9 @@ public interface RClient<T> {
      * @see org.rosuda.JRclient.Rconnection#voidEval(java.lang.String)
      */
     public abstract void voidEval( String command );
+
+    public boolean isConnected();
+
+    public void disconnect();
 
 }

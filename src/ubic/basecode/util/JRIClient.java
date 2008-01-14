@@ -36,11 +36,41 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
  * @author paul
  * @version $Id$
  */
-public class JRIClient implements RClient<org.rosuda.JRI.REXP> {
+public class JRIClient implements RClient {
 
     private static Log log = LogFactory.getLog( JRIClient.class.getName() );
 
-    static Rengine connection;
+    public static void main( String[] args ) {
+        // just making sure we have the right version of everything
+        if ( !Rengine.versionCheck() ) {
+            System.err.println( "** Version mismatch - Java files don't match library version." );
+            System.exit( 1 );
+        }
+        System.out.println( "Creating Rengine (with arguments)" );
+        // 1) we pass the arguments from the command line
+        // 2) we won't use the main loop at first, we'll start it later
+        // (that's the "false" as second argument)
+        // 3) the callbacks are implemented by the TextConsole class above
+        Rengine re = new Rengine( args, false, new TextConsole() );
+        System.out.println( "Rengine created, waiting for R" );
+        // the engine creates R is a new thread, so we should wait until it's ready
+        if ( !re.waitForR() ) {
+            System.out.println( "Cannot load R" );
+            return;
+        }
+
+        REXP x;
+        re.eval( "data(iris)", false );
+        System.out.println( x = re.eval( "iris" ) );
+        re.end();
+
+    }
+
+    Rengine connection;
+
+    // static {
+    // connection = new Rengine( new String[] {}, false, new TextConsole() );
+    // }
 
     public JRIClient() {
 
@@ -51,7 +81,7 @@ public class JRIClient implements RClient<org.rosuda.JRI.REXP> {
             } catch ( UnsatisfiedLinkError e ) {
                 throw new RuntimeException( "No jri library, looked in: " + System.getProperty( "java.library.path" ) );
             }
-            connection = new Rengine( new String[] { "--save" }, false, null );
+            connection = new Rengine( new String[] { "--no-save" }, false, null );
             if ( !connection.waitForR() ) {
                 throw new UnsatisfiedLinkError( "Cannot load R" );
             }
@@ -302,7 +332,7 @@ public class JRIClient implements RClient<org.rosuda.JRI.REXP> {
      * 
      * @see ubic.basecode.util.RClient#eval(java.lang.String)
      */
-    public REXP eval( String command ) {
+    private REXP eval( String command ) {
         return connection.eval( command );
     }
 
@@ -390,6 +420,38 @@ public class JRIClient implements RClient<org.rosuda.JRI.REXP> {
 
     public boolean isConnected() {
         return connection.isAlive();
+    }
+
+    public void disconnect() {
+        connection.end();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#stringEval(java.lang.String)
+     */
+    public String stringEval( String command ) {
+        return this.eval( command ).asString();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#intArrayEval(java.lang.String)
+     */
+    public int[] intArrayEval( String command ) {
+        return this.eval( command ).asIntArray();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#loadLibrary(java.lang.String)
+     */
+    public boolean loadLibrary( String libraryName ) {
+        REXP eval = eval( "library(" + libraryName + ")" );
+        return true;
     }
 
 }
