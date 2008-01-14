@@ -18,6 +18,9 @@
  */
 package ubic.basecode.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
@@ -58,6 +61,23 @@ public class RServeClientTest extends TestCase {
         tester = null;
     }
 
+    public void testAssignStringList() throws Exception {
+        if ( !connected ) {
+            log.warn( "Could not connect to RServe, skipping test." );
+            return;
+        }
+
+        List<String> l = new ArrayList<String>();
+        l.add( "foo" );
+        l.add( "bar" );
+
+        String varname = rc.assignStringList( l );
+        String actualValue = rc.stringEval( varname + "[1]" );
+        assertEquals( "foo", actualValue );
+        actualValue = rc.stringEval( varname + "[2]" );
+        assertEquals( "bar", actualValue );
+    }
+
     /*
      * Test method for ' RCommand.exec(String)'
      */
@@ -66,7 +86,7 @@ public class RServeClientTest extends TestCase {
             log.warn( "Could not connect to RServe, skipping test." );
             return;
         }
-        String actualValue = rc.eval( "R.version.string" ).asString();
+        String actualValue = rc.stringEval( "R.version.string" );
         String expectedValue = "R version 2";
 
         assertTrue( "rc.eval() return version " + actualValue + ", expected something starting with R version 2",
