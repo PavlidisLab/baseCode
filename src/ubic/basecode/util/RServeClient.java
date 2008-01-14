@@ -167,7 +167,7 @@ public class RServeClient implements RClient {
      */
     public void assign( String sym, String ct ) {
         try {
-            this.connection.assign( sym, ct );
+            connection.assign( sym, ct );
         } catch ( RserveException e ) {
             throw new RuntimeException( "Assignment failed: " + sym + " value " + ct, e );
         }
@@ -344,7 +344,7 @@ public class RServeClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#eval(java.lang.String)
      */
-    public REXP eval( String command ) {
+    private REXP eval( String command ) {
         log.debug( "eval: " + command );
         checkConnection();
         try {
@@ -367,15 +367,10 @@ public class RServeClient implements RClient {
     /*
      * (non-Javadoc)
      * 
-     * @see org.rosuda.JRclient.Rconnection#getLastError()
-     */
-    /*
-     * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#getLastError()
      */
     public String getLastError() {
-        return this.connection.getLastError();
+        return connection.getLastError();
     }
 
     /*
