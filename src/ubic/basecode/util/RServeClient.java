@@ -20,7 +20,8 @@ package ubic.basecode.util;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -120,6 +121,13 @@ public class RServeClient implements RClient {
         connect();
     }
 
+    protected RServeClient( boolean startServer ) {
+        if ( startServer ) {
+            this.startServer();
+        }
+        connect();
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -202,7 +210,8 @@ public class RServeClient implements RClient {
         this.voidEval( matrixVarName + "_rows<-" + rows );
         this.voidEval( matrixVarName + "_cols<-" + cols );
         this.assign( "U" + matrixVarName, unrolledMatrix );
-        this.voidEval( matrixVarName + "<-matrix(" + "U" + matrixVarName + ", nrow=rows, ncol=cols, byrow=TRUE)" );
+        this.voidEval( matrixVarName + "<-matrix(" + "U" + matrixVarName + ", nrow=" + matrixVarName + "_rows<-, ncol="
+                + matrixVarName + "_cols, byrow=TRUE)" );
         this.voidEval( "rm(U" + matrixVarName + ")" ); // maybe this saves memory...
 
         return matrixVarName;
@@ -221,9 +230,19 @@ public class RServeClient implements RClient {
         if ( rows == 0 || cols == 0 ) throw new IllegalArgumentException( "Empty matrix?" );
         double[] unrolledMatrix = unrollMatrix( matrix );
         assert ( unrolledMatrix != null );
-        this.assign( "U" + matrixVarName, unrolledMatrix );
-        this.voidEval( matrixVarName + "<-matrix(" + "U" + matrixVarName + ", nrow=" + rows + ", ncol=" + cols
+        String unrolledMatrixVar = "U" + matrixVarName;
+        this.assign( unrolledMatrixVar, unrolledMatrix );
+        this.voidEval( matrixVarName + "<-matrix(" + unrolledMatrixVar + ", nrow=" + rows + ", ncol=" + cols
                 + ", byrow=TRUE)" );
+        REXP dimexp = this.eval( "dim(" + matrixVarName + ")" );
+
+        try {
+            assert dimexp.asIntegers()[0] == rows;
+            assert dimexp.asIntegers()[1] == cols;
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
+
         this.voidEval( "rm(U" + matrixVarName + ")" ); // maybe this saves memory...
 
         assignRowAndColumnNames( matrix, matrixVarName );
@@ -268,8 +287,8 @@ public class RServeClient implements RClient {
      * 
      *
      */
-    public void connect() {
-        connect( false );
+    public boolean connect() {
+        return connect( false );
     }
 
     public void disconnect() {
@@ -420,24 +439,33 @@ public class RServeClient implements RClient {
      * @see ubic.basecode.util.RClient#retrieveMatrix(java.lang.String)
      */
     public DoubleMatrixNamed retrieveMatrix( String variableName ) {
-
-        log.debug( "Retrieving " + variableName );
-        REXP r = this.eval( variableName );
-        if ( r == null ) throw new IllegalArgumentException( variableName + " not found in R context" );
-
         try {
-            double[][] results = r.asDoubleMatrix();
+            log.debug( "Retrieving " + variableName );
 
-            if ( results == null )
-                throw new RuntimeException( "Failed to get back matrix for variable " + variableName
-                        + ", object has length " + r.dim() + " bytes." );
+            // REXP clr = this.eval( "class(" + variableName + ")" );
+            // log.info( clr.asString() );
+
+            // note that for some reason, asDoubleMatrix is returning a 1-d array. So I do this.
+            REXP r = this.eval( "data.frame(t(" + variableName + "))" );
+            if ( r == null ) throw new IllegalArgumentException( variableName + " not found in R context" );
+
+            RList dataframe = r.asList();
+            int numrows = dataframe.size();
+            double[][] results = new double[numrows][];
+            int i = 0;
+            for ( Iterator it = dataframe.iterator(); it.hasNext(); ) {
+                REXP next = ( REXP ) it.next();
+                double[] row = next.asDoubles();
+                results[i] = row;
+                i++;
+            }
 
             DoubleMatrixNamed resultObject = DoubleMatrix2DNamedFactory.dense( results );
 
             retrieveRowAndColumnNames( variableName, resultObject );
             return resultObject;
         } catch ( REXPMismatchException e ) {
-            throw new RuntimeException( e );
+            throw new RuntimeException( "Failed to get back matrix for variable " + variableName, e );
         }
 
     }
@@ -448,8 +476,8 @@ public class RServeClient implements RClient {
     public void startServer() {
 
         try {
-            connect( QUIET );
-            if ( connection.isConnected() ) {
+            boolean connected = connect( QUIET );
+            if ( connected ) {
                 log.info( "RServer is already running" );
                 return;
             }
@@ -465,10 +493,15 @@ public class RServeClient implements RClient {
             log.info( "Starting Rserve with command " + rserveExecutable );
             serverProcess = Runtime.getRuntime().exec( rserveExecutable );
 
+            GenericStreamConsumer gscErr = new GenericStreamConsumer( serverProcess.getErrorStream() );
+            GenericStreamConsumer gscIn = new GenericStreamConsumer( serverProcess.getInputStream() );
+            gscErr.start();
+            gscIn.start();
+
             waitForServerStart();
 
         } catch ( IOException e ) {
-            log.error( "Could not start Rserver" );
+            log.error( "Could not start Rserver", e );
         } catch ( ConfigurationException e ) {
             log.error( "Could not connect to RServe: server executable is not configured", e );
             throw new RuntimeException( e );
@@ -551,16 +584,19 @@ public class RServeClient implements RClient {
     /**
      * @param beQuiet
      */
-    private void connect( boolean beQuiet ) {
+    private boolean connect( boolean beQuiet ) {
         if ( connection != null && connection.isConnected() ) {
-            return;
+            return true;
         }
         try {
             connection = new RConnection();
         } catch ( RserveException e ) {
-            if ( !beQuiet ) log.error( "Could not connect to RServe", e );
-            throw new RuntimeException( e );
+            if ( !beQuiet ) {
+                log.error( "Could not connect to RServe: " + e.getMessage() );
+            }
+            return false;
         }
+        return true;
     }
 
     /**
@@ -568,7 +604,7 @@ public class RServeClient implements RClient {
      * @throws ConfigurationException
      */
     private String findRserveCommand() throws ConfigurationException {
-        URL userSpecificConfigFileLocation = ConfigurationUtils.locate( "Gemma.properties" );
+        URL userSpecificConfigFileLocation = ConfigurationUtils.locate( "local.properties" );
 
         Configuration userConfig = null;
         if ( userSpecificConfigFileLocation != null ) {
@@ -594,22 +630,19 @@ public class RServeClient implements RClient {
     private void retrieveRowAndColumnNames( String variableName, DoubleMatrixNamed resultObject )
             throws REXPMismatchException {
         // getting the row names.
-        List<String> rowNamesREXP = Arrays.asList( this.eval( "dimnames(" + variableName + ")[1][[1]]" ).asStrings() );
-
-        if ( rowNamesREXP != null ) {
-            log.debug( "Got row names" );
-            resultObject.setRowNames( rowNamesREXP );
+        RList rownamesREXP = this.eval( "dimnames(" + variableName + ")[1][[1]]" ).asList();
+        List<String> rowNames = new ArrayList<String>();
+        for ( Iterator it = rownamesREXP.iterator(); it.hasNext(); ) {
+            rowNames.add( ( ( REXP ) it.next() ).asString() );
         }
+        resultObject.setRowNames( rowNames );
 
-        // Getting
-        // the
-        // column
-        // names.
-        List<String> colNamesREXP = Arrays.asList( this.eval( "dimnames(" + variableName + ")[2][[1]]" ).asStrings() );
-        if ( colNamesREXP != null ) {
-            log.debug( "Got column names" );
-            resultObject.setColumnNames( colNamesREXP );
+        RList colnamesREXP = this.eval( "dimnames(" + variableName + ")[2][[1]]" ).asList();
+        List<String> colNames = new ArrayList<String>();
+        for ( Iterator it = colnamesREXP.iterator(); it.hasNext(); ) {
+            colNames.add( ( ( REXP ) it.next() ).asString() );
         }
+        resultObject.setColumnNames( colNames );
     }
 
     /**
@@ -618,27 +651,32 @@ public class RServeClient implements RClient {
      */
     private void waitForServerStart() {
         try {
-
+            int exitValue = Integer.MIN_VALUE;
             boolean waiting = true;
             int tries = 0;
             while ( waiting ) {
                 try {
-                    connect( QUIET );
-                    waiting = false;
+                    // exitValue = serverProcess.exitValue();
+                    boolean connected = connect( QUIET );
+                    if ( connected ) {
+                        waiting = false;
+                        return;
+                    } else {
+                        // not running, keep trying
+                        tries++;
+                        Thread.sleep( 2000 );
+                    }
+                } catch ( IllegalThreadStateException e ) {
+                    log.warn( "Rserve process is dead." );
                     return;
-                } catch ( RuntimeException e ) {
-                    // not running, keep trying
-                    tries++;
-                    Thread.sleep( 100 );
                 }
                 if ( tries > MAX_TRIES ) {
-                    throw new RuntimeException( "Could not get a connection to server: timed out after " + MAX_TRIES
-                            + " attempts." );
+                    log.warn( "Could not get a connection to R server: timed out after " + MAX_TRIES + " attempts." );
+                    waiting = false;
                 }
             }
 
-            serverProcess.exitValue();
-            log.error( "Could not get a connection to the server." );
+            log.error( "Could not get a connection to the server: " + exitValue );
         } catch ( IllegalThreadStateException e ) {
             log.info( "Rserver seems to have started" );
         } catch ( InterruptedException e ) {

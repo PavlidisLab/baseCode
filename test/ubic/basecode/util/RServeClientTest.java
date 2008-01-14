@@ -42,8 +42,8 @@ public class RServeClientTest extends TestCase {
 
     public void setUp() throws Exception {
         try {
-            rc = new RServeClient();
-            connected = rc != null;
+            rc = new RServeClient( true );
+            connected = rc.isConnected();
         } catch ( RuntimeException e ) {
             connected = false;
         }
@@ -54,10 +54,10 @@ public class RServeClientTest extends TestCase {
     }
 
     public void tearDown() throws Exception {
-        if ( rc != null ) {
-            rc.disconnect();
-            rc.stopServer();
-        }
+//        if ( rc != null ) {
+//            rc.disconnect();
+//            rc.stopServer();
+//        }
         tester = null;
     }
 

@@ -31,6 +31,9 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix2D;
@@ -43,6 +46,8 @@ import cern.colt.matrix.DoubleMatrix2D;
  */
 public class RegressionTesting {
 
+    private static Log log = LogFactory.getLog( RegressionTesting.class.getName() );
+
     private RegressionTesting() { /* block instantiation */
     }
 
@@ -51,17 +56,23 @@ public class RegressionTesting {
     /**
      * Test whether two AbstractNamedDoubleMatrix are 'close enough' to call equal.
      * 
-     * @param a
-     * @param b
+     * @param expected
+     * @param actual
      * @param tolerance
      * @return try if all the values in both matrices are within 'tolerance' of each other.
      */
     public static boolean closeEnough( DoubleMatrixNamed a, DoubleMatrixNamed b, double tolerance ) {
-        if ( a.rows() != b.rows() || a.columns() != b.columns() ) return false;
+        if ( a.rows() != b.rows() || a.columns() != b.columns() ) {
+            log.error( "Unequal rows and/or columns" );
+            return false;
+        }
 
         for ( int i = 0; i < a.rows(); i++ ) {
             for ( int j = 0; j < a.columns(); j++ ) {
-                if ( Math.abs( a.getQuick( i, j ) - b.getQuick( i, j ) ) > tolerance ) return false;
+                if ( Math.abs( a.getQuick( i, j ) - b.getQuick( i, j ) ) > tolerance ) {
+                    log.error( "Expected: " + a.getQuick( i, j ) + ", actual=" + b.getQuick( i, j ) );
+                    return false;
+                }
             }
         }
         return true;

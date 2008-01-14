@@ -40,37 +40,7 @@ public class JRIClient implements RClient {
 
     private static Log log = LogFactory.getLog( JRIClient.class.getName() );
 
-//    public static void main( String[] args ) {
-//        // just making sure we have the right version of everything
-//        if ( !Rengine.versionCheck() ) {
-//            System.err.println( "** Version mismatch - Java files don't match library version." );
-//            System.exit( 1 );
-//        }
-//        System.out.println( "Creating Rengine (with arguments)" );
-//        // 1) we pass the arguments from the command line
-//        // 2) we won't use the main loop at first, we'll start it later
-//        // (that's the "false" as second argument)
-//        // 3) the callbacks are implemented by the TextConsole class above
-//        Rengine re = new Rengine( args, false, new TextConsole() );
-//        System.out.println( "Rengine created, waiting for R" );
-//        // the engine creates R is a new thread, so we should wait until it's ready
-//        if ( !re.waitForR() ) {
-//            System.out.println( "Cannot load R" );
-//            return;
-//        }
-//
-//        REXP x;
-//        re.eval( "data(iris)", false );
-//        System.out.println( x = re.eval( "iris" ) );
-//        re.end();
-//
-//    }
-
     Rengine connection;
-
-    // static {
-    // connection = new Rengine( new String[] {}, false, new TextConsole() );
-    // }
 
     public JRIClient() {
 
@@ -85,10 +55,8 @@ public class JRIClient implements RClient {
             if ( !connection.waitForR() ) {
                 throw new UnsatisfiedLinkError( "Cannot load R" );
             }
+            log.info( "JRI looks good!" );
         }
-        /*
-         * TODO capture the RConsoleOutputStream.
-         */
     }
 
     /*
@@ -296,7 +264,15 @@ public class JRIClient implements RClient {
      * @see ubic.basecode.util.RClient#doubleArrayEval(java.lang.String)
      */
     public double[] doubleArrayEval( String command ) {
-        return this.eval( command ).asDoubleArray();
+        if ( !isConnected() ) {
+            return null;
+        }
+        REXP r = this.eval( command );
+        if ( r == null ) {
+            log.warn( "No result for " + command );
+            return null;
+        }
+        return r.asDoubleArray();
     }
 
     /*

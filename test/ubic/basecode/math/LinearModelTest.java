@@ -20,10 +20,6 @@ package ubic.basecode.math;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import ubic.basecode.util.RServeClientTest;
 import ubic.basecode.util.RegressionTesting;
 
 /**
@@ -31,7 +27,6 @@ import ubic.basecode.util.RegressionTesting;
  * @version $Id$
  */
 public class LinearModelTest extends TestCase {
-    private static final Log log = LogFactory.getLog( RServeClientTest.class.getName() );
 
     /*
      * Test method for 'basecode.math.LinearModel.fitNoInteractions()'
@@ -44,6 +39,7 @@ public class LinearModelTest extends TestCase {
         LinearModel lm = new LinearModel( x, a, b );
         lm.fitNoInteractions();
         double[] c = lm.getCoefficients();
+        assertNotNull( c );
         assertTrue( RegressionTesting.closeEnough( new double[] { 0.6666667, 3.5000000, 1.5000000 }, c, 0.0001 ) );
     }
 }

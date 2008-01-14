@@ -19,6 +19,9 @@
 
 package ubic.basecode.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Get a connection to R, somehow (if possible).
  * 
@@ -27,21 +30,34 @@ package ubic.basecode.util;
  */
 public class RConnectionFactory {
 
+    private static Log log = LogFactory.getLog( RConnectionFactory.class.getName() );
+
     /**
      * @return
      */
     public static RClient getRConnection() {
-        RClient rc = new RServeClient();
-        if ( rc == null ) {
-            rc = new JRIClient();
+        RClient rc = null;
+        try {
+            rc = new RServeClient();
+            if ( rc.isConnected() ) {
+                return rc;
+            } else {
+                return getJRIClient();
+            }
+        } catch ( Exception e ) {
+            return getJRIClient();
+        }
+    }
 
+    private static RClient getJRIClient() {
+        log.info( "Trying to get JRI connection instead" );
+        try {
+            return new JRIClient();
+        } catch ( Exception e ) {
+            log.warn( "Was unable to get an R connection", e );
+            return null;
         }
 
-        if ( !rc.isConnected() ) {
-            throw new RuntimeException( "Error during getting R connection" );
-        }
-
-        return rc;
     }
 
 }
