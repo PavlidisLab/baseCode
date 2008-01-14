@@ -18,7 +18,12 @@
  */
 package ubic.basecode.math;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * Fill arrays with random values given a source of values.
@@ -129,4 +134,21 @@ public class RandomChooser {
         }
     }
 
+    public static <T> Set<T> chooseRandomSubset( int n, Collection<? extends T> superSet ) {
+        return chooseRandomSubset( n, new ArrayList( superSet) );
+    }
+    
+    public static <T> Set<T> chooseRandomSubset( int n, List<? extends T> superSet ) {
+        int max = superSet.size();
+        int[] indices = new int[ n ];
+        boolean[] chosen = new boolean[ max ];
+        chooserandom( indices, chosen, max, n );
+        
+        Set<T> result = new HashSet<T>();
+        for ( int i=0; i<n; ++i ) {
+            result.add( superSet.get( indices[i] ) );
+        }
+        return result;
+    }
+    
 }
