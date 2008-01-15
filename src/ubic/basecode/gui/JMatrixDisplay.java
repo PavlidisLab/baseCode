@@ -77,7 +77,7 @@ public class JMatrixDisplay extends JPanel {
     protected Dimension m_cellSize = new Dimension( 10, 10 ); // in pixels
 
     public JMatrixDisplay( String filename ) throws IOException {
-        log.info( "Headless: " + GraphicsEnvironment.isHeadless() );
+        log.warn( "Headless: " + GraphicsEnvironment.isHeadless() );
         ColorMatrix matrix = new ColorMatrix( filename );
         init( matrix );
     }
@@ -87,7 +87,7 @@ public class JMatrixDisplay extends JPanel {
     }
 
     public JMatrixDisplay( ColorMatrix matrix ) {
-        log.info( "Headless: " + GraphicsEnvironment.isHeadless() );
+        log.warn( "Headless: " + GraphicsEnvironment.isHeadless() );
         init( matrix );
     }
 
