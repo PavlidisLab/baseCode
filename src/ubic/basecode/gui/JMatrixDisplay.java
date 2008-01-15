@@ -23,7 +23,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -50,10 +49,6 @@ public class JMatrixDisplay extends JPanel {
     private static final long serialVersionUID = -8078532270193813539L;
 
     private final static Log log = LogFactory.getLog( JMatrixDisplay.class );
-
-    static {
-        if ( GraphicsEnvironment.isHeadless() ) log.warn( "Running in headless mode " );
-    }
 
     // data fields
     ColorMatrix colorMatrix; // reference to standardized or unstandardized matrix
