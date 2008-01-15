@@ -24,7 +24,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
-import java.awt.HeadlessException;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -53,7 +52,7 @@ public class JMatrixDisplay extends JPanel {
     private final static Log log = LogFactory.getLog( JMatrixDisplay.class );
 
     static {
-        log.warn( "Headless: " + GraphicsEnvironment.isHeadless() );
+        if ( GraphicsEnvironment.isHeadless() ) log.warn( "Running in headless mode " );
     }
 
     // data fields
@@ -81,7 +80,6 @@ public class JMatrixDisplay extends JPanel {
     protected Dimension m_cellSize = new Dimension( 10, 10 ); // in pixels
 
     public JMatrixDisplay( String filename ) throws IOException {
-        log.warn( "Headless: " + GraphicsEnvironment.isHeadless() );
         ColorMatrix matrix = new ColorMatrix( filename );
         init( matrix );
     }
@@ -91,21 +89,18 @@ public class JMatrixDisplay extends JPanel {
     }
 
     public JMatrixDisplay( ColorMatrix matrix ) {
-        log.warn( "Headless: " + GraphicsEnvironment.isHeadless() );
         init( matrix );
     }
 
     public void init( ColorMatrix matrix ) {
-        try {
-            m_unstandardizedMatrix = colorMatrix = matrix;
-            initSize();
 
-            // create a standardized copy of the matrix
-            m_standardizedMatrix = ( ColorMatrix ) matrix.clone();
-            m_standardizedMatrix.standardize();
-        } catch ( HeadlessException e ) {
-            log.warn( e, e );
-        }
+        m_unstandardizedMatrix = colorMatrix = matrix;
+        initSize();
+
+        // create a standardized copy of the matrix
+        m_standardizedMatrix = ( ColorMatrix ) matrix.clone();
+        m_standardizedMatrix.standardize();
+
     }
 
     /**

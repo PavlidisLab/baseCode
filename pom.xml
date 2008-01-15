@@ -196,7 +196,7 @@
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<argLine>-enableassertions -Xmx512m</argLine>
+					<argLine>-enableassertions -Xmx512m -Djava.awt.headless=true</argLine>
 					<reportsDirectory>target/surefire-reports</reportsDirectory>
 					<includes>
 						<include>**/Test*.java</include>
