@@ -50,7 +50,8 @@ public class JRIClient implements RClient {
                 System.loadLibrary( "jri" );
             } catch ( UnsatisfiedLinkError e ) {
                 log.error( e, e );
-                throw new RuntimeException( "No jri library, looked in: " + System.getProperty( "java.library.path" ) );
+                throw new RuntimeException( "No jri library, looked in: " + System.getProperty( "java.library.path" ),
+                        e );
             }
             connection = new Rengine( new String[] { "--no-save" }, false, null );
             if ( !connection.waitForR() ) {
