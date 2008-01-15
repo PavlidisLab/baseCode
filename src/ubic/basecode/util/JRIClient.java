@@ -40,7 +40,7 @@ public class JRIClient implements RClient {
 
     private static Log log = LogFactory.getLog( JRIClient.class.getName() );
 
-    Rengine connection;
+    static Rengine connection;
 
     public JRIClient() {
 
