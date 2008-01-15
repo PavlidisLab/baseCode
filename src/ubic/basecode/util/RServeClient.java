@@ -258,7 +258,7 @@ public class RServeClient implements RClient {
     public String assignStringList( List<String> strings ) {
         String variableName = "stringList." + variableIdentityNumber( strings );
         String[] sar = new String[strings.size()];
-        strings.toArray( sar );
+        sar = strings.toArray( sar );
         this.assign( variableName, sar );
         return variableName;
     }
@@ -567,8 +567,19 @@ public class RServeClient implements RClient {
      */
     private void assignRowAndColumnNames( DoubleMatrixNamed matrix, String matrixVarName ) {
 
-        String rowNameVar = assignStringList( matrix.getRowNames() );
-        String colNameVar = assignStringList( matrix.getColNames() );
+        List rowNames = matrix.getRowNames();
+        List<String> rowNameStrings = new ArrayList<String>( rowNames.size() );
+        for ( Object r : rowNames ) {
+            rowNameStrings.add( r.toString() );
+        }
+        String rowNameVar = assignStringList( rowNameStrings );
+
+        List colNames = matrix.getColNames();
+        List<String> colNameStrings = new ArrayList<String>( rowNames.size() );
+        for ( Object r : colNames ) {
+            colNameStrings.add( r.toString() );
+        }
+        String colNameVar = assignStringList( colNameStrings );
 
         String dimcmd = "dimnames(" + matrixVarName + ")<-list(" + rowNameVar + ", " + colNameVar + ")";
         this.voidEval( dimcmd );

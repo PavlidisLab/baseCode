@@ -47,16 +47,15 @@ public class JMatrixDisplayTest extends BaseTestCase {
     double[] row3 = { 54, 7, 8, 3, 1 };
     double[] row4 = { 13, 2, 9, 7, 0 };
 
-    List rowNames = new ArrayList();
+    List<String> rowNames = new ArrayList<String>();
     File tmp;
-    List colNames = new ArrayList();
+    List<String> colNames = new ArrayList<String>();
 
     /**
      * 
      */
     protected void setUp() throws Exception {
         tmp = File.createTempFile( "testimage", ".png" );
-        log.warn( "setup" );
 
         array[0] = row0;
         array[1] = row1;
@@ -64,7 +63,6 @@ public class JMatrixDisplayTest extends BaseTestCase {
         array[3] = row3;
         array[4] = row4;
 
-        // TODO use java 5
         rowNames.add( "A" );
         rowNames.add( "B" );
         rowNames.add( "C" );
@@ -94,7 +92,6 @@ public class JMatrixDisplayTest extends BaseTestCase {
      */
     public void testSaveImage() {
 
-        // DoubleMatrix2D matrix = new DenseDoubleMatrix2D( array );
         DoubleMatrixNamed matrix = new DenseDoubleMatrix2DNamed( array );
         matrix.setRowNames( rowNames );
         matrix.setColumnNames( colNames );

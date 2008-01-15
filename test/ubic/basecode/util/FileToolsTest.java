@@ -276,9 +276,9 @@ public class FileToolsTest extends TestCase {
      * subdirectories) should not be deleted.
      */
     public void testDeleteDir() {
-        File dir = FileTools.createDir( tempdir.getAbsolutePath() + "/testdir" );
+        File dir = FileTools.createDir( tempdir.getAbsolutePath() + File.separatorChar + "testdir" );
 
-        File subdir = FileTools.createDir( dir.getAbsolutePath() + "/testsubdir" );
+        File subdir = FileTools.createDir( dir.getAbsolutePath() + File.separatorChar + "testsubdir" );
 
         int numDeleted = 0;
         boolean fail = false;
@@ -287,7 +287,7 @@ public class FileToolsTest extends TestCase {
             File file1 = File.createTempFile( "junk", ".txt", dir.getAbsoluteFile() );
             File file2 = File.createTempFile( "junk", ".txt", subdir.getAbsoluteFile() );
 
-            Collection files = new HashSet();
+            Collection<File> files = new HashSet<File>();
             files.add( file0 );
             files.add( file1 );
             files.add( file2 );
@@ -310,9 +310,9 @@ public class FileToolsTest extends TestCase {
      * Tests deleting files in a directory tree, then the directories.
      */
     public void testDeleteFilesAndDir() {
-        File dir = FileTools.createDir( tempdir.getAbsolutePath() + "/dir" );
+        File dir = FileTools.createDir( tempdir.getAbsolutePath() + File.separatorChar + "dir" );
 
-        File subdir = FileTools.createDir( dir.getAbsolutePath() + "/subdir" );
+        File subdir = FileTools.createDir( dir.getAbsolutePath() + File.separatorChar + "subdir" );
 
         int numDeleted = 0;
         boolean fail = false;
@@ -321,7 +321,7 @@ public class FileToolsTest extends TestCase {
             File file1 = File.createTempFile( "junk", ".txt", dir.getAbsoluteFile() );
             File file2 = File.createTempFile( "junk", ".txt", subdir.getAbsoluteFile() );
 
-            Collection files = new HashSet();
+            Collection<File> files = new HashSet<File>();
             files.add( file0 );
             files.add( file1 );
             files.add( file2 );
