@@ -50,7 +50,11 @@ public class JMatrixDisplay extends JPanel {
 
     private static final long serialVersionUID = -8078532270193813539L;
 
-    private Log log = LogFactory.getLog( JMatrixDisplay.class );
+    private final static Log log = LogFactory.getLog( JMatrixDisplay.class );
+
+    static {
+        log.warn( "Headless: " + GraphicsEnvironment.isHeadless() );
+    }
 
     // data fields
     ColorMatrix colorMatrix; // reference to standardized or unstandardized matrix
