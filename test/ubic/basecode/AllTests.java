@@ -45,12 +45,15 @@ import ubic.basecode.math.MultipleTestCorrectionTest;
 import ubic.basecode.math.StringDistanceTest;
 import ubic.basecode.math.TestMathUtil;
 import ubic.basecode.math.TestWilcoxon;
+import ubic.basecode.math.distribution.HistogramSamplerTest;
 import ubic.basecode.math.distribution.TestWishart;
 import ubic.basecode.math.metaanalysis.TestCorrelationEffectMetaAnalysis;
 import ubic.basecode.math.metaanalysis.TestMeanDifferenceMetaAnalysis;
 import ubic.basecode.util.FileToolsTest;
+import ubic.basecode.util.JRIClientTest;
 import ubic.basecode.util.NetUtilsTest;
 import ubic.basecode.util.RServeClientTest;
+import ubic.basecode.util.StringUtilTest;
 import ubic.basecode.util.TestStringUtil;
 import ubic.basecode.xml.TestGOParser;
 
@@ -103,6 +106,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite( TestWishart.class );
         suite.addTestSuite( TestCorrelationEffectMetaAnalysis.class );
         suite.addTestSuite( TestMeanDifferenceMetaAnalysis.class );
+        suite.addTestSuite( HistogramSamplerTest.class );
 
         suite.addTestSuite( LinearModelTest.class );
         suite.addTestSuite( MultipleTestCorrectionTest.class );
@@ -130,6 +134,8 @@ public class AllTests extends TestCase {
         suite.addTestSuite( FileToolsTest.class );
         suite.addTestSuite( RServeClientTest.class );
         suite.addTestSuite( NetUtilsTest.class );
+        suite.addTestSuite( JRIClientTest.class );
+        suite.addTestSuite( StringUtilTest.class );
 
         System.out.print( "-----------\nBasecode: running " + suite.countTestCases() + " tests.\n-----------\n" );
 
