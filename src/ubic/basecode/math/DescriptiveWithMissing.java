@@ -41,7 +41,7 @@ import cern.jet.stat.Descriptive;
  * Not all methods need to be overridden. However, all methods that take a "size" parameter should be passed the results
  * of sizeWithoutMissingValues(data), instead of data.size().
  * <p>
- * Based in part on code from the colt package: Copyright © 1999 CERN - European Organization for Nuclear Research.
+ * Based in part on code from the colt package: Copyright ï¿½ 1999 CERN - European Organization for Nuclear Research.
  * 
  * @see <a
  *      href="http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/cern/jet/stat/Descriptive.html">cern.jet.stat.Descriptive
@@ -477,25 +477,25 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
     }
 
     /**
-     * Calculate the mean of the values above a particular quantile of an array.
+     * Calculate the mean of the values above to a particular quantile of an array.
      * 
-     * @param quantile A value from 0 to 100
+     * @param quantile A value from 0 to 1
      * @param array Array for which we want to get the quantile.
      * @return double
      */
-    public static double meanAboveQuantile( int quantile, DoubleArrayList array ) {
+    public static double meanAboveQuantile( double quantile, DoubleArrayList array ) {
 
-        if ( quantile < 0 || quantile > 100 ) {
-            throw new IllegalArgumentException( "Quantile must be between 0 and 100" );
+        if ( quantile < 0.0 || quantile > 1.0 ) {
+            throw new IllegalArgumentException( "Quantile must be between 0 and 1" );
         }
 
         double returnvalue = 0.0;
         int k = 0;
 
-        double median = Descriptive.quantile( array, quantile );
+        double quantileValue = DescriptiveWithMissing.quantile( array, quantile );
 
         for ( int i = 0; i < array.size(); i++ ) {
-            if ( array.get( i ) >= median ) {
+            if ( array.get( i ) > quantileValue ) {
                 returnvalue += array.get( i );
                 k++;
             }
@@ -515,7 +515,7 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @return double
      */
     public static double median( DoubleArrayList sortedData ) {
-        return quantile( sortedData, 0.5 );
+        return DescriptiveWithMissing.quantile( sortedData, 0.5 );
     }
 
     /**
@@ -1039,7 +1039,7 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
         double weightsSum = 0.0;
         for ( int i = size; --i >= 0; ) {
             double w = theWeights[i];
-            if ( Double.isNaN( elements[i] ) ) {
+            if ( Double.isNaN( elements[i] ) || Double.isNaN( w ) ) {
                 continue;
             }
             sum += elements[i] * w;

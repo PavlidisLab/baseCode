@@ -18,6 +18,7 @@
  */
 package ubic.basecode.util;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -63,6 +64,34 @@ public class NetUtilsTest extends TestCase {
         } catch ( FileNotFoundException e ) {
             // ok
         }
+    }
+
+    final public void testCheckForFile() throws Exception {
+        FTPClient f;
+        try {
+            f = NetUtils.connect( FTP.BINARY_FILE_TYPE, "ftp.ncbi.nlm.nih.gov", "anonymous", "paul@ubic.ca" );
+        } catch ( IOException ignore ) {
+            log.warn( "Could not connect to ftp.ncbi.nlm.nih.gov, skipping test" );
+            return;
+        }
+
+        long checkForFile = NetUtils.checkForFile( f, "genomes/README" );
+        assertTrue( checkForFile > 0 );
+
+    }
+
+    final public void testDownloadFile() throws Exception {
+        FTPClient f;
+        try {
+            f = NetUtils.connect( FTP.BINARY_FILE_TYPE, "ftp.ncbi.nlm.nih.gov", "anonymous", "paul@ubic.ca" );
+        } catch ( IOException ignore ) {
+            log.warn( "Could not connect to ftp.ncbi.nlm.nih.gov, skipping test" );
+            return;
+        }
+
+        File temp = File.createTempFile( "ftptest", "txt" );
+        NetUtils.ftpDownloadFile( f, "genomes/README", temp, false );
+        assertTrue( temp.canRead() );
 
     }
 

@@ -38,6 +38,8 @@ public class TestDescriptiveWithMissing extends TestCase {
 
     private DoubleArrayList datacortest1Nomissing;
     private DoubleArrayList datacortest2Nomissing;
+    private DoubleArrayList datacortest1missing;
+    private DoubleArrayList datacortest2missing;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -51,6 +53,8 @@ public class TestDescriptiveWithMissing extends TestCase {
         data2Nomissing = new DoubleArrayList( new double[] { 3.0, 3.5, 4.0 } );
         data3shortNomissing = new DoubleArrayList( new double[] { 3.0 } );
 
+        datacortest1missing = new DoubleArrayList( new double[] { 3.0, Double.NaN, 5.0, 6.0, 3.2 } );
+        datacortest2missing = new DoubleArrayList( new double[] { 3.0, 8.0, 3.5, 4.0, Double.NaN } );
         datacortest1Nomissing = new DoubleArrayList( new double[] { 3.0, 5.0, 6.0 } );
         datacortest2Nomissing = new DoubleArrayList( new double[] { 3.0, 3.5, 4.0 } );
 
@@ -101,6 +105,12 @@ public class TestDescriptiveWithMissing extends TestCase {
         double expectedReturn = Descriptive.durbinWatson( data2Nomissing );
         double actualReturn = DescriptiveWithMissing.durbinWatson( data2missing );
         assertEquals( "return value", expectedReturn, actualReturn, Double.MIN_VALUE );
+    }
+
+    public void testWeightedMean() {
+        double expected = Descriptive.weightedMean( datacortest1Nomissing, datacortest2Nomissing );
+        double actual = DescriptiveWithMissing.weightedMean( datacortest1missing, datacortest2missing );
+        assertEquals( "return value", expected, actual, Double.MIN_VALUE );
     }
 
     public void testDurbinWatsonShort() {
@@ -224,6 +234,16 @@ public class TestDescriptiveWithMissing extends TestCase {
                 .sizeWithoutMissingValues( data1missing ), DescriptiveWithMissing.sum( data1missing ),
                 DescriptiveWithMissing.sumOfSquares( data1missing ) );
         assertEquals( "return value", expectedReturn, actualReturn, 0.000001 );
+    }
+
+    public void testMeanEff() throws Exception {
+        double actualReturn = DescriptiveWithMissing.mean( data1missing, 4 );
+        assertEquals( "return value", 4.75, actualReturn, Double.MIN_VALUE );
+    }
+
+    public void testMeanAboveQuantile() throws Exception {
+        double actualReturn = DescriptiveWithMissing.meanAboveQuantile( 0.75, data1Nomissing );
+        assertEquals( "return value", 6, actualReturn, Double.MIN_VALUE );
     }
 
 }

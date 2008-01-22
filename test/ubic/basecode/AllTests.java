@@ -51,6 +51,7 @@ import ubic.basecode.util.FileToolsTest;
 import ubic.basecode.util.JRIClientTest;
 import ubic.basecode.util.NetUtilsTest;
 import ubic.basecode.util.RServeClientTest;
+import ubic.basecode.util.SQLUtilsTest;
 import ubic.basecode.util.StringUtilTest;
 import ubic.basecode.util.TestStringUtil;
 import ubic.basecode.xml.TestGOParser;
@@ -132,6 +133,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite( NetUtilsTest.class );
         suite.addTestSuite( JRIClientTest.class );
         suite.addTestSuite( StringUtilTest.class );
+        suite.addTestSuite( SQLUtilsTest.class );
 
         System.out.print( "-----------\nBasecode: running " + suite.countTestCases() + " tests.\n-----------\n" );
 

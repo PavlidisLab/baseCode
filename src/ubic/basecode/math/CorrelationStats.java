@@ -261,7 +261,7 @@ public class CorrelationStats {
      * 
      * @param correl Pearson correlation.
      * @param count Number of items used to calculate the correlation. NOT the degrees of freedom.
-     * @return double
+     * @return double one-side pvalue
      */
     public static double pvalue( double correl, int count ) {
 

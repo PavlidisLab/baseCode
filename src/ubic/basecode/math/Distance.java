@@ -35,7 +35,7 @@ public class Distance {
      * @param y DoubleArrayList
      * @return Manhattan distance between x and y
      */
-    public double manhattanDistance( DoubleArrayList x, DoubleArrayList y ) {
+    public static double manhattanDistance( DoubleArrayList x, DoubleArrayList y ) {
         int j;
         double sum = 0.0;
         int numused = 0;
@@ -61,7 +61,7 @@ public class Distance {
      * @param y DoubleArrayList
      * @return Euclidean distance between x and y
      */
-    public double euclDistance( DoubleArrayList x, DoubleArrayList y ) {
+    public static double euclDistance( DoubleArrayList x, DoubleArrayList y ) {
         int j;
         double sum;
         int numused;
@@ -128,7 +128,7 @@ public class Distance {
             sxy += xj * yj;
         }
 
-        return sxy / xe.length;
+        return sxy / ( xe.length - 1 );
     }
 
     /**
@@ -164,6 +164,6 @@ public class Distance {
         if ( length == 0 ) {
             return -2.0; // flag of illegal value.
         }
-        return sxy / length;
+        return sxy / ( length - 1 );
     }
 }

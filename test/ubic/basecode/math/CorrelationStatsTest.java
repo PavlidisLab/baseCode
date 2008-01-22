@@ -85,4 +85,42 @@ public class CorrelationStatsTest extends TestCase {
         double expected = 4.96e-5; // value from R
         assertEquals( expected, actual, 0.0000001 );
     }
+
+    public void testCorrel() throws Exception {
+        double[] x = new double[] { 1, 3, 4, 6 };
+        double[] y = new double[] { -5, 2, 4, 6 };
+        double actual = CorrelationStats.correl( x, y );
+        double expected = 0.9533159;
+        assertEquals( expected, actual, 0.0001 );
+    }
+
+    public void testCorrelTooSmall() throws Exception {
+        double[] x = new double[] { 1, };
+        double[] y = new double[] { -5 };
+        double actual = CorrelationStats.correl( x, y );
+        assertEquals( Double.NaN, actual );
+    }
+
+    public void testCorrelationForPvalue() throws Exception {
+        assertEquals( 0.9533, CorrelationStats.correlationForPvalue( 0.02334, 4 ), 0.01 );
+        assertEquals( 0.03487332, CorrelationStats.correlationForPvalue( 0.4619, 10 ), 0.01 );
+        assertEquals( 0.31008, CorrelationStats.correlationForPvalue( 0.1916, 10 ), 0.01 );
+        assertEquals( 0.180, CorrelationStats.correlationForPvalue( 1.0 - 0.691, 10 ), 0.01 );
+    }
+
+    public void testPvalue() throws Exception {
+        assertEquals( 0.02334, CorrelationStats.pvalue( 0.9533, 4 ), 0.001 );
+        assertEquals( 0.4619, CorrelationStats.pvalue( 0.03487, 10 ), 0.001 );
+        assertEquals( 0.1916, CorrelationStats.pvalue( 0.31008, 10 ), 0.001 );
+        assertEquals( 1.0 - 0.691, CorrelationStats.pvalue( 0.180, 10 ), 0.001 );
+    }
+
+    public void testCorrelAsByte() throws Exception {
+        assertEquals( 198, CorrelationStats.correlAsByte( 0.55 ) );
+        assertEquals( 57, CorrelationStats.correlAsByte( -0.55 ) );
+        assertEquals( 127, CorrelationStats.correlAsByte( 0 ) );
+        assertEquals( 255, CorrelationStats.correlAsByte( 1 ) );
+        assertEquals( 0, CorrelationStats.correlAsByte( -1 ) );
+    }
+
 }

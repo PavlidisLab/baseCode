@@ -168,26 +168,6 @@ public class StringUtil {
     }
 
     /**
-     * Convert "Property" to "property"
-     * 
-     * @param input
-     * @return the input with the first character in lowercase.
-     */
-    public static String lowerCaseFirstLetter( String input ) {
-        return ( new String( new char[] { input.charAt( 0 ) } ) ).toLowerCase() + input.substring( 1 );
-    }
-
-    /**
-     * Convert "property" to "Property"
-     * 
-     * @param input
-     * @return the input with the first character in upper case..
-     */
-    public static String upperCaseFirstLetter( String input ) {
-        return ( new String( new char[] { input.charAt( 0 ) } ) ).toUpperCase() + input.substring( 1 );
-    }
-
-    /**
      * @param stringi
      * @param stringj
      * @return
@@ -200,13 +180,4 @@ public class StringUtil {
         return new Long( stringj.hashCode() | ( long ) stringi.hashCode() << 32 );
     }
 
-    /**
-     * @param str the String to parse, may be <code>null</code>
-     * @param separatorChar the separate character
-     * @return an array of parsed Strings, <code>null</code> if null String input
-     * @deprecated Directly use {@link org.apache.commons.lang.StringUtils.splitPreserveAllTokens} instead.
-     */
-    public static String[] splitPreserveAllTokens( String str, char separatorChar ) {
-        return StringUtils.splitPreserveAllTokens( str, separatorChar );
-    }
 }
