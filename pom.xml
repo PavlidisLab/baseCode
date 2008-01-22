@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<name>baseCode</name>
@@ -18,9 +17,7 @@
 	<packaging>jar</packaging>
 	<scm>
 		<connection>scm:cvs:local:/cvs:baseCode</connection>
-		<developerConnection>
-			scm:cvs:local:/cvs:baseCode
-		</developerConnection>
+		<developerConnection>scm:cvs:local:/cvs:baseCode</developerConnection>
 		<url>http://broca.ubic.ca:8081/viewrep/pavlab/baseCode</url>
 	</scm>
 	<issueManagement>
@@ -222,7 +219,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-                <reportSets>
+				<reportSets>
 					<reportSet>
 						<reports>
 							<report>index</report>
@@ -240,49 +237,49 @@
 				</reportSets>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
-					<quiet>true</quiet>
+					<quiet>false</quiet>
+					<aggregate>false</aggregate>
 					<links>
 						<link>http://java.sun.com/j2ee/1.4/docs/api</link>
 						<link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-						<link>
-							http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/
-						</link>
+						<link>http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/</link>
 						<link>http://jakarta.apache.org/commons/dbcp/apidocs/</link>
 						<link>http://jakarta.apache.org/commons/fileupload/apidocs/</link>
 						<link>http://jakarta.apache.org/commons/httpclient/apidocs/</link>
-						<link>http://jakarta.apache.org/commons/logging/api/</link>
+						<link>http://commons.apache.org/logging/apidocs/</link>
 						<link>http://jakarta.apache.org/commons/pool/apidocs/</link>
-						<link>http://www.junit.org/junit/javadoc/</link>
 						<link>http://logging.apache.org/log4j/docs/api/</link>
 						<link>http://jakarta.apache.org/regexp/apidocs/</link>
 						<link>http://jakarta.apache.org/velocity/api/</link>
 						<link>http://dsd.lbl.gov/~hoschek/colt/api/</link>
-						<link>http://static.springframework.org/spring/docs/1.2.x/api/</link>
+						<link>http://static.springframework.org/spring/docs/2.0.7/api/</link>
+						<link>http://www.hibernate.org/hib_docs/v3/api/</link>
 					</links>
 				</configuration>
 			</plugin>
-			<!--   <plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>changelog-maven-plugin</artifactId>
-				</plugin>
-				<plugin>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jxr-maven-plugin</artifactId>
-				</plugin> -->
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>taglist-maven-plugin</artifactId>
 			</plugin>
-				<plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
 				<configuration>
 					<argLine>-Xmx1024m</argLine>
 				</configuration>
 			</plugin>
-            <plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
 				<configuration>
@@ -303,7 +300,7 @@
 		<site>
 			<id>broca</id>
 			<name>broca</name>
-			<url>file:///www/projects/basecode/devsite</url>
+			<url>scp://hebb.ubic.ca:/spacef/gemmaData/baseCode-site</url>
 		</site>
 		<repository>
 			<id>repo</id>

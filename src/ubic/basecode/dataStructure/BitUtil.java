@@ -21,19 +21,10 @@ limitations under the License.
 package ubic.basecode.dataStructure;
 
 /**
- * This class provides utility methods for converting byte arrays to hexidecimal Strings and manipulating BIT/BIT
- * VARYING values as a packed vector of booleans.
- * <P>
- * The BIT/BIT VARYING methods are modeled after some methods in the <I>java.util.BitSet</I> class. An alternative to
- * using a SQL BIT (VARYING) column in conjunction with the methods provided herein to provide bit manipulation would be
- * to use a serialized <I>java.util.BitSet</I> column instead.
- * <p>
- * This class contains the following static methods:
- * <UL>
- * <LI> void <B>set</B>(byte[] bytes, int position) to set a bit</LI>
- * <LI> void <B>clear</B>(byte[] bytes, int position) to clear a bit</LI>
- * <LI> boolean <B>get</B>(byte[] bytes, int position) to get the bit status </LI>
- * </UL>
+ * Based on code from: Derby - Class org.apache.derbyTesting.unitTests.util.BitUtil
+ * 
+ * @author paul
+ * @version $Id$
  */
 public class BitUtil {
     /**
