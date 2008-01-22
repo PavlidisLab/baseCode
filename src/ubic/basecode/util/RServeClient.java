@@ -40,7 +40,7 @@ import org.rosuda.REngine.RList;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 
 /**
@@ -438,7 +438,7 @@ public class RServeClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#retrieveMatrix(java.lang.String)
      */
-    public DoubleMatrixNamed retrieveMatrix( String variableName ) {
+    public DoubleMatrixNamed<String, String> retrieveMatrix( String variableName ) {
         try {
             log.debug( "Retrieving " + variableName );
 
@@ -460,7 +460,7 @@ public class RServeClient implements RClient {
                 i++;
             }
 
-            DoubleMatrixNamed resultObject = DoubleMatrix2DNamedFactory.dense( results );
+            DoubleMatrixNamed<String, String> resultObject = new DenseDoubleMatrix2DNamed<String, String>( results );
 
             retrieveRowAndColumnNames( variableName, resultObject );
             return resultObject;

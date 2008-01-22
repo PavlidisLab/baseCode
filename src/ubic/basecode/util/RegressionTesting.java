@@ -30,6 +30,7 @@ import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -148,7 +149,7 @@ public class RegressionTesting {
      * @param b
      * @return
      */
-    public static boolean containsSame( Collection a, Collection b ) {
+    public static boolean containsSame( Collection<? extends Object> a, Collection<? extends Object> b ) {
         if ( a.size() != b.size() ) return false;
 
         if ( !a.containsAll( b ) ) return false;
@@ -166,8 +167,8 @@ public class RegressionTesting {
     public static boolean containsSame( double[] a, double[] b ) {
         if ( a.length != b.length ) return false;
 
-        ArrayList av = new ArrayList( a.length );
-        ArrayList bv = new ArrayList( b.length );
+        List<Double> av = new ArrayList<Double>( a.length );
+        List<Double> bv = new ArrayList<Double>( b.length );
         for ( int i = 0; i < b.length; i++ ) {
             av.add( new Double( a[i] ) );
             bv.add( new Double( b[i] ) );
@@ -187,8 +188,8 @@ public class RegressionTesting {
     public static boolean containsSame( Object[] a, Object[] b ) {
         if ( a.length != b.length ) return false;
 
-        ArrayList av = new ArrayList( a.length );
-        ArrayList bv = new ArrayList( b.length );
+        List<Object> av = new ArrayList<Object>( a.length );
+        List<Object> bv = new ArrayList<Object>( b.length );
 
         for ( int i = 0; i < b.length; i++ ) {
             av.add( a[i] );
