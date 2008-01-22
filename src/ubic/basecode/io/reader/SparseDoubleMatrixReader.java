@@ -24,10 +24,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -55,7 +57,7 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
      */
-    public NamedMatrix read( String filename ) throws IOException {
+    public NamedMatrix<String, String> read( String filename ) throws IOException {
         return read( filename, null );
     }
 
@@ -64,7 +66,7 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
      */
-    public NamedMatrix read( InputStream stream ) throws IOException {
+    public NamedMatrix<String, String> read( InputStream stream ) throws IOException {
         return read( stream, null );
     }
 
@@ -76,7 +78,7 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
      */
-    public NamedMatrix read( String filename, Set wantedRowNames ) throws IOException {
+    public NamedMatrix<String, String> read( String filename, Set<String> wantedRowNames ) throws IOException {
         File infile = new File( filename );
         if ( !infile.exists() || !infile.canRead() ) {
             throw new IOException( "Could not read from file " + filename );
@@ -89,13 +91,13 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
      * Read a sparse matrix in "JW" (Jason Weston) format. The format is like this:
      * 
      * <pre>
-     *                          2          &lt;--- number of items - the first line of the file only. NOTE - this line is often blank or not present.
-     *                          1 2        &lt;--- items 1 has 2 edges
-     *                          1 2        &lt;--- edge indices are to items 1 &amp; 2
-     *                          0.1 100    &lt;--- with the following weights
-     *                          2 2        &lt;--- items 2 also has 2 edges
-     *                          1 2        &lt;--- edge indices are also to items 1 &amp; 2 (fully connected)
-     *                          100 0.1    &lt;--- with the following weights
+     * 2          &lt;--- number of items - the first line of the file only. NOTE - this line is often blank or not present.
+     * 1 2        &lt;--- items 1 has 2 edges
+     * 1 2        &lt;--- edge indices are to items 1 &amp; 2
+     * 0.1 100    &lt;--- with the following weights
+     * 2 2        &lt;--- items 2 also has 2 edges
+     * 1 2        &lt;--- edge indices are also to items 1 &amp; 2 (fully connected)
+     * 100 0.1    &lt;--- with the following weights
      * </pre>
      * 
      * <p>
@@ -109,7 +111,8 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
      * @return
      * @throws IOException
      */
-    public NamedMatrix readJW( InputStream stream ) throws IOException, IllegalAccessException, NoSuchFieldException {
+    public NamedMatrix<String, String> readJW( InputStream stream ) throws IOException, IllegalAccessException,
+            NoSuchFieldException {
 
         BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
         FormatReader ff = new FormatReader( dis );
@@ -125,12 +128,12 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
         int dim = 10;
 
         dim = new Integer( Integer.parseInt( dis.readLine() ) ).intValue();
-        SparseDoubleMatrix2DNamed returnVal = new SparseDoubleMatrix2DNamed( dim, dim );
+        SparseDoubleMatrix2DNamed<String, String> returnVal = new SparseDoubleMatrix2DNamed<String, String>( dim, dim );
 
         for ( int k = 1; k <= dim; k++ ) {
 
-            returnVal.addColumnName( new Integer( k ), k - 1 );
-            returnVal.addRowName( new Integer( k ), k - 1 );
+            returnVal.addColumnName( new Integer( k ).toString(), k - 1 );
+            returnVal.addRowName( new Integer( k ).toString(), k - 1 );
 
             ff.read( fmtdd, p.add( index ).add( amount ) ); // "item 1 has 2 edges"
 
@@ -166,10 +169,8 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
      * Read a sparse matrix that is expressed as an adjacency list in a tab-delimited file:
      * 
      * <pre>
-     *       
-     *         item1 item2 weight
-     *         item1 item5 weight
-     *        
+     *  item1 item2 weight
+     *  item1 item5 weight
      * </pre>
      * 
      * <p>
@@ -183,16 +184,16 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
      * @return NamedMatrix
      * @throws IOException
      */
-    public NamedMatrix read( InputStream stream, Set wantedRowNames ) throws IOException {
+    public NamedMatrix<String, String> read( InputStream stream, Set<String> wantedRowNames ) throws IOException {
 
-        Set itemNames = new HashSet();
-        Map rows = new HashMap();
+        Set<String> itemNames = new HashSet<String>();
+        Map<String, Collection<IndexScoreDyad>> rows = new HashMap<String, Collection<IndexScoreDyad>>();
 
         BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
 
         String row;
         int index = 0;
-        Map nameIndexMap = new HashMap(); // name --> eventual row index
+        Map<String, Integer> nameIndexMap = new HashMap<String, Integer>(); // name --> eventual row index
         while ( ( row = dis.readLine() ) != null ) {
             StringTokenizer st = new StringTokenizer( row, " \t", false );
 
@@ -202,7 +203,7 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
                 itemA = st.nextToken();
 
                 if ( !itemNames.contains( itemA ) ) {
-                    rows.put( itemA, new HashSet() );
+                    rows.put( itemA, new HashSet<IndexScoreDyad>() );
                     itemNames.add( itemA );
                     nameIndexMap.put( itemA, new Integer( index ) );
                     index++;
@@ -215,7 +216,7 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
             if ( st.hasMoreTokens() ) {
                 itemB = st.nextToken();
                 if ( !itemNames.contains( itemB ) ) {
-                    rows.put( itemB, new HashSet() );
+                    rows.put( itemB, new HashSet<IndexScoreDyad>() );
                     itemNames.add( itemB );
                     nameIndexMap.put( itemB, new Integer( index ) );
                     index++;
@@ -231,15 +232,14 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
                 weight = 1.0; // just make it a binary matrix.
             }
 
-            ( ( Set ) rows.get( itemA ) ).add( new IndexScoreDyad(
-                    ( ( Integer ) nameIndexMap.get( itemB ) ).intValue(), weight ) );
-            ( ( Set ) rows.get( itemB ) ).add( new IndexScoreDyad(
-                    ( ( Integer ) nameIndexMap.get( itemA ) ).intValue(), weight ) );
+            rows.get( itemA ).add( new IndexScoreDyad( nameIndexMap.get( itemB ).intValue(), weight ) );
+            rows.get( itemB ).add( new IndexScoreDyad( nameIndexMap.get( itemA ).intValue(), weight ) );
         }
 
-        SparseDoubleMatrix2DNamed matrix = new SparseDoubleMatrix2DNamed( itemNames.size(), itemNames.size() );
+        SparseDoubleMatrix2DNamed<String, String> matrix = new SparseDoubleMatrix2DNamed<String, String>( itemNames
+                .size(), itemNames.size() );
 
-        Vector itemVec = new Vector( itemNames );
+        List<String> itemVec = new Vector<String>( itemNames );
         Collections.sort( itemVec );
 
         matrix.setColumnNames( itemVec );
@@ -268,7 +268,7 @@ public class SparseDoubleMatrixReader extends AbstractNamedMatrixReader {
      * 
      * @see basecode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
      */
-    public NamedMatrix readOneRow( BufferedReader dis ) throws IOException {
+    public NamedMatrix<String, String> readOneRow( BufferedReader dis ) {
         // this is impossible for the pair method.
         throw new UnsupportedOperationException();
     }

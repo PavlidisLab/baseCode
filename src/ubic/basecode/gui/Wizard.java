@@ -22,6 +22,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -54,7 +55,7 @@ public abstract class Wizard extends JDialog {
     protected JButton cancelButton = new JButton();
     protected JButton finishButton = new JButton();
 
-    Vector steps = new Vector();
+    List<WizardStep> steps = new Vector<WizardStep>();
     protected JFrame callingframe;
     private StatusViewer statusMessenger;
 
@@ -137,7 +138,7 @@ public abstract class Wizard extends JDialog {
 
     protected void addStep( WizardStep panel, boolean first ) {
         this.addStep( panel );
-        if ( first ) mainPanel.add( ( JPanel ) steps.get( 0 ), BorderLayout.CENTER );
+        if ( first ) mainPanel.add( steps.get( 0 ), BorderLayout.CENTER );
     }
 
     protected void addStep( WizardStep panel ) {
