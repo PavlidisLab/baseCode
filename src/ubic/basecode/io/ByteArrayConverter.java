@@ -349,14 +349,12 @@ public class ByteArrayConverter {
      * @return
      */
     public String[] byteArrayToStrings( byte[] bytes ) {
-        List strings = new ArrayList();
+        List<String> strings = new ArrayList<String>();
         ByteArrayList buf = new ByteArrayList();
         for ( int i = 0; i < bytes.length; i++ ) {
             if ( bytes[i] == '\u0000' ) {
                 String newString = new String( buf.elements() );
-                // newString = newString.replaceAll( "^\t", "____TAB_____" ); // this was for bkwd compat
                 newString = newString.trim();
-                // newString = newString.replaceAll( "____TAB_____", "\t" );
                 strings.add( newString );
                 buf = new ByteArrayList();
             } else {
@@ -366,7 +364,7 @@ public class ByteArrayConverter {
 
         String[] result = new String[strings.size()];
         for ( int i = 0; i < strings.size(); i++ ) {
-            result[i] = ( String ) strings.get( i );
+            result[i] = strings.get( i );
         }
         return result;
     }

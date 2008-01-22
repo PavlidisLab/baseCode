@@ -28,13 +28,13 @@ import java.util.Map;
  * @author pavlidis
  * @version $Id$
  */
-public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serializable {
+public abstract class AbstractNamedMatrix<R, C> implements NamedMatrix<R, C>, java.io.Serializable {
 
     protected static final int MAX_ROWS_TO_PRINT = 20;
-    private List rowNames;
-    private List colNames;
-    private Map rowMap; // contains a map of each row and elements in the row
-    private Map colMap;
+    private List<R> rowNames;
+    private List<C> colNames;
+    private Map<R, Integer> rowMap; // contains a map of each row and elements in the row
+    private Map<C, Integer> colMap;
 
     private int lastColumnIndex = 0;
     private int lastRowIndex = 0;
@@ -44,11 +44,11 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
      *  
      */
     public AbstractNamedMatrix() {
-        rowMap = new LinkedHashMap(); // contains a map of each row name to index
+        rowMap = new LinkedHashMap<R, Integer>(); // contains a map of each row name to index
         // of the row.
-        colMap = new LinkedHashMap();
-        rowNames = new ArrayList();
-        colNames = new ArrayList();
+        colMap = new LinkedHashMap<C, Integer>();
+        rowNames = new ArrayList<R>();
+        colNames = new ArrayList<C>();
     }
 
     /**
@@ -57,7 +57,7 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
      * 
      * @param s
      */
-    public final void addColumnName( Object s ) {
+    public final void addColumnName( C s ) {
 
         if ( colMap.containsKey( s ) ) {
             throw new IllegalArgumentException( "Duplicate column name " + s );
@@ -69,7 +69,7 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
 
     }
 
-    public final void addColumnName( Object s, int i ) {
+    public final void addColumnName( C s, int i ) {
 
         if ( colMap.containsKey( s ) ) {
             throw new IllegalArgumentException( "Duplicate column name " + s );
@@ -85,11 +85,10 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
      * 
      * @param s
      */
-    public final void addRowName( Object s ) {
+    public final void addRowName( R s ) {
 
         if ( rowMap.containsKey( s ) ) {
-            // throw new IllegalArgumentException("Duplicate row name " + s);
-            return;
+            throw new IllegalArgumentException( "Duplicate row name " + s );
         }
 
         this.rowNames.add( s );
@@ -102,11 +101,10 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
      * 
      * @see basecode.dataStructure.NamedMatrix#addRowName(java.lang.String, int)
      */
-    public final void addRowName( Object s, int i ) {
+    public final void addRowName( R s, int i ) {
 
         if ( rowMap.containsKey( s ) ) {
-            // throw new IllegalArgumentException("Duplicate row name " + s);
-            return;
+            throw new IllegalArgumentException( "Duplicate row name " + s );
         }
 
         this.rowNames.add( s );
@@ -117,8 +115,8 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
      * @param s String
      * @return int
      */
-    public final int getRowIndexByName( Object s ) {
-        Integer r = ( ( Integer ) rowMap.get( s ) );
+    public final int getRowIndexByName( R s ) {
+        Integer r = rowMap.get( s );
         if ( r == null ) throw new IllegalArgumentException( s + " not found" );
         return r.intValue();
     }
@@ -127,8 +125,8 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
      * @param r String
      * @return int
      */
-    public final int getColIndexByName( Object r ) {
-        Integer c = ( ( Integer ) colMap.get( r ) );
+    public final int getColIndexByName( C r ) {
+        Integer c = colMap.get( r );
         if ( c == null ) throw new IllegalArgumentException( r + " not found" );
         return c.intValue();
     }
@@ -137,7 +135,7 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
      * @param i int
      * @return java.lang.String
      */
-    public final Object getRowName( int i ) {
+    public final R getRowName( int i ) {
         return rowNames.get( i );
     }
 
@@ -145,7 +143,7 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
      * @param i int
      * @return java.lang.String
      */
-    public final Object getColName( int i ) {
+    public final C getColName( int i ) {
         return colNames.get( i );
     }
 
@@ -157,23 +155,23 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
         return colNames.size() == columns();
     }
 
-    public final void setRowNames( List v ) {
+    public final void setRowNames( List<R> v ) {
         for ( int i = 0; i < v.size(); i++ ) {
             addRowName( v.get( i ), i );
         }
     }
 
-    public void setColumnNames( List v ) {
+    public void setColumnNames( List<C> v ) {
         for ( int i = 0; i < v.size(); i++ ) {
             addColumnName( v.get( i ), i );
         }
     }
 
-    public final List getColNames() {
+    public final List<C> getColNames() {
         return colNames;
     }
 
-    public final List getRowNames() {
+    public final List<R> getRowNames() {
         return rowNames;
     }
 
@@ -181,7 +179,7 @@ public abstract class AbstractNamedMatrix implements NamedMatrix, java.io.Serial
         return this.rowMap.containsKey( r );
     }
 
-    public final Iterator getRowNameMapIterator() {
+    public final Iterator<R> getRowNameMapIterator() {
         return this.rowMap.keySet().iterator();
     }
 

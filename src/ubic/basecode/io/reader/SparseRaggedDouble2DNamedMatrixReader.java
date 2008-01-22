@@ -81,25 +81,25 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
      *         tab-delimited file:
      * 
      * <pre>
-     *             
-     *                          item1 item2 weight
-     *                          item1 item5 weight
+     * item1 item2 weight
+     * item1 item5 weight
      * </pre>
      * 
      * <p>
      *         IMPORTANT: By definition the resulting matrix is square and symmetric, even if the symmetric edges are
      *         not explicitly listed.
+     *         </p>
      * @param stream
      * @return
      */
-    public NamedMatrix readFromAdjList( InputStream stream ) throws NumberFormatException, IOException {
-        Set itemNames = new HashSet();
-        Map rows = new HashMap();
+    public NamedMatrix<String, String> readFromAdjList( InputStream stream ) throws NumberFormatException, IOException {
+        Set<String> itemNames = new HashSet<String>();
+        Map<String, OpenIntDoubleHashMap> rows = new HashMap<String, OpenIntDoubleHashMap>();
 
         BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
 
         OpenIntObjectHashMap indexNameMap = new OpenIntObjectHashMap(); // eventual row index --> name
-        Map nameIndexMap = new HashMap(); // name --> eventual row index
+        Map<String, Integer> nameIndexMap = new HashMap<String, Integer>(); // name --> eventual row index
 
         /*
          * Store the information about the matrix in a temporary set of data structures, the most important of which is
@@ -111,7 +111,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
         while ( ( row = dis.readLine() ) != null ) {
             StringTokenizer st = new StringTokenizer( row, " \t", false );
 
-            Object itemA = null;
+            String itemA = null;
             if ( st.hasMoreTokens() ) {
                 itemA = st.nextToken();
                 if ( !itemNames.contains( itemA ) ) {
@@ -119,14 +119,14 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
                     itemNames.add( itemA );
                     indexNameMap.put( index, itemA );
                     nameIndexMap.put( itemA, new Integer( index ) );
-                    ( ( OpenIntDoubleHashMap ) rows.get( itemA ) ).put( index, 0 ); // to itself. - in case it isn't
+                    rows.get( itemA ).put( index, 0 ); // to itself. - in case it isn't
                     // there.
                     index++;
                 }
             } else
                 continue;
 
-            Object itemB = null;
+            String itemB = null;
             if ( st.hasMoreTokens() ) {
                 itemB = st.nextToken();
                 if ( !itemNames.contains( itemB ) ) {
@@ -134,7 +134,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
                     itemNames.add( itemB );
                     indexNameMap.put( index, itemB );
                     nameIndexMap.put( itemB, new Integer( index ) );
-                    ( ( OpenIntDoubleHashMap ) rows.get( itemB ) ).put( index, 0 ); // to itself. - in case it isn't
+                    rows.get( itemB ).put( index, 0 ); // to itself. - in case it isn't
                     // there.
                     index++;
                 }
@@ -148,14 +148,14 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
                 weight = 1.0; // just make it a binary matrix.
             }
 
-            int aind = ( ( Integer ) nameIndexMap.get( itemA ) ).intValue();
-            int bind = ( ( Integer ) nameIndexMap.get( itemB ) ).intValue();
+            int aind = nameIndexMap.get( itemA ).intValue();
+            int bind = nameIndexMap.get( itemB ).intValue();
 
             // if (itemA.equals("CYP4A11") || itemB.equals("CYP4A11"))
             // System.err.println( itemA + " " + itemB + " " + aind + " " + bind );
 
-            ( ( OpenIntDoubleHashMap ) rows.get( itemA ) ).put( bind, weight ); // link a to b.
-            ( ( OpenIntDoubleHashMap ) rows.get( itemB ) ).put( aind, weight ); // link b to a.
+            rows.get( itemA ).put( bind, weight ); // link a to b.
+            rows.get( itemB ).put( aind, weight ); // link b to a.
 
             if ( ( rows.size() % 500 ) == 0 ) {
                 log.info( new String( "loading  " + index + "th pair" ) );
@@ -163,12 +163,12 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
         }
         dis.close();
 
-        SparseRaggedDoubleMatrix2DNamed matrix = new SparseRaggedDoubleMatrix2DNamed();
+        SparseRaggedDoubleMatrix2DNamed<String, String> matrix = new SparseRaggedDoubleMatrix2DNamed<String, String>();
 
         for ( int i = 0; i < indexNameMap.size(); i++ ) {
             Object itemName = indexNameMap.get( i );
 
-            OpenIntDoubleHashMap arow = ( OpenIntDoubleHashMap ) rows.get( itemName );
+            OpenIntDoubleHashMap arow = rows.get( itemName );
 
             DoubleArrayList finalValues = new DoubleArrayList( arow.size() );
 
@@ -185,7 +185,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
             }
 
             DoubleMatrix1D rowMatrix = new RCDoubleMatrix1D( inB, finalValues );
-            matrix.addRow( itemName, rowMatrix );
+            matrix.addRow( ( String ) itemName, rowMatrix );
 
             if ( i > 0 && ( i % 500 ) == 0 ) {
                 log.info( new String( "Adding  " + i + "th row" ) );
@@ -199,7 +199,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
      * 
      * @see basecode.io.reader.AbstractNamedMatrixReader#read(java.lang.String)
      */
-    public NamedMatrix read( String fileName ) throws IOException {
+    public NamedMatrix<String, String> read( String fileName ) throws IOException {
         if ( !FileTools.testFile( fileName ) ) {
             throw new IOException( "Could not read from file " + fileName );
         }
@@ -207,7 +207,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
         return read( stream );
     }
 
-    public NamedMatrix readOneRow( BufferedReader dis ) throws IOException {
+    public NamedMatrix<String, String> readOneRow( BufferedReader dis ) throws IOException {
         return this.readOneRow( dis, 0 );
     }
 
@@ -221,8 +221,8 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
      * @return
      * @throws IOException
      */
-    public NamedMatrix readOneRow( BufferedReader dis, int offset ) throws IOException {
-        SparseRaggedDoubleMatrix2DNamed returnVal = new SparseRaggedDoubleMatrix2DNamed();
+    public NamedMatrix<String, String> readOneRow( BufferedReader dis, int offset ) throws IOException {
+        SparseRaggedDoubleMatrix2DNamed<String, String> returnVal = new SparseRaggedDoubleMatrix2DNamed<String, String>();
 
         String row = dis.readLine(); // line containing the id and the number of edges.
         StringTokenizer tok = new StringTokenizer( row, " \t" );
@@ -241,7 +241,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
      * @return
      * @throws IOException
      */
-    public NamedMatrix read( InputStream stream ) throws IOException {
+    public NamedMatrix<String, String> read( InputStream stream ) throws IOException {
         return this.read( stream, 0 );
     }
 
@@ -254,9 +254,9 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
      * @return
      * @throws IOException
      */
-    public NamedMatrix read( InputStream stream, int offset ) throws IOException {
+    public NamedMatrix<String, String> read( InputStream stream, int offset ) throws IOException {
         BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
-        SparseRaggedDoubleMatrix2DNamed returnVal = new SparseRaggedDoubleMatrix2DNamed();
+        SparseRaggedDoubleMatrix2DNamed<String, String> returnVal = new SparseRaggedDoubleMatrix2DNamed<String, String>();
 
         String row;
         int k = 1;

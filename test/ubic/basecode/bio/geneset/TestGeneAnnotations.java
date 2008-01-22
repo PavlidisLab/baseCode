@@ -20,8 +20,7 @@ package ubic.basecode.bio.geneset;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Collection; 
 import java.util.HashSet;
 import java.util.List;
 
@@ -37,34 +36,33 @@ public class TestGeneAnnotations extends TestCase {
     InputStream im;
     InputStream ia;
     InputStream imb;
-    List probes;
-    List geneIds;
-    List goIds;
+    List<String> probes;
+    List<String> geneIds;
+    List<Collection<String>> goIds;
 
     /*
      * @see TestCase#setUp()
      */
     protected void setUp() throws Exception {
         super.setUp();
-        probes = new ArrayList();
+        probes = new ArrayList<String>();
         probes.add( "a" );
         probes.add( "b" );
         probes.add( "c" );
-        geneIds = new ArrayList();
+        geneIds = new ArrayList<String>();
         geneIds.add( "aGene" );
         geneIds.add( "bGene" );
         geneIds.add( "cGene" );
-        goIds = new ArrayList();
-        goIds.add( new HashSet() );
-        goIds.add( new HashSet() );
-        goIds.add( new HashSet() );
+        goIds = new ArrayList<Collection<String>>();
+        goIds.add( new HashSet<String>() );
+        goIds.add( new HashSet<String>() );
+        goIds.add( new HashSet<String>() );
 
-        ( ( Collection ) goIds.get( 0 ) ).add( "1" );
-        ( ( Collection ) goIds.get( 1 ) ).add( "1" );
-        ( ( Collection ) goIds.get( 2 ) ).add( "1" );
-        ( ( Collection ) goIds.get( 0 ) ).add( "2" );
-        ( ( Collection ) goIds.get( 1 ) ).add( "2" );
-        // ( ( Collection ) goIds.get( 2 ) ).add( "2" );
+        goIds.get( 0 ).add( "1" );
+        goIds.get( 1 ).add( "1" );
+        goIds.get( 2 ).add( "1" );
+        goIds.get( 0 ).add( "2" );
+        goIds.get( 1 ).add( "2" ); 
         is = TestGeneAnnotations.class.getResourceAsStream( "/data/HG-U133_Plus_2_annot_sample.csv" );
         im = TestGeneAnnotations.class.getResourceAsStream( "/data/geneAnnotation.sample.txt" );
         imb = TestGeneAnnotations.class.getResourceAsStream( "/data/geneAnnotation.sample-goidddelimittest.txt" );
@@ -84,8 +82,7 @@ public class TestGeneAnnotations extends TestCase {
         GeneAnnotations ga = new GeneAnnotations();
         ga.readAffyCsv( is, null );
         ga.setUp( null );
-        List geneSets = new ArrayList( ga.getGeneSets() );
-        Collections.sort( geneSets );
+        Collection<String> geneSets = ga.getGeneSets();
         assertTrue( geneSets.size() > 0 );
     }
 

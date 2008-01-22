@@ -27,7 +27,7 @@ import cern.colt.matrix.impl.DenseObjectMatrix2D;
  * @author pavlidis
  * @version $Id$
  */
-public class ObjectMatrix2DNamed extends AbstractNamedMatrix {
+public class ObjectMatrix2DNamed<R, C> extends AbstractNamedMatrix<R, C> {
 
     private DenseObjectMatrix2D matrix;
 
@@ -84,9 +84,9 @@ public class ObjectMatrix2DNamed extends AbstractNamedMatrix {
         }
         return result;
     }
-    
-    public Object getObj(int row, int col) {
-    	return get(row, col);
+
+    public Object getObj( int row, int col ) {
+        return get( row, col );
     }
 
     public boolean isMissing( int i, int j ) {

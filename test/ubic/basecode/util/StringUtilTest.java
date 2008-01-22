@@ -30,7 +30,7 @@ import junit.framework.TestCase;
 public class StringUtilTest extends TestCase {
 
     public void testCommonPrefix() {
-        Collection test = new HashSet();
+        Collection<String> test = new HashSet<String>();
         test.add( "aadaab" );
         test.add( "aaaaab" );
         test.add( "aabaab" );
@@ -40,7 +40,7 @@ public class StringUtilTest extends TestCase {
     }
 
     public void testCommonPrefixNone() {
-        Collection test = new HashSet();
+        Collection<String> test = new HashSet<String>();
         test.add( "aadaac" );
         test.add( "daaaaab" );
         test.add( "aabaab" );
@@ -50,7 +50,7 @@ public class StringUtilTest extends TestCase {
     }
 
     public void testCommonSuffix() {
-        Collection test = new HashSet();
+        Collection<String> test = new HashSet<String>();
         test.add( "aadaab" );
         test.add( "aaaaab" );
         test.add( "aabaab" );
@@ -60,7 +60,7 @@ public class StringUtilTest extends TestCase {
     }
 
     public void testCommonSuffixNone() {
-        Collection test = new HashSet();
+        Collection<String> test = new HashSet<String>();
         test.add( "aaabf" );
         test.add( "ab" );
         test.add( "aaaab" );

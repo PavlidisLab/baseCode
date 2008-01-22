@@ -25,16 +25,16 @@ import java.util.Set;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class UndirectedGraphNode extends AbstractGraphNode {
+public class UndirectedGraphNode<K, V> extends AbstractGraphNode<K, V> {
 
     private Set neighbors;
 
-    public UndirectedGraphNode( Object key, Object value, AbstractGraph graph ) {
+    public UndirectedGraphNode( K key, V value, AbstractGraph<K, V> graph ) {
         super( key, value, graph );
         neighbors = new HashSet();
     }
 
-    public UndirectedGraphNode( Object key ) {
+    public UndirectedGraphNode( K key ) {
         super( key );
         neighbors = new HashSet();
     }

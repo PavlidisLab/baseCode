@@ -49,14 +49,14 @@ import cern.colt.list.DoubleArrayList;
 public class DoubleMatrixReader extends AbstractNamedMatrixReader {
 
     private int numHeadings;
-    private List colNames;
+    private List<String> colNames;
 
     /**
      * @param filename data file to read from
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
      */
-    public NamedMatrix read( String filename ) throws IOException {
+    public NamedMatrix<String, String> read( String filename ) throws IOException {
         return read( filename, null );
     }
 
@@ -65,7 +65,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
      */
-    public NamedMatrix read( InputStream stream ) throws IOException {
+    public NamedMatrix<String, String> read( InputStream stream ) throws IOException {
         return read( stream, null );
     }
 
@@ -76,7 +76,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
      *         true.
      * @throws IOException
      */
-    public NamedMatrix read( InputStream stream, Collection wantedRowNames ) throws IOException {
+    public NamedMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames ) throws IOException {
         return read( stream, wantedRowNames, true );
     }
 
@@ -88,17 +88,15 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
      * @return matrix
      * @throws IOException
      */
-    public NamedMatrix read( InputStream stream, Collection wantedRowNames, boolean createEmptyRows )
-            throws IOException {
+    public NamedMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames,
+            boolean createEmptyRows ) throws IOException {
 
         BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
 
-        List MTemp = new Vector();
+        List<DoubleArrayList> MTemp = new Vector<DoubleArrayList>();
 
-        List rowNames = new Vector();
+        List<String> rowNames = new Vector<String>();
 
-        // BufferedReader dis = new BufferedReader( new FileReader( filename ) );
-        // int columnNumber = 0;
         int rowNumber = 0;
         String row;
 
@@ -107,9 +105,9 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
         // because will want to add empty rows for each row name we didn't find
         // (if createEmptyRows == true).
         //
-        Collection wantedRowsFound = null;
+        Collection<String> wantedRowsFound = null;
         if ( wantedRowNames != null && createEmptyRows ) {
-            wantedRowsFound = new HashSet();
+            wantedRowsFound = new HashSet<String>();
         }
 
         colNames = readHeader( dis );
@@ -164,11 +162,11 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
      * 
      * @see basecode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
      */
-    public NamedMatrix readOneRow( BufferedReader dis ) throws IOException {
+    public NamedMatrix<String, String> readOneRow( BufferedReader dis ) throws IOException {
         String row = dis.readLine();
-        List MTemp = new Vector();
+        List<DoubleArrayList> MTemp = new Vector<DoubleArrayList>();
 
-        List rowNames = new Vector();
+        List<String> rowNames = new Vector<String>();
         parseRow( row, rowNames, MTemp, null );
         return createMatrix( MTemp, 1, numHeadings, rowNames, colNames );
     }
@@ -181,8 +179,8 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
      * @return
      * @throws IOException
      */
-    private String parseRow( String row, Collection rowNames, List MTemp, Collection wantedRowNames )
-            throws IOException {
+    private String parseRow( String row, Collection<String> rowNames, List<DoubleArrayList> MTemp,
+            Collection<String> wantedRowNames ) throws IOException {
 
         String[] tokens = StringUtils.splitPreserveAllTokens( row, "\t" );
 
@@ -257,7 +255,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
      */
-    public NamedMatrix read( String filename, Collection wantedRowNames ) throws IOException {
+    public NamedMatrix<String, String> read( String filename, Collection<String> wantedRowNames ) throws IOException {
         File infile = new File( filename );
         if ( !infile.exists() || !infile.canRead() ) {
             throw new IOException( "Could not read from file " + filename );
@@ -270,9 +268,10 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
     // protected methods
     // -----------------------------------------------------------------
 
-    protected DoubleMatrixNamed createMatrix( List MTemp, int rowCount, int colCount, List rowNames, List colNames1 ) {
+    protected DoubleMatrixNamed<String, String> createMatrix( List MTemp, int rowCount, int colCount,
+            List<String> rowNames, List<String> colNames1 ) {
 
-        DoubleMatrixNamed matrix = DoubleMatrix2DNamedFactory.fastrow( rowCount, colCount );
+        DoubleMatrixNamed<String, String> matrix = DoubleMatrix2DNamedFactory.fastrow( rowCount, colCount );
 
         for ( int i = 0; i < matrix.rows(); i++ ) {
             for ( int j = 0; j < matrix.columns(); j++ ) {

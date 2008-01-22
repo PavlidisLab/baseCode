@@ -30,7 +30,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -54,11 +53,11 @@ public class GeneSetMapTools {
      */
     public static void collapseGeneSets( GeneAnnotations geneData, StatusViewer messenger ) {
         Collection geneSets = geneData.getGeneSets();
-        Map classesToRedundantMap = geneData.geneSetToRedundantMap();
-        Map seenClasses = new LinkedHashMap();
-        Map sigs = new LinkedHashMap();
+        Map<String, Collection<String>> classesToRedundantMap = geneData.geneSetToRedundantMap();
+        Map<String, String> seenClasses = new LinkedHashMap<String, String>();
+        Map<String, String> sigs = new LinkedHashMap<String, String>();
 
-        Map seenit = new HashMap();
+        Map<String, Boolean> seenit = new HashMap<String, Boolean>();
 
         if ( messenger != null ) {
             messenger.showStatus( "There are " + geneData.numGeneSets()
@@ -69,7 +68,7 @@ public class GeneSetMapTools {
         int ignored = 0;
         for ( Iterator iter = geneSets.iterator(); iter.hasNext(); ) {
             String classId = ( String ) iter.next();
-            Collection classMembers = geneData.getActiveGeneSetGenes( classId );
+            Collection<String> classMembers = geneData.getActiveGeneSetGenes( classId );
             if ( classMembers.size() == 0 ) continue;
             if ( classMembers.contains( null ) ) {
                 classMembers.remove( null ); // FIXME why do we need to do this?
@@ -83,13 +82,11 @@ public class GeneSetMapTools {
             // classes are less likely to be identical to others,
             // anyway. In tests, the range shown below has no effect
             // on the results, but it _could_ matter.
-            if ( classMembers == null || classMembers.size() > 250 || classMembers.size() < 2 ) {
+            if ( classMembers.size() > 250 || classMembers.size() < 2 ) {
                 continue;
             }
 
-            Vector cls = new Vector( classMembers );
-
-            if ( cls == null ) continue;
+            List<String> cls = new Vector<String>( classMembers );
 
             Collections.sort( cls );
             String signature = "";
@@ -106,18 +103,18 @@ public class GeneSetMapTools {
         }
 
         // look at the signatures for repeats.
-        for ( Iterator iter = sigs.keySet().iterator(); iter.hasNext(); ) {
-            String classId = ( String ) iter.next();
-            String signature = ( String ) sigs.get( classId );
+        for ( Iterator<String> iter = sigs.keySet().iterator(); iter.hasNext(); ) {
+            String classId = iter.next();
+            String signature = sigs.get( classId );
 
             // if the signature has already been seen, add it to the redundant
             // list, and remove this class from the classToProbeMap.
             if ( seenClasses.containsKey( signature ) ) {
                 if ( !classesToRedundantMap.containsKey( seenClasses.get( signature ) ) ) {
-                    classesToRedundantMap.put( seenClasses.get( signature ), new ArrayList() );
+                    classesToRedundantMap.put( seenClasses.get( signature ), new ArrayList<String>() );
 
                 }
-                ( ( List ) classesToRedundantMap.get( seenClasses.get( signature ) ) ).add( classId );
+                classesToRedundantMap.get( seenClasses.get( signature ) ).add( classId );
                 ignored++;
                 geneData.removeClassFromMaps( classId );
                 // System.err.println(classId + " is the same as an existing class, " + seenClasses.get(signature));
@@ -200,9 +197,9 @@ public class GeneSetMapTools {
     public static void ignoreSimilar( double fractionSameThreshold, GeneAnnotations ga, StatusViewer messenger,
             int maxClassSize, int minClassSize, double bigClassPenalty ) {
 
-        Map classesToSimilarMap = new LinkedHashMap();
-        Set seenit = new HashSet();
-        Set deleteUs = new HashSet();
+        Map<String, Collection<String>> classesToSimilarMap = new LinkedHashMap<String, Collection<String>>();
+        Collection<String> seenit = new HashSet<String>();
+        Collection<String> deleteUs = new HashSet<String>();
 
         if ( messenger != null ) {
             messenger.showStatus( "...Highly (" + fractionSameThreshold * 100
@@ -211,7 +208,7 @@ public class GeneSetMapTools {
 
         // iterate over all the classes, starting from the smallest one.
         // List sortedList = ga.sortGeneSetsBySize();
-        List sortedList = new ArrayList( ga.getGeneSets() );
+        List<String> sortedList = new ArrayList<String>( ga.getGeneSets() );
         Collections.shuffle( sortedList );
 
         // OUTER - compare all classes to each other.
@@ -358,7 +355,7 @@ public class GeneSetMapTools {
 
         Collection geneSets = ga.getGeneSets();
 
-        Set removeUs = new HashSet();
+        Collection<String> removeUs = new HashSet<String>();
         for ( Iterator iter = geneSets.iterator(); iter.hasNext(); ) {
             String geneSet = ( String ) iter.next();
             if ( gon.getAspectForId( geneSet ).equals( aspect ) ) {
@@ -366,8 +363,7 @@ public class GeneSetMapTools {
             }
         }
 
-        for ( Iterator iter = removeUs.iterator(); iter.hasNext(); ) {
-            String geneSet = ( String ) iter.next();
+        for ( String geneSet : removeUs ) {
             ga.removeClassFromMaps( geneSet );
         }
 
@@ -390,12 +386,10 @@ public class GeneSetMapTools {
      */
     public static void removeBySize( GeneAnnotations ga, StatusViewer messenger, int minClassSize, int maxClassSize ) {
 
-        Collection geneSets = ga.getGeneSets();
+        Collection<String> geneSets = ga.getGeneSets();
 
-        Set removeUs = new HashSet();
-        for ( Iterator iter = geneSets.iterator(); iter.hasNext(); ) {
-            String geneSet = ( String ) iter.next();
-
+        Collection<String> removeUs = new HashSet<String>();
+        for ( String geneSet : geneSets ) {
             Collection element = ga.getActiveGeneSetGenes( geneSet );
             if ( element.size() < minClassSize || element.size() > maxClassSize ) {
                 removeUs.add( geneSet );
@@ -403,8 +397,7 @@ public class GeneSetMapTools {
 
         }
 
-        for ( Iterator iter = removeUs.iterator(); iter.hasNext(); ) {
-            String geneSet = ( String ) iter.next();
+        for ( String geneSet : removeUs ) {
             ga.removeClassFromMaps( geneSet );
         }
 
@@ -466,15 +459,16 @@ public class GeneSetMapTools {
      * @param queryClassId
      * @param targetClassId
      */
-    private static void storeSimilarSets( Map classesToSimilarMap, String queryClassId, String targetClassId ) {
+    private static void storeSimilarSets( Map<String, Collection<String>> classesToSimilarMap, String queryClassId,
+            String targetClassId ) {
         if ( !classesToSimilarMap.containsKey( targetClassId ) ) {
-            classesToSimilarMap.put( targetClassId, new HashSet() );
+            classesToSimilarMap.put( targetClassId, new HashSet<String>() );
         }
         if ( !classesToSimilarMap.containsKey( queryClassId ) ) {
-            classesToSimilarMap.put( queryClassId, new HashSet() );
+            classesToSimilarMap.put( queryClassId, new HashSet<String>() );
         }
-        ( ( HashSet ) classesToSimilarMap.get( queryClassId ) ).add( targetClassId );
-        ( ( HashSet ) classesToSimilarMap.get( targetClassId ) ).add( queryClassId );
+        classesToSimilarMap.get( queryClassId ).add( targetClassId );
+        classesToSimilarMap.get( targetClassId ).add( queryClassId );
     }
 
     /**
@@ -488,18 +482,16 @@ public class GeneSetMapTools {
         if ( messenger != null ) {
             messenger.showStatus( "Adding parent terms (" + ga.numGeneSets() + " gene sets now)" );
         }
-        Map toBeAdded = new HashMap();
-        Map parentCache = new HashMap();
+        Map<String, Collection<String>> toBeAdded = new HashMap<String, Collection<String>>();
+        Map<String, Collection<String>> parentCache = new HashMap<String, Collection<String>>();
         int count = 0;
         for ( Iterator iter = genes.iterator(); iter.hasNext(); ) {
             String gene = ( String ) iter.next();
 
-            Collection geneSets = ga.getGeneGeneSets( gene );
+            Collection<String> geneSets = ga.getGeneGeneSets( gene );
 
-            for ( Iterator iterator = geneSets.iterator(); iterator.hasNext(); ) {
-                String geneSet = ( String ) iterator.next();
-
-                Set parents = new HashSet();
+            for ( String geneSet : geneSets ) {
+                Collection<String> parents = new HashSet<String>();
                 getAllParents( gon, parentCache, geneSet, parents );
 
                 setParentsToBeAdded( toBeAdded, gene, parents );
@@ -513,7 +505,7 @@ public class GeneSetMapTools {
         parentCache = null;
         for ( Iterator iter = toBeAdded.keySet().iterator(); iter.hasNext(); ) {
             String gene = ( String ) iter.next();
-            Set parents = ( Set ) toBeAdded.get( gene );
+            Collection<String> parents = toBeAdded.get( gene );
             ga.addGoTermsToGene( gene, parents );
         }
 
@@ -530,12 +522,13 @@ public class GeneSetMapTools {
      * @param gene
      * @param parents
      */
-    private static void setParentsToBeAdded( Map toBeAdded, String gene, Set parents ) {
+    private static void setParentsToBeAdded( Map<String, Collection<String>> toBeAdded, String gene,
+            Collection<String> parents ) {
         if ( parents.size() == 0 ) return;
         if ( !toBeAdded.containsKey( gene ) ) {
-            toBeAdded.put( gene, new HashSet( parents ) );
+            toBeAdded.put( gene, parents );
         } else {
-            ( ( Set ) toBeAdded.get( gene ) ).addAll( parents );
+            toBeAdded.get( gene ).addAll( parents );
         }
     }
 
@@ -545,12 +538,13 @@ public class GeneSetMapTools {
      * @param geneSet
      * @return
      */
-    private static void getAllParents( GONames gon, Map parentCache, String geneSet, Collection parents ) {
+    private static void getAllParents( GONames gon, Map<String, Collection<String>> parentCache, String geneSet,
+            Collection<String> parents ) {
         // if ( parentCache.containsKey( geneSet ) ) {
         // parents = ( Set ) parentCache.get( geneSet );
         // } else {
         // recursively add all the parents.
-        Set newParents = gon.getParents( geneSet );
+        Collection<String> newParents = gon.getParents( geneSet );
         for ( Iterator it = newParents.iterator(); it.hasNext(); ) {
             String parent = ( String ) it.next();
             if ( parent.equals( "all" ) ) continue;

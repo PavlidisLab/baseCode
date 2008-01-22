@@ -22,24 +22,24 @@ package ubic.basecode.dataStructure.graph;
  * @author pavlidis
  * @version $Id$
  */
-public interface GraphNode {
+public interface GraphNode<K, V> extends Comparable {
 
     /**
      * @return the contents of the node.
      */
-    public Object getItem();
+    public V getItem();
 
     /**
      * @return the key for this node.
      */
-    public Object getKey();
+    public K getKey();
 
     /**
      * Set the contents of the node.
      * 
      * @param value
      */
-    public void setItem( Object value );
+    public void setItem( V value );
 
     /**
      * Set the key and value associated with this node.
@@ -47,15 +47,15 @@ public interface GraphNode {
      * @param key
      * @param value
      */
-    public void setValue( Object key, Object value );
+    public void setValue( K key, V value );
 
     /**
      * @return the Graph this belongs to.
      */
-    public Graph getGraph();
+    public Graph<K, V> getGraph();
 
     /**
      * @param graph
      */
-    public void setGraph( Graph graph );
+    public void setGraph( Graph<K, V> graph );
 }

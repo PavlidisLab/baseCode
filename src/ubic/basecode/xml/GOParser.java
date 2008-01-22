@@ -60,9 +60,9 @@ public class GOParser {
      * 
      * @return Map
      */
-    public Map getGONameMap() {
+    public Map<String, String> getGONameMap() {
         Map nodes = m.getItems();
-        Map result = new HashMap();
+        Map<String, String> result = new HashMap<String, String>();
         for ( Iterator it = nodes.keySet().iterator(); it.hasNext(); ) {
             DirectedGraphNode node = ( DirectedGraphNode ) nodes.get( it.next() );
             GOEntry e = ( GOEntry ) node.getItem();

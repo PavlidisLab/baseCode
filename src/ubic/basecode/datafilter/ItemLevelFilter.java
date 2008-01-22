@@ -18,7 +18,7 @@
  */
 package ubic.basecode.datafilter;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import ubic.basecode.dataStructure.matrix.NamedMatrix;
 
@@ -28,9 +28,9 @@ import ubic.basecode.dataStructure.matrix.NamedMatrix;
  * @author Pavlidis
  * @version $Id$
  */
-public class ItemLevelFilter extends AbstractLevelFilter {
+public class ItemLevelFilter<R, C> extends AbstractLevelFilter<R, C> {
 
-    public NamedMatrix filter( NamedMatrix data ) {
+    public NamedMatrix<R, C> filter( NamedMatrix<R, C> data ) {
         if ( !( data instanceof DoubleMatrixNamed ) ) {
             throw new IllegalArgumentException( "Only valid for DoubleMatrixNamed" );
         }
@@ -42,7 +42,7 @@ public class ItemLevelFilter extends AbstractLevelFilter {
 
         int numRows = data.rows();
         int numCols = data.columns();
-        DoubleMatrixNamed returnval = DoubleMatrix2DNamedFactory.dense( numRows, numCols );
+        DoubleMatrixNamed<R, C> returnval = new DenseDoubleMatrix2DNamed<R, C>( numRows, numCols );
         for ( int i = 0; i < numRows; i++ ) {
 
             for ( int j = 0; j < numCols; j++ ) {

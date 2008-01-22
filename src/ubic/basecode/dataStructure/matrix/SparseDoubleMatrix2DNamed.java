@@ -30,7 +30,7 @@ import cern.colt.matrix.impl.SparseDoubleMatrix2D;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class SparseDoubleMatrix2DNamed extends DoubleMatrixNamed {
+public class SparseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
 
     private SparseDoubleMatrix2D matrix;
 
@@ -120,9 +120,9 @@ public class SparseDoubleMatrix2DNamed extends DoubleMatrixNamed {
         }
         return result;
     }
-    
-    public Object getObj(int row, int col) {
-    	return new Double(get(row, col));
+
+    public Object getObj( int row, int col ) {
+        return new Double( get( row, col ) );
     }
 
     /**
@@ -166,7 +166,7 @@ public class SparseDoubleMatrix2DNamed extends DoubleMatrixNamed {
      * @param s String
      * @return double[]
      */
-    public double[] getRowByName( String s ) {
+    public double[] getRowByName( R s ) {
         return getRow( getRowIndexByName( s ) );
     }
 

@@ -32,15 +32,15 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed {
+public class SparseRaggedDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
 
-    private Vector matrix; // a vector of DoubleArrayList containing the values of the matrix
+    private Vector<DoubleMatrix1D> matrix; // a vector of DoubleMatrix1D containing the values of the matrix
 
     int columns = 0;
     private boolean isDirty = true;
 
     public SparseRaggedDoubleMatrix2DNamed() {
-        matrix = new Vector();
+        matrix = new Vector<DoubleMatrix1D>();
     }
 
     /*
@@ -94,9 +94,7 @@ public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed {
      * @param d value
      */
     public void set( int i, int j, double d ) {
-
-        ( ( DoubleMatrix1D ) matrix.get( i ) ).set( j, d );
-
+        matrix.get( i ).set( j, d );
     }
 
     /*
@@ -123,9 +121,9 @@ public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed {
     public Object[] getColObj( int i ) {
         throw new UnsupportedOperationException();
     }
-    
-    public Object getObj(int row, int col) {
-    	return new Double(get(row, col));
+
+    public Object getObj( int row, int col ) {
+        return new Double( get( row, col ) );
     }
 
     /**
@@ -182,7 +180,7 @@ public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed {
      * @return
      */
     public double get( int i, int j ) {
-        return ( ( DoubleMatrix1D ) matrix.get( i ) ).getQuick( j );
+        return matrix.get( i ).getQuick( j );
     }
 
     /**
@@ -194,7 +192,7 @@ public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed {
      */
     public DoubleArrayList getRowArrayList( int row ) {
         DoubleArrayList returnVal = new DoubleArrayList();
-        ( ( DoubleMatrix1D ) matrix.get( row ) ).getNonZeros( new IntArrayList(), returnVal );
+        matrix.get( row ).getNonZeros( new IntArrayList(), returnVal );
         return returnVal;
     }
 
@@ -204,7 +202,7 @@ public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed {
      * @see basecode.dataStructure.matrix.AbstractNamedDoubleMatrix#viewRow(int)
      */
     public DoubleMatrix1D viewRow( int i ) {
-        return ( DoubleMatrix1D ) matrix.get( i );
+        return matrix.get( i );
     }
 
     /*
@@ -213,8 +211,7 @@ public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed {
      * @see basecode.dataStructure.matrix.AbstractNamedDoubleMatrix#getRow(int)
      */
     public double[] getRow( int i ) {
-        // return getRowMatrix1D( i ).toArray();
-        return ( ( DoubleMatrix1D ) matrix.get( i ) ).toArray();
+        return matrix.get( i ).toArray();
     }
 
     /**
@@ -222,11 +219,10 @@ public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed {
      * @param indexes
      * @param values
      */
-    public void addRow( Object name, IntArrayList indexes, DoubleArrayList values ) {
+    public void addRow( R name, IntArrayList indexes, DoubleArrayList values ) {
         DoubleMatrix1D rowToAdd = new RCDoubleMatrix1D( indexes, values );
 
         matrix.add( rowToAdd );
-        this.addColumnName( name, matrix.size() - 1 );
         this.addRowName( name, matrix.size() - 1 );
         isDirty = true;
     }
@@ -234,9 +230,8 @@ public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed {
     /**
      * @param matrix1D
      */
-    public void addRow( Object name, DoubleMatrix1D matrix1D ) {
+    public void addRow( R name, DoubleMatrix1D matrix1D ) {
         matrix.add( matrix1D );
-        this.addColumnName( name, matrix.size() - 1 );
         this.addRowName( name, matrix.size() - 1 );
         isDirty = true;
     }
@@ -256,7 +251,7 @@ public class SparseRaggedDoubleMatrix2DNamed extends DoubleMatrixNamed {
      * @see basecode.dataStructure.matrix.DoubleMatrixNamed#setQuick(int, int, double)
      */
     public void setQuick( int j, int i, double c ) {
-        ( ( DoubleMatrix1D ) matrix.get( i ) ).set( j, c );
+        matrix.get( i ).set( j, c );
     }
 
     /*

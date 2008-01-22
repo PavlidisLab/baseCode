@@ -32,7 +32,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @author xwan
  * @version $Id$
  */
-public class CompressedSparseDoubleMatrix2DNamed extends DoubleMatrixNamed {
+public class CompressedSparseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
     private FlexCompRowMatrix matrix;
 
     /**
@@ -55,15 +55,15 @@ public class CompressedSparseDoubleMatrix2DNamed extends DoubleMatrixNamed {
      * @return double[]
      */
     public double[] getRow( int row ) {
-		SparseVector vector = this.matrix.getRow(row);
-		double[] data = vector.getData();
-		int[] indices = vector.getIndex();
-		double[] values = new double[columns()];
-    	for(int j = 0; j < data.length; j++){
-    		if(indices[j] == 0 && j > 0) break;
-    		values[indices[j]] = data[j];
-    	}
-    	return values;
+        SparseVector vector = this.matrix.getRow( row );
+        double[] data = vector.getData();
+        int[] indices = vector.getIndex();
+        double[] values = new double[columns()];
+        for ( int j = 0; j < data.length; j++ ) {
+            if ( indices[j] == 0 && j > 0 ) break;
+            values[indices[j]] = data[j];
+        }
+        return values;
     }
 
     /*
@@ -95,7 +95,7 @@ public class CompressedSparseDoubleMatrix2DNamed extends DoubleMatrixNamed {
 
     public Object[] getRowObj( int row ) {
         Double[] result = new Double[columns()];
-        double[] values = getRow(row);
+        double[] values = getRow( row );
         for ( int i = 0; i < columns(); i++ ) {
             result[i] = new Double( values[i] );
         }
@@ -109,9 +109,9 @@ public class CompressedSparseDoubleMatrix2DNamed extends DoubleMatrixNamed {
         }
         return result;
     }
-    
-    public Object getObj(int row, int col) {
-    	return new Double(get(row, col));
+
+    public Object getObj( int row, int col ) {
+        return new Double( get( row, col ) );
     }
 
     /**
@@ -155,7 +155,7 @@ public class CompressedSparseDoubleMatrix2DNamed extends DoubleMatrixNamed {
      * @param s String
      * @return double[]
      */
-    public double[] getRowByName( String s ) {
+    public double[] getRowByName( R s ) {
         return getRow( getRowIndexByName( s ) );
     }
 
@@ -229,7 +229,7 @@ public class CompressedSparseDoubleMatrix2DNamed extends DoubleMatrixNamed {
      * @return
      */
     public DoubleMatrix1D viewRow( int row ) {
-        return new DenseDoubleMatrix1D( getRow(row) );
+        return new DenseDoubleMatrix1D( getRow( row ) );
     }
 
     /**

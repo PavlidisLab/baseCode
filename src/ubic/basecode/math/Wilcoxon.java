@@ -32,7 +32,7 @@ import cern.jet.stat.Probability;
 
 /**
  * Implements methods from supplementary file I of "Comparing functional annotation analyses with Catmap", Thomas
- * Breslin, Patrik Edén and Morten Krogh, BMC Bioinformatics 2004, 5:193 doi:10.1186/1471-2105-5-193
+ * Breslin, Patrik Edï¿½n and Morten Krogh, BMC Bioinformatics 2004, 5:193 doi:10.1186/1471-2105-5-193
  * <p>
  * Note that in the Catmap code, zero-based ranks are used, but these are converted to one-based before computation of
  * pvalues. Therefore this code uses one-based ranks throughout.
@@ -43,7 +43,7 @@ import cern.jet.stat.Probability;
  */
 public class Wilcoxon {
 
-    private static final Map cache = new HashMap();
+    private static final Map<Integer, Map<Integer, Map<Integer, BigInteger>>> cache = new HashMap<Integer, Map<Integer, Map<Integer, BigInteger>>>();
     private static Log log = LogFactory.getLog( Wilcoxon.class.getName() );
 
     /**
@@ -90,16 +90,16 @@ public class Wilcoxon {
         Integer R_i = new Integer( R );
 
         if ( !cache.containsKey( N_i ) ) {
-            cache.put( N_i, new HashMap() );
+            cache.put( N_i, new HashMap<Integer, Map<Integer, BigInteger>>() );
         }
 
-        Map nVals = ( Map ) cache.get( N_i );
+        Map<Integer, Map<Integer, BigInteger>> nVals = cache.get( N_i );
 
         if ( !nVals.containsKey( n_i ) ) {
-            nVals.put( n_i, new HashMap() );
+            nVals.put( n_i, new HashMap<Integer, BigInteger>() );
         }
 
-        Map rVals = ( Map ) nVals.get( n_i );
+        Map<Integer, BigInteger> rVals = nVals.get( n_i );
 
         rVals.put( R_i, value );
     }
@@ -186,7 +186,7 @@ public class Wilcoxon {
         Integer R_i = new Integer( R );
         if ( !cache.containsKey( N_i ) ) return false;
 
-        Map nVals = ( Map ) cache.get( N_i );
+        Map nVals = cache.get( N_i );
 
         if ( !nVals.containsKey( n_i ) ) return false;
 
@@ -201,15 +201,15 @@ public class Wilcoxon {
      * Purely for debugging.
      */
     protected static void printCache() {
-        for ( Iterator iter = cache.keySet().iterator(); iter.hasNext(); ) {
-            Integer N = ( Integer ) iter.next();
-            Map nToRs = ( Map ) cache.get( N );
+        for ( Iterator<Integer> iter = cache.keySet().iterator(); iter.hasNext(); ) {
+            Integer N = iter.next();
+            Map<Integer, Map<Integer, BigInteger>> nToRs = cache.get( N );
             for ( Iterator iterator = nToRs.keySet().iterator(); iterator.hasNext(); ) {
                 Integer n = ( Integer ) iterator.next();
-                Map rs = ( Map ) nToRs.get( n );
-                for ( Iterator itc = rs.keySet().iterator(); itc.hasNext(); ) {
-                    Integer r = ( Integer ) itc.next();
-                    BigInteger a = ( BigInteger ) rs.get( r );
+                Map<Integer, BigInteger> rs = nToRs.get( n );
+                for ( Iterator<Integer> itc = rs.keySet().iterator(); itc.hasNext(); ) {
+                    Integer r = itc.next();
+                    BigInteger a = rs.get( r );
                     log.debug( N + ", " + n + ", " + r + "=" + a );
                 }
             }
@@ -229,7 +229,7 @@ public class Wilcoxon {
 
         // if ( !cache.containsKey( N_i ) ) return -1;
 
-        Map nVals = ( Map ) cache.get( N_i );
+        Map nVals = cache.get( N_i );
 
         // if ( !nVals.containsKey( n_i ) ) return -1;
 

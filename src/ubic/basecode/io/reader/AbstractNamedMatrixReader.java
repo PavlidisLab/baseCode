@@ -38,16 +38,16 @@ import ubic.basecode.dataStructure.matrix.NamedMatrix;
  */
 public abstract class AbstractNamedMatrixReader {
 
-    public abstract NamedMatrix read( String filename ) throws IOException;
+    public abstract NamedMatrix<String, String> read( String filename ) throws IOException;
 
-    public abstract NamedMatrix read( InputStream stream ) throws IOException;
+    public abstract NamedMatrix<String, String> read( InputStream stream ) throws IOException;
 
-    public abstract NamedMatrix readOneRow( BufferedReader dis ) throws IOException;
+    public abstract NamedMatrix<String, String> readOneRow( BufferedReader dis ) throws IOException;
 
     protected static final Log log = LogFactory.getLog( AbstractNamedMatrixReader.class );
 
-    protected List readHeader( BufferedReader dis ) throws IOException {
-        List headerVec = new Vector();
+    protected List<String> readHeader( BufferedReader dis ) throws IOException {
+        List<String> headerVec = new Vector<String>();
         String header = dis.readLine();
         StringTokenizer st = new StringTokenizer( header, "\t", true ); // return
         // delims.

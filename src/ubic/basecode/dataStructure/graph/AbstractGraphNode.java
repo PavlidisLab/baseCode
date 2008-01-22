@@ -27,10 +27,10 @@ import ubic.basecode.dataStructure.Visitable;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public abstract class AbstractGraphNode extends Visitable implements GraphNode {
-    protected Object key;
-    protected Object item;
-    protected Graph graph; // the graph this belongs to.
+public abstract class AbstractGraphNode<K, V> extends Visitable implements GraphNode<K, V> {
+    protected K key;
+    protected V item;
+    protected Graph<K, V> graph; // the graph this belongs to.
     protected boolean visited = false;
     protected static Log log = LogFactory.getLog( GraphNode.class );
 
@@ -39,7 +39,7 @@ public abstract class AbstractGraphNode extends Visitable implements GraphNode {
      * 
      * @return
      */
-    public Object getItem() {
+    public V getItem() {
         return item;
     }
 
@@ -48,7 +48,7 @@ public abstract class AbstractGraphNode extends Visitable implements GraphNode {
      * 
      * @return Object
      */
-    public Object getKey() {
+    public K getKey() {
         return key;
     }
 
@@ -60,7 +60,7 @@ public abstract class AbstractGraphNode extends Visitable implements GraphNode {
      * @param value
      * @param graph
      */
-    public AbstractGraphNode( Object key, Object value, Graph graph ) {
+    public AbstractGraphNode( K key, V value, Graph<K, V> graph ) {
         if ( key == null || value == null || graph == null ) throw new NullPointerException( "Null value given" );
         this.setValue( key, value );
         this.graph = graph;
@@ -71,7 +71,7 @@ public abstract class AbstractGraphNode extends Visitable implements GraphNode {
      * 
      * @param key
      */
-    public AbstractGraphNode( Object key ) {
+    public AbstractGraphNode( K key ) {
         this.key = key;
         this.item = null;
     }
@@ -81,16 +81,16 @@ public abstract class AbstractGraphNode extends Visitable implements GraphNode {
      * 
      * @param graph Graph
      */
-    public void setGraph( Graph graph ) {
+    public void setGraph( Graph<K, V> graph ) {
         this.graph = graph;
     }
 
-    public void setValue( Object key, Object value ) {
+    public void setValue( K key, V value ) {
         this.item = value;
         this.key = key;
     }
 
-    public void setItem( Object value ) {
+    public void setItem( V value ) {
         this.item = value;
     }
 
@@ -98,7 +98,7 @@ public abstract class AbstractGraphNode extends Visitable implements GraphNode {
         return item.toString();
     }
 
-    public Graph getGraph() {
+    public Graph<K, V> getGraph() {
         return graph;
     }
 

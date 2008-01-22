@@ -163,7 +163,7 @@ public interface RClient {
      * @param variableName
      * @return
      */
-    public abstract DoubleMatrixNamed retrieveMatrix( String variableName );
+    public abstract DoubleMatrixNamed<String, String> retrieveMatrix( String variableName );
 
     /*
      * (non-Javadoc)

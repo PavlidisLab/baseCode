@@ -5,158 +5,152 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public abstract class AbstractNamedMatrix3D implements NamedMatrix3D {
-	public LinkedHashMap colMap;
-	public LinkedHashMap rowMap;
-	public LinkedHashMap sliceMap;
-	public List colNames;
-	public List rowNames;
-	public List sliceNames;
-	
-	public AbstractNamedMatrix3D() {
-		colMap = new LinkedHashMap();
-		rowMap = new LinkedHashMap();
-		sliceMap = new LinkedHashMap();
-		colNames = new ArrayList();
-		rowNames = new ArrayList();
-		sliceNames = new ArrayList();
-	}
+public abstract class AbstractNamedMatrix3D<R, C, S> implements NamedMatrix3D<R, C, S> {
+    public LinkedHashMap<C, Integer> colMap;
+    public LinkedHashMap<R, Integer> rowMap;
+    public LinkedHashMap<S, Integer> sliceMap;
+    public List<C> colNames;
+    public List<R> rowNames;
+    public List<S> sliceNames;
 
-	public final void addColumnName(Object s, int index) {
-		if (colNames.contains(s))
-			return;
-		colMap.put(s, new Integer(index));
-		colNames.add(s);
-	}
+    public AbstractNamedMatrix3D() {
+        colMap = new LinkedHashMap<C, Integer>();
+        rowMap = new LinkedHashMap<R, Integer>();
+        sliceMap = new LinkedHashMap<S, Integer>();
+        colNames = new ArrayList<C>();
+        rowNames = new ArrayList<R>();
+        sliceNames = new ArrayList<S>();
+    }
 
-	public final void addRowName(Object s, int index) {
-		if (rowNames.contains(s))
-			return;
-		rowMap.put(s, new Integer(index));
-		rowNames.add(s);
+    public final void addColumnName( C s, int index ) {
+        if ( colNames.contains( s ) ) return;
+        colMap.put( s, new Integer( index ) );
+        colNames.add( s );
+    }
 
-	}
+    public final void addRowName( R s, int index ) {
+        if ( rowNames.contains( s ) ) return;
+        rowMap.put( s, new Integer( index ) );
+        rowNames.add( s );
 
-	public final void addSliceName(Object s, int index) {
-		if (sliceNames.contains(s))
-			return;
-		sliceMap.put(s, new Integer(index));
-		sliceNames.add(s);
-	}
+    }
 
-	public abstract int columns();
+    public final void addSliceName( S s, int index ) {
+        if ( sliceNames.contains( s ) ) return;
+        sliceMap.put( s, new Integer( index ) );
+        sliceNames.add( s );
+    }
 
-	public final boolean containsColumnName(Object columnName) {
-		return colMap.containsKey(columnName);
-	}
+    public abstract int columns();
 
-	public final boolean containsRowName(Object rowName) {
-		return rowMap.containsKey(rowName);
-	}
+    public final boolean containsColumnName( Object columnName ) {
+        return colMap.containsKey( columnName );
+    }
 
-	public final boolean containsSliceName(Object sliceName) {
-		return sliceMap.containsKey(sliceName);
-	}
+    public final boolean containsRowName( Object rowName ) {
+        return rowMap.containsKey( rowName );
+    }
 
-	public final int getColIndexByName(Object s) {
-		Integer index = (Integer) colMap.get(s);
-		if (index == null)
-			throw new IllegalArgumentException(s + " not found");
-		return index.intValue();
-	}
+    public final boolean containsSliceName( Object sliceName ) {
+        return sliceMap.containsKey( sliceName );
+    }
 
-	public Object getColName(int i) {
-		return colNames.get(i);
-	}
+    public final int getColIndexByName( Object s ) {
+        Integer index = colMap.get( s );
+        if ( index == null ) throw new IllegalArgumentException( s + " not found" );
+        return index.intValue();
+    }
 
-	public Iterator getColNameIterator() {
-		return colNames.iterator();
-	}
+    public C getColName( int i ) {
+        return colNames.get( i );
+    }
 
-	public List getColNames() {
-		return colNames;
-	}
+    public Iterator<C> getColNameIterator() {
+        return colNames.iterator();
+    }
 
-	public int getRowIndexByName(Object s) {
-		Integer index = (Integer) rowMap.get(s);
-		if (index == null)
-			throw new IllegalArgumentException(s + " not found");
-		return index.intValue();
-	}
+    public List<C> getColNames() {
+        return colNames;
+    }
 
-	public Object getRowName(int i) {
-		return rowNames.get(i);
-	}
+    public int getRowIndexByName( R s ) {
+        Integer index = rowMap.get( s );
+        if ( index == null ) throw new IllegalArgumentException( s + " not found" );
+        return index.intValue();
+    }
 
-	public Iterator getRowNameIterator() {
-		return rowMap.keySet().iterator();
-	}
+    public R getRowName( int i ) {
+        return rowNames.get( i );
+    }
 
-	public List getRowNames() {
-		return rowNames;
-	}
+    public Iterator<R> getRowNameIterator() {
+        return rowMap.keySet().iterator();
+    }
 
-	public int getSliceIndexByName(Object s) {
-		Integer index = (Integer) sliceMap.get(s);
-		if (index == null)
-			throw new IllegalArgumentException(s + " not found");
-		return index.intValue();
-	}
+    public List<R> getRowNames() {
+        return rowNames;
+    }
 
-	public Object getSliceName(int i) {
-		return sliceNames.get(i);
-	}
+    public int getSliceIndexByName( S s ) {
+        Integer index = sliceMap.get( s );
+        if ( index == null ) throw new IllegalArgumentException( s + " not found" );
+        return index.intValue();
+    }
 
-	public Iterator getSliceNameIterator() {
-		return sliceNames.iterator();
-	}
+    public S getSliceName( int i ) {
+        return sliceNames.get( i );
+    }
 
-	public List getSliceNames() {
-		return sliceNames;
-	}
+    public Iterator<S> getSliceNameIterator() {
+        return sliceNames.iterator();
+    }
 
-	public boolean hasColNames() {
-		return columns() == colNames.size();
-	}
-	
-	public abstract Object getObj(int i, int j, int k);
+    public List<S> getSliceNames() {
+        return sliceNames;
+    }
 
-	public boolean hasRow(Object r) {
-		return rowMap.containsKey(r);
-	}
+    public boolean hasColNames() {
+        return columns() == colNames.size();
+    }
 
-	public boolean hasRowNames() {
-		return rows() == rowNames.size();
-	}
+    public abstract Object getObj( int i, int j, int k );
 
-	public boolean hasSliceNames() {
-		return slices() == sliceNames.size();
-	}
+    public boolean hasRow( Object r ) {
+        return rowMap.containsKey( r );
+    }
 
-	public abstract boolean isMissing(int slice, int row, int col);
+    public boolean hasRowNames() {
+        return rows() == rowNames.size();
+    }
 
-	public abstract int numMissing();
+    public boolean hasSliceNames() {
+        return slices() == sliceNames.size();
+    }
 
-	public abstract int rows();
+    public abstract boolean isMissing( int slice, int row, int col );
 
-	public void setColumnNames(List v) {
-		colNames = v;
-		for (int i = 0 ; i < v.size(); i++)
-			colMap.put(v.get(i), new Integer(i));
-	}
+    public abstract int numMissing();
 
-	public void setRowNames(List v) {
-		rowNames = v;
-		for (int i = 0; i < v.size(); i++) 
-			rowMap.put(v.get(i), new Integer(i));
-	}
-	
-	public void setSliceNames(List v) {
-		sliceNames = v;
-		for (int i = 0; i < v.size(); i++)
-			sliceMap.put(v.get(i), new Integer(i));
-	}
+    public abstract int rows();
 
-	public abstract int slices();
-	
+    public void setColumnNames( List<C> v ) {
+        colNames = v;
+        for ( int i = 0; i < v.size(); i++ )
+            colMap.put( v.get( i ), new Integer( i ) );
+    }
+
+    public void setRowNames( List<R> v ) {
+        rowNames = v;
+        for ( int i = 0; i < v.size(); i++ )
+            rowMap.put( v.get( i ), new Integer( i ) );
+    }
+
+    public void setSliceNames( List<S> v ) {
+        sliceNames = v;
+        for ( int i = 0; i < v.size(); i++ )
+            sliceMap.put( v.get( i ), new Integer( i ) );
+    }
+
+    public abstract int slices();
+
 }

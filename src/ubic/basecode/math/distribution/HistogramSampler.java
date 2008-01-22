@@ -41,11 +41,11 @@ public class HistogramSampler {
      * @param max Maximum of range histogram covers (value at the start of the last bin)
      */
     public HistogramSampler( int[] counts, double min, double max ) {
-    	histogramAxis = new FixedAxis(counts.length - 1, min, max);
+        histogramAxis = new FixedAxis( counts.length - 1, min, max );
         uniformDist = new Uniform( 0, 1, ( int ) System.currentTimeMillis() );
         int sum = 0;
-        for (int i = 0; i < counts.length; i++) {
-        	sum += counts[i];
+        for ( int i = 0; i < counts.length; i++ ) {
+            sum += counts[i];
         }
 
         this.cdf = new double[counts.length];
@@ -57,21 +57,21 @@ public class HistogramSampler {
         }
 
     }
-    
+
     /**
      * @param histogram
      */
-    public HistogramSampler(Histogram1D histogram) {
+    public HistogramSampler( Histogram1D histogram ) {
         this.uniformDist = new Uniform( 0, 1, ( int ) System.currentTimeMillis() );
-    	this.histogramAxis = histogram.xAxis();
-    	this.cdf = new double[histogramAxis.bins()];
-    	
-    	double sum = histogram.sumBinHeights();
-    	double prev = 0.0;
-    	for (int i = 0; i < histogramAxis.bins(); i++) {
-    		cdf[i] = (double) histogram.binHeight(i) / sum + prev;
-    		prev = cdf[i];
-    	}
+        this.histogramAxis = histogram.xAxis();
+        this.cdf = new double[histogramAxis.bins()];
+
+        double sum = histogram.sumBinHeights();
+        double prev = 0.0;
+        for ( int i = 0; i < histogramAxis.bins(); i++ ) {
+            cdf[i] = histogram.binHeight( i ) / sum + prev;
+            prev = cdf[i];
+        }
     }
 
     public double nextSample() {
@@ -82,11 +82,11 @@ public class HistogramSampler {
         double u = uniformDist.nextDouble();
         for ( int i = 0; i < cdf.length; i++ ) {
             if ( cdf[i] >= u ) {
-            	double bin = histogramAxis.binLowerEdge(i);
-            	return bin;
+                double bin = histogramAxis.binLowerEdge( i );
+                return bin;
             }
         }
-        return histogramAxis.binLowerEdge(cdf.length - 1);
+        return histogramAxis.binLowerEdge( cdf.length - 1 );
 
     }
 }

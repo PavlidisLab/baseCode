@@ -400,7 +400,7 @@ public class CorrelationStats {
             int[] ar = new int[n_small];
             int ifr;
             int nfac = 1;
-            double n3 = ( double ) n;
+            double n3 = n;
             n3 *= ( n3 * n3 - 1.0 ) / 3.0;/* = (n^3 - n)/3 */
             if ( sStat > n3 ) { /* larger than maximal value */
                 return 0.0; // best possible pvalue...

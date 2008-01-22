@@ -33,9 +33,9 @@ import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class RowAbsentFilter extends AbstractFilter implements Filter {
+public class RowAbsentFilter<R, C> extends AbstractFilter<R, C> {
 
-    private StringMatrix2DNamed flags = null;
+    private StringMatrix2DNamed<R, C> flags = null;
 
     private double minPresentFraction = 0.0;
     private int minPresentCount = 0;
@@ -47,7 +47,7 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
     /**
      * @param f the matrix containing the flags.
      */
-    public void setFlagMatrix( StringMatrix2DNamed f ) {
+    public void setFlagMatrix( StringMatrix2DNamed<R, C> f ) {
         if ( f == null ) {
             throw new IllegalArgumentException( "Flag matrix is null" );
         }
@@ -90,7 +90,7 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
      * @param data The input matrix
      * @return Matrix after filtering.
      */
-    public NamedMatrix filter( NamedMatrix data ) {
+    public NamedMatrix<R, C> filter( NamedMatrix<R, C> data ) {
 
         int numRows = data.rows();
         int numCols = data.columns();
@@ -123,12 +123,12 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
             return data;
         }
 
-        List MTemp = new Vector();
-        List rowNames = new Vector();
+        List<Object[]> MTemp = new Vector<Object[]>();
+        List<R> rowNames = new Vector<R>();
 
         int kept = 0;
         for ( int i = 0; i < numRows; i++ ) {
-            Object rowName = data.getRowName( i );
+            R rowName = data.getRowName( i );
 
             if ( !flags.containsRowName( rowName ) ) {
                 log.debug( "Row " + rowName + " not found in flags, skipping." );
@@ -137,7 +137,7 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
 
             int numPresent = 0;
             for ( int j = 0; j < numCols; j++ ) {
-                Object colName = data.getColName( j );
+                C colName = data.getColName( j );
 
                 if ( !flags.containsColumnName( colName ) ) {
                     log.debug( "Column " + colName + " not found in flags, skipping." );
@@ -176,10 +176,10 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
             }
         }
 
-        NamedMatrix returnval = getOutputMatrix( data, MTemp.size(), numCols );
+        NamedMatrix<R, C> returnval = getOutputMatrix( data, MTemp.size(), numCols );
         for ( int i = 0; i < MTemp.size(); i++ ) {
             for ( int j = 0; j < numCols; j++ ) {
-                returnval.set( i, j, ( ( Object[] ) MTemp.get( i ) )[j] );
+                returnval.set( i, j, MTemp.get( i )[j] );
             }
         }
         returnval.setColumnNames( data.getColNames() );
@@ -187,7 +187,7 @@ public class RowAbsentFilter extends AbstractFilter implements Filter {
 
         log.info( "There are " + kept + " rows left after filtering." );
 
-        return ( returnval );
+        return returnval;
     }
 
     /**

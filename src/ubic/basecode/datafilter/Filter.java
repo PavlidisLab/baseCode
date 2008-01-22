@@ -1,3 +1,21 @@
+/*
+ * The baseCode project
+ * 
+ * Copyright (c) 2008 University of British Columbia
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package ubic.basecode.datafilter;
 
 import ubic.basecode.dataStructure.matrix.NamedMatrix;
@@ -5,13 +23,11 @@ import ubic.basecode.dataStructure.matrix.NamedMatrix;
 /**
  * An interface representing the functionality of a class that can filter 2-d matrix-based data by row-oriented
  * criteria.
- * <p>
- * Copyright (c) 2004 Columbia University
  * 
  * @author Pavlidis
  * @version $Id$
  */
-public interface Filter {
+public interface Filter<R, C> {
 
     /**
      * Filter the data
@@ -20,5 +36,5 @@ public interface Filter {
      *        the Filter interface.
      * @return The resulting filtered matrix
      */
-    public NamedMatrix filter( NamedMatrix data );
+    public NamedMatrix<R, C> filter( NamedMatrix<R, C> data );
 }

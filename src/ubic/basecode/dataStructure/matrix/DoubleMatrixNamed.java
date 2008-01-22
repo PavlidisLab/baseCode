@@ -30,7 +30,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public abstract class DoubleMatrixNamed extends AbstractNamedMatrix {
+public abstract class DoubleMatrixNamed<R, C> extends AbstractNamedMatrix<R, C> {
 
     protected static Log log = LogFactory.getLog( DoubleMatrixNamed.class.getName() );
 
@@ -68,8 +68,8 @@ public abstract class DoubleMatrixNamed extends AbstractNamedMatrix {
      * @see basecode.dataStructure.matrix.NamedMatrix#getColObj(int)
      */
     public abstract Object[] getColObj( int i );
-    
-    public abstract Object getObj(int i, int j);
+
+    public abstract Object getObj( int i, int j );
 
     /*
      * (non-Javadoc)
@@ -105,7 +105,7 @@ public abstract class DoubleMatrixNamed extends AbstractNamedMatrix {
      * @param s String
      * @return double[]
      */
-    public double[] getRowByName( Object s ) {
+    public double[] getRowByName( R s ) {
         return getRow( getRowIndexByName( s ) );
     }
 
@@ -113,7 +113,7 @@ public abstract class DoubleMatrixNamed extends AbstractNamedMatrix {
      * @param s String
      * @return double[]
      */
-    public double[] getColumnByName( Object s ) {
+    public double[] getColumnByName( C s ) {
         return getColumn( getColIndexByName( s ) );
     }
 

@@ -28,11 +28,11 @@ import java.util.Set;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
+public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements Comparable {
 
-    protected Set parents;
+    protected Set<K> parents;
     // immeddiate parents, references to other GraphNodes by keys.
-    protected Set children;
+    protected Set<K> children;
     // immediate children, references to other GraphNodes by keys.
 
     protected int topoSortOrder = 0;
@@ -42,10 +42,10 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
      * @param value Object
      * @param graph Graph
      */
-    public DirectedGraphNode( Object key, Object value, Graph graph ) {
+    public DirectedGraphNode( K key, V value, Graph<K, V> graph ) {
         super( key, value, graph );
-        parents = new LinkedHashSet();
-        children = new LinkedHashSet();
+        parents = new LinkedHashSet<K>();
+        children = new LinkedHashSet<K>();
     }
 
     /**
@@ -65,28 +65,28 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
     /**
      * @param newChildKey Object
      */
-    public void addChild( Object newChildKey ) {
+    public void addChild( K newChildKey ) {
         children.add( newChildKey );
     }
 
     /**
      * @param newParentKey Object
      */
-    public void addParent( Object newParentKey ) {
+    public void addParent( K newParentKey ) {
         parents.add( newParentKey );
     }
 
     /**
      * @return Object
      */
-    public Object getParentKeys() {
+    public Set<K> getParentKeys() {
         return parents;
     }
 
     /**
      * @return Object
      */
-    public Object getChildKeys() {
+    public Set<K> getChildKeys() {
         return children;
     }
 
@@ -96,11 +96,11 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
      * 
      * @return Set containing the child nodes of this node.
      */
-    public Set getChildNodes() {
-        Set f = new LinkedHashSet();
-        for ( Iterator i = this.getChildIterator(); i.hasNext(); ) {
-            Object k = i.next();
-            f.add( getGraph().get( k ) );
+    public Set<DirectedGraphNode> getChildNodes() {
+        Set<DirectedGraphNode> f = new LinkedHashSet<DirectedGraphNode>();
+        for ( Iterator<K> i = this.getChildIterator(); i.hasNext(); ) {
+            K k = i.next();
+            f.add( ( DirectedGraphNode ) getGraph().get( k ) );
         }
         return f;
     }
@@ -110,11 +110,11 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
      * 
      * @return Set
      */
-    public Set getParentNodes() {
-        Set f = new LinkedHashSet();
-        for ( Iterator i = this.getParentIterator(); i.hasNext(); ) {
-            Object k = i.next();
-            f.add( getGraph().get( k ) );
+    public Set<DirectedGraphNode> getParentNodes() {
+        Set<DirectedGraphNode> f = new LinkedHashSet<DirectedGraphNode>();
+        for ( Iterator<K> i = this.getParentIterator(); i.hasNext(); ) {
+            K k = i.next();
+            f.add( ( DirectedGraphNode ) getGraph().get( k ) );
         }
         return f;
     }
@@ -124,14 +124,14 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
      * 
      * @return Graph
      */
-    public Graph getChildGraph() {
-        Set k = this.getAllChildNodes();
+    public Graph<K, V> getChildGraph() {
+        Set<DirectedGraphNode<K, V>> k = this.getAllChildNodes();
         k.add( this );
 
-        DirectedGraph returnVal = new DirectedGraph();
-        for ( Iterator it = k.iterator(); it.hasNext(); ) {
-            DirectedGraphNode m = ( DirectedGraphNode ) it.next();
-            returnVal.addNode( ( DirectedGraphNode ) m.clone() );
+        DirectedGraph<K, V> returnVal = new DirectedGraph<K, V>();
+        for ( Iterator<DirectedGraphNode<K, V>> it = k.iterator(); it.hasNext(); ) {
+            DirectedGraphNode<K, V> m = it.next();
+            returnVal.addNode( ( DirectedGraphNode<K, V> ) m.clone() );
         }
         returnVal.prune(); // failing to do this will cause all kinds of problems
         return returnVal;
@@ -175,7 +175,7 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
     /**
      * Get all the children of this node, recursively.
      */
-    public Set getAllChildNodes() {
+    public Set<DirectedGraphNode<K, V>> getAllChildNodes() {
         return this.getAllChildNodes( null );
     }
 
@@ -184,7 +184,7 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
      * 
      * @return
      */
-    public Set getAllParentNodes() {
+    public Set<DirectedGraphNode<K, V>> getAllParentNodes() {
         return this.getAllParentNodes( null );
     }
 
@@ -216,8 +216,8 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
      * Remove connections that are to nodes not contained in this graph
      */
     public void prune() {
-        for ( Iterator it = this.getChildIterator(); it.hasNext(); ) {
-            Object j = it.next();
+        for ( Iterator<K> it = this.getChildIterator(); it.hasNext(); ) {
+            K j = it.next();
             DirectedGraphNode k = ( DirectedGraphNode ) getGraph().get( j );
             if ( k == null ) {
                 if ( log.isDebugEnabled() ) {
@@ -228,8 +228,8 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
 
         }
 
-        for ( Iterator it = this.getParentIterator(); it.hasNext(); ) {
-            Object j = it.next();
+        for ( Iterator<K> it = this.getParentIterator(); it.hasNext(); ) {
+            K j = it.next();
             DirectedGraphNode k = ( DirectedGraphNode ) getGraph().get( j );
             if ( k == null ) {
                 if ( log.isDebugEnabled() ) {
@@ -244,37 +244,37 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
 
     /** ************* private methods *************** */
 
-    private Set getAllChildNodes( Set list ) {
+    private Set<DirectedGraphNode<K, V>> getAllChildNodes( Set<DirectedGraphNode<K, V>> list ) {
         if ( list == null ) {
-            list = new LinkedHashSet();
+            list = new LinkedHashSet<DirectedGraphNode<K, V>>();
         }
 
-        for ( Iterator it = this.getChildIterator(); it.hasNext(); ) {
-            Object j = it.next();
-            list.add( getGraph().get( j ) );
-            ( ( DirectedGraphNode ) getGraph().get( j ) ).getAllChildNodes( list );
+        for ( Iterator<K> it = this.getChildIterator(); it.hasNext(); ) {
+            K j = it.next();
+            list.add( ( DirectedGraphNode<K, V> ) getGraph().get( j ) );
+            ( ( DirectedGraphNode<K, V> ) getGraph().get( j ) ).getAllChildNodes( list );
         }
         return list;
     }
 
-    private Set getAllParentNodes( Set list ) {
+    private Set<DirectedGraphNode<K, V>> getAllParentNodes( Set<DirectedGraphNode<K, V>> list ) {
         if ( list == null ) {
-            list = new LinkedHashSet();
+            list = new LinkedHashSet<DirectedGraphNode<K, V>>();
         }
 
-        for ( Iterator it = this.getParentIterator(); it.hasNext(); ) {
-            Object j = it.next();
-            list.add( getGraph().get( j ) );
-            ( ( DirectedGraphNode ) getGraph().get( j ) ).getAllParentNodes( list );
+        for ( Iterator<K> it = this.getParentIterator(); it.hasNext(); ) {
+            K j = it.next();
+            list.add( ( DirectedGraphNode<K, V> ) getGraph().get( j ) );
+            ( ( DirectedGraphNode<K, V> ) getGraph().get( j ) ).getAllParentNodes( list );
         }
         return list;
     }
 
-    private Iterator getChildIterator() {
+    private Iterator<K> getChildIterator() {
         return children.iterator();
     }
 
-    private Iterator getParentIterator() {
+    private Iterator<K> getParentIterator() {
         return parents.iterator();
     }
 
@@ -301,15 +301,16 @@ public class DirectedGraphNode extends AbstractGraphNode implements Comparable {
      * 
      * @return Object
      */
-    public Object clone() {
-        DirectedGraphNode r = new DirectedGraphNode( key, item, graph );
-        for ( Iterator it = this.getParentIterator(); it.hasNext(); ) {
-            Object j = it.next();
+    @Override
+    public DirectedGraphNode<K, V> clone() {
+        DirectedGraphNode<K, V> r = new DirectedGraphNode<K, V>( key, item, graph );
+        for ( Iterator<K> it = this.getParentIterator(); it.hasNext(); ) {
+            K j = it.next();
             r.addParent( j );
         }
 
-        for ( Iterator it = this.getChildIterator(); it.hasNext(); ) {
-            Object j = it.next();
+        for ( Iterator<K> it = this.getChildIterator(); it.hasNext(); ) {
+            K j = it.next();
             r.addChild( j );
         }
         return r;

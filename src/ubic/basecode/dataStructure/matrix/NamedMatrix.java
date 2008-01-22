@@ -22,12 +22,12 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Represents a matrix with named columns and rows.
+ * Represents a matrix with named columns and rows. The 'names' are generic.
  * 
  * @author Paul Pavlidis
  * @version $Id$
  */
-public interface NamedMatrix {
+public interface NamedMatrix<R, C> {
 
     /**
      * Add a column name associated with an index.
@@ -35,7 +35,7 @@ public interface NamedMatrix {
      * @param s Object a column name
      * @param index int the column index associated with this name
      */
-    public void addColumnName( Object s, int index );
+    public void addColumnName( C s, int index );
 
     /**
      * Add a row name associated with a row index.
@@ -43,7 +43,7 @@ public interface NamedMatrix {
      * @param s Object
      * @param index int
      */
-    public void addRowName( Object s, int index );
+    public void addRowName( R s, int index );
 
     /**
      * Get the index of a row by name..
@@ -51,7 +51,7 @@ public interface NamedMatrix {
      * @param s Object
      * @return int
      */
-    public int getRowIndexByName( Object s );
+    public int getRowIndexByName( R s );
 
     /**
      * Get the index of a column by name.
@@ -59,7 +59,7 @@ public interface NamedMatrix {
      * @param s Object
      * @return int
      */
-    public int getColIndexByName( Object s );
+    public int getColIndexByName( C s );
 
     /**
      * Get the row name for an index
@@ -67,7 +67,7 @@ public interface NamedMatrix {
      * @param i int
      * @return java.lang.Object
      */
-    public Object getRowName( int i );
+    public R getRowName( int i );
 
     /**
      * Gte the column name for an index.
@@ -75,7 +75,7 @@ public interface NamedMatrix {
      * @param i int
      * @return java.lang.Object
      */
-    public Object getColName( int i );
+    public C getColName( int i );
 
     /**
      * @return boolean
@@ -90,35 +90,35 @@ public interface NamedMatrix {
     public boolean hasColNames();
 
     /**
-     * @param v List a vector of Strings.
+     * @param v
      */
-    public void setRowNames( List v );
+    public void setRowNames( List<R> v );
 
     /**
-     * @param v List a vector of Strings.
+     * @param v
      */
-    public void setColumnNames( List v );
+    public void setColumnNames( List<C> v );
 
     /**
-     * @return List of Object
+     * @return
      */
-    public List getColNames();
+    public List<C> getColNames();
 
     /**
-     * @return List of Object
+     * @return
      */
-    public List getRowNames();
+    public List<R> getRowNames();
 
     /**
      * @param r Object
      * @return boolean
      */
-    public boolean hasRow( Object r );
+    public boolean hasRow( R r );
 
     /**
      * @return java.util.Iterator
      */
-    public Iterator getRowNameMapIterator();
+    public Iterator<R> getRowNameMapIterator();
 
     /**
      * Get the number of rows the matrix has
@@ -177,12 +177,12 @@ public interface NamedMatrix {
      * @param rowName
      * @return
      */
-    public boolean containsRowName( Object rowName );
+    public boolean containsRowName( R rowName );
 
     /**
      * @param columnName
      * @return
      */
-    public boolean containsColumnName( Object columnName );
+    public boolean containsColumnName( C columnName );
 
 }

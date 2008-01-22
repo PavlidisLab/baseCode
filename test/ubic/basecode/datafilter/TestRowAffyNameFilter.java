@@ -36,8 +36,8 @@ public class TestRowAffyNameFilter extends AbstractTestFilter {
     }
 
     public void testFilter() {
-        RowAffyNameFilter fi = new RowAffyNameFilter( new int[] { RowAffyNameFilter.AFFX, RowAffyNameFilter.X,
-                RowAffyNameFilter.ST, RowAffyNameFilter.F } );
+        AffymetrixProbeNameFilter fi = new AffymetrixProbeNameFilter( new int[] { AffymetrixProbeNameFilter.AFFX,
+                AffymetrixProbeNameFilter.X, AffymetrixProbeNameFilter.ST, AffymetrixProbeNameFilter.F } );
         DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) fi.filter( testdata );
         int expectedReturn = teststringdata.rows() - 5; // file contains on AFFX,
         // and two _f_ tags.
@@ -46,8 +46,8 @@ public class TestRowAffyNameFilter extends AbstractTestFilter {
     }
 
     public void testStringFilter() {
-        RowAffyNameFilter fi = new RowAffyNameFilter( new int[] { RowAffyNameFilter.AFFX, RowAffyNameFilter.X,
-                RowAffyNameFilter.ST, RowAffyNameFilter.F } );
+        AffymetrixProbeNameFilter fi = new AffymetrixProbeNameFilter( new int[] { AffymetrixProbeNameFilter.AFFX,
+                AffymetrixProbeNameFilter.X, AffymetrixProbeNameFilter.ST, AffymetrixProbeNameFilter.F } );
         StringMatrix2DNamed filtered = ( StringMatrix2DNamed ) fi.filter( teststringdata );
         int expectedReturn = teststringdata.rows() - 5; // file contains on AFFX,
         // and two _f_ tags.

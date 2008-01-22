@@ -21,7 +21,7 @@ package ubic.basecode.datafilter;
 import java.util.List;
 import java.util.Vector;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import ubic.basecode.dataStructure.matrix.NamedMatrix;
 import ubic.basecode.math.DescriptiveWithMissing;
@@ -61,7 +61,7 @@ import cern.jet.stat.Descriptive;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class RowLevelFilter extends AbstractLevelFilter {
+public class RowLevelFilter<R, C> extends AbstractLevelFilter<R, C> {
 
     private boolean removeAllNegative = false;
 
@@ -126,7 +126,7 @@ public class RowLevelFilter extends AbstractLevelFilter {
      * @param data
      * @return
      */
-    public NamedMatrix filter( NamedMatrix data ) {
+    public NamedMatrix<R, C> filter( NamedMatrix<R, C> data ) {
 
         if ( !( data instanceof DoubleMatrixNamed ) ) {
             throw new IllegalArgumentException( "Only valid for DoubleMatrixNamed" );
@@ -153,10 +153,10 @@ public class RowLevelFilter extends AbstractLevelFilter {
             /* stupid, copy into a DoubleArrayList so we can do stats */
             for ( int j = 0; j < numCols; j++ ) {
                 double item = row[j].doubleValue();
-                if(Double.isNaN( item ))
-                	rowAsList.set( j, 0 );
+                if ( Double.isNaN( item ) )
+                    rowAsList.set( j, 0 );
                 else
-                	rowAsList.set( j, item );
+                    rowAsList.set( j, item );
                 if ( item < 0.0 || Double.isNaN( item ) ) {
                     numNeg++;
                 }
@@ -237,8 +237,8 @@ public class RowLevelFilter extends AbstractLevelFilter {
         // go back over the data now using the cutpoints. This is not optimally
         // efficient.
         int kept = 0;
-        List rowsToKeep = new Vector();
-        List rowNames = new Vector();
+        List<Object[]> rowsToKeep = new Vector<Object[]>();
+        List<R> rowNames = new Vector<R>();
 
         for ( int i = 0; i < numRows; i++ ) {
             if ( criteria.get( i ) >= realLowCut && criteria.get( i ) <= realHighCut ) {
@@ -248,7 +248,7 @@ public class RowLevelFilter extends AbstractLevelFilter {
             }
         }
 
-        DoubleMatrixNamed returnval = DoubleMatrix2DNamedFactory.fastrow( rowsToKeep.size(), numCols );
+        DoubleMatrixNamed<R, C> returnval = new DenseDoubleMatrix2DNamed<R, C>( rowsToKeep.size(), numCols );
         for ( int i = 0; i < kept; i++ ) {
             Double[] row = ( Double[] ) rowsToKeep.get( i );
             for ( int j = 0; j < numCols; j++ ) {

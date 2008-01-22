@@ -29,7 +29,7 @@ import junit.framework.TestCase;
  */
 public class TestROC extends TestCase {
 
-    Set ranksOfPositives;
+    Set<Integer> ranksOfPositives;
 
     /*
      * @see TestCase#setUp()
@@ -38,7 +38,7 @@ public class TestROC extends TestCase {
         super.setUp();
 
         // set up the ranks of the opsitives
-        ranksOfPositives = new HashSet();
+        ranksOfPositives = new HashSet<Integer>();
         ranksOfPositives.add( new Integer( 0 ) );
         ranksOfPositives.add( new Integer( 3 ) );
         ranksOfPositives.add( new Integer( 5 ) );

@@ -26,7 +26,7 @@ import ubic.basecode.math.Stats;
  * @author pavlidis
  * @version $Id$
  */
-public abstract class AbstractLevelFilter extends AbstractFilter {
+public abstract class AbstractLevelFilter<R, C> extends AbstractFilter<R, C> {
 
     protected double lowCut = -Double.MAX_VALUE;
     protected double highCut = Double.MAX_VALUE;

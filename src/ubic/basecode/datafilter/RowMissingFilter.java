@@ -30,7 +30,7 @@ import cern.colt.list.IntArrayList;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class RowMissingFilter extends AbstractFilter implements Filter {
+public class RowMissingFilter<R, C> extends AbstractFilter<R, C> implements Filter<R, C> {
 
     private int minPresentCount = 5;
     private static final int ABSOLUTEMINPRESENT = 1;
@@ -76,9 +76,9 @@ public class RowMissingFilter extends AbstractFilter implements Filter {
         maxFractionRemoved = f;
     }
 
-    public NamedMatrix filter( NamedMatrix data ) {
-        List MTemp = new Vector();
-        List rowNames = new Vector();
+    public NamedMatrix<R, C> filter( NamedMatrix<R, C> data ) {
+        List<Object[]> MTemp = new Vector<Object[]>();
+        List<R> rowNames = new Vector<R>();
         int numRows = data.rows();
         int numCols = data.columns();
         IntArrayList present = new IntArrayList( numRows );
@@ -111,7 +111,7 @@ public class RowMissingFilter extends AbstractFilter implements Filter {
             if ( missingCount >= ABSOLUTEMINPRESENT && missingCount >= minPresentCount ) {
                 kept++;
                 MTemp.add( data.getRowObj( i ) );
-                rowNames.add(data.getRowName( i ));
+                rowNames.add( data.getRowName( i ) );
             }
         }
 
@@ -134,18 +134,19 @@ public class RowMissingFilter extends AbstractFilter implements Filter {
                 if ( present.get( i ) >= minPresentCount && present.get( i ) >= ABSOLUTEMINPRESENT ) {
                     kept++;
                     MTemp.add( data.getRowObj( i ) );
-                    rowNames.add(data.getRowName( i ));
+                    if ( !rowNames.contains( data.getRowName( i ) ) ) {
+                        rowNames.add( data.getRowName( i ) );
+                    }
                 }
             }
-
         }
 
-        NamedMatrix returnval = getOutputMatrix( data, MTemp.size(), numCols );
+        NamedMatrix<R, C> returnval = getOutputMatrix( data, MTemp.size(), numCols );
 
         // Finally fill in the return value.
         for ( int i = 0; i < MTemp.size(); i++ ) {
             for ( int j = 0; j < numCols; j++ ) {
-                returnval.set( i, j, ( ( Object[] ) MTemp.get( i ) )[j] );
+                returnval.set( i, j, MTemp.get( i )[j] );
             }
         }
         returnval.setColumnNames( data.getColNames() );

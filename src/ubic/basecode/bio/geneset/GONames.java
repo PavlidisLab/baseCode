@@ -20,6 +20,7 @@ package ubic.basecode.bio.geneset;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -65,13 +66,13 @@ public class GONames {
 
     protected static final Log log = LogFactory.getLog( GONames.class );
 
-    private Map goNameMap;
-    private Set newGeneSets = new HashSet();
+    private Map<String, String> goNameMap;
+    private Set<String> newGeneSets = new HashSet<String>();
     private String NO_DEFINITION_AVAILABLE = "[No definition available]";
 
     private GOParser parser;
 
-    private Map oldNameMap;
+    private Map<String, String> oldNameMap;
 
     /**
      * @param inputStream
@@ -89,11 +90,11 @@ public class GONames {
      * @param goIds
      * @param goTerms
      */
-    public GONames( List goIds, List goTerms ) {
+    public GONames( List<String> goIds, List<String> goTerms ) {
         if ( goIds == null || goTerms == null || goIds.size() != goTerms.size() ) {
             throw new IllegalArgumentException( "Invalid arguments" );
         }
-        goNameMap = new HashMap();
+        goNameMap = new HashMap<String, String>();
         for ( int i = 0; i < goIds.size(); i++ ) {
             goNameMap.put( goIds.get( i ), goTerms.get( i ) );
         }
@@ -160,10 +161,9 @@ public class GONames {
 
         GOEntry node = ( GOEntry ) getGraph().getNodeContents( geneSetId );
         if ( node.getAspect() == null || node.getAspect().equals( NO_ASPECT_AVAILABLE ) ) {
-            Set parents = getParents( geneSetId );
+            Collection<String> parents = getParents( geneSetId );
             if ( parents == null ) return NO_ASPECT_AVAILABLE;
-            for ( Iterator iter = parents.iterator(); iter.hasNext(); ) {
-                String parent = ( String ) iter.next();
+            for ( String parent : parents ) {
                 String aspect = getAspectForId( parent );
                 if ( aspect != null && !aspect.equals( NO_ASPECT_AVAILABLE ) ) {
                     node.setAspect( aspect );
@@ -178,9 +178,9 @@ public class GONames {
      * @param id
      * @return a Set containing the ids of geneSets which are immediately below the selected one in the hierarchy.
      */
-    public Set getChildren( String id ) {
+    public Set<String> getChildren( String id ) {
         if ( getGraph() == null ) return null;
-        Set returnVal = new HashSet();
+        Set<String> returnVal = new HashSet<String>();
         Set children = ( ( DirectedGraphNode ) getGraph().get( id ) ).getChildNodes();
         for ( Iterator it = children.iterator(); it.hasNext(); ) {
             DirectedGraphNode child = ( DirectedGraphNode ) it.next();
@@ -232,16 +232,16 @@ public class GONames {
             return NO_DESCRIPTION_AVAILABLE;
         }
 
-        return ( String ) goNameMap.get( go_ID );
+        return goNameMap.get( go_ID );
     }
 
     /**
      * @param id
      * @return a Set containing the ids of geneSets which are immediately above the selected one in the hierarchy.
      */
-    public Set getParents( String id ) {
+    public Collection<String> getParents( String id ) {
         if ( getGraph() == null ) return null;
-        Set returnVal = new HashSet();
+        Collection<String> returnVal = new HashSet<String>();
 
         if ( !getGraph().containsKey( id ) ) {
             log.debug( "GeneSet " + id + " doesn't exist in graph" ); // this is not really a problem.
@@ -335,7 +335,7 @@ public class GONames {
     private void initialize( InputStream inputStream ) throws IOException, SAXException {
         this.parser = new GOParser( inputStream );
         goNameMap = parser.getGONameMap();
-        oldNameMap = new HashMap();
+        oldNameMap = new HashMap<String, String>();
         if ( this.getGraph() == null ) return;
         DirectedGraphNode root = this.getGraph().getRoot();
         this.getGraph().addChildTo( root.getKey(), USER_DEFINED,

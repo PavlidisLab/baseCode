@@ -23,8 +23,6 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import ubic.basecode.bio.geneset.TestGeneAnnotations;
 import ubic.basecode.dataStructure.BitUtilTest;
-import ubic.basecode.dataStructure.TestQueue;
-import ubic.basecode.dataStructure.TestStack;
 import ubic.basecode.dataStructure.graph.TestDirectedGraph;
 import ubic.basecode.dataStructure.matrix.CompressedNamedBitMatrixTest;
 import ubic.basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamedTest;
@@ -89,8 +87,6 @@ public class AllTests extends TestCase {
         suite.addTestSuite( FastRowAccessDoubleMatrix2DNamedTest.class );
         suite.addTestSuite( TestSparseRaggedDoubleMatrix2DNamed.class );
         suite.addTestSuite( TestRCDoubleMatrix1D.class );
-        suite.addTestSuite( TestQueue.class );
-        suite.addTestSuite( TestStack.class );
         suite.addTestSuite( BitUtilTest.class );
         suite.addTestSuite( CompressedNamedBitMatrixTest.class );
 

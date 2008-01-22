@@ -150,7 +150,7 @@ public class StringDistance {
 
         double result = 0;
         for ( int i = 0; i < trimmedS.length(); i++ ) {
-            double penalty = Math.max( 0.0, ( 1.0 - ( double ) i / ( weight * trimmedS.length() ) ) );
+            double penalty = Math.max( 0.0, ( 1.0 - i / ( weight * trimmedS.length() ) ) );
             result += trimmedT.charAt( i ) == trimmedS.charAt( i ) ? 0 : penalty;
         }
         return result;

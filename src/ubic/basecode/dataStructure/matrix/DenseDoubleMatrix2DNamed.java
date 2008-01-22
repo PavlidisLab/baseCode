@@ -29,7 +29,7 @@ import corejava.Format;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class DenseDoubleMatrix2DNamed extends DoubleMatrixNamed {
+public class DenseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
 
     private DenseDoubleMatrix2D matrix;
 
@@ -66,7 +66,7 @@ public class DenseDoubleMatrix2DNamed extends DoubleMatrixNamed {
      * @param s String
      * @return double[]
      */
-    public double[] getRowByName( Object s ) {
+    public double[] getRowByName( R s ) {
         return getRow( getRowIndexByName( s ) );
     }
 
@@ -90,7 +90,7 @@ public class DenseDoubleMatrix2DNamed extends DoubleMatrixNamed {
      * @param col int
      * @return double[]
      */
-    public double[] getColByName( Object s ) {
+    public double[] getColByName( C s ) {
         int col = getColIndexByName( s );
         double[] result = new double[rows()];
         for ( int i = 0; i < rows(); i++ ) {
@@ -114,43 +114,26 @@ public class DenseDoubleMatrix2DNamed extends DoubleMatrixNamed {
         }
         return result;
     }
-    
-    public Object getObj(int row, int col) {
-    	return new Double(get(row, col));
+
+    public Object getObj( int row, int col ) {
+        return new Double( get( row, col ) );
     }
 
     /**
      * Converts to a String that can be read by read.table in R, using default parameters
+     * 
      * @return java.lang.String
      */
-  /*  public String toRReadTableString() {
-        Format nf = new Format( "%.4g" );
-        StringBuffer result = new StringBuffer( this.rows() * this.columns() );
+    /*
+     * public String toRReadTableString() { Format nf = new Format( "%.4g" ); StringBuffer result = new StringBuffer(
+     * this.rows() * this.columns() ); if ( this.hasColNames() ) { for ( int i = 0; i < this.columns(); i++ ) {
+     * result.append( "\"" + this.getColName( i ) +"\" "); System.out.println("\"" + this.getColName( i ) +"\" "); }
+     * result.append( "\n" ); } for ( int i = 0; i < this.rows(); i++ ) { if ( this.hasRowNames() ) { result.append("\"" +
+     * this.getRowName( i ) + "\"" ); } for ( int j = 0; j < this.columns(); j++ ) { if ( Double.isNaN( this.get( i, j ) ) ) {
+     * result.append( " NA" ); } else { result.append( " " + nf.format( this.get( i, j ) ) ); } } result.append( "\n" ); }
+     * return result.toString(); }
+     */
 
-        if ( this.hasColNames() ) {
-            for ( int i = 0; i < this.columns(); i++ ) {
-                result.append( "\"" + this.getColName( i ) +"\" ");
-                System.out.println("\"" + this.getColName( i ) +"\" ");
-            }
-            result.append( "\n" );
-        }
-
-        for ( int i = 0; i < this.rows(); i++ ) {
-            if ( this.hasRowNames() ) {
-                result.append("\"" + this.getRowName( i ) + "\"" );
-            }
-            for ( int j = 0; j < this.columns(); j++ ) {
-                if ( Double.isNaN( this.get( i, j ) ) ) {
-                    result.append( " NA" );
-                } else {
-                    result.append( " " + nf.format( this.get( i, j ) ) );
-                }
-            }
-            result.append( "\n" );
-        }
-        return result.toString();
-    }*/
-    
     /**
      * @return java.lang.String
      */
@@ -193,8 +176,8 @@ public class DenseDoubleMatrix2DNamed extends DoubleMatrixNamed {
      * 
      * @return basecode.dataStructure.DenseDoubleMatrix2DNamed
      */
-    public DenseDoubleMatrix2DNamed copy() {
-        DenseDoubleMatrix2DNamed returnval = new DenseDoubleMatrix2DNamed( this.rows(), this.columns() );
+    public DoubleMatrixNamed<R, C> copy() {
+        DoubleMatrixNamed<R, C> returnval = new DenseDoubleMatrix2DNamed<R, C>( this.rows(), this.columns() );
         for ( int i = 0, n = this.rows(); i < n; i++ ) {
             returnval.addRowName( this.getRowName( i ), i );
             for ( int j = 0, m = this.columns(); j < m; j++ ) {

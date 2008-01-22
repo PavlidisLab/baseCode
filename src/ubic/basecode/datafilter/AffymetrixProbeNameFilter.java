@@ -30,7 +30,7 @@ import ubic.basecode.dataStructure.matrix.NamedMatrix;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class AffymetrixProbeNameFilter extends AbstractFilter implements Filter {
+public class AffymetrixProbeNameFilter<R, C> extends AbstractFilter<R, C> {
 
     private boolean skip_ST = false;
     private boolean skip_AFFX = false;
@@ -102,9 +102,9 @@ public class AffymetrixProbeNameFilter extends AbstractFilter implements Filter 
         }
     }
 
-    public NamedMatrix filter( NamedMatrix data ) {
-        List MTemp = new Vector();
-        List rowNames = new Vector();
+    public NamedMatrix<R, C> filter( NamedMatrix<R, C> data ) {
+        List<Object[]> MTemp = new Vector<Object[]>();
+        List<R> rowNames = new Vector<R>();
         int numRows = data.rows();
         int numCols = data.columns();
 
@@ -133,22 +133,22 @@ public class AffymetrixProbeNameFilter extends AbstractFilter implements Filter 
                 continue;
             }
             MTemp.add( data.getRowObj( i ) );
-            rowNames.add( data.getRowName(i) );
+            rowNames.add( data.getRowName( i ) );
             kept++;
         }
 
-        NamedMatrix returnval = getOutputMatrix( data, MTemp.size(), numCols );
+        NamedMatrix<R, C> returnval = getOutputMatrix( data, MTemp.size(), numCols );
 
         for ( int i = 0; i < MTemp.size(); i++ ) {
             for ( int j = 0; j < numCols; j++ ) {
-                returnval.set( i, j, ( ( Object[] ) MTemp.get( i ) )[j] );
+                returnval.set( i, j, MTemp.get( i )[j] );
             }
         }
         returnval.setColumnNames( data.getColNames() );
         returnval.setRowNames( rowNames );
         log.info( "There are " + kept + " rows left after filtering." );
 
-        return ( returnval );
+        return returnval;
 
     }
 }

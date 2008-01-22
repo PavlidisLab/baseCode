@@ -31,12 +31,12 @@ import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
 
 public class TestRowNameFilter extends AbstractTestFilter {
 
-    protected Set testfilterlist;
+    protected Set<String> testfilterlist;
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        testfilterlist = new HashSet();
+        testfilterlist = new HashSet<String>();
         testfilterlist.add( "gene1_at" );
         testfilterlist.add( "gene4_at" );
         testfilterlist.add( "gene13_s_at" );

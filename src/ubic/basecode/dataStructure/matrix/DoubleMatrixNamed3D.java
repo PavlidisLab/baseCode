@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 
 import cern.colt.matrix.DoubleMatrix2D;
 
-public abstract class DoubleMatrixNamed3D extends AbstractNamedMatrix3D {
+public abstract class DoubleMatrixNamed3D<R, C, S> extends AbstractNamedMatrix3D<R, C, S> {
     protected static final int MAX_ROWS_TO_PRINT = 20;
     protected static final int MAX_SLICES_TO_PRINT = 10;
     protected static Log log = LogFactory.getLog( DoubleMatrixNamed.class.getName() );
@@ -60,7 +60,7 @@ public abstract class DoubleMatrixNamed3D extends AbstractNamedMatrix3D {
      * @param s String
      * @return double[]
      */
-    public double[][] getRowByName( Object row ) {
+    public double[][] getRowByName( R row ) {
         return getRow( getRowIndexByName( row ) );
     }
 
@@ -68,11 +68,11 @@ public abstract class DoubleMatrixNamed3D extends AbstractNamedMatrix3D {
      * @param s String
      * @return double[]
      */
-    public double[][] getColumnByName( Object col ) {
+    public double[][] getColumnByName( C col ) {
         return getColumn( getColIndexByName( col ) );
     }
 
-    public double[][] getSliceByName( Object slice ) {
+    public double[][] getSliceByName( S slice ) {
         return getSlice( getSliceIndexByName( slice ) );
     }
 

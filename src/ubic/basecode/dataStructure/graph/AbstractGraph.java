@@ -32,13 +32,13 @@ import ubic.basecode.dataStructure.Visitable;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public abstract class AbstractGraph implements Graph {
+public abstract class AbstractGraph<K, V> implements Graph<K, V> {
 
     private static Log log = LogFactory.getLog( AbstractGraph.class.getName() );
-    protected Map items;
+    protected Map<K, GraphNode<K, V>> items;
 
     public AbstractGraph() {
-        items = new LinkedHashMap();
+        items = new LinkedHashMap<K, GraphNode<K, V>>();
     }
 
     /**
@@ -46,10 +46,9 @@ public abstract class AbstractGraph implements Graph {
      * 
      * @param nodes Set of AbstractGraphNodes.
      */
-    public AbstractGraph( Set nodes ) {
-        items = new LinkedHashMap();
-        for ( Iterator it = nodes.iterator(); it.hasNext(); ) {
-            GraphNode n = ( GraphNode ) it.next();
+    public AbstractGraph( Set<GraphNode<K, V>> nodes ) {
+        this();
+        for ( GraphNode<K, V> n : nodes ) {
             this.addNode( n.getKey(), n.getItem() );
         }
     }
@@ -57,7 +56,7 @@ public abstract class AbstractGraph implements Graph {
     /**
      * @param node GraphNode
      */
-    public void addNode( GraphNode node ) {
+    public void addNode( GraphNode<K, V> node ) {
         node.setGraph( this );
         items.put( node.getKey(), node );
     }
@@ -69,8 +68,8 @@ public abstract class AbstractGraph implements Graph {
      * @see #getNodeContents(Object)
      * @return AbstractGraphNode referenced by the key.
      */
-    public GraphNode get( Object key ) {
-        return ( GraphNode ) items.get( key );
+    public GraphNode<K, V> get( K key ) {
+        return items.get( key );
     }
 
     /**
@@ -87,16 +86,16 @@ public abstract class AbstractGraph implements Graph {
      * @param key Object
      * @return The object contained by a node, not the node itself.
      */
-    public Object getNodeContents( Object key ) {
+    public V getNodeContents( K key ) {
         if ( !items.containsKey( key ) ) return null;
-        return ( ( GraphNode ) items.get( key ) ).getItem();
+        return items.get( key ).getItem();
     }
 
     /**
      * @param key Object
      * @return true if the graph contains an item referenced by key, false otherwise.
      */
-    public boolean containsKey( Object key ) {
+    public boolean containsKey( K key ) {
         return items.containsKey( key );
     }
 
@@ -104,8 +103,8 @@ public abstract class AbstractGraph implements Graph {
      * Reset the 'visited' marks of the graph to false.
      */
     public void unmarkAll() {
-        for ( Iterator it = items.keySet().iterator(); it.hasNext(); ) {
-            Object item = it.next();
+        for ( Iterator<K> it = items.keySet().iterator(); it.hasNext(); ) {
+            K item = it.next();
             if ( !( item instanceof Visitable ) ) {
                 log.debug( "Got " + item.getClass().getName() );
                 break;

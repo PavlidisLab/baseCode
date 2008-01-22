@@ -24,8 +24,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 import javax.swing.JTree;
@@ -35,8 +37,6 @@ import javax.swing.tree.DefaultTreeModel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ubic.basecode.dataStructure.Queue;
-
 /**
  * A graph that contains DirectedGraphNodes. It can be cyclic. Small unconnected parts of the graph will be ignored for
  * many operation. Tree traversals start from the root node, which is defined as the node with the most children.
@@ -45,7 +45,7 @@ import ubic.basecode.dataStructure.Queue;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class DirectedGraph extends AbstractGraph {
+public class DirectedGraph<K, V> extends AbstractGraph<K, V> {
     private static Log log = LogFactory.getLog( DirectedGraph.class.getName() );
     protected DefaultTreeModel dtm;
     private JTree treeView;
@@ -57,10 +57,10 @@ public class DirectedGraph extends AbstractGraph {
     /**
      * @param nodes Set of DirectedGraphNodes
      */
-    public DirectedGraph( Set nodes ) {
-        items = new LinkedHashMap();
-        for ( Iterator it = nodes.iterator(); it.hasNext(); ) {
-            DirectedGraphNode a = ( DirectedGraphNode ) it.next();
+    public DirectedGraph( Set<DirectedGraphNode<K, V>> nodes ) {
+        super();
+        for ( Iterator<DirectedGraphNode<K, V>> it = nodes.iterator(); it.hasNext(); ) {
+            DirectedGraphNode<K, V> a = it.next();
             this.addNode( a );
         }
     }
@@ -69,9 +69,9 @@ public class DirectedGraph extends AbstractGraph {
      * @param key Object
      * @param item Object
      */
-    public void addNode( Object key, Object item ) {
+    public void addNode( K key, V item ) {
         if ( !items.containsKey( key ) ) {
-            items.put( key, new DirectedGraphNode( key, item, this ) );
+            items.put( key, new DirectedGraphNode<K, V>( key, item, this ) );
         }
     }
 
@@ -82,7 +82,7 @@ public class DirectedGraph extends AbstractGraph {
      * @param newChildKey Object
      * @param newChild Object
      */
-    public void addChildTo( Object key, Object newChildKey, Object newChild ) {
+    public void addChildTo( K key, K newChildKey, V newChild ) {
         if ( !items.containsKey( newChild ) ) {
             this.addNode( newChildKey, newChild );
         }
@@ -95,7 +95,7 @@ public class DirectedGraph extends AbstractGraph {
      * @param user_defined
      * @param classID
      */
-    public void deleteChildFrom( Object parent, Object childKey ) {
+    public void deleteChildFrom( K parent, K childKey ) {
         items.remove( childKey ); // minor memory leak danger.
     }
 
@@ -106,14 +106,14 @@ public class DirectedGraph extends AbstractGraph {
      * @param newChildKey Object
      * @throws IllegalStateException if the graph doesn't contain the child node.
      */
-    public void addChildTo( Object key, Object newChildKey ) throws IllegalStateException {
+    public void addChildTo( K key, K newChildKey ) throws IllegalStateException {
         if ( !items.containsKey( newChildKey ) ) {
             throw new IllegalStateException( "Attempt to add link to node that is not in the graph" );
         }
 
         if ( items.containsKey( key ) ) {
-            ( ( DirectedGraphNode ) items.get( key ) ).addChild( newChildKey );
-            ( ( DirectedGraphNode ) items.get( newChildKey ) ).addParent( key );
+            ( ( DirectedGraphNode<K, V> ) items.get( key ) ).addChild( newChildKey );
+            ( ( DirectedGraphNode<K, V> ) items.get( newChildKey ) ).addParent( key );
         }
 
     }
@@ -123,7 +123,7 @@ public class DirectedGraph extends AbstractGraph {
      * @param newParentKey Object
      * @param newParent Object
      */
-    public void addParentTo( Object key, Object newParentKey, Object newParent ) {
+    public void addParentTo( K key, K newParentKey, V newParent ) {
         if ( !items.containsKey( newParent ) ) {
             this.addNode( newParentKey, newParent );
         }
@@ -137,14 +137,14 @@ public class DirectedGraph extends AbstractGraph {
      * @param newParentKey Object
      * @throws IllegalStateException
      */
-    public void addParentTo( Object key, Object newParentKey ) throws IllegalStateException {
+    public void addParentTo( K key, K newParentKey ) throws IllegalStateException {
         if ( !items.containsKey( newParentKey ) ) {
             throw new IllegalStateException( "Attempt to add link to node that is not in the graph" );
         }
 
         if ( items.containsKey( key ) ) {
-            ( ( DirectedGraphNode ) items.get( key ) ).addParent( newParentKey );
-            ( ( DirectedGraphNode ) items.get( newParentKey ) ).addChild( key );
+            ( ( DirectedGraphNode<K, V> ) items.get( key ) ).addParent( newParentKey );
+            ( ( DirectedGraphNode<K, V> ) items.get( newParentKey ) ).addChild( key );
         }
 
     }
@@ -157,7 +157,7 @@ public class DirectedGraph extends AbstractGraph {
     public String toString() {
         prune();
         this.topoSort();
-        List nodes = new ArrayList( items.values() );
+        List<GraphNode<K, V>> nodes = new ArrayList<GraphNode<K, V>>( items.values() );
         Collections.sort( nodes );
         DirectedGraphNode root = ( DirectedGraphNode ) nodes.get( 0 );
         StringBuffer buf = new StringBuffer();
@@ -211,33 +211,33 @@ public class DirectedGraph extends AbstractGraph {
      * Fills in the topoSortOrder for each node.
      */
     public void topoSort() {
-        Queue q = new Queue();
+        Queue<DirectedGraphNode> q = new LinkedList<DirectedGraphNode>();
         int counter = 0;
-        DirectedGraphNode v;
-        Map degrees = new HashMap();
+
+        Map<DirectedGraphNode, Integer> degrees = new HashMap<DirectedGraphNode, Integer>();
 
         /* Get the degrees of all items, and enqueue zero-indegree nodes */
         for ( Iterator it = this.items.keySet().iterator(); it.hasNext(); ) {
-            v = ( DirectedGraphNode ) items.get( it.next() );
+            DirectedGraphNode v = ( DirectedGraphNode ) items.get( it.next() );
             degrees.put( v, new Integer( v.inDegree() ) );
-            if ( ( ( Integer ) degrees.get( v ) ).intValue() == 0 ) {
-                q.enqueue( v );
+            if ( degrees.get( v ).intValue() == 0 ) {
+                q.offer( v );
             }
         }
 
         while ( !q.isEmpty() ) {
-            v = ( DirectedGraphNode ) q.dequeue();
+            DirectedGraphNode v = q.remove();
             v.setTopoSortOrder( ++counter );
             for ( Iterator vit = v.getChildNodes().iterator(); vit.hasNext(); ) {
                 DirectedGraphNode w = ( DirectedGraphNode ) vit.next();
                 /* decrement the degree of this node */
-                int inDegree = ( ( Integer ) degrees.get( w ) ).intValue();
+                int inDegree = degrees.get( w ).intValue();
                 inDegree--;
                 degrees.put( w, new Integer( inDegree ) );
 
                 /* see if this now is one of the zero-indegree nodes */
                 if ( inDegree == 0 ) {
-                    q.enqueue( w );
+                    q.offer( w );
                 }
             }
         }

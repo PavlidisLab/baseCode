@@ -19,6 +19,8 @@
 package ubic.basecode.io.reader;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipInputStream;
 
 import junit.framework.TestCase;
@@ -31,7 +33,7 @@ import ubic.basecode.util.RegressionTesting;
  */
 public class TestSparseRaggedDouble2DNamedMatrixReader extends TestCase {
 
-    SparseRaggedDoubleMatrix2DNamed matrix = null;
+    SparseRaggedDoubleMatrix2DNamed<String, String> matrix = null;
     InputStream is = null;
     SparseRaggedDouble2DNamedMatrixReader reader = null;
     InputStream isa = null;
@@ -54,7 +56,12 @@ public class TestSparseRaggedDouble2DNamedMatrixReader extends TestCase {
      * Class under test for NamedMatrix read(InputStream)
      */
     public void testReadInputStream() throws Exception {
-        matrix = ( SparseRaggedDoubleMatrix2DNamed ) reader.read( is, 1 );
+        matrix = ( SparseRaggedDoubleMatrix2DNamed<String, String> ) reader.read( is, 1 );
+        List<String> columnNames = new ArrayList<String>();
+        columnNames.add( "1" );
+        columnNames.add( "2" );
+        columnNames.add( "3" );
+        matrix.setColumnNames( columnNames );
         String actualReturn = matrix.toString();
         String expectedReturn = RegressionTesting.readTestResult( TestSparseDoubleMatrixReader.class
                 .getResourceAsStream( "/data/JW-testoutput.txt" ) );
@@ -66,7 +73,12 @@ public class TestSparseRaggedDouble2DNamedMatrixReader extends TestCase {
      */
     public void testReadStreamAdjList() throws Exception {
 
-        matrix = ( SparseRaggedDoubleMatrix2DNamed ) reader.readFromAdjList( isa );
+        matrix = ( SparseRaggedDoubleMatrix2DNamed<String, String> ) reader.readFromAdjList( isa );
+        List<String> columnNames = new ArrayList<String>();
+        columnNames.add( "1" );
+        columnNames.add( "2" );
+        columnNames.add( "3" );
+        matrix.setColumnNames( columnNames );
         String actualReturn = matrix.toString();
         String expectedReturn = RegressionTesting.readTestResult( TestSparseDoubleMatrixReader.class
                 .getResourceAsStream( "/data/JW-testoutputSym.txt" ) );
@@ -79,8 +91,8 @@ public class TestSparseRaggedDouble2DNamedMatrixReader extends TestCase {
      */
     public void testReadStreamAdjListBig() throws Exception {
 
-        matrix = ( SparseRaggedDoubleMatrix2DNamed ) reader.readFromAdjList( isbig );
-
+        matrix = ( SparseRaggedDoubleMatrix2DNamed<String, String> ) reader.readFromAdjList( isbig );
+        matrix.setColumnNames( matrix.getRowNames() );
         String actualReturn = matrix.toString();
 
         ZipInputStream zis = new ZipInputStream( TestSparseDoubleMatrixReader.class

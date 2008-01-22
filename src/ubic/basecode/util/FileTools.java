@@ -257,7 +257,7 @@ public class FileTools {
 
         String outputFilePath = chompExtension( seekFile );
 
-        Collection result = new HashSet();
+        Collection<File> result = new HashSet<File>();
         try {
             ZipFile f = new ZipFile( seekFile );
             for ( Enumeration entries = f.entries(); entries.hasMoreElements(); ) {
@@ -347,7 +347,7 @@ public class FileTools {
         if ( FileTools.isZipped( fileName ) ) {
             log.debug( "Reading from zipped file" );
             ZipFile f = new ZipFile( fileName );
-            ZipEntry entry = ( ZipEntry ) f.entries().nextElement();
+            ZipEntry entry = f.entries().nextElement();
             if ( entry == null ) throw new IOException( "No zip entries" );
             i = f.getInputStream( entry );
         } else if ( FileTools.isGZipped( fileName ) ) {
