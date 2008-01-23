@@ -18,7 +18,7 @@
  */
 package ubic.basecode.math;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import ubic.basecode.dataStructure.matrix.SparseDoubleMatrix2DNamed;
 import cern.colt.function.DoubleFunction;
@@ -33,11 +33,14 @@ import cern.jet.math.Functions;
 public class MatrixStats {
 
     /**
-     * @param data DenseDoubleMatrix2DNamed
-     * @return DenseDoubleMatrix2DNamed
+     * Compute the correlation matrix of the rows of a matrix.
+     * 
+     * @param data
+     * @return a symmetric matrix that has the rows and columns set to be the names of the rows of the input.
      */
+    @SuppressWarnings("unchecked")
     public static DoubleMatrixNamed correlationMatrix( DoubleMatrixNamed data ) {
-        DoubleMatrixNamed result = DoubleMatrix2DNamedFactory.dense( data.rows(), data.rows() );
+        DoubleMatrixNamed result = new DenseDoubleMatrix2DNamed( data.rows(), data.rows() );
 
         for ( int i = 0; i < data.rows(); i++ ) {
             DoubleArrayList irow = new DoubleArrayList( data.getRow( i ) );
@@ -61,8 +64,9 @@ public class MatrixStats {
     /**
      * @param data DenseDoubleMatrix2DNamed
      * @param threshold only correlations with absolute values above this level are stored.
-     * @return SparseDoubleMatrix2DNamed
+     * @return a sparse symmetric matrix that has the rows and columns set to be the names of the rows of the input.
      */
+    @SuppressWarnings("unchecked")
     public static SparseDoubleMatrix2DNamed correlationMatrix( DoubleMatrixNamed data, double threshold ) {
         SparseDoubleMatrix2DNamed result = new SparseDoubleMatrix2DNamed( data.rows(), data.rows() );
 
