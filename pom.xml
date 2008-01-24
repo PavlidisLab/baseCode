@@ -15,10 +15,9 @@
 	</organization>
 	<packaging>jar</packaging>
 	<scm>
-		<connection>scm:cvs:ext:broca.ubic.ca:/cvs:baseCode</connection>
-		<developerConnection>scm:cvs:ext:broca.ubic.ca:/cvs:baseCode</developerConnection>
+		<connection>scm:cvs:ext:@broca.ubic.ca:/cvs:baseCode</connection>
+		<developerConnection>scm:cvs:ext:@broca.ubic.ca:/cvs:baseCode</developerConnection>
 		<url>http://broca.ubic.ca:8081/viewrep/pavlab/baseCode</url>
-	  <tag>baseCode-0_6</tag>
   </scm>
 	<issueManagement>
 		<system>Bugzilla</system>
