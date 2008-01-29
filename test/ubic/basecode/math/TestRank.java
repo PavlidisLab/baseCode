@@ -23,6 +23,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 import cern.colt.list.DoubleArrayList;
+import cern.colt.list.IntArrayList;
 
 /**
  * @author Paul Pavlidis
@@ -58,12 +59,72 @@ public class TestRank extends TestCase {
         testmap = null;
     }
 
+    public void testOrder() {
+        double[] a = new double[] { 49.0, 43.0, 310.0, 20.0, 20.0, 688.0, 498.0, 533.0, 723.0, 1409.0, 279.0 };
+        DoubleArrayList al = new DoubleArrayList( a );
+        IntArrayList actual = Rank.order( al );
+        int[] expected = new int[] { 3, 2, 5, 1, 0, 8, 6, 7, 9, 10, 4 };
+        for ( int i = 0; i < al.size(); i++ ) {
+            assertEquals( "at position " + i, expected[i], actual.get( i ), 0.0001 );
+        }
+    }
+
+    public void testRankWithTies() {
+        double[] a = new double[] { 49.0, 43.0, 310.0, 20.0, 20.0, 688.0, 498.0, 533.0, 723.0, 1409.0, 279.0 };
+        DoubleArrayList al = new DoubleArrayList( a );
+        DoubleArrayList actual = Rank.rankTransform( al );
+        double[] expected = new double[] { 4.0, 3.0, 6.0, 1.5, 1.5, 9.0, 7.0, 8.0, 10.0, 11.0, 5.0 };
+        for ( int i = 0; i < al.size(); i++ ) {
+            assertEquals( "at position " + i, expected[i], actual.get( i ), 0.0001 );
+        }
+    }
+
+    public void testRankWithTiesB() {
+        double[] a = new double[] { 49.0, 43.0, 310.0, 20.0, 20.0, 688.0, 498.0, 533.0, 723.0, 1409.0, 279.0, 279.0 };
+        DoubleArrayList al = new DoubleArrayList( a );
+        DoubleArrayList actual = Rank.rankTransform( al );
+        double[] expected = new double[] { 4.0, 3.0, 7.0, 1.5, 1.5, 10.0, 8.0, 9.0, 11.0, 12.0, 5.5, 5.5 };
+        for ( int i = 0; i < al.size(); i++ ) {
+            assertEquals( "at position " + i, expected[i], actual.get( i ), 0.0001 );
+        }
+    }
+
+    public void testRankWithTiesC() {
+        double[] a = new double[] { 49.0, 43.0, 310.0, 20.0, 279.0, 20.0, 688.0, 498.0, 533.0, 723.0, 1409.0, 279.0 };
+        DoubleArrayList al = new DoubleArrayList( a );
+        DoubleArrayList actual = Rank.rankTransform( al );
+        double[] expected = new double[] { 4.0, 3.0, 7.0, 1.5, 5.5, 1.5, 10.0, 8.0, 9.0, 11.0, 12.0, 5.5 };
+        for ( int i = 0; i < al.size(); i++ ) {
+            assertEquals( "at position " + i, expected[i], actual.get( i ), 0.0001 );
+        }
+    }
+
+    public void testRankWithTiesD() {
+        double[] a = new double[] { 49.0, 49.0 };
+        DoubleArrayList al = new DoubleArrayList( a );
+        DoubleArrayList actual = Rank.rankTransform( al );
+        double[] expected = new double[] { 1.5, 1.5 };
+        for ( int i = 0; i < al.size(); i++ ) {
+            assertEquals( "at position " + i, expected[i], actual.get( i ), 0.0001 );
+        }
+    }
+
+    public void testRankWithTiesE() {
+        double[] a = new double[] { 49.0, 1.0, 49.0, 49.0 };
+        DoubleArrayList al = new DoubleArrayList( a );
+        DoubleArrayList actual = Rank.rankTransform( al );
+        double[] expected = new double[] { 3, 1, 3, 3 };
+        for ( int i = 0; i < al.size(); i++ ) {
+            assertEquals( "at position " + i, expected[i], actual.get( i ), 0.0001 );
+        }
+    }
+
     /*
      * Class under test for DoubleArrayList rankTransform(DoubleArrayList)
      */
     public void testRankTransformDoubleArrayList() {
         DoubleArrayList actualReturn = Rank.rankTransform( testdata );
-        DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 1, 2, 3, 4, 5, 0 } );
+        DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 2, 3, 4, 5, 6, 1 } );
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 

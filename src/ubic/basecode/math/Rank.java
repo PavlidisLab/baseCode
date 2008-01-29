@@ -39,31 +39,27 @@ public class Rank {
     /**
      * Return a permutation which puts the array in sorted order. In other words, the values returned indicate the
      * positions of the sorted values in the current array (the lowest value has the lowest rank, but it could be
-     * located anywhere in the array).
+     * located anywhere in the array). Indexes start from 0
      * 
      * @param array
      * @return
      */
     public static IntArrayList order( DoubleArrayList array ) {
+        int size = array.size();
+        IntArrayList result = new IntArrayList( new int[size] );
 
-        // this is easily done, albeit very inefficiently, if we 1) get the ranks and then 2) find the indexes of the
-        // ranks.
-        DoubleArrayList ranks = rankTransform( array );
-
-        IntArrayList order = new IntArrayList( ranks.size() );
-
-        for ( int i = 0; i < ranks.size(); i++ ) {
-
-            // find the ith item.
-            for ( int j = 0; j < ranks.size(); j++ ) {
-                if ( i == ranks.getQuick( j ) ) {
-                    order.add( j );
-                    break;
-                }
-            }
-
+        ObjectArrayList ranks = new ObjectArrayList( size );
+        for ( int i = 0; i < size; i++ ) {
+            RankData rd = new RankData( i, array.get( i ) );
+            ranks.add( rd );
         }
-        return order;
+        ranks.sort();
+
+        for ( int i = 0; i < size; i++ ) {
+            RankData rd = ( RankData ) ranks.getQuick( i );
+            result.setQuick( rd.getIndex(), i );
+        }
+        return result;
     }
 
     /**
@@ -80,8 +76,11 @@ public class Rank {
     }
 
     /**
-     * Rank transform an array. Ties are not handled specially. The ranks are constructed based on the sort order of the
-     * elements. That is, low values get low numbered ranks.
+     * Rank transform an array. The ranks are constructed based on the sort order of the elements. That is, low values
+     * get low numbered ranks starting from 1.
+     * <p>
+     * Ties are resolved by assigning the average rank for tied values. For example, instead of arbitrarily assigning
+     * ties ranks 3,4,5, all three values would get a rank of 4 and no value would get a rank of 3 or 5.
      * 
      * @param array DoubleArrayList
      * @return cern.colt.list.DoubleArrayList
@@ -99,7 +98,7 @@ public class Rank {
         ObjectArrayList ranks = new ObjectArrayList( size );
         DoubleArrayList result = new DoubleArrayList( new double[size] );
 
-        // store the ranks in the array.
+        // store the values with their indices.
         for ( int i = 0; i < size; i++ ) {
             RankData rd = new RankData( i, array.get( i ) );
             ranks.add( rd );
@@ -107,12 +106,95 @@ public class Rank {
 
         ranks.sort();
 
-        // fill in the results.
+        // fill in the results. We iterate over the ranks by order.
+        Double prevVal = null;
+        int rank = 1;
+        int nominalRank = 1; // rank we'd have if no ties.
         for ( int i = 0; i < size; i++ ) {
-            result.set( ( ( RankData ) ranks.get( i ) ).getIndex(), i );
+            RankData rankData = ( RankData ) ranks.get( i );
+            int index = rankData.getIndex();
+            double val = rankData.getValue();
+
+            result.set( index, nominalRank ); // might not keep.
+
+            // only bump up ranks if we're not tied with the last one.
+            if ( prevVal != null && val != prevVal.doubleValue() ) {
+                rank = nominalRank;
+            } else {
+                // tied. Do not advance the rank.
+                result.set( index, rank );
+            }
+
+            System.err.println( rankData + " assigned rank=" + result.get( index ) + " rank for ties=" + rank
+                    + " nominal rank =" + nominalRank );
+
+            prevVal = val;
+            nominalRank++;
         }
 
+        // At this point we may have repeated ranks.
+
+        fixTies( result, ranks );
+
         return result;
+    }
+
+    /**
+     * @param ranksWithTies
+     */
+    private static void fixTies( DoubleArrayList ranksWithTies, ObjectArrayList ranks ) {
+
+        int numties = 1;
+        Double prev = null;
+        int i = 0;
+        // iterate over in order of the values.
+        for ( int j = ranksWithTies.size(); i < j; i++ ) {
+            RankData rankData = ( RankData ) ranks.get( i );
+            int index = rankData.getIndex();
+            double rank = ranksWithTies.getQuick( index );
+            if ( prev != null ) {
+                if ( rank == prev.doubleValue() ) {
+                    // record how many ties we have seen
+                    numties++;
+                    System.err.println( "Tied rank: " + rank );
+                } else if ( numties > 1 ) {
+                    // we're past the batch of ties and need to adjust them
+                    for ( int k = 1; k <= numties; k++ ) {
+                        int indexOfTied = ( ( RankData ) ranks.get( i - k ) ).getIndex();
+                        double rawRankInTie = ranksWithTies.getQuick( indexOfTied );
+                        double meanRank = meanRank( rawRankInTie, numties );
+                        ranksWithTies.setQuick( indexOfTied, meanRank );
+                    }
+                    numties = 1; // reset
+                }
+                // no tie, nothing needs to be changed.
+            }
+            prev = rank;
+        }
+
+        // cleanup the end of the array if there were ties there.
+        if ( numties > 1 ) {
+            for ( int k = 1; k <= numties; k++ ) {
+                int indexOfTied = ( ( RankData ) ranks.get( i - k ) ).getIndex();
+                double rawRankInTie = ranksWithTies.getQuick( indexOfTied );
+                double meanRank = meanRank( rawRankInTie, numties );
+                ranksWithTies.setQuick( indexOfTied, meanRank );
+            }
+        }
+
+    }
+
+    /**
+     * @param rawRank
+     * @param numties
+     * @return
+     */
+    private static double meanRank( double rawRank, int numties ) {
+        double total = 0;
+        for ( int i = 0; i < numties; i++ ) {
+            total = total + rawRank + i;
+        }
+        return total / numties;
     }
 
     /**
@@ -146,7 +228,7 @@ public class Rank {
 
         /* sort it */
         Arrays.sort( values );
-        Map result = new HashMap();
+        Map<Object, Object> result = new HashMap<Object, Object>();
         /* put the sorted items back into a hashmap with the rank */
         for ( int i = 0; i < m.size(); i++ ) {
             result.put( values[i].getKey(), new Integer( i ) );
@@ -156,9 +238,8 @@ public class Rank {
 }
 
 /*
- * Helper class for rankTransform.
+ * Helper class for rankTransform map.
  */
-
 class keyAndValueData implements Comparable {
     private Object key;
 
@@ -191,9 +272,8 @@ class keyAndValueData implements Comparable {
 }
 
 /*
- * Helper class for rankTransform map.
+ * Helper class for rankTransform .
  */
-
 class RankData implements Comparable {
 
     private int index;
@@ -213,6 +293,10 @@ class RankData implements Comparable {
         } else {
             return 0;
         }
+    }
+
+    public String toString() {
+        return "Index=" + index + " value=" + value;
     }
 
     public int getIndex() {
