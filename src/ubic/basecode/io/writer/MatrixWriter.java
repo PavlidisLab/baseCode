@@ -40,8 +40,9 @@ import ubic.basecode.dataStructure.matrix.AbstractNamedMatrix3D;
  * @version $Id$
  */
 public class MatrixWriter {
+
     public static final String DEFAULT_SEP = "\t";
-    public static final String DEFAULT_TOP_LEFT = "";
+    public static final String DEFAULT_TOP_LEFT = "ID";
     protected Writer out;
     protected Format formatter;
     protected String sep;
@@ -52,62 +53,47 @@ public class MatrixWriter {
     protected Map colNameMap;
     protected Map rowNameMap;
 
-    private boolean flush;
-
-    public MatrixWriter( Writer out, Format formatter, String sep, boolean flush ) {
+    public MatrixWriter( Writer out, Format formatter, String sep ) {
         this.out = out;
         this.formatter = formatter;
         this.sep = sep;
-        this.flush = flush;
         this.topLeft = DEFAULT_TOP_LEFT;
     }
 
     public MatrixWriter( OutputStream out ) {
-        this( out, null, DEFAULT_SEP, false );
+        this( out, null, DEFAULT_SEP );
     }
 
     public MatrixWriter( OutputStream out, boolean flush ) {
-        this( out, null, DEFAULT_SEP, flush );
+        this( out, null, DEFAULT_SEP );
     }
 
     public MatrixWriter( OutputStream out, Format formatter ) {
-        this( out, formatter, DEFAULT_SEP, false );
+        this( out, formatter, DEFAULT_SEP );
     }
 
-    public MatrixWriter( OutputStream out, Format formatter, String sep, boolean flush ) {
-        this( new BufferedWriter( new OutputStreamWriter( out ) ), formatter, sep, flush );
-    }
-
-    public MatrixWriter( Writer out, String sep, boolean flush ) {
-        this( out, null, sep, flush );
+    public MatrixWriter( OutputStream out, Format formatter, String sep ) {
+        this( new BufferedWriter( new OutputStreamWriter( out ) ), formatter, sep );
     }
 
     public MatrixWriter( Writer out, Format formatter ) {
-        this( out, formatter, DEFAULT_SEP, false );
-    }
-
-    public MatrixWriter( String fileName, Format formatter, String sep ) throws IOException {
-        this( fileName, formatter, sep, false );
+        this( out, formatter, DEFAULT_SEP );
     }
 
     public MatrixWriter( String fileName, Format formatter ) throws IOException {
-        this( fileName, formatter, DEFAULT_SEP, false );
+        this( fileName, formatter, DEFAULT_SEP );
     }
 
-    public MatrixWriter( String fileName, Format formatter, String sep, boolean flush ) throws IOException {
-        this( new BufferedWriter( new FileWriter( fileName ) ), formatter, sep, flush );
-    }
-
-    public MatrixWriter( Writer out, boolean flush ) {
-        this( out, DEFAULT_SEP, flush );
+    public MatrixWriter( String fileName, Format formatter, String sep ) throws IOException {
+        this( new BufferedWriter( new FileWriter( fileName ) ), formatter, sep );
     }
 
     public MatrixWriter( Writer out, String sep ) {
-        this( out, sep, false );
+        this( out, null, sep );
     }
 
     public MatrixWriter( Writer out ) {
-        this( out, DEFAULT_SEP, false );
+        this( out, null, DEFAULT_SEP );
     }
 
     /**
@@ -130,7 +116,6 @@ public class MatrixWriter {
             }
             buf.append( "\n" );
             out.write( buf.toString() );
-            if ( flush ) out.flush();
         }
         for ( int i = 0; i < matrix.rows(); i++ ) {
             for ( int j = 0; j < matrix.columns(); j++ ) {
@@ -157,9 +142,10 @@ public class MatrixWriter {
                 }
                 buf.append( "\n" );
                 out.write( buf.toString() );
-                if ( flush ) out.flush();
+
             }
         }
+        out.flush();
     }
 
     public void writeMatrix( AbstractNamedMatrix matrix, boolean printNames ) throws IOException {
@@ -173,7 +159,6 @@ public class MatrixWriter {
             }
             buf.append( "\n" );
             out.write( buf.toString() );
-            if ( flush ) out.flush();
         }
 
         for ( Iterator rowIt = matrix.getRowNames().iterator(); rowIt.hasNext(); ) {
@@ -194,8 +179,8 @@ public class MatrixWriter {
             }
             buf.append( "\n" );
             out.write( buf.toString() );
-            if ( flush ) out.flush();
         }
+        out.flush();
     }
 
     public void writeMatrix( ObjectMatrix2D matrix ) throws IOException {
@@ -213,9 +198,8 @@ public class MatrixWriter {
 
             buf.append( "\n" );
             out.write( buf.toString() );
-            if ( flush ) out.flush();
         }
-
+        out.flush();
     }
 
     public void close() throws IOException {
