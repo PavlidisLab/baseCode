@@ -125,8 +125,8 @@ public class Rank {
                 result.set( index, rank );
             }
 
-            System.err.println( rankData + " assigned rank=" + result.get( index ) + " rank for ties=" + rank
-                    + " nominal rank =" + nominalRank );
+            // System.err.println( rankData + " assigned rank=" + result.get( index ) + " rank for ties=" + rank
+            // + " nominal rank =" + nominalRank );
 
             prevVal = val;
             nominalRank++;
@@ -156,7 +156,7 @@ public class Rank {
                 if ( rank == prev.doubleValue() ) {
                     // record how many ties we have seen
                     numties++;
-                    System.err.println( "Tied rank: " + rank );
+                    // System.err.println( "Tied rank: " + rank );
                 } else if ( numties > 1 ) {
                     // we're past the batch of ties and need to adjust them
                     for ( int k = 1; k <= numties; k++ ) {
