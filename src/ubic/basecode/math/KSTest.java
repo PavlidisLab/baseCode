@@ -31,6 +31,11 @@ import cern.jet.stat.Descriptive;
  */
 public class KSTest {
 
+    /**
+     * @param x
+     * @param y
+     * @return pvalue
+     */
     public static double twoSample( DoubleArrayList x, DoubleArrayList y ) {
         int nx = x.size();
         int ny = y.size();
@@ -69,6 +74,11 @@ public class KSTest {
 
     }
 
+    /**
+     * @param x
+     * @param pg
+     * @return pvalue
+     */
     public static double oneSample( DoubleArrayList x, ProbabilityComputer pg ) {
 
         DoubleArrayList xs = x.copy();

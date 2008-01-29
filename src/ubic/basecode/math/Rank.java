@@ -38,8 +38,8 @@ public class Rank {
 
     /**
      * Return a permutation which puts the array in sorted order. In other words, the values returned indicate the
-     * positions of the sorted values in the current array (the lowest value has the lowest rank, but it could be
-     * located anywhere in the array). Indexes start from 0
+     * positions of the sorted values in the <em>original</em> array (the lowest value has the lowest rank, but it
+     * could be located anywhere in the array). Indexes start from 0. Tied values are put in an arbitrary ordering.
      * 
      * @param array
      * @return
@@ -57,7 +57,7 @@ public class Rank {
 
         for ( int i = 0; i < size; i++ ) {
             RankData rd = ( RankData ) ranks.getQuick( i );
-            result.setQuick( rd.getIndex(), i );
+            result.setQuick( i, rd.getIndex() );
         }
         return result;
     }

@@ -63,9 +63,21 @@ public class TestRank extends TestCase {
         double[] a = new double[] { 49.0, 43.0, 310.0, 20.0, 20.0, 688.0, 498.0, 533.0, 723.0, 1409.0, 279.0 };
         DoubleArrayList al = new DoubleArrayList( a );
         IntArrayList actual = Rank.order( al );
-        int[] expected = new int[] { 3, 2, 5, 1, 0, 8, 6, 7, 9, 10, 4 };
+        int[] expected = new int[] { 5, 4, 2, 1, 11, 3, 7, 8, 6, 9, 10 };
+        // note, the ties are the 5,4, so it could
+        // be 4,5. So we start checking at 2.
+        for ( int i = 2; i < al.size(); i++ ) {
+            assertEquals( "at position " + i, expected[i] - 1, actual.get( i ) );
+        }
+    }
+
+    public void testOrderB() {
+        double[] a = new double[] { 2, 3, 1, 5, 4 };
+        DoubleArrayList al = new DoubleArrayList( a );
+        IntArrayList actual = Rank.order( al );
+        int[] expected = new int[] { 3, 1, 2, 5, 4 };
         for ( int i = 0; i < al.size(); i++ ) {
-            assertEquals( "at position " + i, expected[i], actual.get( i ), 0.0001 );
+            assertEquals( "at position " + i, expected[i] - 1, actual.get( i ) );
         }
     }
 
