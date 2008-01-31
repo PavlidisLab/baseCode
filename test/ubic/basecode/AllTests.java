@@ -47,6 +47,7 @@ import ubic.basecode.math.distribution.HistogramSamplerTest;
 import ubic.basecode.math.distribution.TestWishart;
 import ubic.basecode.math.metaanalysis.TestCorrelationEffectMetaAnalysis;
 import ubic.basecode.math.metaanalysis.TestMeanDifferenceMetaAnalysis;
+import ubic.basecode.util.BatchIterator;
 import ubic.basecode.util.FileToolsTest;
 import ubic.basecode.util.JRIClientTest;
 import ubic.basecode.util.NetUtilsTest;
@@ -134,6 +135,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite( JRIClientTest.class );
         suite.addTestSuite( StringUtilTest.class );
         suite.addTestSuite( SQLUtilsTest.class );
+        suite.addTestSuite( BatchIterator.class );
 
         System.out.print( "-----------\nBasecode: running " + suite.countTestCases() + " tests.\n-----------\n" );
 
