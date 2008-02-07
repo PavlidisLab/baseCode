@@ -1,7 +1,10 @@
 package ubic.basecode.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.NoSuchElementException;
 
 import junit.framework.TestCase;
 
@@ -35,6 +38,11 @@ public class BatchIteratorTest extends TestCase
                 4, batch.size() );
         assertEquals( "no more batches",
                 false, iterator.hasNext() );
+        try {
+            batch = iterator.next();
+            fail( "NoSuchElementException not thrown" );
+        } catch ( NoSuchElementException e ) {
+        }
     }
     
     /**
@@ -52,5 +60,17 @@ public class BatchIteratorTest extends TestCase
                         4, batch.size() );
         }
         assertEquals( "found 3 batches", 3, batchCount );
+    }
+    
+    public void testConcurrentModificationException()
+    {
+        Collection<String> modifiableItems = new ArrayList( items );
+        try {
+            for ( Collection<String> batch : BatchIterator.batches( modifiableItems, 10 ) ) {
+                modifiableItems.clear();
+            }
+            fail( "ConcurrentModificationException not thrown" );
+        } catch ( ConcurrentModificationException e ) {
+        }
     }
 }

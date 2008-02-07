@@ -3,6 +3,7 @@ package ubic.basecode.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * @author luke
@@ -30,10 +31,10 @@ public class BatchIterator<E> implements Iterable<Collection<E>>, Iterator<Colle
     
     private int batchSize;
     
-    private int cursor = 0;
-    
     /**
      * Returns a BatchIterator over the specified collection.
+     * @param collection the collection over which to iterate
+     * @param batchSize the maximum size of each batch returned
      */
     public BatchIterator( Collection<E> collection, int batchSize )
     {
@@ -41,6 +42,13 @@ public class BatchIterator<E> implements Iterable<Collection<E>>, Iterator<Colle
         this.batchSize = batchSize;
     }
     
+    /**
+     * Returns a BatchIterator over the specified collection.
+     * This is a convenience method to simplify the code need to loop over an existing collection.
+     * @param collection the collection over which to iterate
+     * @param batchSize the maximum size of each batch returned
+     * @return a BatchIterator over the specified collection
+     */
     public static <E> BatchIterator<E> batches( Collection<E> collection, int batchSize )
     {
         return new BatchIterator( collection, batchSize );
@@ -66,6 +74,9 @@ public class BatchIterator<E> implements Iterable<Collection<E>>, Iterator<Colle
      */
     public Collection<E> next()
     {
+        if ( !individualIterator.hasNext() )
+            throw new NoSuchElementException();
+        
         Collection<E> batch = new ArrayList<E>( batchSize );
         while ( batch.size() < batchSize && individualIterator.hasNext() )
             batch.add( individualIterator.next() );
