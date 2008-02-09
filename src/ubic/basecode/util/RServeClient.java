@@ -118,14 +118,18 @@ public class RServeClient implements RClient {
     private static RConnection connection = null;
 
     protected RServeClient() {
-        connect();
+        if ( !connect() ) {
+            throw new RuntimeException( "Could not connect to Rserve" );
+        }
     }
 
     protected RServeClient( boolean startServer ) {
         if ( startServer ) {
             this.startServer();
         }
-        connect();
+        if ( !connect() ) {
+            throw new RuntimeException( "Could not connect to Rserve" );
+        }
     }
 
     /*
