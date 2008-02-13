@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import ubic.basecode.dataStructure.matrix.NamedMatrix;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import ubic.basecode.dataStructure.matrix.RCDoubleMatrix1D;
 import ubic.basecode.dataStructure.matrix.SparseRaggedDoubleMatrix2DNamed;
 import ubic.basecode.util.FileTools;
@@ -48,31 +48,49 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @version $Id$
  * @see DoubleMatrixReader
  */
-public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixReader {
+public class SparseRaggedDouble2DNamedMatrixReader extends DoubleMatrixReader {
 
     /**
-     * Read a sparse symmetric square matrix that is expressed as an adjacency list in a tab-delimited file:
+     * Read an entire sparse matrix from a stream (JW format).
      * 
-     * <pre>
-     *           
-     *                                       item1 item2 weight
-     *                                       item1 item5 weight
-     *            
-     * </pre>
-     * 
-     * <p>
-     * IMPORTANT: By definition the resulting matrix is square and symmetric, even if the symmetric edges are not
-     * explicitly listed.
-     * 
-     * @param name of file
+     * @param stream
+     * @param offset A value indicating the lowest value for the indexes listed. This is here in case the indexes in the
+     *        stream are numbered starting from 1 instead of zero.
      * @return
+     * @throws IOException
      */
-    public NamedMatrix readFromAdjList( String fileName ) throws IOException {
-        if ( !FileTools.testFile( fileName ) ) {
-            throw new IOException( "Could not read from file " + fileName );
+    public DoubleMatrixNamed<String, String> read( InputStream stream, int offset ) throws IOException {
+        BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
+        SparseRaggedDoubleMatrix2DNamed<String, String> returnVal = new SparseRaggedDoubleMatrix2DNamed<String, String>();
+
+        String row;
+        int k = 1;
+
+        while ( ( row = dis.readLine() ) != null ) {
+
+            if ( row.equals( "" ) ) { // in case there is a blank line at the top.
+                continue;
+            }
+
+            StringTokenizer tok = new StringTokenizer( row, " \t" );
+            if ( tok.countTokens() != 2 ) { // in case the row count is there.
+                continue;
+            }
+
+            int index = Integer.parseInt( tok.nextToken() ) - offset;
+            int amount = Integer.parseInt( tok.nextToken() );
+
+            if ( index % 500 == 0 ) {
+                log.info( new String( "loading  " + index + "th entry" ) );
+            }
+
+            returnVal.addRow( new Integer( k ).toString(), readOneRow( dis, amount, offset ) );
+
+            k++;
         }
-        FileInputStream stream = new FileInputStream( fileName );
-        return readFromAdjList( stream );
+
+        dis.close();
+        return returnVal;
     }
 
     /**
@@ -92,7 +110,8 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
      * @param stream
      * @return
      */
-    public NamedMatrix<String, String> readFromAdjList( InputStream stream ) throws NumberFormatException, IOException {
+    public DoubleMatrixNamed<String, String> readFromAdjList( InputStream stream ) throws NumberFormatException,
+            IOException {
         Set<String> itemNames = new HashSet<String>();
         Map<String, OpenIntDoubleHashMap> rows = new HashMap<String, OpenIntDoubleHashMap>();
 
@@ -157,7 +176,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
             rows.get( itemA ).put( bind, weight ); // link a to b.
             rows.get( itemB ).put( aind, weight ); // link b to a.
 
-            if ( ( rows.size() % 500 ) == 0 ) {
+            if ( rows.size() % 500 == 0 ) {
                 log.info( new String( "loading  " + index + "th pair" ) );
             }
         }
@@ -178,8 +197,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
             int[] rowMemberIndexes = inB.elements();
             // System.err.println( itemName + " " + i + " " + inB );
 
-            for ( int j = 0; j < rowMemberIndexes.length; j++ ) {
-                int itemNumber = rowMemberIndexes[j]; // keys
+            for ( int itemNumber : rowMemberIndexes ) {
                 double weight = arow.get( itemNumber );
                 finalValues.add( weight );
             }
@@ -187,28 +205,36 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
             DoubleMatrix1D rowMatrix = new RCDoubleMatrix1D( inB, finalValues );
             matrix.addRow( ( String ) itemName, rowMatrix );
 
-            if ( i > 0 && ( i % 500 ) == 0 ) {
+            if ( i > 0 && i % 500 == 0 ) {
                 log.info( new String( "Adding  " + i + "th row" ) );
             }
         }
         return matrix;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Read a sparse symmetric square matrix that is expressed as an adjacency list in a tab-delimited file:
      * 
-     * @see basecode.io.reader.AbstractNamedMatrixReader#read(java.lang.String)
+     * <pre>
+     *           
+     *                                       item1 item2 weight
+     *                                       item1 item5 weight
+     *            
+     * </pre>
+     * 
+     * <p>
+     * IMPORTANT: By definition the resulting matrix is square and symmetric, even if the symmetric edges are not
+     * explicitly listed.
+     * 
+     * @param name of file
+     * @return
      */
-    public NamedMatrix<String, String> read( String fileName ) throws IOException {
+    public DoubleMatrixNamed<String, String> readFromAdjList( String fileName ) throws IOException {
         if ( !FileTools.testFile( fileName ) ) {
             throw new IOException( "Could not read from file " + fileName );
         }
         FileInputStream stream = new FileInputStream( fileName );
-        return read( stream );
-    }
-
-    public NamedMatrix<String, String> readOneRow( BufferedReader dis ) throws IOException {
-        return this.readOneRow( dis, 0 );
+        return readFromAdjList( stream );
     }
 
     /**
@@ -221,7 +247,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
      * @return
      * @throws IOException
      */
-    public NamedMatrix<String, String> readOneRow( BufferedReader dis, int offset ) throws IOException {
+    public DoubleMatrixNamed<String, String> readOneRow( BufferedReader dis, int offset ) throws IOException {
         SparseRaggedDoubleMatrix2DNamed<String, String> returnVal = new SparseRaggedDoubleMatrix2DNamed<String, String>();
 
         String row = dis.readLine(); // line containing the id and the number of edges.
@@ -231,60 +257,6 @@ public class SparseRaggedDouble2DNamedMatrixReader extends AbstractNamedMatrixRe
         int amount = Integer.parseInt( tok.nextToken() );
         String rowName = new Integer( index ).toString();
         returnVal.addRow( rowName, readOneRow( dis, amount, offset ) );
-        return returnVal;
-    }
-
-    /**
-     * Read an entire sparse matrix from a stream (JW format).
-     * 
-     * @param stream
-     * @return
-     * @throws IOException
-     */
-    public NamedMatrix<String, String> read( InputStream stream ) throws IOException {
-        return this.read( stream, 0 );
-    }
-
-    /**
-     * Read an entire sparse matrix from a stream (JW format).
-     * 
-     * @param stream
-     * @param offset A value indicating the lowest value for the indexes listed. This is here in case the indexes in the
-     *        stream are numbered starting from 1 instead of zero.
-     * @return
-     * @throws IOException
-     */
-    public NamedMatrix<String, String> read( InputStream stream, int offset ) throws IOException {
-        BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
-        SparseRaggedDoubleMatrix2DNamed<String, String> returnVal = new SparseRaggedDoubleMatrix2DNamed<String, String>();
-
-        String row;
-        int k = 1;
-
-        while ( ( row = dis.readLine() ) != null ) {
-
-            if ( row.equals( "" ) ) { // in case there is a blank line at the top.
-                continue;
-            }
-
-            StringTokenizer tok = new StringTokenizer( row, " \t" );
-            if ( tok.countTokens() != 2 ) { // in case the row count is there.
-                continue;
-            }
-
-            int index = Integer.parseInt( tok.nextToken() ) - offset;
-            int amount = Integer.parseInt( tok.nextToken() );
-
-            if ( ( index % 500 ) == 0 ) {
-                log.info( new String( "loading  " + index + "th entry" ) );
-            }
-
-            returnVal.addRow( new Integer( k ).toString(), readOneRow( dis, amount, offset ) );
-
-            k++;
-        }
-
-        dis.close();
         return returnVal;
     }
 

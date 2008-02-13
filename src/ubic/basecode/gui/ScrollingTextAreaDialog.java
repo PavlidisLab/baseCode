@@ -34,6 +34,10 @@ import javax.swing.JTextArea;
  * @version $Id$
  */
 public class ScrollingTextAreaDialog extends JDialog {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -8888590244789533769L;
     private JTextArea ta;
 
     public ScrollingTextAreaDialog( Frame owner, String title, boolean modal ) {

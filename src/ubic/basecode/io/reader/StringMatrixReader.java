@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import ubic.basecode.dataStructure.matrix.NamedMatrix;
 import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
 
 /**
@@ -37,16 +36,7 @@ import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class StringMatrixReader extends AbstractNamedMatrixReader {
-
-    public NamedMatrix read( String filename ) throws IOException {
-        File infile = new File( filename );
-        if ( !infile.exists() || !infile.canRead() ) {
-            throw new IllegalArgumentException( "Could not read from " + filename );
-        }
-        FileInputStream stream = new FileInputStream( infile );
-        return read( stream );
-    }
+public class StringMatrixReader extends AbstractNamedMatrixReader<StringMatrix2DNamed<String, String>, String> {
 
     /**
      * Missing values are entered as an empty string.
@@ -55,11 +45,12 @@ public class StringMatrixReader extends AbstractNamedMatrixReader {
      * @return NamedMatrix
      * @throws IOException
      */
-    public NamedMatrix read( InputStream stream ) throws IOException {
-        StringMatrix2DNamed matrix = null;
-        List MTemp = new Vector();
-        List rowNames = new Vector();
-        List columnNames;
+    @Override
+    public StringMatrix2DNamed<String, String> read( InputStream stream ) throws IOException {
+        StringMatrix2DNamed<String, String> matrix = null;
+        List<List<String>> MTemp = new Vector<List<String>>();
+        List<String> rowNames = new Vector<String>();
+        List<String> columnNames;
         BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
         // BufferedReader dis = new BufferedReader( new FileReader( filename ) );
         int columnNumber = 0;
@@ -71,7 +62,7 @@ public class StringMatrixReader extends AbstractNamedMatrixReader {
 
         while ( ( row = dis.readLine() ) != null ) {
             StringTokenizer st = new StringTokenizer( row, "\t", true );
-            Vector rowTemp = new Vector();
+            List<String> rowTemp = new Vector<String>();
             columnNumber = 0;
             String previousToken = "";
 
@@ -117,17 +108,17 @@ public class StringMatrixReader extends AbstractNamedMatrixReader {
             rowNumber++;
         }
 
-        matrix = new StringMatrix2DNamed( rowNumber, numHeadings );
+        matrix = new StringMatrix2DNamed<String, String>( rowNumber, numHeadings );
         matrix.setColumnNames( columnNames );
         matrix.setRowNames( rowNames );
 
         for ( int i = 0; i < matrix.rows(); i++ ) {
             for ( int j = 0; j < matrix.columns(); j++ ) {
-                if ( ( ( Vector ) MTemp.get( i ) ).size() < j + 1 ) {
+                if ( MTemp.get( i ).size() < j + 1 ) {
                     matrix.set( i, j, "" );
                     // this allows the input file to have ragged ends.
                 } else {
-                    matrix.set( i, j, ( ( Vector ) MTemp.get( i ) ).get( j ) );
+                    matrix.set( i, j, MTemp.get( i ).get( j ) );
                 }
             }
         }
@@ -136,12 +127,24 @@ public class StringMatrixReader extends AbstractNamedMatrixReader {
 
     }
 
+    @Override
+    public StringMatrix2DNamed<String, String> read( String filename ) throws IOException {
+        File infile = new File( filename );
+        if ( !infile.exists() || !infile.canRead() ) {
+            throw new IllegalArgumentException( "Could not read from " + filename );
+        }
+        FileInputStream stream = new FileInputStream( infile );
+        return read( stream );
+    }
+
     /*
      * (non-Javadoc)
      * 
      * @see basecode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
      */
-    public NamedMatrix readOneRow( BufferedReader dis ) throws IOException {
+    @Override
+    @SuppressWarnings("unused")
+    public StringMatrix2DNamed<String, String> readOneRow( BufferedReader dis ) throws IOException {
         throw new UnsupportedOperationException();
     }
 }

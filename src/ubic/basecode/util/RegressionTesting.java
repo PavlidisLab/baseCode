@@ -23,6 +23,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -37,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import cern.colt.list.DoubleArrayList;
+import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 
 /**
@@ -70,13 +72,23 @@ public class RegressionTesting {
 
         for ( int i = 0; i < a.rows(); i++ ) {
             for ( int j = 0; j < a.columns(); j++ ) {
-                if ( Math.abs( a.getQuick( i, j ) - b.getQuick( i, j ) ) > tolerance ) {
-                    log.error( "Expected: " + a.getQuick( i, j ) + ", actual=" + b.getQuick( i, j ) );
+                if ( Math.abs( a.get( i, j ) - b.get( i, j ) ) > tolerance ) {
+                    log.error( "Expected: " + a.get( i, j ) + ", actual=" + b.get( i, j ) );
                     return false;
                 }
             }
         }
         return true;
+    }
+
+    /**
+     * @param a
+     * @param b
+     * @param tolerance
+     * @return
+     */
+    public static boolean closeEnough( DoubleMatrix1D a, DoubleMatrix1D b, double tolerance ) {
+        return closeEnough( a.toArray(), b.toArray(), tolerance );
     }
 
     /**
@@ -106,7 +118,7 @@ public class RegressionTesting {
         if ( a.size() != b.size() ) return false;
 
         for ( int i = 0; i < a.size(); i++ ) {
-            if ( Math.abs( a.getQuick( i ) - b.getQuick( i ) ) > tolerance ) return false;
+            if ( Math.abs( a.get( i ) - b.get( i ) ) > tolerance ) return false;
         }
         return true;
     }
@@ -116,7 +128,7 @@ public class RegressionTesting {
 
         for ( int i = 0; i < a.rows(); i++ ) {
             for ( int j = 0; j < a.columns(); j++ ) {
-                if ( Math.abs( a.getQuick( i, j ) - b.getQuick( i, j ) ) > tolerance ) return false;
+                if ( Math.abs( a.get( i, j ) - b.get( i, j ) ) > tolerance ) return false;
             }
         }
         return true;
@@ -198,6 +210,22 @@ public class RegressionTesting {
 
         return av.containsAll( bv );
 
+    }
+
+    /**
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    public static String readTestResult( File file ) throws IOException {
+        BufferedReader buf = new BufferedReader( new FileReader( file ) );
+        String line = "";
+        StringBuffer testOutput = new StringBuffer( line );
+        while ( ( line = buf.readLine() ) != null ) {
+            testOutput.append( line + "\n" );
+        }
+        buf.close();
+        return testOutput.toString();
     }
 
     /**

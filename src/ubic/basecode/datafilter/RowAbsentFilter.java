@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Vector;
 
 import ubic.basecode.dataStructure.matrix.NamedMatrix;
+import ubic.basecode.dataStructure.matrix.NamedMatrixUtil;
 import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
 
 /**
@@ -33,7 +34,7 @@ import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class RowAbsentFilter<R, C> extends AbstractFilter<R, C> {
+public class RowAbsentFilter<M extends NamedMatrix<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
 
     private StringMatrix2DNamed<R, C> flags = null;
 
@@ -45,52 +46,13 @@ public class RowAbsentFilter<R, C> extends AbstractFilter<R, C> {
     private boolean flagsSet = false;
 
     /**
-     * @param f the matrix containing the flags.
-     */
-    public void setFlagMatrix( StringMatrix2DNamed<R, C> f ) {
-        if ( f == null ) {
-            throw new IllegalArgumentException( "Flag matrix is null" );
-        }
-        flags = f;
-        flagsSet = true;
-    }
-
-    /**
-     * @param k the minimum fraction of present values that there must be, in order to keep the row.
-     */
-    public void setMinPresentFraction( double k ) {
-        if ( k < 0.0 || k > 1.0 )
-            throw new IllegalArgumentException( "Min present fraction must be between 0 and 1, got " + k );
-        minPresentFraction = k;
-        fractionIsSet = true;
-    }
-
-    /**
-     * @param k the minimum number of present values there must be in order to keep the row.
-     */
-    public void setMinPresentCount( int k ) {
-        if ( k < 0 ) {
-            throw new IllegalArgumentException( "Minimum present count must be > 0." );
-        }
-        minPresentCount = k;
-        countIsSet = true;
-    }
-
-    /**
-     * @param k whether to count 'marginal' as 'present'. Default is false.
-     */
-    public void setKeepMarginal( boolean k ) {
-        keepMarginal = k;
-    }
-
-    /**
      * The data is going to be filtered in accordance to strings in 'flags'. These are either 'A', 'P' or 'M' for
      * absent, present and marginal.
      * 
      * @param data The input matrix
      * @return Matrix after filtering.
      */
-    public NamedMatrix<R, C> filter( NamedMatrix<R, C> data ) {
+    public M filter( M data ) {
 
         int numRows = data.rows();
         int numCols = data.columns();
@@ -123,7 +85,7 @@ public class RowAbsentFilter<R, C> extends AbstractFilter<R, C> {
             return data;
         }
 
-        List<Object[]> MTemp = new Vector<Object[]>();
+        List<V[]> MTemp = new Vector<V[]>();
         List<R> rowNames = new Vector<R>();
 
         int kept = 0;
@@ -151,8 +113,7 @@ public class RowAbsentFilter<R, C> extends AbstractFilter<R, C> {
                     continue;
                 }
 
-                String flag = ( String ) flags.get( flags.getRowIndexByName( rowName ), flags
-                        .getColIndexByName( colName ) );
+                String flag = flags.get( flags.getRowIndexByName( rowName ), flags.getColIndexByName( colName ) );
 
                 if ( flags.isMissing( flags.getRowIndexByName( rowName ), flags.getColIndexByName( colName ) ) ) {
                     log.warn( "Flags had no value for an item, counting as present." );
@@ -168,15 +129,15 @@ public class RowAbsentFilter<R, C> extends AbstractFilter<R, C> {
             }
 
             /* decide whether this row is a keeper */
-            if ( ( countIsSet && numPresent >= minPresentCount )
-                    || ( fractionIsSet && ( double ) numPresent / numCols >= minPresentFraction ) ) {
-                MTemp.add( data.getRowObj( i ) );
+            if ( countIsSet && numPresent >= minPresentCount || fractionIsSet
+                    && ( double ) numPresent / numCols >= minPresentFraction ) {
+                MTemp.add( NamedMatrixUtil.getRow( data, i ) );
                 rowNames.add( rowName );
                 kept++;
             }
         }
 
-        NamedMatrix<R, C> returnval = getOutputMatrix( data, MTemp.size(), numCols );
+       M returnval = getOutputMatrix( data, MTemp.size(), numCols );
         for ( int i = 0; i < MTemp.size(); i++ ) {
             for ( int j = 0; j < numCols; j++ ) {
                 returnval.set( i, j, MTemp.get( i )[j] );
@@ -188,6 +149,45 @@ public class RowAbsentFilter<R, C> extends AbstractFilter<R, C> {
         log.info( "There are " + kept + " rows left after filtering." );
 
         return returnval;
+    }
+
+    /**
+     * @param f the matrix containing the flags.
+     */
+    public void setFlagMatrix( StringMatrix2DNamed<R, C> f ) {
+        if ( f == null ) {
+            throw new IllegalArgumentException( "Flag matrix is null" );
+        }
+        flags = f;
+        flagsSet = true;
+    }
+
+    /**
+     * @param k whether to count 'marginal' as 'present'. Default is false.
+     */
+    public void setKeepMarginal( boolean k ) {
+        keepMarginal = k;
+    }
+
+    /**
+     * @param k the minimum number of present values there must be in order to keep the row.
+     */
+    public void setMinPresentCount( int k ) {
+        if ( k < 0 ) {
+            throw new IllegalArgumentException( "Minimum present count must be > 0." );
+        }
+        minPresentCount = k;
+        countIsSet = true;
+    }
+
+    /**
+     * @param k the minimum fraction of present values that there must be, in order to keep the row.
+     */
+    public void setMinPresentFraction( double k ) {
+        if ( k < 0.0 || k > 1.0 )
+            throw new IllegalArgumentException( "Min present fraction must be between 0 and 1, got " + k );
+        minPresentFraction = k;
+        fractionIsSet = true;
     }
 
     /**

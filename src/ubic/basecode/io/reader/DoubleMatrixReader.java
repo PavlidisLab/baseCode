@@ -37,7 +37,6 @@ import org.apache.commons.lang.StringUtils;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
-import ubic.basecode.dataStructure.matrix.NamedMatrix;
 import cern.colt.list.DoubleArrayList;
 
 /**
@@ -46,26 +45,18 @@ import cern.colt.list.DoubleArrayList;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class DoubleMatrixReader extends AbstractNamedMatrixReader {
+public class DoubleMatrixReader extends AbstractNamedMatrixReader<DoubleMatrixNamed<String, String>, Double> {
 
     private int numHeadings;
     private List<String> colNames;
-
-    /**
-     * @param filename data file to read from
-     * @return NamedMatrix object constructed from the data file
-     * @throws IOException
-     */
-    public NamedMatrix<String, String> read( String filename ) throws IOException {
-        return read( filename, null );
-    }
 
     /**
      * @param stream InputStream stream to read from
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
      */
-    public NamedMatrix<String, String> read( InputStream stream ) throws IOException {
+    @Override
+    public DoubleMatrixNamed<String, String> read( InputStream stream ) throws IOException {
         return read( stream, null );
     }
 
@@ -76,7 +67,8 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
      *         true.
      * @throws IOException
      */
-    public NamedMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames ) throws IOException {
+    public DoubleMatrixNamed<String, String> read( InputStream stream, Collection<String> wantedRowNames )
+            throws IOException {
         return read( stream, wantedRowNames, true );
     }
 
@@ -88,7 +80,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
      * @return matrix
      * @throws IOException
      */
-    public NamedMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames,
+    public DoubleMatrixNamed<String, String> read( InputStream stream, Collection<String> wantedRowNames,
             boolean createEmptyRows ) throws IOException {
 
         BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
@@ -157,12 +149,41 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
 
     }
 
+    /**
+     * @param filename data file to read from
+     * @return NamedMatrix object constructed from the data file
+     * @throws IOException
+     */
+    @Override
+    public DoubleMatrixNamed<String, String> read( String filename ) throws IOException {
+        return read( filename, null );
+    }
+
+    /**
+     * Read a matrix from a file, subject to filtering criteria.
+     * 
+     * @param filename data file to read from
+     * @param wantedRowNames contains names of rows we want to get
+     * @return NamedMatrix object constructed from the data file
+     * @throws IOException
+     */
+    public DoubleMatrixNamed<String, String> read( String filename, Collection<String> wantedRowNames )
+            throws IOException {
+        File infile = new File( filename );
+        if ( !infile.exists() || !infile.canRead() ) {
+            throw new IOException( "Could not read from file " + filename );
+        }
+        FileInputStream stream = new FileInputStream( infile );
+        return read( stream, wantedRowNames );
+    } // end read
+
     /*
      * (non-Javadoc)
      * 
      * @see basecode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
      */
-    public NamedMatrix<String, String> readOneRow( BufferedReader dis ) throws IOException {
+    @Override
+    public DoubleMatrixNamed<String, String> readOneRow( BufferedReader dis ) throws IOException {
         String row = dis.readLine();
         List<DoubleArrayList> MTemp = new Vector<DoubleArrayList>();
 
@@ -170,6 +191,41 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
         parseRow( row, rowNames, MTemp, null );
         return createMatrix( MTemp, 1, numHeadings, rowNames, colNames );
     }
+
+    protected DoubleArrayList createEmptyRow( int numColumns ) {
+
+        DoubleArrayList row = new DoubleArrayList();
+        for ( int i = 0; i < numColumns; i++ ) {
+            row.add( Double.NaN );
+        }
+        return row;
+    }
+
+    // -----------------------------------------------------------------
+    // protected methods
+    // -----------------------------------------------------------------
+
+    protected DoubleMatrixNamed<String, String> createMatrix( List MTemp, int rowCount, int colCount,
+            List<String> rowNames, List<String> colNames1 ) {
+
+        DoubleMatrixNamed<String, String> matrix = DoubleMatrix2DNamedFactory.fastrow( rowCount, colCount );
+
+        for ( int i = 0; i < matrix.rows(); i++ ) {
+            for ( int j = 0; j < matrix.columns(); j++ ) {
+                if ( ( ( DoubleArrayList ) MTemp.get( i ) ).size() < j + 1 ) {
+                    matrix.set( i, j, Double.NaN );
+                    // this allows the input file to have ragged ends.
+                    // todo I'm not sure allowing ragged inputs is a good idea -PP
+                } else {
+                    matrix.set( i, j, ( ( DoubleArrayList ) MTemp.get( i ) ).elements()[j] );
+                }
+            }
+        }
+        matrix.setRowNames( rowNames );
+        matrix.setColumnNames( colNames1 );
+        return matrix;
+
+    } // end createMatrix
 
     /**
      * @param row
@@ -215,8 +271,8 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
                 } else {
                     NumberFormat nf = NumberFormat.getInstance( Locale.getDefault() );
                     try {
-                        if ( log.isDebugEnabled() ) log.debug( "" + nf.parse( s ).doubleValue() );
-                        rowTemp.add( ( nf.parse( s ) ).doubleValue() );
+//                        if ( log.isDebugEnabled() ) log.debug( "" + nf.parse( s ).doubleValue() );
+                        rowTemp.add( nf.parse( s ).doubleValue() );
                         // rowTemp.add( Double.parseDouble( s ) );
                     } catch ( ParseException e ) {
                         throw new RuntimeException( e );
@@ -245,58 +301,6 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader {
         MTemp.add( rowTemp );
         return s;
 
-    }
-
-    /**
-     * Read a matrix from a file, subject to filtering criteria.
-     * 
-     * @param filename data file to read from
-     * @param wantedRowNames contains names of rows we want to get
-     * @return NamedMatrix object constructed from the data file
-     * @throws IOException
-     */
-    public NamedMatrix<String, String> read( String filename, Collection<String> wantedRowNames ) throws IOException {
-        File infile = new File( filename );
-        if ( !infile.exists() || !infile.canRead() ) {
-            throw new IOException( "Could not read from file " + filename );
-        }
-        FileInputStream stream = new FileInputStream( infile );
-        return read( stream, wantedRowNames );
-    } // end read
-
-    // -----------------------------------------------------------------
-    // protected methods
-    // -----------------------------------------------------------------
-
-    protected DoubleMatrixNamed<String, String> createMatrix( List MTemp, int rowCount, int colCount,
-            List<String> rowNames, List<String> colNames1 ) {
-
-        DoubleMatrixNamed<String, String> matrix = DoubleMatrix2DNamedFactory.fastrow( rowCount, colCount );
-
-        for ( int i = 0; i < matrix.rows(); i++ ) {
-            for ( int j = 0; j < matrix.columns(); j++ ) {
-                if ( ( ( DoubleArrayList ) MTemp.get( i ) ).size() < j + 1 ) {
-                    matrix.setQuick( i, j, Double.NaN );
-                    // this allows the input file to have ragged ends.
-                    // todo I'm not sure allowing ragged inputs is a good idea -PP
-                } else {
-                    matrix.setQuick( i, j, ( ( DoubleArrayList ) MTemp.get( i ) ).elements()[j] );
-                }
-            }
-        }
-        matrix.setRowNames( rowNames );
-        matrix.setColumnNames( colNames1 );
-        return matrix;
-
-    } // end createMatrix
-
-    protected DoubleArrayList createEmptyRow( int numColumns ) {
-
-        DoubleArrayList row = new DoubleArrayList();
-        for ( int i = 0; i < numColumns; i++ ) {
-            row.add( Double.NaN );
-        }
-        return row;
     }
 
 } // end class DoubleMatrixReader

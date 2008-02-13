@@ -33,23 +33,91 @@ import cern.jet.stat.Probability;
  */
 public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
 
-    private boolean transform = false;
-    private boolean fixed = true;
+    /**
+     * Equation 18-10 from CH. For untransformed correlations.
+     * <p>
+     * 
+     * <pre>
+     * v_i = ( 1 - r_i &circ; 2 ) &circ; 2 / ( n_i - 1 )
+     * </pre>
+     * 
+     * <p>
+     * I added a regularization to this, so that we don't get ridiculous variances when correlations are close to 1
+     * (this happens). If the correlation is very close to 1 (or -1), we fudge it to be a value less close to 1 (e.g.,
+     * 0.999)
+     * </p>
+     * 
+     * @param r
+     * @param n
+     * @return
+     */
+    protected static double samplingVariance( double r, double numsamples ) {
 
+        if ( numsamples <= 0 ) throw new IllegalArgumentException( "N must be greater than 0" );
+
+        if ( !CorrelationStats.isValidPearsonCorrelation( r ) )
+            throw new IllegalArgumentException( "r=" + r + " is not a valid Pearson correlation" );
+
+        double FUDGE = 0.001;
+        if ( 1.0 - Math.abs( r ) < FUDGE ) {
+            r = Math.abs( r ) - FUDGE; // don't care about sign. any more.
+        }
+
+        if ( numsamples < 2 ) {
+            return Double.NaN;
+        }
+        double k = 1.0 - r * r;
+        double var = k * k / ( numsamples - 1 );
+
+        return var;
+    }
+
+    private boolean transform = false;
+
+    private boolean fixed = true;
     private double z; // z score
     private double p; // probability
     private double q; // q-score;
     private double e; // unconditional effect;
     private double v; // unconditional variance;
     private double n; // total sample size
+
     private double bsv; // between-studies variance component;
+
+    public CorrelationEffectMetaAnalysis() {
+    }
 
     public CorrelationEffectMetaAnalysis( boolean fixed, boolean transform ) {
         this.fixed = fixed;
         this.transform = transform;
     }
 
-    public CorrelationEffectMetaAnalysis() {
+    public double getBsv() {
+        return bsv;
+    }
+
+    public double getE() {
+        return e;
+    }
+
+    public double getN() {
+        return n;
+    }
+
+    public double getP() {
+        return p;
+    }
+
+    public double getQ() {
+        return q;
+    }
+
+    public double getV() {
+        return v;
+    }
+
+    public double getZ() {
+        return z;
     }
 
     /**
@@ -122,69 +190,12 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
         return p;
     }
 
-    /**
-     * Equation 18-10 from CH. For untransformed correlations.
-     * <p>
-     * 
-     * <pre>
-     * v_i = ( 1 - r_i &circ; 2 ) &circ; 2 / ( n_i - 1 )
-     * </pre>
-     * 
-     * <p>
-     * I added a regularization to this, so that we don't get ridiculous variances when correlations are close to 1
-     * (this happens). If the correlation is very close to 1 (or -1), we fudge it to be a value less close to 1 (e.g.,
-     * 0.999)
-     * </p>
-     * 
-     * @param r
-     * @param n
-     * @return
-     */
-    protected static double samplingVariance( double r, double numsamples ) {
-
-        if ( numsamples <= 0 ) throw new IllegalArgumentException( "N must be greater than 0" );
-
-        if ( !CorrelationStats.isValidPearsonCorrelation( r ) )
-            throw new IllegalArgumentException( "r=" + r + " is not a valid Pearson correlation" );
-
-        double FUDGE = 0.001;
-        if ( 1.0 - Math.abs( r ) < FUDGE ) {
-            r = Math.abs( r ) - FUDGE; // don't care about sign. any more.
-        }
-
-        if ( numsamples < 2 ) {
-            return Double.NaN;
-        }
-        double k = 1.0 - r * r;
-        double var = k * k / ( numsamples - 1 );
-
-        return var;
+    public void setFixed( boolean fixed ) {
+        this.fixed = fixed;
     }
 
-    /**
-     * Run equation CH 18-10 on a list of sample sizes and effects.
-     * 
-     * @param effectSizes
-     * @param sampleSizes
-     * @see samplingVariance
-     * @return
-     */
-    protected DoubleArrayList samplingVariances( DoubleArrayList effectSizes, DoubleArrayList sampleSizes ) {
-
-        if ( effectSizes.size() != sampleSizes.size() ) throw new IllegalArgumentException( "Unequal sample sizes." );
-
-        DoubleArrayList answer = new DoubleArrayList( sampleSizes.size() );
-        for ( int i = 0; i < sampleSizes.size(); i++ ) {
-
-            double ef = effectSizes.getQuick( i );
-
-            if ( Double.isNaN( ef ) ) {
-                answer.add( Double.NaN );
-            } else {
-                answer.add( samplingVariance( ef, sampleSizes.getQuick( i ) ) );
-            }
-        }
-        return answer;
+    public void setTransform( boolean transform ) {
+        this.transform = transform;
     }
 
     /**
@@ -219,39 +230,29 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
         return answer;
     }
 
-    public void setFixed( boolean fixed ) {
-        this.fixed = fixed;
-    }
+    /**
+     * Run equation CH 18-10 on a list of sample sizes and effects.
+     * 
+     * @param effectSizes
+     * @param sampleSizes
+     * @see samplingVariance
+     * @return
+     */
+    protected DoubleArrayList samplingVariances( DoubleArrayList effectSizes, DoubleArrayList sampleSizes ) {
 
-    public void setTransform( boolean transform ) {
-        this.transform = transform;
-    }
+        if ( effectSizes.size() != sampleSizes.size() ) throw new IllegalArgumentException( "Unequal sample sizes." );
 
-    public double getP() {
-        return p;
-    }
+        DoubleArrayList answer = new DoubleArrayList( sampleSizes.size() );
+        for ( int i = 0; i < sampleSizes.size(); i++ ) {
 
-    public double getQ() {
-        return q;
-    }
+            double ef = effectSizes.getQuick( i );
 
-    public double getZ() {
-        return z;
-    }
-
-    public double getE() {
-        return e;
-    }
-
-    public double getV() {
-        return v;
-    }
-
-    public double getN() {
-        return n;
-    }
-
-    public double getBsv() {
-        return bsv;
+            if ( Double.isNaN( ef ) ) {
+                answer.add( Double.NaN );
+            } else {
+                answer.add( samplingVariance( ef, sampleSizes.getQuick( i ) ) );
+            }
+        }
+        return answer;
     }
 }

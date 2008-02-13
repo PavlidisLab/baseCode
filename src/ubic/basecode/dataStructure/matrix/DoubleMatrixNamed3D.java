@@ -1,3 +1,21 @@
+/*
+ * The baseCode project
+ * 
+ * Copyright (c) 2008 University of British Columbia
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package ubic.basecode.dataStructure.matrix;
 
 import org.apache.commons.logging.Log;
@@ -5,64 +23,19 @@ import org.apache.commons.logging.LogFactory;
 
 import cern.colt.matrix.DoubleMatrix2D;
 
-public abstract class DoubleMatrixNamed3D<R, C, S> extends AbstractNamedMatrix3D<R, C, S> {
+/**
+ * TODO Document Me
+ * 
+ * @author Xwan
+ * @version $Id$
+ * @param <R> Row label type
+ * @param <C> Column label type
+ * @param <S> Slice label type
+ */
+public abstract class DoubleMatrixNamed3D<R, C, S> extends AbstractNamedMatrix3D<R, C, S, Double> {
     protected static final int MAX_ROWS_TO_PRINT = 20;
     protected static final int MAX_SLICES_TO_PRINT = 10;
     protected static Log log = LogFactory.getLog( DoubleMatrixNamed.class.getName() );
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.NamedMatrix#rows()
-     */
-    public abstract int rows();
-
-    public abstract int columns();
-
-    public abstract int slices();
-
-    public abstract Object[][] getRowObj( int row );
-
-    public abstract Object[][] getColObj( int col );
-
-    public abstract Object[][] getSliceObj( int slice );
-
-    public abstract boolean isMissing( int slice, int row, int col );
-
-    public abstract double[][] getRow( int row );
-
-    public abstract double[][] getColumn( int col );
-
-    public abstract double[][] getSlice( int slice );
-
-    public abstract double get( int x, int y, int z );
-
-    /**
-     * @param i
-     * @param j
-     * @return
-     */
-    public abstract double getQuick( int i, int j, int k );
-
-    public abstract void set( int x, int y, int z, double value );
-
-    /**
-     * @param j
-     * @return
-     */
-    public abstract DoubleMatrix2D viewRow( int slice );
-
-    public abstract DoubleMatrix2D viewColumn( int column );
-
-    public abstract DoubleMatrix2D viewSlice( int slice );
-
-    /**
-     * @param s String
-     * @return double[]
-     */
-    public double[][] getRowByName( R row ) {
-        return getRow( getRowIndexByName( row ) );
-    }
 
     /**
      * @param s String
@@ -72,9 +45,44 @@ public abstract class DoubleMatrixNamed3D<R, C, S> extends AbstractNamedMatrix3D
         return getColumn( getColIndexByName( col ) );
     }
 
+    public abstract double[][] getColumn( int column );
+
+    public abstract double[][] getRow( int row );
+
+    public abstract double get( int slice, int row, int column );
+
+    /**
+     * @param s String
+     * @return double[]
+     */
+    public double[][] getRowByName( R row ) {
+        return getRow( getRowIndexByName( row ) );
+    }
+
+    public abstract Double[][] getRowObj( int row );
+
+    public abstract Double[][] getColObj( int col );
+
+    public abstract double[][] getSlice( int slice );
+
     public double[][] getSliceByName( S slice ) {
         return getSlice( getSliceIndexByName( slice ) );
     }
+
+    public abstract Double[][] getSliceObj( int slice );
+
+    @Override
+    public abstract boolean isMissing( int slice, int row, int col );
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.dataStructure.matrix.NamedMatrix#rows()
+     */
+    @Override
+    public abstract int rows();
+
+    public abstract void set( int x, int y, int z, double value );
 
     /**
      * @param j
@@ -83,6 +91,10 @@ public abstract class DoubleMatrixNamed3D<R, C, S> extends AbstractNamedMatrix3D
      */
     public abstract void setQuick( int slice, int row, int column, double c );
 
+    @Override
+    public abstract int slices();
+
+    @Override
     public String toString() {
         int slices = this.slices();
         int rows = this.rows();
@@ -114,4 +126,14 @@ public abstract class DoubleMatrixNamed3D<R, C, S> extends AbstractNamedMatrix3D
         }
         return buf.toString();
     }
+
+    public abstract DoubleMatrix2D viewColumn( int column );
+
+    /**
+     * @param j
+     * @return
+     */
+    public abstract DoubleMatrix2D viewRow( int slice );
+
+    public abstract DoubleMatrix2D viewSlice( int slice );
 }

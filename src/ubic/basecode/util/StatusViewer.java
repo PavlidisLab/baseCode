@@ -20,7 +20,7 @@ package ubic.basecode.util;
 
 /**
  * Intended use is to display 'status' information or other messages to users in a non-disruptive fashion (though the
- * actual use is up to the implementer). Copyright (c) 2004 Columbia University
+ * actual use is up to the implementer). Copyright (c) 2004 University of British Columbia
  * 
  * @author Paul Pavlidis
  * @version $Id$

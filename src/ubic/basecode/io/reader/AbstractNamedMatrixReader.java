@@ -36,15 +36,15 @@ import ubic.basecode.dataStructure.matrix.NamedMatrix;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public abstract class AbstractNamedMatrixReader {
-
-    public abstract NamedMatrix<String, String> read( String filename ) throws IOException;
-
-    public abstract NamedMatrix<String, String> read( InputStream stream ) throws IOException;
-
-    public abstract NamedMatrix<String, String> readOneRow( BufferedReader dis ) throws IOException;
+public abstract class AbstractNamedMatrixReader<M extends NamedMatrix<String, String, V>, V> {
 
     protected static final Log log = LogFactory.getLog( AbstractNamedMatrixReader.class );
+
+    public abstract M read( InputStream stream ) throws IOException;
+
+    public abstract M read( String filename ) throws IOException;
+
+    public abstract M readOneRow( BufferedReader dis ) throws IOException;
 
     protected List<String> readHeader( BufferedReader dis ) throws IOException {
         List<String> headerVec = new Vector<String>();

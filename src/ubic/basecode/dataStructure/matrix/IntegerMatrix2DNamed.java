@@ -24,13 +24,106 @@ import cern.colt.matrix.ObjectMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public class IntegerMatrix2DNamed<R, C> extends AbstractNamedMatrix<R, C> {
+public class IntegerMatrix2DNamed<R, C> extends AbstractNamedMatrix<R, C, Integer> implements
+        NamedPrimitiveMatrix<R, C, Integer> {
 
-    private ObjectMatrix2DNamed matrix;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -8413796057024940237L;
+    private ObjectMatrix2DNamed<R, C, Integer> matrix;
 
     public IntegerMatrix2DNamed( int x, int y ) {
         super();
-        matrix = new ObjectMatrix2DNamed( x, y );
+        matrix = new ObjectMatrix2DNamed<R, C, Integer>( x, y );
+    }
+
+    /**
+     * @return
+     */
+    public int columns() {
+        return matrix.columns();
+    }
+
+    /**
+     * @param row
+     * @param column
+     * @return
+     */
+    public Integer get( int row, int column ) {
+        return matrix.get( row, column );
+    }
+
+    public void set( int row, int column, Integer value ) {
+        matrix.set( row, column, value );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(java.lang.Object, java.lang.Object, java.lang.Object)
+     */
+    public void setByKeys( R r, C c, Integer v ) {
+        this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
+    }
+
+    public Integer[] getColObj( int col ) {
+        Integer[] result = new Integer[rows()];
+        for ( int i = 0; i < rows(); i++ ) {
+            result[i] = get( i, col );
+        }
+        return result;
+    }
+
+    public Integer[] getColumn( int col ) {
+        Integer[] result = new Integer[rows()];
+        for ( int i = 0; i < rows(); i++ ) {
+            result[i] = get( i, col );
+        }
+        return result;
+    }
+
+    public Integer getObject( int row, int col ) {
+        return get( row, col );
+    }
+
+    public Integer[] getRow( int row ) {
+        return ( Integer[] ) viewRow( row ).toArray();
+    }
+
+    public Integer[] getRowObj( int row ) {
+        Integer[] result = new Integer[columns()];
+        for ( int i = 0; i < columns(); i++ ) {
+            result[i] = get( row, i );
+        }
+        return result;
+    }
+
+    public boolean isMissing( int i, int j ) {
+        return get( i, j ) == null;
+    }
+
+    /**
+     * @return
+     */
+    public int rows() {
+        return matrix.rows();
+    }
+
+    /**
+     * @param row
+     * @param column
+     * @param value
+     */
+    public void setObj( int row, int column, Integer value ) {
+        matrix.set( row, column, value );
+    }
+
+    /**
+     * @return
+     */
+    public int size() {
+        return matrix.size();
     }
 
     /**
@@ -54,81 +147,6 @@ public class IntegerMatrix2DNamed<R, C> extends AbstractNamedMatrix<R, C> {
         return buf.toString();
     }
 
-    public Integer[] getRow( int row ) {
-        return ( Integer[] ) viewRow( row ).toArray();
-    }
-
-    public Integer[] getColumn( int col ) {
-        Integer[] result = new Integer[rows()];
-        for ( int i = 0; i < rows(); i++ ) {
-            result[i] = get( i, col );
-        }
-        return result;
-    }
-
-    public Object[] getRowObj( int row ) {
-        Integer[] result = new Integer[columns()];
-        for ( int i = 0; i < columns(); i++ ) {
-            result[i] = get( row, i );
-        }
-        return result;
-    }
-
-    public Object[] getColObj( int col ) {
-        Integer[] result = new Integer[rows()];
-        for ( int i = 0; i < rows(); i++ ) {
-            result[i] = get( i, col );
-        }
-        return result;
-    }
-
-    public Object getObj( int row, int col ) {
-        return get( row, col );
-    }
-
-    public boolean isMissing( int i, int j ) {
-        return get( i, j ) == null;
-    }
-
-    /**
-     * @return
-     */
-    public int columns() {
-        return matrix.columns();
-    }
-
-    /**
-     * @param row
-     * @param column
-     * @return
-     */
-    public Integer get( int row, int column ) {
-        return ( Integer ) matrix.get( row, column );
-    }
-
-    /**
-     * @param row
-     * @param column
-     * @return
-     */
-    public Integer getQuick( int row, int column ) {
-        return ( Integer ) matrix.getQuick( row, column );
-    }
-
-    /**
-     * @return
-     */
-    public int rows() {
-        return matrix.rows();
-    }
-
-    /**
-     * @return
-     */
-    public int size() {
-        return matrix.size();
-    }
-
     /**
      * @param column
      * @return
@@ -143,25 +161,6 @@ public class IntegerMatrix2DNamed<R, C> extends AbstractNamedMatrix<R, C> {
      */
     public ObjectMatrix1D viewRow( int row ) {
         return matrix.viewRow( row );
-    }
-
-    /**
-     * @param row
-     * @param column
-     * @param value
-     */
-    public void set( int row, int column, Object value ) {
-        assert value instanceof Integer;
-        matrix.set( row, column, value );
-    }
-
-    /**
-     * @param row
-     * @param column
-     * @param value
-     */
-    public void setQuick( int row, int column, Object value ) {
-        matrix.setQuick( row, column, value );
     }
 
 }

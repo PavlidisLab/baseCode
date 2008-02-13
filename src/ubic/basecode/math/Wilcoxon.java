@@ -21,7 +21,6 @@ package ubic.basecode.math;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -47,6 +46,25 @@ public class Wilcoxon {
     private static Log log = LogFactory.getLog( Wilcoxon.class.getName() );
 
     /**
+     * @param N
+     * @param n
+     * @param R
+     * @return
+     */
+    public static double exactWilcoxonP( int N, int n, int R ) {
+        return pExact( N, n, R );
+    }
+
+    /**
+     * @param N total number of items (in and not in the class)
+     * @param ranks of items in the class
+     * @return
+     */
+    public static double wilcoxonP( int N, Collection ranks ) {
+        return wilcoxonP( N, ranks.size(), Rank.rankSum( ranks ) );
+    }
+
+    /**
      * @param N number of all Items
      * @param n number of class Items
      * @param R rankSum for items in the class. (one-based)
@@ -58,7 +76,7 @@ public class Wilcoxon {
 
         if ( n == 0 && N == 0 ) return 1.0;
 
-        if ( ( long ) N * n * R <= 1e6 || ( R < N && n * Math.pow( R, 2 ) <= 1e6 ) ) {
+        if ( ( long ) N * n * R <= 1e6 || R < N && n * Math.pow( R, 2 ) <= 1e6 ) {
             log.debug( "Using exact method (" + N * n * R + ")" );
             return pExact( N, n, R );
         }
@@ -75,12 +93,21 @@ public class Wilcoxon {
     }
 
     /**
-     * @param N total number of items (in and not in the class)
-     * @param ranks of items in the class
-     * @return
+     * Purely for debugging.
      */
-    public static double wilcoxonP( int N, Collection ranks ) {
-        return wilcoxonP( N, ranks.size(), Rank.rankSum( ranks ) );
+    protected static void printCache() {
+        for ( Integer N : cache.keySet() ) {
+            Map<Integer, Map<Integer, BigInteger>> nToRs = cache.get( N );
+            for ( Object element : nToRs.keySet() ) {
+                Integer n = ( Integer ) element;
+                Map<Integer, BigInteger> rs = nToRs.get( n );
+                for ( Integer r : rs.keySet() ) {
+                    BigInteger a = rs.get( r );
+                    log.debug( N + ", " + n + ", " + r + "=" + a );
+                }
+            }
+        }
+
     }
 
     private static void addToCache( int N, int n, int R, BigInteger value ) {
@@ -102,6 +129,29 @@ public class Wilcoxon {
         Map<Integer, BigInteger> rVals = nVals.get( n_i );
 
         rVals.put( R_i, value );
+    }
+
+    /**
+     * @param n0
+     * @param n02
+     * @param r0
+     * @return
+     */
+    private static boolean cacheContains( int N, int n, int R ) {
+        Integer N_i = new Integer( N );
+        Integer n_i = new Integer( n );
+        Integer R_i = new Integer( R );
+        if ( !cache.containsKey( N_i ) ) return false;
+
+        Map nVals = cache.get( N_i );
+
+        if ( !nVals.containsKey( n_i ) ) return false;
+
+        Map rVals = ( Map ) nVals.get( n_i );
+
+        if ( !rVals.containsKey( R_i ) ) return false;
+
+        return true;
     }
 
     /**
@@ -172,49 +222,6 @@ public class Wilcoxon {
         // printCache();
         // }
         return getFromCache( N0, n0, R0 );
-    }
-
-    /**
-     * @param n0
-     * @param n02
-     * @param r0
-     * @return
-     */
-    private static boolean cacheContains( int N, int n, int R ) {
-        Integer N_i = new Integer( N );
-        Integer n_i = new Integer( n );
-        Integer R_i = new Integer( R );
-        if ( !cache.containsKey( N_i ) ) return false;
-
-        Map nVals = cache.get( N_i );
-
-        if ( !nVals.containsKey( n_i ) ) return false;
-
-        Map rVals = ( Map ) nVals.get( n_i );
-
-        if ( !rVals.containsKey( R_i ) ) return false;
-
-        return true;
-    }
-
-    /**
-     * Purely for debugging.
-     */
-    protected static void printCache() {
-        for ( Iterator<Integer> iter = cache.keySet().iterator(); iter.hasNext(); ) {
-            Integer N = iter.next();
-            Map<Integer, Map<Integer, BigInteger>> nToRs = cache.get( N );
-            for ( Iterator iterator = nToRs.keySet().iterator(); iterator.hasNext(); ) {
-                Integer n = ( Integer ) iterator.next();
-                Map<Integer, BigInteger> rs = nToRs.get( n );
-                for ( Iterator<Integer> itc = rs.keySet().iterator(); itc.hasNext(); ) {
-                    Integer r = itc.next();
-                    BigInteger a = rs.get( r );
-                    log.debug( N + ", " + n + ", " + r + "=" + a );
-                }
-            }
-        }
-
     }
 
     private static BigInteger getFromCache( int N, int n, int R ) {
@@ -309,7 +316,7 @@ public class Wilcoxon {
 
         double result = 0.0;
         for ( int a = 0; a <= n; a++ ) {
-            result += C[kMax][a] * ( Math.pow( t - kMax, a ) );
+            result += C[kMax][a] * Math.pow( t - kMax, a );
         }
         return result;
 
@@ -320,16 +327,6 @@ public class Wilcoxon {
      */
     private static void removeFromCache( int N ) {
         cache.remove( new Integer( N ) );
-    }
-
-    /**
-     * @param N
-     * @param n
-     * @param R
-     * @return
-     */
-    public static double exactWilcoxonP( int N, int n, int R ) {
-        return pExact( N, n, R );
     }
 
 }

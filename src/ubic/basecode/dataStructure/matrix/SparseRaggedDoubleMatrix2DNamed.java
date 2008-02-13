@@ -18,8 +18,6 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
-import java.text.NumberFormat;
-import java.util.Iterator;
 import java.util.Vector;
 
 import cern.colt.list.DoubleArrayList;
@@ -34,184 +32,27 @@ import cern.colt.matrix.DoubleMatrix1D;
  */
 public class SparseRaggedDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
 
-    private Vector<DoubleMatrix1D> matrix; // a vector of DoubleMatrix1D containing the values of the matrix
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -8911689395488681312L;
 
     int columns = 0;
+
+    private Vector<DoubleMatrix1D> matrix; // a vector of DoubleMatrix1D containing the values of the matrix
     private boolean isDirty = true;
 
     public SparseRaggedDoubleMatrix2DNamed() {
         matrix = new Vector<DoubleMatrix1D>();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.NamedMatrix#rows()
-     */
-    public int rows() {
-        return matrix.size();
-    }
-
-    /*
-     * (non-Javadoc) Unfortunately this has to iterate over the entire array.
-     * 
-     * @see basecode.dataStructure.matrix.NamedMatrix#columns()
-     */
-    public int columns() {
-
-        if ( !isDirty ) {
-            return columns;
-        }
-
-        int max = 0;
-        for ( Iterator iter = matrix.iterator(); iter.hasNext(); ) {
-            DoubleMatrix1D element = ( DoubleMatrix1D ) iter.next();
-
-            int value = element.size();
-            if ( value > max ) {
-                max = value;
-            }
-
-        }
-
-        columns = max;
-        isDirty = false;
-        return columns;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.NamedMatrix#set(int, int, java.lang.Object)
-     */
-    public void set( int i, int j, Object val ) {
-        set( i, j, ( ( Double ) val ).doubleValue() );
-    }
-
     /**
-     * @param i row
-     * @param j column
-     * @param d value
+     * @param matrix1D
      */
-    public void set( int i, int j, double d ) {
-        matrix.get( i ).set( j, d );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.NamedMatrix#getRowObj(int)
-     */
-    public Object[] getRowObj( int i ) {
-        Double[] result = new Double[columns()];
-
-        double[] row = getRow( i );
-
-        for ( int j = 0; j < columns(); j++ ) {
-            result[i] = new Double( row[j] );
-        }
-        return result;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.NamedMatrix#getColObj(int)
-     */
-    public Object[] getColObj( int i ) {
-        throw new UnsupportedOperationException();
-    }
-
-    public Object getObj( int row, int col ) {
-        return new Double( get( row, col ) );
-    }
-
-    /**
-     * (non-Javadoc) Note that in a sparse matrix, zero values are considered "missing"!
-     * 
-     * @see basecode.dataStructure.matrix.NamedMatrix#isMissing(int, int)
-     */
-    public boolean isMissing( int i, int j ) {
-        return get( i, j ) == 0.0;
-    }
-
-    /**
-     * @return java.lang.String
-     */
-    public String toString() {
-        NumberFormat nf = NumberFormat.getInstance();
-
-        StringBuffer buf = new StringBuffer();
-
-        if ( this.hasColNames() || this.hasRowNames() ) {
-            buf.append( "label" );
-        }
-
-        if ( this.hasColNames() ) {
-            for ( int i = 0; i < columns(); i++ ) {
-                buf.append( "\t" + getColName( i ) );
-            }
-            buf.append( "\n" );
-        }
-
-        for ( int i = 0; i < rows(); i++ ) {
-            if ( this.hasRowNames() ) {
-                buf.append( getRowName( i ) );
-            }
-            for ( int j = 0; j < columns(); j++ ) {
-
-                double value = get( i, j );
-
-                if ( value == 0.0 ) {
-                    buf.append( "\t" );
-                } else {
-                    buf.append( "\t" + nf.format( value ) );
-                }
-            }
-
-            buf.append( "\n" );
-        }
-        return buf.toString();
-    }
-
-    /**
-     * @param row
-     * @param column
-     * @return
-     */
-    public double get( int i, int j ) {
-        return matrix.get( i ).getQuick( j );
-    }
-
-    /**
-     * This gives just the list of values in the row - make sure this is what you want. It does not include the zero
-     * values.
-     * 
-     * @param row
-     * @return
-     */
-    public DoubleArrayList getRowArrayList( int row ) {
-        DoubleArrayList returnVal = new DoubleArrayList();
-        matrix.get( row ).getNonZeros( new IntArrayList(), returnVal );
-        return returnVal;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.AbstractNamedDoubleMatrix#viewRow(int)
-     */
-    public DoubleMatrix1D viewRow( int i ) {
-        return matrix.get( i );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.AbstractNamedDoubleMatrix#getRow(int)
-     */
-    public double[] getRow( int i ) {
-        return matrix.get( i ).toArray();
+    public void addRow( R name, DoubleMatrix1D matrix1D ) {
+        matrix.add( matrix1D );
+        this.addRowName( name, matrix.size() - 1 );
+        isDirty = true;
     }
 
     /**
@@ -228,30 +69,65 @@ public class SparseRaggedDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, 
     }
 
     /**
-     * @param matrix1D
+     * @return double[][]
      */
-    public void addRow( R name, DoubleMatrix1D matrix1D ) {
-        matrix.add( matrix1D );
-        this.addRowName( name, matrix.size() - 1 );
-        isDirty = true;
+    @Override
+    public double[][] asArray() {
+        double[][] result = new double[rows()][];
+        for ( int i = 0; i < rows(); i++ ) {
+            result[i] = getRow( i );
+        }
+        return result;
+    }
+
+    /**
+     * Returns the size of the widest row.
+     * 
+     * @see basecode.dataStructure.matrix.NamedMatrix#columns()
+     */
+    public int columns() {
+
+        if ( !isDirty ) {
+            return columns;
+        }
+
+        int max = 0;
+        for ( Object element2 : matrix ) {
+            DoubleMatrix1D element = ( DoubleMatrix1D ) element2;
+
+            int value = element.size();
+            if ( value > max ) {
+                max = value;
+            }
+
+        }
+
+        columns = max;
+        isDirty = false;
+        return columns;
+    }
+
+    /**
+     * @param row
+     * @param column
+     * @return
+     */
+    @Override
+    public double get( int i, int j ) {
+        return matrix.get( i ).getQuick( j );
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see basecode.dataStructure.matrix.AbstractNamedDoubleMatrix#getQuick(int, int)
+     * @see basecode.dataStructure.matrix.NamedMatrix#getColObj(int)
      */
-    public double getQuick( int i, int j ) {
-        return get( i, j );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#setQuick(int, int, double)
-     */
-    public void setQuick( int j, int i, double c ) {
-        matrix.get( i ).set( j, c );
+    public Double[] getColObj( int col ) {
+        Double[] result = new Double[rows()];
+        for ( int i = 0; i < rows(); i++ ) {
+            result[i] = get( i, col );
+        }
+        return result;
     }
 
     /*
@@ -259,12 +135,111 @@ public class SparseRaggedDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, 
      * 
      * @see basecode.dataStructure.matrix.DoubleMatrixNamed#getColumn(int)
      */
+    @Override
     public double[] getColumn( int col ) {
         double[] result = new double[rows()];
         for ( int i = 0; i < rows(); i++ ) {
             result[i] = get( i, col );
         }
         return result;
+    }
+
+    public Double getObject( int row, int col ) {
+        return new Double( get( row, col ) );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.dataStructure.matrix.AbstractNamedDoubleMatrix#getRow(int)
+     */
+    @Override
+    public double[] getRow( int i ) {
+        return matrix.get( i ).toArray();
+    }
+
+    /**
+     * This gives just the list of values in the row - make sure this is what you want. It does not include the zero
+     * values.
+     * 
+     * @param row
+     * @return
+     */
+    @Override
+    public DoubleArrayList getRowArrayList( int row ) {
+        DoubleArrayList returnVal = new DoubleArrayList();
+        matrix.get( row ).getNonZeros( new IntArrayList(), returnVal );
+        return returnVal;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.dataStructure.matrix.NamedMatrix#getRowObj(int)
+     */
+    public Double[] getRowObj( int i ) {
+        Double[] result = new Double[columns()];
+
+        double[] row = getRow( i );
+
+        for ( int j = 0; j < columns(); j++ ) {
+            result[i] = new Double( row[j] );
+        }
+        return result;
+    }
+
+    /**
+     * (non-Javadoc) Note that in a sparse matrix, zero values are considered "missing"!
+     * 
+     * @see basecode.dataStructure.matrix.NamedMatrix#isMissing(int, int)
+     */
+    public boolean isMissing( int i, int j ) {
+        return get( i, j ) == 0.0;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.dataStructure.matrix.NamedMatrix#rows()
+     */
+    public int rows() {
+        return matrix.size();
+    }
+
+    public void set( int i, int j, Double d ) {
+        matrix.get( i ).set( j, d );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.dataStructure.matrix.AbstractNamedDoubleMatrix#viewRow(int)
+     */
+    @Override
+    public DoubleMatrix1D viewRow( int i ) {
+        return matrix.get( i );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.DoubleMatrixNamed#copy()
+     */
+    @Override
+    public DoubleMatrixNamed<R, C> copy() {
+        DoubleMatrixNamed<R, C> returnval = new SparseRaggedDoubleMatrix2DNamed<R, C>();
+
+        for ( int i = 0; i < this.rows(); i++ ) {
+            returnval.addRowName( this.getRowName( i ), i );
+            for ( int j = 0; j < this.columns(); j++ ) {
+                if ( i == 0 ) {
+                    returnval.addColumnName( this.getColName( j ), j );
+                }
+                returnval.set( i, j, this.get( i, j ) );
+            }
+        }
+        return returnval;
+
     }
 
 }

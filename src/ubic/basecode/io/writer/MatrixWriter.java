@@ -27,16 +27,15 @@ import java.io.Writer;
 import java.text.Format;
 import java.util.Iterator;
 import java.util.Map;
-
-import cern.colt.matrix.ObjectMatrix2D;
-
-import ubic.basecode.dataStructure.matrix.AbstractNamedMatrix;
-import ubic.basecode.dataStructure.matrix.AbstractNamedMatrix3D;
+import ubic.basecode.dataStructure.matrix.NamedMatrix;
+import ubic.basecode.dataStructure.matrix.NamedMatrix3D;
+import ubic.basecode.dataStructure.matrix.NamedMatrixUtil;
 
 /**
  * Class for writing matrices to disk
  * 
  * @author Raymond Lim
+ * @author paul
  * @version $Id$
  */
 public class MatrixWriter {
@@ -53,18 +52,7 @@ public class MatrixWriter {
     protected Map colNameMap;
     protected Map rowNameMap;
 
-    public MatrixWriter( Writer out, Format formatter, String sep ) {
-        this.out = out;
-        this.formatter = formatter;
-        this.sep = sep;
-        this.topLeft = DEFAULT_TOP_LEFT;
-    }
-
     public MatrixWriter( OutputStream out ) {
-        this( out, null, DEFAULT_SEP );
-    }
-
-    public MatrixWriter( OutputStream out, boolean flush ) {
         this( out, null, DEFAULT_SEP );
     }
 
@@ -76,10 +64,6 @@ public class MatrixWriter {
         this( new BufferedWriter( new OutputStreamWriter( out ) ), formatter, sep );
     }
 
-    public MatrixWriter( Writer out, Format formatter ) {
-        this( out, formatter, DEFAULT_SEP );
-    }
-
     public MatrixWriter( String fileName, Format formatter ) throws IOException {
         this( fileName, formatter, DEFAULT_SEP );
     }
@@ -88,12 +72,90 @@ public class MatrixWriter {
         this( new BufferedWriter( new FileWriter( fileName ) ), formatter, sep );
     }
 
+    public MatrixWriter( Writer out ) {
+        this( out, null, DEFAULT_SEP );
+    }
+
+    public MatrixWriter( Writer out, Format formatter ) {
+        this( out, formatter, DEFAULT_SEP );
+    }
+
+    public MatrixWriter( Writer out, Format formatter, String sep ) {
+        this.out = out;
+        this.formatter = formatter;
+        this.sep = sep;
+        this.topLeft = DEFAULT_TOP_LEFT;
+    }
+
     public MatrixWriter( Writer out, String sep ) {
         this( out, null, sep );
     }
 
-    public MatrixWriter( Writer out ) {
-        this( out, null, DEFAULT_SEP );
+    public void setColNameMap( Map colNameMap ) {
+        this.colNameMap = colNameMap;
+    }
+
+    public void setRowNameMap( Map rowNameMap ) {
+        this.rowNameMap = rowNameMap;
+    }
+
+    public void setSep( String sep ) {
+        this.sep = sep;
+    }
+
+    public void setSliceNameMap( Map sliceNameMap ) {
+        this.sliceNameMap = sliceNameMap;
+    }
+
+    public void setTopLeft( String topLeft ) {
+        this.topLeft = topLeft;
+    }
+
+    /**
+     * @param <R>
+     * @param <C>
+     * @param <V>
+     * @param matrix
+     * @param printNames
+     * @throws IOException
+     */
+    public <R, C, V> void writeMatrix( NamedMatrix<R, C, V> matrix, boolean printNames ) throws IOException {
+        // write headers
+        StringBuffer buf = new StringBuffer( topLeft );
+        if ( printNames ) {
+            for ( Iterator it = matrix.getColNames().iterator(); it.hasNext(); ) {
+                Object colName = it.next();
+                buf.append( sep );
+                buf.append( colName );
+            }
+            buf.append( "\n" );
+            out.write( buf.toString() );
+        }
+
+        for ( Iterator<R> rowIt = matrix.getRowNames().iterator(); rowIt.hasNext(); ) {
+            R rowName = rowIt.next();
+            int rowIndex = matrix.getRowIndexByName( rowName );
+            buf = new StringBuffer();
+            if ( printNames ) buf.append( rowName + sep );
+            for ( Iterator<C> colIt = matrix.getColNames().iterator(); colIt.hasNext(); ) {
+                C colName = colIt.next();
+                int colIndex = matrix.getColIndexByName( colName );
+                Object val = NamedMatrixUtil.getObject( matrix, rowIndex, colIndex );
+
+                if ( val != null ) {
+                    String s = val.toString();
+                    if ( formatter != null ) s = formatter.format( val );
+                    buf.append( s );
+                } else {
+                    buf.append( "" ); // just to make explicit ...
+                }
+                if ( colIt.hasNext() ) buf.append( sep );
+            }
+            buf.append( "\n" );
+            out.write( buf.toString() );
+        }
+        out.flush();
+        out.close();
     }
 
     /**
@@ -103,7 +165,7 @@ public class MatrixWriter {
      * @param printNames
      * @throws IOException
      */
-    public void writeMatrix( AbstractNamedMatrix3D matrix, boolean printNames ) throws IOException {
+    public void writeMatrix( NamedMatrix3D matrix, boolean printNames ) throws IOException {
         if ( printNames ) {
             StringBuffer buf = new StringBuffer( topLeft );
             for ( Iterator it = matrix.getSliceNameIterator(); it.hasNext(); ) {
@@ -132,7 +194,7 @@ public class MatrixWriter {
                 StringBuffer buf = new StringBuffer();
                 if ( printNames ) buf.append( name + sep );
                 for ( int k = 0; k < matrix.slices(); k++ ) {
-                    Object val = matrix.getObj( k, i, j );
+                    Object val = matrix.getObject( k, i, j );
                     if ( val != null ) {
                         String s = val.toString();
                         if ( formatter != null ) s = formatter.format( val );
@@ -146,103 +208,7 @@ public class MatrixWriter {
             }
         }
         out.flush();
-    }
-
-    public void writeMatrix( AbstractNamedMatrix matrix, boolean printNames ) throws IOException {
-        // write headers
-        StringBuffer buf = new StringBuffer( topLeft );
-        if ( printNames ) {
-            for ( Iterator it = matrix.getColNames().iterator(); it.hasNext(); ) {
-                Object colName = it.next();
-                buf.append( sep );
-                buf.append( colName );
-            }
-            buf.append( "\n" );
-            out.write( buf.toString() );
-        }
-
-        for ( Iterator rowIt = matrix.getRowNames().iterator(); rowIt.hasNext(); ) {
-            Object rowName = rowIt.next();
-            int rowIndex = matrix.getRowIndexByName( rowName );
-            buf = new StringBuffer();
-            if ( printNames ) buf.append( rowName + sep );
-            for ( Iterator colIt = matrix.getColNames().iterator(); colIt.hasNext(); ) {
-                Object colName = colIt.next();
-                int colIndex = matrix.getColIndexByName( colName );
-                Object val = matrix.getObj( rowIndex, colIndex );
-                if ( val != null ) {
-                    String s = val.toString();
-                    if ( formatter != null ) s = formatter.format( val );
-                    buf.append( s );
-                }
-                if ( colIt.hasNext() ) buf.append( sep );
-            }
-            buf.append( "\n" );
-            out.write( buf.toString() );
-        }
-        out.flush();
-    }
-
-    public void writeMatrix( ObjectMatrix2D matrix ) throws IOException {
-        StringBuffer buf = new StringBuffer();
-        for ( int i = 0; i < matrix.rows(); i++ ) {
-            for ( int j = 0; j < matrix.columns(); j++ ) {
-                Object o = matrix.get( i, j );
-                if ( o != null ) {
-                    String s = o.toString();
-                    if ( formatter != null ) s = formatter.format( o );
-                    buf.append( s );
-                }
-                if ( j != matrix.columns() - 1 ) buf.append( sep );
-            }
-
-            buf.append( "\n" );
-            out.write( buf.toString() );
-        }
-        out.flush();
-    }
-
-    public void close() throws IOException {
         out.close();
     }
 
-    public String getTopLeft() {
-        return topLeft;
-    }
-
-    public void setTopLeft( String topLeft ) {
-        this.topLeft = topLeft;
-    }
-
-    public String getSep() {
-        return sep;
-    }
-
-    public void setSep( String sep ) {
-        this.sep = sep;
-    }
-
-    public Map getSliceNameMap() {
-        return sliceNameMap;
-    }
-
-    public void setSliceNameMap( Map sliceNameMap ) {
-        this.sliceNameMap = sliceNameMap;
-    }
-
-    public Map getColNameMap() {
-        return colNameMap;
-    }
-
-    public void setColNameMap( Map colNameMap ) {
-        this.colNameMap = colNameMap;
-    }
-
-    public Map getRowNameMap() {
-        return rowNameMap;
-    }
-
-    public void setRowNameMap( Map rowNameMap ) {
-        this.rowNameMap = rowNameMap;
-    }
 }

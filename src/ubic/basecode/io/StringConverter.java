@@ -26,18 +26,25 @@ package ubic.basecode.io;
 public class StringConverter {
     private String delimiter = "\t"; // it's a regexp.
 
-    public void setDelimiter( String delimiter ) {
-        this.delimiter = delimiter;
+    /**
+     * Convert a double array to a delimited string.
+     * 
+     * @param arrayToConvert
+     * @return
+     */
+    public String doubleArrayToString( double[] arrayToConvert ) {
+        if ( arrayToConvert == null ) return null;
+        StringBuffer buf = new StringBuffer();
+        for ( int i = 0; i < arrayToConvert.length; i++ ) {
+            buf.append( arrayToConvert[i] );
+            if ( i > 0 ) buf.append( delimiter );
+        }
+
+        return buf.toString();
     }
 
-    /**
-     * @param stringToParse
-     * @return double[]
-     */
-    public double[] stringToDoubles( String stringToParse ) {
-        if ( stringToParse == null ) return null;
-        String[] sArray = stringToParse.split( delimiter );
-        return stringArrayToDoubles( sArray );
+    public void setDelimiter( String delimiter ) {
+        this.delimiter = delimiter;
     }
 
     /**
@@ -54,20 +61,13 @@ public class StringConverter {
     }
 
     /**
-     * Convert a double array to a delimited string.
-     * 
-     * @param arrayToConvert
-     * @return
+     * @param stringToParse
+     * @return double[]
      */
-    public String doubleArrayToString( double[] arrayToConvert ) {
-        if ( arrayToConvert == null ) return null;
-        StringBuffer buf = new StringBuffer();
-        for ( int i = 0; i < arrayToConvert.length; i++ ) {
-            buf.append( arrayToConvert[i] );
-            if ( i > 0 ) buf.append( delimiter );
-        }
-
-        return buf.toString();
+    public double[] stringToDoubles( String stringToParse ) {
+        if ( stringToParse == null ) return null;
+        String[] sArray = stringToParse.split( delimiter );
+        return stringArrayToDoubles( sArray );
     }
 
     // /**

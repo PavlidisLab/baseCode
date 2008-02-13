@@ -23,7 +23,7 @@ import java.util.Vector;
 
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
-import ubic.basecode.dataStructure.matrix.NamedMatrix;
+import ubic.basecode.dataStructure.matrix.NamedMatrixUtil;
 import ubic.basecode.math.DescriptiveWithMissing;
 import ubic.basecode.math.Stats;
 import cern.colt.list.DoubleArrayList;
@@ -63,8 +63,6 @@ import cern.jet.stat.Descriptive;
  */
 public class RowLevelFilter<R, C> extends AbstractLevelFilter<R, C> {
 
-    private boolean removeAllNegative = false;
-
     /**
      * Use the minimum of the row as the criterion.
      */
@@ -95,42 +93,15 @@ public class RowLevelFilter<R, C> extends AbstractLevelFilter<R, C> {
      */
     public static final int CV = 6;
 
+    private boolean removeAllNegative = false;
+
     private int method = MAX;
-
-    /**
-     * Choose the method that will be used for filtering. Default is 'MAX'. Those rows with the lowest values are
-     * removed during 'low' filtering.
-     * 
-     * @param method one of the filtering method constants.
-     */
-    public void setMethod( int method ) {
-        if ( method != MIN && method != MAX && method != MEDIAN && method != MEAN && method != RANGE && method != CV ) {
-            throw new IllegalArgumentException( "Unknown filtering method requested" );
-        }
-        this.method = method;
-    }
-
-    /**
-     * Set the filter to remove all rows that have only negative values. This is applied BEFORE applying fraction-based
-     * criteria. In other words, if you request filtering 0.5 of the values, and 0.5 have all negative values, you will
-     * get 0.25 of the data back. Default = false.
-     * 
-     * @param t boolean
-     */
-    public void setRemoveAllNegative( boolean t ) {
-        log.info( "Rows with all negative values will be " + "removed PRIOR TO applying fraction-based criteria." );
-        removeAllNegative = t;
-    }
 
     /**
      * @param data
      * @return
      */
-    public NamedMatrix<R, C> filter( NamedMatrix<R, C> data ) {
-
-        if ( !( data instanceof DoubleMatrixNamed ) ) {
-            throw new IllegalArgumentException( "Only valid for DoubleMatrixNamed" );
-        }
+    public DoubleMatrixNamed<R, C> filter( DoubleMatrixNamed<R, C> data ) {
 
         if ( lowCut == -Double.MAX_VALUE && highCut == Double.MAX_VALUE ) {
             log.info( "No filtering requested" );
@@ -148,7 +119,7 @@ public class RowLevelFilter<R, C> extends AbstractLevelFilter<R, C> {
         DoubleArrayList rowAsList = new DoubleArrayList( new double[numCols] );
         int numAllNeg = 0;
         for ( int i = 0; i < numRows; i++ ) {
-            Double[] row = ( Double[] ) data.getRowObj( i );
+            Double[] row = NamedMatrixUtil.getRow( data, i );
             int numNeg = 0;
             /* stupid, copy into a DoubleArrayList so we can do stats */
             for ( int j = 0; j < numCols; j++ ) {
@@ -243,7 +214,7 @@ public class RowLevelFilter<R, C> extends AbstractLevelFilter<R, C> {
         for ( int i = 0; i < numRows; i++ ) {
             if ( criteria.get( i ) >= realLowCut && criteria.get( i ) <= realHighCut ) {
                 kept++;
-                rowsToKeep.add( data.getRowObj( i ) );
+                rowsToKeep.add( NamedMatrixUtil.getRow( data, i ) );
                 rowNames.add( data.getRowName( i ) );
             }
         }
@@ -260,7 +231,32 @@ public class RowLevelFilter<R, C> extends AbstractLevelFilter<R, C> {
 
         log.info( "There are " + kept + " rows left after filtering." );
 
-        return ( returnval );
+        return returnval;
 
+    }
+
+    /**
+     * Choose the method that will be used for filtering. Default is 'MAX'. Those rows with the lowest values are
+     * removed during 'low' filtering.
+     * 
+     * @param method one of the filtering method constants.
+     */
+    public void setMethod( int method ) {
+        if ( method != MIN && method != MAX && method != MEDIAN && method != MEAN && method != RANGE && method != CV ) {
+            throw new IllegalArgumentException( "Unknown filtering method requested" );
+        }
+        this.method = method;
+    }
+
+    /**
+     * Set the filter to remove all rows that have only negative values. This is applied BEFORE applying fraction-based
+     * criteria. In other words, if you request filtering 0.5 of the values, and 0.5 have all negative values, you will
+     * get 0.25 of the data back. Default = false.
+     * 
+     * @param t boolean
+     */
+    public void setRemoveAllNegative( boolean t ) {
+        log.info( "Rows with all negative values will be " + "removed PRIOR TO applying fraction-based criteria." );
+        removeAllNegative = t;
     }
 }

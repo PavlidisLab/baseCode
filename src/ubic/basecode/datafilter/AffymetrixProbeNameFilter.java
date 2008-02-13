@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Vector;
 
 import ubic.basecode.dataStructure.matrix.NamedMatrix;
+import ubic.basecode.dataStructure.matrix.NamedMatrixUtil;
 
 /**
  * Remove probes that have names meeting certain rules indicating they may have low reliability. This is targeted at
@@ -30,45 +31,38 @@ import ubic.basecode.dataStructure.matrix.NamedMatrix;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class AffymetrixProbeNameFilter<R, C> extends AbstractFilter<R, C> {
-
-    private boolean skip_ST = false;
-    private boolean skip_AFFX = false;
-    private boolean skip_F = false;
-    private boolean skip_X = false;
-    private boolean skip_G = false;
+public class AffymetrixProbeNameFilter<M extends NamedMatrix<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
 
     /**
      * Filter probes that contain the '_st' (sense strand) tag
      */
     public static final int ST = 1;
-
     /**
      * Filter probes that have the AFFX prefix.
      */
     public static final int AFFX = 2;
-
     /**
      * Filter probes that have the "_f_at" (family) tag.
      */
     public static final int F = 3;
-
     /**
      * Filter probes that have the "_x_at" tag.
      */
     public static final int X = 4;
-
     /**
      * Filter probes that have the "_g_at" (group) tag.
      */
     public static final int G = 5;
 
-    /**
-     * @param criteria int[] of constants indicating the criteria to use.
-     */
-    public AffymetrixProbeNameFilter( int[] criteria ) {
-        this.setCriteria( criteria );
-    }
+    private boolean skip_ST = false;
+
+    private boolean skip_AFFX = false;
+
+    private boolean skip_F = false;
+
+    private boolean skip_X = false;
+
+    private boolean skip_G = false;
 
     /**
      * Filter probes with all criteria switched on.
@@ -77,33 +71,15 @@ public class AffymetrixProbeNameFilter<R, C> extends AbstractFilter<R, C> {
         this.setCriteria( new int[] { 1, 2, 3, 4, 5 } );
     }
 
-    private void setCriteria( int[] criteria ) {
-        for ( int i = 0; i < criteria.length; i++ ) {
-            switch ( criteria[i] ) {
-                case ST: {
-                    skip_ST = true;
-                }
-                case AFFX: {
-                    skip_AFFX = true;
-                }
-                case F: {
-                    skip_F = true;
-                }
-                case X: {
-                    skip_X = true;
-                }
-                case G: {
-                    skip_G = true;
-                }
-                default: {
-                    break;
-                }
-            }
-        }
+    /**
+     * @param criteria int[] of constants indicating the criteria to use.
+     */
+    public AffymetrixProbeNameFilter( int[] criteria ) {
+        this.setCriteria( criteria );
     }
 
-    public NamedMatrix<R, C> filter( NamedMatrix<R, C> data ) {
-        List<Object[]> MTemp = new Vector<Object[]>();
+    public M filter( M data ) {
+        List<V[]> MTemp = new Vector<V[]>();
         List<R> rowNames = new Vector<R>();
         int numRows = data.rows();
         int numCols = data.columns();
@@ -132,12 +108,12 @@ public class AffymetrixProbeNameFilter<R, C> extends AbstractFilter<R, C> {
             if ( skip_G && name.contains( "_g_at" ) ) {
                 continue;
             }
-            MTemp.add( data.getRowObj( i ) );
+            MTemp.add( NamedMatrixUtil.getRow( data, i ) );
             rowNames.add( data.getRowName( i ) );
             kept++;
         }
 
-        NamedMatrix<R, C> returnval = getOutputMatrix( data, MTemp.size(), numCols );
+        M returnval = getOutputMatrix( data, MTemp.size(), numCols );
 
         for ( int i = 0; i < MTemp.size(); i++ ) {
             for ( int j = 0; j < numCols; j++ ) {
@@ -150,5 +126,30 @@ public class AffymetrixProbeNameFilter<R, C> extends AbstractFilter<R, C> {
 
         return returnval;
 
+    }
+
+    private void setCriteria( int[] criteria ) {
+        for ( int element : criteria ) {
+            switch ( element ) {
+                case ST: {
+                    skip_ST = true;
+                }
+                case AFFX: {
+                    skip_AFFX = true;
+                }
+                case F: {
+                    skip_F = true;
+                }
+                case X: {
+                    skip_X = true;
+                }
+                case G: {
+                    skip_G = true;
+                }
+                default: {
+                    break;
+                }
+            }
+        }
     }
 }

@@ -28,7 +28,7 @@ import java.util.Map;
  * @author pavlidis
  * @version $Id$
  */
-public abstract class AbstractNamedMatrix<R, C> implements NamedMatrix<R, C>, java.io.Serializable {
+public abstract class AbstractNamedMatrix<R, C, V> implements NamedMatrix<R, C, V>, java.io.Serializable {
 
     protected static final int MAX_ROWS_TO_PRINT = 20;
     private List<R> rowNames;
@@ -111,6 +111,36 @@ public abstract class AbstractNamedMatrix<R, C> implements NamedMatrix<R, C>, ja
         this.rowMap.put( s, new Integer( i ) );
     }
 
+    public final boolean containsColumnName( C columnName ) {
+        return colMap.containsKey( columnName );
+    }
+
+    public final boolean containsRowName( R rowName ) {
+        return hasRow( rowName );
+    }
+
+    /**
+     * @param columnKey String
+     * @return int
+     */
+    public final int getColIndexByName( C columnKey ) {
+        Integer c = colMap.get( columnKey );
+        if ( c == null ) throw new IllegalArgumentException( columnKey + " not found" );
+        return c.intValue();
+    }
+
+    /**
+     * @param i int
+     * @return java.lang.String
+     */
+    public final C getColName( int i ) {
+        return colNames.get( i );
+    }
+
+    public final List<C> getColNames() {
+        return colNames;
+    }
+
     /**
      * @param s String
      * @return int
@@ -122,16 +152,6 @@ public abstract class AbstractNamedMatrix<R, C> implements NamedMatrix<R, C>, ja
     }
 
     /**
-     * @param r String
-     * @return int
-     */
-    public final int getColIndexByName( C r ) {
-        Integer c = colMap.get( r );
-        if ( c == null ) throw new IllegalArgumentException( r + " not found" );
-        return c.intValue();
-    }
-
-    /**
      * @param i int
      * @return java.lang.String
      */
@@ -139,70 +159,24 @@ public abstract class AbstractNamedMatrix<R, C> implements NamedMatrix<R, C>, ja
         return rowNames.get( i );
     }
 
-    /**
-     * @param i int
-     * @return java.lang.String
-     */
-    public final C getColName( int i ) {
-        return colNames.get( i );
-    }
-
-    public final boolean hasRowNames() {
-        return rowNames.size() == rows();
-    }
-
-    public final boolean hasColNames() {
-        return colNames.size() == columns();
-    }
-
-    public final void setRowNames( List<R> v ) {
-        for ( int i = 0; i < v.size(); i++ ) {
-            addRowName( v.get( i ), i );
-        }
-    }
-
-    public void setColumnNames( List<C> v ) {
-        for ( int i = 0; i < v.size(); i++ ) {
-            addColumnName( v.get( i ), i );
-        }
-    }
-
-    public final List<C> getColNames() {
-        return colNames;
+    public final Iterator<R> getRowNameMapIterator() {
+        return this.rowMap.keySet().iterator();
     }
 
     public final List<R> getRowNames() {
         return rowNames;
     }
 
-    public final boolean hasRow( Object r ) {
+    public final boolean hasColNames() {
+        return colNames.size() == columns();
+    }
+
+    public final boolean hasRow( R r ) {
         return this.rowMap.containsKey( r );
     }
 
-    public final Iterator<R> getRowNameMapIterator() {
-        return this.rowMap.keySet().iterator();
-    }
-
-    public abstract int rows();
-
-    public abstract int columns();
-
-    public abstract void set( int i, int j, Object val );
-
-    public abstract Object[] getRowObj( int i );
-
-    public abstract Object[] getColObj( int i );
-
-    public abstract Object getObj( int i, int j );
-
-    public abstract boolean isMissing( int i, int j );
-
-    public final boolean containsRowName( Object rowName ) {
-        return hasRow( rowName );
-    }
-
-    public final boolean containsColumnName( Object columnName ) {
-        return colMap.containsKey( columnName );
+    public final boolean hasRowNames() {
+        return rowNames.size() == rows();
     }
 
     /*
@@ -222,6 +196,18 @@ public abstract class AbstractNamedMatrix<R, C> implements NamedMatrix<R, C>, ja
             }
         }
         return count;
+    }
+
+    public void setColumnNames( List<C> v ) {
+        for ( int i = 0; i < v.size(); i++ ) {
+            addColumnName( v.get( i ), i );
+        }
+    }
+
+    public final void setRowNames( List<R> v ) {
+        for ( int i = 0; i < v.size(); i++ ) {
+            addRowName( v.get( i ), i );
+        }
     }
 
 }

@@ -28,6 +28,7 @@ public abstract class Constants {
 
     public static final double TINY = 1e-20;
     public static final double SMALL = 1e-10;
+    public static final double SMALLISH = 1e-5;
 
     /* sqrt(2) */
     public static final double M_SQRT_2 = 1.4142135623730950488016887242097;

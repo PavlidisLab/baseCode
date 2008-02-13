@@ -18,8 +18,6 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
-import java.text.NumberFormat;
-
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
@@ -32,6 +30,10 @@ import cern.colt.matrix.impl.SparseDoubleMatrix2D;
  */
 public class SparseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -1651885517252689369L;
     private SparseDoubleMatrix2D matrix;
 
     /**
@@ -52,6 +54,18 @@ public class SparseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
     }
 
     /**
+     * @return double[][]
+     */
+    @Override
+    public double[][] asArray() {
+        double[][] result = new double[rows()][];
+        for ( int i = 0; i < rows(); i++ ) {
+            result[i] = getRow( i );
+        }
+        return result;
+    }
+
+    /**
      * @param rows int
      * @param cols int
      * @param initlalCapacity int
@@ -64,31 +78,36 @@ public class SparseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
         matrix = new SparseDoubleMatrix2D( rows, cols, initialCapacity, minLoadFactor, maxLoadFactor );
     }
 
-    public void set( int row, int col, Object value ) {
-        set( row, col, ( ( Double ) value ).doubleValue() );
+    /**
+     * @return
+     */
+    public int cardinality() {
+        return matrix.cardinality();
     }
 
     /**
-     * Return a reference to a specific row.
-     * 
-     * @param row int
-     * @return double[]
+     * @return
      */
-    public double[] getRow( int row ) {
-        return viewRow( row ).toArray();
+
+    public int columns() {
+        return matrix.columns();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#getColumn(int)
+    /**
+     * @param minNonZeros
      */
-    public double[] getColumn( int col ) {
-        double[] result = new double[rows()];
-        for ( int i = 0; i < rows(); i++ ) {
-            result[i] = get( i, col );
-        }
-        return result;
+    public void ensureCapacity( int minNonZeros ) {
+        matrix.ensureCapacity( minNonZeros );
+    }
+
+    /**
+     * @param row
+     * @param column
+     * @return
+     */
+    @Override
+    public double get( int row, int column ) {
+        return matrix.get( row, column );
     }
 
     /**
@@ -105,15 +124,7 @@ public class SparseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
         return result;
     }
 
-    public Object[] getRowObj( int row ) {
-        Double[] result = new Double[columns()];
-        for ( int i = 0; i < columns(); i++ ) {
-            result[i] = new Double( get( row, i ) );
-        }
-        return result;
-    }
-
-    public Object[] getColObj( int col ) {
+    public Double[] getColObj( int col ) {
         Double[] result = new Double[rows()];
         for ( int i = 0; i < rows(); i++ ) {
             result[i] = new Double( get( i, col ) );
@@ -121,53 +132,60 @@ public class SparseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
         return result;
     }
 
-    public Object getObj( int row, int col ) {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#getColumn(int)
+     */
+    @Override
+    public double[] getColumn( int col ) {
+        double[] result = new double[rows()];
+        for ( int i = 0; i < rows(); i++ ) {
+            result[i] = get( i, col );
+        }
+        return result;
+    }
+
+    public Double getObject( int row, int col ) {
         return new Double( get( row, col ) );
     }
 
     /**
-     * @return java.lang.String
+     * Return a reference to a specific row.
+     * 
+     * @param row int
+     * @return double[]
      */
-    public String toString() {
-        NumberFormat nf = NumberFormat.getInstance();
-        String result = "";
-        if ( this.hasColNames() || this.hasRowNames() ) {
-            result = "label";
-        }
+    @Override
+    public double[] getRow( int row ) {
+        return viewRow( row ).toArray();
+    }
 
-        if ( this.hasColNames() ) {
-            for ( int i = 0; i < columns(); i++ ) {
-                result = result + "\t" + getColName( i );
-            }
-            result += "\n";
-        }
-
-        for ( int i = 0; i < rows(); i++ ) {
-            if ( this.hasRowNames() ) {
-                result += getRowName( i );
-            }
-            for ( int j = 0; j < columns(); j++ ) {
-
-                double value = get( i, j );
-
-                if ( value == 0.0 ) {
-                    result = result + "\t";
-                } else {
-
-                    result = result + "\t" + nf.format( value );
-                }
-            }
-            result += "\n";
-        }
-        return result;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.dataStructure.matrix.AbstractNamedDoubleMatrix#getRowArrayList(int)
+     */
+    @Override
+    public DoubleArrayList getRowArrayList( int i ) {
+        return new DoubleArrayList( getRow( i ) );
     }
 
     /**
      * @param s String
      * @return double[]
      */
+    @Override
     public double[] getRowByName( R s ) {
         return getRow( getRowIndexByName( s ) );
+    }
+
+    public Double[] getRowObj( int row ) {
+        Double[] result = new Double[columns()];
+        for ( int i = 0; i < columns(); i++ ) {
+            result[i] = new Double( get( row, i ) );
+        }
+        return result;
     }
 
     public boolean isMissing( int i, int j ) {
@@ -177,81 +195,12 @@ public class SparseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
     /**
      * @return
      */
-    public int columns() {
-        return matrix.columns();
-    }
-
-    /**
-     * @param row
-     * @param column
-     * @return
-     */
-    public double get( int row, int column ) {
-        return matrix.get( row, column );
-    }
-
-    /**
-     * @param row
-     * @param column
-     * @return
-     */
-    public double getQuick( int row, int column ) {
-        return matrix.getQuick( row, column );
-    }
-
-    /**
-     * @return
-     */
     public int rows() {
         return matrix.rows();
     }
 
-    /**
-     * @param row
-     * @param column
-     * @param value
-     */
-    public void set( int row, int column, double value ) {
+    public void set( int row, int column, Double value ) {
         matrix.set( row, column, value );
-    }
-
-    /**
-     * @param row
-     * @param column
-     * @param value
-     */
-    public void setQuick( int row, int column, double value ) {
-        matrix.setQuick( row, column, value );
-    }
-
-    /**
-     * @param column
-     * @return
-     */
-    public DoubleMatrix1D viewColumn( int column ) {
-        return matrix.viewColumn( column );
-    }
-
-    /**
-     * @param row
-     * @return
-     */
-    public DoubleMatrix1D viewRow( int row ) {
-        return matrix.viewRow( row );
-    }
-
-    /**
-     * @return
-     */
-    public int cardinality() {
-        return matrix.cardinality();
-    }
-
-    /**
-     * @param minNonZeros
-     */
-    public void ensureCapacity( int minNonZeros ) {
-        matrix.ensureCapacity( minNonZeros );
     }
 
     /**
@@ -268,13 +217,38 @@ public class SparseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
         matrix.trimToSize();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.AbstractNamedDoubleMatrix#getRowArrayList(int)
+    /**
+     * @param column
+     * @return
      */
-    public DoubleArrayList getRowArrayList( int i ) {
-        return new DoubleArrayList( getRow( i ) );
+    public DoubleMatrix1D viewColumn( int column ) {
+        return matrix.viewColumn( column );
+    }
+
+    /**
+     * @param row
+     * @return
+     */
+    @Override
+    public DoubleMatrix1D viewRow( int row ) {
+        return matrix.viewRow( row );
+    }
+
+    @Override
+    public DoubleMatrixNamed<R, C> copy() {
+        DoubleMatrixNamed<R, C> returnval = new SparseDoubleMatrix2DNamed<R, C>( this.rows(), this.columns() );
+
+        for ( int i = 0; i < this.rows(); i++ ) {
+            returnval.addRowName( this.getRowName( i ), i );
+            for ( int j = 0; j < this.columns(); j++ ) {
+                if ( i == 0 ) {
+                    returnval.addColumnName( this.getColName( j ), j );
+                }
+                returnval.set( i, j, this.get( i, j ) );
+            }
+        }
+        return returnval;
+
     }
 
 }

@@ -20,7 +20,6 @@ package ubic.basecode.datafilter;
 
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
-import ubic.basecode.dataStructure.matrix.NamedMatrix;
 
 /**
  * Filter that removes individual values that are outside of a range. Removed values are set to NaN.
@@ -30,10 +29,7 @@ import ubic.basecode.dataStructure.matrix.NamedMatrix;
  */
 public class ItemLevelFilter<R, C> extends AbstractLevelFilter<R, C> {
 
-    public NamedMatrix<R, C> filter( NamedMatrix<R, C> data ) {
-        if ( !( data instanceof DoubleMatrixNamed ) ) {
-            throw new IllegalArgumentException( "Only valid for DoubleMatrixNamed" );
-        }
+    public DoubleMatrixNamed<R, C> filter( DoubleMatrixNamed<R, C> data ) {
 
         if ( lowCut == -Double.MAX_VALUE && highCut == Double.MAX_VALUE ) {
             log.info( "No filtering requested" );
@@ -47,7 +43,7 @@ public class ItemLevelFilter<R, C> extends AbstractLevelFilter<R, C> {
 
             for ( int j = 0; j < numCols; j++ ) {
 
-                double newVal = ( ( DoubleMatrixNamed ) data ).get( i, j );
+                double newVal = data.get( i, j );
                 if ( newVal < lowCut || newVal > highCut ) {
                     newVal = Double.NaN;
                 }

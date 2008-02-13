@@ -36,6 +36,16 @@ final class IndexScoreDyad implements Comparable {
         this.value = value;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo( Object o ) {
+        IndexScoreDyad other = ( IndexScoreDyad ) o;
+        return other.getKey() - key;
+    }
+
     /**
      * @return Returns the key.
      */
@@ -48,16 +58,6 @@ final class IndexScoreDyad implements Comparable {
      */
     public double getValue() {
         return value;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
-    public int compareTo( Object o ) {
-        IndexScoreDyad other = ( IndexScoreDyad ) o;
-        return other.getKey() - key;
     }
 
 }

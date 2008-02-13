@@ -29,19 +29,6 @@ import cern.colt.list.DoubleArrayList;
 public class MultipleTestCorrection {
 
     /**
-     * Determine the Bonferroni pvalue threshold to maintain the family wise error rate (assuming pvalues are
-     * independent).
-     * 
-     * @param pvalues The pvalues
-     * @param fwe The family wise error rate
-     * @return The minimum pvalue that maintains the FWE
-     */
-    public static double BonferroniCut( DoubleArrayList pvalues, double fwe ) {
-        int numpvals = pvalues.size();
-        return fwe / numpvals;
-    }
-
-    /**
      * Benjamini-Hochberg method. Determines the maximum p value to maintain the false discovery rate. (Assuming pvalues
      * are independent);
      * 
@@ -102,6 +89,19 @@ public class MultipleTestCorrection {
             }
         }
         return 0.0;
+    }
+
+    /**
+     * Determine the Bonferroni pvalue threshold to maintain the family wise error rate (assuming pvalues are
+     * independent).
+     * 
+     * @param pvalues The pvalues
+     * @param fwe The family wise error rate
+     * @return The minimum pvalue that maintains the FWE
+     */
+    public static double BonferroniCut( DoubleArrayList pvalues, double fwe ) {
+        int numpvals = pvalues.size();
+        return fwe / numpvals;
     }
 
 }

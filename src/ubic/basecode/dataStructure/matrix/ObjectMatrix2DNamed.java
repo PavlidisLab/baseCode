@@ -22,13 +22,15 @@ import cern.colt.matrix.ObjectMatrix1D;
 import cern.colt.matrix.impl.DenseObjectMatrix2D;
 
 /**
- * Very closely related to the StringMatrix2DNamed, but holds ay objects.
- * 
  * @author pavlidis
  * @version $Id$
  */
-public class ObjectMatrix2DNamed<R, C> extends AbstractNamedMatrix<R, C> {
+public class ObjectMatrix2DNamed<R, C, V> extends AbstractNamedMatrix<R, C, V> implements NamedObjectMatrix<R, C, V> {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -902358802107186038L;
     private DenseObjectMatrix2D matrix;
 
     public ObjectMatrix2DNamed( int x, int y ) {
@@ -37,9 +39,62 @@ public class ObjectMatrix2DNamed<R, C> extends AbstractNamedMatrix<R, C> {
     }
 
     /**
-     * @return java.lang.Object
+     * @return
      */
-    public String toObject() {
+    public int columns() {
+        return matrix.columns();
+    }
+
+    /**
+     * @param row
+     * @param column
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public V get( int row, int column ) {
+        return ( V ) matrix.getQuick( row, column );
+    }
+
+    @SuppressWarnings("unchecked")
+    public V[] getColumn( int col ) {
+        V[] result = ( V[] ) new Object[rows()]; // this is how they do it in ArrayList
+        for ( int i = 0; i < rows(); i++ ) {
+            result[i] = get( i, col );
+        }
+
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    public V[] getRow( int row ) {
+        Object[] ro = viewRow( row ).toArray();
+        V[] result = ( V[] ) new Object[columns()]; // this is how they do it in ArrayList
+        for ( int i = 0; i < columns(); i++ ) {
+            result[i] = ( V ) ro[i];
+        }
+        return result;
+    }
+
+    public boolean isMissing( int i, int j ) {
+        return get( i, j ) == "";
+    }
+
+    /**
+     * @return
+     */
+
+    public int rows() {
+        return matrix.rows();
+    }
+
+    /**
+     * @return
+     */
+    public int size() {
+        return matrix.size();
+    }
+
+    public String toString() {
         StringBuffer buf = new StringBuffer();
         buf.append( "label" );
         for ( int i = 0; i < columns(); i++ ) {
@@ -55,81 +110,6 @@ public class ObjectMatrix2DNamed<R, C> extends AbstractNamedMatrix<R, C> {
             buf.append( "\n" );
         }
         return buf.toString();
-    }
-
-    public Object[] getRow( int row ) {
-        return viewRow( row ).toArray();
-    }
-
-    public Object[] getCol( int col ) {
-        Object[] result = new Object[rows()];
-        for ( int i = 0; i < rows(); i++ ) {
-            result[i] = get( i, col );
-        }
-        return result;
-    }
-
-    public Object[] getRowObj( int row ) {
-        Object[] result = new Object[columns()];
-        for ( int i = 0; i < columns(); i++ ) {
-            result[i] = get( row, i );
-        }
-        return result;
-    }
-
-    public Object[] getColObj( int col ) {
-        Object[] result = new Object[rows()];
-        for ( int i = 0; i < rows(); i++ ) {
-            result[i] = get( i, col );
-        }
-        return result;
-    }
-
-    public Object getObj( int row, int col ) {
-        return get( row, col );
-    }
-
-    public boolean isMissing( int i, int j ) {
-        return get( i, j ) == "";
-    }
-
-    /**
-     * @return
-     */
-    public int columns() {
-        return matrix.columns();
-    }
-
-    /**
-     * @param row
-     * @param column
-     * @return
-     */
-    public Object get( int row, int column ) {
-        return matrix.get( row, column );
-    }
-
-    /**
-     * @param row
-     * @param column
-     * @return
-     */
-    public Object getQuick( int row, int column ) {
-        return matrix.getQuick( row, column );
-    }
-
-    /**
-     * @return
-     */
-    public int rows() {
-        return matrix.rows();
-    }
-
-    /**
-     * @return
-     */
-    public int size() {
-        return matrix.size();
     }
 
     /**
@@ -148,22 +128,32 @@ public class ObjectMatrix2DNamed<R, C> extends AbstractNamedMatrix<R, C> {
         return matrix.viewRow( row );
     }
 
-    /**
-     * @param row
-     * @param column
-     * @param value
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.NamedObjectMatrix#get(java.lang.Object, java.lang.Object)
      */
-    public void set( int row, int column, Object value ) {
-        matrix.set( row, column, value );
+    public Object get( R row, C column ) {
+        return get( getRowIndexByName( row ), getColIndexByName( column ) );
     }
 
-    /**
-     * @param row
-     * @param column
-     * @param value
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(int, int, java.lang.Object)
      */
-    public void setQuick( int row, int column, Object value ) {
+    public void set( int row, int column, V value ) {
         matrix.setQuick( row, column, value );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(java.lang.Object, java.lang.Object, java.lang.Object)
+     */
+    public void setByKeys( R r, C c, V v ) {
+        this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
+
     }
 
 }

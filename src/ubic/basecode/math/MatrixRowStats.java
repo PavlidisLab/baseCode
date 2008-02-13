@@ -31,7 +31,34 @@ import cern.colt.list.DoubleArrayList;
  */
 public class MatrixRowStats {
 
-    private MatrixRowStats() { /* keep us from instantiating this */
+    /**
+     * Calculates the means of a matrix's rows.
+     * 
+     * @param M DoubleMatrixNamed
+     * @return DoubleArrayList
+     */
+    public static DoubleArrayList means( DoubleMatrixNamed M ) {
+        DoubleArrayList r = new DoubleArrayList();
+        for ( int i = 0; i < M.rows(); i++ ) {
+            r.add( DescriptiveWithMissing.mean( new DoubleArrayList( M.getRow( i ) ) ) );
+        }
+        return r;
+    }
+
+    /**
+     * Calculates the sample standard deviation of each row of a matrix
+     * 
+     * @param M DoubleMatrixNamed
+     * @return DoubleArrayList
+     */
+    public static DoubleArrayList sampleStandardDeviations( DoubleMatrixNamed M ) {
+        DoubleArrayList r = new DoubleArrayList();
+        for ( int i = 0; i < M.rows(); i++ ) {
+            DoubleArrayList row = new DoubleArrayList( M.getRow( i ) );
+            double mean = DescriptiveWithMissing.mean( row );
+            r.add( Math.sqrt( DescriptiveWithMissing.sampleVariance( row, mean ) ) );
+        }
+        return r;
     }
 
     /**
@@ -52,20 +79,6 @@ public class MatrixRowStats {
     }
 
     /**
-     * Calculates the means of a matrix's rows.
-     * 
-     * @param M DoubleMatrixNamed
-     * @return DoubleArrayList
-     */
-    public static DoubleArrayList means( DoubleMatrixNamed M ) {
-        DoubleArrayList r = new DoubleArrayList();
-        for ( int i = 0; i < M.rows(); i++ ) {
-            r.add( DescriptiveWithMissing.mean( new DoubleArrayList( M.getRow( i ) ) ) );
-        }
-        return r;
-    }
-
-    /**
      * Calculate the sums of a matrix's rows.
      * 
      * @param M DoubleMatrixNamed
@@ -79,20 +92,7 @@ public class MatrixRowStats {
         return r;
     }
 
-    /**
-     * Calculates the sample standard deviation of each row of a matrix
-     * 
-     * @param M DoubleMatrixNamed
-     * @return DoubleArrayList
-     */
-    public static DoubleArrayList sampleStandardDeviations( DoubleMatrixNamed M ) {
-        DoubleArrayList r = new DoubleArrayList();
-        for ( int i = 0; i < M.rows(); i++ ) {
-            DoubleArrayList row = new DoubleArrayList( M.getRow( i ) );
-            double mean = DescriptiveWithMissing.mean( row );
-            r.add( Math.sqrt( DescriptiveWithMissing.sampleVariance( row, mean ) ) );
-        }
-        return r;
+    private MatrixRowStats() { /* keep us from instantiating this */
     }
 
 }

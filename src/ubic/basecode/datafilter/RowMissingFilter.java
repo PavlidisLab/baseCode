@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Vector;
 
 import ubic.basecode.dataStructure.matrix.NamedMatrix;
+import ubic.basecode.dataStructure.matrix.NamedMatrixUtil;
 import cern.colt.list.IntArrayList;
 
 /**
@@ -30,54 +31,17 @@ import cern.colt.list.IntArrayList;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class RowMissingFilter<R, C> extends AbstractFilter<R, C> implements Filter<R, C> {
+public class RowMissingFilter<M extends NamedMatrix<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
 
-    private int minPresentCount = 5;
     private static final int ABSOLUTEMINPRESENT = 1;
+    private int minPresentCount = 5;
     private double maxFractionRemoved = 0.0;
     private double minPresentFraction = 1.0;
     private boolean minPresentFractionIsSet = false;
     private boolean minPresentIsSet = false;
 
-    /**
-     * Set the minimum number of values that must be present in each row. The default value is 5. This is always
-     * overridden by a hard-coded value (currently 2) that must be present for a row to be kept; but this value is in
-     * turn overridden by the maxfractionRemoved.
-     * 
-     * @param m int
-     */
-    public void setMinPresentCount( int m ) {
-        if ( m < 0 ) {
-            throw new IllegalArgumentException( "Minimum present count must be > 0." );
-        }
-        minPresentIsSet = true;
-        minPresentCount = m;
-    }
-
-    /**
-     * @param k double the fraction of values to be removed.
-     */
-    public void setMinPresentFraction( double k ) {
-        if ( k < 0.0 || k > 1.0 )
-            throw new IllegalArgumentException( "Min present fraction must be between 0 and 1, got " + k );
-        minPresentFractionIsSet = true;
-        minPresentFraction = k;
-    }
-
-    /**
-     * Set the maximum fraction of rows which will be removed from the data set. The default value is 0.3 Set it to 1.0
-     * to remove this restriction.
-     * 
-     * @param f double
-     */
-    public void setMaxFractionRemoved( double f ) {
-        if ( f < 0.0 || f > 1.0 )
-            throw new IllegalArgumentException( "Max fraction removed must be between 0 and 1, got " + f );
-        maxFractionRemoved = f;
-    }
-
-    public NamedMatrix<R, C> filter( NamedMatrix<R, C> data ) {
-        List<Object[]> MTemp = new Vector<Object[]>();
+    public M filter( M data ) {
+        List<V[]> MTemp = new Vector<V[]>();
         List<R> rowNames = new Vector<R>();
         int numRows = data.rows();
         int numCols = data.columns();
@@ -110,7 +74,7 @@ public class RowMissingFilter<R, C> extends AbstractFilter<R, C> implements Filt
             present.add( missingCount );
             if ( missingCount >= ABSOLUTEMINPRESENT && missingCount >= minPresentCount ) {
                 kept++;
-                MTemp.add( data.getRowObj( i ) );
+                MTemp.add( NamedMatrixUtil.getRow( data, i ) );
                 rowNames.add( data.getRowName( i ) );
             }
         }
@@ -124,8 +88,8 @@ public class RowMissingFilter<R, C> extends AbstractFilter<R, C> implements Filt
 
             log.info( "There are " + kept + " rows that meet criterion of at least " + minPresentCount
                     + " non-missing values, but that's too many given the max fraction of " + maxFractionRemoved
-                    + "; minpresent adjusted to " + sortedPresent.get( ( int ) ( numRows * ( maxFractionRemoved ) ) ) );
-            minPresentCount = sortedPresent.get( ( int ) ( numRows * ( maxFractionRemoved ) ) );
+                    + "; minpresent adjusted to " + sortedPresent.get( ( int ) ( numRows * maxFractionRemoved ) ) );
+            minPresentCount = sortedPresent.get( ( int ) ( numRows * maxFractionRemoved ) );
 
             // Do another pass to add rows we missed before.
             kept = 0;
@@ -133,7 +97,7 @@ public class RowMissingFilter<R, C> extends AbstractFilter<R, C> implements Filt
             for ( int i = 0; i < numRows; i++ ) {
                 if ( present.get( i ) >= minPresentCount && present.get( i ) >= ABSOLUTEMINPRESENT ) {
                     kept++;
-                    MTemp.add( data.getRowObj( i ) );
+                    MTemp.add( NamedMatrixUtil.getRow( data, i ) );
                     if ( !rowNames.contains( data.getRowName( i ) ) ) {
                         rowNames.add( data.getRowName( i ) );
                     }
@@ -141,7 +105,7 @@ public class RowMissingFilter<R, C> extends AbstractFilter<R, C> implements Filt
             }
         }
 
-        NamedMatrix<R, C> returnval = getOutputMatrix( data, MTemp.size(), numCols );
+        M returnval = getOutputMatrix( data, MTemp.size(), numCols );
 
         // Finally fill in the return value.
         for ( int i = 0; i < MTemp.size(); i++ ) {
@@ -155,7 +119,44 @@ public class RowMissingFilter<R, C> extends AbstractFilter<R, C> implements Filt
         log.info( "There are " + kept + " rows after removing rows which have fewer than " + minPresentCount
                 + " values (or fewer than " + ABSOLUTEMINPRESENT + ")" );
 
-        return ( returnval );
+        return returnval;
 
+    }
+
+    /**
+     * Set the maximum fraction of rows which will be removed from the data set. The default value is 0.3 Set it to 1.0
+     * to remove this restriction.
+     * 
+     * @param f double
+     */
+    public void setMaxFractionRemoved( double f ) {
+        if ( f < 0.0 || f > 1.0 )
+            throw new IllegalArgumentException( "Max fraction removed must be between 0 and 1, got " + f );
+        this.maxFractionRemoved = f;
+    }
+
+    /**
+     * Set the minimum number of values that must be present in each row. The default value is 5. This is always
+     * overridden by a hard-coded value (currently 2) that must be present for a row to be kept; but this value is in
+     * turn overridden by the maxfractionRemoved.
+     * 
+     * @param m int
+     */
+    public void setMinPresentCount( int m ) {
+        if ( m < 0 ) {
+            throw new IllegalArgumentException( "Minimum present count must be > 0." );
+        }
+        this.minPresentIsSet = true;
+        this.minPresentCount = m;
+    }
+
+    /**
+     * @param k double the fraction of values to be removed.
+     */
+    public void setMinPresentFraction( double k ) {
+        if ( k < 0.0 || k > 1.0 )
+            throw new IllegalArgumentException( "Min present fraction must be between 0 and 1, got " + k );
+        this.minPresentFractionIsSet = true;
+        this.minPresentFraction = k;
     }
 }

@@ -31,6 +31,19 @@ public class DenseDoubleMatrix3DNamed<R, C, S> extends DoubleMatrixNamed3D<R, C,
 
     private DenseDoubleMatrix3D matrix;
 
+    public DenseDoubleMatrix3DNamed( double[][][] data ) {
+        super();
+        matrix = new DenseDoubleMatrix3D( data );
+    }
+
+    public DenseDoubleMatrix3DNamed( double[][][] data, List<S> sliceNames, List<R> rowNames, List<C> colNames ) {
+        super();
+        matrix = new DenseDoubleMatrix3D( data );
+        setRowNames( rowNames );
+        setColumnNames( colNames );
+        setSliceNames( sliceNames );
+    }
+
     public DenseDoubleMatrix3DNamed( int slices, int rows, int columns ) {
         super();
         matrix = new DenseDoubleMatrix3D( slices, rows, columns );
@@ -44,49 +57,14 @@ public class DenseDoubleMatrix3DNamed<R, C, S> extends DoubleMatrixNamed3D<R, C,
         matrix = new DenseDoubleMatrix3D( sliceNames.size(), rowNames.size(), colNames.size() );
     }
 
-    public DenseDoubleMatrix3DNamed( double[][][] data, List<S> sliceNames, List<R> rowNames, List<C> colNames ) {
-        super();
-        matrix = new DenseDoubleMatrix3D( data );
-        setRowNames( rowNames );
-        setColumnNames( colNames );
-        setSliceNames( sliceNames );
-    }
-
-    public DenseDoubleMatrix3DNamed( double[][][] data ) {
-        super();
-        matrix = new DenseDoubleMatrix3D( data );
-    }
-
+    @Override
     public int columns() {
         return matrix.columns();
     }
 
-    public double[][] getColumn( int col ) {
-        double[][] columnArray = new double[slices()][rows()];
-        for ( int i = 0; i < slices(); i++ )
-            for ( int j = 0; j < rows(); j++ )
-                columnArray[i][j] = matrix.get( i, j, col );
-        return columnArray;
-    }
-
-    public double[][] getRow( int row ) {
-        double[][] rowArray = new double[slices()][columns()];
-        for ( int i = 0; i < slices(); i++ )
-            for ( int j = 0; j < columns(); j++ )
-                rowArray[i][j] = matrix.get( i, row, j );
-        return rowArray;
-    }
-
-    public double[][] getSlice( int slice ) {
-        double[][] sliceArray = new double[rows()][columns()];
-        for ( int i = 0; i < rows(); i++ )
-            for ( int j = 0; j < columns(); j++ )
-                sliceArray[i][j] = matrix.get( slice, i, j );
-        return sliceArray;
-    }
-
-    public Object[][] getColObj( int col ) {
-        Object[][] colObj = new Object[slices()][rows()];
+    @Override
+    public Double[][] getColObj( int col ) {
+        Double[][] colObj = new Double[slices()][rows()];
         for ( int i = 0; i < slices(); i++ ) {
             for ( int j = 0; j < rows(); i++ ) {
                 colObj[i][j] = new Double( matrix.get( i, j, col ) );
@@ -95,12 +73,36 @@ public class DenseDoubleMatrix3DNamed<R, C, S> extends DoubleMatrixNamed3D<R, C,
         return colObj;
     }
 
-    public double getQuick( int i, int j, int k ) {
-        return matrix.getQuick( i, j, k );
+    @Override
+    public double[][] getColumn( int col ) {
+        double[][] columnArray = new double[slices()][rows()];
+        for ( int i = 0; i < slices(); i++ )
+            for ( int j = 0; j < rows(); j++ )
+                columnArray[i][j] = matrix.get( i, j, col );
+        return columnArray;
     }
 
-    public Object[][] getRowObj( int row ) {
-        Object[][] rowObj = new Object[slices()][columns()];
+    public Double getObject( int slice, int row, int col ) {
+        return new Double( get( slice, row, col ) );
+    }
+
+    @Override
+    public double get( int i, int j, int k ) {
+        return matrix.get( i, j, k );
+    }
+
+    @Override
+    public double[][] getRow( int row ) {
+        double[][] rowArray = new double[slices()][columns()];
+        for ( int i = 0; i < slices(); i++ )
+            for ( int j = 0; j < columns(); j++ )
+                rowArray[i][j] = matrix.get( i, row, j );
+        return rowArray;
+    }
+
+    @Override
+    public Double[][] getRowObj( int row ) {
+        Double[][] rowObj = new Double[slices()][columns()];
         for ( int i = 0; i < slices(); i++ ) {
             for ( int j = 0; j < columns(); i++ ) {
                 rowObj[i][j] = new Double( matrix.get( i, row, j ) );
@@ -109,8 +111,18 @@ public class DenseDoubleMatrix3DNamed<R, C, S> extends DoubleMatrixNamed3D<R, C,
         return rowObj;
     }
 
-    public Object[][] getSliceObj( int slice ) {
-        Object[][] sliceObj = new Object[slices()][columns()];
+    @Override
+    public double[][] getSlice( int slice ) {
+        double[][] sliceArray = new double[rows()][columns()];
+        for ( int i = 0; i < rows(); i++ )
+            for ( int j = 0; j < columns(); j++ )
+                sliceArray[i][j] = matrix.get( slice, i, j );
+        return sliceArray;
+    }
+
+    @Override
+    public Double[][] getSliceObj( int slice ) {
+        Double[][] sliceObj = new Double[slices()][columns()];
         for ( int i = 0; i < rows(); i++ ) {
             for ( int j = 0; j < columns(); j++ ) {
                 sliceObj[i][j] = new Double( matrix.get( slice, i, j ) );
@@ -119,26 +131,12 @@ public class DenseDoubleMatrix3DNamed<R, C, S> extends DoubleMatrixNamed3D<R, C,
         return sliceObj;
     }
 
-    public void setQuick( int slice, int row, int column, double c ) {
-        matrix.setQuick( slice, row, column, c );
-    }
-
-    public DoubleMatrix2D viewRow( int row ) {
-        return matrix.viewRow( row );
-    }
-
-    public DoubleMatrix2D viewColumn( int column ) {
-        return matrix.viewColumn( column );
-    }
-
-    public DoubleMatrix2D viewSlice( int slice ) {
-        return matrix.viewSlice( slice );
-    }
-
+    @Override
     public boolean isMissing( int slice, int row, int col ) {
         return slice < slices() || row < rows() || col < columns();
     }
 
+    @Override
     public int numMissing() {
         int num = 0;
         for ( int i = 0; i < slices(); i++ )
@@ -148,24 +146,39 @@ public class DenseDoubleMatrix3DNamed<R, C, S> extends DoubleMatrixNamed3D<R, C,
         return num;
     }
 
+    @Override
     public int rows() {
         return matrix.rows();
     }
 
+    @Override
     public void set( int slice, int row, int col, double val ) {
         matrix.set( slice, row, col, val );
     }
 
+    @Override
+    public void setQuick( int slice, int row, int column, double c ) {
+        matrix.setQuick( slice, row, column, c );
+    }
+
+    @Override
     public int slices() {
         return matrix.slices();
     }
 
-    public double get( int slice, int row, int col ) {
-        return matrix.get( slice, row, col );
+    @Override
+    public DoubleMatrix2D viewColumn( int column ) {
+        return matrix.viewColumn( column );
     }
 
-    public Object getObj( int slice, int row, int col ) {
-        return new Double( get( slice, row, col ) );
+    @Override
+    public DoubleMatrix2D viewRow( int row ) {
+        return matrix.viewRow( row );
+    }
+
+    @Override
+    public DoubleMatrix2D viewSlice( int slice ) {
+        return matrix.viewSlice( slice );
     }
 
 }

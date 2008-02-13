@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import ubic.basecode.dataStructure.matrix.NamedMatrix;
+import ubic.basecode.dataStructure.matrix.NamedMatrixUtil;
 
 /**
  * Remove or retain rows that are on a list.
@@ -30,10 +31,21 @@ import ubic.basecode.dataStructure.matrix.NamedMatrix;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class RowNameFilter<R, C> extends AbstractFilter<R, C> implements Filter<R, C> {
+public class RowNameFilter<M extends NamedMatrix<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
 
     private boolean exclude = false;
     private Set filterNames;
+
+    public RowNameFilter() {
+        filterNames = null;
+    }
+
+    /**
+     * @param namesToFilter
+     */
+    public RowNameFilter( Set<R> namesToFilter ) {
+        filterNames = namesToFilter;
+    }
 
     /**
      * @param namesToFilter
@@ -45,29 +57,13 @@ public class RowNameFilter<R, C> extends AbstractFilter<R, C> implements Filter<
     }
 
     /**
-     * @param namesToFilter
-     */
-    public RowNameFilter( Set<R> namesToFilter ) {
-        filterNames = namesToFilter;
-    }
-
-    public RowNameFilter() {
-        filterNames = null;
-    }
-
-    public void setFilterNames( Set<R> namesToFilter, boolean exclude ) {
-        this.filterNames = namesToFilter;
-        this.exclude = exclude;
-    }
-
-    /**
      * Filter according to row names.
      * 
      * @param data
      * @return
      */
-    public NamedMatrix<R, C> filter( NamedMatrix<R, C> data ) {
-        List<Object[]> MTemp = new Vector<Object[]>();
+    public M filter( M data ) {
+        List<V[]> MTemp = new Vector<V[]>();
         List<R> rowNames = new Vector<R>();
         int numRows = data.rows();
         int numCols = data.columns();
@@ -81,7 +77,7 @@ public class RowNameFilter<R, C> extends AbstractFilter<R, C> implements Filter<
                 if ( exclude ) {
                     continue;
                 }
-                MTemp.add( data.getRowObj( i ) );
+                MTemp.add( NamedMatrixUtil.getRow( data, i ) );
                 rowNames.add( name );
                 kept++;
                 if ( kept >= numNeeded ) {
@@ -90,13 +86,13 @@ public class RowNameFilter<R, C> extends AbstractFilter<R, C> implements Filter<
             }
 
             if ( exclude ) {
-                MTemp.add( data.getRowObj( i ) );
+                MTemp.add( NamedMatrixUtil.getRow( data, i ) );
                 rowNames.add( name );
                 kept++;
             }
         }
 
-        NamedMatrix<R, C> returnval = getOutputMatrix( data, MTemp.size(), numCols );
+        M returnval = getOutputMatrix( data, MTemp.size(), numCols );
 
         for ( int i = 0; i < MTemp.size(); i++ ) {
             for ( int j = 0; j < numCols; j++ ) {
@@ -109,6 +105,11 @@ public class RowNameFilter<R, C> extends AbstractFilter<R, C> implements Filter<
         log.info( "There are " + kept + " rows left after filtering." );
 
         return returnval;
+    }
+
+    public void setFilterNames( Set<R> namesToFilter, boolean exclude ) {
+        this.filterNames = namesToFilter;
+        this.exclude = exclude;
     }
 
 }

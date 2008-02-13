@@ -34,7 +34,7 @@ import cern.colt.list.DoubleArrayList;
  * @author Will Braynen
  * @version $Id$
  */
-public class ColorMatrix implements Cloneable {
+public class ColorMatrix<R, C> implements Cloneable {
 
     // data fields
 
@@ -52,13 +52,29 @@ public class ColorMatrix implements Cloneable {
     protected Color m_missingColor = Color.lightGray;
     protected Color[] m_colorMap = ColorMap.BLACKBODY_COLORMAP;
 
-    protected DoubleMatrixNamed m_matrix;
+    protected DoubleMatrixNamed<R, C> m_matrix;
     protected DoubleMatrixReader m_matrixReader;
 
     protected int m_totalRows, m_totalColumns;
 
     /** to be able to sort the rows by an arbitrary key */
     protected int m_rowKeys[];
+
+    public ColorMatrix( DoubleMatrixNamed<R, C> matrix ) {
+        init( matrix );
+    }
+
+    /**
+     * @param matrix the matrix
+     * @param colorMap the simplest color map is one with just two colors: { minColor, maxColor }
+     * @param missingColor values missing from the matrix or non-numeric entries will be displayed using this color
+     */
+    public ColorMatrix( DoubleMatrixNamed<R, C> matrix, Color[] colorMap, Color missingColor ) {
+
+        m_missingColor = missingColor;
+        m_colorMap = colorMap;
+        init( matrix );
+    }
 
     /**
      * @param filename either an absolute path, or if providing a relative path (e.g. data.txt), then keep in mind that
@@ -68,10 +84,6 @@ public class ColorMatrix implements Cloneable {
      */
     public ColorMatrix( String filename ) throws IOException {
         loadMatrixFromFile( filename );
-    }
-
-    public ColorMatrix( DoubleMatrixNamed matrix ) {
-        init( matrix );
     }
 
     /**
@@ -87,28 +99,127 @@ public class ColorMatrix implements Cloneable {
         loadMatrixFromFile( filename );
     }
 
-    /**
-     * @param matrix the matrix
-     * @param colorMap the simplest color map is one with just two colors: { minColor, maxColor }
-     * @param missingColor values missing from the matrix or non-numeric entries will be displayed using this color
-     */
-    public ColorMatrix( DoubleMatrixNamed matrix, Color[] colorMap, Color missingColor ) {
+    @Override
+    public Object clone() {
+        // create another double matrix
+        DenseDoubleMatrix2DNamed<R, C> matrix = new DenseDoubleMatrix2DNamed<R, C>( m_totalRows, m_totalColumns );
+        // copy the row and column names
+        for ( int i = 0; i < m_totalRows; i++ ) {
+            matrix.addRowName( m_matrix.getRowName( i ), i );
+        }
+        for ( int i = 0; i < m_totalColumns; i++ ) {
+            matrix.addColumnName( m_matrix.getColName( i ), i );
+            // copy the data
+        }
+        for ( int r = 0; r < m_totalRows; r++ ) {
+            for ( int c = 0; c < m_totalColumns; c++ ) {
+                matrix.set( r, c, m_matrix.get( r, c ) );
+            }
+        }
 
-        m_missingColor = missingColor;
-        m_colorMap = colorMap;
-        init( matrix );
-    }
+        // create another copy of a color matrix (this class)
+        ColorMatrix<R, C> clonedColorMatrix = new ColorMatrix<R, C>( matrix, m_colorMap, m_missingColor );
 
-    public int getRowCount() {
-        return m_totalRows;
+        int[] rowKeys = m_rowKeys.clone();
+        clonedColorMatrix.setRowKeys( rowKeys );
+
+        return clonedColorMatrix;
+
+    } // end clone
+
+    public Color getColor( int row, int column ) throws ArrayIndexOutOfBoundsException {
+
+        if ( row >= m_totalRows )
+            throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalRows
+                    + " rows, so the maximum possible row index is " + ( m_totalRows - 1 ) + ". Row index " + row
+                    + " is too high." );
+        if ( column >= m_totalColumns )
+            throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalColumns
+                    + " columns, so the maximum possible column index is " + ( m_totalColumns - 1 ) + ". Column index "
+                    + column + " is too high." );
+
+        row = getTrueRowIndex( row );
+        return m_colors[row][column];
     }
 
     public int getColumnCount() {
         return m_totalColumns;
     }
 
-    protected int getTrueRowIndex( int row ) {
-        return m_rowKeys[row];
+    public Object getColumnName( int column ) throws ArrayIndexOutOfBoundsException {
+
+        if ( column >= m_totalColumns )
+            throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalColumns
+                    + " columns, so the maximum possible column index is " + ( m_totalColumns - 1 ) + ". Column index "
+                    + column + " is too high." );
+
+        return m_matrix.getColName( column );
+    }
+
+    public String[] getColumnNames() {
+        String[] columnNames = new String[m_totalColumns];
+        for ( int i = 0; i < m_totalColumns; i++ ) {
+            columnNames[i] = getColumnName( i ).toString();
+        }
+        return columnNames;
+    }
+
+    public double getDisplayMax() {
+        return m_displayMax;
+    }
+
+    public double getDisplayMin() {
+        return m_displayMin;
+    }
+
+    /**
+     * @return a DenseDoubleMatrix2DNamed object
+     */
+    public DoubleMatrixNamed getMatrix() {
+        return m_matrix;
+    }
+
+    public double[] getRow( int row ) throws ArrayIndexOutOfBoundsException {
+
+        if ( row >= m_totalRows )
+            throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalRows
+                    + " rows, so the maximum possible row index is " + ( m_totalRows - 1 ) + ". Row index " + row
+                    + " is too high." );
+
+        row = getTrueRowIndex( row );
+        return m_matrix.getRow( row );
+    }
+
+    public double[] getRowByName( R rowName ) {
+        return m_matrix.getRowByName( rowName );
+    }
+
+    public int getRowCount() {
+        return m_totalRows;
+    }
+
+    public int getRowIndexByName( R rowName ) {
+        return m_matrix.getRowIndexByName( rowName );
+    }
+
+    public Object getRowName( int row ) throws ArrayIndexOutOfBoundsException {
+
+        if ( row >= m_totalRows )
+            throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalRows
+                    + " rows, so the maximum possible row index is " + ( m_totalRows - 1 ) + ". Row index " + row
+                    + " is too high." );
+
+        row = getTrueRowIndex( row );
+        return m_matrix.getRowName( row );
+    }
+
+    public String[] getRowNames() {
+        String[] rowNames = new String[m_totalRows];
+        for ( int i = 0; i < m_totalRows; i++ ) {
+            int row = getTrueRowIndex( i );
+            rowNames[i] = getRowName( row ).toString();
+        }
+        return rowNames;
     }
 
     public double getValue( int row, int column ) throws ArrayIndexOutOfBoundsException {
@@ -126,138 +237,7 @@ public class ColorMatrix implements Cloneable {
         return m_matrix.get( row, column );
     }
 
-    public double[] getRow( int row ) throws ArrayIndexOutOfBoundsException {
-
-        if ( row >= m_totalRows )
-            throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalRows
-                    + " rows, so the maximum possible row index is " + ( m_totalRows - 1 ) + ". Row index " + row
-                    + " is too high." );
-
-        row = getTrueRowIndex( row );
-        return m_matrix.getRow( row );
-    }
-
-    public double[] getRowByName( String rowName ) {
-        return m_matrix.getRowByName( rowName );
-    }
-
-    public Color getColor( int row, int column ) throws ArrayIndexOutOfBoundsException {
-
-        if ( row >= m_totalRows )
-            throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalRows
-                    + " rows, so the maximum possible row index is " + ( m_totalRows - 1 ) + ". Row index " + row
-                    + " is too high." );
-        if ( column >= m_totalColumns )
-            throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalColumns
-                    + " columns, so the maximum possible column index is " + ( m_totalColumns - 1 ) + ". Column index "
-                    + column + " is too high." );
-
-        row = getTrueRowIndex( row );
-        return m_colors[row][column];
-    }
-
-    public void setColor( int row, int column, Color newColor ) throws ArrayIndexOutOfBoundsException {
-
-        if ( row >= m_totalRows )
-            throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalRows
-                    + " rows, so the maximum possible row index is " + ( m_totalRows - 1 ) + ". Row index " + row
-                    + " is too high." );
-        if ( column >= m_totalColumns )
-            throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalColumns
-                    + " columns, so the maximum possible column index is " + ( m_totalColumns - 1 ) + ". Column index "
-                    + column + " is too high." );
-
-        row = getTrueRowIndex( row );
-        m_colors[row][column] = newColor;
-    }
-
-    public Object getRowName( int row ) throws ArrayIndexOutOfBoundsException {
-
-        if ( row >= m_totalRows )
-            throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalRows
-                    + " rows, so the maximum possible row index is " + ( m_totalRows - 1 ) + ". Row index " + row
-                    + " is too high." );
-
-        row = getTrueRowIndex( row );
-        return m_matrix.getRowName( row );
-    }
-
-    public Object getColumnName( int column ) throws ArrayIndexOutOfBoundsException {
-
-        if ( column >= m_totalColumns )
-            throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalColumns
-                    + " columns, so the maximum possible column index is " + ( m_totalColumns - 1 ) + ". Column index "
-                    + column + " is too high." );
-
-        return m_matrix.getColName( column );
-    }
-
-    public String[] getRowNames() {
-        String[] rowNames = new String[m_totalRows];
-        for ( int i = 0; i < m_totalRows; i++ ) {
-            int row = getTrueRowIndex( i );
-            rowNames[i] = getRowName( row ).toString();
-        }
-        return rowNames;
-    }
-
-    public String[] getColumnNames() {
-        String[] columnNames = new String[m_totalColumns];
-        for ( int i = 0; i < m_totalColumns; i++ ) {
-            columnNames[i] = getColumnName( i ).toString();
-        }
-        return columnNames;
-    }
-
-    public int getRowIndexByName( String rowName ) {
-        return m_matrix.getRowIndexByName( rowName );
-    }
-
-    /**
-     * Changes values in a row, clipping if there are more values than columns.
-     * 
-     * @param row row whose values we want to change
-     * @param values new row values
-     */
-    protected void setRow( int row, double values[] ) {
-
-        row = getTrueRowIndex( row );
-
-        // clip if we have more values than columns
-        int totalValues = Math.min( values.length, m_totalColumns );
-
-        for ( int column = 0; column < totalValues; column++ ) {
-            m_matrix.set( row, column, values[column] );
-
-        }
-    } // end setRow
-
-    /**
-     * To be able to sort the rows by an arbitrary key. Creates <code>m_rowKeys</code> array and initializes it in
-     * ascending order from 0 to <code>m_totalRows</code> -1, so that by default it matches the physical order of the
-     * columns: [0,1,2,...,m_totalRows-1]
-     * 
-     * @return int[]
-     */
-    protected int[] createRowKeys() {
-        m_rowKeys = new int[m_totalRows];
-        for ( int i = 0; i < m_totalRows; i++ ) {
-            m_rowKeys[i] = i;
-        }
-        return m_rowKeys;
-    }
-
-    public void setRowKeys( int[] rowKeys ) {
-        m_rowKeys = rowKeys;
-    }
-
-    public void resetRowKeys() {
-        for ( int i = 0; i < m_totalRows; i++ ) {
-            m_rowKeys[i] = i;
-        }
-    }
-
-    public void init( DoubleMatrixNamed matrix ) {
+    public void init( DoubleMatrixNamed<R, C> matrix ) {
 
         m_matrix = matrix; // by reference, or should we clone?
         m_totalRows = m_matrix.rows();
@@ -281,71 +261,8 @@ public class ColorMatrix implements Cloneable {
     public void loadMatrixFromFile( String filename ) throws IOException {
 
         m_matrixReader = new DoubleMatrixReader();
-        DenseDoubleMatrix2DNamed matrix = ( DenseDoubleMatrix2DNamed ) m_matrixReader.read( filename );
+        DoubleMatrixNamed matrix = m_matrixReader.read( filename );
         init( matrix );
-    }
-
-    /**
-     * Normalizes the elements of a matrix to variance one and mean zero, ignoring missing values todo move this to
-     * matrixstats or something.
-     */
-    public void standardize() {
-
-        // normalize the data in each row
-        for ( int r = 0; r < m_totalRows; r++ ) {
-            double[] rowValues = getRow( r );
-            DoubleArrayList doubleArrayList = new cern.colt.list.DoubleArrayList( rowValues );
-            DescriptiveWithMissing.standardize( doubleArrayList );
-            rowValues = doubleArrayList.elements();
-            setRow( r, rowValues );
-        }
-
-        m_displayMin = -2;
-        m_displayMax = +2;
-
-        mapValuesToColors();
-
-    } // end standardize
-
-    /**
-     * @return a DenseDoubleMatrix2DNamed object
-     */
-    public DoubleMatrixNamed getMatrix() {
-        return m_matrix;
-    }
-
-    //
-    // Standardized display range
-    //
-    public void setDisplayRange( double min, double max ) {
-
-        m_displayMin = min;
-        m_displayMax = max;
-
-        mapValuesToColors();
-    }
-
-    public double getDisplayMin() {
-        return m_displayMin;
-    }
-
-    public double getDisplayMax() {
-        return m_displayMax;
-    }
-
-    /**
-     * @param colorMap an array of colors which define the midpoints in the color map; this can be one of the constants
-     *        defined in the ColorMap class, like ColorMap.REDGREEN_COLORMAP and ColorMap.BLACKBODY_COLORMAP
-     * @throws IllegalArgumentException if the colorMap array argument contains less than two colors.
-     */
-    public void setColorMap( Color[] colorMap ) throws IllegalArgumentException {
-
-        if ( colorMap.length < 2 ) {
-            throw new IllegalArgumentException();
-        }
-
-        m_colorMap = colorMap;
-        mapValuesToColors();
     }
 
     public void mapValuesToColors() {
@@ -397,31 +314,115 @@ public class ColorMatrix implements Cloneable {
         }
     } // end mapValuesToColors
 
-    public Object clone() {
-        // create another double matrix
-        DenseDoubleMatrix2DNamed matrix = new DenseDoubleMatrix2DNamed( m_totalRows, m_totalColumns );
-        // copy the row and column names
+    public void resetRowKeys() {
         for ( int i = 0; i < m_totalRows; i++ ) {
-            matrix.addRowName( m_matrix.getRowName( i ), i );
+            m_rowKeys[i] = i;
         }
-        for ( int i = 0; i < m_totalColumns; i++ ) {
-            matrix.addColumnName( m_matrix.getColName( i ), i );
-            // copy the data
+    }
+
+    public void setColor( int row, int column, Color newColor ) throws ArrayIndexOutOfBoundsException {
+
+        if ( row >= m_totalRows )
+            throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalRows
+                    + " rows, so the maximum possible row index is " + ( m_totalRows - 1 ) + ". Row index " + row
+                    + " is too high." );
+        if ( column >= m_totalColumns )
+            throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalColumns
+                    + " columns, so the maximum possible column index is " + ( m_totalColumns - 1 ) + ". Column index "
+                    + column + " is too high." );
+
+        row = getTrueRowIndex( row );
+        m_colors[row][column] = newColor;
+    }
+
+    /**
+     * @param colorMap an array of colors which define the midpoints in the color map; this can be one of the constants
+     *        defined in the ColorMap class, like ColorMap.REDGREEN_COLORMAP and ColorMap.BLACKBODY_COLORMAP
+     * @throws IllegalArgumentException if the colorMap array argument contains less than two colors.
+     */
+    public void setColorMap( Color[] colorMap ) throws IllegalArgumentException {
+
+        if ( colorMap.length < 2 ) {
+            throw new IllegalArgumentException();
         }
+
+        m_colorMap = colorMap;
+        mapValuesToColors();
+    }
+
+    //
+    // Standardized display range
+    //
+    public void setDisplayRange( double min, double max ) {
+
+        m_displayMin = min;
+        m_displayMax = max;
+
+        mapValuesToColors();
+    }
+
+    public void setRowKeys( int[] rowKeys ) {
+        m_rowKeys = rowKeys;
+    }
+
+    /**
+     * Normalizes the elements of a matrix to variance one and mean zero, ignoring missing values todo move this to
+     * matrixstats or something.
+     */
+    public void standardize() {
+
+        // normalize the data in each row
         for ( int r = 0; r < m_totalRows; r++ ) {
-            for ( int c = 0; c < m_totalColumns; c++ ) {
-                matrix.set( r, c, m_matrix.get( r, c ) );
-            }
+            double[] rowValues = getRow( r );
+            DoubleArrayList doubleArrayList = new cern.colt.list.DoubleArrayList( rowValues );
+            DescriptiveWithMissing.standardize( doubleArrayList );
+            rowValues = doubleArrayList.elements();
+            setRow( r, rowValues );
         }
 
-        // create another copy of a color matrix (this class)
-        ColorMatrix clonedColorMatrix = new ColorMatrix( matrix, m_colorMap, m_missingColor );
+        m_displayMin = -2;
+        m_displayMax = +2;
 
-        int[] rowKeys = ( int[] ) m_rowKeys.clone();
-        clonedColorMatrix.setRowKeys( rowKeys );
+        mapValuesToColors();
 
-        return clonedColorMatrix;
+    } // end standardize
 
-    } // end clone
+    /**
+     * To be able to sort the rows by an arbitrary key. Creates <code>m_rowKeys</code> array and initializes it in
+     * ascending order from 0 to <code>m_totalRows</code> -1, so that by default it matches the physical order of the
+     * columns: [0,1,2,...,m_totalRows-1]
+     * 
+     * @return int[]
+     */
+    protected int[] createRowKeys() {
+        m_rowKeys = new int[m_totalRows];
+        for ( int i = 0; i < m_totalRows; i++ ) {
+            m_rowKeys[i] = i;
+        }
+        return m_rowKeys;
+    }
+
+    protected int getTrueRowIndex( int row ) {
+        return m_rowKeys[row];
+    }
+
+    /**
+     * Changes values in a row, clipping if there are more values than columns.
+     * 
+     * @param row row whose values we want to change
+     * @param values new row values
+     */
+    protected void setRow( int row, double values[] ) {
+
+        row = getTrueRowIndex( row );
+
+        // clip if we have more values than columns
+        int totalValues = Math.min( values.length, m_totalColumns );
+
+        for ( int column = 0; column < totalValues; column++ ) {
+            m_matrix.set( row, column, values[column] );
+
+        }
+    } // end setRow
 
 } // end class ColorMatrix

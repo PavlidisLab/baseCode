@@ -30,10 +30,10 @@ public class NormalProbabilityComputer implements ProbabilityComputer {
     double mean;
 
     /**
-     * @param variance
      * @param mean
+     * @param variance
      */
-    public NormalProbabilityComputer( double variance, double mean ) {
+    public NormalProbabilityComputer( double mean, double variance ) {
         super();
         this.variance = variance;
 
@@ -53,6 +53,11 @@ public class NormalProbabilityComputer implements ProbabilityComputer {
         return 1.0 - Probability.normal( mean, variance, value );
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.math.distribution.ProbabilityComputer#probability(double, boolean)
+     */
     public double probability( double value, boolean upperTail ) {
         if ( upperTail ) {
             return probability( value );

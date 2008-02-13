@@ -34,32 +34,15 @@ import cern.jet.stat.Descriptive;
  */
 public class Stats {
 
-    private Stats() { /* block instantiation */
-    };
-
     /**
-     * Test whether a value is a valid fractional or probability value.
+     * Convert an array into a cumulative density function (CDF). This assumes that the input contains counts
+     * representing the distribution in question.
      * 
-     * @param value
-     * @return true if the value is in the interval 0 to 1.
+     * @param x The input of counts (i.e. a histogram).
+     * @return DoubleArrayList the CDF.
      */
-    public static boolean isValidFraction( double value ) {
-        if ( value > 1.0 || value < 0.0 ) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Compute the coefficient of variation of an array (standard deviation / mean)
-     * 
-     * @param data DoubleArrayList
-     * @return the cv
-     * @todo offer a regularized version of this function.
-     */
-    public static double cv( DoubleArrayList data ) {
-        double mean = DescriptiveWithMissing.mean( data );
-        return mean / Math.sqrt( DescriptiveWithMissing.sampleVariance( data, mean ) );
+    public static DoubleArrayList cdf( DoubleArrayList x ) {
+        return cumulateRight( normalize( x ) );
     }
 
     /**
@@ -108,45 +91,28 @@ public class Stats {
     }
 
     /**
-     * Convert an array into a cumulative density function (CDF). This assumes that the input contains counts
-     * representing the distribution in question.
+     * Compute the coefficient of variation of an array (standard deviation / mean)
      * 
-     * @param x The input of counts (i.e. a histogram).
-     * @return DoubleArrayList the CDF.
+     * @param data DoubleArrayList
+     * @return the cv
+     * @todo offer a regularized version of this function.
      */
-    public static DoubleArrayList cdf( DoubleArrayList x ) {
-        return cumulateRight( normalize( x ) );
+    public static double cv( DoubleArrayList data ) {
+        double mean = DescriptiveWithMissing.mean( data );
+        return mean / Math.sqrt( DescriptiveWithMissing.sampleVariance( data, mean ) );
     }
 
     /**
-     * Divide the elements of an array by a given factor.
+     * Test whether a value is a valid fractional or probability value.
      * 
-     * @param x Input array.
-     * @param normfactor double
-     * @return Normalized array.
+     * @param value
+     * @return true if the value is in the interval 0 to 1.
      */
-    public static DoubleArrayList normalize( DoubleArrayList x, double normfactor ) {
-        if ( x.size() == 0 ) {
-            return new DoubleArrayList( 0 );
+    public static boolean isValidFraction( double value ) {
+        if ( value > 1.0 || value < 0.0 ) {
+            return false;
         }
-
-        DoubleArrayList r = new DoubleArrayList();
-
-        for ( int i = 0; i < x.size(); i++ ) {
-            r.add( x.get( i ) / normfactor );
-        }
-        return r;
-
-    }
-
-    /**
-     * Adjust the elements of an array so they total to 1.0.
-     * 
-     * @param x Input array.
-     * @return Normalized array.
-     */
-    public static DoubleArrayList normalize( DoubleArrayList x ) {
-        return normalize( x, Descriptive.sum( x ) );
+        return true;
     }
 
     /**
@@ -175,17 +141,38 @@ public class Stats {
                 k++;
             }
         }
-        return ( returnvalue / k );
+        return returnvalue / k;
     }
 
     /**
-     * Compute the range of an array.
+     * Adjust the elements of an array so they total to 1.0.
      * 
-     * @param data DoubleArrayList
-     * @return double
+     * @param x Input array.
+     * @return Normalized array.
      */
-    public static double range( DoubleArrayList data ) {
-        return Descriptive.max( data ) - Descriptive.min( data );
+    public static DoubleArrayList normalize( DoubleArrayList x ) {
+        return normalize( x, Descriptive.sum( x ) );
+    }
+
+    /**
+     * Divide the elements of an array by a given factor.
+     * 
+     * @param x Input array.
+     * @param normfactor double
+     * @return Normalized array.
+     */
+    public static DoubleArrayList normalize( DoubleArrayList x, double normfactor ) {
+        if ( x.size() == 0 ) {
+            return new DoubleArrayList( 0 );
+        }
+
+        DoubleArrayList r = new DoubleArrayList();
+
+        for ( int i = 0; i < x.size(); i++ ) {
+            r.add( x.get( i ) / normfactor );
+        }
+        return r;
+
     }
 
     /**
@@ -239,6 +226,19 @@ public class Stats {
             return pivot;
         }
 
+    }
+
+    /**
+     * Compute the range of an array.
+     * 
+     * @param data DoubleArrayList
+     * @return double
+     */
+    public static double range( DoubleArrayList data ) {
+        return Descriptive.max( data ) - Descriptive.min( data );
+    }
+
+    private Stats() { /* block instantiation */
     }
 
 }

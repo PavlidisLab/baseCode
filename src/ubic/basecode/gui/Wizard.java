@@ -55,8 +55,8 @@ public abstract class Wizard extends JDialog {
     protected JButton cancelButton = new JButton();
     protected JButton finishButton = new JButton();
 
-    List<WizardStep> steps = new Vector<WizardStep>();
     protected JFrame callingframe;
+    List<WizardStep> steps = new Vector<WizardStep>();
     private StatusViewer statusMessenger;
 
     public Wizard( JFrame callingframe, int width, int height ) {
@@ -64,6 +64,92 @@ public abstract class Wizard extends JDialog {
         setModal( true );
         jbInit( width, height );
     }
+
+    /**
+     * Make the status bar empty.
+     */
+    public void clearStatus() {
+        statusMessenger.showStatus( "" );
+    }
+
+    /**
+     * Disable the "finish" button, indicating the user has some steps to do yet.
+     */
+    public void setFinishDisabled() {
+        this.finishButton.setEnabled( false );
+    }
+
+    /**
+     * Enable the "finish" button, indicating the user can get out of the wizard at this stage.
+     */
+    public void setFinishEnabled() {
+        this.finishButton.setEnabled( true );
+    }
+
+    /**
+     * Print an error message to the status bar.
+     * 
+     * @param a
+     */
+    public void showError( String a ) {
+        statusMessenger.showError( a );
+    }
+
+    /**
+     * Print a message to the status bar.
+     * 
+     * @param a
+     */
+    public void showStatus( String a ) {
+        statusMessenger.showStatus( a );
+    }
+
+    public void showWizard() {
+        Dimension dlgSize = getPreferredSize();
+        Dimension frmSize = callingframe.getSize();
+        Point loc = callingframe.getLocation();
+        setLocation( ( frmSize.width - dlgSize.width ) / 2 + loc.x, ( frmSize.height - dlgSize.height ) / 2 + loc.y );
+        pack();
+        nextButton.requestFocusInWindow();
+        this.setVisible( true );
+    }
+
+    protected void addStep( WizardStep panel ) {
+        steps.add( panel );
+    }
+
+    protected void addStep( WizardStep panel, boolean first ) {
+        this.addStep( panel );
+        if ( first ) mainPanel.add( steps.get( 0 ), BorderLayout.CENTER );
+    }
+
+    /**
+     * Define what happens when the 'back' button is pressed
+     * 
+     * @param e
+     */
+    protected abstract void backButton_actionPerformed( ActionEvent e );
+
+    /**
+     * Define what happens when the 'cancel' button is pressed.
+     * 
+     * @param e
+     */
+    protected abstract void cancelButton_actionPerformed( ActionEvent e );
+
+    /**
+     * Define what happens when the 'finish' button is pressed.
+     * 
+     * @param e
+     */
+    protected abstract void finishButton_actionPerformed( ActionEvent e );
+
+    /**
+     * Define what happens when the 'next' button is pressed
+     * 
+     * @param e
+     */
+    protected abstract void nextButton_actionPerformed( ActionEvent e );
 
     // Component initialization
     private void jbInit( int width, int height ) {
@@ -110,104 +196,6 @@ public abstract class Wizard extends JDialog {
         mainPanel.add( BottomPanelWrap, BorderLayout.SOUTH );
 
     }
-
-    /**
-     * Print a message to the status bar.
-     * 
-     * @param a
-     */
-    public void showStatus( String a ) {
-        statusMessenger.showStatus( a );
-    }
-
-    /**
-     * Print an error message to the status bar.
-     * 
-     * @param a
-     */
-    public void showError( String a ) {
-        statusMessenger.showError( a );
-    }
-
-    /**
-     * Make the status bar empty.
-     */
-    public void clearStatus() {
-        statusMessenger.showStatus( "" );
-    }
-
-    protected void addStep( WizardStep panel, boolean first ) {
-        this.addStep( panel );
-        if ( first ) mainPanel.add( steps.get( 0 ), BorderLayout.CENTER );
-    }
-
-    protected void addStep( WizardStep panel ) {
-        steps.add( panel );
-    }
-
-    public void showWizard() {
-        Dimension dlgSize = getPreferredSize();
-        Dimension frmSize = callingframe.getSize();
-        Point loc = callingframe.getLocation();
-        setLocation( ( frmSize.width - dlgSize.width ) / 2 + loc.x, ( frmSize.height - dlgSize.height ) / 2 + loc.y );
-        pack();
-        nextButton.requestFocusInWindow();
-        this.setVisible( true );
-    }
-
-    /**
-     * Define what happens when the 'next' button is pressed
-     * 
-     * @param e
-     */
-    protected abstract void nextButton_actionPerformed( ActionEvent e );
-
-    /**
-     * Define what happens when the 'back' button is pressed
-     * 
-     * @param e
-     */
-    protected abstract void backButton_actionPerformed( ActionEvent e );
-
-    /**
-     * Define what happens when the 'cancel' button is pressed.
-     * 
-     * @param e
-     */
-    protected abstract void cancelButton_actionPerformed( ActionEvent e );
-
-    /**
-     * Define what happens when the 'finish' button is pressed.
-     * 
-     * @param e
-     */
-    protected abstract void finishButton_actionPerformed( ActionEvent e );
-
-    /**
-     * Disable the "finish" button, indicating the user has some steps to do yet.
-     */
-    public void setFinishDisabled() {
-        this.finishButton.setEnabled( false );
-    }
-
-    /**
-     * Enable the "finish" button, indicating the user can get out of the wizard at this stage.
-     */
-    public void setFinishEnabled() {
-        this.finishButton.setEnabled( true );
-    }
-}
-
-class Wizard_nextButton_actionAdapter implements java.awt.event.ActionListener {
-    Wizard adaptee;
-
-    Wizard_nextButton_actionAdapter( Wizard adaptee ) {
-        this.adaptee = adaptee;
-    }
-
-    public void actionPerformed( ActionEvent e ) {
-        adaptee.nextButton_actionPerformed( e );
-    }
 }
 
 class Wizard_backButton_actionAdapter implements java.awt.event.ActionListener {
@@ -243,5 +231,17 @@ class Wizard_finishButton_actionAdapter implements java.awt.event.ActionListener
 
     public void actionPerformed( ActionEvent e ) {
         adaptee.finishButton_actionPerformed( e );
+    }
+}
+
+class Wizard_nextButton_actionAdapter implements java.awt.event.ActionListener {
+    Wizard adaptee;
+
+    Wizard_nextButton_actionAdapter( Wizard adaptee ) {
+        this.adaptee = adaptee;
+    }
+
+    public void actionPerformed( ActionEvent e ) {
+        adaptee.nextButton_actionPerformed( e );
     }
 }

@@ -24,34 +24,45 @@ import ubic.basecode.dataStructure.Visitable;
  * @author pavlidis
  * @version $Id$
  */
-public class BinaryTreeNode extends Visitable {
+public class BinaryTreeNode<T> extends Visitable {
 
-    private BinaryTreeNode left;
-    private BinaryTreeNode right;
-    private Object contents;
+    private BinaryTreeNode<T> left = null;
+    private BinaryTreeNode<T> right = null;
+    private BinaryTreeNode<T> parent = null;
+    private T contents;
+
+    public BinaryTreeNode() {
+
+    }
+
+    public BinaryTreeNode( BinaryTreeNode<T> parent ) {
+        this.parent = parent;
+    }
 
     /**
      * @param left
      * @param right
      * @param contents
      */
-    public BinaryTreeNode( Object contents ) {
+    public BinaryTreeNode( T contents ) {
         super();
         this.contents = contents;
     }
 
-    public BinaryTreeNode() {
-        super();
+    public BinaryTreeNode<T> insertLeft( T contents ) {
+        if ( this.getLeft() != null ) {
+            throw new IllegalArgumentException( "Already has left" );
+        }
+        this.left = new BinaryTreeNode<T>( contents );
+        return left;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
-    public int compareTo( Object o ) {
-        // TODO Auto-generated method stub
-        return 0;
+    public BinaryTreeNode<T> insertRight( T contents ) {
+        if ( this.getRight() != null ) {
+            throw new IllegalArgumentException( "Already has right" );
+        }
+        this.right = new BinaryTreeNode<T>( contents );
+        return right;
     }
 
     /**
@@ -62,38 +73,17 @@ public class BinaryTreeNode extends Visitable {
     }
 
     /**
-     * @param contents
-     */
-    public void setContents( Object contents ) {
-        this.contents = contents;
-    }
-
-    /**
      * @return
      */
-    public BinaryTreeNode getLeft() {
+    public BinaryTreeNode<T> getLeft() {
         return left;
     }
 
     /**
-     * @param left
-     */
-    public void setLeft( BinaryTreeNode left ) {
-        this.left = left;
-    }
-
-    /**
      * @return
      */
-    public BinaryTreeNode getRight() {
+    public BinaryTreeNode<T> getRight() {
         return right;
-    }
-
-    /**
-     * @param right
-     */
-    public void setRight( BinaryTreeNode right ) {
-        this.right = right;
     }
 
     /**
@@ -101,5 +91,33 @@ public class BinaryTreeNode extends Visitable {
      */
     public boolean isLeaf() {
         return left == null && right == null;
+    }
+
+    /**
+     * @return
+     */
+    public boolean isRoot() {
+        return parent == null;
+    }
+
+    /**
+     * @param contents
+     */
+    public void setContents( T contents ) {
+        this.contents = contents;
+    }
+
+    /**
+     * @param left
+     */
+    public void setLeft( BinaryTreeNode<T> left ) {
+        this.left = left;
+    }
+
+    /**
+     * @param right
+     */
+    public void setRight( BinaryTreeNode<T> right ) {
+        this.right = right;
     }
 }

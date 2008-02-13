@@ -26,7 +26,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -35,15 +34,15 @@ import java.util.Map;
  * @author raymond
  */
 public class HistogramReader {
-    private String title;
     protected BufferedReader in;
+    private String title;
 
     public HistogramReader( Reader in, String title ) {
         this.in = new BufferedReader( in );
         this.title = title;
     }
 
-    public HistogramReader( String fileName, String title ) throws FileNotFoundException {
+    public HistogramReader( String fileName ) throws FileNotFoundException {
         this.in = new BufferedReader( new FileReader( fileName ) );
     }
 
@@ -69,8 +68,8 @@ public class HistogramReader {
         int numBins = binCountMap.keySet().size();
 
         Histogram1D hist = new Histogram1D( title, numBins, min.doubleValue(), max.doubleValue() );
-        for ( Iterator it = binCountMap.entrySet().iterator(); it.hasNext(); ) {
-            Map.Entry entry = ( Map.Entry ) it.next();
+        for ( Object element : binCountMap.entrySet() ) {
+            Map.Entry entry = ( Map.Entry ) element;
             Double bin = ( Double ) entry.getKey();
             Integer count = ( Integer ) entry.getValue();
             hist.fill( bin.doubleValue(), count.doubleValue() );

@@ -29,90 +29,6 @@ import cern.colt.list.DoubleArrayList;
 public class Distance {
 
     /**
-     * Calculate the Manhattan distance between two vectors.
-     * 
-     * @param x DoubleArrayList
-     * @param y DoubleArrayList
-     * @return Manhattan distance between x and y
-     */
-    public static double manhattanDistance( DoubleArrayList x, DoubleArrayList y ) {
-        int j;
-        double sum = 0.0;
-        int numused = 0;
-
-        if ( x.size() != y.size() ) {
-            throw new ArithmeticException();
-        }
-
-        int length = x.size();
-        for ( j = 0; j < length; j++ ) {
-            if ( !Double.isNaN( x.elements()[j] ) && !Double.isNaN( y.elements()[j] ) ) {
-                sum += Math.abs( x.elements()[j] - y.elements()[j] );
-                numused++;
-            }
-        }
-        return sum;
-    }
-
-    /**
-     * Calculate the Euclidean distance between two vectors.
-     * 
-     * @param x DoubleArrayList
-     * @param y DoubleArrayList
-     * @return Euclidean distance between x and y
-     */
-    public static double euclDistance( DoubleArrayList x, DoubleArrayList y ) {
-        int j;
-        double sum;
-        int numused;
-        sum = 0.0;
-        numused = 0;
-
-        if ( x.size() != y.size() ) {
-            throw new ArithmeticException();
-        }
-
-        int length = x.size();
-
-        for ( j = 0; j < length; j++ ) {
-            if ( !Double.isNaN( x.elements()[j] ) && !Double.isNaN( y.elements()[j] ) ) {
-                sum += Math.pow( ( x.elements()[j] - y.elements()[j] ), 2 );
-                numused++;
-            }
-        }
-        if ( sum == 0.0 ) {
-            return 0.0;
-        }
-        return Math.sqrt( sum );
-    }
-
-    /**
-     * Spearman Rank Correlation. This does the rank transformation of the data.
-     * 
-     * @param x DoubleArrayList
-     * @param y DoubleArrayList
-     * @return Spearman's rank correlation between x and y.
-     */
-    public static double spearmanRankCorrelation( DoubleArrayList x, DoubleArrayList y ) {
-        double sum = 0.0;
-
-        int n = 0;
-        for ( int i = 0; i < x.size() && i < y.size(); i++ ) {
-            if ( !Double.isNaN( x.get( i ) ) && !Double.isNaN( y.get( i ) ) ) n++;
-        }
-
-        DoubleArrayList rx = Rank.rankTransform( x );
-        DoubleArrayList ry = Rank.rankTransform( y );
-
-        for ( int j = 0; j < n; j++ ) {
-            if ( !Double.isNaN( x.get( j ) ) && !Double.isNaN( y.get( j ) ) ) continue;
-            sum += ( rx.elements()[j] - ry.elements()[j] * ( rx.elements()[j] - ry.elements()[j] ) );
-        }
-
-        return 1.0 - 6.0 * sum / ( Math.pow( n, 3 ) - n );
-    }
-
-    /**
      * Highly optimized implementation of the Pearson correlation. The inputs must be standardized - mean zero, variance
      * one, without any missing values.
      * 
@@ -165,5 +81,89 @@ public class Distance {
             return -2.0; // flag of illegal value.
         }
         return sxy / ( length - 1 );
+    }
+
+    /**
+     * Calculate the Euclidean distance between two vectors.
+     * 
+     * @param x DoubleArrayList
+     * @param y DoubleArrayList
+     * @return Euclidean distance between x and y
+     */
+    public static double euclDistance( DoubleArrayList x, DoubleArrayList y ) {
+        int j;
+        double sum;
+        int numused;
+        sum = 0.0;
+        numused = 0;
+
+        if ( x.size() != y.size() ) {
+            throw new ArithmeticException();
+        }
+
+        int length = x.size();
+
+        for ( j = 0; j < length; j++ ) {
+            if ( !Double.isNaN( x.elements()[j] ) && !Double.isNaN( y.elements()[j] ) ) {
+                sum += Math.pow( ( x.elements()[j] - y.elements()[j] ), 2 );
+                numused++;
+            }
+        }
+        if ( sum == 0.0 ) {
+            return 0.0;
+        }
+        return Math.sqrt( sum );
+    }
+
+    /**
+     * Calculate the Manhattan distance between two vectors.
+     * 
+     * @param x DoubleArrayList
+     * @param y DoubleArrayList
+     * @return Manhattan distance between x and y
+     */
+    public static double manhattanDistance( DoubleArrayList x, DoubleArrayList y ) {
+        int j;
+        double sum = 0.0;
+        int numused = 0;
+
+        if ( x.size() != y.size() ) {
+            throw new ArithmeticException();
+        }
+
+        int length = x.size();
+        for ( j = 0; j < length; j++ ) {
+            if ( !Double.isNaN( x.elements()[j] ) && !Double.isNaN( y.elements()[j] ) ) {
+                sum += Math.abs( x.elements()[j] - y.elements()[j] );
+                numused++;
+            }
+        }
+        return sum;
+    }
+
+    /**
+     * Spearman Rank Correlation. This does the rank transformation of the data.
+     * 
+     * @param x DoubleArrayList
+     * @param y DoubleArrayList
+     * @return Spearman's rank correlation between x and y.
+     */
+    public static double spearmanRankCorrelation( DoubleArrayList x, DoubleArrayList y ) {
+        double sum = 0.0;
+
+        int n = 0;
+        for ( int i = 0; i < x.size() && i < y.size(); i++ ) {
+            if ( !Double.isNaN( x.get( i ) ) && !Double.isNaN( y.get( i ) ) ) n++;
+        }
+
+        DoubleArrayList rx = Rank.rankTransform( x );
+        DoubleArrayList ry = Rank.rankTransform( y );
+
+        for ( int j = 0; j < n; j++ ) {
+            if ( !Double.isNaN( x.get( j ) ) && !Double.isNaN( y.get( j ) ) ) continue;
+            sum += rx.elements()[j] - ry.elements()[j] * ( rx.elements()[j] - ry.elements()[j] );
+        }
+
+        return 1.0 - 6.0 * sum / ( Math.pow( n, 3 ) - n );
     }
 }

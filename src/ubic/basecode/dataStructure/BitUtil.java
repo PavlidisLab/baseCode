@@ -28,27 +28,6 @@ package ubic.basecode.dataStructure;
  */
 public class BitUtil {
     /**
-     * Set the bit at the specified position
-     * 
-     * @param bytes the byte array
-     * @param position the bit to set, starting from zero
-     * @return the byte array with the set bit
-     * @exception IndexOutOfBoundsException on bad position
-     */
-    public static byte[] set( byte[] bytes, int position ) {
-        if ( position >= 0 ) {
-            int bytepos = position >> 3;
-            if ( bytepos < bytes.length ) {
-                int bitpos = 7 - ( position % 8 );
-
-                bytes[bytepos] |= ( 1 << bitpos );
-                return bytes;
-            }
-        }
-        throw new IndexOutOfBoundsException( Integer.toString( position ) );
-    }
-
-    /**
      * Clear the bit at the specified position
      * 
      * @param bytes the byte array
@@ -60,7 +39,7 @@ public class BitUtil {
         if ( position >= 0 ) {
             int bytepos = position >> 3;
             if ( bytepos < bytes.length ) {
-                int bitpos = 7 - ( position % 8 );
+                int bitpos = 7 - position % 8;
                 bytes[bytepos] &= ~( 1 << bitpos );
                 return bytes;
             }
@@ -81,8 +60,29 @@ public class BitUtil {
         if ( position >= 0 ) {
             int bytepos = position >> 3;
             if ( bytepos < bytes.length ) {
-                int bitpos = 7 - ( position % 8 );
-                return ( ( bytes[bytepos] & ( 1 << bitpos ) ) != 0 );
+                int bitpos = 7 - position % 8;
+                return ( bytes[bytepos] & 1 << bitpos ) != 0;
+            }
+        }
+        throw new IndexOutOfBoundsException( Integer.toString( position ) );
+    }
+
+    /**
+     * Set the bit at the specified position
+     * 
+     * @param bytes the byte array
+     * @param position the bit to set, starting from zero
+     * @return the byte array with the set bit
+     * @exception IndexOutOfBoundsException on bad position
+     */
+    public static byte[] set( byte[] bytes, int position ) {
+        if ( position >= 0 ) {
+            int bytepos = position >> 3;
+            if ( bytepos < bytes.length ) {
+                int bitpos = 7 - position % 8;
+
+                bytes[bytepos] |= 1 << bitpos;
+                return bytes;
             }
         }
         throw new IndexOutOfBoundsException( Integer.toString( position ) );

@@ -1,7 +1,7 @@
 /*
  * The baseCode project
  * 
- * Copyright (c) 2007 Columbia University
+ * Copyright (c) 2007 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,29 +36,6 @@ public class HistogramSampler {
     private IAxis histogramAxis;
 
     /**
-     * @param counts Array of counts of how many events there are for each bin, from min to max.
-     * @param min Minimum of range histogram covers (value of the start of the first bin)
-     * @param max Maximum of range histogram covers (value at the start of the last bin)
-     */
-    public HistogramSampler( int[] counts, double min, double max ) {
-        histogramAxis = new FixedAxis( counts.length - 1, min, max );
-        uniformDist = new Uniform( 0, 1, ( int ) System.currentTimeMillis() );
-        int sum = 0;
-        for ( int i = 0; i < counts.length; i++ ) {
-            sum += counts[i];
-        }
-
-        this.cdf = new double[counts.length];
-
-        double prev = 0.0;
-        for ( int i = 0; i < counts.length; i++ ) {
-            cdf[i] = ( double ) counts[i] / sum + prev;
-            prev = cdf[i];
-        }
-
-    }
-
-    /**
      * @param histogram
      */
     public HistogramSampler( Histogram1D histogram ) {
@@ -72,6 +49,29 @@ public class HistogramSampler {
             cdf[i] = histogram.binHeight( i ) / sum + prev;
             prev = cdf[i];
         }
+    }
+
+    /**
+     * @param counts Array of counts of how many events there are for each bin, from min to max.
+     * @param min Minimum of range histogram covers (value of the start of the first bin)
+     * @param max Maximum of range histogram covers (value at the start of the last bin)
+     */
+    public HistogramSampler( int[] counts, double min, double max ) {
+        histogramAxis = new FixedAxis( counts.length - 1, min, max );
+        uniformDist = new Uniform( 0, 1, ( int ) System.currentTimeMillis() );
+        int sum = 0;
+        for ( int element : counts ) {
+            sum += element;
+        }
+
+        this.cdf = new double[counts.length];
+
+        double prev = 0.0;
+        for ( int i = 0; i < counts.length; i++ ) {
+            cdf[i] = ( double ) counts[i] / sum + prev;
+            prev = cdf[i];
+        }
+
     }
 
     public double nextSample() {

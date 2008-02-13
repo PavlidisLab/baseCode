@@ -22,12 +22,13 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Represents a matrix with named columns and rows. The 'names' are generic.
+ * Represents a matrix with index columns and rows. The keys are generic.
  * 
  * @author Paul Pavlidis
  * @version $Id$
+ * @see ObjectMatrix for matrix storing objects.
  */
-public interface NamedMatrix<R, C> {
+public abstract interface NamedMatrix<R, C, V> {
 
     /**
      * Add a column name associated with an index.
@@ -46,12 +47,23 @@ public interface NamedMatrix<R, C> {
     public void addRowName( R s, int index );
 
     /**
-     * Get the index of a row by name..
+     * Get the number of columns the matrix has.
      * 
-     * @param s Object
      * @return int
      */
-    public int getRowIndexByName( R s );
+    public int columns();
+
+    /**
+     * @param columnName
+     * @return
+     */
+    public boolean containsColumnName( C columnName );
+
+    /**
+     * @param rowName
+     * @return
+     */
+    public boolean containsRowName( R rowName );
 
     /**
      * Get the index of a column by name.
@@ -62,14 +74,6 @@ public interface NamedMatrix<R, C> {
     public int getColIndexByName( C s );
 
     /**
-     * Get the row name for an index
-     * 
-     * @param i int
-     * @return java.lang.Object
-     */
-    public R getRowName( int i );
-
-    /**
      * Gte the column name for an index.
      * 
      * @param i int
@@ -78,9 +82,35 @@ public interface NamedMatrix<R, C> {
     public C getColName( int i );
 
     /**
-     * @return boolean
+     * @return
      */
-    public boolean hasRowNames();
+    public List<C> getColNames();
+
+    /**
+     * Get the index of a row by name..
+     * 
+     * @param s Object
+     * @return int
+     */
+    public int getRowIndexByName( R s );
+
+    /**
+     * Get the row name for an index
+     * 
+     * @param i int
+     * @return java.lang.Object
+     */
+    public R getRowName( int i );
+
+    /**
+     * @return java.util.Iterator
+     */
+    public Iterator<R> getRowNameMapIterator();
+
+    /**
+     * @return
+     */
+    public List<R> getRowNames();
 
     /**
      * Check if this matrix has a valid set of column names.
@@ -90,72 +120,15 @@ public interface NamedMatrix<R, C> {
     public boolean hasColNames();
 
     /**
-     * @param v
-     */
-    public void setRowNames( List<R> v );
-
-    /**
-     * @param v
-     */
-    public void setColumnNames( List<C> v );
-
-    /**
-     * @return
-     */
-    public List<C> getColNames();
-
-    /**
-     * @return
-     */
-    public List<R> getRowNames();
-
-    /**
      * @param r Object
      * @return boolean
      */
     public boolean hasRow( R r );
 
     /**
-     * @return java.util.Iterator
+     * @return boolean
      */
-    public Iterator<R> getRowNameMapIterator();
-
-    /**
-     * Get the number of rows the matrix has
-     * 
-     * @return int
-     */
-    public int rows();
-
-    /**
-     * Get the number of columns the matrix has.
-     * 
-     * @return int
-     */
-    public int columns();
-
-    /**
-     * Set a value in the matrix.
-     * 
-     * @param i int
-     * @param j int
-     * @param val Object
-     */
-    public void set( int i, int j, Object val );
-
-    /**
-     * Get a row in the matrix as a generic Object[]. This exists so NamedMatrices can be used more generically.
-     * 
-     * @param i int row
-     * @return Object[]
-     */
-    public Object[] getRowObj( int i );
-
-    /**
-     * @param i int column
-     * @return Object[]
-     */
-    public Object[] getColObj( int i );
+    public boolean hasRowNames();
 
     /**
      * Check if the value at a given index is missing.
@@ -174,15 +147,34 @@ public interface NamedMatrix<R, C> {
     public int numMissing();
 
     /**
-     * @param rowName
-     * @return
+     * Get the number of rows the matrix has
+     * 
+     * @return int
      */
-    public boolean containsRowName( R rowName );
+    public int rows();
 
     /**
-     * @param columnName
-     * @return
+     * @param v
      */
-    public boolean containsColumnName( C columnName );
+    public void setColumnNames( List<C> v );
+
+    /**
+     * @param v
+     */
+    public void setRowNames( List<R> v );
+
+    /**
+     * @param row
+     * @param column
+     * @param value
+     */
+    public void set( int row, int column, V value );
+
+    /**
+     * @param r
+     * @param c
+     * @param v
+     */
+    public void setByKeys( R r, C c, V v );
 
 }

@@ -25,23 +25,6 @@ package ubic.basecode.math;
 public class StringDistance {
 
     /**
-     * The Hamming distance H is defined only for strings of the same length. For two strings s and t, H(s, t) is the
-     * number of places in which the two string differ, i.e., have different characters.
-     * 
-     * @param a
-     * @param b
-     * @return
-     */
-    public static int hammingDistance( String a, String b ) {
-        if ( a.length() != b.length() ) throw new IllegalArgumentException( "Strings must be the same length" );
-        int result = 0;
-        for ( int i = 0; i < a.length(); i++ ) {
-            result += a.charAt( i ) == b.charAt( i ) ? 0 : 1;
-        }
-        return result;
-    }
-
-    /**
      * The edit distance counts the differences between two strings, where we would count a difference not only when
      * strings have different characters but also when one has a character whereas the other does not. The formal
      * definition follows.
@@ -120,6 +103,23 @@ public class StringDistance {
     }
 
     /**
+     * The Hamming distance H is defined only for strings of the same length. For two strings s and t, H(s, t) is the
+     * number of places in which the two string differ, i.e., have different characters.
+     * 
+     * @param a
+     * @param b
+     * @return
+     */
+    public static int hammingDistance( String a, String b ) {
+        if ( a.length() != b.length() ) throw new IllegalArgumentException( "Strings must be the same length" );
+        int result = 0;
+        for ( int i = 0; i < a.length(); i++ ) {
+            result += a.charAt( i ) == b.charAt( i ) ? 0 : 1;
+        }
+        return result;
+    }
+
+    /**
      * Compute the Hamming distance between two strings of equal length (if they are of unequal length the longer one is
      * trimmed), giving higher weight to characters at the start of the strings, so strings that are similar at the
      * starts are given higher scores (shorter distances) than strings that are similar at the ends.
@@ -180,7 +180,7 @@ public class StringDistance {
 
         double result = 0;
         for ( int i = 0; i < trimmedS.length(); i++ ) {
-            double rawpen = ( ( double ) i / ( double ) trimmedS.length() / weight ) - ( 1.0 - weight );
+            double rawpen = ( double ) i / ( double ) trimmedS.length() / weight - ( 1.0 - weight );
             double penalty = Math.max( 0.0, rawpen );
             // / System.err.println( rawpen + " " + penalty );
             result += trimmedT.charAt( i ) == trimmedS.charAt( i ) ? 0 : penalty;

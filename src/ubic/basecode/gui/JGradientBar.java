@@ -40,10 +40,14 @@ import javax.swing.SwingConstants;
  */
 public class JGradientBar extends JPanel {
 
+    protected final static Color[] EMPTY = { Color.GRAY, Color.GRAY };
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6668982782351006998L;
     protected JNumberLabel m_min;
     protected JNumberLabel m_max;
     protected JGradientLabel m_gradient;
-    protected final static Color[] EMPTY = { Color.GRAY, Color.GRAY };
 
     /** Creates a new instance of JGradientBar */
     public JGradientBar() {
@@ -78,52 +82,15 @@ public class JGradientBar extends JPanel {
 
 } // end class JGradientBar
 
-class JNumberLabel extends JLabel {
-
-    protected static final DecimalFormat m_scientificNotation = new DecimalFormat( "0.##E0" );
-    protected static final DecimalFormat m_regular = new DecimalFormat();
-    protected static final int MINIMUM_WIDTH = 100;
-    protected static final int WIDTH = 40;
-
-    public JNumberLabel() {
-        super();
-        init();
-    }
-
-    public JNumberLabel( double number ) {
-        this();
-        m_regular.setMaximumFractionDigits( 3 );
-        setText( number );
-    }
-
-    protected void init() {
-        // setOpaque( true );
-        // setBackground( Color.lightGray );
-        Dimension d = new Dimension( WIDTH, JGradientLabel.HEIGHT );
-        setSize( d );
-        setPreferredSize( d );
-    }
-
-    public void setText( double number ) {
-
-        // Only very small numbers (except for zero) as well as very large numbers
-        // should be displayed in scientific notation
-        String text;
-        if ( ( number != 0 && Math.abs( number ) < 0.01 ) || Math.abs( number ) > 999 ) {
-            text = m_scientificNotation.format( number );
-        } else {
-            text = m_regular.format( number );
-        }
-
-        super.setText( text );
-    }
-}
-
 class JGradientLabel extends JLabel {
 
     // fields
     protected static final int WIDTH = 100;
     protected static final int HEIGHT = 20;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 348823467068723730L;
     protected Color[] m_colorMap;
 
     /**
@@ -155,6 +122,7 @@ class JGradientLabel extends JLabel {
         setPreferredSize( d );
     } // end constructor
 
+    @Override
     protected void paintComponent( Graphics g ) {
 
         Graphics2D g2 = ( Graphics2D ) g;
@@ -180,7 +148,52 @@ class JGradientLabel extends JLabel {
             g2.fillRect( x, y, width, height );
 
             // Move to paint the next vertical screen slice of this component
-            x += ( width / intervalCount );
+            x += width / intervalCount;
         }
     } // end paintComponent
 } // end JGradientLabel
+
+class JNumberLabel extends JLabel {
+
+    protected static final DecimalFormat m_scientificNotation = new DecimalFormat( "0.##E0" );
+    protected static final DecimalFormat m_regular = new DecimalFormat();
+    protected static final int MINIMUM_WIDTH = 100;
+    protected static final int WIDTH = 40;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3334047037807389979L;
+
+    public JNumberLabel() {
+        super();
+        init();
+    }
+
+    public JNumberLabel( double number ) {
+        this();
+        m_regular.setMaximumFractionDigits( 3 );
+        setText( number );
+    }
+
+    public void setText( double number ) {
+
+        // Only very small numbers (except for zero) as well as very large numbers
+        // should be displayed in scientific notation
+        String text;
+        if ( number != 0 && Math.abs( number ) < 0.01 || Math.abs( number ) > 999 ) {
+            text = m_scientificNotation.format( number );
+        } else {
+            text = m_regular.format( number );
+        }
+
+        super.setText( text );
+    }
+
+    protected void init() {
+        // setOpaque( true );
+        // setBackground( Color.lightGray );
+        Dimension d = new Dimension( WIDTH, JGradientLabel.HEIGHT );
+        setSize( d );
+        setPreferredSize( d );
+    }
+}

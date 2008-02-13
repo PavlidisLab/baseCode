@@ -28,11 +28,25 @@ import ubic.basecode.dataStructure.Visitable;
  * @version $Id$
  */
 public abstract class AbstractGraphNode<K, V> extends Visitable implements GraphNode<K, V> {
+    protected static Log log = LogFactory.getLog( GraphNode.class );
     protected K key;
     protected V item;
-    protected Graph<K, V> graph; // the graph this belongs to.
     protected boolean visited = false;
-    protected static Log log = LogFactory.getLog( GraphNode.class );
+
+    /**
+     * Create a new node when given only a key.
+     * 
+     * @param key
+     */
+    public AbstractGraphNode( K key ) {
+        this.key = key;
+        this.item = null;
+    }
+
+    public AbstractGraphNode( K key, V value ) {
+        this.key = key;
+        this.item = value;
+    }
 
     /**
      * Get the actual contents of the node.
@@ -52,37 +66,18 @@ public abstract class AbstractGraphNode<K, V> extends Visitable implements Graph
         return key;
     }
 
-    /**
-     * Create a new node with key and value given. The key is stored by the graph and is used to retrieve nodes. Keys
-     * and nodes can be any kind of object.
-     * 
-     * @param key
-     * @param value
-     * @param graph
-     */
-    public AbstractGraphNode( K key, V value, Graph<K, V> graph ) {
-        if ( key == null || value == null || graph == null ) throw new NullPointerException( "Null value given" );
-        this.setValue( key, value );
-        this.graph = graph;
+    @Override
+    public boolean isVisited() {
+        return visited;
     }
 
-    /**
-     * Create a new node when given only a key.
-     * 
-     * @param key
-     */
-    public AbstractGraphNode( K key ) {
-        this.key = key;
-        this.item = null;
+    @Override
+    public void mark() {
+        visited = true;
     }
 
-    /**
-     * Set the graph this belongs to.
-     * 
-     * @param graph Graph
-     */
-    public void setGraph( Graph<K, V> graph ) {
-        this.graph = graph;
+    public void setItem( V value ) {
+        this.item = value;
     }
 
     public void setValue( K key, V value ) {
@@ -90,28 +85,14 @@ public abstract class AbstractGraphNode<K, V> extends Visitable implements Graph
         this.key = key;
     }
 
-    public void setItem( V value ) {
-        this.item = value;
-    }
-
+    @Override
     public String toString() {
         return item.toString();
     }
 
-    public Graph<K, V> getGraph() {
-        return graph;
-    }
-
-    public void mark() {
-        visited = true;
-    }
-
+    @Override
     public void unMark() {
         visited = false;
-    }
-
-    public boolean isVisited() {
-        return visited;
     }
 
 }

@@ -27,7 +27,7 @@ import ubic.basecode.dataStructure.matrix.NamedMatrix;
  * @author Pavlidis
  * @version $Id$
  */
-public interface Filter<R, C> {
+public interface Filter<M extends NamedMatrix<R, C, V>, R, C, V> {
 
     /**
      * Filter the data
@@ -36,5 +36,5 @@ public interface Filter<R, C> {
      *        the Filter interface.
      * @return The resulting filtered matrix
      */
-    public NamedMatrix<R, C> filter( NamedMatrix<R, C> data );
+    public M filter( M data );
 }

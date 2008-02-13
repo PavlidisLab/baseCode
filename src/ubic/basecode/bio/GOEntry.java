@@ -1,7 +1,7 @@
 /*
  * The basecode project
  * 
- * Copyright (c) 2005 Columbia University
+ * Copyright (c) 2005 University of British Columbia
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -25,7 +25,7 @@ import ubic.basecode.dataStructure.OntologyEntry;
 /**
  * <hr>
  * <p>
- * Copyright (c) 2004 Columbia University
+ * Copyright (c) 2004 University of British Columbia
  * 
  * @author pavlidis
  * @version $Id$
@@ -39,12 +39,12 @@ public class GOEntry extends OntologyEntry {
         this.aspect = aspect;
     }
 
-    public void setAspect( String aspect ) {
-        this.aspect = aspect;
-    }
-
     public String getAspect() {
         return aspect;
+    }
+
+    public void setAspect( String aspect ) {
+        this.aspect = aspect;
     }
 
 }

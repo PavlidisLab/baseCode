@@ -33,6 +33,36 @@ public class KSTest {
 
     /**
      * @param x
+     * @param pg
+     * @return pvalue
+     */
+    public static double oneSample( DoubleArrayList x, ProbabilityComputer pg ) {
+
+        DoubleArrayList xs = x.copy();
+        int n = xs.size();
+
+        DoubleArrayList z = new DoubleArrayList( 2 * n );
+
+        // x <- y(sort(x), ...) - (0 : (n-1)) / n
+        xs.sort();
+        for ( int i = 0; i < n; i++ ) {
+            z.add( pg.probability( xs.getQuick( i ) ) - ( double ) i / n );
+        }
+
+        // c(x, 1/n - x)
+        for ( int i = 0; i < n; i++ ) {
+            z.add( 1.0 / n - z.getQuick( i ) );
+        }
+
+        double statistic = Descriptive.max( z );
+
+        // 1 - pkstwo(sqrt(n) * STATISTIC)
+        return 1.0 - pkstwo( Math.sqrt( n ) * statistic );
+
+    }
+
+    /**
+     * @param x
      * @param y
      * @return pvalue
      */
@@ -71,36 +101,6 @@ public class KSTest {
         double statistic = Descriptive.max( z );
 
         return 1.0 - psmirnov2x( statistic, nx, ny );
-
-    }
-
-    /**
-     * @param x
-     * @param pg
-     * @return pvalue
-     */
-    public static double oneSample( DoubleArrayList x, ProbabilityComputer pg ) {
-
-        DoubleArrayList xs = x.copy();
-        int n = xs.size();
-
-        DoubleArrayList z = new DoubleArrayList( 2 * n );
-
-        // x <- y(sort(x), ...) - (0 : (n-1)) / n
-        xs.sort();
-        for ( int i = 0; i < n; i++ ) {
-            z.add( pg.probability( xs.getQuick( i ) ) - ( ( double ) i / n ) );
-        }
-
-        // c(x, 1/n - x)
-        for ( int i = 0; i < n; i++ ) {
-            z.add( 1.0 / n - z.getQuick( i ) );
-        }
-
-        double statistic = Descriptive.max( z );
-
-        // 1 - pkstwo(sqrt(n) * STATISTIC)
-        return 1.0 - pkstwo( Math.sqrt( n ) * statistic );
 
     }
 
@@ -193,11 +193,11 @@ public class KSTest {
         double[] u = new double[n + 1];
 
         for ( j = 0; j <= n; j++ ) {
-            u[j] = ( ( j / nd ) > q ) ? 0 : 1;
+            u[j] = j / nd > q ? 0 : 1;
         }
         for ( i = 1; i <= m; i++ ) {
-            double w = ( double ) ( i ) / ( ( double ) ( i + n ) );
-            if ( ( i / md ) > q )
+            double w = ( double ) i / ( double ) ( i + n );
+            if ( i / md > q )
                 u[0] = 0;
             else
                 u[0] = w * u[0];

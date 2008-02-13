@@ -35,15 +35,6 @@ public class Point {
     }
 
     /**
-     * @param i
-     * @param j
-     */
-    public void set( int i, int j ) {
-        x = i;
-        y = j;
-    }
-
-    /**
      * @return array containing the coordinates x,y.
      */
     public int[] get() {
@@ -65,8 +56,18 @@ public class Point {
     }
 
     /**
+     * @param i
+     * @param j
+     */
+    public void set( int i, int j ) {
+        x = i;
+        y = j;
+    }
+
+    /**
      * @return string representation of the point.
      */
+    @Override
     public String toString() {
         return new String( x + "\t" + y );
     }

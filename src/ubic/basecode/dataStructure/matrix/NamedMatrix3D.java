@@ -25,39 +25,7 @@ import java.util.List;
  * @author ?
  * @version $Id$
  */
-public interface NamedMatrix3D<R, C, S> {
-    /**
-     * Add a slice name
-     * 
-     * @param s name of the slice
-     * @param index
-     */
-    public void addSliceName( S s, int index );
-
-    /**
-     * Get a slice index
-     * 
-     * @param s name
-     * @return slice index
-     */
-    public int getSliceIndexByName( S s );
-
-    public void setSliceNames( List<S> v );
-
-    /**
-     * Get a slice name
-     * 
-     * @param i index
-     * @return slice name
-     */
-    public S getSliceName( int i );
-
-    public boolean hasSliceNames();
-
-    public List<S> getSliceNames();
-
-    public int slices();
-
+public interface NamedMatrix3D<R, C, S, V> {
     /**
      * Add a column name associated with an index.
      * 
@@ -75,12 +43,43 @@ public interface NamedMatrix3D<R, C, S> {
     public void addRowName( R s, int index );
 
     /**
-     * Get the index of a row by name.
+     * Add a slice name
      * 
-     * @param s name
-     * @return row index
+     * @param s name of the slice
+     * @param index
      */
-    public int getRowIndexByName( R s );
+    public void addSliceName( S s, int index );
+
+    /**
+     * Get the number of columns the matrix has.
+     * 
+     * @return int
+     */
+    public int columns();
+
+    /**
+     * Check if the matrix contains a column name
+     * 
+     * @param colName
+     * @return true if the matrix contains the column name
+     */
+    public boolean containsColumnName( C columnName );
+
+    /**
+     * Check if the matrix contains a row name
+     * 
+     * @param rowName
+     * @return true if the matrix contains the row name
+     */
+    public boolean containsRowName( R rowName );
+
+    /**
+     * Check if the matrix contains a slice name
+     * 
+     * @param stripeName
+     * @return true if the matrix contains the slice name
+     */
+    public boolean containsSliceName( S sliceName );
 
     /**
      * Get the index of a column by name.
@@ -91,6 +90,29 @@ public interface NamedMatrix3D<R, C, S> {
     public int getColIndexByName( C s );
 
     /**
+     * Get the column name for an index.
+     * 
+     * @param i column index
+     * @return column name
+     */
+    public C getColName( int i );
+
+    public Iterator<C> getColNameIterator();
+
+    /**
+     * @return List of Object
+     */
+    public List<C> getColNames();
+
+    /**
+     * Get the index of a row by name.
+     * 
+     * @param s name
+     * @return row index
+     */
+    public int getRowIndexByName( R s );
+
+    /**
      * Get the row name for an index
      * 
      * @param i row index
@@ -99,17 +121,34 @@ public interface NamedMatrix3D<R, C, S> {
     public R getRowName( int i );
 
     /**
-     * Get the column name for an index.
-     * 
-     * @param i column index
-     * @return column name
+     * @return java.util.Iterator
      */
-    public C getColName( int i );
+    public Iterator<R> getRowNameIterator();
 
     /**
-     * @return boolean
+     * @return List of Object
      */
-    public boolean hasRowNames();
+    public List<R> getRowNames();
+
+    /**
+     * Get a slice index
+     * 
+     * @param s name
+     * @return slice index
+     */
+    public int getSliceIndexByName( S s );
+
+    /**
+     * Get a slice name
+     * 
+     * @param i index
+     * @return slice name
+     */
+    public S getSliceName( int i );
+
+    public Iterator<S> getSliceNameIterator();
+
+    public List<S> getSliceNames();
 
     /**
      * Check if this matrix has a valid set of column names.
@@ -119,53 +158,17 @@ public interface NamedMatrix3D<R, C, S> {
     public boolean hasColNames();
 
     /**
-     * @param v List a vector of Strings.
-     */
-    public void setRowNames( List<R> v );
-
-    /**
-     * @param v List a vector of Strings.
-     */
-    public void setColumnNames( List<C> v );
-
-    /**
-     * @return List of Object
-     */
-    public List<C> getColNames();
-
-    /**
-     * @return List of Object
-     */
-    public List<R> getRowNames();
-
-    /**
      * @param r row name
      * @return whether the row exists
      */
     public boolean hasRow( R r );
 
     /**
-     * @return java.util.Iterator
+     * @return boolean
      */
-    public Iterator<R> getRowNameIterator();
+    public boolean hasRowNames();
 
-    public Iterator<C> getColNameIterator();
-
-    public Iterator<S> getSliceNameIterator();
-
-    /**
-     * Get the number of rows the matrix has
-     * 
-     * @return int
-     */
-    public int rows();
-
-    /**
-     * Get the number of columns the matrix has.
-     * 
-     * @return int
-     */
-    public int columns();
+    public boolean hasSliceNames();
 
     /**
      * Check if the value at a given index is missing.
@@ -185,27 +188,26 @@ public interface NamedMatrix3D<R, C, S> {
     public int numMissing();
 
     /**
-     * Check if the matrix contains a row name
+     * Get the number of rows the matrix has
      * 
-     * @param rowName
-     * @return true if the matrix contains the row name
+     * @return int
      */
-    public boolean containsRowName( R rowName );
+    public int rows();
 
     /**
-     * Check if the matrix contains a column name
-     * 
-     * @param colName
-     * @return true if the matrix contains the column name
+     * @param v List a vector of Strings.
      */
-    public boolean containsColumnName( C columnName );
+    public void setColumnNames( List<C> v );
 
     /**
-     * Check if the matrix contains a slice name
-     * 
-     * @param stripeName
-     * @return true if the matrix contains the slice name
+     * @param v List a vector of Strings.
      */
-    public boolean containsSliceName( S sliceName );
+    public void setRowNames( List<R> v );
+
+    public void setSliceNames( List<S> v );
+
+    public int slices();
+
+    public V getObject( int slice, int row, int column );
 
 }

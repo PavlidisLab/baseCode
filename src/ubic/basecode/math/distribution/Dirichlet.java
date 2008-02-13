@@ -49,13 +49,6 @@ public class Dirichlet {
     }
 
     /**
-     * @return
-     */
-    public double nextDouble() {
-        return 0;
-    }
-
-    /**
      * @param n
      * @return
      */
@@ -75,6 +68,13 @@ public class Dirichlet {
         }
 
         return null;
+    }
+
+    /**
+     * @return
+     */
+    public double nextDouble() {
+        return 0;
     }
 }
 // rdirichlet <- function ( n, p ) {

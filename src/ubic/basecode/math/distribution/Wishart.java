@@ -39,11 +39,11 @@ import cern.jet.random.engine.RandomEngine;
  */
 public class Wishart {
 
-    private Gamma rgamma;
     int s; // dimension of matrix
     double df; // degrees of freedom
     DoubleMatrix2D cov; // input covariance matrix
     DoubleMatrix2D chol; // cholesky decomposition of the covariance matrix.
+    private Gamma rgamma;
     private DoubleMatrix2D mat;
     private Normal rnorm;
     private Algebra a = new Algebra();

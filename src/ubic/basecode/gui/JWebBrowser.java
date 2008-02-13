@@ -40,9 +40,10 @@ import javax.swing.event.HyperlinkListener;
  */
 public class JWebBrowser extends JFrame implements HyperlinkListener, ActionListener {
 
-    private JTextField m_urlField;
-    private JEditorPane m_htmlPane;
-    private String m_initialURL;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6725319231884948542L;
 
     public static void main( String[] args ) {
         if ( args.length == 0 )
@@ -50,6 +51,11 @@ public class JWebBrowser extends JFrame implements HyperlinkListener, ActionList
         else
             new JWebBrowser( args[0] );
     }
+
+    private JTextField m_urlField;
+    private JEditorPane m_htmlPane;
+
+    private String m_initialURL;
 
     public JWebBrowser( String initialURL ) {
         super( "Web Browser" );

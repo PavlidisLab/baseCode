@@ -30,84 +30,10 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public abstract class DoubleMatrixNamed<R, C> extends AbstractNamedMatrix<R, C> {
+public abstract class DoubleMatrixNamed<R, C> extends AbstractNamedMatrix<R, C, Double> implements
+        NamedPrimitiveMatrix<R, C, Double> {
 
     protected static Log log = LogFactory.getLog( DoubleMatrixNamed.class.getName() );
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.NamedMatrix#rows()
-     */
-    public abstract int rows();
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.NamedMatrix#columns()
-     */
-    public abstract int columns();
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.NamedMatrix#set(int, int, java.lang.Object)
-     */
-    public abstract void set( int i, int j, Object val );
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.NamedMatrix#getRowObj(int)
-     */
-    public abstract Object[] getRowObj( int i );
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.NamedMatrix#getColObj(int)
-     */
-    public abstract Object[] getColObj( int i );
-
-    public abstract Object getObj( int i, int j );
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.NamedMatrix#isMissing(int, int)
-     */
-    public abstract boolean isMissing( int i, int j );
-
-    public abstract double[] getRow( int i );
-
-    public abstract double[] getColumn( int i );
-
-    public abstract DoubleArrayList getRowArrayList( int i );
-
-    public abstract double get( int x, int y );
-
-    /**
-     * @param i
-     * @param j
-     * @return
-     */
-    public abstract double getQuick( int i, int j );
-
-    public abstract void set( int x, int y, double value );
-
-    /**
-     * @param j
-     * @return
-     */
-    public abstract DoubleMatrix1D viewRow( int j );
-
-    /**
-     * @param s String
-     * @return double[]
-     */
-    public double[] getRowByName( R s ) {
-        return getRow( getRowIndexByName( s ) );
-    }
 
     /**
      * @param s String
@@ -117,19 +43,35 @@ public abstract class DoubleMatrixNamed<R, C> extends AbstractNamedMatrix<R, C> 
         return getColumn( getColIndexByName( s ) );
     }
 
-    /**
-     * @param j
-     * @param i
-     * @param c
-     */
-    public abstract void setQuick( int j, int i, double c );
+    public abstract double[] getRow( int i );
 
-    public String toString() {
+    public abstract double[] getColumn( int j );
+
+    public abstract DoubleArrayList getRowArrayList( int i );
+
+    /**
+     * @param s String
+     * @return double[]
+     */
+    public double[] getRowByName( R s ) {
+        return getRow( getRowIndexByName( s ) );
+    }
+
+    public void setByKeys( R r, C c, Double v ) {
+        this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
+    }
+
+    public abstract DoubleMatrixNamed<R, C> copy();
+
+    public abstract double[][] asArray();
+
+    @Override
+    public final String toString() {
         int rows = this.rows();
         int columns = this.columns();
         StringBuffer buf = new StringBuffer();
         int stop = 0;
-        buf.append( "Row\\Col" );
+        buf.append( "label" );
         for ( int i = 0; i < columns; i++ ) {
             buf.append( "\t" + this.getColName( i ) );
         }
@@ -138,7 +80,12 @@ public abstract class DoubleMatrixNamed<R, C> extends AbstractNamedMatrix<R, C> 
 
             buf.append( this.getRowName( j ) );
             for ( int i = 0; i < columns; i++ ) {
-                buf.append( "\t" + this.get( j, i ) );
+                double value = this.get( j, i );
+                if ( Double.isNaN( value ) ) {
+                    buf.append( "\t" );
+                } else {
+                    buf.append( "\t" + String.format( "%.4g", value ) );
+                }
             }
             buf.append( "\n" );
             if ( stop > MAX_ROWS_TO_PRINT ) {
@@ -149,4 +96,17 @@ public abstract class DoubleMatrixNamed<R, C> extends AbstractNamedMatrix<R, C> 
         }
         return buf.toString();
     }
+
+    /**
+     * @param j
+     * @param i
+     * @return
+     */
+    public abstract double get( int j, int i );
+
+    /**
+     * @param j
+     * @return
+     */
+    public abstract DoubleMatrix1D viewRow( int j );
 }

@@ -25,9 +25,6 @@ import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix1D;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import cern.colt.matrix.DoubleMatrix1D;
 
-import com.braju.beta.format.Format;
-import com.braju.beta.format.Parameters;
-
 /**
  * Implementation of RankProp, as described in Weston et al. PNAS
  * 
@@ -39,20 +36,6 @@ public class RankProp {
 
     double alpha = 0.95; // alpha parameter, controls amount of "clustering"
     int maxIter = 20;// number of iterations of algorithm
-
-    /**
-     * @param matrix
-     * @param query
-     * @param k
-     * @return
-     */
-    public DoubleMatrix1D computeRanking( DoubleMatrixNamed matrix, DoubleMatrixNamed query, int k ) {
-
-        DoubleMatrix1D yorig = new DenseDoubleMatrix1D( query.viewRow( 0 ).toArray() );
-
-        return this.computeRanking( matrix, yorig, k );
-
-    }
 
     /**
      * @param matrix
@@ -89,14 +72,28 @@ public class RankProp {
 
                 // new y is old y +
                 // new weighted linear combination of neighbors
-                y.set( j, ( alpha * dotProduct ) + query.getQuick( j ) );
+                y.set( j, alpha * dotProduct + query.getQuick( j ) );
             }
 
             if ( loops % 5 == 0 ) {
-                log.info( " iteration " + loops + " y[0]=" + Format.sprintf( "%g", new Parameters( y.getQuick( 0 ) ) ) );
+                log.info( " iteration " + loops + " y[0]=" + String.format( "%g", y.get( 0 ) ) );
             }
         }
         return y;
+    }
+
+    /**
+     * @param matrix
+     * @param query
+     * @param k
+     * @return
+     */
+    public DoubleMatrix1D computeRanking( DoubleMatrixNamed matrix, DoubleMatrixNamed query, int k ) {
+
+        DoubleMatrix1D yorig = new DenseDoubleMatrix1D( query.viewRow( 0 ).toArray() );
+
+        return this.computeRanking( matrix, yorig, k );
+
     }
 
     /**
@@ -107,21 +104,21 @@ public class RankProp {
     }
 
     /**
-     * controls amount of "clustering"
-     * 
-     * @param alpha The alpha to set.
-     */
-    public void setAlpha( double alpha ) {
-        this.alpha = alpha;
-    }
-
-    /**
      * Maximum iterations before stopping.
      * 
      * @return Returns the max_loops.
      */
     public int getMaxIter() {
         return maxIter;
+    }
+
+    /**
+     * controls amount of "clustering"
+     * 
+     * @param alpha The alpha to set.
+     */
+    public void setAlpha( double alpha ) {
+        this.alpha = alpha;
     }
 
     /**

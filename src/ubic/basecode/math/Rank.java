@@ -18,10 +18,12 @@
  */
 package ubic.basecode.math;
 
-import java.util.Arrays;
+import java.util.ArrayList; 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import cern.colt.list.DoubleArrayList;
@@ -140,6 +142,40 @@ public class Rank {
     }
 
     /**
+     * Rank transform a map, where the values are numerical (java.lang.Double) values we wish to rank. Ties are not
+     * handled specially. Ranks are zero-based.
+     * 
+     * @param m java.util.Map with keys Objects, values Doubles.
+     * @return A java.util.Map keys=old keys, values=java.lang.Integer rank of the key.
+     */
+    public static <K> Map<K, Integer> rankTransform( Map<K, Double> m ) throws IllegalArgumentException {
+        int counter = 0;
+
+        List<KeyAndValueData<K>> values = new ArrayList<KeyAndValueData<K>>();
+
+        /*
+         * put the pvalues into an array of objects which contain the pvalue and the gene id
+         */
+        for ( Iterator<K> itr = m.keySet().iterator(); itr.hasNext(); ) {
+
+            K key = itr.next();
+
+            double val = m.get( key ).doubleValue();
+            values.add( new KeyAndValueData<K>( key, val ) );
+            counter++;
+        }
+
+        /* sort it */
+        Collections.sort( values );
+        Map<K, Integer> result = new HashMap<K, Integer>();
+        /* put the sorted items back into a hashmap with the rank */
+        for ( int i = 0; i < m.size(); i++ ) {
+            result.put( values.get( i ).getKey(), new Integer( i ) );
+        }
+        return result;
+    }
+
+    /**
      * @param ranksWithTies
      */
     private static void fixTies( DoubleArrayList ranksWithTies, ObjectArrayList ranks ) {
@@ -196,62 +232,22 @@ public class Rank {
         }
         return total / numties;
     }
-
-    /**
-     * Rank transform a map, where the values are numerical (java.lang.Double) values we wish to rank. Ties are not
-     * handled specially. Ranks are zero-based.
-     * 
-     * @param m java.util.Map with keys Objects, values Doubles.
-     * @return A java.util.Map keys=old keys, values=java.lang.Integer rank of the key.
-     * @throws IllegalArgumentException if the input Map does not have Double values.
-     */
-    public static Map rankTransform( Map m ) throws IllegalArgumentException {
-        int counter = 0;
-
-        keyAndValueData[] values = new keyAndValueData[m.size()];
-
-        /*
-         * put the pvalues into an array of objects which contain the pvalue and the gene id
-         */
-        for ( Iterator itr = m.keySet().iterator(); itr.hasNext(); ) {
-
-            Object key = itr.next();
-
-            if ( !( m.get( key ) instanceof Double ) ) {
-                throw new IllegalArgumentException( "Attempt to rank a map with non-Double values" );
-            }
-
-            double val = ( ( Double ) m.get( key ) ).doubleValue();
-            values[counter] = new keyAndValueData( key, val );
-            counter++;
-        }
-
-        /* sort it */
-        Arrays.sort( values );
-        Map<Object, Object> result = new HashMap<Object, Object>();
-        /* put the sorted items back into a hashmap with the rank */
-        for ( int i = 0; i < m.size(); i++ ) {
-            result.put( values[i].getKey(), new Integer( i ) );
-        }
-        return result;
-    }
 }
 
 /*
  * Helper class for rankTransform map.
  */
-class keyAndValueData implements Comparable {
-    private Object key;
+class KeyAndValueData<K> implements Comparable<KeyAndValueData> {
+    private K key;
 
     private double value;
 
-    public keyAndValueData( Object id, double v ) {
+    public KeyAndValueData( K id, double v ) {
         this.key = id;
         this.value = v;
     }
 
-    public int compareTo( Object ob ) {
-        keyAndValueData other = ( keyAndValueData ) ob;
+    public int compareTo( KeyAndValueData other ) {
 
         if ( this.value < other.value ) {
             return -1;
@@ -262,7 +258,7 @@ class keyAndValueData implements Comparable {
         }
     }
 
-    public Object getKey() {
+    public K getKey() {
         return key;
     }
 
@@ -285,7 +281,7 @@ class RankData implements Comparable {
     }
 
     public int compareTo( Object a ) {
-        RankData other = ( RankData ) ( a );
+        RankData other = ( RankData ) a;
         if ( this.value < other.getValue() ) {
             return -1;
         } else if ( this.value > other.getValue() ) {
@@ -295,15 +291,16 @@ class RankData implements Comparable {
         }
     }
 
-    public String toString() {
-        return "Index=" + index + " value=" + value;
-    }
-
     public int getIndex() {
         return index;
     }
 
     public double getValue() {
         return value;
+    }
+
+    @Override
+    public String toString() {
+        return "Index=" + index + " value=" + value;
     }
 }

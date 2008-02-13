@@ -41,20 +41,6 @@ public class Link extends Point implements Comparable {
         this.weight = weight;
     }
 
-    /**
-     * @return double
-     */
-    public double getWeight() {
-        return weight;
-    }
-
-    /**
-     * @return java.lang.String
-     */
-    public String toString() {
-        return super.toString() + "\t" + NumberFormat.getInstance().format( this.weight );
-    }
-
     public int compareTo( Object arg ) {
         Link a = ( Link ) arg;
 
@@ -70,6 +56,21 @@ public class Link extends Point implements Comparable {
             }
             return 0;
         }
+    }
+
+    /**
+     * @return double
+     */
+    public double getWeight() {
+        return weight;
+    }
+
+    /**
+     * @return java.lang.String
+     */
+    @Override
+    public String toString() {
+        return super.toString() + "\t" + NumberFormat.getInstance().format( this.weight );
     }
 
 }

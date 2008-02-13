@@ -26,17 +26,17 @@ import java.awt.Color;
  */
 public class ColorMap {
 
+    public static final int m_defaultSuggestedNumberOfColors = 64;
+    public static final Color DARK_RED = new Color( 128, 0, 0 );
+    public static final Color[] GREENRED_COLORMAP = { Color.green, Color.black, Color.red };
+
+    public static final Color[] REDGREEN_COLORMAP = { Color.red, Color.black, Color.green };
+    public static final Color[] BLACKBODY_COLORMAP = { Color.black, DARK_RED, Color.orange, Color.yellow, Color.white };
     /** first color in the current color map */
     protected Color m_minColor;
     /** last color in the current color map */
     protected Color m_maxColor;
     protected Color[] m_customColorMap;
-
-    public static final int m_defaultSuggestedNumberOfColors = 64;
-    public static final Color DARK_RED = new Color( 128, 0, 0 );
-    public static final Color[] GREENRED_COLORMAP = { Color.green, Color.black, Color.red };
-    public static final Color[] REDGREEN_COLORMAP = { Color.red, Color.black, Color.green };
-    public static final Color[] BLACKBODY_COLORMAP = { Color.black, DARK_RED, Color.orange, Color.yellow, Color.white };
 
     protected Color[] m_currentColorMap = GREENRED_COLORMAP; // reference to a
     // color map
@@ -47,14 +47,14 @@ public class ColorMap {
         this( m_defaultSuggestedNumberOfColors );
     }
 
-    public ColorMap( int suggestedNumberOfColors ) {
-
-        this( suggestedNumberOfColors, GREENRED_COLORMAP );
-    }
-
     public ColorMap( Color[] colorMap ) {
 
         this( m_defaultSuggestedNumberOfColors, colorMap );
+    }
+
+    public ColorMap( int suggestedNumberOfColors ) {
+
+        this( suggestedNumberOfColors, GREENRED_COLORMAP );
     }
 
     /**
@@ -69,19 +69,22 @@ public class ColorMap {
         m_colorPalette = createColorPalette( suggestedNumberOfColors, colorMap );
     }
 
-    /**
-     * Calculate how fast we have to change color components. Assume min and max colors are different!
-     * 
-     * @param minColor red, green, or blue component of the RGB color
-     * @param maxColor red, green, or blue component of the RGB color
-     * @param totalColors int
-     * @return positive or negative step size
-     */
-    protected int getStepSize( int minColor, int maxColor, int totalColors ) {
+    public Color getColor( int i ) {
 
-        int colorRange = maxColor - minColor;
-        double stepSize = colorRange / ( 1 == totalColors ? 1 : totalColors - 1 );
-        return ( int ) Math.round( stepSize );
+        return m_colorPalette[i];
+    }
+
+    public Color[] getPalette() {
+
+        return m_colorPalette;
+    }
+
+    /**
+     * @return the number of colors in the palette
+     */
+    public int getPaletteSize() {
+
+        return m_colorPalette.length;
     }
 
     /**
@@ -154,21 +157,18 @@ public class ColorMap {
 
     } // end createColorPalette
 
-    public Color getColor( int i ) {
-
-        return m_colorPalette[i];
-    }
-
-    public Color[] getPalette() {
-
-        return m_colorPalette;
-    }
-
     /**
-     * @return the number of colors in the palette
+     * Calculate how fast we have to change color components. Assume min and max colors are different!
+     * 
+     * @param minColor red, green, or blue component of the RGB color
+     * @param maxColor red, green, or blue component of the RGB color
+     * @param totalColors int
+     * @return positive or negative step size
      */
-    public int getPaletteSize() {
+    protected int getStepSize( int minColor, int maxColor, int totalColors ) {
 
-        return m_colorPalette.length;
+        int colorRange = maxColor - minColor;
+        double stepSize = colorRange / ( 1 == totalColors ? 1 : totalColors - 1 );
+        return ( int ) Math.round( stepSize );
     }
 }

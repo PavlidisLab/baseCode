@@ -22,50 +22,36 @@ package ubic.basecode.dataStructure.tree;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class BinaryTree {
+public class BinaryTree<T> {
 
-    BinaryTreeNode root;
+    BinaryTreeNode<T> root;
 
-    public BinaryTree( BinaryTreeNode root ) {
-        this.root = root;
+    public BinaryTree( T root ) {
+        this.root = new BinaryTreeNode<T>( root );
     }
 
     /**
      * @return Returns the root.
      */
-    public BinaryTreeNode getRoot() {
+    public BinaryTreeNode<T> getRoot() {
         return root;
     }
 
-    /**
-     * @param root The root to set.
-     */
-    public void setRoot( BinaryTreeNode root ) {
-        this.root = root;
-    }
-
-    /**
-     * 
-     */
-    public BinaryTree() {
-        super();
-    }
-
-    public void insertLeft( BinaryTreeNode p, Object o ) {
-        if ( ( p != null ) && ( p.getLeft() == null ) ) p.setLeft( new BinaryTreeNode( o ) );
-    }
-
-    public void insertRight( BinaryTreeNode p, Object o ) {
-        if ( ( p != null ) && ( p.getRight() == null ) ) p.setRight( new BinaryTreeNode( o ) );
-    }
-
-    public BinaryTreeNode getLeft() {
-        if ( !isEmpty() ) return root.getLeft();
+    public BinaryTreeNode<T> insertLeft( BinaryTreeNode<T> p, T o ) {
+        if ( p != null && p.getLeft() == null ) {
+            BinaryTreeNode<T> newNode = new BinaryTreeNode<T>( o );
+            p.setLeft( newNode );
+            return newNode;
+        }
         return null;
     }
 
-    public BinaryTreeNode getRight() {
-        if ( !isEmpty() ) return root.getRight();
+    public BinaryTreeNode<T> insertRight( BinaryTreeNode<T> p, T o ) {
+        if ( p != null && p.getRight() == null ) {
+            BinaryTreeNode<T> newNode = new BinaryTreeNode<T>( o );
+            p.setRight( newNode );
+            return newNode;
+        }
         return null;
     }
 

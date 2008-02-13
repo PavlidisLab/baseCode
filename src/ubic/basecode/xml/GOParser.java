@@ -43,14 +43,14 @@ import ubic.basecode.dataStructure.graph.DirectedGraphNode;
  */
 public class GOParser {
 
-    private DirectedGraph m;
+    private DirectedGraph<String, GOEntry> m;
 
     /**
      * Get the graph that was created.
      * 
      * @return a DirectedGraph. Nodes contain OntologyEntry instances.
      */
-    public DirectedGraph getGraph() {
+    public DirectedGraph<String, GOEntry> getGraph() {
         return m;
     }
 
@@ -96,15 +96,15 @@ public class GOParser {
 }
 
 class GOHandler extends DefaultHandler {
-    private DirectedGraph m;
+    private DirectedGraph<String, GOEntry> m;
 
-    public DirectedGraph getResults() {
+    public DirectedGraph<String, GOEntry> getResults() {
         return m;
     }
 
     public GOHandler() {
         super();
-        m = new DirectedGraph();
+        m = new DirectedGraph<String, GOEntry>();
     }
 
     private boolean inTerm = false;
@@ -120,6 +120,7 @@ class GOHandler extends DefaultHandler {
     private StringBuffer accBuf;
     private StringBuffer defBuf;
 
+    @SuppressWarnings("unused")
     public void startElement( String uri, String name, String qName, Attributes atts ) {
 
         if ( name.equals( "term" ) ) {
@@ -166,6 +167,7 @@ class GOHandler extends DefaultHandler {
         m.addNode( parent, new GOEntry( parent, "No name yet", "No definition found", null ) );
     }
 
+    @SuppressWarnings("unused")
     public void endElement( String uri, String name, String qName ) {
         if ( name.equals( "term" ) ) {
             inTerm = false;
@@ -175,7 +177,7 @@ class GOHandler extends DefaultHandler {
             initializeNewNode( currentTerm );
         } else if ( name.equals( "definition" ) ) {
             String currentTerm = accBuf.toString();
-            ( ( GOEntry ) m.getNodeContents( currentTerm ) ).setDefinition( defBuf.toString().intern() );
+            m.getNodeContents( currentTerm ).setDefinition( defBuf.toString().intern() );
             inDef = false;
         } else if ( name.equals( "is_a" ) ) {
             // inIsa = false;
@@ -189,7 +191,7 @@ class GOHandler extends DefaultHandler {
 
             String currentName = nameBuf.toString().intern();
 
-            ( ( GOEntry ) m.getNodeContents( currentTerm ) ).setName( currentName );
+            m.getNodeContents( currentTerm ).setName( currentName );
 
             if ( currentName.equalsIgnoreCase( "molecular_function" )
                     || currentName.equalsIgnoreCase( "biological_process" )
@@ -198,7 +200,7 @@ class GOHandler extends DefaultHandler {
                     || currentName.equalsIgnoreCase( "obsolete_biological_process" )
                     || currentName.equalsIgnoreCase( "obsolete_cellullar_component" ) ) {
                 currentAspect = currentName;
-                ( ( GOEntry ) m.getNodeContents( currentTerm ) ).setAspect( currentAspect );
+                m.getNodeContents( currentTerm ).setAspect( currentAspect );
             }
 
         }

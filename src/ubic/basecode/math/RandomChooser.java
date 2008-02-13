@@ -26,26 +26,14 @@ import java.util.Random;
 import java.util.Set;
 
 /**
- * Fill arrays with random values given a source of values.
+ * Fill arrays with random values
  * 
  * @author Paul Pavlidis
  * @version $Id$
  */
 public class RandomChooser {
 
-    private RandomChooser() { /* block instantiation */
-    }
-
     private static Random generator = new Random( System.currentTimeMillis() );
-
-    /**
-     * Initialized the random number generator witha given seed.
-     * 
-     * @param seed
-     */
-    public static void init( long seed ) {
-        generator = new Random( seed );
-    }
 
     /**
      * Fill randomvals with random things from sourcedata, without replacement.
@@ -57,7 +45,7 @@ public class RandomChooser {
      * @param n int
      */
     public static void chooserandom( double[] randomvals, double[] sourcedata, int[] deck, int numNeeded, int n ) {
-        if (numNeeded <= 0) throw new IllegalArgumentException("numNeeded must be greater than zero");
+        if ( numNeeded <= 0 ) throw new IllegalArgumentException( "numNeeded must be greater than zero" );
         int rand;
         int i;
         int temp;
@@ -71,6 +59,36 @@ public class RandomChooser {
     }
 
     /**
+     * choose n random integers from 0 (inclusive) to max (exclusive) without repeating
+     * 
+     * @param max largest value to choose
+     * @param n how many to choose
+     */
+    public static int[] chooserandom( int max, int n ) {
+        if ( n > max ) {
+            throw new IllegalArgumentException(
+                    "n must be less than or equal to max (and should be much smaller, actually)" );
+        }
+        int[] result = new int[n];
+        boolean[] recLog = new boolean[max];
+        for ( int i = 0; i < max; i++ ) {
+            recLog[i] = false;
+        }
+        int numgot = 0;
+        while ( numgot < n ) { /* numgot is the index of the last gotten item */
+            int newnum = generator.nextInt( max );
+            if ( !recLog[newnum] ) {
+                result[numgot] = newnum;
+                recLog[newnum] = true;
+                numgot++;
+            }
+        }
+
+        return result;
+
+    }
+
+    /**
      * choose n random integers from 0 to max without repeating
      * 
      * @param randomnums answers go here.
@@ -79,10 +97,8 @@ public class RandomChooser {
      * @param n int
      */
     public static void chooserandom( int[] randomnums, int[] deck, int max, int n ) {
-        int rand;
-        int i;
-        for ( i = 0; i < n; i++ ) {
-            rand = generator.nextInt( max - i ) + i; // a value between i and max.
+        for ( int i = 0; i < n; i++ ) {
+            int rand = generator.nextInt( max - i ) + i; // a value between i and max.
             randomnums[i] = deck[rand];
             deck[rand] = deck[i];
             deck[i] = randomnums[i];
@@ -90,34 +106,31 @@ public class RandomChooser {
     }
 
     /**
-     * choose n random integers from 0 to max without repeating
+     * Select a random subset of size n from collection superSet
      * 
-     * @param randomnums int[]
-     * @param recLog record of what values are already chosen.
-     * @param max int
-     * @param n int
+     * @param n
+     * @param superSet
+     * @return subset.
      */
-    public static void chooserandom( int[] randomnums, boolean[] recLog, int max, int n ) {
-        int numgot;
-        int i;
-        int newnum;
+    public static <T> Set<T> chooseRandomSubset( int n, Collection<? extends T> superSet ) {
+        return chooseRandomSubset( n, new ArrayList<T>( superSet ) );
+    }
 
-        numgot = 0;
-
-        while ( numgot < n ) { /* numgot is the index of the last gotten item */
-            newnum = generator.nextInt( max );
-            if ( !recLog[newnum] ) {
-                randomnums[numgot] = newnum;
-                recLog[newnum] = true;
-                numgot++;
-            }
+    /**
+     * Select a random subset of size n from List superSet
+     * 
+     * @param n
+     * @param superSet
+     * @return subset
+     */
+    public static <T> Set<T> chooseRandomSubset( int n, List<? extends T> superSet ) {
+        int max = superSet.size();
+        int[] indices = chooserandom( max, n );
+        Set<T> result = new HashSet<T>();
+        for ( int i = 0; i < n; ++i ) {
+            result.add( superSet.get( indices[i] ) );
         }
-
-        // reset all elements in recLog to false
-        for ( i = 0; i < n; i++ ) {
-            recLog[randomnums[i]] = false;
-        }
-
+        return result;
     }
 
     /**
@@ -127,28 +140,25 @@ public class RandomChooser {
      * @param max int
      * @param n int
      */
-    public static void chooserandomWrep( int[] randomnums, int max, int n ) {
+    public static int[] chooserandomWrep( int max, int n ) {
+        int[] randomnums = new int[n];
         for ( int i = 0; i < n; i++ ) {
-            int newnum = ( char ) ( generator.nextInt() % max );
+            int newnum = Math.abs( generator.nextInt() ) % max;
             randomnums[i] = newnum;
         }
+        return randomnums;
     }
 
-    public static <T> Set<T> chooseRandomSubset( int n, Collection<? extends T> superSet ) {
-        return chooseRandomSubset( n, new ArrayList( superSet) );
+    /**
+     * Initialized the random number generator witha given seed.
+     * 
+     * @param seed
+     */
+    public static void init( long seed ) {
+        generator = new Random( seed );
     }
-    
-    public static <T> Set<T> chooseRandomSubset( int n, List<? extends T> superSet ) {
-        int max = superSet.size();
-        int[] indices = new int[ n ];
-        boolean[] chosen = new boolean[ max ];
-        chooserandom( indices, chosen, max, n );
-        
-        Set<T> result = new HashSet<T>();
-        for ( int i=0; i<n; ++i ) {
-            result.add( superSet.get( indices[i] ) );
-        }
-        return result;
+
+    private RandomChooser() { /* block instantiation */
     }
-    
+
 }

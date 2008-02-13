@@ -1,3 +1,21 @@
+/*
+ * The baseCode project
+ * 
+ * Copyright (c) 2008 University of British Columbia
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package ubic.basecode.dataStructure.matrix;
 
 import java.util.ArrayList;
@@ -5,7 +23,13 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public abstract class AbstractNamedMatrix3D<R, C, S> implements NamedMatrix3D<R, C, S> {
+/**
+ * TODO Document Me
+ * 
+ * @author Raymond
+ * @version $Id$
+ */
+public abstract class AbstractNamedMatrix3D<R, C, S, V> implements NamedMatrix3D<R, C, S, V> {
     public LinkedHashMap<C, Integer> colMap;
     public LinkedHashMap<R, Integer> rowMap;
     public LinkedHashMap<S, Integer> sliceMap;
@@ -112,8 +136,6 @@ public abstract class AbstractNamedMatrix3D<R, C, S> implements NamedMatrix3D<R,
     public boolean hasColNames() {
         return columns() == colNames.size();
     }
-
-    public abstract Object getObj( int i, int j, int k );
 
     public boolean hasRow( Object r ) {
         return rowMap.containsKey( r );

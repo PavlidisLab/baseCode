@@ -1,7 +1,7 @@
 /*
  * The baseCode project
  * 
- * Copyright (c) 2006 University of British Columbia
+ * Copyright (c) 2008 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,16 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.dataStructure.tree;
-
-import java.util.LinkedList;
-import java.util.List;
+package ubic.basecode.dataStructure.matrix;
 
 /**
- * @author pavlidis
+ * @author Paul
  * @version $Id$
  */
-public class Tree {
+public interface NamedObjectMatrix<R, C, V> extends NamedMatrix<R, C, V> {
 
-    List nodes;
+    public V get( int row, int col );
 
-    /**
-     * 
-     */
-    public Tree() {
-        super();
-        nodes = new LinkedList();
-    }
+    public V[] getRow( int row );
 
 }

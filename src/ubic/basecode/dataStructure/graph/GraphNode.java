@@ -22,7 +22,12 @@ package ubic.basecode.dataStructure.graph;
  * @author pavlidis
  * @version $Id$
  */
-public interface GraphNode<K, V> extends Comparable {
+public interface GraphNode<K, V> {
+
+    /**
+     * @return the Graph this belongs to.
+     */
+    public Graph<? extends GraphNode<K, V>, K, V> getGraph();
 
     /**
      * @return the contents of the node.
@@ -48,14 +53,4 @@ public interface GraphNode<K, V> extends Comparable {
      * @param value
      */
     public void setValue( K key, V value );
-
-    /**
-     * @return the Graph this belongs to.
-     */
-    public Graph<K, V> getGraph();
-
-    /**
-     * @param graph
-     */
-    public void setGraph( Graph<K, V> graph );
 }

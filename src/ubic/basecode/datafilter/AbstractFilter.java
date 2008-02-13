@@ -31,12 +31,13 @@ import ubic.basecode.dataStructure.matrix.NamedMatrix;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public abstract class AbstractFilter<R, C> implements Filter<R, C> {
+public abstract class AbstractFilter<M extends NamedMatrix<R, C, V>, R, C, V> implements Filter<M, R, C, V> {
 
     protected static final Log log = LogFactory.getLog( AbstractFilter.class );
 
-    protected NamedMatrix<R, C> getOutputMatrix( NamedMatrix<R, C> data, int numRows, int numCols ) {
-        NamedMatrix<R, C> returnval = null;
+    @SuppressWarnings("unchecked")
+    protected M getOutputMatrix( M data, int numRows, int numCols ) {
+        NamedMatrix<R, C, V> returnval = null;
 
         try {
             Constructor<? extends NamedMatrix> cr = data.getClass().getConstructor(
@@ -46,7 +47,7 @@ public abstract class AbstractFilter<R, C> implements Filter<R, C> {
             e.printStackTrace();
         }
 
-        return returnval;
+        return ( M ) returnval;
     }
 
 }

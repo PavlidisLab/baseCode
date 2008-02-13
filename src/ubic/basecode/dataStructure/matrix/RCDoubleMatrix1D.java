@@ -27,9 +27,9 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 
 /**
  * A row-compressed 1D matrix. The only deviation from the contract of DoubleMatrix1D is in apply(), which only operates
- * on the non-empty elements. This implementation has a highly optimized dot product computer. If you need to compute
- * the dot product of a RCDoubleMatrix1D with another DoubleMatrix1D, call zDotProduct on this, not on the other. This
- * is because getQuick() and setQuick() are not very fast for this.
+ * on the non-empty (0) elements. This implementation has a highly optimized dot product computer. If you need to
+ * compute the dot product of a RCDoubleMatrix1D with another DoubleMatrix1D, call zDotProduct on this, not on the
+ * other. This is because getQuick() and setQuick() are not very fast for this.
  * 
  * @author pavlidis
  * @version $Id$
@@ -44,17 +44,33 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
      * @param values
      */
     public RCDoubleMatrix1D( double[] values ) {
-        this( values.length );
         assign( values );
+    }
+
+    @Override
+    public DoubleMatrix1D assign( double[] v ) {
+        this.indexes = new IntArrayList();
+        this.values = new DoubleArrayList();
+        int used = 0;
+        for ( int i = 0; i < v.length; i++ ) {
+            if ( v[i] == 0 || Double.isNaN( v[i] ) ) {
+                continue;
+            }
+            this.indexes.add( i );
+            this.values.add( v[i] );
+            used++;
+
+        }
+        this.size = v.length;
+        return this;
     }
 
     /**
      * @param length
      */
     public RCDoubleMatrix1D( int length ) {
-        setUp( length );
-        this.indexes = new IntArrayList( length );
-        this.values = new DoubleArrayList( length );
+        this.indexes = new IntArrayList();
+        this.values = new DoubleArrayList();
     }
 
     /**
@@ -74,11 +90,26 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
         this.values = values;
     }
 
+    /**
+     * WARNING this only assigns to the non-empty values, for performance reasons. If you need to assign to any index,
+     * you have to use another way.
+     * 
+     * @see cern.colt.matrix.DoubleMatrix1D#assign(cern.colt.function.DoubleFunction)
+     */
+    @Override
+    public DoubleMatrix1D assign( DoubleFunction function ) {
+        for ( int i = values.size(); --i >= 0; ) {
+            values.set( i, function.apply( values.get( i ) ) );
+        }
+        return this;
+    }
+
     /*
      * (non-Javadoc)
      * 
      * @see cern.colt.matrix.DoubleMatrix1D#getQuick(int)
      */
+    @Override
     public double getQuick( int index ) {
 
         int location = indexes.binarySearch( index );
@@ -86,7 +117,11 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
         if ( location >= 0 ) {
             return values.get( location );
         }
-        return 0.0;
+        return 0;
+    }
+
+    public double get( int index ) {
+        return this.getQuick( index );
     }
 
     /*
@@ -94,6 +129,7 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
      * 
      * @see cern.colt.matrix.DoubleMatrix1D#like(int)
      */
+    @Override
     public DoubleMatrix1D like( int s ) {
         return new RCDoubleMatrix1D( s );
     }
@@ -103,6 +139,7 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
      * 
      * @see cern.colt.matrix.DoubleMatrix1D#like2D(int, int)
      */
+    @Override
     public DoubleMatrix2D like2D( int rows, int columns ) {
         return new DenseDoubleMatrix2D( rows, columns );
     }
@@ -112,6 +149,7 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
      * 
      * @see cern.colt.matrix.DoubleMatrix1D#setQuick(int, double)
      */
+    @Override
     public void setQuick( int column, double value ) {
         int location = indexes.binarySearch( column );
 
@@ -127,25 +165,21 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
     /*
      * (non-Javadoc)
      * 
-     * @see cern.colt.matrix.DoubleMatrix1D#viewSelectionLike(int[])
+     * @see java.lang.Object#toString()
      */
-    protected DoubleMatrix1D viewSelectionLike( int[] offsets ) {
-        throw new UnsupportedOperationException(); // should never be called
-    }
-
-    /**
-     * Apply the given function to each element non-zero element in the matrix.
-     * 
-     * @param function
-     * @return
-     */
-    public DoubleMatrix1D forEachNonZero( final cern.colt.function.DoubleFunction function ) {
-
-        double[] elements = values.elements();
-        for ( int i = elements.length; --i >= 0; ) {
-            elements[i] = function.apply( elements[i] );
+    @Override
+    public String toString() {
+        int used = 0;
+        StringBuilder buf = new StringBuilder();
+        for ( int i = 0; i < indexes.size(); i++ ) {
+            int index = indexes.get( i );
+            while ( index > used ) {
+                buf.append( " 0" );
+                used++;
+            }
+            buf.append( " " + values.get( i ) );
         }
-        return this;
+        return buf.toString();
 
     }
 
@@ -154,6 +188,7 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
      * 
      * @see cern.colt.matrix.DoubleMatrix1D#zDotProduct(cern.colt.matrix.DoubleMatrix1D)
      */
+    @Override
     public double zDotProduct( DoubleMatrix1D y ) {
 
         int[] idx = indexes.elements();
@@ -169,26 +204,12 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
         return returnVal;
     }
 
-    /**
-     * WARNING this only even assigns to the non-empty values, for performance reasons. If you need to assign to any
-     * index, you have to use another way.
-     * 
-     * @see cern.colt.matrix.DoubleMatrix1D#assign(cern.colt.function.DoubleFunction)
-     */
-    public DoubleMatrix1D assign( DoubleFunction function ) {
-
-        double[] elements = values.elements();
-        for ( int i = elements.length; --i >= 0; ) {
-            elements[i] = function.apply( elements[i] );
-        }
-        return this;
-    }
-
     /*
      * (non-Javadoc)
      * 
      * @see cern.colt.matrix.DoubleMatrix1D#zSum()
      */
+    @Override
     public double zSum() {
         double sum = 0.0;
         double[] elements = values.elements();
@@ -201,9 +222,11 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
     /*
      * (non-Javadoc)
      * 
-     * @see java.lang.Object#toString()
+     * @see cern.colt.matrix.DoubleMatrix1D#viewSelectionLike(int[])
      */
-    public String toString() {
-        return new cern.colt.matrix.doublealgo.Formatter().toString( this );
+    @Override
+    @SuppressWarnings("unused")
+    protected DoubleMatrix1D viewSelectionLike( int[] offsets ) {
+        throw new UnsupportedOperationException(); // should never be called
     }
 }

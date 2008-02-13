@@ -26,7 +26,7 @@ import cern.colt.matrix.impl.DenseObjectMatrix3D;
  * @author ?
  * @version $Id$
  */
-public class DenseObjectMatrix3DNamed<R, C, S> extends AbstractNamedMatrix3D<R, C, S> {
+public class DenseObjectMatrix3DNamed<R, C, S> extends AbstractNamedMatrix3D<R, C, S, Object> {
     private DenseObjectMatrix3D matrix;
 
     public DenseObjectMatrix3DNamed( int slices, int rows, int columns ) {
@@ -42,6 +42,11 @@ public class DenseObjectMatrix3DNamed<R, C, S> extends AbstractNamedMatrix3D<R, 
         matrix = new DenseObjectMatrix3D( sliceNames.size(), rowNames.size(), colNames.size() );
     }
 
+    public DenseObjectMatrix3DNamed( Object[][][] data ) {
+        super();
+        matrix = new DenseObjectMatrix3D( data );
+    }
+
     public DenseObjectMatrix3DNamed( Object[][][] data, List<S> sliceNames, List<R> rowNames, List<C> colNames ) {
         super();
         matrix = new DenseObjectMatrix3D( data );
@@ -50,13 +55,17 @@ public class DenseObjectMatrix3DNamed<R, C, S> extends AbstractNamedMatrix3D<R, 
         setSliceNames( sliceNames );
     }
 
-    public DenseObjectMatrix3DNamed( Object[][][] data ) {
-        super();
-        matrix = new DenseObjectMatrix3D( data );
-    }
-
+    @Override
     public int columns() {
         return matrix.columns();
+    }
+
+    public Object getObject( int slice, int row, int col ) {
+        return this.get( slice, row, col );
+    }
+
+    public Object get( int slice, int row, int col ) {
+        return matrix.get( slice, row, col );
     }
 
     public Object[] getCol( int slice, int col ) {
@@ -81,10 +90,12 @@ public class DenseObjectMatrix3DNamed<R, C, S> extends AbstractNamedMatrix3D<R, 
         return sliceObjs;
     }
 
+    @Override
     public boolean isMissing( int slice, int row, int col ) {
         return slice < slices() || row < rows() || col < columns() || matrix.get( slice, row, col ) == null;
     }
 
+    @Override
     public int numMissing() {
         int num = 0;
         for ( int i = 0; i < slices(); i++ )
@@ -94,6 +105,7 @@ public class DenseObjectMatrix3DNamed<R, C, S> extends AbstractNamedMatrix3D<R, 
         return num;
     }
 
+    @Override
     public int rows() {
         return matrix.rows();
     }
@@ -103,16 +115,9 @@ public class DenseObjectMatrix3DNamed<R, C, S> extends AbstractNamedMatrix3D<R, 
 
     }
 
+    @Override
     public int slices() {
         return matrix.slices();
-    }
-
-    public Object get( int slice, int row, int col ) {
-        return matrix.get( slice, row, col );
-    }
-
-    public Object getObj( int slice, int row, int col ) {
-        return get( slice, row, col );
     }
 
 }

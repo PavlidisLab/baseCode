@@ -22,15 +22,15 @@ package ubic.basecode.dataStructure.graph;
  * @author pavlidis
  * @version $Id$
  */
-public interface Graph<K, V> {
+public interface Graph<R extends GraphNode<K, V>, K, V> {
 
     public void addNode( K key, V item );
 
-    public GraphNode get( K key );
+    public boolean containsKey( K key );
+
+    public R get( K key );
 
     public V getNodeContents( K key );
-
-    public boolean containsKey( K key );
 
     public void unmarkAll();
 }

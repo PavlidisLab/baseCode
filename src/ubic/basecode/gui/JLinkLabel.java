@@ -34,6 +34,11 @@ import ubic.basecode.util.BrowserLauncher;
  */
 public class JLinkLabel extends JLabel implements MouseListener {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -7916376574174272599L;
+
     protected String m_url = null;
 
     protected String m_text = "";
@@ -53,36 +58,11 @@ public class JLinkLabel extends JLabel implements MouseListener {
         setText( text, url );
     }
 
-    public void setText( String text ) {
-        if ( m_url != null ) {
-            setText( text, m_url );
-        } else {
-            setText( text, text );
-        }
-    }
-
-    /**
-     * @param url
-     */
-    public void setURL( String url ) {
-        setText( m_text, url );
-    }
-
     /**
      * @return
      */
     public String getURL() {
         return m_url;
-    }
-
-    public void setText( String text, String url ) {
-        m_text = text;
-        m_url = url;
-        super.setText( "<html><a href=\"" + url + "\">" + text + "</a></html>" );
-    }
-
-    public String toString() {
-        return "<html><a href=\"" + m_url + "\">" + m_text + "</a></html>";
     }
 
     public void mouseClicked( MouseEvent e ) {
@@ -105,6 +85,33 @@ public class JLinkLabel extends JLabel implements MouseListener {
     }
 
     public void mouseReleased( MouseEvent e ) {
+    }
+
+    @Override
+    public void setText( String text ) {
+        if ( m_url != null ) {
+            setText( text, m_url );
+        } else {
+            setText( text, text );
+        }
+    }
+
+    public void setText( String text, String url ) {
+        m_text = text;
+        m_url = url;
+        super.setText( "<html><a href=\"" + url + "\">" + text + "</a></html>" );
+    }
+
+    /**
+     * @param url
+     */
+    public void setURL( String url ) {
+        setText( m_text, url );
+    }
+
+    @Override
+    public String toString() {
+        return "<html><a href=\"" + m_url + "\">" + m_text + "</a></html>";
     }
 
 }

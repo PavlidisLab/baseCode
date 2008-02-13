@@ -1,7 +1,7 @@
 /*
  * The baseCode project
  * 
- * Copyright (c) 2006 University of British Columbia
+ * Copyright (c) 2008 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,33 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.dataStructure;
+package ubic.basecode.dataStructure.matrix;
 
 /**
- * @author pavlidis
+ * Matrix that holds primitives, with an available object representation of the values.
+ * 
+ * @author Paul
  * @version $Id$
  */
-public abstract class Visitable {
+public interface NamedPrimitiveMatrix<R, C, V> extends NamedMatrix<R, C, V> {
 
-    private boolean mark;
+    /**
+     * @param r
+     * @param c
+     * @return
+     */
+    public V getObject( int r, int c );
 
-    public boolean isVisited() {
-        return mark;
-    }
+    /**
+     * @param col
+     * @return
+     */
+    public V[] getColObj( int col );
 
-    public void mark() {
-        mark = true;
-    }
-
-    public void unMark() {
-        mark = false;
-    }
+    /**
+     * @param row
+     * @return
+     */
+    public V[] getRowObj( int row );
 
 }

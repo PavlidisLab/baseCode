@@ -69,6 +69,24 @@ public class ByteArrayConverter {
     private static final int BOOL_SIZE = 1; // erm...this seems to work.
 
     /**
+     * @param boolarray
+     * @return byte[]
+     */
+    public byte[] booleanArrayToBytes( boolean[] boolarray ) {
+        if ( boolarray == null ) return null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream( bos );
+        try {
+            for ( boolean element : boolarray ) {
+                dos.writeBoolean( element );
+            }
+        } catch ( IOException e ) {
+            // do nothing
+        }
+        return bos.toByteArray();
+    }
+
+    /**
      * Convert a byte array with one-byte-per-character ASCII encoding (aka ISO-8859-1).
      * 
      * @param barray
@@ -81,6 +99,36 @@ public class ByteArrayConverter {
         } catch ( UnsupportedEncodingException e ) {
             throw new RuntimeException( "Conversion error", e );
         }
+    }
+
+    /**
+     * @param barray
+     * @return boolean[]
+     */
+    public boolean[] byteArrayToBooleans( byte[] barray ) {
+        if ( barray == null ) return null;
+        ByteArrayInputStream bis = new ByteArrayInputStream( barray );
+        DataInputStream dis = new DataInputStream( bis );
+        boolean[] iarray = new boolean[barray.length / BOOL_SIZE];
+        int i = 0;
+
+        try {
+            while ( true ) {
+                iarray[i] = dis.readBoolean();
+                i++;
+            }
+        } catch ( IOException e ) {
+            // do nothing.
+        }
+
+        try {
+            dis.close();
+            bis.close();
+        } catch ( IOException e1 ) {
+            throw new RuntimeException( "Conversion error", e1 );
+        }
+
+        return iarray;
     }
 
     /**
@@ -173,36 +221,6 @@ public class ByteArrayConverter {
 
     /**
      * @param barray
-     * @return boolean[]
-     */
-    public boolean[] byteArrayToBooleans( byte[] barray ) {
-        if ( barray == null ) return null;
-        ByteArrayInputStream bis = new ByteArrayInputStream( barray );
-        DataInputStream dis = new DataInputStream( bis );
-        boolean[] iarray = new boolean[barray.length / BOOL_SIZE];
-        int i = 0;
-
-        try {
-            while ( true ) {
-                iarray[i] = dis.readBoolean();
-                i++;
-            }
-        } catch ( IOException e ) {
-            // do nothing.
-        }
-
-        try {
-            dis.close();
-            bis.close();
-        } catch ( IOException e1 ) {
-            throw new RuntimeException( "Conversion error", e1 );
-        }
-
-        return iarray;
-    }
-
-    /**
-     * @param barray
      * @return long[] resulting from parse of the bytes.
      */
     public long[] byteArrayToLongs( byte[] barray ) {
@@ -232,115 +250,6 @@ public class ByteArrayConverter {
     }
 
     /**
-     * @param carray
-     * @return byte[]
-     */
-    public byte[] charArrayToBytes( char[] carray ) {
-        if ( carray == null ) return null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream( bos );
-
-        try {
-            for ( int i = 0; i < carray.length; i++ ) {
-                dos.writeChar( carray[i] );
-            }
-            dos.close();
-            bos.close();
-
-        } catch ( IOException e ) {
-            // do nothing.
-        }
-
-        return bos.toByteArray();
-    }
-
-    /**
-     * Note that this method cannot differentiate between empty strings and null strings. A string that is empty will be
-     * returned as an empty string, not null, while a null string will be stored as an empty string.
-     * 
-     * @param stringArray
-     * @return byte[]
-     */
-    public byte[] stringArrayToBytes( Object[] stringArray ) {
-        if ( stringArray == null ) return null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream( bos );
-
-        try {
-            for ( int i = 0; i < stringArray.length; i++ ) {
-                String string = ( String ) stringArray[i];
-                if ( string != null ) {
-                    dos.write( string.getBytes() );
-                }
-                dos.write( '\u0000' );
-            }
-            dos.close();
-            bos.close();
-
-        } catch ( IOException e ) {
-            // do nothing.
-        }
-
-        return bos.toByteArray();
-    }
-
-    /**
-     * @param darray
-     * @return byte[]
-     */
-    public byte[] doubleArrayToBytes( double[] darray ) {
-        if ( darray == null ) return null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream( bos );
-        try {
-            for ( int i = 0; i < darray.length; i++ ) {
-                dos.writeDouble( darray[i] );
-            }
-        } catch ( IOException e ) {
-            // do nothing
-        }
-        return bos.toByteArray();
-    }
-
-    /**
-     * @param boolarray
-     * @return byte[]
-     */
-    public byte[] booleanArrayToBytes( boolean[] boolarray ) {
-        if ( boolarray == null ) return null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream( bos );
-        try {
-            for ( int i = 0; i < boolarray.length; i++ ) {
-                dos.writeBoolean( boolarray[i] );
-            }
-        } catch ( IOException e ) {
-            // do nothing
-        }
-        return bos.toByteArray();
-    }
-
-    /**
-     * @param iarray
-     * @return byte[]
-     */
-    public byte[] intArrayToBytes( int[] iarray ) {
-        if ( iarray == null ) return null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream( bos );
-        try {
-            for ( int i = 0; i < iarray.length; i++ ) {
-                dos.writeInt( iarray[i] );
-            }
-            dos.close();
-            bos.close();
-        } catch ( IOException e ) {
-            // do nothing
-        }
-        return bos.toByteArray();
-    }
-
-    /**
      * Convert a byte array into a array of Strings. It is assumed that separate strings are delimited by '\u0000'
      * (NUL). Note that this method cannot differentiate between empty strings and null strings. A string that is empty
      * will be returned as an empty string, not null.
@@ -351,14 +260,14 @@ public class ByteArrayConverter {
     public String[] byteArrayToStrings( byte[] bytes ) {
         List<String> strings = new ArrayList<String>();
         ByteArrayList buf = new ByteArrayList();
-        for ( int i = 0; i < bytes.length; i++ ) {
-            if ( bytes[i] == '\u0000' ) {
+        for ( byte element : bytes ) {
+            if ( element == '\u0000' ) {
                 String newString = new String( buf.elements() );
                 newString = newString.trim();
                 strings.add( newString );
                 buf = new ByteArrayList();
             } else {
-                buf.add( bytes[i] );
+                buf.add( element );
             }
         }
 
@@ -394,6 +303,12 @@ public class ByteArrayConverter {
                 buf.append( array[i] );
                 if ( i != array.length - 1 ) buf.append( "\t" ); // so we don't have a trailing tab.
             }
+        } else if ( type.equals( Long.class ) ) {
+            long[] array = byteArrayToLongs( bytes );
+            for ( int i = 0; i < array.length; i++ ) {
+                buf.append( array[i] );
+                if ( i != array.length - 1 ) buf.append( "\t" ); // so we don't have a trailing tab.
+            }
         } else if ( type.equals( String.class ) ) {
             return byteArrayToAsciiString( bytes );
         } else if ( type.equals( Boolean.class ) ) {
@@ -413,6 +328,124 @@ public class ByteArrayConverter {
         }
 
         return buf.toString();
+    }
+
+    /**
+     * @param carray
+     * @return byte[]
+     */
+    public byte[] charArrayToBytes( char[] carray ) {
+        if ( carray == null ) return null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream( bos );
+
+        try {
+            for ( char element : carray ) {
+                dos.writeChar( element );
+            }
+            dos.close();
+            bos.close();
+
+        } catch ( IOException e ) {
+            // do nothing.
+        }
+
+        return bos.toByteArray();
+    }
+
+    /**
+     * @param darray
+     * @return byte[]
+     */
+    public byte[] doubleArrayToBytes( double[] darray ) {
+        if ( darray == null ) return null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream( bos );
+        try {
+            for ( double element : darray ) {
+                dos.writeDouble( element );
+            }
+        } catch ( IOException e ) {
+            // do nothing
+        }
+        return bos.toByteArray();
+    }
+
+    /**
+     * @param iarray
+     * @return byte[]
+     */
+    public byte[] intArrayToBytes( int[] iarray ) {
+        if ( iarray == null ) return null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream( bos );
+        try {
+            for ( int element : iarray ) {
+                dos.writeInt( element );
+            }
+            dos.close();
+            bos.close();
+        } catch ( IOException e ) {
+            // do nothing
+        }
+        return bos.toByteArray();
+    }
+
+    /**
+     * @param larray
+     * @return byte[]
+     */
+    public byte[] longArrayToBytes( long[] larray ) {
+        if ( larray == null ) return null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream( bos );
+        try {
+            for ( long element : larray ) {
+                dos.writeLong( element );
+            }
+            dos.close();
+            bos.close();
+        } catch ( IOException e ) {
+            // do nothing
+        }
+        return bos.toByteArray();
+    }
+
+    /**
+     * Note that this method cannot differentiate between empty strings and null strings. A string that is empty will be
+     * returned as an empty string, not null, while a null string will be stored as an empty string.
+     * 
+     * @param stringArray
+     * @return byte[]
+     */
+    public byte[] stringArrayToBytes( Object[] stringArray ) {
+        if ( stringArray == null ) return null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream( bos );
+
+        try {
+            for ( Object element : stringArray ) {
+                String string = ( String ) element;
+                if ( string != null ) {
+                    dos.write( string.getBytes() );
+                }
+                dos.write( '\u0000' );
+            }
+            dos.close();
+            bos.close();
+
+        } catch ( IOException e ) {
+            // do nothing.
+        }
+
+        return bos.toByteArray();
+    }
+
+    /**
+     * @param data
+     */
+    public byte[] toBytes( Object data ) {
+        return toBytes( new Object[] { data } );
     }
 
     /**
@@ -460,17 +493,17 @@ public class ByteArrayConverter {
                 toConvert[i] = object;
             }
             return intArrayToBytes( toConvert );
+        } else if ( array[0] instanceof Long ) {
+            long[] toConvert = new long[array.length];
+            for ( int i = 0; i < array.length; i++ ) {
+                int object = ( ( Long ) array[i] ).intValue();
+                toConvert[i] = object;
+            }
+            return longArrayToBytes( toConvert );
         } else {
             throw new UnsupportedOperationException( "Can't convert " + array[0].getClass() + " to bytes" );
         }
 
-    }
-
-    /**
-     * @param data
-     */
-    public byte[] toBytes( Object data ) {
-        return toBytes( new Object[] { data } );
     }
 
 }

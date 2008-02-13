@@ -41,6 +41,30 @@ public class StatusJlabel extends StatusDebugLogger {
         this.jlabel = l;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.util.StatusViewer#clear()
+     */
+    @Override
+    public void clear() {
+        if ( SwingUtilities.isEventDispatchThread() ) {
+            setLabel( "", null );
+        } else {
+            try {
+                SwingUtilities.invokeAndWait( new Runnable() {
+                    public void run() {
+                        setLabel( "", null );
+                    }
+                } );
+            } catch ( InterruptedException e ) {
+                e.printStackTrace();
+            } catch ( InvocationTargetException e ) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void setStatus( String s, boolean callSuper ) {
         final String m = s;
 
@@ -66,21 +90,7 @@ public class StatusJlabel extends StatusDebugLogger {
         }
     }
 
-    public void showStatus( String s ) {
-        this.setStatus( s, true );
-    }
-
-    public void showError( String message, Throwable e ) {
-        super.showError( message, e );
-        this.showError( message );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.util.StatusViewer#setError(java.lang.String)
-     */
-
+    @Override
     public void showError( String s ) {
 
         final String m = s;
@@ -103,9 +113,22 @@ public class StatusJlabel extends StatusDebugLogger {
         super.showError( s );
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.util.StatusViewer#setError(java.lang.String)
+     */
+
+    @Override
+    public void showError( String message, Throwable e ) {
+        super.showError( message, e );
+        this.showError( message );
+    }
+
     /**
      * 
      */
+    @Override
     public void showError( Throwable e ) {
         final String m = "There was an error: see logs for details";
         if ( SwingUtilities.isEventDispatchThread() ) {
@@ -126,27 +149,9 @@ public class StatusJlabel extends StatusDebugLogger {
         super.showError( e );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.util.StatusViewer#clear()
-     */
-    public void clear() {
-        if ( SwingUtilities.isEventDispatchThread() ) {
-            setLabel( "", null );
-        } else {
-            try {
-                SwingUtilities.invokeAndWait( new Runnable() {
-                    public void run() {
-                        setLabel( "", null );
-                    }
-                } );
-            } catch ( InterruptedException e ) {
-                e.printStackTrace();
-            } catch ( InvocationTargetException e ) {
-                e.printStackTrace();
-            }
-        }
+    @Override
+    public void showStatus( String s ) {
+        this.setStatus( s, true );
     }
 
     /**

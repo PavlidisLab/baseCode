@@ -39,6 +39,10 @@ import ubic.basecode.dataStructure.graph.DirectedGraphNode;
  */
 public class TreePanel extends JPanel implements TreeSelectionListener {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 5618153031969647463L;
     private JTree tree;
     private JTextArea detailPane;
 

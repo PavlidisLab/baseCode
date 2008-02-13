@@ -26,20 +26,35 @@ import no.uib.cipr.matrix.sparse.FlexCompRowMatrix;
 import no.uib.cipr.matrix.sparse.SparseVector;
 
 /**
- * Named compressed sparse bit matrix. Elements of the matrix are stored in the <code>long</code> data type.
+ * Named compressed sparse bit matrix.
  * 
  * @author xwan
  */
-public class CompressedNamedBitMatrix<R,C> extends AbstractNamedMatrix<R,C> {
+public class CompressedNamedBitMatrix<R, C> extends AbstractNamedMatrix<R, C, double[]> implements
+        NamedObjectMatrix<R, C, double[]> {
+
+    public static int BITS_PER_ELEMENT = Double.SIZE - 1;
+
+    public static long BIT1 = 0x1L;
 
     private static final long serialVersionUID = 1775002416710933373L;
 
-    private FlexCompRowMatrix[] matrix;
+    /**
+     * Count the number of one-bits of the passed-in <code>double</code> val.
+     * 
+     * @param val
+     * @return number of one-bits in val
+     */
+    static public int countBits( double val ) {
+        if ( val == 0.0 ) return 0;
+        long binVal = Double.doubleToRawLongBits( val );
+        return Long.bitCount( binVal );
+    }
 
-    public static int BITS_PER_ELEMENT = Double.SIZE - 1;
+    private FlexCompRowMatrix[] matrix;
     private int totalBitsPerItem;
+
     private int rows = 0, cols = 0;
-    public static long BIT1 = 0x1L;
 
     /**
      * Constructs a matrix with specified rows, columns, and total bits per element
@@ -62,12 +77,59 @@ public class CompressedNamedBitMatrix<R,C> extends AbstractNamedMatrix<R,C> {
     }
 
     /**
-     * Returns the total number of bits in a matrix element
+     * Count the number of one-bits at the specified element position
      * 
-     * @return the number of bits per element
+     * @param rows
+     * @param cols
+     * @return
      */
-    public int getBitNum() {
-        return this.totalBitsPerItem;
+    public int bitCount( int rows, int cols ) {
+        int bits = 0;
+        if ( rows > this.rows || cols > this.cols ) return bits;
+        for ( FlexCompRowMatrix element : this.matrix ) {
+            double val = element.get( rows, cols );
+            if ( val != 0 ) bits = bits + countBits( val );
+        }
+        return bits;
+    }
+
+    public int columns() {
+        return this.cols;
+    }
+
+    @SuppressWarnings("unused")
+    public double[] get( int row, int col ) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Checks the bit of the specified element at the specified index.
+     * 
+     * @param row - matrix row
+     * @param col - matrix column
+     * @param index - bit vector index
+     * @return true if bit is 1, false if 0.
+     */
+    public boolean get( int row, int col, int index ) {
+        if ( index >= this.totalBitsPerItem || row > this.rows || col > this.cols )
+            throw new ArrayIndexOutOfBoundsException( "Attempt to access row=" + row + " col=" + col + " index="
+                    + index );
+        int num = ( int ) Math.floor( ( double ) index / CompressedNamedBitMatrix.BITS_PER_ELEMENT );
+        int bit_index = index % CompressedNamedBitMatrix.BITS_PER_ELEMENT;
+        long binVal = Double.doubleToRawLongBits( matrix[num].get( row, col ) );
+        long res = binVal & CompressedNamedBitMatrix.BIT1 << bit_index;
+        if ( res == 0 ) return false;
+        return true;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.NamedMatrix#get(java.lang.Object, java.lang.Object)
+     */
+    @SuppressWarnings("unused")
+    public double[] get( R row, C column ) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -82,6 +144,121 @@ public class CompressedNamedBitMatrix<R,C> extends AbstractNamedMatrix<R,C> {
         for ( int i = 0; i < this.matrix.length; i++ )
             allBits[i] = Double.doubleToRawLongBits( this.matrix[i].get( row, col ) );
         return allBits;
+    }
+
+    /**
+     * Returns the total number of bits in a matrix element
+     * 
+     * @return the number of bits per element
+     */
+    public int getBitNum() {
+        return this.totalBitsPerItem;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#getColObj(int)
+     */
+    @SuppressWarnings("unused")
+    public double[][] getColumn( int i ) {
+        throw new UnsupportedOperationException();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#getRowObj(int)
+     */
+    @SuppressWarnings("unused")
+    public double[][] getRow( int i ) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @param row
+     * @return - array of counts of one-bits for each element in the row.
+     */
+    public int[] getRowBitCount( int row ) {
+        int[] bits = new int[columns()];
+        for ( FlexCompRowMatrix element : this.matrix ) {
+            SparseVector vector = element.getRow( row );
+
+            /*
+             * Sparse vector: has indices (>0 except for first position) saying where values are; data are the values.
+             */
+            double[] data = vector.getData();
+            int[] indices = vector.getIndex();
+            for ( int j = 0; j < data.length; j++ ) {
+                if ( indices[j] == 0 && j > 0 ) break;
+                if ( data[j] != 0.0 ) bits[indices[j]] += countBits( data[j] );
+            }
+        }
+        return bits;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#isMissing(int, int)
+     */
+    @SuppressWarnings("unused")
+    public boolean isMissing( int i, int j ) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Counts the number of one-bits that are in common between the two specified elements; i.e. performs an AND
+     * operation on the two bit vectors and counts the remaining 1 bits.
+     * 
+     * @param row1 - element 1 row
+     * @param col1 - element 1 column
+     * @param row2 - element 2 row
+     * @param col2 - element 2 column
+     * @return number of bits in common
+     */
+    public int overlap( int row1, int col1, int row2, int col2 ) {
+        int bits = 0;
+        for ( FlexCompRowMatrix element : this.matrix ) {
+            double val1 = element.get( row1, col1 );
+            double val2 = element.get( row2, col2 );
+            if ( val1 == 0 || val2 == 0 ) continue;
+            long binVal1 = Double.doubleToRawLongBits( val1 );
+            long binVal2 = Double.doubleToRawLongBits( val2 );
+            bits = bits + countBits( binVal1 & binVal2 );
+        }
+        return bits;
+    }
+
+    public void reset( int rows, int cols ) {
+        for ( FlexCompRowMatrix element : this.matrix ) {
+            element.set( rows, cols, 0 );
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#rows()
+     */
+    public int rows() {
+        return this.rows;
+    }
+
+    /**
+     * Set the matrix element to the specified bit vector
+     * 
+     * @param row
+     * @param col
+     * @param val
+     * @return true if set successfully
+     */
+    public void set( int row, int col, double[] val ) {
+        if ( val.length != this.matrix.length || row >= this.rows || col >= this.cols )
+            throw new IllegalArgumentException( "Value out of range" );
+        for ( int mi = 0; mi < val.length; mi++ ) {
+            this.matrix[mi].set( row, col, val[mi] );
+        }
     }
 
     /**
@@ -113,202 +290,14 @@ public class CompressedNamedBitMatrix<R,C> extends AbstractNamedMatrix<R,C> {
         matrix[num].set( row, col, res );
     }
 
-    public void reset( int rows, int cols ) {
-        for ( int i = 0; i < this.matrix.length; i++ ) {
-            this.matrix[i].set( rows, cols, 0 );
-        }
-    }
-
-    /**
-     * Checks the bit of the specified element at the specified index.
-     * 
-     * @param row - matrix row
-     * @param col - matrix column
-     * @param index - bit vector index
-     * @return true if bit is 1, false if 0.
-     */
-    public boolean get( int row, int col, int index ) {
-        if ( index >= this.totalBitsPerItem || row > this.rows || col > this.cols )
-            throw new ArrayIndexOutOfBoundsException( "Attempt to access row=" + row + " col=" + col + " index="
-                    + index );
-        int num = ( int ) Math.floor( ( double ) index / CompressedNamedBitMatrix.BITS_PER_ELEMENT );
-        int bit_index = index % CompressedNamedBitMatrix.BITS_PER_ELEMENT;
-        long binVal = Double.doubleToRawLongBits( matrix[num].get( row, col ) );
-        long res = binVal & CompressedNamedBitMatrix.BIT1 << bit_index;
-        if ( res == 0 ) return false;
-        return true;
-    }
-
-    /**
-     * Count the number of one-bits of the passed-in <code>double</code> val.
-     * 
-     * @param val
-     * @return number of one-bits in val
-     */
-    static public int countBits( double val ) {
-        if ( val == 0.0 ) return 0;
-        long binVal = Double.doubleToRawLongBits( val );
-        return Long.bitCount( binVal );
-    }
-
-    /**
-     * @param row
-     * @return - array of counts of one-bits for each element in the row.
-     */
-    public int[] getRowBitCount( int row ) {
-        int[] bits = new int[columns()];
-        for ( int i = 0, k = this.matrix.length; i < k; i++ ) {
-            SparseVector vector = this.matrix[i].getRow( row );
-
-            /*
-             * Sparse vector: has indices (>0 except for first position) saying where values are; data are the values.
-             */
-            double[] data = vector.getData();
-            int[] indices = vector.getIndex();
-            for ( int j = 0; j < data.length; j++ ) {
-                if ( indices[j] == 0 && j > 0 ) break;
-                if ( data[j] != 0.0 ) bits[indices[j]] += countBits( data[j] );
-            }
-        }
-        return bits;
-    }
-
-    /**
-     * Count the number of one-bits at the specified element position
-     * 
-     * @param rows
-     * @param cols
-     * @return
-     */
-    public int bitCount( int rows, int cols ) {
-        int bits = 0;
-        if ( rows > this.rows || cols > this.cols ) return bits;
-        for ( int i = 0; i < this.matrix.length; i++ ) {
-            double val = this.matrix[i].get( rows, cols );
-            if ( val != 0 ) bits = bits + countBits( val );
-        }
-        return bits;
-    }
-
-    /**
-     * Number of ones in the entire matrix.
-     * 
-     * @return
-     */
-    public long totalBitCount() {
-        long result = 0L;
-        for ( int i = 0, k = this.matrix.length; i < k; i++ ) {
-            for ( int j = 0; j < cols; j++ ) {
-
-                SparseVector vector = this.matrix[i].getRow( j );
-
-                /*
-                 * Sparse vector: has indices (>0 except for first position) saying where values are; data are the
-                 * values.
-                 */
-                double[] data = vector.getData();
-                for ( int m = 0; m < data.length; m++ ) {
-                    result += countBits( data[m] );
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Counts the number of one-bits that are in common between the two specified elements; i.e. performs an AND
-     * operation on the two bit vectors and counts the remaining 1 bits.
-     * 
-     * @param row1 - element 1 row
-     * @param col1 - element 1 column
-     * @param row2 - element 2 row
-     * @param col2 - element 2 column
-     * @return number of bits in common
-     */
-    public int overlap( int row1, int col1, int row2, int col2 ) {
-        int bits = 0;
-        for ( int i = 0; i < this.matrix.length; i++ ) {
-            double val1 = this.matrix[i].get( row1, col1 );
-            double val2 = this.matrix[i].get( row2, col2 );
-            if ( val1 == 0 || val2 == 0 ) continue;
-            long binVal1 = Double.doubleToRawLongBits( val1 );
-            long binVal2 = Double.doubleToRawLongBits( val2 );
-            bits = bits + countBits( binVal1 & binVal2 );
-        }
-        return bits;
-    }
-
-    /**
-     * Return the number of columns in the matrix
-     * 
-     * @return number of columns
-     */
-    public int columns() {
-        return this.cols;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#getColObj(int)
-     */
-    public Object[] getColObj( int i ) {
-        throw new UnsupportedOperationException();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#getRowObj(int)
-     */
-    public Object[] getRowObj( int i ) {
-        throw new UnsupportedOperationException();
-    }
-
-    public Object getObj( int row, int col ) {
-        throw new UnsupportedOperationException();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#isMissing(int, int)
-     */
-    public boolean isMissing( int i, int j ) {
-        throw new UnsupportedOperationException();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#rows()
-     */
-    public int rows() {
-        return this.rows;
-    }
-
     /*
      * (non-Javadoc)
      * 
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#set(int, int, java.lang.Object)
      */
-    public void set( int i, int j, Object val ) {
+    @SuppressWarnings("unused")
+    public void set( int i, int j, Long val ) {
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Set the matrix element to the specified bit vector
-     * 
-     * @param row
-     * @param col
-     * @param val
-     * @return true if set successfully
-     */
-    public boolean set( int row, int col, double[] val ) {
-        if ( val.length != this.matrix.length || row >= this.rows || col >= this.cols ) return false;
-        for ( int mi = 0; mi < val.length; mi++ )
-            this.matrix[mi].set( row, col, val[mi] );
-        return true;
     }
 
     /**
@@ -335,8 +324,8 @@ public class CompressedNamedBitMatrix<R,C> extends AbstractNamedMatrix<R,C> {
             for ( int j = 0; j < this.cols; j++ ) {
                 if ( this.bitCount( i, j ) != 0 ) {
                     out.write( i + "\t" + j );
-                    for ( int k = 0; k < this.matrix.length; k++ ) {
-                        long binVal = Double.doubleToRawLongBits( this.matrix[k].get( i, j ) );
+                    for ( FlexCompRowMatrix element : this.matrix ) {
+                        long binVal = Double.doubleToRawLongBits( element.get( i, j ) );
                         /* Long.parseLong( hexString, 16) to get it back; */
                         String hexString = Long.toHexString( binVal );
                         out.write( "\t" + hexString );
@@ -346,4 +335,39 @@ public class CompressedNamedBitMatrix<R,C> extends AbstractNamedMatrix<R,C> {
             }
         out.close();
     }
+
+    /**
+     * Number of ones in the entire matrix.
+     * 
+     * @return
+     */
+    public long totalBitCount() {
+        long result = 0L;
+        for ( FlexCompRowMatrix element : this.matrix ) {
+            for ( int j = 0; j < cols; j++ ) {
+
+                SparseVector vector = element.getRow( j );
+
+                /*
+                 * Sparse vector: has indices (>0 except for first position) saying where values are; data are the
+                 * values.
+                 */
+                double[] data = vector.getData();
+                for ( double element2 : data ) {
+                    result += countBits( element2 );
+                }
+            }
+        }
+        return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(java.lang.Object, java.lang.Object, java.lang.Object)
+     */
+    public void setByKeys( R r, C c, double[] v ) {
+        this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
+    }
+
 }

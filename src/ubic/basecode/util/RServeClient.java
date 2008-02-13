@@ -18,6 +18,7 @@
  */
 package ubic.basecode.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,12 +30,14 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConfigurationUtils;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPList;
 import org.rosuda.REngine.REXPLogical;
 import org.rosuda.REngine.REXPMismatchException;
+import org.rosuda.REngine.REXPString;
 import org.rosuda.REngine.REngineException;
 import org.rosuda.REngine.RList;
 import org.rosuda.REngine.Rserve.RConnection;
@@ -47,7 +50,7 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
  * @author pavlidis
  * @version $Id$
  */
-public class RServeClient implements RClient {
+public class RServeClient extends AbstractRClient {
 
     final static Log log = LogFactory.getLog( RServeClient.class.getName() );
 
@@ -59,63 +62,34 @@ public class RServeClient implements RClient {
 
     private static final boolean QUIET = true;
 
-    /**
-     * @param ob
-     * @return
-     */
-    public static String variableIdentityNumber( Object ob ) {
-        return Integer.toString( Math.abs( ob.hashCode() ) );
-    }
-
-    /**
-     * Copy a matrix into an array, so that rows are represented consecutively in the array. (RServe has no interface
-     * for passing a 2-d array).
-     * 
-     * @param matrix
-     * @return
-     */
-    private static double[] unrollMatrix( double[][] matrix ) {
-        int rows = matrix.length;
-        int cols = matrix[0].length;
-        double[] unrolledMatrix = new double[rows * cols];
-
-        int k = 0;
-        for ( int i = 0; i < rows; i++ ) {
-            for ( int j = 0; j < cols; j++ ) {
-                unrolledMatrix[k] = matrix[i][j];
-                k++;
-            }
-        }
-        return unrolledMatrix;
-    }
-
-    /**
-     * Copy a matrix into an array, so that rows are represented consecutively in the array. (RServe has no interface
-     * for passing a 2-d array).
-     * 
-     * @param matrix
-     * @return array representation of the matrix.
-     */
-    private static double[] unrollMatrix( DoubleMatrixNamed matrix ) {
-        // unroll the matrix into an array Unfortunately this makes a
-        // copy of the data...and R will probably make yet
-        // another copy. If there was a way to get the raw element array from the DoubleMatrixNamed, that would
-        // be better.
-        int rows = matrix.rows();
-        int cols = matrix.columns();
-        double[] unrolledMatrix = new double[rows * cols];
-
-        int k = 0;
-        for ( int i = 0; i < rows; i++ ) {
-            for ( int j = 0; j < cols; j++ ) {
-                unrolledMatrix[k] = matrix.getQuick( i, j );
-                k++;
-            }
-        }
-        return unrolledMatrix;
-    }
-
     private static RConnection connection = null;
+
+    /**
+     * @return
+     * @throws ConfigurationException
+     */
+    protected static String findRserveCommand() throws ConfigurationException {
+        URL userSpecificConfigFileLocation = ConfigurationUtils.locate( "local.properties" );
+
+        Configuration userConfig = null;
+        if ( userSpecificConfigFileLocation != null ) {
+            userConfig = new PropertiesConfiguration( userSpecificConfigFileLocation );
+        }
+        String rserveExecutable = null;
+        if ( userConfig != null ) {
+            rserveExecutable = userConfig.getString( "rserve.start.command" );
+        }
+        if ( StringUtils.isBlank( rserveExecutable ) ) {
+            log.info( "Rserve command not configured? Trying fallbacks" );
+            if ( os.startsWith( "windows" ) ) { // lower cased
+                rserveExecutable = System.getenv( "R_HOME" ) + File.separator + "library" + File.separator + "Rserve"
+                        + File.separator + "Rserve.exe";
+            } else {
+                rserveExecutable = "R CMD Rserve";
+            }
+        }
+        return rserveExecutable;
+    }
 
     protected RServeClient() {
         if ( !connect() ) {
@@ -151,14 +125,12 @@ public class RServeClient implements RClient {
     /*
      * (non-Javadoc)
      * 
-     * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, int[])
-     */
-    /*
-     * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, int[])
      */
     public void assign( String arg0, int[] arg1 ) {
+        if ( StringUtils.isBlank( arg0 ) ) {
+            throw new IllegalArgumentException( "Must supply valid variable name" );
+        }
         checkConnection();
         try {
             connection.assign( arg0, arg1 );
@@ -178,6 +150,9 @@ public class RServeClient implements RClient {
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String)
      */
     public void assign( String sym, String ct ) {
+        if ( StringUtils.isBlank( sym ) ) {
+            throw new IllegalArgumentException( "Must supply valid variable name" );
+        }
         try {
             connection.assign( sym, ct );
         } catch ( RserveException e ) {
@@ -191,80 +166,18 @@ public class RServeClient implements RClient {
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String[])
      */
     public void assign( String argName, String[] array ) {
+        if ( array == null || array.length == 0 ) {
+            throw new IllegalArgumentException( "Array must not be null or empty" );
+        }
+        if ( StringUtils.isBlank( argName ) ) {
+            throw new IllegalArgumentException( "Must supply valid variable name" );
+        }
         try {
+            log.debug( "assign: " + argName + "<-" + array.length + " strings." );
             connection.assign( argName, array );
         } catch ( REngineException e ) {
-            throw new RuntimeException( e );
+            throw new RuntimeException( "Failure with assignment: " + argName + "<-" + array.length + " strings." + e );
         }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.util.RClient#assignMatrix(double[][])
-     */
-    public String assignMatrix( double[][] matrix ) {
-        String matrixVarName = "Matrix_" + variableIdentityNumber( matrix );
-        log.debug( "Assigning matrix with variable name " + matrixVarName );
-        int rows = matrix.length;
-        int cols = matrix[0].length;
-        double[] unrolledMatrix = RServeClient.unrollMatrix( matrix );
-        if ( rows == 0 || cols == 0 ) throw new IllegalArgumentException( "Empty matrix?" );
-
-        this.voidEval( matrixVarName + "_rows<-" + rows );
-        this.voidEval( matrixVarName + "_cols<-" + cols );
-        this.assign( "U" + matrixVarName, unrolledMatrix );
-        this.voidEval( matrixVarName + "<-matrix(" + "U" + matrixVarName + ", nrow=" + matrixVarName + "_rows<-, ncol="
-                + matrixVarName + "_cols, byrow=TRUE)" );
-        this.voidEval( "rm(U" + matrixVarName + ")" ); // maybe this saves memory...
-
-        return matrixVarName;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.util.RClient#assignMatrix(ubic.basecode.dataStructure.matrix.DoubleMatrixNamed)
-     */
-    public String assignMatrix( DoubleMatrixNamed matrix ) {
-        String matrixVarName = "Matrix_" + variableIdentityNumber( matrix );
-        log.debug( "Assigning matrix with variable name " + matrixVarName );
-        int rows = matrix.rows();
-        int cols = matrix.columns();
-        if ( rows == 0 || cols == 0 ) throw new IllegalArgumentException( "Empty matrix?" );
-        double[] unrolledMatrix = unrollMatrix( matrix );
-        assert ( unrolledMatrix != null );
-        String unrolledMatrixVar = "U" + matrixVarName;
-        this.assign( unrolledMatrixVar, unrolledMatrix );
-        this.voidEval( matrixVarName + "<-matrix(" + unrolledMatrixVar + ", nrow=" + rows + ", ncol=" + cols
-                + ", byrow=TRUE)" );
-        REXP dimexp = this.eval( "dim(" + matrixVarName + ")" );
-
-        try {
-            assert dimexp.asIntegers()[0] == rows;
-            assert dimexp.asIntegers()[1] == cols;
-        } catch ( REXPMismatchException e ) {
-            throw new RuntimeException( e );
-        }
-
-        this.voidEval( "rm(U" + matrixVarName + ")" ); // maybe this saves memory...
-
-        assignRowAndColumnNames( matrix, matrixVarName );
-        return matrixVarName;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.util.RClient#assignStringList(java.util.List)
-     */
-    @SuppressWarnings("unchecked")
-    public String assignStringList( List<String> strings ) {
-        String variableName = "stringList." + variableIdentityNumber( strings );
-        String[] sar = new String[strings.size()];
-        sar = strings.toArray( sar );
-        this.assign( variableName, sar );
-        return variableName;
     }
 
     /*
@@ -366,22 +279,6 @@ public class RServeClient implements RClient {
     /*
      * (non-Javadoc)
      * 
-     * @see ubic.basecode.util.RClient#eval(java.lang.String)
-     */
-    private REXP eval( String command ) {
-        log.debug( "eval: " + command );
-        checkConnection();
-        try {
-            return connection.eval( command );
-        } catch ( RserveException e ) {
-            log.error( "Error excecuting " + command, e );
-            throw new RuntimeException( e );
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see java.lang.Object#finalize()
      */
     public void finalize() {
@@ -416,25 +313,6 @@ public class RServeClient implements RClient {
     public boolean isConnected() {
         if ( connection != null && connection.isConnected() ) return true;
         return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.util.RClient#loadLibrary(java.lang.String)
-     */
-    public boolean loadLibrary( String libraryName ) {
-        REXP eval = eval( "library(" + libraryName + ")" );
-        return true;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.util.RClient#remove(java.lang.String)
-     */
-    public void remove( String variableName ) {
-        this.voidEval( "rm(" + variableName + ")" );
     }
 
     /*
@@ -539,6 +417,24 @@ public class RServeClient implements RClient {
         }
     }
 
+    /**
+     * @param string
+     * @return
+     */
+    public List<String> stringListEval( String command ) {
+        try {
+            RList v = this.eval( command ).asList();
+
+            List<String> results = new ArrayList<String>();
+            for ( Iterator it = v.iterator(); it.hasNext(); ) {
+                results.add( ( ( REXPString ) it.next() ).asString() );
+            }
+            return results;
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -556,37 +452,10 @@ public class RServeClient implements RClient {
             log.debug( "voidEval: " + command );
             connection.voidEval( command );
         } catch ( RserveException e ) {
-            log.error( "R failure with command " + command, e );
-            throw new RuntimeException( e );
+            throw new RuntimeException( "R failure with command " + command, e );
         } catch ( Exception e ) {
-            log.error( "R failure with command " + command, e );
-            throw new RuntimeException( e );
+            throw new RuntimeException( "R failure with command " + command, e );
         }
-    }
-
-    /**
-     * @param matrix
-     * @param matrixVarName
-     * @return
-     */
-    private void assignRowAndColumnNames( DoubleMatrixNamed matrix, String matrixVarName ) {
-
-        List rowNames = matrix.getRowNames();
-        List<String> rowNameStrings = new ArrayList<String>( rowNames.size() );
-        for ( Object r : rowNames ) {
-            rowNameStrings.add( r.toString() );
-        }
-        String rowNameVar = assignStringList( rowNameStrings );
-
-        List colNames = matrix.getColNames();
-        List<String> colNameStrings = new ArrayList<String>( rowNames.size() );
-        for ( Object r : colNames ) {
-            colNameStrings.add( r.toString() );
-        }
-        String colNameVar = assignStringList( colNameStrings );
-
-        String dimcmd = "dimnames(" + matrixVarName + ")<-list(" + rowNameVar + ", " + colNameVar + ")";
-        this.voidEval( dimcmd );
     }
 
     /**
@@ -614,27 +483,20 @@ public class RServeClient implements RClient {
         return true;
     }
 
-    /**
-     * @return
-     * @throws ConfigurationException
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#eval(java.lang.String)
      */
-    private String findRserveCommand() throws ConfigurationException {
-        URL userSpecificConfigFileLocation = ConfigurationUtils.locate( "local.properties" );
-
-        Configuration userConfig = null;
-        if ( userSpecificConfigFileLocation != null ) {
-            userConfig = new PropertiesConfiguration( userSpecificConfigFileLocation );
+    private REXP eval( String command ) {
+        log.debug( "eval: " + command );
+        checkConnection();
+        try {
+            return connection.eval( command );
+        } catch ( RserveException e ) {
+            log.error( "Error excecuting " + command, e );
+            throw new RuntimeException( e );
         }
-        String rserveExecutable = userConfig.getString( "rserve.start.command" );
-        if ( rserveExecutable == null || rserveExecutable.length() == 0 ) {
-            log.info( "Rserve command not configured, trying fallbacks" );
-            if ( os.startsWith( "windows" ) ) {
-                rserveExecutable = System.getenv( "R_HOME" ) + java.io.File.separator + "Rserve.exe";
-            } else {
-                rserveExecutable = "R CMD Rserve";
-            }
-        }
-        return rserveExecutable;
     }
 
     /**
@@ -642,20 +504,32 @@ public class RServeClient implements RClient {
      * @param resultObject
      * @throws REXPMismatchException
      */
-    private void retrieveRowAndColumnNames( String variableName, DoubleMatrixNamed resultObject )
+    private void retrieveRowAndColumnNames( String variableName, DoubleMatrixNamed<String, String> resultObject )
             throws REXPMismatchException {
         // getting the row names.
         RList rownamesREXP = this.eval( "dimnames(" + variableName + ")[1][[1]]" ).asList();
         List<String> rowNames = new ArrayList<String>();
         for ( Iterator it = rownamesREXP.iterator(); it.hasNext(); ) {
-            rowNames.add( ( ( REXP ) it.next() ).asString() );
+            REXP rexp = ( ( REXP ) it.next() );
+            if ( rexp == null ) {
+                log.warn( "Null name!" );
+                rowNames.add( null );
+                continue;
+            }
+            rowNames.add( rexp.asString() );
         }
         resultObject.setRowNames( rowNames );
 
         RList colnamesREXP = this.eval( "dimnames(" + variableName + ")[2][[1]]" ).asList();
         List<String> colNames = new ArrayList<String>();
         for ( Iterator it = colnamesREXP.iterator(); it.hasNext(); ) {
-            colNames.add( ( ( REXP ) it.next() ).asString() );
+            REXP rexp = ( ( REXP ) it.next() );
+            if ( rexp == null ) {
+                log.warn( "Null name!" );
+                colNames.add( null );
+                continue;
+            }
+            colNames.add( rexp.asString() );
         }
         resultObject.setColumnNames( colNames );
     }
@@ -676,11 +550,11 @@ public class RServeClient implements RClient {
                     if ( connected ) {
                         waiting = false;
                         return;
-                    } else {
-                        // not running, keep trying
-                        tries++;
-                        Thread.sleep( 2000 );
                     }
+                    // not running, keep trying
+                    tries++;
+                    Thread.sleep( 2000 );
+
                 } catch ( IllegalThreadStateException e ) {
                     log.warn( "Rserve process is dead." );
                     return;
@@ -695,7 +569,7 @@ public class RServeClient implements RClient {
         } catch ( IllegalThreadStateException e ) {
             log.info( "Rserver seems to have started" );
         } catch ( InterruptedException e ) {
-            ;
+            //
         }
     }
 

@@ -38,6 +38,17 @@ import corejava.Format;
 public class HistogramWriter {
 
     /**
+     * Print to a stream.
+     * 
+     * @param h
+     * @param s
+     * @throws IOException
+     */
+    public void write( IHistogram1D h, OutputStream s ) throws IOException {
+        this.write( h, new OutputStreamWriter( s ) );
+    }
+
+    /**
      * Print out a IHistogram1D object.
      * 
      * @param h IHistogram1D to be printed.
@@ -53,17 +64,6 @@ public class HistogramWriter {
                     + k.format( ( double ) h.binEntries( i ) / ( double ) total ) + "\n" );
         }
         s.flush();
-    }
-
-    /**
-     * Print to a stream.
-     * 
-     * @param h
-     * @param s
-     * @throws IOException
-     */
-    public void write( IHistogram1D h, OutputStream s ) throws IOException {
-        this.write( h, new OutputStreamWriter( s ) );
     }
 
 }

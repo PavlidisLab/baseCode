@@ -1,7 +1,7 @@
 /*
  * The baseCode project
  * 
- * Copyright (c) 2008 Columbia University
+ * Copyright (c) 2008 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,9 +41,8 @@ public class RConnectionFactory {
             rc = new RServeClient();
             if ( rc.isConnected() ) {
                 return rc;
-            } else {
-                return getJRIClient();
             }
+            return getJRIClient();
         } catch ( Exception e ) {
             return getJRIClient();
         }

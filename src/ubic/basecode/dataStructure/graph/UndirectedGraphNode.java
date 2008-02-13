@@ -25,31 +25,42 @@ import java.util.Set;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class UndirectedGraphNode<K, V> extends AbstractGraphNode<K, V> {
+public class UndirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements Comparable<UndirectedGraphNode<K, V>> {
 
     private Set neighbors;
-
-    public UndirectedGraphNode( K key, V value, AbstractGraph<K, V> graph ) {
-        super( key, value, graph );
-        neighbors = new HashSet();
-    }
+    private Graph<UndirectedGraphNode<K, V>, K, V> graph;
 
     public UndirectedGraphNode( K key ) {
         super( key );
         neighbors = new HashSet();
     }
 
+    public UndirectedGraphNode( K key, V value, Graph<UndirectedGraphNode<K, V>, K, V> graph ) {
+        super( key, value );
+        this.graph = graph;
+        neighbors = new HashSet();
+    }
+
+    public int compareTo( UndirectedGraphNode<K, V> o ) {
+        if ( o.numNeighbors() > this.numNeighbors() ) {
+            return -1;
+        } else if ( o.numNeighbors() < this.numNeighbors() ) {
+            return 1;
+        }
+        return 0;
+    }
+
     public int numNeighbors() {
         return neighbors.size();
     }
 
-    public int compareTo( Object o ) {
-        if ( ( ( UndirectedGraphNode ) o ).numNeighbors() > this.numNeighbors() ) {
-            return -1;
-        } else if ( ( ( UndirectedGraphNode ) o ).numNeighbors() < this.numNeighbors() ) {
-            return 1;
-        }
-        return 0;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.graph.GraphNode#getGraph()
+     */
+    public Graph<UndirectedGraphNode<K, V>, K, V> getGraph() {
+        return graph;
     }
 
 }

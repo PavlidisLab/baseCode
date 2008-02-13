@@ -20,17 +20,23 @@ package ubic.basecode.dataStructure.matrix;
 
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
+import cern.colt.matrix.DoubleMatrix2D;
+import cern.colt.matrix.impl.AbstractMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import corejava.Format;
 
 /**
- * A matrix of doubles that knows about row and column names.
+ * A dense matrix of doubles that knows about row and column names.
  * 
  * @author Paul Pavlidis
  * @version $Id$
  */
 public class DenseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -239226762166912931L;
     private DenseDoubleMatrix2D matrix;
 
     /**
@@ -50,38 +56,36 @@ public class DenseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
         matrix = new DenseDoubleMatrix2D( rows, cols );
     }
 
-    /**
-     * Return a reference to a specific row.
-     * 
-     * @param row int
-     * @return double[]
-     */
-    public double[] getRow( int row ) {
-        return viewRow( row ).toArray();
+    public int columns() {
+        return matrix.columns();
     }
 
     /**
-     * Return a reference to a specific row.
-     * 
-     * @param s String
-     * @return double[]
+     * @return basecode.dataStructure.DenseDoubleMatrix2DNamed
      */
-    public double[] getRowByName( R s ) {
-        return getRow( getRowIndexByName( s ) );
-    }
-
-    /**
-     * Return a copy of a given column.
-     * 
-     * @param col int
-     * @return double[]
-     */
-    public double[] getCol( int col ) {
-        double[] result = new double[rows()];
-        for ( int i = 0; i < rows(); i++ ) {
-            result[i] = get( i, col );
+    public DoubleMatrixNamed<R, C> copy() {
+        DoubleMatrixNamed<R, C> returnval = new DenseDoubleMatrix2DNamed<R, C>( this.rows(), this.columns() );
+        for ( int i = 0, n = this.rows(); i < n; i++ ) {
+            returnval.addRowName( this.getRowName( i ), i );
+            for ( int j = 0, m = this.columns(); j < m; j++ ) {
+                if ( i == 0 ) {
+                    returnval.addColumnName( this.getColName( j ), j );
+                }
+                returnval.set( i, j, this.get( i, j ) );
+            }
         }
-        return result;
+        return returnval;
+    }
+
+    /**
+     * @param row int
+     * @param column int
+     * @return
+     * @see DoubleMatrix2D#get(int, int)
+     */
+    @Override
+    public double get( int row, int column ) {
+        return matrix.getQuick( row, column );
     }
 
     /**
@@ -99,15 +103,7 @@ public class DenseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
         return result;
     }
 
-    public Object[] getRowObj( int row ) {
-        Double[] result = new Double[columns()];
-        for ( int i = 0; i < columns(); i++ ) {
-            result[i] = new Double( get( row, i ) );
-        }
-        return result;
-    }
-
-    public Object[] getColObj( int col ) {
+    public Double[] getColObj( int col ) {
         Double[] result = new Double[rows()];
         for ( int i = 0; i < rows(); i++ ) {
             result[i] = new Double( get( i, col ) );
@@ -115,8 +111,18 @@ public class DenseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
         return result;
     }
 
-    public Object getObj( int row, int col ) {
-        return new Double( get( row, col ) );
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#getColumn(int)
+     */
+    @Override
+    public double[] getColumn( int col ) {
+        double[] result = new double[rows()];
+        for ( int i = 0; i < rows(); i++ ) {
+            result[i] = get( i, col );
+        }
+        return result;
     }
 
     /**
@@ -134,103 +140,76 @@ public class DenseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
      * return result.toString(); }
      */
 
-    /**
-     * @return java.lang.String
-     */
-    public String toString() {
-        Format nf = new Format( "%.4g" );
-        StringBuffer result = new StringBuffer( this.rows() * this.columns() );
-        if ( this.hasColNames() || this.hasRowNames() ) {
-            result.append( "label" );
-        }
-
-        if ( this.hasColNames() ) {
-            for ( int i = 0; i < columns(); i++ ) {
-                result.append( "\t" + getColName( i ) );
-            }
-            result.append( "\n" );
-        }
-
-        for ( int i = 0; i < rows(); i++ ) {
-            if ( this.hasRowNames() ) {
-                result.append( getRowName( i ) );
-            }
-            for ( int j = 0; j < columns(); j++ ) {
-                if ( Double.isNaN( get( i, j ) ) ) {
-                    result.append( "\t" );
-                } else {
-                    result.append( "\t" + nf.format( get( i, j ) ) );
-                }
-            }
-            result.append( "\n" );
-        }
-        return result.toString();
-    }
-
-    public void set( int row, int col, Object value ) {
-        set( row, col, ( ( Double ) value ).doubleValue() );
+    public Double getObject( int row, int col ) {
+        return new Double( get( row, col ) );
     }
 
     /**
-     * Make a copy of a matrix. FIXME move to superclass.
+     * Return a reference to a specific row.
      * 
-     * @return basecode.dataStructure.DenseDoubleMatrix2DNamed
+     * @param row int
+     * @return double[]
      */
-    public DoubleMatrixNamed<R, C> copy() {
-        DoubleMatrixNamed<R, C> returnval = new DenseDoubleMatrix2DNamed<R, C>( this.rows(), this.columns() );
-        for ( int i = 0, n = this.rows(); i < n; i++ ) {
-            returnval.addRowName( this.getRowName( i ), i );
-            for ( int j = 0, m = this.columns(); j < m; j++ ) {
-                if ( i == 0 ) {
-                    returnval.addColumnName( this.getColName( j ), j );
-                }
-                returnval.set( i, j, this.get( i, j ) );
-            }
+    @Override
+    public double[] getRow( int row ) {
+        return viewRow( row ).toArray();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.dataStructure.matrix.AbstractNamedDoubleMatrix#getRowArrayList(int)
+     */
+    @Override
+    public DoubleArrayList getRowArrayList( int i ) {
+        return new DoubleArrayList( getRow( i ) );
+    }
+
+    /**
+     * Return a reference to a specific row.
+     * 
+     * @param s String
+     * @return double[]
+     */
+    @Override
+    public double[] getRowByName( R s ) {
+        return getRow( getRowIndexByName( s ) );
+    }
+
+    public Double[] getRowObj( int row ) {
+        Double[] result = new Double[columns()];
+        for ( int i = 0; i < columns(); i++ ) {
+            result[i] = new Double( get( row, i ) );
         }
-        return returnval;
+        return result;
     }
 
     public boolean isMissing( int i, int j ) {
         return Double.isNaN( get( i, j ) );
     }
 
-    /**
-     * @param row int
-     * @param column int
-     * @return
-     * @see DoubleMatrix2D#get(int, int)
-     */
-    public double get( int row, int column ) {
-        return matrix.get( row, column );
+    public int rows() {
+        return matrix.rows();
     }
 
-    /**
-     * @param row int
-     * @param column int
-     * @return double
-     * @see DenseDoubleMatrix2D#getQuick(int, int)
-     */
-    public double getQuick( int row, int column ) {
-        return matrix.getQuick( row, column );
-    }
-
-    /**
-     * @param row int
-     * @param column int
-     * @param value double
-     */
-    public void set( int row, int column, double value ) {
+    public void set( int row, int column, Double value ) {
         matrix.set( row, column, value );
     }
 
     /**
-     * @param row int
-     * @param column int
-     * @param value double
-     * @see DenseDoubleMatrix2D#setQuick(int, int, double)
+     * @return int
+     * @see AbstractMatrix2D#size()
      */
-    public void setQuick( int row, int column, double value ) {
-        matrix.setQuick( row, column, value );
+    public int size() {
+        return matrix.size();
+    }
+
+    /**
+     * @return double[][]
+     */
+    @Override
+    public double[][] asArray() {
+        return matrix.toArray();
     }
 
     /**
@@ -246,61 +225,9 @@ public class DenseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
      * @return DoubleMatrix1D
      * @see DenseDoubleMatrix2D#viewRow(int)
      */
+    @Override
     public DoubleMatrix1D viewRow( int row ) {
         return matrix.viewRow( row );
-    }
-
-    /**
-     * @return the number of columns in the matrix
-     * @see cern.colt.matrix.impl.AbstractMatrix2D#columns()
-     */
-    public int columns() {
-        return matrix.columns();
-    }
-
-    /**
-     * @return the number of rows in the matrix
-     * @see AbstractMatrix2D#rows()
-     */
-    public int rows() {
-        return matrix.rows();
-    }
-
-    /**
-     * @return int
-     * @see AbstractMatrix2D#size()
-     */
-    public int size() {
-        return matrix.size();
-    }
-
-    /**
-     * @return double[][]
-     */
-    public double[][] toArray() {
-        return matrix.toArray();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.AbstractNamedDoubleMatrix#getRowArrayList(int)
-     */
-    public DoubleArrayList getRowArrayList( int i ) {
-        return new DoubleArrayList( getRow( i ) );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#getColumn(int)
-     */
-    public double[] getColumn( int col ) {
-        double[] result = new double[rows()];
-        for ( int i = 0; i < rows(); i++ ) {
-            result[i] = get( i, col );
-        }
-        return result;
     }
 
 }

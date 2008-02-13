@@ -50,8 +50,8 @@ public class MathUtil {
     public static int sumArray( int[] array ) {
         if ( array == null ) return 0;
         int result = 0;
-        for ( int i = 0; i < array.length; i++ ) {
-            result += array[i];
+        for ( int element : array ) {
+            result += element;
         }
         return result;
     }

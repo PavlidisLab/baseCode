@@ -36,11 +36,11 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
  * @author paul
  * @version $Id$
  */
-public class JRIClient implements RClient {
-
-    private static Log log = LogFactory.getLog( JRIClient.class.getName() );
+public class JRIClient extends AbstractRClient {
 
     static Rengine connection;
+
+    private static Log log = LogFactory.getLog( JRIClient.class.getName() );
 
     public JRIClient() {
 
@@ -82,15 +82,6 @@ public class JRIClient implements RClient {
     /*
      * (non-Javadoc)
      * 
-     * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String[])
-     */
-    public void assign( String argName, String[] array ) {
-        connection.assign( argName, array );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, org.rosuda.REngine.REXP)
      */
     public void assign( String arg0, REXP arg1 ) {
@@ -109,133 +100,10 @@ public class JRIClient implements RClient {
     /*
      * (non-Javadoc)
      * 
-     * @see ubic.basecode.util.RClient#assignMatrix(ubic.basecode.dataStructure.matrix.DoubleMatrixNamed)
+     * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String[])
      */
-    public String assignMatrix( DoubleMatrixNamed matrix ) {
-        String matrixVarName = "Matrix_" + variableIdentityNumber( matrix );
-        log.debug( "Assigning matrix with variable name " + matrixVarName );
-        int rows = matrix.rows();
-        int cols = matrix.columns();
-        if ( rows == 0 || cols == 0 ) throw new IllegalArgumentException( "Empty matrix?" );
-        double[] unrolledMatrix = unrollMatrix( matrix );
-        assert ( unrolledMatrix != null );
-        this.assign( "U" + matrixVarName, unrolledMatrix );
-        this.voidEval( matrixVarName + "<-matrix(" + "U" + matrixVarName + ", nrow=" + rows + ", ncol=" + cols
-                + ", byrow=TRUE)" );
-        this.voidEval( "rm(U" + matrixVarName + ")" ); // maybe this saves memory...
-
-        assignRowAndColumnNames( matrix, matrixVarName );
-        return matrixVarName;
-    }
-
-    /**
-     * @param matrix
-     * @param matrixVarName
-     * @return
-     */
-    private void assignRowAndColumnNames( DoubleMatrixNamed matrix, String matrixVarName ) {
-
-        String rowNameVar = assignStringList( matrix.getRowNames() );
-        String colNameVar = assignStringList( matrix.getColNames() );
-
-        String dimcmd = "dimnames(" + matrixVarName + ")<-list(" + rowNameVar + ", " + colNameVar + ")";
-        this.voidEval( dimcmd );
-    }
-
-    /**
-     * @param ob
-     * @return
-     */
-    public static String variableIdentityNumber( Object ob ) {
-        return Integer.toString( Math.abs( ob.hashCode() ) );
-    }
-
-    /**
-     * Copy a matrix into an array, so that rows are represented consecutively in the array. (RServe has no interface
-     * for passing a 2-d array).
-     * 
-     * @param matrix
-     * @return array representation of the matrix.
-     */
-    private static double[] unrollMatrix( DoubleMatrixNamed matrix ) {
-        // unroll the matrix into an array Unfortunately this makes a
-        // copy of the data...and R will probably make yet
-        // another copy. If there was a way to get the raw element array from the DoubleMatrixNamed, that would
-        // be better.
-        int rows = matrix.rows();
-        int cols = matrix.columns();
-        double[] unrolledMatrix = new double[rows * cols];
-
-        int k = 0;
-        for ( int i = 0; i < rows; i++ ) {
-            for ( int j = 0; j < cols; j++ ) {
-                unrolledMatrix[k] = matrix.getQuick( i, j );
-                k++;
-            }
-        }
-        return unrolledMatrix;
-    }
-
-    /**
-     * Copy a matrix into an array, so that rows are represented consecutively in the array. (RServe has no interface
-     * for passing a 2-d array).
-     * 
-     * @param matrix
-     * @return
-     */
-    private static double[] unrollMatrix( double[][] matrix ) {
-        int rows = matrix.length;
-        int cols = matrix[0].length;
-        double[] unrolledMatrix = new double[rows * cols];
-
-        int k = 0;
-        for ( int i = 0; i < rows; i++ ) {
-            for ( int j = 0; j < cols; j++ ) {
-                unrolledMatrix[k] = matrix[i][j];
-                k++;
-            }
-        }
-        return unrolledMatrix;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.util.RClient#assignMatrix(double[][])
-     */
-    public String assignMatrix( double[][] matrix ) {
-        String matrixVarName = "Matrix_" + variableIdentityNumber( matrix );
-        log.debug( "Assigning matrix with variable name " + matrixVarName );
-        int rows = matrix.length;
-        int cols = matrix[0].length;
-        double[] unrolledMatrix = unrollMatrix( matrix );
-        if ( rows == 0 || cols == 0 ) throw new IllegalArgumentException( "Empty matrix?" );
-
-        this.voidEval( matrixVarName + "_rows<-" + rows );
-        this.voidEval( matrixVarName + "_cols<-" + cols );
-        this.assign( "U" + matrixVarName, unrolledMatrix );
-        this.voidEval( matrixVarName + "<-matrix(" + "U" + matrixVarName + ", nrow=rows, ncol=cols, byrow=TRUE)" );
-        this.voidEval( "rm(U" + matrixVarName + ")" ); // maybe this saves memory...
-
-        return matrixVarName;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.util.RClient#assignStringList(java.util.List)
-     */
-    public String assignStringList( List<String> strings ) {
-        String variableName = "stringList." + variableIdentityNumber( strings );
-
-        Object[] array = strings.toArray();
-        String[] sa = new String[array.length];
-        for ( int i = 0; i < array.length; i++ ) {
-            sa[i] = array[i].toString();
-        }
-
-        assign( variableName, sa );
-        return variableName;
+    public void assign( String argName, String[] array ) {
+        connection.assign( argName, array );
     }
 
     /*
@@ -247,6 +115,10 @@ public class JRIClient implements RClient {
         this.assign( argName, arg );
         REXP x = this.eval( command );
         return x.asBool().isTRUE();
+    }
+
+    public void disconnect() {
+        connection.end();
     }
 
     /*
@@ -308,15 +180,6 @@ public class JRIClient implements RClient {
     /*
      * (non-Javadoc)
      * 
-     * @see ubic.basecode.util.RClient#eval(java.lang.String)
-     */
-    private REXP eval( String command ) {
-        return connection.eval( command );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#getLastError()
      */
     public String getLastError() {
@@ -326,10 +189,14 @@ public class JRIClient implements RClient {
     /*
      * (non-Javadoc)
      * 
-     * @see ubic.basecode.util.RClient#remove(java.lang.String)
+     * @see ubic.basecode.util.RClient#intArrayEval(java.lang.String)
      */
-    public void remove( String variableName ) {
-        this.voidEval( "rm(" + variableName + ")" );
+    public int[] intArrayEval( String command ) {
+        return this.eval( command ).asIntArray();
+    }
+
+    public boolean isConnected() {
+        return connection.isAlive();
     }
 
     /*
@@ -337,7 +204,7 @@ public class JRIClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#retrieveMatrix(java.lang.String)
      */
-    public DoubleMatrixNamed retrieveMatrix( String variableName ) {
+    public DoubleMatrixNamed<String, String> retrieveMatrix( String variableName ) {
         log.debug( "Retrieving " + variableName );
         REXP r = this.eval( variableName );
         if ( r == null ) throw new IllegalArgumentException( variableName + " not found in R context" );
@@ -346,11 +213,56 @@ public class JRIClient implements RClient {
 
         if ( results == null ) throw new RuntimeException( "Failed to get back matrix for variable " + variableName );
 
-        DoubleMatrixNamed resultObject = DoubleMatrix2DNamedFactory.dense( results );
+        DoubleMatrixNamed<String, String> resultObject = DoubleMatrix2DNamedFactory.dense( results );
 
         retrieveRowAndColumnNames( variableName, resultObject );
         return resultObject;
 
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#stringEval(java.lang.String)
+     */
+    public String stringEval( String command ) {
+        return this.eval( command ).asString();
+    }
+
+    /**
+     * @param string
+     * @return
+     */
+    public List<String> stringListEval( String command ) {
+        String[] ar = this.eval( command ).asStringArray();
+        if ( ar == null ) {
+            log.warn( "No string list in R: " + command );
+            return null;
+        }
+        List<String> results = new ArrayList<String>();
+        for ( String s : ar ) {
+            results.add( s );
+        }
+        return results;
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#voidEval(java.lang.String)
+     */
+    public void voidEval( String command ) {
+        connection.eval( command );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#eval(java.lang.String)
+     */
+    private REXP eval( String command ) {
+        return connection.eval( command );
     }
 
     /**
@@ -358,13 +270,13 @@ public class JRIClient implements RClient {
      * @param resultObject
      * @throws REXPMismatchException
      */
-    private void retrieveRowAndColumnNames( String variableName, DoubleMatrixNamed resultObject ) {
+    private void retrieveRowAndColumnNames( String variableName, DoubleMatrixNamed<String, String> resultObject ) {
         // getting the row names.
         List rowNamesREXP = this.eval( "dimnames(" + variableName + ")[1][[1]]" ).asVector();
 
         if ( rowNamesREXP != null ) {
             log.debug( "Got row names" );
-            List rowNames = new ArrayList();
+            List<String> rowNames = new ArrayList<String>();
             for ( Iterator iter = rowNamesREXP.iterator(); iter.hasNext(); ) {
                 REXP element = ( REXP ) iter.next();
                 String rowName = element.asString();
@@ -377,7 +289,7 @@ public class JRIClient implements RClient {
         List colNamesREXP = this.eval( "dimnames(" + variableName + ")[2][[1]]" ).asVector();
         if ( colNamesREXP != null ) {
             log.debug( "Got column names" );
-            List colNames = new ArrayList();
+            List<String> colNames = new ArrayList<String>();
             for ( Iterator iter = colNamesREXP.iterator(); iter.hasNext(); ) {
                 REXP element = ( REXP ) iter.next();
                 String rowName = element.asString();
@@ -385,51 +297,6 @@ public class JRIClient implements RClient {
             }
             resultObject.setColumnNames( colNames );
         }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.util.RClient#voidEval(java.lang.String)
-     */
-    public void voidEval( String command ) {
-        connection.eval( command );
-    }
-
-    public boolean isConnected() {
-        return connection.isAlive();
-    }
-
-    public void disconnect() {
-        connection.end();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.util.RClient#stringEval(java.lang.String)
-     */
-    public String stringEval( String command ) {
-        return this.eval( command ).asString();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.util.RClient#intArrayEval(java.lang.String)
-     */
-    public int[] intArrayEval( String command ) {
-        return this.eval( command ).asIntArray();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.util.RClient#loadLibrary(java.lang.String)
-     */
-    public boolean loadLibrary( String libraryName ) {
-        REXP eval = eval( "library(" + libraryName + ")" );
-        return true;
     }
 
 }

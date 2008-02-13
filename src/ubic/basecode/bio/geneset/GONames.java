@@ -159,7 +159,7 @@ public class GONames {
             return NO_ASPECT_AVAILABLE;
         }
 
-        GOEntry node = ( GOEntry ) getGraph().getNodeContents( geneSetId );
+        GOEntry node = getGraph().getNodeContents( geneSetId );
         if ( node.getAspect() == null || node.getAspect().equals( NO_ASPECT_AVAILABLE ) ) {
             Collection<String> parents = getParents( geneSetId );
             if ( parents == null ) return NO_ASPECT_AVAILABLE;
@@ -203,14 +203,14 @@ public class GONames {
             log.debug( "No node for " + classid );
             return NO_DEFINITION_AVAILABLE;
         }
-        GOEntry node = ( GOEntry ) getGraph().getNodeContents( classid );
+        GOEntry node = getGraph().getNodeContents( classid );
         return node.getDefinition();
     }
 
     /**
      * @return graph representation of the GO hierarchy
      */
-    public DirectedGraph getGraph() {
+    public DirectedGraph<String, GOEntry> getGraph() {
         if ( parser == null ) return null;
         return parser.getGraph();
     }
@@ -337,7 +337,7 @@ public class GONames {
         goNameMap = parser.getGONameMap();
         oldNameMap = new HashMap<String, String>();
         if ( this.getGraph() == null ) return;
-        DirectedGraphNode root = this.getGraph().getRoot();
+        DirectedGraphNode<String, GOEntry> root = this.getGraph().getRoot();
         this.getGraph().addChildTo( root.getKey(), USER_DEFINED,
                 new GOEntry( USER_DEFINED, "", "Gene sets modified or created by the user", USER_DEFINED ) );
     }

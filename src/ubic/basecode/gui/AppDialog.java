@@ -46,15 +46,15 @@ import ubic.basecode.util.BrowserLauncher;
  */
 public abstract class AppDialog extends JDialog {
 
-    JPanel mainPanel;
-    BorderLayout borderLayout1 = new BorderLayout();
-    JPanel contentPanel = new JPanel();
-    JPanel bottomPanel = new JPanel();
     protected JButton actionButton = new JButton();
     protected JButton cancelButton = new JButton();
     protected JButton helpButton = new JButton();
-
     protected Container callingframe;
+    JPanel mainPanel;
+    BorderLayout borderLayout1 = new BorderLayout();
+    JPanel contentPanel = new JPanel();
+
+    JPanel bottomPanel = new JPanel();
 
     public AppDialog() {
 
@@ -66,30 +66,11 @@ public abstract class AppDialog extends JDialog {
         jbInit( width, height );
     }
 
-    private void jbInit( int width, int height ) {
-        setResizable( true );
-        mainPanel = ( JPanel ) this.getContentPane();
-        mainPanel.setPreferredSize( new Dimension( width, height ) );
-        mainPanel.setLayout( borderLayout1 );
-
-        contentPanel.setPreferredSize( new Dimension( width, height - 40 ) );
-        BorderLayout borderLayout4 = new BorderLayout();
-        contentPanel.setLayout( borderLayout4 );
-
-        bottomPanel.setPreferredSize( new Dimension( width, 40 ) );
-        cancelButton.setText( "Cancel" );
-        cancelButton.setMnemonic( 'c' );
-        cancelButton.addActionListener( new AppDialog_cancelButton_actionAdapter( this ) );
-        actionButton.addActionListener( new AppDialog_actionButton_actionAdapter( this ) );
-
-        helpButton.addActionListener( new AppDialog_helpButton_actionAdapter( this ) );
-        helpButton.setText( "Help" );
-
-        bottomPanel.add( helpButton, null );
-        bottomPanel.add( cancelButton, null );
-        bottomPanel.add( actionButton, null );
-        mainPanel.add( contentPanel, BorderLayout.CENTER );
-        mainPanel.add( bottomPanel, BorderLayout.SOUTH );
+    /**
+     * @param e
+     */
+    public void mouseButton_actionPerformed( MouseEvent e ) {
+        // TODO Auto-generated method stub
     }
 
     public void showDialog() {
@@ -101,36 +82,7 @@ public abstract class AppDialog extends JDialog {
         this.setVisible( true );
     }
 
-    // helper to respond to links.
-    class LinkFollower implements HyperlinkListener {
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see javax.swing.event.HyperlinkListener#hyperlinkUpdate(javax.swing.event.HyperlinkEvent)
-         */
-        public void hyperlinkUpdate( HyperlinkEvent e ) {
-            if ( e.getEventType() == HyperlinkEvent.EventType.ACTIVATED ) {
-                try {
-                    BrowserLauncher.openURL( e.getURL().toExternalForm() );
-                } catch ( IOException e1 ) {
-                    GuiUtil.error( "Could not open link" );
-                }
-            }
-        }
-    }
-
-    // Slightly specialized editor pane.
-    class HelpEditorPane extends JEditorPane {
-        HelpEditorPane( String text ) {
-            super();
-            this.setEditable( false );
-            this.setFont( new Font( "SansSerif", Font.PLAIN, 11 ) );
-            this.setContentType( "text/html" );
-            this.setText( text );
-            this.addHyperlinkListener( new LinkFollower() );
-        }
-    }
+    protected abstract void actionButton_actionPerformed( ActionEvent e );
 
     protected void addHelp( String text ) {
 
@@ -160,6 +112,10 @@ public abstract class AppDialog extends JDialog {
         contentPanel.add( panel, BorderLayout.CENTER );
     }
 
+    protected abstract void cancelButton_actionPerformed( ActionEvent e );
+
+    protected abstract void helpButton_actionPerformed( ActionEvent e );
+
     protected void setActionButtonText( String val ) {
         actionButton.setText( val );
     }
@@ -172,30 +128,79 @@ public abstract class AppDialog extends JDialog {
         helpButton.setText( val );
     }
 
-    protected abstract void cancelButton_actionPerformed( ActionEvent e );
+    private void jbInit( int width, int height ) {
+        setResizable( true );
+        mainPanel = ( JPanel ) this.getContentPane();
+        mainPanel.setPreferredSize( new Dimension( width, height ) );
+        mainPanel.setLayout( borderLayout1 );
 
-    protected abstract void actionButton_actionPerformed( ActionEvent e );
+        contentPanel.setPreferredSize( new Dimension( width, height - 40 ) );
+        BorderLayout borderLayout4 = new BorderLayout();
+        contentPanel.setLayout( borderLayout4 );
 
-    protected abstract void helpButton_actionPerformed( ActionEvent e );
+        bottomPanel.setPreferredSize( new Dimension( width, 40 ) );
+        cancelButton.setText( "Cancel" );
+        cancelButton.setMnemonic( 'c' );
+        cancelButton.addActionListener( new AppDialog_cancelButton_actionAdapter( this ) );
+        actionButton.addActionListener( new AppDialog_actionButton_actionAdapter( this ) );
 
-    /**
-     * @param e
-     */
-    public void mouseButton_actionPerformed( MouseEvent e ) {
-        // TODO Auto-generated method stub
+        helpButton.addActionListener( new AppDialog_helpButton_actionAdapter( this ) );
+        helpButton.setText( "Help" );
+
+        bottomPanel.add( helpButton, null );
+        bottomPanel.add( cancelButton, null );
+        bottomPanel.add( actionButton, null );
+        mainPanel.add( contentPanel, BorderLayout.CENTER );
+        mainPanel.add( bottomPanel, BorderLayout.SOUTH );
+    }
+
+    // Slightly specialized editor pane.
+    class HelpEditorPane extends JEditorPane {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -5734511581620275891L;
+
+        HelpEditorPane( String text ) {
+            super();
+            this.setEditable( false );
+            this.setFont( new Font( "SansSerif", Font.PLAIN, 11 ) );
+            this.setContentType( "text/html" );
+            this.setText( text );
+            this.addHyperlinkListener( new LinkFollower() );
+        }
+    }
+
+    // helper to respond to links.
+    class LinkFollower implements HyperlinkListener {
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see javax.swing.event.HyperlinkListener#hyperlinkUpdate(javax.swing.event.HyperlinkEvent)
+         */
+        public void hyperlinkUpdate( HyperlinkEvent e ) {
+            if ( e.getEventType() == HyperlinkEvent.EventType.ACTIVATED ) {
+                try {
+                    BrowserLauncher.openURL( e.getURL().toExternalForm() );
+                } catch ( IOException e1 ) {
+                    GuiUtil.error( "Could not open link" );
+                }
+            }
+        }
     }
 
 }
 
-class AppDialog_helpButton_actionAdapter implements java.awt.event.ActionListener {
+class AppDialog_actionButton_actionAdapter implements java.awt.event.ActionListener {
     AppDialog adaptee;
 
-    AppDialog_helpButton_actionAdapter( AppDialog adaptee ) {
+    AppDialog_actionButton_actionAdapter( AppDialog adaptee ) {
         this.adaptee = adaptee;
     }
 
     public void actionPerformed( ActionEvent e ) {
-        adaptee.helpButton_actionPerformed( e );
+        adaptee.actionButton_actionPerformed( e );
     }
 }
 
@@ -211,15 +216,15 @@ class AppDialog_cancelButton_actionAdapter implements java.awt.event.ActionListe
     }
 }
 
-class AppDialog_actionButton_actionAdapter implements java.awt.event.ActionListener {
+class AppDialog_helpButton_actionAdapter implements java.awt.event.ActionListener {
     AppDialog adaptee;
 
-    AppDialog_actionButton_actionAdapter( AppDialog adaptee ) {
+    AppDialog_helpButton_actionAdapter( AppDialog adaptee ) {
         this.adaptee = adaptee;
     }
 
     public void actionPerformed( ActionEvent e ) {
-        adaptee.actionButton_actionPerformed( e );
+        adaptee.helpButton_actionPerformed( e );
     }
 }
 

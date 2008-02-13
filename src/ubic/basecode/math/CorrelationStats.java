@@ -32,15 +32,18 @@ import cern.jet.stat.Probability;
  */
 public class CorrelationStats {
 
+    /* for spearman - for n <= this, we compute exact probabilities. */
+    final static int n_small = 9;
     private static DoubleMatrix2D correlationPvalLookup;
-    private static DoubleMatrix2D spearmanPvalLookup;
 
+    private static DoubleMatrix2D spearmanPvalLookup;
     private static final double BINSIZE = 0.005; // resolution of correlation.
     // Differences smaller than this
     // are considered meaningless.
     private static final double STEPSIZE = BINSIZE * 2; // this MUST be more than
     // the binsize.
     private static final int MAXCOUNT = 1000; // maximum number of things.
+
     private static final double PVALCHOP = 8.0; // value by which log(pvalues)
     // are scaled before storing as
     // bytes. Values less than
@@ -50,9 +53,6 @@ public class CorrelationStats {
     /* Edgeworth coefficients for spearman computation : */
     private static final double c1 = 0.2274, c2 = 0.2531, c3 = 0.1745, c4 = 0.0758, c5 = 0.1033, c6 = 0.3932,
             c7 = 0.0879, c8 = 0.0151, c9 = 0.0072, c10 = 0.0831, c11 = 0.0131, c12 = 4.6e-4;
-
-    /* for spearman - for n <= this, we compute exact probabilities. */
-    final static int n_small = 9;
 
     static {
         int numbins = ( int ) Math.ceil( 1.0 / BINSIZE );
@@ -92,7 +92,7 @@ public class CorrelationStats {
         double sigma;
         double p;
 
-        sigma = Math.sqrt( ( 1 / ( ( double ) n1 - 3 ) ) + ( 1 / ( ( double ) n2 - 3 ) ) );
+        sigma = Math.sqrt( 1 / ( ( double ) n1 - 3 ) + 1 / ( ( double ) n2 - 3 ) );
 
         Z = Math.abs( correl1 - correl2 ) / sigma;
 
@@ -183,7 +183,7 @@ public class CorrelationStats {
                 throw new IllegalStateException( "Too many iterations" );
             }
         }
-        return ( corrguess );
+        return corrguess;
     }
 
     /**
@@ -253,7 +253,7 @@ public class CorrelationStats {
      * @return
      */
     public static boolean isValidPearsonCorrelation( double r ) {
-        return ( r + Constants.SMALL >= -1.0 && r - Constants.SMALL <= 1.0 );
+        return r + Constants.SMALL >= -1.0 && r - Constants.SMALL <= 1.0;
     }
 
     /**
@@ -388,9 +388,8 @@ public class CorrelationStats {
         if ( sStat <= 0.0 ) {
             if ( rho > 0 ) {
                 return 0.0;
-            } else {
-                return 1.0;
             }
+            return 1.0;
         }
 
         /*

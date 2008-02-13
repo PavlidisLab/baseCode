@@ -18,6 +18,8 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
+import org.apache.commons.lang.StringUtils;
+
 import cern.colt.matrix.ObjectMatrix1D;
 import cern.colt.matrix.impl.DenseObjectMatrix2D;
 
@@ -27,8 +29,13 @@ import cern.colt.matrix.impl.DenseObjectMatrix2D;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class StringMatrix2DNamed<R, C> extends AbstractNamedMatrix<R, C> {
+public class StringMatrix2DNamed<R, C> extends AbstractNamedMatrix<R, C, String> implements
+        NamedObjectMatrix<R, C, String> {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -7369003979104984162L;
     private DenseObjectMatrix2D matrix;
 
     public StringMatrix2DNamed( int x, int y ) {
@@ -37,8 +44,83 @@ public class StringMatrix2DNamed<R, C> extends AbstractNamedMatrix<R, C> {
     }
 
     /**
+     * @return
+     */
+    public int columns() {
+        return matrix.columns();
+    }
+
+    /**
+     * @param row
+     * @param column
+     * @return
+     */
+    public String get( int row, int column ) {
+        return ( String ) matrix.get( row, column );
+    }
+
+    public String[] getColObj( int col ) {
+        String[] result = new String[rows()];
+        for ( int i = 0; i < rows(); i++ ) {
+            result[i] = get( i, col );
+        }
+        return result;
+    }
+
+    public String[] getColumn( int col ) {
+        String[] result = new String[rows()];
+        for ( int i = 0; i < rows(); i++ ) {
+            result[i] = get( i, col );
+        }
+        return result;
+    }
+
+    public String getObject( int row, int col ) {
+        return get( row, col );
+    }
+
+    public String[] getRow( int row ) {
+        String[] result = new String[columns()];
+        for ( int i = 0; i < columns(); i++ ) {
+            result[i] = get( row, i );
+        }
+        return result;
+    }
+
+    /**
+     * Strings are considered missing if they are whitespace, null or empty.
+     */
+    public boolean isMissing( int i, int j ) {
+        return StringUtils.isBlank( get( i, j ) );
+    }
+
+    /**
+     * @return
+     */
+    public int rows() {
+        return matrix.rows();
+    }
+
+    /**
+     * @param row
+     * @param column
+     * @param value
+     */
+    public void set( int row, int column, String value ) {
+        matrix.set( row, column, value );
+    }
+
+    /**
+     * @return
+     */
+    public int size() {
+        return matrix.size();
+    }
+
+    /**
      * @return java.lang.String
      */
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
         buf.append( "label" );
@@ -57,81 +139,6 @@ public class StringMatrix2DNamed<R, C> extends AbstractNamedMatrix<R, C> {
         return buf.toString();
     }
 
-    public Object[] getRow( int row ) {
-        return viewRow( row ).toArray();
-    }
-
-    public String[] getColumn( int col ) {
-        String[] result = new String[rows()];
-        for ( int i = 0; i < rows(); i++ ) {
-            result[i] = ( String ) get( i, col );
-        }
-        return result;
-    }
-
-    public Object[] getRowObj( int row ) {
-        String[] result = new String[columns()];
-        for ( int i = 0; i < columns(); i++ ) {
-            result[i] = ( String ) get( row, i );
-        }
-        return result;
-    }
-
-    public Object[] getColObj( int col ) {
-        String[] result = new String[rows()];
-        for ( int i = 0; i < rows(); i++ ) {
-            result[i] = ( String ) get( i, col );
-        }
-        return result;
-    }
-
-    public Object getObj( int row, int col ) {
-        return get( row, col );
-    }
-
-    public boolean isMissing( int i, int j ) {
-        return get( i, j ) == "";
-    }
-
-    /**
-     * @return
-     */
-    public int columns() {
-        return matrix.columns();
-    }
-
-    /**
-     * @param row
-     * @param column
-     * @return
-     */
-    public Object get( int row, int column ) {
-        return matrix.get( row, column );
-    }
-
-    /**
-     * @param row
-     * @param column
-     * @return
-     */
-    public Object getQuick( int row, int column ) {
-        return matrix.getQuick( row, column );
-    }
-
-    /**
-     * @return
-     */
-    public int rows() {
-        return matrix.rows();
-    }
-
-    /**
-     * @return
-     */
-    public int size() {
-        return matrix.size();
-    }
-
     /**
      * @param column
      * @return
@@ -148,21 +155,22 @@ public class StringMatrix2DNamed<R, C> extends AbstractNamedMatrix<R, C> {
         return matrix.viewRow( row );
     }
 
-    /**
-     * @param row
-     * @param column
-     * @param value
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.NamedObjectMatrix#get(java.lang.Object, java.lang.Object)
      */
-    public void set( int row, int column, Object value ) {
-        matrix.set( row, column, value );
+    public String get( R row, C column ) {
+        return this.get( this.getRowIndexByName( row ), this.getColIndexByName( column ) );
     }
 
-    /**
-     * @param row
-     * @param column
-     * @param value
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(java.lang.Object, java.lang.Object, java.lang.Object)
      */
-    public void setQuick( int row, int column, Object value ) {
-        matrix.setQuick( row, column, value );
+    public void setByKeys( R r, C c, String v ) {
+        this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }
+
 }

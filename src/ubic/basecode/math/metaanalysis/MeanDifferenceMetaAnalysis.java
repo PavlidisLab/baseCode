@@ -57,12 +57,45 @@ public class MeanDifferenceMetaAnalysis extends MetaAnalysis {
         this.fixed = fixed;
     }
 
-    public double run( DoubleArrayList effects, DoubleArrayList controlSizes, DoubleArrayList testSizes ) {
+    public double getBsv() {
+        return bsv;
+    }
+
+    public double getE() {
+        return e;
+    }
+
+    public double getN() {
+        return n;
+    }
+
+    public double getP() {
+        return p;
+    }
+
+    public double getQ() {
+        return q;
+    }
+
+    public double getV() {
+        return v;
+    }
+
+    public double getZ() {
+        return z;
+    }
+
+    /**
+     * @param effects
+     * @param cvar Conditional variances.
+     * @return
+     */
+    public double run( DoubleArrayList effects, DoubleArrayList cvar ) {
         DoubleArrayList weights;
         DoubleArrayList conditionalVariances;
-        this.n = Descriptive.sum( controlSizes ) + Descriptive.sum( testSizes );
+        // this.n = Descriptive.sum( controlSizes ) + Descriptive.sum( testSizes );
 
-        conditionalVariances = samplingVariances( effects, controlSizes, testSizes );
+        conditionalVariances = cvar.copy();
         weights = metaFEWeights( conditionalVariances );
         this.q = super.qStatistic( effects, conditionalVariances, super.weightedMean( effects, weights ) );
 
@@ -83,17 +116,12 @@ public class MeanDifferenceMetaAnalysis extends MetaAnalysis {
         return p;
     }
 
-    /**
-     * @param effects
-     * @param cvar Conditional variances.
-     * @return
-     */
-    public double run( DoubleArrayList effects, DoubleArrayList cvar ) {
+    public double run( DoubleArrayList effects, DoubleArrayList controlSizes, DoubleArrayList testSizes ) {
         DoubleArrayList weights;
         DoubleArrayList conditionalVariances;
-        // this.n = Descriptive.sum( controlSizes ) + Descriptive.sum( testSizes );
+        this.n = Descriptive.sum( controlSizes ) + Descriptive.sum( testSizes );
 
-        conditionalVariances = cvar.copy();
+        conditionalVariances = samplingVariances( effects, controlSizes, testSizes );
         weights = metaFEWeights( conditionalVariances );
         this.q = super.qStatistic( effects, conditionalVariances, super.weightedMean( effects, weights ) );
 
@@ -144,34 +172,6 @@ public class MeanDifferenceMetaAnalysis extends MetaAnalysis {
             answer.add( samplingVariance( effects.getQuick( i ), controlSizes.getQuick( i ), testSizes.getQuick( i ) ) );
         }
         return answer;
-    }
-
-    public double getP() {
-        return p;
-    }
-
-    public double getQ() {
-        return q;
-    }
-
-    public double getZ() {
-        return z;
-    }
-
-    public double getE() {
-        return e;
-    }
-
-    public double getV() {
-        return v;
-    }
-
-    public double getN() {
-        return n;
-    }
-
-    public double getBsv() {
-        return bsv;
     }
 
 }

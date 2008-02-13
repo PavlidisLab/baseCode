@@ -50,13 +50,24 @@ public abstract class WizardStep extends JPanel {
         }
     }
 
-    // Component initialization
-    protected abstract void jbInit() throws Exception;
-
     abstract public boolean isReady();
 
-    protected void addMain( JPanel panel ) {
-        this.add( panel, BorderLayout.CENTER );
+    /**
+     * Print an error message to the status bar.
+     * 
+     * @param a error message to show.
+     */
+    public void showError( String a ) {
+        owner.showError( a );
+    }
+
+    /**
+     * Print a message to the status bar.
+     * 
+     * @param a message to show.
+     */
+    public void showStatus( String a ) {
+        owner.showStatus( a );
     }
 
     /**
@@ -79,22 +90,11 @@ public abstract class WizardStep extends JPanel {
         this.add( labelPanel, BorderLayout.NORTH );
     }
 
-    /**
-     * Print a message to the status bar.
-     * 
-     * @param a message to show.
-     */
-    public void showStatus( String a ) {
-        owner.showStatus( a );
+    protected void addMain( JPanel panel ) {
+        this.add( panel, BorderLayout.CENTER );
     }
 
-    /**
-     * Print an error message to the status bar.
-     * 
-     * @param a error message to show.
-     */
-    public void showError( String a ) {
-        owner.showError( a );
-    }
+    // Component initialization
+    protected abstract void jbInit() throws Exception;
 
 }
