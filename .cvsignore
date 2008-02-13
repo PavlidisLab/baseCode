@@ -41,3 +41,5 @@ junit*.properties
 surefire*
 cobertura.ser
 .externalToolBuilders
+.deployment
+release.properties
