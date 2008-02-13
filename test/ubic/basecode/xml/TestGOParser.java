@@ -31,6 +31,17 @@ import ubic.basecode.util.RegressionTesting;
 public class TestGOParser extends TestCase {
     private GOParser gOParser = null;
 
+    public void testGOParser() throws IOException {
+        String actualReturn = gOParser.getGraph().toString();
+        String expectedReturn = RegressionTesting.readTestResult( "/data/goparsertestoutput.txt" );
+        assertEquals( "return", expectedReturn, actualReturn );
+        /*
+         * assertEquals( "Diffs: " + RegressionTesting.regress( expectedReturn, actualReturn ), expectedReturn,
+         * actualReturn );
+         */
+    }
+
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         InputStream i = GOParser.class.getResourceAsStream( "/data/go-termdb-sample.xml" );
@@ -42,19 +53,10 @@ public class TestGOParser extends TestCase {
 
     }
 
+    @Override
     protected void tearDown() throws Exception {
         gOParser = null;
         super.tearDown();
-    }
-
-    public void testGOParser() throws IOException {
-        String actualReturn = gOParser.getGraph().toString();
-        String expectedReturn = RegressionTesting.readTestResult( "/data/goparsertestoutput.txt" );
-        assertEquals( "return", expectedReturn, actualReturn );
-        /*
-         * assertEquals( "Diffs: " + RegressionTesting.regress( expectedReturn, actualReturn ), expectedReturn,
-         * actualReturn );
-         */
     }
 
 }

@@ -35,6 +35,7 @@ import java.util.zip.ZipOutputStream;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -44,53 +45,33 @@ import org.apache.commons.logging.LogFactory;
  * @version $Id$
  */
 public class FileToolsTest extends TestCase {
-    private Log log = LogFactory.getLog( this.getClass() );
-
     File plain;
+
     File compressed;
     File tempoutput;
     File tempdir;
     File zipped;
+    private Log log = LogFactory.getLog( this.getClass() );
 
     /*
-     * @see TestCase#setUp()
+     * Test method for 'basecode.util.FileTools.addDataExtension(String)'
      */
-    protected void setUp() throws Exception {
-        super.setUp();
-        plain = File.createTempFile( "foo", ".bar" );
-        plain.deleteOnExit();
-        FileOutputStream tmp = new FileOutputStream( plain );
-        tmp.write( "fooblydoobly\n".getBytes() );
-        tmp.close();
-
-        compressed = new File( plain.getAbsolutePath() + ".gz" );
-        OutputStream fos = new FileOutputStream( compressed );
-        OutputStream cos = new GZIPOutputStream( fos );
-
-        InputStream input = new FileInputStream( plain );
-
-        byte[] buf = new byte[1024];
-        int len;
-        while ( ( len = input.read( buf ) ) > 0 ) {
-            cos.write( buf, 0, len );
-        }
-        input.close();
-        cos.close();
-        tempoutput = File.createTempFile( "junkme", ".txt" );
-
-        tempdir = FileTools.createDir( System.getProperty( "java.io.tmpdir" ) + File.separatorChar + "junk.tmpdir" );
-
+    public void testAddDataExtension() {
+        assertTrue( FileTools.addDataExtension( plain.getPath() ).endsWith( ".txt" ) );
     }
 
     /*
-     * @see TestCase#tearDown()
+     * Test method for 'basecode.util.FileTools.addImageExtension(String)'
      */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        if ( plain != null ) plain.delete();
-        if ( compressed != null ) compressed.delete();
-        if ( tempoutput != null ) tempoutput.delete();
-        if ( tempdir != null ) tempdir.delete();
+    public void testAddImageExtension() throws Exception {
+        assertTrue( FileTools.addImageExtension( plain.getPath() ).endsWith( ".png" ) );
+    }
+
+    /*
+     * Test method for 'basecode.util.FileTools.changeExtension(String, String)'
+     */
+    public void testChangeExtension() throws Exception {
+        assertTrue( FileTools.changeExtension( plain.getPath(), "barbie" ).endsWith( ".barbie" ) );
     }
 
     /*
@@ -104,111 +85,13 @@ public class FileToolsTest extends TestCase {
         }
     }
 
-    /*
-     * Test method for 'basecode.util.FileTools.getExtension(String)'
-     */
-    public void testGetExtension() throws Exception {
-        assertEquals( "bar", FileTools.getExtension( plain.getPath() ) );
-    }
+    public void testCheckPathIsReadableFileNot() throws Exception {
+        try {
+            FileTools.checkPathIsReadableFile( plain.getPath() + RandomStringUtils.randomNumeric( 10 ) );
+            fail( "Should have thrown an IOException" );
+        } catch ( IOException e ) {
 
-    /*
-     * Test method for 'basecode.util.FileTools.getWithoutExtension(String)'
-     */
-    public void testGetWithoutExtension() throws Exception {
-        assertFalse( FileTools.chompExtension( plain.getPath() ).endsWith( ".bar" ) );
-    }
-
-    /*
-     * Test method for 'basecode.util.FileTools.getWithoutExtension(String)'
-     */
-    public void testGetWithoutExtensionB() throws Exception {
-        assertEquals( "a.b", FileTools.chompExtension( "a.b.jar" ) );
-    }
-
-    /*
-     * Test method for 'basecode.util.FileTools.getWithoutExtension(String)'
-     */
-    public void testGetWithoutExtensionC() throws Exception {
-        assertEquals( "a.b.", FileTools.chompExtension( "a.b..jar" ) );
-    }
-
-    /*
-     * Test method for 'basecode.util.FileTools.changeExtension(String, String)'
-     */
-    public void testChangeExtension() throws Exception {
-        assertTrue( FileTools.changeExtension( plain.getPath(), "barbie" ).endsWith( ".barbie" ) );
-    }
-
-    /*
-     * Test method for 'basecode.util.FileTools.hasImageExtension(String)'
-     */
-    public void testHasImageExtension() throws Exception {
-        assertFalse( FileTools.hasImageExtension( plain.getPath() ) );
-    }
-
-    /*
-     * Test method for 'basecode.util.FileTools.hasXMLExtension(String)'
-     */
-    public void testHasXMLExtension() throws Exception {
-        assertFalse( FileTools.hasXMLExtension( plain.getPath() ) );
-    }
-
-    /*
-     * Test method for 'basecode.util.FileTools.addImageExtension(String)'
-     */
-    public void testAddImageExtension() throws Exception {
-        assertTrue( FileTools.addImageExtension( plain.getPath() ).endsWith( ".png" ) );
-    }
-
-    /*
-     * Test method for 'basecode.util.FileTools.addDataExtension(String)'
-     */
-    public void testAddDataExtension() {
-        assertTrue( FileTools.addDataExtension( plain.getPath() ).endsWith( ".txt" ) );
-    }
-
-    /*
-     * Test method for 'basecode.util.FileTools.testDir(String)'
-     */
-    public void testTestDir() throws Exception {
-        assertFalse( FileTools.testDir( plain.getPath() ) );
-    }
-
-    /*
-     * Test method for 'basecode.util.FileTools.testFile(String)'
-     */
-    public void testTestFileString() throws Exception {
-        assertTrue( FileTools.testFile( plain.getPath() ) );
-    }
-
-    /*
-     * Test method for 'basecode.util.FileTools.testFile(File)'
-     */
-    public void testTestFileFile() throws Exception {
-        assertTrue( FileTools.testFile( plain ) );
-    }
-
-    /*
-     * Test method for 'basecode.util.FileTools.isZipped(String)'
-     */
-    public void testIsZipped() throws Exception {
-        assertFalse( FileTools.isZipped( plain.getPath() ) );
-    }
-
-    /*
-     * Test method for 'basecode.util.FileTools.isGZipped(String)'
-     */
-    public void testIsGZipped() throws Exception {
-        assertFalse( FileTools.isGZipped( plain.getPath() ) );
-    }
-
-    /*
-     * Test method for 'basecode.util.FileTools.getInputStreamFromPlainOrCompressedFile(String)'
-     */
-    public void testGetInputStreamFromPlainOrCompressedFile() throws Exception {
-        InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile( plain.getPath() );
-        assertTrue( is != null && is.available() > 0 );
-        is.close();
+        }
     }
 
     public void testCopyFile() throws Exception {
@@ -226,35 +109,13 @@ public class FileToolsTest extends TestCase {
         testout.delete();
     }
 
-    public void testUnGzipFile() throws Exception {
-        String result = FileTools.unGzipFile( compressed.getAbsolutePath() );
-        Reader r = new FileReader( new File( result ) );
-        char[] buf = new char[1024];
-        int j = r.read( buf );
-        assertEquals( "unexpected character count", 13, j );
-    }
-
-    public void testUnzipFile() throws Exception {
-        zipped = File.createTempFile( "test", ".zip" );
-        log.info( "Created " + zipped );
-        ZipOutputStream out = new ZipOutputStream( new FileOutputStream( zipped ) );
-        for ( int i = 0; i < 3; i++ ) {
-            out.putNextEntry( new ZipEntry( "foo" + i ) );
-            out.write( ( new Byte( "34" ) ).byteValue() );
-            out.closeEntry();
-        }
-        out.close();
-        Collection result = FileTools.unZipFiles( zipped.getAbsolutePath() );
-        assertEquals( 3, result.size() );
-    }
-
     public void testCopyFileFailOnDirectoryInput() throws Exception {
         try {
 
             FileTools.copyPlainOrCompressedFile( System.getProperty( "java.io.tmpdir" ), tempoutput.getAbsolutePath() );
             fail( "Should have gotten an exception" );
         } catch ( UnsupportedOperationException e ) {
-            ; // expected
+            // expected
         }
     }
 
@@ -266,7 +127,7 @@ public class FileToolsTest extends TestCase {
 
             fail( "Should have gotten an exception" );
         } catch ( UnsupportedOperationException e ) {
-            ; // expected
+            // expected
         }
 
     }
@@ -337,5 +198,156 @@ public class FileToolsTest extends TestCase {
             assertFalse( fail );
             assertTrue( numDeleted == 2 );
         }
+    }
+
+    /*
+     * Test method for 'basecode.util.FileTools.getExtension(String)'
+     */
+    public void testGetExtension() throws Exception {
+        assertEquals( "bar", FileTools.getExtension( plain.getPath() ) );
+    }
+
+    /*
+     * Test method for 'basecode.util.FileTools.getInputStreamFromPlainOrCompressedFile(String)'
+     */
+    public void testGetInputStreamFromPlainOrCompressedFile() throws Exception {
+        InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile( plain.getPath() );
+        assertTrue( is != null && is.available() > 0 );
+        is.close();
+    }
+
+    /*
+     * Test method for 'basecode.util.FileTools.getWithoutExtension(String)'
+     */
+    public void testGetWithoutExtension() throws Exception {
+        assertFalse( FileTools.chompExtension( plain.getPath() ).endsWith( ".bar" ) );
+    }
+
+    /*
+     * Test method for 'basecode.util.FileTools.getWithoutExtension(String)'
+     */
+    public void testGetWithoutExtensionB() throws Exception {
+        assertEquals( "a.b", FileTools.chompExtension( "a.b.jar" ) );
+    }
+
+    /*
+     * Test method for 'basecode.util.FileTools.getWithoutExtension(String)'
+     */
+    public void testGetWithoutExtensionC() throws Exception {
+        assertEquals( "a.b.", FileTools.chompExtension( "a.b..jar" ) );
+    }
+
+    /*
+     * Test method for 'basecode.util.FileTools.hasImageExtension(String)'
+     */
+    public void testHasImageExtension() throws Exception {
+        assertFalse( FileTools.hasImageExtension( plain.getPath() ) );
+    }
+
+    /*
+     * Test method for 'basecode.util.FileTools.hasXMLExtension(String)'
+     */
+    public void testHasXMLExtension() throws Exception {
+        assertFalse( FileTools.hasXMLExtension( plain.getPath() ) );
+    }
+
+    /*
+     * Test method for 'basecode.util.FileTools.isGZipped(String)'
+     */
+    public void testIsGZipped() throws Exception {
+        assertFalse( FileTools.isGZipped( plain.getPath() ) );
+    }
+
+    /*
+     * Test method for 'basecode.util.FileTools.isZipped(String)'
+     */
+    public void testIsZipped() throws Exception {
+        assertFalse( FileTools.isZipped( plain.getPath() ) );
+    }
+
+    /*
+     * Test method for 'basecode.util.FileTools.testDir(String)'
+     */
+    public void testTestDir() throws Exception {
+        assertFalse( FileTools.testDir( plain.getPath() ) );
+    }
+
+    /*
+     * Test method for 'basecode.util.FileTools.testFile(File)'
+     */
+    public void testTestFileFile() throws Exception {
+        assertTrue( FileTools.testFile( plain ) );
+    }
+
+    /*
+     * Test method for 'basecode.util.FileTools.testFile(String)'
+     */
+    public void testTestFileString() throws Exception {
+        assertTrue( FileTools.testFile( plain.getPath() ) );
+    }
+
+    public void testUnGzipFile() throws Exception {
+        String result = FileTools.unGzipFile( compressed.getAbsolutePath() );
+        Reader r = new FileReader( new File( result ) );
+        char[] buf = new char[1024];
+        int j = r.read( buf );
+        assertEquals( "unexpected character count", 13, j );
+    }
+
+    public void testUnzipFile() throws Exception {
+        zipped = File.createTempFile( "test", ".zip" );
+        log.info( "Created " + zipped );
+        ZipOutputStream out = new ZipOutputStream( new FileOutputStream( zipped ) );
+        for ( int i = 0; i < 3; i++ ) {
+            out.putNextEntry( new ZipEntry( "foo" + i ) );
+            out.write( ( new Byte( "34" ) ).byteValue() );
+            out.closeEntry();
+        }
+        out.close();
+        Collection result = FileTools.unZipFiles( zipped.getAbsolutePath() );
+        assertEquals( 3, result.size() );
+    }
+
+    /*
+     * @see TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        plain = File.createTempFile( "foo", ".bar" );
+        plain.deleteOnExit();
+        FileOutputStream tmp = new FileOutputStream( plain );
+        tmp.write( "fooblydoobly\n".getBytes() );
+        tmp.close();
+
+        compressed = new File( plain.getAbsolutePath() + ".gz" );
+        OutputStream fos = new FileOutputStream( compressed );
+        OutputStream cos = new GZIPOutputStream( fos );
+
+        InputStream input = new FileInputStream( plain );
+
+        byte[] buf = new byte[1024];
+        int len;
+        while ( ( len = input.read( buf ) ) > 0 ) {
+            cos.write( buf, 0, len );
+        }
+        input.close();
+        cos.close();
+        tempoutput = File.createTempFile( "junkme", ".txt" );
+
+        tempdir = FileTools.createDir( System.getProperty( "java.io.tmpdir" ) + File.separatorChar + "junk.tmpdir" );
+
+    }
+
+    /*
+     * @see TestCase#tearDown()
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        if ( plain != null ) plain.delete();
+        if ( compressed != null ) compressed.delete();
+        if ( tempoutput != null ) tempoutput.delete();
+        if ( tempdir != null ) tempdir.delete();
     }
 }

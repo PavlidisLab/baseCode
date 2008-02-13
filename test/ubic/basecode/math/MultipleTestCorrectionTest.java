@@ -34,29 +34,6 @@ public class MultipleTestCorrectionTest extends TestCase {
     private DoubleArrayList values;
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
-        DoubleMatrixReader dmr = new DoubleMatrixReader();
-        DoubleMatrixNamed<String, String> mat = ( DoubleMatrixNamed<String, String> ) dmr.read( this.getClass()
-                .getResourceAsStream( "/data/multtest.test.txt" ) );
-
-        values = new DoubleArrayList( mat.getColumnByName( "rawp" ) );
-    }
-
-    /*
-     * Test method for 'basecode.math.MultipleTestCorrection.BonferroniCut(DoubleArrayList, double)'
-     */
-    public void testBonferroniCut() throws Exception {
-        double actualResult = MultipleTestCorrection.BonferroniCut( values, 0.01 );
-        double expectedResult = 3.30E-06;
-        assertEquals( expectedResult, actualResult, 0.00001 );
-    }
-
-    /*
      * Test method for 'basecode.math.MultipleTestCorrection.BenjaminiHochbergCut(DoubleArrayList, double)'
      */
     public void testBenjaminiHochbergCut() throws Exception {
@@ -72,6 +49,30 @@ public class MultipleTestCorrectionTest extends TestCase {
         double actualResult = MultipleTestCorrection.BenjaminiYekuteliCut( values, 0.01 );
         double expectedResult = 0.00013;
         assertEquals( expectedResult, actualResult, 0.00001 );
+    }
+
+    /*
+     * Test method for 'basecode.math.MultipleTestCorrection.BonferroniCut(DoubleArrayList, double)'
+     */
+    public void testBonferroniCut() throws Exception {
+        double actualResult = MultipleTestCorrection.BonferroniCut( values, 0.01 );
+        double expectedResult = 3.30E-06;
+        assertEquals( expectedResult, actualResult, 0.00001 );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        DoubleMatrixReader dmr = new DoubleMatrixReader();
+        DoubleMatrixNamed<String, String> mat = ( DoubleMatrixNamed<String, String> ) dmr.read( this.getClass()
+                .getResourceAsStream( "/data/multtest.test.txt" ) );
+
+        values = new DoubleArrayList( mat.getColumnByName( "rawp" ) );
     }
 
 }

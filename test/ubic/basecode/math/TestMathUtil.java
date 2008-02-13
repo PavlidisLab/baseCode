@@ -6,7 +6,7 @@ import ubic.basecode.util.RegressionTesting;
 /**
  * <hr>
  * <p>
- * Copyright (c) 2004-2005 Columbia University
+ * Copyright (c) 2004-2005 University of British Columbia
  * 
  * @author pavlidis
  * @version $Id$

@@ -30,8 +30,8 @@ import junit.framework.TestCase;
  * @version $Id$
  */
 public class TestDirectedGraph extends TestCase {
-    DirectedGraph testGraph;
-    DirectedGraph testGraphCycle; // has a cycle.
+    DirectedGraph<String, String> testGraph;
+    DirectedGraph<String, String> testGraphCycle; // has a cycle.
 
     /**
      * Constructor for TestDirectedGraph.
@@ -40,7 +40,7 @@ public class TestDirectedGraph extends TestCase {
      */
     public TestDirectedGraph( String arg0 ) {
         super( arg0 );
-        testGraph = new DirectedGraph();
+        testGraph = new DirectedGraph<String, String>();
 
         testGraph.addNode( "b", "bee." );
         testGraph.addNode( "a", "aaa." );
@@ -58,7 +58,7 @@ public class TestDirectedGraph extends TestCase {
         testGraph.addChildTo( "c", "e" ); // top down
         testGraph.addParentTo( "f", "c" ); // bottom up
 
-        testGraphCycle = new DirectedGraph();
+        testGraphCycle = new DirectedGraph<String, String>();
 
         testGraphCycle.addNode( "b", "bee." );
         testGraphCycle.addNode( "a", "aaa." );
@@ -78,29 +78,17 @@ public class TestDirectedGraph extends TestCase {
         testGraphCycle.addParentTo( "f", "e" ); // cycle
     }
 
-    /*
-     * @see TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    public void testToString() {
-        String expectedReturn = "aaa.\n\tbee.\n\tcee.\n\t\tdee.\n\t\teee.\n\t\teff.\n";
-        String actualReturn = testGraph.toString();
+    public void testGetChildren() {
+        DirectedGraphNode n = testGraph.get( "c" );
+        String actualReturn = n.getChildGraph().toString();
+        String expectedReturn = "cee.\n\tdee.\n\teee.\n\teff.\n";
         assertEquals( "return", expectedReturn, actualReturn );
     }
 
     public void testTopoSort() {
         testGraph.topoSort();
-        List nodes = new ArrayList( testGraph.getItems().values() );
+        List<DirectedGraphNode<String, String>> nodes = new ArrayList<DirectedGraphNode<String, String>>( testGraph
+                .getItems().values() );
         Collections.sort( nodes );
         StringBuffer buf = new StringBuffer();
         for ( Iterator it = nodes.iterator(); it.hasNext(); ) {
@@ -112,11 +100,26 @@ public class TestDirectedGraph extends TestCase {
         assertEquals( "return", expectedReturn, actualReturn );
     }
 
-    public void testGetChildren() {
-        DirectedGraphNode n = ( DirectedGraphNode ) testGraph.get( "c" );
-        String actualReturn = n.getChildGraph().toString();
-        String expectedReturn = "cee.\n\tdee.\n\teee.\n\teff.\n";
+    public void testToString() {
+        String expectedReturn = "aaa.\n\tbee.\n\tcee.\n\t\tdee.\n\t\teee.\n\t\teff.\n";
+        String actualReturn = testGraph.toString();
         assertEquals( "return", expectedReturn, actualReturn );
+    }
+
+    /*
+     * @see TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+    }
+
+    /*
+     * @see TestCase#tearDown()
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
     }
 
 }

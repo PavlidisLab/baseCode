@@ -11,22 +11,6 @@ public class TestStringConverter extends TestCase {
     StringConverter sc;
     ByteArrayConverter bac;
 
-    /*
-     * @see TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
-        sc = new StringConverter();
-        bac = new ByteArrayConverter();
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     /**
      * 
      *
@@ -41,6 +25,24 @@ public class TestStringConverter extends TestCase {
         // // Integer(actualReturn[i]).toBinaryString(actualReturn[i]));
         // assertEquals( "return value", expectedValue[i], actualReturn[i], 0 );
         // }
+    }
+
+    /*
+     * @see TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        sc = new StringConverter();
+        bac = new ByteArrayConverter();
+    }
+
+    /*
+     * @see TestCase#tearDown()
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
     }
 
     // /**

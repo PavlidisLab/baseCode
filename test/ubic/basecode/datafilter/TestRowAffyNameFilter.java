@@ -27,18 +27,11 @@ import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
  */
 public class TestRowAffyNameFilter extends AbstractTestFilter {
 
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     public void testFilter() {
-        AffymetrixProbeNameFilter fi = new AffymetrixProbeNameFilter( new int[] { AffymetrixProbeNameFilter.AFFX,
-                AffymetrixProbeNameFilter.X, AffymetrixProbeNameFilter.ST, AffymetrixProbeNameFilter.F } );
-        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) fi.filter( testdata );
+        AffymetrixProbeNameFilter<DoubleMatrixNamed<String, String>, String, String, Double> fi = new AffymetrixProbeNameFilter<DoubleMatrixNamed<String, String>, String, String, Double>(
+                new int[] { AffymetrixProbeNameFilter.AFFX, AffymetrixProbeNameFilter.X, AffymetrixProbeNameFilter.ST,
+                        AffymetrixProbeNameFilter.F } );
+        DoubleMatrixNamed filtered = fi.filter( testdata );
         int expectedReturn = teststringdata.rows() - 5; // file contains on AFFX,
         // and two _f_ tags.
         int actualReturn = filtered.rows();
@@ -46,13 +39,24 @@ public class TestRowAffyNameFilter extends AbstractTestFilter {
     }
 
     public void testStringFilter() {
-        AffymetrixProbeNameFilter fi = new AffymetrixProbeNameFilter( new int[] { AffymetrixProbeNameFilter.AFFX,
-                AffymetrixProbeNameFilter.X, AffymetrixProbeNameFilter.ST, AffymetrixProbeNameFilter.F } );
-        StringMatrix2DNamed filtered = ( StringMatrix2DNamed ) fi.filter( teststringdata );
+        AffymetrixProbeNameFilter<StringMatrix2DNamed<String, String>, String, String, String> fi = new AffymetrixProbeNameFilter<StringMatrix2DNamed<String, String>, String, String, String>(
+                new int[] { AffymetrixProbeNameFilter.AFFX, AffymetrixProbeNameFilter.X, AffymetrixProbeNameFilter.ST,
+                        AffymetrixProbeNameFilter.F } );
+        StringMatrix2DNamed filtered = fi.filter( teststringdata );
         int expectedReturn = teststringdata.rows() - 5; // file contains on AFFX,
         // and two _f_ tags.
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
     }
 
 }

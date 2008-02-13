@@ -30,27 +30,10 @@ public class DistanceTest extends TestCase {
     DoubleArrayList x;
     DoubleArrayList y;
 
+    @Override
     public void setUp() throws Exception {
         x = new DoubleArrayList( new double[] { 1, 3, 4, 6 } );
         y = new DoubleArrayList( new double[] { -5, 2, 4, 6 } );
-    }
-
-    public void testManhattanDistance() {
-        double actualValue = Distance.manhattanDistance( x, y );
-        double expectedValue = 7.0;
-        assertEquals( expectedValue, actualValue, 0.001 );
-    }
-
-    public void testEuclDistance() {
-        double actualValue = Distance.euclDistance( x, y );
-        double expectedValue = 6.0827;
-        assertEquals( expectedValue, actualValue, 0.001 );
-    }
-
-    public void testSpearmanRankCorrelation() {
-        double actualValue = Distance.spearmanRankCorrelation( x, y );
-        double expectedValue = 1.0;
-        assertEquals( expectedValue, actualValue, 0.001 );
     }
 
     public void testCorrelationOfStandardizedDoubleArrayDoubleArray() {
@@ -64,6 +47,24 @@ public class DistanceTest extends TestCase {
         double actualValue = Distance.correlationOfStandardized( new DoubleArrayList( new double[] { -1.20096,
                 -0.24019, 0.24019, 1.20096 } ), new DoubleArrayList( new double[] { -1.41, 0.0522233, 0.47, 0.8877 } ) );
         double expectedValue = 0.9533;
+        assertEquals( expectedValue, actualValue, 0.001 );
+    }
+
+    public void testEuclDistance() {
+        double actualValue = Distance.euclDistance( x, y );
+        double expectedValue = 6.0827;
+        assertEquals( expectedValue, actualValue, 0.001 );
+    }
+
+    public void testManhattanDistance() {
+        double actualValue = Distance.manhattanDistance( x, y );
+        double expectedValue = 7.0;
+        assertEquals( expectedValue, actualValue, 0.001 );
+    }
+
+    public void testSpearmanRankCorrelation() {
+        double actualValue = Distance.spearmanRankCorrelation( x, y );
+        double expectedValue = 1.0;
         assertEquals( expectedValue, actualValue, 0.001 );
     }
 }

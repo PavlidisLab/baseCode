@@ -1,63 +1,66 @@
+/*
+ * The baseCode project
+ * 
+ * Copyright (c) 2008 University of British Columbia
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package ubic.basecode.io.reader;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import junit.framework.TestCase;
-import ubic.basecode.dataStructure.matrix.SparseDoubleMatrix2DNamed;
-import ubic.basecode.util.RegressionTesting;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.math.Constants;
 
 /**
- * <hr>
- * <p>
- * Copyright (c) 2004 Columbia University
- * 
  * @author pavlidis
  * @version $Id$
  */
 public class TestSparseDoubleMatrixReader extends TestCase {
-    SparseDoubleMatrix2DNamed matrix = null;
+    DoubleMatrixNamed<String, String> matrix = null;
     InputStream is = null;
     InputStream isa = null;
     SparseDoubleMatrixReader reader = null;
 
-    /*
-     * @see TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
-        reader = new SparseDoubleMatrixReader();
-        is = TestSparseDoubleMatrixReader.class.getResourceAsStream( "/data/JW-testmatrix.txt" );
-        isa = TestSparseDoubleMatrixReader.class.getResourceAsStream( "/data/adjacencylist-testmatrix.txt" );
+    public void testReadJW() throws Exception {
+        matrix = reader.readJW( is );
+        assertEquals( 3, matrix.rows() );
+        assertEquals( 3, matrix.columns() );
+        assertEquals( 0.1, matrix.get( 1, 1 ), Constants.SMALL );
+        assertEquals( 0.3, matrix.get( 2, 0 ), Constants.SMALL );
+        assertEquals( 0.0, matrix.get( 0, 2 ), Constants.SMALL );
     }
 
     /*
      * Class under test for NamedMatrix read(String)
      */
-    public void testReadStream() {
-        try {
-            matrix = ( SparseDoubleMatrix2DNamed ) reader.read( isa, null );
-            String actualReturn = matrix.toString();
-            String expectedReturn = RegressionTesting.readTestResult( TestSparseDoubleMatrixReader.class
-                    .getResourceAsStream( "/data/JW-testoutputSym.txt" ) );
-            // System.err.println("testReadStream\nHere it is:\n" + actualReturn + "\nExpected:\n" + expectedReturn);
-            assertEquals( "return value", expectedReturn, actualReturn );
-
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
-
+    public void testReadStream() throws Exception {
+        matrix = reader.read( isa, null );
+        assertEquals( 3, matrix.rows() );
+        assertEquals( 3, matrix.columns() );
+        assertEquals( 0.1, matrix.get( 1, 1 ), Constants.SMALL );
+        assertEquals( 0.3, matrix.get( 2, 0 ), Constants.SMALL );
+        assertEquals( 0.3, matrix.get( 0, 2 ), Constants.SMALL );
+        assertEquals( 0.8, matrix.get( 2, 2 ), Constants.SMALL );
     }
 
-    public void testReadJW() throws Exception {
-
-        matrix = ( SparseDoubleMatrix2DNamed ) reader.readJW( is );
-        String actualReturn = matrix.toString();
-        String expectedReturn = RegressionTesting.readTestResult( TestSparseDoubleMatrixReader.class
-                .getResourceAsStream( "/data/JW-testoutput.txt" ) );
-        // System.err.println("testReadJW\nHere it is:\n" + actualReturn + "\nExpected:\n" + expectedReturn);
-        assertEquals( "return value", expectedReturn, actualReturn );
-
+    protected void setUp() throws Exception {
+        super.setUp();
+        reader = new SparseDoubleMatrixReader();
+        is = TestSparseDoubleMatrixReader.class.getResourceAsStream( "/data/JW-testmatrix.txt" );
+        isa = TestSparseDoubleMatrixReader.class.getResourceAsStream( "/data/adjacencylist-testmatrix.txt" );
     }
 
 }

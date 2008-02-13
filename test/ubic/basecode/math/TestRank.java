@@ -34,31 +34,6 @@ public class TestRank extends TestCase {
     DoubleArrayList testdata = null;
     Map<String, Double> testmap = null;
 
-    /*
-     * @see TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
-        testdata = new DoubleArrayList( new double[] { 10.0, 11.0, 12.0, 13.0, 114.0, 5.0 } );
-        testmap = new HashMap<String, Double>();
-        testmap.put( "Ten", new Double( 10.0 ) );
-        testmap.put( "Eleven", new Double( 11.0 ) );
-        testmap.put( "Twelve", new Double( 12.0 ) );
-        testmap.put( "Thirteen", new Double( 13.0 ) );
-        testmap.put( "HundredFourteen", new Double( 114.0 ) );
-        testmap.put( "Five", new Double( 5.0 ) );
-
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        testdata = null;
-        testmap = null;
-    }
-
     public void testOrder() {
         double[] a = new double[] { 49.0, 43.0, 310.0, 20.0, 20.0, 688.0, 498.0, 533.0, 723.0, 1409.0, 279.0 };
         DoubleArrayList al = new DoubleArrayList( a );
@@ -79,6 +54,29 @@ public class TestRank extends TestCase {
         for ( int i = 0; i < al.size(); i++ ) {
             assertEquals( "at position " + i, expected[i] - 1, actual.get( i ) );
         }
+    }
+
+    /*
+     * Class under test for DoubleArrayList rankTransform(DoubleArrayList)
+     */
+    public void testRankTransformDoubleArrayList() {
+        DoubleArrayList actualReturn = Rank.rankTransform( testdata );
+        DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 2, 3, 4, 5, 6, 1 } );
+        assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
+    public void testRankTransformMap() {
+
+        Map<String, Integer> actualReturn = Rank.rankTransform( testmap );
+        Map<String, Integer> expectedReturn = new HashMap<String, Integer>();
+        expectedReturn.put( "Ten", new Integer( 1 ) );
+        expectedReturn.put( "Eleven", new Integer( 2 ) );
+        expectedReturn.put( "Twelve", new Integer( 3 ) );
+        expectedReturn.put( "Thirteen", new Integer( 4 ) );
+        expectedReturn.put( "HundredFourteen", new Integer( 5 ) );
+        expectedReturn.put( "Five", new Integer( 0 ) );
+        assertEquals( "return value", expectedReturn, actualReturn );
+
     }
 
     public void testRankWithTies() {
@@ -132,25 +130,29 @@ public class TestRank extends TestCase {
     }
 
     /*
-     * Class under test for DoubleArrayList rankTransform(DoubleArrayList)
+     * @see TestCase#setUp()
      */
-    public void testRankTransformDoubleArrayList() {
-        DoubleArrayList actualReturn = Rank.rankTransform( testdata );
-        DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 2, 3, 4, 5, 6, 1 } );
-        assertEquals( "return value", expectedReturn, actualReturn );
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        testdata = new DoubleArrayList( new double[] { 10.0, 11.0, 12.0, 13.0, 114.0, 5.0 } );
+        testmap = new HashMap<String, Double>();
+        testmap.put( "Ten", new Double( 10.0 ) );
+        testmap.put( "Eleven", new Double( 11.0 ) );
+        testmap.put( "Twelve", new Double( 12.0 ) );
+        testmap.put( "Thirteen", new Double( 13.0 ) );
+        testmap.put( "HundredFourteen", new Double( 114.0 ) );
+        testmap.put( "Five", new Double( 5.0 ) );
+
     }
 
-    public void testRankTransformMap() {
-
-        Map<String, Integer> actualReturn = Rank.rankTransform( testmap );
-        Map<String, Integer> expectedReturn = new HashMap<String, Integer>();
-        expectedReturn.put( "Ten", new Integer( 1 ) );
-        expectedReturn.put( "Eleven", new Integer( 2 ) );
-        expectedReturn.put( "Twelve", new Integer( 3 ) );
-        expectedReturn.put( "Thirteen", new Integer( 4 ) );
-        expectedReturn.put( "HundredFourteen", new Integer( 5 ) );
-        expectedReturn.put( "Five", new Integer( 0 ) );
-        assertEquals( "return value", expectedReturn, actualReturn );
-
+    /*
+     * @see TestCase#tearDown()
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        testdata = null;
+        testmap = null;
     }
 }

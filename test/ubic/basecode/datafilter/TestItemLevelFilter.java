@@ -26,30 +26,32 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
  */
 public class TestItemLevelFilter extends AbstractTestFilter {
 
-    ItemLevelFilter f = null;
+    ItemLevelFilter<String, String> f = null;
+
+    public final void testFilter() {
+        f.setLowCut( 0.0 );
+        DoubleMatrixNamed result = f.filter( testdata );
+        int expectedReturn = 283;
+        int actualReturn = result.rows() * result.columns() - result.numMissing();
+        assertEquals( "return value", expectedReturn, actualReturn );
+    }
 
     /*
      * @see TestCase#setUp()
      */
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
-        f = new ItemLevelFilter();
+        f = new ItemLevelFilter<String, String>();
     }
 
     /*
      * @see TestCase#tearDown()
      */
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
 
-    }
-
-    public final void testFilter() {
-        f.setLowCut( 0.0 );
-        DoubleMatrixNamed result = ( DoubleMatrixNamed ) f.filter( testdata );
-        int expectedReturn = 283;
-        int actualReturn = result.rows() * result.columns() - result.numMissing();
-        assertEquals( "return value", expectedReturn, actualReturn );
     }
 
 }

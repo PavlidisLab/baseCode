@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.zip.ZipInputStream;
 
 import junit.framework.TestCase;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import ubic.basecode.dataStructure.matrix.SparseRaggedDoubleMatrix2DNamed;
 import ubic.basecode.util.RegressionTesting;
 
@@ -40,19 +41,6 @@ public class TestSparseRaggedDouble2DNamedMatrixReader extends TestCase {
     InputStream isbig = null;
 
     /*
-     * @see TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
-        reader = new SparseRaggedDouble2DNamedMatrixReader();
-        is = TestSparseRaggedDouble2DNamedMatrixReader.class.getResourceAsStream( "/data/JW-testmatrix.txt" );
-        isa = TestSparseRaggedDouble2DNamedMatrixReader.class
-                .getResourceAsStream( "/data/adjacencylist-testmatrix.txt" );
-        isbig = TestSparseRaggedDouble2DNamedMatrixReader.class
-                .getResourceAsStream( "/data/adjacency_list.7ormore.txt" );
-    }
-
-    /*
      * Class under test for NamedMatrix read(InputStream)
      */
     public void testReadInputStream() throws Exception {
@@ -65,7 +53,7 @@ public class TestSparseRaggedDouble2DNamedMatrixReader extends TestCase {
         String actualReturn = matrix.toString();
         String expectedReturn = RegressionTesting.readTestResult( TestSparseDoubleMatrixReader.class
                 .getResourceAsStream( "/data/JW-testoutput.txt" ) );
-        assertEquals( "return value", expectedReturn, actualReturn );
+        assertEquals( expectedReturn, actualReturn );
     }
 
     /*
@@ -79,10 +67,11 @@ public class TestSparseRaggedDouble2DNamedMatrixReader extends TestCase {
         columnNames.add( "2" );
         columnNames.add( "3" );
         matrix.setColumnNames( columnNames );
-        String actualReturn = matrix.toString();
-        String expectedReturn = RegressionTesting.readTestResult( TestSparseDoubleMatrixReader.class
+
+        DoubleMatrixReader reader = new DoubleMatrixReader();
+        DoubleMatrixNamed<String, String> expectedReturn = reader.read( TestSparseDoubleMatrixReader.class
                 .getResourceAsStream( "/data/JW-testoutputSym.txt" ) );
-        assertEquals( "return value", expectedReturn, actualReturn );
+        assertTrue( RegressionTesting.closeEnough( expectedReturn, matrix, 0.0001 ) );
 
     }
 
@@ -93,16 +82,28 @@ public class TestSparseRaggedDouble2DNamedMatrixReader extends TestCase {
 
         matrix = ( SparseRaggedDoubleMatrix2DNamed<String, String> ) reader.readFromAdjList( isbig );
         matrix.setColumnNames( matrix.getRowNames() );
-        String actualReturn = matrix.toString();
 
         ZipInputStream zis = new ZipInputStream( TestSparseDoubleMatrixReader.class
                 .getResourceAsStream( "/data/adjacency_list.7ormore.output.zip" ) );
         zis.getNextEntry();
+        DoubleMatrixNamed<String, String> expectedReturn = reader.read( zis );
 
-        String expectedReturn = RegressionTesting.readTestResult( zis );
+        assertTrue( RegressionTesting.closeEnough( expectedReturn, matrix, 0.0001 ) );
 
-        assertEquals( "return value", expectedReturn, actualReturn );
+    }
 
+    /*
+     * @see TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        reader = new SparseRaggedDouble2DNamedMatrixReader();
+        is = TestSparseRaggedDouble2DNamedMatrixReader.class.getResourceAsStream( "/data/JW-testmatrix.txt" );
+        isa = TestSparseRaggedDouble2DNamedMatrixReader.class
+                .getResourceAsStream( "/data/adjacencylist-testmatrix.txt" );
+        isbig = TestSparseRaggedDouble2DNamedMatrixReader.class
+                .getResourceAsStream( "/data/adjacency_list.7ormore.txt" );
     }
 
 }

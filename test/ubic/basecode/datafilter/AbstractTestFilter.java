@@ -32,33 +32,32 @@ import ubic.basecode.io.reader.StringMatrixReader;
  */
 public abstract class AbstractTestFilter extends TestCase {
 
-    protected DoubleMatrixNamed testdata = null;
-    protected StringMatrix2DNamed teststringdata = null;
-    protected DoubleMatrixNamed testmissingdata = null;
-    protected StringMatrix2DNamed teststringmissingdata = null;
+    protected DoubleMatrixNamed<String, String> testdata = null;
+    protected StringMatrix2DNamed<String, String> teststringdata = null;
+    protected DoubleMatrixNamed<String, String> testmissingdata = null;
+    protected StringMatrix2DNamed<String, String> teststringmissingdata = null;
 
     public AbstractTestFilter() {
         super();
     }
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         DoubleMatrixReader f = new DoubleMatrixReader();
         StringMatrixReader s = new StringMatrixReader();
 
-        testdata = ( DoubleMatrixNamed ) f.read( AbstractTestFilter.class.getResourceAsStream( "/data/testdata.txt" ) );
+        testdata = f.read( AbstractTestFilter.class.getResourceAsStream( "/data/testdata.txt" ) );
 
-        testmissingdata = ( DoubleMatrixNamed ) f.read( AbstractTestFilter.class
-                .getResourceAsStream( "/data/testdatamissing.txt" ) );
+        testmissingdata = f.read( AbstractTestFilter.class.getResourceAsStream( "/data/testdatamissing.txt" ) );
 
-        teststringdata = ( StringMatrix2DNamed ) s.read( AbstractTestFilter.class
-                .getResourceAsStream( "/data/testdata.txt" ) );
+        teststringdata = s.read( AbstractTestFilter.class.getResourceAsStream( "/data/testdata.txt" ) );
 
-        teststringmissingdata = ( StringMatrix2DNamed ) s.read( AbstractTestFilter.class
-                .getResourceAsStream( "/data/testdatamissing.txt" ) );
-
+        teststringmissingdata = s.read( AbstractTestFilter.class.getResourceAsStream( "/data/testdatamissing.txt" ) );
+        assert teststringmissingdata != null && teststringmissingdata.size() > 0;
     }
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         testdata = null;

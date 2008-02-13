@@ -26,6 +26,23 @@ import junit.framework.TestCase;
  */
 public class BitUtilTest extends TestCase {
 
+    public void testGet() {
+        byte[] v = new byte[4];
+        for ( int i = 0, j = v.length; i < j; i++ ) {
+            v[i] = 0x0;
+        }
+        BitUtil.set( v, 4 );
+        BitUtil.set( v, 14 );
+        BitUtil.set( v, 10 );
+        BitUtil.set( v, 3 );
+        BitUtil.set( v, 11 );
+        BitUtil.set( v, 30 );
+
+        assertTrue( BitUtil.get( v, 4 ) );
+        assertTrue( BitUtil.get( v, 14 ) );
+
+    }
+
     public void testSet() throws Exception {
         byte[] v = new byte[4];
         for ( int i = 0, j = v.length; i < j; i++ ) {
@@ -43,25 +60,7 @@ public class BitUtilTest extends TestCase {
         assertEquals( "00011000 00110010 00000000 00000010 ", buf.toString() );
     }
 
-    /**
-     * @param v
-     * @return
-     */
-    private StringBuilder prettyprint( byte[] v ) {
-        StringBuilder buf = new StringBuilder();
-
-        for ( int i = 0; i < v.length; i++ ) {
-            byte b = v[i];
-            for ( int k = 7; k >= 0; k-- ) {
-                int u = ( b >> k ) & 0x00000001;
-                buf.append( u + "" );
-            }
-            buf.append( " " );
-        }
-        return buf;
-    }
-
-    public void testGet() {
+    public void testClear() {
         byte[] v = new byte[4];
         for ( int i = 0, j = v.length; i < j; i++ ) {
             v[i] = 0x0;
@@ -72,9 +71,26 @@ public class BitUtilTest extends TestCase {
         BitUtil.set( v, 3 );
         BitUtil.set( v, 11 );
         BitUtil.set( v, 30 );
-
+        BitUtil.clear( v, 14 );
+        assertFalse( BitUtil.get( v, 14 ) );
         assertTrue( BitUtil.get( v, 4 ) );
-        assertTrue( BitUtil.get( v, 14 ) );
+        assertTrue( BitUtil.get( v, 30 ) );
+    }
 
+    /**
+     * @param v
+     * @return
+     */
+    private StringBuilder prettyprint( byte[] v ) {
+        StringBuilder buf = new StringBuilder();
+
+        for ( byte b : v ) {
+            for ( int k = 7; k >= 0; k-- ) {
+                int u = b >> k & 0x00000001;
+                buf.append( u + "" );
+            }
+            buf.append( " " );
+        }
+        return buf;
     }
 }

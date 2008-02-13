@@ -14,6 +14,16 @@ import javax.swing.UIManager;
  */
 public class GradientBarApp {
 
+    // Main method: args[0] can contain the name of the data file
+    public static void main( String[] args ) {
+        try {
+            UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+        new GradientBarApp();
+    }
+
     boolean packFrame = false;
 
     /** Creates a new instance of GradientBarApp */
@@ -51,15 +61,5 @@ public class GradientBarApp {
         frame.setLocation( ( screenSize.width - frameSize.width ) / 2, ( screenSize.height - frameSize.height ) / 2 );
         frame.setVisible( true );
 
-    }
-
-    // Main method: args[0] can contain the name of the data file
-    public static void main( String[] args ) {
-        try {
-            UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-        new GradientBarApp();
     }
 }

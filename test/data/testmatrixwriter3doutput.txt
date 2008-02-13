@@ -1,0 +1,5 @@
+ID	Slice1	Slice2
+row1:col1	1.0	5.0
+row1:col2	2.0	6.0
+row2:col1	3.0	7.0
+row2:col2	4.0	8.0

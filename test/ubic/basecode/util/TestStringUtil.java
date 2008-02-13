@@ -18,20 +18,6 @@ public class TestStringUtil extends TestCase {
 
     private static Log log = LogFactory.getLog( TestStringUtil.class.getName() );
 
-    /*
-     * @see TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     // simple case
     public void testCsvSplitA() {
         String i = "foo,bar,aloo,balloo";
@@ -94,6 +80,33 @@ public class TestStringUtil extends TestCase {
         assertEquals( expectedReturn[3], actualReturn[3] );
     }
 
+    public void testSpeedTwoStringHashKey() {
+        String a = "barblyfoo";
+        String b = "fooblybar";
+        StopWatch timer = new StopWatch();
+        timer.start();
+        int iters = 100000;
+        for ( int i = 0; i < iters; i++ ) {
+            StringUtil.twoStringHashKey( a, b );
+        }
+        timer.stop();
+        log.debug( "Bitwise hash took " + timer.getTime() + " milliseconds" );
+        timer.reset();
+        timer.start();
+//        for ( int i = 0; i < iters; i++ ) {
+//            String r;
+//            if ( a.hashCode() < b.hashCode() ) {
+//                r = b + "___" + a;
+//            } else {
+//                r = a + "___" + b;
+//            }
+//            // if ( log.isTraceEnabled() ) log.trace( r ); // avoid compiler warning about r not being used - no big
+//            // time.
+//        }
+        timer.stop();
+        log.debug( "String concat " + timer.getTime() + " milliseconds" );
+    }
+
     public void testTwoStringHashKey() throws Exception {
         String i = "foo";
         String j = "bar";
@@ -103,7 +116,7 @@ public class TestStringUtil extends TestCase {
 
         log.debug( Long.toBinaryString( jcode.longValue() ) + " " + Long.toBinaryString( icode.longValue() << 32 ) );
 
-        long expectedResult = jcode.longValue() | ( icode.longValue() << 32 );
+        long expectedResult = jcode.longValue() | icode.longValue() << 32;
 
         Long result = ( Long ) StringUtil.twoStringHashKey( j, i );
 
@@ -119,29 +132,19 @@ public class TestStringUtil extends TestCase {
         assertEquals( StringUtil.twoStringHashKey( i, j ), StringUtil.twoStringHashKey( j, i ) );
     }
 
-    public void testSpeedTwoStringHashKey() {
-        String a = "barblyfoo";
-        String b = "fooblybar";
-        StopWatch timer = new StopWatch();
-        timer.start();
-        int iters = 100000;
-        for ( int i = 0; i < iters; i++ ) {
-            StringUtil.twoStringHashKey( a, b );
-        }
-        timer.stop();
-        log.debug( "Bitwise hash took " + timer.getTime() + " milliseconds" );
-        timer.reset();
-        timer.start();
-        for ( int i = 0; i < iters; i++ ) {
-            String r;
-            if ( a.hashCode() < b.hashCode() ) {
-                r = b + "___" + a;
-            } else {
-                r = a + "___" + b;
-            }
-            if ( log.isTraceEnabled() ) log.trace( r ); // avoid compiler warning about r not being used - no big time.
-        }
-        timer.stop();
-        log.debug( "String concat " + timer.getTime() + " milliseconds" );
+    /*
+     * @see TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+    }
+
+    /*
+     * @see TestCase#tearDown()
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
     }
 }

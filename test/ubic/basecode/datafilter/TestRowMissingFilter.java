@@ -29,76 +29,21 @@ import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
  */
 public class TestRowMissingFilter extends AbstractTestFilter {
 
-    RowMissingFilter f = null;
-
-    /*
-     * @see TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
-        f = new RowMissingFilter();
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception {
-        f = null;
-        super.tearDown();
-    }
+    RowMissingFilter<DoubleMatrixNamed<String, String>, String, String, Double> f = null;
+    RowMissingFilter<StringMatrix2DNamed<String, String>, String, String, String> fss = null;
+    RowAbsentFilter<StringMatrix2DNamed<String, String>, String, String, String> fs = null;
 
     public void testFilter() {
         f.setMinPresentCount( 12 );
-        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f.filter( testdata );
+        DoubleMatrixNamed<String, String> filtered = f.filter( testdata );
         int expectedReturn = testdata.rows();
-        int actualReturn = filtered.rows();
-        assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
-    public void testFilterNoFiltering() {
-        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f.filter( testdata );
-        int expectedReturn = testdata.rows();
-        int actualReturn = filtered.rows();
-        assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
-    public void testFilterWithMissing() {
-        f.setMinPresentCount( 12 );
-        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f.filter( testmissingdata );
-        int expectedReturn = 21;
-        int actualReturn = filtered.rows();
-        assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
-    public void testFilterWithMissingLowMaxFraction() {
-        f.setMaxFractionRemoved( 0.1 );
-        f.setMinPresentCount( 12 );
-        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f.filter( testmissingdata );
-        int expectedReturn = 21;
-        int actualReturn = filtered.rows();
-        assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
-    public void testFilterWithMissingLessStringent() {
-
-        f.setMinPresentCount( 10 );
-        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f.filter( testmissingdata );
-        int expectedReturn = 29;
-        int actualReturn = filtered.rows();
-        assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
-    public void testFilterStringMatrix() {
-        f.setMinPresentCount( 12 );
-        StringMatrix2DNamed filtered = ( StringMatrix2DNamed ) f.filter( teststringmissingdata );
-        int expectedReturn = 21;
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
     public void testFilterFraction() {
         f.setMinPresentFraction( 1.0 );
-        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f.filter( testmissingdata );
+        DoubleMatrixNamed<String, String> filtered = f.filter( testmissingdata );
         int expectedReturn = 21;
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );
@@ -124,14 +69,11 @@ public class TestRowMissingFilter extends AbstractTestFilter {
 
     }
 
-    public void testMaxFractionRemovedInvalid() {
-        try {
-            f.setMaxFractionRemoved( 934109821 );
-            fail( "Should have gotten an exception" );
-        } catch ( IllegalArgumentException e ) {
-
-        }
-
+    public void testFilterNoFiltering() {
+        DoubleMatrixNamed filtered = f.filter( testdata );
+        int expectedReturn = testdata.rows();
+        int actualReturn = filtered.rows();
+        assertEquals( "return value", expectedReturn, actualReturn );
     }
 
     public void testFilterPresentCountInvalid() {
@@ -143,6 +85,71 @@ public class TestRowMissingFilter extends AbstractTestFilter {
 
         }
 
+    }
+
+    public void testFilterStringMatrix() {
+        fss.setMinPresentCount( 12 );
+        System.err.println( teststringmissingdata.rows() );
+        StringMatrix2DNamed<String, String> filtered = fss.filter( teststringmissingdata );
+        int expectedReturn = 21;
+        int actualReturn = filtered.rows();
+        assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
+    public void testFilterWithMissing() {
+        f.setMinPresentCount( 12 );
+        DoubleMatrixNamed<String, String> filtered = f.filter( testmissingdata );
+        int expectedReturn = 21;
+        int actualReturn = filtered.rows();
+        assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
+    public void testFilterWithMissingLessStringent() {
+
+        f.setMinPresentCount( 10 );
+        DoubleMatrixNamed<String, String> filtered = f.filter( testmissingdata );
+        int expectedReturn = 29;
+        int actualReturn = filtered.rows();
+        assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
+    public void testFilterWithMissingLowMaxFraction() {
+        f.setMaxFractionRemoved( 0.1 );
+        f.setMinPresentCount( 12 );
+        DoubleMatrixNamed<String, String> filtered = f.filter( testmissingdata );
+        int expectedReturn = 21;
+        int actualReturn = filtered.rows();
+        assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
+    public void testMaxFractionRemovedInvalid() {
+        try {
+            f.setMaxFractionRemoved( 934109821 );
+            fail( "Should have gotten an exception" );
+        } catch ( IllegalArgumentException e ) {
+
+        }
+
+    }
+
+    /*
+     * @see TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        f = new RowMissingFilter<DoubleMatrixNamed<String, String>, String, String, Double>();
+        fss = new RowMissingFilter<StringMatrix2DNamed<String, String>, String, String, String>();
+        fs = new RowAbsentFilter<StringMatrix2DNamed<String, String>, String, String, String>();
+    }
+
+    /*
+     * @see TestCase#tearDown()
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        f = null;
+        super.tearDown();
     }
 
 }

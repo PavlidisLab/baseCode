@@ -25,10 +25,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import junit.framework.TestCase;
 
-import ubic.basecode.BaseTestCase;
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 
@@ -36,24 +34,96 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
  * @author keshav
  * @version $Id$
  */
-public class JMatrixDisplayTest extends BaseTestCase {
-    private Log log = LogFactory.getLog( this.getClass() );
-
+public class JMatrixDisplayTest extends TestCase {
     double[][] array = new double[5][5];
 
     double[] row0 = { 3, 2, 5, 6, 9 };
+
     double[] row1 = { 100, 13, 0, 12, 0 };
     double[] row2 = { 7, 78, 23, 98, 4 };
     double[] row3 = { 54, 7, 8, 3, 1 };
     double[] row4 = { 13, 2, 9, 7, 0 };
-
     List<String> rowNames = new ArrayList<String>();
+
     File tmp;
     List<String> colNames = new ArrayList<String>();
 
     /**
      * 
+     *
      */
+    public void testSaveImage() {
+
+        DoubleMatrixNamed<String, String> matrix = new DenseDoubleMatrix2DNamed<String, String>( array );
+        matrix.setRowNames( rowNames );
+        matrix.setColumnNames( colNames );
+        ColorMatrix colorMatrix = new ColorMatrix( matrix );
+        JMatrixDisplay display = new JMatrixDisplay( colorMatrix );
+        display.setLabelsVisible( true );
+
+        boolean fail = false;
+        try {
+            display.saveImage( tmp.getAbsolutePath() );
+        } catch ( IOException e ) {
+            fail = true;
+            e.printStackTrace();
+        } finally {
+            assertFalse( fail );
+        }
+    }
+
+    /**
+     * 
+     *
+     */
+    public void testSaveImageStandardize() {
+
+        DoubleMatrixNamed<String, String> matrix = new DenseDoubleMatrix2DNamed<String, String>( array );
+        matrix.setRowNames( rowNames );
+        matrix.setColumnNames( colNames );
+        ColorMatrix colorMatrix = new ColorMatrix( matrix );
+        JMatrixDisplay display = new JMatrixDisplay( colorMatrix );
+        display.setLabelsVisible( true );
+
+        boolean fail = false;
+        try {
+            display.saveImage( tmp.getAbsolutePath() );
+        } catch ( IOException e ) {
+            fail = true;
+            e.printStackTrace();
+        } finally {
+            assertFalse( fail );
+        }
+    }
+
+    /**
+     * 
+     *
+     */
+    public void testWriteOutAsPNG() {
+        DoubleMatrixNamed<String, String> matrix = new DenseDoubleMatrix2DNamed<String, String>( array );
+        matrix.setRowNames( rowNames );
+        matrix.setColumnNames( colNames );
+        ColorMatrix colorMatrix = new ColorMatrix( matrix );
+        JMatrixDisplay display = new JMatrixDisplay( colorMatrix );
+        display.setLabelsVisible( true );
+
+        boolean fail = false;
+        try {
+            OutputStream stream = new FileOutputStream( File.createTempFile( "testOuputStream", ".out" ) );
+            display.saveImageToPng( colorMatrix, stream, true, true );
+        } catch ( IOException e ) {
+            fail = true;
+            e.printStackTrace();
+        } finally {
+            assertFalse( fail );
+        }
+    }
+
+    /**
+     * 
+     */
+    @Override
     protected void setUp() throws Exception {
         tmp = File.createTempFile( "testimage", ".png" );
 
@@ -79,6 +149,7 @@ public class JMatrixDisplayTest extends BaseTestCase {
     /**
      * 
      */
+    @Override
     protected void tearDown() throws Exception {
         tmp.delete();
         rowNames = null;
@@ -86,93 +157,4 @@ public class JMatrixDisplayTest extends BaseTestCase {
 
     }
 
-    /**
-     * 
-     *
-     */
-    public void testSaveImage() {
-
-        DoubleMatrixNamed matrix = new DenseDoubleMatrix2DNamed( array );
-        matrix.setRowNames( rowNames );
-        matrix.setColumnNames( colNames );
-        ColorMatrix colorMatrix = new ColorMatrix( matrix );
-        JMatrixDisplay display = new JMatrixDisplay( colorMatrix );
-        display.setLabelsVisible( true );
-
-        boolean fail = false;
-        try {
-            display.saveImage( tmp.getAbsolutePath() );
-        } catch ( IOException e ) {
-            fail = true;
-            e.printStackTrace();
-        } finally {
-            assertFalse( fail );
-        }
-    }
-
-    /**
-     * 
-     *
-     */
-    public void testSaveImageStandardize() {
-
-        // DoubleMatrix2D matrix = new DenseDoubleMatrix2D( array );
-        DoubleMatrixNamed matrix = new DenseDoubleMatrix2DNamed( array );
-        matrix.setRowNames( rowNames );
-        matrix.setColumnNames( colNames );
-        ColorMatrix colorMatrix = new ColorMatrix( matrix );
-        JMatrixDisplay display = new JMatrixDisplay( colorMatrix );
-        display.setLabelsVisible( true );
-
-        boolean fail = false;
-        try {
-            display.saveImage( tmp.getAbsolutePath() );
-        } catch ( IOException e ) {
-            fail = true;
-            e.printStackTrace();
-        } finally {
-            assertFalse( fail );
-        }
-    }
-
-    /**
-     * 
-     *
-     */
-    public void testWriteOutAsPNG() {
-        DoubleMatrixNamed matrix = new DenseDoubleMatrix2DNamed( array );
-        matrix.setRowNames( rowNames );
-        matrix.setColumnNames( colNames );
-        ColorMatrix colorMatrix = new ColorMatrix( matrix );
-        JMatrixDisplay display = new JMatrixDisplay( colorMatrix );
-        display.setLabelsVisible( true );
-
-        boolean fail = false;
-        try {
-            OutputStream stream = new FileOutputStream( File.createTempFile( "testOuputStream", ".out" ) );
-            display.saveImageToPng( colorMatrix, stream, true, true );
-        } catch ( IOException e ) {
-            fail = true;
-            e.printStackTrace();
-        } finally {
-            assertFalse( fail );
-        }
-    }
-
-    // public void testColorMatrixHtmlLabels() {
-    //
-    // // DoubleMatrix2D matrix = new DenseDoubleMatrix2D( array );
-    // DoubleMatrixNamed matrix = new DenseDoubleMatrix2DNamed( array );
-    // matrix.setRowNames( rowNames );
-    // matrix.setColumnNames( colNames );
-    // ColorMatrix colorMatrix = new ColorMatrix( matrix );
-    // JMatrixDisplay display = new JMatrixDisplay( colorMatrix );
-    // try {
-    // display.setLabelsVisible( true );
-    // // display.saveImage( "test/ubic/basecode/gui/outfile.png" );
-    // display.cacheImage( "test/ubic/basecode/gui/outfile2.png", true, true );
-    // } catch ( IOException e ) {
-    // e.printStackTrace();
-    // }
-    // }
 }

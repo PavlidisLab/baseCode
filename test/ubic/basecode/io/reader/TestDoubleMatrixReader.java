@@ -31,16 +31,83 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
  */
 public class TestDoubleMatrixReader extends TestCase {
 
-    DoubleMatrixNamed matrix = null;
+    DoubleMatrixNamed<String, String> matrix = null;
     InputStream is = null;
     DoubleMatrixReader reader = null;
     InputStream ism = null;
     InputStream ismb = null; // missing, with bad rows.
     ZipInputStream isbig = null; // missing, with bad rows.
 
+    public void testReadInputStreamColumnCount() throws Exception {
+
+        matrix = reader.read( is );
+        int actualReturn = matrix.columns();
+        int expectedReturn = 12;
+        assertEquals( "return value", expectedReturn, actualReturn );
+
+    }
+
+    public void testReadInputStreamGotColName() throws Exception {
+        matrix = reader.read( is );
+        boolean actualReturn = matrix.containsColumnName( "sample1" ) && matrix.containsColumnName( "sample12" );
+        boolean expectedReturn = true;
+        assertEquals( "return value (for sample1 and sample12)", expectedReturn, actualReturn );
+
+    }
+
+    public void testReadInputStreamGotRowName() throws Exception {
+
+        matrix = reader.read( is );
+        boolean actualReturn = matrix.containsRowName( "gene1_at" ) && matrix.containsRowName( "AFFXgene30_at" );
+        boolean expectedReturn = true;
+        assertEquals( "return value", expectedReturn, actualReturn );
+
+    }
+
+    public void testReadInputStreamMissing() throws Exception {
+
+        matrix = reader.read( ism );
+        int actualReturn = matrix.rows();
+        int expectedReturn = 30;
+        assertEquals( 12, matrix.getRow( 3 ).length );
+        assertEquals( "return value", expectedReturn, actualReturn );
+
+    }
+
+    public void testReadInputStreamMissingBad() throws Exception {
+        try {
+            matrix = reader.read( ismb );
+            fail( "Should have gotten an IO error" );
+        } catch ( IOException e ) {
+        }
+    }
+
+    public void testReadInputStreamMissingSpaces() throws Exception {
+        InputStream isl = this.getClass().getResourceAsStream( "/data/luo-prostate.sample.txt" );
+        matrix = reader.read( isl );
+        int actualReturn = matrix.rows();
+        int expectedReturn = 173;
+        assertEquals( 25, matrix.getRow( 3 ).length );
+        assertEquals( "return value", expectedReturn, actualReturn );
+
+    }
+
+    /*
+     * Class under test for NamedMatrix read(InputStream)
+     */
+    public void testReadInputStreamRowCount() throws Exception {
+
+        matrix = reader.read( is );
+        int actualReturn = matrix.rows();
+        int expectedReturn = 30;
+        assertEquals( "return value", expectedReturn, actualReturn );
+
+    }
+
     /*
      * @see TestCase#setUp()
      */
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         reader = new DoubleMatrixReader();
@@ -58,6 +125,7 @@ public class TestDoubleMatrixReader extends TestCase {
     /*
      * @see TestCase#tearDown()
      */
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         is.close();
@@ -65,72 +133,6 @@ public class TestDoubleMatrixReader extends TestCase {
         ismb.close();
         isbig.close();
         matrix = null;
-    }
-
-    public void testReadInputStreamMissingSpaces() throws Exception {
-        InputStream isl = this.getClass().getResourceAsStream( "/data/luo-prostate.sample.txt" );
-        matrix = ( DoubleMatrixNamed ) reader.read( isl );
-        int actualReturn = matrix.rows();
-        int expectedReturn = 173;
-        assertEquals( 25, matrix.getRow( 3 ).length );
-        assertEquals( "return value", expectedReturn, actualReturn );
-
-    }
-
-    public void testReadInputStreamMissing() throws Exception {
-
-        matrix = ( DoubleMatrixNamed ) reader.read( ism );
-        int actualReturn = matrix.rows();
-        int expectedReturn = 30;
-        assertEquals( 12, matrix.getRow( 3 ).length );
-        assertEquals( "return value", expectedReturn, actualReturn );
-
-    }
-
-    public void testReadInputStreamMissingBad() throws Exception {
-        try {
-            matrix = ( DoubleMatrixNamed ) reader.read( ismb );
-            fail( "Should have gotten an IO error" );
-        } catch ( IOException e ) {
-        }
-    }
-
-    /*
-     * Class under test for NamedMatrix read(InputStream)
-     */
-    public void testReadInputStreamRowCount() throws Exception {
-
-        matrix = ( DoubleMatrixNamed ) reader.read( is );
-        int actualReturn = matrix.rows();
-        int expectedReturn = 30;
-        assertEquals( "return value", expectedReturn, actualReturn );
-
-    }
-
-    public void testReadInputStreamColumnCount() throws Exception {
-
-        matrix = ( DoubleMatrixNamed ) reader.read( is );
-        int actualReturn = matrix.columns();
-        int expectedReturn = 12;
-        assertEquals( "return value", expectedReturn, actualReturn );
-
-    }
-
-    public void testReadInputStreamGotRowName() throws Exception {
-
-        matrix = ( DoubleMatrixNamed ) reader.read( is );
-        boolean actualReturn = matrix.containsRowName( "gene1_at" ) && matrix.containsRowName( "AFFXgene30_at" );
-        boolean expectedReturn = true;
-        assertEquals( "return value", expectedReturn, actualReturn );
-
-    }
-
-    public void testReadInputStreamGotColName() throws Exception {
-        matrix = ( DoubleMatrixNamed ) reader.read( is );
-        boolean actualReturn = matrix.containsColumnName( "sample1" ) && matrix.containsColumnName( "sample12" );
-        boolean expectedReturn = true;
-        assertEquals( "return value (for sample1 and sample12)", expectedReturn, actualReturn );
-
     }
 
     // public void testReadInputStreamBig() {

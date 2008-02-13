@@ -32,6 +32,88 @@ public class TestStats extends TestCase {
 
     private DoubleArrayList longtest;
 
+    public final void testCdf() {
+        DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 1, 0.947368421052632, 0.789473684210526,
+                0.578947368421053, 0.315789473684211 } );
+        DoubleArrayList actualReturn = Stats.cdf( data1Nomissing );
+        assertEquals( true, RegressionTesting.closeEnough( actualReturn, expectedReturn, 0.0001 ) );
+    }
+
+    public final void testCumulate() {
+        DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 1, 4, 8, 13, 19 } );
+        DoubleArrayList actualReturn = Stats.cumulate( data1Nomissing );
+        assertEquals( true, RegressionTesting.closeEnough( actualReturn, expectedReturn, 0.0001 ) );
+    }
+
+    public final void testCumulateRight() {
+        DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 19, 18, 15, 11, 6 } );
+        DoubleArrayList actualReturn = Stats.cumulateRight( data1Nomissing );
+        assertEquals( true, RegressionTesting.closeEnough( actualReturn, expectedReturn, 0.0001 ) );
+    }
+
+    public final void testCv() {
+        double expectedReturn = 1.975525931;
+        double actualReturn = Stats.cv( data1Nomissing );
+        assertEquals( expectedReturn, actualReturn, 0.000001 );
+    }
+
+    public final void testIsValidFraction() {
+        boolean actualReturn = Stats.isValidFraction( 12 );
+        assertEquals( false, actualReturn );
+    }
+
+    public final void testIsValidFraction2() {
+        boolean actualReturn = Stats.isValidFraction( 0.5 );
+        assertEquals( true, actualReturn );
+    }
+
+    public final void testMeanAboveQuantile() {
+        double expectedReturn = 0.806953261;
+        double actualReturn = Stats.meanAboveQuantile( 25, longtest.elements(), 50 );
+        assertEquals( expectedReturn, actualReturn, 1e-5 );
+    }
+
+    /*
+     * Class under test for DoubleArrayList normalize(DoubleArrayList)
+     */
+    public final void testNormalizeDoubleArrayList() {
+        DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 0.0526315789473684, 0.157894736842105,
+                0.210526315789474, 0.263157894736842, 0.315789473684211 } );
+
+        DoubleArrayList actualReturn = Stats.normalize( data1Nomissing );
+        assertEquals( true, RegressionTesting.closeEnough( actualReturn, expectedReturn, 0.0001 ) );
+    }
+
+    /*
+     * Class under test for DoubleArrayList normalize(DoubleArrayList, double)
+     */
+    public final void testNormalizeDoubleArrayListdouble() {
+        DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 0.263157894736842, 0.789473684210526,
+                1.05263157894737, 1.31578947368421, 1.57894736842105, } );
+
+        DoubleArrayList actualReturn = Stats.normalize( data1Nomissing, 3.8 );
+        assertEquals( true, RegressionTesting.closeEnough( actualReturn, expectedReturn, 0.0001 ) );
+    }
+
+    public final void testQuantile() {
+        double expectedReturn = 0.595221355;
+        double actualReturn = Stats.quantile( 25, longtest.elements(), 50 );
+        assertEquals( expectedReturn, actualReturn, 1e-5 );
+    }
+
+    public final void testQuantile75() {
+        double expectedReturn = 0.831726757;
+        double actualReturn = Stats.quantile( 25, longtest.elements(), 37 );
+        assertEquals( expectedReturn, actualReturn, 1e-5 );
+    }
+
+    public final void testRange() {
+        double expectedReturn = 5;
+        double actualReturn = Stats.range( data1Nomissing );
+        assertEquals( expectedReturn, actualReturn, 1e-5 );
+    }
+
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -51,92 +133,12 @@ public class TestStats extends TestCase {
                 0.487896010852323, 0.714714352227883, } );
 
     } /*
-         * @see TestCase#tearDown()
-         */
+     * @see TestCase#tearDown()
+     */
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-    }
-
-    public final void testIsValidFraction() {
-        boolean actualReturn = Stats.isValidFraction( 12 );
-        assertEquals( false, actualReturn );
-    }
-
-    public final void testIsValidFraction2() {
-        boolean actualReturn = Stats.isValidFraction( 0.5 );
-        assertEquals( true, actualReturn );
-    }
-
-    public final void testCv() {
-        double expectedReturn = 1.975525931;
-        double actualReturn = Stats.cv( data1Nomissing );
-        assertEquals( expectedReturn, actualReturn, 0.000001 );
-    }
-
-    public final void testCumulate() {
-        DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 1, 4, 8, 13, 19 } );
-        DoubleArrayList actualReturn = Stats.cumulate( data1Nomissing );
-        assertEquals( true, RegressionTesting.closeEnough( actualReturn, expectedReturn, 0.0001 ) );
-    }
-
-    public final void testCumulateRight() {
-        DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 19, 18, 15, 11, 6 } );
-        DoubleArrayList actualReturn = Stats.cumulateRight( data1Nomissing );
-        assertEquals( true, RegressionTesting.closeEnough( actualReturn, expectedReturn, 0.0001 ) );
-    }
-
-    public final void testCdf() {
-        DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 1, 0.947368421052632, 0.789473684210526,
-                0.578947368421053, 0.315789473684211 } );
-        DoubleArrayList actualReturn = Stats.cdf( data1Nomissing );
-        assertEquals( true, RegressionTesting.closeEnough( actualReturn, expectedReturn, 0.0001 ) );
-    }
-
-    /*
-     * Class under test for DoubleArrayList normalize(DoubleArrayList, double)
-     */
-    public final void testNormalizeDoubleArrayListdouble() {
-        DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 0.263157894736842, 0.789473684210526,
-                1.05263157894737, 1.31578947368421, 1.57894736842105, } );
-
-        DoubleArrayList actualReturn = Stats.normalize( data1Nomissing, 3.8 );
-        assertEquals( true, RegressionTesting.closeEnough( actualReturn, expectedReturn, 0.0001 ) );
-    }
-
-    /*
-     * Class under test for DoubleArrayList normalize(DoubleArrayList)
-     */
-    public final void testNormalizeDoubleArrayList() {
-        DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 0.0526315789473684, 0.157894736842105,
-                0.210526315789474, 0.263157894736842, 0.315789473684211 } );
-
-        DoubleArrayList actualReturn = Stats.normalize( data1Nomissing );
-        assertEquals( true, RegressionTesting.closeEnough( actualReturn, expectedReturn, 0.0001 ) );
-    }
-
-    public final void testMeanAboveQuantile() {
-        double expectedReturn = 0.806953261;
-        double actualReturn = Stats.meanAboveQuantile( 25, longtest.elements(), 50 );
-        assertEquals( expectedReturn, actualReturn, 1e-5 );
-    }
-
-    public final void testRange() {
-        double expectedReturn = 5;
-        double actualReturn = Stats.range( data1Nomissing );
-        assertEquals( expectedReturn, actualReturn, 1e-5 );
-    }
-
-    public final void testQuantile() {
-        double expectedReturn = 0.595221355;
-        double actualReturn = Stats.quantile( 25, longtest.elements(), 50 );
-        assertEquals( expectedReturn, actualReturn, 1e-5 );
-    }
-
-    public final void testQuantile75() {
-        double expectedReturn = 0.831726757;
-        double actualReturn = Stats.quantile( 25, longtest.elements(), 37 );
-        assertEquals( expectedReturn, actualReturn, 1e-5 );
     }
 
 }

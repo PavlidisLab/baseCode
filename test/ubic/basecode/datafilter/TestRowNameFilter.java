@@ -33,6 +33,43 @@ public class TestRowNameFilter extends AbstractTestFilter {
 
     protected Set<String> testfilterlist;
 
+    public void testFilter() {
+        RowNameFilter<DoubleMatrixNamed<String, String>, String, String, Double> fi = new RowNameFilter<DoubleMatrixNamed<String, String>, String, String, Double>(
+                testfilterlist );
+        DoubleMatrixNamed filtered = fi.filter( testdata );
+        int expectedReturn = 4;
+        int actualReturn = filtered.rows();
+        assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
+    public void testFilterExclude() {
+        RowNameFilter<DoubleMatrixNamed<String, String>, String, String, Double> fi = new RowNameFilter<DoubleMatrixNamed<String, String>, String, String, Double>(
+                testfilterlist, true );
+        DoubleMatrixNamed filtered = fi.filter( testdata );
+        int expectedReturn = testdata.rows() - 4;
+        int actualReturn = filtered.rows();
+        assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
+    public void testFilterString() {
+        RowNameFilter<StringMatrix2DNamed<String, String>, String, String, String> fi = new RowNameFilter<StringMatrix2DNamed<String, String>, String, String, String>(
+                testfilterlist );
+        StringMatrix2DNamed filtered = fi.filter( teststringdata );
+        int expectedReturn = 4;
+        int actualReturn = filtered.rows();
+        assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
+    public void testFilterStringExclude() {
+        RowNameFilter<StringMatrix2DNamed<String, String>, String, String, String> fi = new RowNameFilter<StringMatrix2DNamed<String, String>, String, String, String>(
+                testfilterlist, true );
+        StringMatrix2DNamed filtered = fi.filter( teststringdata );
+        int expectedReturn = teststringdata.rows() - 4;
+        int actualReturn = filtered.rows();
+        assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -44,41 +81,10 @@ public class TestRowNameFilter extends AbstractTestFilter {
         testfilterlist.add( "fooblydoobly" ); // shouldn't care.
     }
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         testfilterlist = null;
-    }
-
-    public void testFilter() {
-        RowNameFilter fi = new RowNameFilter( testfilterlist );
-        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) fi.filter( testdata );
-        int expectedReturn = 4;
-        int actualReturn = filtered.rows();
-        assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
-    public void testFilterExclude() {
-        RowNameFilter fi = new RowNameFilter( testfilterlist, true );
-        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) fi.filter( testdata );
-        int expectedReturn = testdata.rows() - 4;
-        int actualReturn = filtered.rows();
-        assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
-    public void testFilterString() {
-        RowNameFilter fi = new RowNameFilter( testfilterlist );
-        StringMatrix2DNamed filtered = ( StringMatrix2DNamed ) fi.filter( teststringdata );
-        int expectedReturn = 4;
-        int actualReturn = filtered.rows();
-        assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
-    public void testFilterStringExclude() {
-        RowNameFilter fi = new RowNameFilter( testfilterlist, true );
-        StringMatrix2DNamed filtered = ( StringMatrix2DNamed ) fi.filter( teststringdata );
-        int expectedReturn = teststringdata.rows() - 4;
-        int actualReturn = filtered.rows();
-        assertEquals( "return value", expectedReturn, actualReturn );
     }
 
 }

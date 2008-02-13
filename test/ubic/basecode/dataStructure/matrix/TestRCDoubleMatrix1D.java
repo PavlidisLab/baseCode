@@ -37,8 +37,58 @@ public class TestRCDoubleMatrix1D extends TestCase {
     DoubleMatrix1D c;
 
     /*
+     * Class under test for double zDotProduct(DoubleMatrix1D)
+     */
+    public void testZDotProductDoubleMatrix1D() throws Exception {
+        double actualReturn = a.zDotProduct( b );
+        double expectedReturn = 7;
+        assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
+    }
+
+    // FIXME fails in maven 2 http://jira.codehaus.org/browse/MSUREFIRE-59
+
+    // public void testForEachNonZero() {
+    // DoubleMatrix1D actualReturn = a.forEachNonZero( new cern.colt.function.DoubleFunction() {
+    // public double apply( double value ) {
+    // return value / 2.0;
+    // }
+    // } );
+    // DoubleMatrix1D expectedReturn = new RCDoubleMatrix1D( new double[] { 0, 0.5, 1, 0, 2.5 } );
+    // assertEquals( "return value", new DoubleArrayList( expectedReturn.toArray() ), new DoubleArrayList(
+    // actualReturn.toArray() ) );
+    // }
+
+    /*
+     * Class under test for double zDotProduct(DoubleMatrix1D)
+     */
+    public void testZDotProductDoubleMatrix1DHarder() throws Exception {
+        double actualReturn = a.zDotProduct( c );
+        double expectedReturn = 7;
+        assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
+    }
+
+    /*
+     * Class under test for double zDotProduct(DoubleMatrix1D)
+     */
+    public void testZDotProductDoubleMatrix1DHarderReverse() throws Exception {
+        double actualReturn = c.zDotProduct( a );
+        double expectedReturn = 7;
+        assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
+    }
+
+    /*
+     * Class under test for double zDotProduct(DoubleMatrix1D)
+     */
+    public void testZDotProductDoubleMatrix1DReverse() throws Exception {
+        double actualReturn = b.zDotProduct( a );
+        double expectedReturn = 7;
+        assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
+    }
+
+    /*
      * @see TestCase#setUp()
      */
+    @Override
     protected void setUp() throws Exception {
 
         /*
@@ -63,55 +113,6 @@ public class TestRCDoubleMatrix1D extends TestCase {
 
         c = new DenseDoubleMatrix1D( new double[] { 5, 3, 2, 1 } );
         super.setUp();
-    }
-
-    // FIXME fails in maven 2 http://jira.codehaus.org/browse/MSUREFIRE-59
-
-    // public void testForEachNonZero() {
-    // DoubleMatrix1D actualReturn = a.forEachNonZero( new cern.colt.function.DoubleFunction() {
-    // public double apply( double value ) {
-    // return value / 2.0;
-    // }
-    // } );
-    // DoubleMatrix1D expectedReturn = new RCDoubleMatrix1D( new double[] { 0, 0.5, 1, 0, 2.5 } );
-    // assertEquals( "return value", new DoubleArrayList( expectedReturn.toArray() ), new DoubleArrayList(
-    // actualReturn.toArray() ) );
-    // }
-
-    /*
-     * Class under test for double zDotProduct(DoubleMatrix1D)
-     */
-    public void testZDotProductDoubleMatrix1D() throws Exception {
-        double actualReturn = a.zDotProduct( b );
-        double expectedReturn = 7;
-        assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
-    }
-
-    /*
-     * Class under test for double zDotProduct(DoubleMatrix1D)
-     */
-    public void testZDotProductDoubleMatrix1DReverse() throws Exception {
-        double actualReturn = b.zDotProduct( a );
-        double expectedReturn = 7;
-        assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
-    }
-
-    /*
-     * Class under test for double zDotProduct(DoubleMatrix1D)
-     */
-    public void testZDotProductDoubleMatrix1DHarder() throws Exception {
-        double actualReturn = a.zDotProduct( c );
-        double expectedReturn = 7;
-        assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
-    }
-
-    /*
-     * Class under test for double zDotProduct(DoubleMatrix1D)
-     */
-    public void testZDotProductDoubleMatrix1DHarderReverse() throws Exception {
-        double actualReturn = c.zDotProduct( a );
-        double expectedReturn = 7;
-        assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
     }
 
     /*

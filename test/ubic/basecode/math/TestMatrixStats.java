@@ -21,6 +21,8 @@ package ubic.basecode.math;
 import java.io.IOException;
 
 import junit.framework.TestCase;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import ubic.basecode.datafilter.AbstractTestFilter;
 import ubic.basecode.io.reader.DoubleMatrixReader;
@@ -34,33 +36,21 @@ public class TestMatrixStats extends TestCase {
 
     protected DoubleMatrixNamed testdata = null;
     protected DoubleMatrixNamed testdatahuge = null;
+    DoubleMatrixNamed<String, String> smallT = null;
 
-    /*
-     * @see TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
+    double[][] testrdm = { { 1, 2, 3, 4 }, { 11, 12, 13, 14 }, { 21, Double.NaN, 23, 24 } };
+
+    public final void testCorrelationMatrix() throws Exception {
+        DoubleMatrixNamed actualReturn = MatrixStats.correlationMatrix( testdata );
         DoubleMatrixReader f = new DoubleMatrixReader();
-
-        testdata = ( DoubleMatrixNamed ) f.read( AbstractTestFilter.class.getResourceAsStream( "/data/testdata.txt" ) );
-
-        // testdatahuge = ( DoubleMatrixNamed ) f.read( AbstractTestFilter.class
-        // .getResourceAsStream( "/data/melanoma_and_sarcomaMAS5.txt" ) );
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        testdata = null;
-        testdatahuge = null;
-    }
-
-    public final void testMin() throws Exception {
-        double expectedReturn = -965.3;
-        double actualReturn = MatrixStats.min( testdata );
-        assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
+        DoubleMatrixNamed expectedReturn = null;
+        try {
+            expectedReturn = f.read( AbstractTestFilter.class
+                    .getResourceAsStream( "/data/correlation-matrix-testoutput.txt" ) );
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        assertEquals( true, RegressionTesting.closeEnough( expectedReturn, actualReturn, 0.001 ) );
     }
 
     public final void testMax() throws Exception {
@@ -69,25 +59,63 @@ public class TestMatrixStats extends TestCase {
         assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
     }
 
-    public final void testCorrelationMatrix() throws Exception {
-        DoubleMatrixNamed actualReturn = MatrixStats.correlationMatrix( testdata );
-        DoubleMatrixReader f = new DoubleMatrixReader();
-        DoubleMatrixNamed expectedReturn = null;
-        try {
-            expectedReturn = ( DoubleMatrixNamed ) f.read( AbstractTestFilter.class
-                    .getResourceAsStream( "/data/correlation-matrix-testoutput.txt" ) );
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
-        assertEquals( true, RegressionTesting.closeEnough( expectedReturn, actualReturn, 0.001 ) );
+    public final void testMin() throws Exception {
+        double expectedReturn = -965.3;
+        double actualReturn = MatrixStats.min( testdata );
+        assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
+    }
+
+    public final void testNan() throws Exception {
+        boolean[][] actual = MatrixStats.nanStatusMatrix( testrdm );
+        assertFalse( actual[0][0] );
+        assertFalse( actual[0][3] );
+        assertTrue( actual[2][1] );
     }
 
     public final void testRbfNormalize() throws Exception {
-        MatrixStats.rbfNormalize( testdata, 100 );
+        double[][] actual = { { 0.001, 0.2, 0.13, 0.4 }, { 0.11, 0.12, 0.00013, 0.14 }, { 0.21, 0.0001, 0.99, 0.24 } };
+        DenseDoubleMatrix2DNamed av = new DenseDoubleMatrix2DNamed( actual );
+        MatrixStats.rbfNormalize( av, 1 );
+        double[][] expected = { { 0.2968, 0.2432, 0.2609, 0.1991 }, { 0.2453, 0.2429, 0.2738, 0.2381 },
+                { 0.273, 0.3368, 0.1252, 0.265 } };
+        assertEquals( true, RegressionTesting.closeEnough( new DenseDoubleMatrix2DNamed( expected ), av, 0.001 ) );
+        for ( int i = 0; i < 3; i++ ) {
+            assertEquals( 1.0, av.viewRow( i ).zSum(), 0.0001 );
+        }
+    }
 
-        // System.err.println(testdata);
+    public final void testSelfSquare() throws Exception {
+        double[][] actual = MatrixStats.selfSquaredMatrix( testrdm );
+        assertEquals( 1, actual[0][0], 0.000001 );
+        assertEquals( 16, actual[0][3], 0.00001 );
+    }
 
-        // assertEquals( true, RegressionTesting.closeEnough(expectedReturn, testdata, 0.001 ));
+    /*
+     * @see TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        DoubleMatrixReader f = new DoubleMatrixReader();
+
+        testdata = f.read( AbstractTestFilter.class.getResourceAsStream( "/data/testdata.txt" ) );
+
+        smallT = DoubleMatrix2DNamedFactory.dense( testrdm );
+        smallT.setRowNames( java.util.Arrays.asList( new String[] { "a", "b", "c" } ) );
+        smallT.setColumnNames( java.util.Arrays.asList( new String[] { "w", "x", "y", "z" } ) );
+
+        // testdatahuge = ( DoubleMatrixNamed ) f.read( AbstractTestFilter.class
+        // .getResourceAsStream( "/data/melanoma_and_sarcomaMAS5.txt" ) );
+    }
+
+    /*
+     * @see TestCase#tearDown()
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        testdata = null;
+        testdatahuge = null;
     }
 
     /**

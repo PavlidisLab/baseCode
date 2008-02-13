@@ -35,85 +35,28 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
 
     private static Log log = LogFactory.getLog( TestRowAbsentFilter.class.getName() );
 
-    StringMatrix2DNamed testpdata = null;
+    StringMatrix2DNamed<String, String> testpdata = null;
 
-    RowAbsentFilter f = null;
-
-    /*
-     * @see TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
-        f = new RowAbsentFilter();
-        StringMatrixReader s = new StringMatrixReader();
-        testpdata = ( StringMatrix2DNamed ) s.read( AbstractTestFilter.class
-                .getResourceAsStream( "/data/test-presence-data.txt" ) );
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception {
-        testpdata = null;
-        testdata = null;
-        super.tearDown();
-    }
+    RowAbsentFilter<DoubleMatrixNamed<String, String>, String, String, Double> fd = new RowAbsentFilter<DoubleMatrixNamed<String, String>, String, String, Double>();
+    RowAbsentFilter<StringMatrix2DNamed<String, String>, String, String, String> fs = new RowAbsentFilter<StringMatrix2DNamed<String, String>, String, String, String>();
 
     /*
      * Class under test for DoubleMatrixNamed filter(DoubleMatrixNamed)
      */
     public void testFilter() {
-        f.setFlagMatrix( testpdata );
-        f.setMinPresentCount( 12 );
-        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f.filter( testdata );
+        fd.setFlagMatrix( testpdata );
+        fd.setMinPresentCount( 12 );
+        DoubleMatrixNamed filtered = fd.filter( testdata );
         int expectedReturn = testdata.rows() - 7; // 7 rows have some absent or
         // marginal.
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
-    public void testFilterWithMissing() {
-        f.setFlagMatrix( testpdata );
-        f.setMinPresentCount( 12 );
-        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f.filter( testmissingdata );
-        int expectedReturn = 17;
-        int actualReturn = filtered.rows();
-        assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
-    public void testFilterWithMissingLessStringent() {
-        f.setFlagMatrix( testpdata );
-        f.setMinPresentCount( 8 );
-        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f.filter( testmissingdata );
-        int expectedReturn = 24;
-        int actualReturn = filtered.rows();
-        assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
-    public void testFilterStringMatrix() {
-        f.setFlagMatrix( testpdata );
-        f.setMinPresentCount( 12 );
-        StringMatrix2DNamed filtered = ( StringMatrix2DNamed ) f.filter( teststringdata );
-        int expectedReturn = testdata.rows() - 7; // 7 rows have some missing or
-        // marginal OR absent.
-        int actualReturn = filtered.rows();
-        assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
-    public void testFilterKeepMarginal() {
-        f.setFlagMatrix( testpdata );
-        f.setKeepMarginal( true );
-        f.setMinPresentCount( 12 );
-        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f.filter( testdata );
-        int expectedReturn = testdata.rows() - 6; // 6 rows have some absent
-        int actualReturn = filtered.rows();
-        assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
     public void testFilterFraction() {
-        f.setFlagMatrix( testpdata );
-        f.setMinPresentFraction( 1.0 );
-        DoubleMatrixNamed filtered = ( DoubleMatrixNamed ) f.filter( testdata );
+        fd.setFlagMatrix( testpdata );
+        fd.setMinPresentFraction( 1.0 );
+        DoubleMatrixNamed filtered = fd.filter( testdata );
         int expectedReturn = testdata.rows() - 7; // 7 rows have some missing or
         // marginal.
         int actualReturn = filtered.rows();
@@ -122,9 +65,9 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
 
     public void testFilterFractionInvalid() {
         try {
-            f.setFlagMatrix( testpdata );
-            f.setMinPresentFraction( 934109821 );
-            f.filter( testdata );
+            fd.setFlagMatrix( testpdata );
+            fd.setMinPresentFraction( 934109821 );
+            fd.filter( testdata );
             fail( "Should have gotten an exception" );
         } catch ( IllegalArgumentException e ) {
             log.debug( "As expected, got " + e );
@@ -132,11 +75,32 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
 
     }
 
+    public void testFilterKeepMarginal() {
+        fd.setFlagMatrix( testpdata );
+        fd.setKeepMarginal( true );
+        fd.setMinPresentCount( 12 );
+        DoubleMatrixNamed filtered = fd.filter( testdata );
+        int expectedReturn = testdata.rows() - 6; // 6 rows have some absent
+        int actualReturn = filtered.rows();
+        assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
+    public void testFilterNullFlags() {
+        try {
+            fd.setFlagMatrix( null );
+            fd.setMinPresentCount( 10 );
+            fd.filter( testdata );
+            fail( "Should have gotten an exception" );
+        } catch ( IllegalArgumentException success ) {
+            log.debug( "As expected, got " + success );
+        }
+    }
+
     public void testFilterPresentCountInvalid() {
         try {
-            f.setFlagMatrix( testpdata );
-            f.setMinPresentCount( 129 );
-            f.filter( testdata );
+            fd.setFlagMatrix( testpdata );
+            fd.setMinPresentCount( 129 );
+            fd.filter( testdata );
             fail( "Should have gotten an exception" );
         } catch ( IllegalStateException e ) {
             log.debug( "As expected, got " + e );
@@ -144,15 +108,53 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
 
     }
 
-    public void testFilterNullFlags() {
-        try {
-            f.setFlagMatrix( null );
-            f.setMinPresentCount( 10 );
-            f.filter( testdata );
-            fail( "Should have gotten an exception" );
-        } catch ( IllegalArgumentException success ) {
-            log.debug( "As expected, got " + success );
-        }
+    public void testFilterStringMatrix() {
+        fs.setFlagMatrix( testpdata );
+        fs.setMinPresentCount( 12 );
+        StringMatrix2DNamed filtered = fs.filter( teststringdata );
+        int expectedReturn = testdata.rows() - 7; // 7 rows have some missing or
+        // marginal OR absent.
+        int actualReturn = filtered.rows();
+        assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
+    public void testFilterWithMissing() {
+        fd.setFlagMatrix( testpdata );
+        fd.setMinPresentCount( 12 );
+        DoubleMatrixNamed filtered = fd.filter( testmissingdata );
+        int expectedReturn = 17;
+        int actualReturn = filtered.rows();
+        assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
+    public void testFilterWithMissingLessStringent() {
+        fd.setFlagMatrix( testpdata );
+        fd.setMinPresentCount( 8 );
+        DoubleMatrixNamed filtered = fd.filter( testmissingdata );
+        int expectedReturn = 24;
+        int actualReturn = filtered.rows();
+        assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
+    /*
+     * @see TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+
+        StringMatrixReader s = new StringMatrixReader();
+        testpdata = s.read( AbstractTestFilter.class.getResourceAsStream( "/data/test-presence-data.txt" ) );
+    }
+
+    /*
+     * @see TestCase#tearDown()
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        testpdata = null;
+        testdata = null;
+        super.tearDown();
     }
 
 }

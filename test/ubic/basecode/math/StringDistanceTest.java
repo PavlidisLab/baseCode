@@ -8,26 +8,12 @@ import junit.framework.TestCase;
  */
 public class StringDistanceTest extends TestCase {
 
-    /*
-     * @see TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    /*
-     * Test method for 'basecode.math.StringDistance.hammingDistance(String, String)'
-     */
-    public void testHammingDistance() {
-        assertEquals( 1, StringDistance.hammingDistance( "foobly", "goobly" ) );
-        assertEquals( 2, StringDistance.hammingDistance( "fooblybar", "gooblyfar" ) );
+    public void testBadMatch() {
+        String sa = "HCC1954Cy3vsHMECCy5r2; src: MDA-MB436 Breast Cancer cell line; src: Human Mammary Epithelial Cells";
+        String sb = "Normal Breast Epithelium Control replicate 2 133B; src: Human Mammary Epithelial Cells";
+        int distance = StringDistance.editDistance( sa, sb );
+        double normalizedDistance = ( double ) distance / Math.max( sa.length(), sb.length() );
+        assertEquals( 0.5208, normalizedDistance, 0.001 );
     }
 
     /*
@@ -86,12 +72,12 @@ public class StringDistanceTest extends TestCase {
         assertEquals( 6, StringDistance.editDistance( "GAMBOL", "" ) );
     }
 
-    public void testBadMatch() {
-        String sa = "HCC1954Cy3vsHMECCy5r2; src: MDA-MB436 Breast Cancer cell line; src: Human Mammary Epithelial Cells";
-        String sb = "Normal Breast Epithelium Control replicate 2 133B; src: Human Mammary Epithelial Cells";
-        int distance = StringDistance.editDistance( sa, sb );
-        double normalizedDistance = ( double ) distance / Math.max( sa.length(), sb.length() );
-        assertEquals( 0.5208, normalizedDistance, 0.001 );
+    /*
+     * Test method for 'basecode.math.StringDistance.hammingDistance(String, String)'
+     */
+    public void testHammingDistance() {
+        assertEquals( 1, StringDistance.hammingDistance( "foobly", "goobly" ) );
+        assertEquals( 2, StringDistance.hammingDistance( "fooblybar", "gooblyfar" ) );
     }
 
     public void testWeightedHammingA() {
@@ -140,6 +126,22 @@ public class StringDistanceTest extends TestCase {
         double actualValue = StringDistance.suffixWeightedHammingDistance( a, b, 0.5 );
         double expectedValue = 0.0 + 0.0 + 0.0 + 1.0;
         assertEquals( expectedValue, actualValue, 0.000001 );
+    }
+
+    /*
+     * @see TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+    }
+
+    /*
+     * @see TestCase#tearDown()
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
     }
 
 }

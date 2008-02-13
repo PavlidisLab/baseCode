@@ -26,32 +26,6 @@ import junit.framework.TestCase;
  */
 public class TestSpecFunc extends TestCase {
 
-    /*
-     * @see TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    public final void testHypergeometric() {
-        // hypergeometric( int positives, int successes,
-        // int negatives, int failures )
-
-        // dhyper takes : successes, positives, negatives, trials
-        // dhyper(2, 20, 100, 50);
-        // [1] 0.0009644643
-        double expectedReturn = 0.0009644643;
-        double actualReturn = SpecFunc.dhyper( 2, 20, 100, 50 );
-        assertEquals( expectedReturn, actualReturn, 1e-5 );
-    }
-
     public final void testCumHyperGeometric() {
         // phyper(2, 20, 100, 50);
         // [1] 0.001077697
@@ -74,6 +48,34 @@ public class TestSpecFunc extends TestCase {
         double expectedReturn = 0.001623197;
         double actualReturn = SpecFunc.dbinom( 2, 100, 0.1 );
         assertEquals( expectedReturn, actualReturn, 1e-5 );
+    }
+
+    public final void testHypergeometric() {
+        // hypergeometric( int positives, int successes,
+        // int negatives, int failures )
+
+        // dhyper takes : successes, positives, negatives, trials
+        // dhyper(2, 20, 100, 50);
+        // [1] 0.0009644643
+        double expectedReturn = 0.0009644643;
+        double actualReturn = SpecFunc.dhyper( 2, 20, 100, 50 );
+        assertEquals( expectedReturn, actualReturn, 1e-5 );
+    }
+
+    /*
+     * @see TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+    }
+
+    /*
+     * @see TestCase#tearDown()
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
     }
 
 }
