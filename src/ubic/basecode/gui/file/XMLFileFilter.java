@@ -30,6 +30,7 @@ import ubic.basecode.util.FileTools;
  */
 public class XMLFileFilter extends FileFilter {
 
+    @Override
     public boolean accept( File f ) {
 
         if ( f.isDirectory() ) {
@@ -40,6 +41,7 @@ public class XMLFileFilter extends FileFilter {
 
     } // end accept
 
+    @Override
     public String getDescription() {
 
         return "XML data files";

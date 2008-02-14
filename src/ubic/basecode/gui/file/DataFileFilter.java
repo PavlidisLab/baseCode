@@ -28,6 +28,7 @@ import javax.swing.filechooser.FileFilter;
  */
 public class DataFileFilter extends FileFilter {
 
+    @Override
     public boolean accept( File f ) {
 
         if ( f.isDirectory() ) {
@@ -38,6 +39,7 @@ public class DataFileFilter extends FileFilter {
 
     } // end accept
 
+    @Override
     public String getDescription() {
 
         return "TXT data files";

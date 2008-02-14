@@ -23,10 +23,6 @@ package ubic.basecode.bio;
 import ubic.basecode.dataStructure.OntologyEntry;
 
 /**
- * <hr>
- * <p>
- * Copyright (c) 2004 University of British Columbia
- * 
  * @author pavlidis
  * @version $Id$
  */

@@ -52,6 +52,7 @@ public class JMatrixCellRenderer extends JLabel implements TableCellRenderer {
 
     // This method is called each time a cell in a column
     // using this renderer needs to be rendered.
+    @SuppressWarnings("unused")
     public Component getTableCellRendererComponent( JTable table, Object tableCellValue, boolean isSelected,
             boolean hasFocus, int displayedRow, int displayedColumn ) {
         // 'value' is value contained in the cell located at
@@ -108,15 +109,21 @@ public class JMatrixCellRenderer extends JLabel implements TableCellRenderer {
     }
 
     // The following methods override the defaults for performance reasons
+    @Override
     public void validate() {
     }
 
+    @Override
     public void revalidate() {
     }
 
+    @Override
+    @SuppressWarnings("unused")
     protected void firePropertyChange( String propertyName, Object oldValue, Object newValue ) {
     }
 
+    @Override
+    @SuppressWarnings("unused")
     public void firePropertyChange( String propertyName, boolean oldValue, boolean newValue ) {
     }
 

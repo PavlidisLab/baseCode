@@ -105,6 +105,7 @@ public class JBarGraphCellRenderer extends JLabel implements TableCellRenderer {
         g.fillRect( 0, 0, getWidth(), getHeight() );
     }
 
+    @Override
     protected void paintComponent( Graphics g ) {
 
         if ( m_isSelected ) {
@@ -158,15 +159,21 @@ public class JBarGraphCellRenderer extends JLabel implements TableCellRenderer {
         }
     } // end paintComponent
 
+    @Override
     public void validate() {
     }
 
+    @Override
     public void revalidate() {
     }
 
+    @Override
+    @SuppressWarnings("unused")
     public void repaint( long tm, int x, int y, int width, int height ) {
     }
 
+    @Override
+    @SuppressWarnings("unused")
     public void repaint( Rectangle r ) {
     }
 

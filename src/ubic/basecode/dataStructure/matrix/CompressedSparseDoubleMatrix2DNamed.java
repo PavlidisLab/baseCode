@@ -18,8 +18,6 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
-import java.text.NumberFormat;
-
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.sparse.FlexCompRowMatrix;
 import no.uib.cipr.matrix.sparse.SparseVector;

@@ -111,12 +111,14 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      * @param key Object
      * @param item Object
      */
+    @Override
     public void addNode( K key, V item ) {
         if ( !items.containsKey( key ) ) {
             items.put( key, new DirectedGraphNode<K, V>( key, item, this ) );
         }
     }
 
+    @Override
     public void addNode( DirectedGraphNode<K, V> node ) {
         node.setGraph( this );
         items.put( node.getKey(), node );

@@ -69,8 +69,8 @@ public class MultipleTestCorrectionTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         DoubleMatrixReader dmr = new DoubleMatrixReader();
-        DoubleMatrixNamed<String, String> mat = ( DoubleMatrixNamed<String, String> ) dmr.read( this.getClass()
-                .getResourceAsStream( "/data/multtest.test.txt" ) );
+        DoubleMatrixNamed<String, String> mat = dmr.read( this.getClass().getResourceAsStream(
+                "/data/multtest.test.txt" ) );
 
         values = new DoubleArrayList( mat.getColumnByName( "rawp" ) );
     }

@@ -19,7 +19,6 @@
 package ubic.basecode.gui;
 
 import java.awt.Color;
-import java.io.IOException;
 
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
@@ -34,7 +33,7 @@ import cern.colt.list.DoubleArrayList;
  * @author Will Braynen
  * @version $Id$
  */
-public class ColorMatrix<R, C> implements Cloneable {
+public class ColorMatrix implements Cloneable {
 
     // data fields
 
@@ -52,7 +51,7 @@ public class ColorMatrix<R, C> implements Cloneable {
     protected Color m_missingColor = Color.lightGray;
     protected Color[] m_colorMap = ColorMap.BLACKBODY_COLORMAP;
 
-    protected DoubleMatrixNamed<R, C> m_matrix;
+    protected DoubleMatrixNamed m_matrix;
     protected DoubleMatrixReader m_matrixReader;
 
     protected int m_totalRows, m_totalColumns;
@@ -60,7 +59,7 @@ public class ColorMatrix<R, C> implements Cloneable {
     /** to be able to sort the rows by an arbitrary key */
     protected int m_rowKeys[];
 
-    public ColorMatrix( DoubleMatrixNamed<R, C> matrix ) {
+    public ColorMatrix( DoubleMatrixNamed matrix ) {
         init( matrix );
     }
 
@@ -69,46 +68,23 @@ public class ColorMatrix<R, C> implements Cloneable {
      * @param colorMap the simplest color map is one with just two colors: { minColor, maxColor }
      * @param missingColor values missing from the matrix or non-numeric entries will be displayed using this color
      */
-    public ColorMatrix( DoubleMatrixNamed<R, C> matrix, Color[] colorMap, Color missingColor ) {
+    public ColorMatrix( DoubleMatrixNamed matrix, Color[] colorMap, Color missingColor ) {
 
         m_missingColor = missingColor;
         m_colorMap = colorMap;
         init( matrix );
     }
 
-    /**
-     * @param filename either an absolute path, or if providing a relative path (e.g. data.txt), then keep in mind that
-     *        it will be relative to the java interpreter, not the class (not my fault -- that's how java treats
-     *        relative paths)
-     * @throws IOException
-     */
-    public ColorMatrix( String filename ) throws IOException {
-        loadMatrixFromFile( filename );
-    }
-
-    /**
-     * @param filename data filename
-     * @param colorMap the simplest color map is one with just two colors: { minColor, maxColor }
-     * @param missingColor values missing from the matrix or non-numeric entries will be displayed using this color
-     * @throws IOException
-     */
-    public ColorMatrix( String filename, Color[] colorMap, Color missingColor ) throws IOException {
-
-        m_missingColor = missingColor;
-        m_colorMap = colorMap;
-        loadMatrixFromFile( filename );
-    }
-
     @Override
-    public Object clone() {
+    public ColorMatrix clone() {
         // create another double matrix
-        DenseDoubleMatrix2DNamed<R, C> matrix = new DenseDoubleMatrix2DNamed<R, C>( m_totalRows, m_totalColumns );
+        DenseDoubleMatrix2DNamed matrix = new DenseDoubleMatrix2DNamed( m_totalRows, m_totalColumns );
         // copy the row and column names
         for ( int i = 0; i < m_totalRows; i++ ) {
-            matrix.addRowName( m_matrix.getRowName( i ), i );
+            matrix.addRowName( m_matrix.getRowName( i ).toString(), i );
         }
         for ( int i = 0; i < m_totalColumns; i++ ) {
-            matrix.addColumnName( m_matrix.getColName( i ), i );
+            matrix.addColumnName( m_matrix.getColName( i ).toString(), i );
             // copy the data
         }
         for ( int r = 0; r < m_totalRows; r++ ) {
@@ -118,7 +94,7 @@ public class ColorMatrix<R, C> implements Cloneable {
         }
 
         // create another copy of a color matrix (this class)
-        ColorMatrix<R, C> clonedColorMatrix = new ColorMatrix<R, C>( matrix, m_colorMap, m_missingColor );
+        ColorMatrix clonedColorMatrix = new ColorMatrix( matrix, m_colorMap, m_missingColor );
 
         int[] rowKeys = m_rowKeys.clone();
         clonedColorMatrix.setRowKeys( rowKeys );
@@ -190,7 +166,7 @@ public class ColorMatrix<R, C> implements Cloneable {
         return m_matrix.getRow( row );
     }
 
-    public double[] getRowByName( R rowName ) {
+    public double[] getRowByName( String rowName ) {
         return m_matrix.getRowByName( rowName );
     }
 
@@ -198,7 +174,7 @@ public class ColorMatrix<R, C> implements Cloneable {
         return m_totalRows;
     }
 
-    public int getRowIndexByName( R rowName ) {
+    public int getRowIndexByName( String rowName ) {
         return m_matrix.getRowIndexByName( rowName );
     }
 
@@ -237,7 +213,7 @@ public class ColorMatrix<R, C> implements Cloneable {
         return m_matrix.get( row, column );
     }
 
-    public void init( DoubleMatrixNamed<R, C> matrix ) {
+    public void init( DoubleMatrixNamed matrix ) {
 
         m_matrix = matrix; // by reference, or should we clone?
         m_totalRows = m_matrix.rows();
@@ -250,19 +226,6 @@ public class ColorMatrix<R, C> implements Cloneable {
 
         // map values to colors
         mapValuesToColors();
-    }
-
-    /**
-     * A convenience method for loading data files
-     * 
-     * @param filename the name of the data file
-     * @throws IOException
-     */
-    public void loadMatrixFromFile( String filename ) throws IOException {
-
-        m_matrixReader = new DoubleMatrixReader();
-        DoubleMatrixNamed matrix = m_matrixReader.read( filename );
-        init( matrix );
     }
 
     public void mapValuesToColors() {

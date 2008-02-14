@@ -27,6 +27,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
+
 import cern.colt.list.ByteArrayList;
 
 /**
@@ -289,44 +291,40 @@ public class ByteArrayConverter {
      */
     public String byteArrayToTabbedString( byte[] bytes, Class type ) {
         if ( bytes == null ) return null;
-        StringBuffer buf = new StringBuffer();
 
         if ( type.equals( Double.class ) ) {
-            double[] array = byteArrayToDoubles( bytes );
-            for ( int i = 0; i < array.length; i++ ) {
-                buf.append( array[i] );
-                if ( i != array.length - 1 ) buf.append( "\t" ); // so we don't have a trailing tab.
-            }
+            Double[] array = ArrayUtils.toObject( byteArrayToDoubles( bytes ) );
+            return formatAsString( array );
         } else if ( type.equals( Integer.class ) ) {
-            int[] array = byteArrayToInts( bytes );
-            for ( int i = 0; i < array.length; i++ ) {
-                buf.append( array[i] );
-                if ( i != array.length - 1 ) buf.append( "\t" ); // so we don't have a trailing tab.
-            }
+            Integer[] array = ArrayUtils.toObject( byteArrayToInts( bytes ) );
+            return formatAsString( array );
         } else if ( type.equals( Long.class ) ) {
-            long[] array = byteArrayToLongs( bytes );
-            for ( int i = 0; i < array.length; i++ ) {
-                buf.append( array[i] );
-                if ( i != array.length - 1 ) buf.append( "\t" ); // so we don't have a trailing tab.
-            }
+            Long[] array = ArrayUtils.toObject( byteArrayToLongs( bytes ) );
+            return formatAsString( array );
         } else if ( type.equals( String.class ) ) {
             return byteArrayToAsciiString( bytes );
         } else if ( type.equals( Boolean.class ) ) {
-            boolean[] array = byteArrayToBooleans( bytes );
-            for ( int i = 0; i < array.length; i++ ) {
-                buf.append( array[i] ? "1" : "0" );
-                if ( i != array.length - 1 ) buf.append( "\t" ); // so we don't have a trailing tab.
-            }
+            Boolean[] array = ArrayUtils.toObject( byteArrayToBooleans( bytes ) );
+            return formatAsString( array );
         } else if ( type.equals( Character.class ) ) {
-            char[] array = byteArrayToChars( bytes );
-            for ( int i = 0; i < array.length; i++ ) {
-                buf.append( array[i] );
-                if ( i != array.length - 1 ) buf.append( "\t" ); // so we don't have a trailing tab.
-            }
+            Character[] array = ArrayUtils.toObject( byteArrayToChars( bytes ) );
+            return formatAsString( array );
         } else {
             throw new UnsupportedOperationException( "Can't convert " + type.getName() );
         }
 
+    }
+
+    /**
+     * @param array
+     * @return
+     */
+    private String formatAsString( Object[] array ) {
+        StringBuffer buf = new StringBuffer();
+        for ( int i = 0; i < array.length; i++ ) {
+            buf.append( array[i] );
+            if ( i != array.length - 1 ) buf.append( "\t" ); // so we don't have a trailing tab.
+        }
         return buf.toString();
     }
 

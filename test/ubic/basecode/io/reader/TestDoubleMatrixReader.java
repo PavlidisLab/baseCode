@@ -43,7 +43,7 @@ public class TestDoubleMatrixReader extends TestCase {
         matrix = reader.read( is );
         int actualReturn = matrix.columns();
         int expectedReturn = 12;
-        assertEquals( "return value", expectedReturn, actualReturn );
+        assertEquals( expectedReturn, actualReturn );
 
     }
 
@@ -51,7 +51,7 @@ public class TestDoubleMatrixReader extends TestCase {
         matrix = reader.read( is );
         boolean actualReturn = matrix.containsColumnName( "sample1" ) && matrix.containsColumnName( "sample12" );
         boolean expectedReturn = true;
-        assertEquals( "return value (for sample1 and sample12)", expectedReturn, actualReturn );
+        assertEquals( expectedReturn, actualReturn );
 
     }
 
@@ -60,7 +60,7 @@ public class TestDoubleMatrixReader extends TestCase {
         matrix = reader.read( is );
         boolean actualReturn = matrix.containsRowName( "gene1_at" ) && matrix.containsRowName( "AFFXgene30_at" );
         boolean expectedReturn = true;
-        assertEquals( "return value", expectedReturn, actualReturn );
+        assertEquals( expectedReturn, actualReturn );
 
     }
 
@@ -70,7 +70,7 @@ public class TestDoubleMatrixReader extends TestCase {
         int actualReturn = matrix.rows();
         int expectedReturn = 30;
         assertEquals( 12, matrix.getRow( 3 ).length );
-        assertEquals( "return value", expectedReturn, actualReturn );
+        assertEquals( expectedReturn, actualReturn );
 
     }
 
@@ -79,6 +79,7 @@ public class TestDoubleMatrixReader extends TestCase {
             matrix = reader.read( ismb );
             fail( "Should have gotten an IO error" );
         } catch ( IOException e ) {
+            //
         }
     }
 
@@ -88,7 +89,7 @@ public class TestDoubleMatrixReader extends TestCase {
         int actualReturn = matrix.rows();
         int expectedReturn = 173;
         assertEquals( 25, matrix.getRow( 3 ).length );
-        assertEquals( "return value", expectedReturn, actualReturn );
+        assertEquals( expectedReturn, actualReturn );
 
     }
 
@@ -134,19 +135,5 @@ public class TestDoubleMatrixReader extends TestCase {
         isbig.close();
         matrix = null;
     }
-
-    // public void testReadInputStreamBig() {
-    // try {
-    // matrix = ( DoubleMatrixNamed ) reader.read( isbig );
-    // int actualReturn = matrix.rows();
-    // int expectedReturn = 12533;
-    // assertEquals( "return value ",
-    // expectedReturn, actualReturn );
-    // } catch ( IOException e ) {
-    // e.printStackTrace();
-    // } catch ( OutOfMemoryError e) {
-    // e.printStackTrace();
-    // }
-    // }
 
 }

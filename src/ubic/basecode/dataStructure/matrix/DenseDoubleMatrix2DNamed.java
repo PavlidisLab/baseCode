@@ -23,7 +23,6 @@ import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.AbstractMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
-import corejava.Format;
 
 /**
  * A dense matrix of doubles that knows about row and column names.
@@ -63,6 +62,7 @@ public class DenseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
     /**
      * @return basecode.dataStructure.DenseDoubleMatrix2DNamed
      */
+    @Override
     public DoubleMatrixNamed<R, C> copy() {
         DoubleMatrixNamed<R, C> returnval = new DenseDoubleMatrix2DNamed<R, C>( this.rows(), this.columns() );
         for ( int i = 0, n = this.rows(); i < n; i++ ) {

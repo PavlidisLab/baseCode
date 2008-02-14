@@ -41,6 +41,7 @@ public class JVerticalHeaderRenderer extends JTableHeader implements TableCellRe
 
     // This method is called each time a column header
     // using this renderer needs to be rendered.
+    @SuppressWarnings("unused")
     public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus,
             int rowIndex, int vColIndex ) {
         // 'value' is column header value of column 'vColIndex'
@@ -58,6 +59,7 @@ public class JVerticalHeaderRenderer extends JTableHeader implements TableCellRe
         return this;
     }
 
+    @Override
     protected void paintComponent( Graphics g ) {
 
         super.paintComponent( g );
@@ -72,21 +74,28 @@ public class JVerticalHeaderRenderer extends JTableHeader implements TableCellRe
         Util.drawVerticalString( g, m_columnName, font, x, y );
     }
 
+    @Override
     public Dimension getPreferredSize() {
 
         return new Dimension( super.getPreferredSize().width, PREFERRED_HEIGHT );
     }
 
     // The following methods override the defaults for performance reasons
+    @Override
     public void validate() {
     }
 
+    @Override
     public void revalidate() {
     }
 
+    @Override
+    @SuppressWarnings("unused")
     protected void firePropertyChange( String propertyName, Object oldValue, Object newValue ) {
     }
 
+    @Override
+    @SuppressWarnings("unused")
     public void firePropertyChange( String propertyName, boolean oldValue, boolean newValue ) {
     }
 }

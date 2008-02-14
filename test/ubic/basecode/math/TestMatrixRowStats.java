@@ -102,7 +102,7 @@ public class TestMatrixRowStats extends TestCase {
         super.setUp();
         DoubleMatrixReader f = new DoubleMatrixReader();
 
-        testdata = ( DoubleMatrixNamed ) f.read( AbstractTestFilter.class.getResourceAsStream( "/data/testdata.txt" ) );
+        testdata = f.read( AbstractTestFilter.class.getResourceAsStream( "/data/testdata.txt" ) );
     }
 
     /*

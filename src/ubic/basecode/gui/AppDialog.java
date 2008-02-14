@@ -244,6 +244,7 @@ class AppDialog_mouselistener_actionAdapter implements MouseListener {
      * 
      * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
      */
+    @SuppressWarnings("unused")
     public void mouseClicked( MouseEvent e ) {
         adaptee.mouseButton_actionPerformed( e );
     }
@@ -253,6 +254,7 @@ class AppDialog_mouselistener_actionAdapter implements MouseListener {
      * 
      * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
      */
+    @SuppressWarnings("unused")
     public void mouseEntered( MouseEvent e ) {
     }
 
@@ -261,6 +263,7 @@ class AppDialog_mouselistener_actionAdapter implements MouseListener {
      * 
      * @see java.awt.event.MouseListener#mouseExited(java.awt.event.MouseEvent)
      */
+    @SuppressWarnings("unused")
     public void mouseExited( MouseEvent e ) {
     }
 
@@ -269,6 +272,7 @@ class AppDialog_mouselistener_actionAdapter implements MouseListener {
      * 
      * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
      */
+    @SuppressWarnings("unused")
     public void mousePressed( MouseEvent e ) {
     }
 
@@ -277,6 +281,7 @@ class AppDialog_mouselistener_actionAdapter implements MouseListener {
      * 
      * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
      */
+    @SuppressWarnings("unused")
     public void mouseReleased( MouseEvent e ) {
     }
 

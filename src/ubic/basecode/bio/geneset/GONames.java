@@ -319,6 +319,7 @@ public class GONames {
      * @param id
      * @deprecated
      */
+    @Deprecated
     void removeClassFromUserDefined( String id ) {
         if ( getGraph() == null ) return;
         if ( this.getGraph().get( USER_DEFINED ) == null ) {

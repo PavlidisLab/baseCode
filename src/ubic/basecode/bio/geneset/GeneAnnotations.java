@@ -610,7 +610,7 @@ public class GeneAnnotations {
     /**
      * @return Map
      */
-    public Map getProbeToGeneMap() {
+    public Map<String, String> getProbeToGeneMap() {
         return probeToGeneName;
     }
 
@@ -1734,7 +1734,7 @@ public class GeneAnnotations {
     /**
      * @return Returns the activeProbes.
      */
-    public Collection getActiveProbes() {
+    public Collection<String> getActiveProbes() {
         return this.activeProbes;
     }
 
@@ -1750,7 +1750,7 @@ public class GeneAnnotations {
      * @param geneSymbol
      * @return
      */
-    public Collection getGeneProbes( String geneSymbol ) {
+    public Collection<String> getGeneProbes( String geneSymbol ) {
         if ( activeProbes == null ) return this.geneToProbeMap.get( geneSymbol );
 
         Collection<String> finalList = new HashSet<String>();

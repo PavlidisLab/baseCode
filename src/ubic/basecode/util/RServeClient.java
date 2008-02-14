@@ -281,6 +281,7 @@ public class RServeClient extends AbstractRClient {
      * 
      * @see java.lang.Object#finalize()
      */
+    @Override
     public void finalize() {
         this.disconnect();
     }

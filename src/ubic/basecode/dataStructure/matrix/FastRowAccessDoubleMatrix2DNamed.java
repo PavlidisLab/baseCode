@@ -93,6 +93,7 @@ public class FastRowAccessDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R,
      * @see basecode.dataStructure.matrix.DoubleMatrixNamed#get(int, int)
      */
 
+    @Override
     public double get( int x, int y ) {
         assert data[x] != null;
         return data[x].get( y );
@@ -136,6 +137,7 @@ public class FastRowAccessDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R,
      * @see basecode.dataStructure.matrix.DoubleMatrixNamed#getRow(int)
      */
 
+    @Override
     public double[] getRow( int i ) {
         return data[i].elements();
     }

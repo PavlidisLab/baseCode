@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipInputStream;
 
 import javax.swing.table.TableModel;
@@ -83,6 +84,19 @@ public class TestGeneAnnotations extends TestCase {
         assertEquals( 87, ga.getGeneSets().size() );
         GeneSetMapTools.removeBySize( ga, null, 2, 5 );
         assertEquals( 53, ga.getGeneSets().size() );
+    }
+
+    public void testConstructPruned() throws Exception {
+        GeneAnnotations ga = new GeneAnnotations( im, null, null, goNames );
+        Set<String> keepers = new HashSet<String>();
+        keepers.add( "36949_at" );
+        keepers.add( "41208_at" );
+        keepers.add( "34764_at" );
+        keepers.add( "33338_at" );
+        GeneAnnotations pruned = new GeneAnnotations( ga, keepers );
+        assertEquals( 4, pruned.numGenes() );
+        assertEquals( 64, pruned.numGeneSets() );
+        assertEquals( 4, pruned.numProbes() );
     }
 
     public void testRemoveAspect() throws Exception {

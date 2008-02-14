@@ -120,6 +120,7 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
         return 0;
     }
 
+    @Override
     public double get( int index ) {
         return this.getQuick( index );
     }

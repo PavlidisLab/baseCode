@@ -94,6 +94,7 @@ public class ObjectMatrix2DNamed<R, C, V> extends AbstractNamedMatrix<R, C, V> i
         return matrix.size();
     }
 
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
         buf.append( "label" );

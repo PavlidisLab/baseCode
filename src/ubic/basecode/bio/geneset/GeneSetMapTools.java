@@ -242,7 +242,7 @@ public class GeneSetMapTools {
 
                 double sizeScore;
 
-                if ( areSimilarClasses( targetClass, queryClassMembers, fractionSameThreshold, bigClassPenalty ) ) {
+                if ( areSimilarClasses( targetClass, queryClassMembers, fractionSameThreshold ) ) {
 
                     sizeScore = ( ( double ) targetClass.size() / ( double ) queryClassMembers.size() )
                             / bigClassPenalty;
@@ -414,7 +414,7 @@ public class GeneSetMapTools {
      * Helper function for ignoreSimilar.
      */
     private static boolean areSimilarClasses( Collection biggerClass, Collection smallerClass,
-            double fractionSameThreshold, double bigClassPenalty ) {
+            double fractionSameThreshold  ) {
 
         if ( biggerClass.size() < smallerClass.size() ) {
             throw new IllegalArgumentException( "Invalid sizes" );

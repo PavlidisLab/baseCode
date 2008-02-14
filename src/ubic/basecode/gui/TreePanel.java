@@ -75,6 +75,7 @@ public class TreePanel extends JPanel implements TreeSelectionListener {
         add( splitPane );
     }
 
+    @SuppressWarnings("unused")
     public void valueChanged( TreeSelectionEvent e ) {
         DefaultMutableTreeNode node = ( DefaultMutableTreeNode ) tree.getLastSelectedPathComponent();
 

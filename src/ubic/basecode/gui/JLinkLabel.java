@@ -65,6 +65,7 @@ public class JLinkLabel extends JLabel implements MouseListener {
         return m_url;
     }
 
+    @SuppressWarnings("unused")
     public void mouseClicked( MouseEvent e ) {
         if ( m_url != null ) {
             try {
@@ -75,15 +76,19 @@ public class JLinkLabel extends JLabel implements MouseListener {
         }
     }
 
+    @SuppressWarnings("unused")
     public void mouseEntered( MouseEvent e ) {
     }
 
+    @SuppressWarnings("unused")
     public void mouseExited( MouseEvent e ) {
     }
 
+    @SuppressWarnings("unused")
     public void mousePressed( MouseEvent e ) {
     }
 
+    @SuppressWarnings("unused")
     public void mouseReleased( MouseEvent e ) {
     }
 

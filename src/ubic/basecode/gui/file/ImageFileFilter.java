@@ -35,6 +35,7 @@ public class ImageFileFilter extends FileFilter {
     /**
      * 
      */
+    @Override
     public boolean accept( File f ) {
 
         if ( f.isDirectory() ) {
@@ -48,6 +49,7 @@ public class ImageFileFilter extends FileFilter {
     /**
      * 
      */
+    @Override
     public String getDescription() {
         return description;
     }

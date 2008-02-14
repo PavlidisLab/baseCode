@@ -168,7 +168,7 @@ public class TestByteArrayConverter extends TestCase {
 
     public void testByteArrayToTabbedString() throws Exception {
         String bools = bac.byteArrayToTabbedString( boolbytes, Boolean.class );
-        assertEquals( "1\t0\t1\t1\t0\t1", bools );
+        assertEquals( "true\tfalse\ttrue\ttrue\tfalse\ttrue", bools );
     }
 
     public void testObjectToBytes() throws Exception {

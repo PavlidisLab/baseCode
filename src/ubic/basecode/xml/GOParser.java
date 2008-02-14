@@ -120,6 +120,7 @@ class GOHandler extends DefaultHandler {
     private StringBuffer accBuf;
     private StringBuffer defBuf;
 
+    @Override
     @SuppressWarnings("unused")
     public void startElement( String uri, String name, String qName, Attributes atts ) {
 
@@ -167,6 +168,7 @@ class GOHandler extends DefaultHandler {
         m.addNode( parent, new GOEntry( parent, "No name yet", "No definition found", null ) );
     }
 
+    @Override
     @SuppressWarnings("unused")
     public void endElement( String uri, String name, String qName ) {
         if ( name.equals( "term" ) ) {
@@ -206,6 +208,7 @@ class GOHandler extends DefaultHandler {
         }
     }
 
+    @Override
     public void characters( char ch[], int start, int length ) {
 
         if ( inTerm ) {

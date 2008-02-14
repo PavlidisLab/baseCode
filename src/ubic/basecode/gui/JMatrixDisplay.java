@@ -37,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import ubic.basecode.gui.graphics.text.Util;
+import ubic.basecode.io.reader.DoubleMatrixReader;
 
 /**
  * A visual component for displaying a color matrix
@@ -78,13 +79,15 @@ public class JMatrixDisplay extends JPanel {
         init( matrix );
     }
 
-    public JMatrixDisplay( DoubleMatrixNamed matrix ) {
+    public JMatrixDisplay( DoubleMatrixNamed<String, String> matrix ) {
         this( new ColorMatrix( matrix ) );
     }
 
     public JMatrixDisplay( String filename ) throws IOException {
-        ColorMatrix matrix = new ColorMatrix( filename );
-        init( matrix );
+        DoubleMatrixReader m_matrixReader = new DoubleMatrixReader();
+        DoubleMatrixNamed<String, String> matrix = m_matrixReader.read( filename );
+        ColorMatrix m = new ColorMatrix( matrix );
+        init( m );
     }
 
     public Color getColor( int row, int column ) {
@@ -201,7 +204,7 @@ public class JMatrixDisplay extends JPanel {
         initSize();
 
         // create a standardized copy of the matrix
-        m_standardizedMatrix = ( ColorMatrix ) matrix.clone();
+        m_standardizedMatrix = matrix.clone();
         m_standardizedMatrix.standardize();
 
     }
