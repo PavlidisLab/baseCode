@@ -116,6 +116,10 @@ public class RServeClientTest extends TestCase {
     }
 
     public void testStringListEval() throws Exception {
+        if ( !connected ) {
+            log.warn( "Could not connect to RServe, skipping test." );
+            return;
+        }
         List<String> actual = rc.stringListEval( "c('a','b')" );
         assertEquals( 2, actual.size() );
         assertEquals( "a", actual.get( 0 ) );
