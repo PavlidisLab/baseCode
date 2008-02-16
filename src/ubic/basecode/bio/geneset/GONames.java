@@ -273,7 +273,7 @@ public class GONames {
      * 
      * @return
      */
-    public Set getUserDefinedGeneSets() {
+    public Set<String> getUserDefinedGeneSets() {
         return newGeneSets;
     }
 
