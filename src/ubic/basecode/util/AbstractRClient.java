@@ -130,7 +130,7 @@ public abstract class AbstractRClient implements RClient {
                 + ", byrow=TRUE)" );
         this.voidEval( "rm(U" + matrixVarName + ")" ); // maybe this saves memory...
 
-        assignRowAndColumnNames( matrix, matrixVarName );
+        if ( matrix.hasColNames() && matrix.hasRowNames() ) assignRowAndColumnNames( matrix, matrixVarName );
         return matrixVarName;
     }
 
