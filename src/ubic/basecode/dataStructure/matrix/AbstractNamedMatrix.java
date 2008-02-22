@@ -134,6 +134,7 @@ public abstract class AbstractNamedMatrix<R, C, V> implements NamedMatrix<R, C, 
      * @return java.lang.String
      */
     public final C getColName( int i ) {
+        if ( !this.hasColNames() ) return null;
         return colNames.get( i );
     }
 
@@ -156,6 +157,7 @@ public abstract class AbstractNamedMatrix<R, C, V> implements NamedMatrix<R, C, 
      * @return java.lang.String
      */
     public final R getRowName( int i ) {
+        if ( !this.hasRowNames() ) return null;
         return rowNames.get( i );
     }
 
