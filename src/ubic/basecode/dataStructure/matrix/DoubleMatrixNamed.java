@@ -72,13 +72,22 @@ public abstract class DoubleMatrixNamed<R, C> extends AbstractNamedMatrix<R, C, 
         StringBuffer buf = new StringBuffer();
         int stop = 0;
         buf.append( "label" );
+
         for ( int i = 0; i < columns; i++ ) {
-            buf.append( "\t" + this.getColName( i ) );
+            if ( this.hasColNames() ) {
+                buf.append( "\t" + this.getColName( i ) );
+            } else {
+                buf.append( "\t" + i );
+            }
         }
         buf.append( "\n" );
         for ( int j = 0; j < rows; j++ ) {
 
-            buf.append( this.getRowName( j ) );
+            if ( this.hasRowNames() ) {
+                buf.append( this.getRowName( j ) );
+            } else {
+                buf.append( j );
+            }
             for ( int i = 0; i < columns; i++ ) {
                 double value = this.get( j, i );
                 if ( Double.isNaN( value ) ) {
