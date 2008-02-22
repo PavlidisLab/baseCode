@@ -18,6 +18,7 @@
  */
 package ubic.basecode.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class RServeClientTest extends TestCase {
         try {
             rc = new RServeClient( false );
             connected = rc.isConnected();
-        } catch ( RuntimeException e ) {
+        } catch ( IOException e ) {
             connected = false;
         }
 

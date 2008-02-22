@@ -91,18 +91,18 @@ public class RServeClient extends AbstractRClient {
         return rserveExecutable;
     }
 
-    protected RServeClient() {
+    protected RServeClient() throws IOException {
         if ( !connect() ) {
-            throw new RuntimeException( "Could not connect to Rserve" );
+            throw new IOException( "Could not connect to Rserve" );
         }
     }
 
-    protected RServeClient( boolean startServer ) {
+    protected RServeClient( boolean startServer ) throws IOException {
         if ( startServer ) {
             this.startServer();
         }
         if ( !connect() ) {
-            throw new RuntimeException( "Could not connect to Rserve" );
+            throw new IOException( "Could not connect to Rserve" );
         }
     }
 

@@ -18,6 +18,7 @@
  */
 package ubic.basecode.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,14 +28,17 @@ import org.apache.commons.logging.LogFactory;
 import org.rosuda.JRI.REXP;
 import org.rosuda.JRI.RList;
 import org.rosuda.JRI.Rengine;
-import org.rosuda.REngine.REXPMismatchException;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 
 /**
+ * R connection implementation that uses the dynamic library interface JRI. For this to work the user must have
+ * libjri.so or jir.dll and libr.so in their java.library.path.
+ * 
  * @author paul
  * @version $Id$
+ * @see RConnectionFactory
  */
 public class JRIClient extends AbstractRClient {
 
@@ -42,7 +46,10 @@ public class JRIClient extends AbstractRClient {
 
     private static Log log = LogFactory.getLog( JRIClient.class.getName() );
 
-    public JRIClient() {
+    /**
+     * @throws IOException if the JRI library could not e loaded.
+     */
+    public JRIClient() throws IOException {
 
         if ( connection == null ) {
             log.info( "Loading JRI library, looking in " + System.getProperty( "java.library.path" ) );
@@ -50,12 +57,11 @@ public class JRIClient extends AbstractRClient {
                 System.loadLibrary( "jri" );
             } catch ( UnsatisfiedLinkError e ) {
                 log.error( e, e );
-                throw new RuntimeException( "No jri library, looked in: " + System.getProperty( "java.library.path" ),
-                        e );
+                throw new IOException( "No jri library, looked in: " + System.getProperty( "java.library.path" ) );
             }
             connection = new Rengine( new String[] { "--no-save" }, false, null );
             if ( !connection.waitForR() ) {
-                throw new UnsatisfiedLinkError( "Cannot load R" );
+                throw new IOException( "Cannot load R" );
             }
             log.info( "JRI looks good!" );
         }
@@ -266,14 +272,16 @@ public class JRIClient extends AbstractRClient {
     }
 
     /**
-     * @param variableName
-     * @param resultObject
-     * @throws REXPMismatchException
+     * Get the dimnames associated with the matrix variable row and column names, if any, and assign them to the
+     * resultObject NamedMatrix
+     * 
+     * @param variableName a matrix in R
+     * @param resultObject corresponding NamedMatrix we are filling in.
      */
     private void retrieveRowAndColumnNames( String variableName, DoubleMatrixNamed<String, String> resultObject ) {
-        // getting the row names.
-        List rowNamesREXP = this.eval( "dimnames(" + variableName + ")[1][[1]]" ).asVector();
+        log.debug( "Getting row & column names names" );
 
+        List rowNamesREXP = this.eval( "dimnames(" + variableName + ")[1][[1]]" ).asVector();
         if ( rowNamesREXP != null ) {
             log.debug( "Got row names" );
             List<String> rowNames = new ArrayList<String>();
@@ -283,6 +291,8 @@ public class JRIClient extends AbstractRClient {
                 rowNames.add( rowName );
             }
             resultObject.setRowNames( rowNames );
+        } else {
+            log.debug( "No row names" );
         }
 
         // Getting the column names.
@@ -296,7 +306,10 @@ public class JRIClient extends AbstractRClient {
                 colNames.add( rowName );
             }
             resultObject.setColumnNames( colNames );
+        } else {
+            log.debug( "No column names" );
         }
+        log.info( resultObject );
     }
 
 }
