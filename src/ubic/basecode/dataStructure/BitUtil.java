@@ -88,4 +88,23 @@ public class BitUtil {
         throw new IndexOutOfBoundsException( Integer.toString( position ) );
     }
 
+    /**
+     * @param bytes
+     * @return The number of '1' bits.
+     */
+    public static int count( byte[] bytes ) {
+        int count = 0;
+        int numbits = bytes.length * Byte.SIZE;
+        for ( int position = 0; position < numbits; position++ ) {
+            int bytepos = position >> 3;
+            if ( bytepos < numbits ) {
+                int bitpos = 7 - position % 8;
+                if ( ( bytes[bytepos] & 1 << bitpos ) != 0 ) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
 }

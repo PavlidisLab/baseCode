@@ -77,6 +77,24 @@ public class BitUtilTest extends TestCase {
         assertTrue( BitUtil.get( v, 30 ) );
     }
 
+    public void testCount() {
+        byte[] v = new byte[4];
+        for ( int i = 0, j = v.length; i < j; i++ ) {
+            v[i] = 0x0;
+        }
+        assertEquals( 0, BitUtil.count( v ) );
+        BitUtil.set( v, 4 );
+        BitUtil.set( v, 14 );
+        assertEquals( 2, BitUtil.count( v ) );
+        BitUtil.set( v, 10 );
+        BitUtil.set( v, 3 );
+        BitUtil.set( v, 11 );
+        BitUtil.set( v, 30 );
+        assertEquals( 6, BitUtil.count( v ) );
+        BitUtil.clear( v, 14 );
+        assertEquals( 5, BitUtil.count( v ) );
+    }
+
     /**
      * @param v
      * @return
