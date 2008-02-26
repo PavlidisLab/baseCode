@@ -4,7 +4,7 @@
 	<name>baseCode</name>
 	<groupId>baseCode</groupId>
 	<artifactId>baseCode</artifactId>
-	<version>0.9</version>
+	<version>1.0-SNAPSHOT</version>
 	<inceptionYear>2003</inceptionYear>
 	<description>
 		<![CDATA[Data structures, math and statistics tools, and utilities that are often needed across projects.]]>
@@ -18,7 +18,6 @@
 		<connection>scm:cvs:ext:@broca.ubic.ca:/cvs:baseCode</connection>
 		<developerConnection>scm:cvs:ext:@broca.ubic.ca:/cvs:baseCode</developerConnection>
 		<url>http://broca.ubic.ca:8081/viewrep/pavlab/baseCode</url>
-    <tag>baseCode-0_9</tag>
   </scm>
 	<issueManagement>
 		<system>Bugzilla</system>
