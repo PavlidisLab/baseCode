@@ -10,7 +10,7 @@
 		<![CDATA[Data structures, math and statistics tools, and utilities that are often needed across projects.]]>
 	</description>
 	<organization>
-		<name>UBC Bioinformatics Centre</name>
+		<name>UBC Centre for High-throughput Biology</name>
 		<url>http://bioinformatics.ubc.ca/</url>
 	</organization>
 	<packaging>jar</packaging>
