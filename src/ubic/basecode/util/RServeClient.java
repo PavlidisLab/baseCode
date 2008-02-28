@@ -424,12 +424,21 @@ public class RServeClient extends AbstractRClient {
      */
     public List<String> stringListEval( String command ) {
         try {
-            RList v = this.eval( command ).asList();
-
+            REXP eval = this.eval( command );
+            RList v;
             List<String> results = new ArrayList<String>();
-            for ( Iterator it = v.iterator(); it.hasNext(); ) {
-                results.add( ( ( REXPString ) it.next() ).asString() );
+            if ( eval instanceof REXPString ) {
+                String[] strs = ( ( REXPString ) eval ).asStrings();
+                for ( String string : strs ) {
+                    results.add( string );
+                }
+            } else {
+                v = eval.asList();
+                for ( Iterator it = v.iterator(); it.hasNext(); ) {
+                    results.add( ( ( REXPString ) it.next() ).asString() );
+                }
             }
+
             return results;
         } catch ( REXPMismatchException e ) {
             throw new RuntimeException( e );
@@ -507,31 +516,12 @@ public class RServeClient extends AbstractRClient {
      */
     private void retrieveRowAndColumnNames( String variableName, DoubleMatrixNamed<String, String> resultObject )
             throws REXPMismatchException {
-        // getting the row names.
-        RList rownamesREXP = this.eval( "dimnames(" + variableName + ")[1][[1]]" ).asList();
-        List<String> rowNames = new ArrayList<String>();
-        for ( Iterator it = rownamesREXP.iterator(); it.hasNext(); ) {
-            REXP rexp = ( ( REXP ) it.next() );
-            if ( rexp == null ) {
-                log.warn( "Null name!" );
-                rowNames.add( null );
-                continue;
-            }
-            rowNames.add( rexp.asString() );
-        }
+        List<String> rowNames = this.stringListEval( "dimnames(" + variableName + ")[1][[1]]" );
+       
         resultObject.setRowNames( rowNames );
 
-        RList colnamesREXP = this.eval( "dimnames(" + variableName + ")[2][[1]]" ).asList();
-        List<String> colNames = new ArrayList<String>();
-        for ( Iterator it = colnamesREXP.iterator(); it.hasNext(); ) {
-            REXP rexp = ( ( REXP ) it.next() );
-            if ( rexp == null ) {
-                log.warn( "Null name!" );
-                colNames.add( null );
-                continue;
-            }
-            colNames.add( rexp.asString() );
-        }
+        List<String> colNames = this.stringListEval( "dimnames(" + variableName + ")[2][[1]]" );
+     
         resultObject.setColumnNames( colNames );
     }
 
