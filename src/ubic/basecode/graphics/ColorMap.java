@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.gui;
+package ubic.basecode.graphics;
 
 import java.awt.Color;
 

@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.gui;
+package ubic.basecode.graphics;
 
 import java.awt.Color;
 
@@ -25,6 +25,7 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.math.DescriptiveWithMissing;
 import ubic.basecode.math.MatrixStats;
+import ubic.basecode.graphics.ColorMap;
 import cern.colt.list.DoubleArrayList;
 
 /**
@@ -41,17 +42,17 @@ public class ColorMatrix implements Cloneable {
      * Min and max values to display, which might not be the actual min and max values in the matrix. For instance, we
      * might want to clip values, or show a bigger color range for equal comparison with other rows or matrices.
      */
-    protected double m_displayMin;
-    protected double m_displayMax;
+    protected double displayMin;
+    protected double displayMax;
 
-    protected double m_min;
-    protected double m_max;
+    protected double min;
+    protected double max;
 
-    protected Color[][] m_colors;
-    protected Color m_missingColor = Color.lightGray;
-    protected Color[] m_colorMap = ColorMap.BLACKBODY_COLORMAP;
+    protected Color[][] colors;
+    protected Color missingColor = Color.lightGray;
+    protected Color[] colorMap = ColorMap.BLACKBODY_COLORMAP;
 
-    protected DoubleMatrixNamed m_matrix;
+    protected DoubleMatrixNamed maxtrix;
     protected DoubleMatrixReader m_matrixReader;
 
     protected int m_totalRows, m_totalColumns;
@@ -69,9 +70,8 @@ public class ColorMatrix implements Cloneable {
      * @param missingColor values missing from the matrix or non-numeric entries will be displayed using this color
      */
     public ColorMatrix( DoubleMatrixNamed matrix, Color[] colorMap, Color missingColor ) {
-
-        m_missingColor = missingColor;
-        m_colorMap = colorMap;
+        this.missingColor = missingColor;
+        this.colorMap = colorMap;
         init( matrix );
     }
 
@@ -81,20 +81,20 @@ public class ColorMatrix implements Cloneable {
         DenseDoubleMatrix2DNamed matrix = new DenseDoubleMatrix2DNamed( m_totalRows, m_totalColumns );
         // copy the row and column names
         for ( int i = 0; i < m_totalRows; i++ ) {
-            matrix.addRowName( m_matrix.getRowName( i ).toString(), i );
+            matrix.addRowName( maxtrix.getRowName( i ).toString(), i );
         }
         for ( int i = 0; i < m_totalColumns; i++ ) {
-            matrix.addColumnName( m_matrix.getColName( i ).toString(), i );
+            matrix.addColumnName( maxtrix.getColName( i ).toString(), i );
             // copy the data
         }
         for ( int r = 0; r < m_totalRows; r++ ) {
             for ( int c = 0; c < m_totalColumns; c++ ) {
-                matrix.set( r, c, m_matrix.get( r, c ) );
+                matrix.set( r, c, maxtrix.get( r, c ) );
             }
         }
 
         // create another copy of a color matrix (this class)
-        ColorMatrix clonedColorMatrix = new ColorMatrix( matrix, m_colorMap, m_missingColor );
+        ColorMatrix clonedColorMatrix = new ColorMatrix( matrix, colorMap, missingColor );
 
         int[] rowKeys = m_rowKeys.clone();
         clonedColorMatrix.setRowKeys( rowKeys );
@@ -115,7 +115,7 @@ public class ColorMatrix implements Cloneable {
                     + column + " is too high." );
 
         row = getTrueRowIndex( row );
-        return m_colors[row][column];
+        return colors[row][column];
     }
 
     public int getColumnCount() {
@@ -129,7 +129,7 @@ public class ColorMatrix implements Cloneable {
                     + " columns, so the maximum possible column index is " + ( m_totalColumns - 1 ) + ". Column index "
                     + column + " is too high." );
 
-        return m_matrix.getColName( column );
+        return maxtrix.getColName( column );
     }
 
     public String[] getColumnNames() {
@@ -141,18 +141,18 @@ public class ColorMatrix implements Cloneable {
     }
 
     public double getDisplayMax() {
-        return m_displayMax;
+        return displayMax;
     }
 
     public double getDisplayMin() {
-        return m_displayMin;
+        return displayMin;
     }
 
     /**
      * @return a DenseDoubleMatrix2DNamed object
      */
     public DoubleMatrixNamed getMatrix() {
-        return m_matrix;
+        return maxtrix;
     }
 
     public double[] getRow( int row ) throws ArrayIndexOutOfBoundsException {
@@ -163,11 +163,11 @@ public class ColorMatrix implements Cloneable {
                     + " is too high." );
 
         row = getTrueRowIndex( row );
-        return m_matrix.getRow( row );
+        return maxtrix.getRow( row );
     }
 
     public double[] getRowByName( String rowName ) {
-        return m_matrix.getRowByName( rowName );
+        return maxtrix.getRowByName( rowName );
     }
 
     public int getRowCount() {
@@ -175,7 +175,7 @@ public class ColorMatrix implements Cloneable {
     }
 
     public int getRowIndexByName( String rowName ) {
-        return m_matrix.getRowIndexByName( rowName );
+        return maxtrix.getRowIndexByName( rowName );
     }
 
     public Object getRowName( int row ) throws ArrayIndexOutOfBoundsException {
@@ -186,7 +186,7 @@ public class ColorMatrix implements Cloneable {
                     + " is too high." );
 
         row = getTrueRowIndex( row );
-        return m_matrix.getRowName( row );
+        return maxtrix.getRowName( row );
     }
 
     public String[] getRowNames() {
@@ -210,27 +210,27 @@ public class ColorMatrix implements Cloneable {
                     + column + " is too high." );
 
         row = getTrueRowIndex( row );
-        return m_matrix.get( row, column );
+        return maxtrix.get( row, column );
     }
 
     public void init( DoubleMatrixNamed matrix ) {
 
-        m_matrix = matrix; // by reference, or should we clone?
-        m_totalRows = m_matrix.rows();
-        m_totalColumns = m_matrix.columns();
-        m_colors = new Color[m_totalRows][m_totalColumns];
+        maxtrix = matrix; // by reference, or should we clone?
+        m_totalRows = maxtrix.rows();
+        m_totalColumns = maxtrix.columns();
+        colors = new Color[m_totalRows][m_totalColumns];
         createRowKeys();
 
-        m_displayMin = m_min = MatrixStats.min( m_matrix );
-        m_displayMax = m_max = MatrixStats.max( m_matrix );
+        displayMin = min = MatrixStats.min( maxtrix );
+        displayMax = max = MatrixStats.max( maxtrix );
 
         // map values to colors
         mapValuesToColors();
     }
 
     public void mapValuesToColors() {
-        ColorMap colorMap = new ColorMap( m_colorMap );
-        double range = m_displayMax - m_displayMin;
+        ColorMap colorMapO = new ColorMap( colorMap );
+        double range = displayMax - displayMin;
 
         if ( 0.0 == range ) {
             // This is not an exception, just a warning, so no exception to throw
@@ -240,7 +240,7 @@ public class ColorMatrix implements Cloneable {
         }
 
         // zoom factor for stretching or shrinking the range
-        double zoomFactor = ( colorMap.getPaletteSize() - 1 ) / range;
+        double zoomFactor = ( colorMapO.getPaletteSize() - 1 ) / range;
 
         // map values to colors
         for ( int row = 0; row < m_totalRows; row++ ) {
@@ -249,29 +249,29 @@ public class ColorMatrix implements Cloneable {
 
                 if ( Double.isNaN( value ) ) {
                     // the value is missing
-                    m_colors[row][column] = m_missingColor;
+                    colors[row][column] = missingColor;
                 } else {
                     // clip extreme values (this makes sense for normalized
                     // values because then for a standard deviation of one and
                     // mean zero, we set m_minValue = -2 and m_maxValue = 2,
                     // even though there could be a few extreme values
                     // outside this range (right?)
-                    if ( value > m_displayMax ) {
+                    if ( value > displayMax ) {
                         // clip extremely large values
-                        value = m_displayMax;
-                    } else if ( value < m_displayMin ) {
+                        value = displayMax;
+                    } else if ( value < displayMin ) {
                         // clip extremely small values
-                        value = m_displayMin;
+                        value = displayMin;
                     }
 
                     // shift the minimum value to zero
                     // to the range [0, maxValue + minValue]
-                    value -= m_displayMin;
+                    value -= displayMin;
 
                     // stretch or shrink the range to [0, totalColors]
                     double valueNew = value * zoomFactor;
                     int i = ( int ) Math.round( valueNew );
-                    m_colors[row][column] = colorMap.getColor( i );
+                    colors[row][column] = colorMapO.getColor( i );
                 }
             }
         }
@@ -295,7 +295,7 @@ public class ColorMatrix implements Cloneable {
                     + column + " is too high." );
 
         row = getTrueRowIndex( row );
-        m_colors[row][column] = newColor;
+        colors[row][column] = newColor;
     }
 
     /**
@@ -309,7 +309,7 @@ public class ColorMatrix implements Cloneable {
             throw new IllegalArgumentException();
         }
 
-        m_colorMap = colorMap;
+        colorMap = colorMap;
         mapValuesToColors();
     }
 
@@ -318,8 +318,8 @@ public class ColorMatrix implements Cloneable {
     //
     public void setDisplayRange( double min, double max ) {
 
-        m_displayMin = min;
-        m_displayMax = max;
+        displayMin = min;
+        displayMax = max;
 
         mapValuesToColors();
     }
@@ -343,8 +343,8 @@ public class ColorMatrix implements Cloneable {
             setRow( r, rowValues );
         }
 
-        m_displayMin = -2;
-        m_displayMax = +2;
+        displayMin = -2;
+        displayMax = +2;
 
         mapValuesToColors();
 
@@ -383,9 +383,33 @@ public class ColorMatrix implements Cloneable {
         int totalValues = Math.min( values.length, m_totalColumns );
 
         for ( int column = 0; column < totalValues; column++ ) {
-            m_matrix.set( row, column, values[column] );
+            maxtrix.set( row, column, values[column] );
 
         }
     } // end setRow
+
+    public Color[][] getColors() {
+        return colors;
+    }
+
+    public Color[] getColorMap() {
+        return colorMap;
+    }
+
+    public double getMin() {
+        return min;
+    }
+
+    public double getMax() {
+        return max;
+    }
+
+    public Color getMissingColor() {
+        return missingColor;
+    }
+
+    public DoubleMatrixNamed getMaxtrix() {
+        return maxtrix;
+    }
 
 } // end class ColorMatrix

@@ -514,14 +514,13 @@ public class RServeClient extends AbstractRClient {
      * @param resultObject
      * @throws REXPMismatchException
      */
-    private void retrieveRowAndColumnNames( String variableName, DoubleMatrixNamed<String, String> resultObject )
-            throws REXPMismatchException {
+    private void retrieveRowAndColumnNames( String variableName, DoubleMatrixNamed<String, String> resultObject ) {
         List<String> rowNames = this.stringListEval( "dimnames(" + variableName + ")[1][[1]]" );
-       
+
         resultObject.setRowNames( rowNames );
 
         List<String> colNames = this.stringListEval( "dimnames(" + variableName + ")[2][[1]]" );
-     
+
         resultObject.setColumnNames( colNames );
     }
 

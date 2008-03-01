@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.gui;
+package ubic.basecode.graphics;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,6 +27,8 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import ubic.basecode.graphics.ColorMatrix;
+import ubic.basecode.graphics.MatrixDisplay;
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
 
@@ -34,7 +36,7 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
  * @author keshav
  * @version $Id$
  */
-public class JMatrixDisplayTest extends TestCase {
+public class MatrixDisplayTest extends TestCase {
     double[][] array = new double[5][5];
 
     double[] row0 = { 3, 2, 5, 6, 9 };
@@ -58,7 +60,7 @@ public class JMatrixDisplayTest extends TestCase {
         matrix.setRowNames( rowNames );
         matrix.setColumnNames( colNames );
         ColorMatrix colorMatrix = new ColorMatrix( matrix );
-        JMatrixDisplay display = new JMatrixDisplay( colorMatrix );
+        MatrixDisplay display = new MatrixDisplay( colorMatrix );
         display.setLabelsVisible( true );
 
         boolean fail = false;
@@ -82,7 +84,7 @@ public class JMatrixDisplayTest extends TestCase {
         matrix.setRowNames( rowNames );
         matrix.setColumnNames( colNames );
         ColorMatrix colorMatrix = new ColorMatrix( matrix );
-        JMatrixDisplay display = new JMatrixDisplay( colorMatrix );
+        MatrixDisplay display = new MatrixDisplay( colorMatrix );
         display.setLabelsVisible( true );
 
         boolean fail = false;
@@ -105,7 +107,7 @@ public class JMatrixDisplayTest extends TestCase {
         matrix.setRowNames( rowNames );
         matrix.setColumnNames( colNames );
         ColorMatrix colorMatrix = new ColorMatrix( matrix );
-        JMatrixDisplay display = new JMatrixDisplay( colorMatrix );
+        MatrixDisplay display = new MatrixDisplay( colorMatrix );
         display.setLabelsVisible( true );
 
         boolean fail = false;

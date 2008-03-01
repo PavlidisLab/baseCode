@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.gui;
+package ubic.basecode.graphics;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -36,7 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
-import ubic.basecode.gui.graphics.text.Util;
+import ubic.basecode.graphics.text.Util;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 
 /**
@@ -45,11 +45,11 @@ import ubic.basecode.io.reader.DoubleMatrixReader;
  * @author Will Braynen
  * @version $Id$
  */
-public class JMatrixDisplay extends JPanel {
+public class MatrixDisplay extends JPanel {
 
     private static final long serialVersionUID = -8078532270193813539L;
 
-    private final static Log log = LogFactory.getLog( JMatrixDisplay.class );
+    private final static Log log = LogFactory.getLog( MatrixDisplay.class );
 
     protected boolean m_isShowLabels = false;
     //   
@@ -75,15 +75,15 @@ public class JMatrixDisplay extends JPanel {
 
     boolean m_isShowingStandardizedMatrix = false;
 
-    public JMatrixDisplay( ColorMatrix matrix ) {
+    public MatrixDisplay( ColorMatrix matrix ) {
         init( matrix );
     }
 
-    public JMatrixDisplay( DoubleMatrixNamed<String, String> matrix ) {
+    public MatrixDisplay( DoubleMatrixNamed<String, String> matrix ) {
         this( new ColorMatrix( matrix ) );
     }
 
-    public JMatrixDisplay( String filename ) throws IOException {
+    public MatrixDisplay( String filename ) throws IOException {
         DoubleMatrixReader m_matrixReader = new DoubleMatrixReader();
         DoubleMatrixNamed<String, String> matrix = m_matrixReader.read( filename );
         ColorMatrix m = new ColorMatrix( matrix );
@@ -98,7 +98,7 @@ public class JMatrixDisplay extends JPanel {
      * @return the current color map
      */
     public Color[] getColorMap() {
-        return colorMatrix.m_colorMap;
+        return colorMatrix.getColorMap();
     }
 
     public ColorMatrix getColorMatrix() {
@@ -118,26 +118,26 @@ public class JMatrixDisplay extends JPanel {
     }
 
     public double getDisplayMax() {
-        return colorMatrix.m_displayMax;
+        return colorMatrix.getDisplayMax();
     }
 
     public double getDisplayMin() {
-        return colorMatrix.m_displayMin;
+        return colorMatrix.getDisplayMin();
     }
 
     public double getDisplayRange() {
-        return colorMatrix.m_displayMax - colorMatrix.m_displayMin;
+        return colorMatrix.getDisplayMax() - getDisplayMin();
     }
 
     public DoubleMatrixNamed getMatrix() {
-        return colorMatrix.m_matrix;
+        return colorMatrix.getMatrix();
     }
 
     /**
      * @return the largest value in the matrix
      */
     public double getMax() {
-        return colorMatrix.m_max;
+        return colorMatrix.getMax();
     }
 
     /**
@@ -151,14 +151,14 @@ public class JMatrixDisplay extends JPanel {
      * @return the smallest value in the matrix
      */
     public double getMin() {
-        return colorMatrix.m_min;
+        return colorMatrix.getMin();
     }
 
     /**
      * @return the color used for missing values
      */
     public Color getMissingColor() {
-        return colorMatrix.m_missingColor;
+        return colorMatrix.getMissingColor();
     }
 
     public double[] getRow( int row ) {
