@@ -446,6 +446,10 @@ public class GeneAnnotations {
         if ( !classToActiveProbeCache.containsKey( id ) ) {
             Collection<String> finalList = new HashSet<String>();
             Collection<String> startingList = geneSetToProbeMap.get( id );
+            if ( startingList == null ) {
+                log.warn( "No probes for class: " + id );
+                return finalList;
+            }
             for ( Object element : startingList ) {
                 String probe = ( String ) element;
                 if ( activeProbes.contains( probe ) ) {
