@@ -309,7 +309,7 @@ public class ColorMatrix implements Cloneable {
             throw new IllegalArgumentException();
         }
 
-        colorMap = colorMap;
+        this.colorMap = colorMap;
         mapValuesToColors();
     }
 
