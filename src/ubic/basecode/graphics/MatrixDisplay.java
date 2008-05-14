@@ -588,5 +588,5 @@ public class MatrixDisplay extends JPanel {
         }
     }
 
-} // end class JMatrixDisplay
+} // end class MatrixDisplay
 
