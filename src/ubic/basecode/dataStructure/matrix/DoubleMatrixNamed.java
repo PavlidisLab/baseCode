@@ -61,10 +61,21 @@ public abstract class DoubleMatrixNamed<R, C> extends AbstractNamedMatrix<R, C, 
         this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }
 
+    public Double getByKeys( R r, C c) {
+        return this.get( getRowIndexByName( r ), getColIndexByName( c ));
+    }
+
     public abstract DoubleMatrixNamed<R, C> copy();
 
     public abstract double[][] asArray();
 
+    /*
+     * For more advanced matrix writing see the MatrixWriter class
+     * 
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     * @see ubic.basecode.io.writer.MatrixWriter
+     */
     @Override
     public final String toString() {
         int rows = this.rows();

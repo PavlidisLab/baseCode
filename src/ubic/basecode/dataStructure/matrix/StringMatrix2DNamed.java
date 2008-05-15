@@ -173,4 +173,8 @@ public class StringMatrix2DNamed<R, C> extends AbstractNamedMatrix<R, C, String>
         this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }
 
+    public String getByKeys( R r, C c) {
+        return this.get( getRowIndexByName( r ), getColIndexByName( c ));
+    }
+
 }

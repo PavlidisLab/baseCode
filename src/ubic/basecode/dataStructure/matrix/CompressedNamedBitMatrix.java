@@ -370,4 +370,9 @@ public class CompressedNamedBitMatrix<R, C> extends AbstractNamedMatrix<R, C, do
         this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }
 
+    public double[] getByKeys( R r, C c) {
+        return this.get( getRowIndexByName( r ), getColIndexByName( c ));
+    }
+
+    
 }

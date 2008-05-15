@@ -177,4 +177,11 @@ public abstract interface NamedMatrix<R, C, V> {
      */
     public void setByKeys( R r, C c, V v );
 
+    /**
+     * @param r
+     * @param c
+     */
+    public V getByKeys( R r, C c );
+    
+    
 }

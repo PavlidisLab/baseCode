@@ -154,7 +154,9 @@ public class ObjectMatrix2DNamed<R, C, V> extends AbstractNamedMatrix<R, C, V> i
      */
     public void setByKeys( R r, C c, V v ) {
         this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
-
     }
 
+    public V getByKeys( R r, C c) {
+        return this.get( getRowIndexByName( r ), getColIndexByName( c ));
+    }
 }

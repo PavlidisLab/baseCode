@@ -67,6 +67,12 @@ public class IntegerMatrix2DNamed<R, C> extends AbstractNamedMatrix<R, C, Intege
         this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }
 
+    public Integer getByKeys( R r, C c) {
+        return this.get( getRowIndexByName( r ), getColIndexByName( c ));
+    }
+
+    
+    
     public Integer[] getColObj( int col ) {
         Integer[] result = new Integer[rows()];
         for ( int i = 0; i < rows(); i++ ) {
