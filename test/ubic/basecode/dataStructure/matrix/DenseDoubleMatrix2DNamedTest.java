@@ -119,6 +119,17 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
+     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed#getByKeys(Object, Object)}.
+     */
+    public void testGetByKeys() {
+        assertEquals( 24.0, testM.getByKeys( "c", "z") );
+        assertEquals( 1.0, testM.getByKeys( "a", "w" ) );
+        assertEquals( 13.0, testM.getByKeys( "b", "y" ) );
+        assertEquals( Double.NaN, testM.getByKeys( "c", "x" ) );
+        assertEquals( 23.0, testM.getByKeys( "c", "y" ) );
+    }
+
+    /**
      * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed#viewRow(int)}.
      */
     public void testViewRow() {

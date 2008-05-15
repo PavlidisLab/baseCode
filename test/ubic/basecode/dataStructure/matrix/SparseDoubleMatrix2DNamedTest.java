@@ -118,6 +118,17 @@ public class SparseDoubleMatrix2DNamedTest extends TestCase {
         assertEquals( Double.NaN, testM.get( 2, 1 ) );
         assertEquals( 23.0, testM.get( 2, 2 ) );
     }
+    
+    /**
+     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix2DNamed#getByKeys(Object, Object)}.
+     */
+    public void testGetByKeys() {
+        assertEquals( 24.0, testM.getByKeys( "c", "z") );
+        assertEquals( 1.0, testM.getByKeys( "a", "w" ) );
+        assertEquals( 13.0, testM.getByKeys( "b", "y" ) );
+        assertEquals( Double.NaN, testM.getByKeys( "c", "x" ) );
+        assertEquals( 23.0, testM.getByKeys( "c", "y" ) );
+    }    
 
     /**
      * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix2DNamed#viewRow(int)}.
