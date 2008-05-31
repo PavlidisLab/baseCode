@@ -41,11 +41,9 @@ public class RConnectionFactory {
         RClient rc = null;
         try {
             rc = new RServeClient();
-            log.info( "here" );
             if ( rc.isConnected() ) {
                 return rc;
             }
-            log.info( "here" );
             return getJRIClient();
         } catch ( IOException e ) {
             return getJRIClient();
