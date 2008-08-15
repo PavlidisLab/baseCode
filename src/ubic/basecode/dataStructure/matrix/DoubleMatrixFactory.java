@@ -24,14 +24,14 @@ package ubic.basecode.dataStructure.matrix;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class DoubleMatrix2DNamedFactory {
+public class DoubleMatrixFactory {
 
-    public static CompressedSparseDoubleMatrix2DNamed<String, String> compressedsparse( int rows, int cols ) {
-        return new CompressedSparseDoubleMatrix2DNamed<String, String>( rows, cols );
+    public static CompressedSparseDoubleMatrix<String, String> compressedsparse( int rows, int cols ) {
+        return new CompressedSparseDoubleMatrix<String, String>( rows, cols );
     }
 
-    public static DenseDoubleMatrix2DNamed<String, String> dense( double T[][] ) {
-        return new DenseDoubleMatrix2DNamed<String, String>( T );
+    public static DenseDoubleMatrix<String, String> dense( double T[][] ) {
+        return new DenseDoubleMatrix<String, String>( T );
     }
 
     /**
@@ -40,8 +40,8 @@ public class DoubleMatrix2DNamedFactory {
      * @param T
      * @return
      */
-    public static DenseDoubleMatrix2DNamed<String, String> dense( DoubleMatrixNamed<String, String> T ) {
-        DenseDoubleMatrix2DNamed<String, String> copy = new DenseDoubleMatrix2DNamed<String, String>( T.rows(), T
+    public static DenseDoubleMatrix<String, String> dense( DoubleMatrix<String, String> T ) {
+        DenseDoubleMatrix<String, String> copy = new DenseDoubleMatrix<String, String>( T.rows(), T
                 .columns() );
         copy.setRowNames( T.getRowNames() );
         copy.setColumnNames( T.getColNames() );
@@ -53,8 +53,8 @@ public class DoubleMatrix2DNamedFactory {
         return copy;
     }
 
-    public static DenseDoubleMatrix2DNamed<String, String> dense( int rows, int cols ) {
-        return new DenseDoubleMatrix2DNamed<String, String>( rows, cols );
+    public static DenseDoubleMatrix<String, String> dense( int rows, int cols ) {
+        return new DenseDoubleMatrix<String, String>( rows, cols );
     }
 
     public static FastRowAccessDoubleMatrix2DNamed<String, String> fastrow( double T[][] ) {
@@ -65,12 +65,12 @@ public class DoubleMatrix2DNamedFactory {
         return new FastRowAccessDoubleMatrix2DNamed<String, String>( rows, cols );
     }
 
-    public static SparseDoubleMatrix2DNamed<String, String> sparse( double T[][] ) {
-        return new SparseDoubleMatrix2DNamed<String, String>( T );
+    public static SparseDoubleMatrix<String, String> sparse( double T[][] ) {
+        return new SparseDoubleMatrix<String, String>( T );
     }
 
-    public static SparseDoubleMatrix2DNamed<String, String> sparse( int rows, int cols ) {
-        return new SparseDoubleMatrix2DNamed<String, String>( rows, cols );
+    public static SparseDoubleMatrix<String, String> sparse( int rows, int cols ) {
+        return new SparseDoubleMatrix<String, String>( rows, cols );
     }
 
 }

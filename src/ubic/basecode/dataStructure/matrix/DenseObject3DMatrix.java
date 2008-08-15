@@ -26,15 +26,15 @@ import cern.colt.matrix.impl.DenseObjectMatrix3D;
  * @author ?
  * @version $Id$
  */
-public class DenseObjectMatrix3DNamed<R, C, S> extends AbstractNamedMatrix3D<R, C, S, Object> {
+public class DenseObject3DMatrix<R, C, S> extends AbstractMatrix3D<R, C, S, Object> {
     private DenseObjectMatrix3D matrix;
 
-    public DenseObjectMatrix3DNamed( int slices, int rows, int columns ) {
+    public DenseObject3DMatrix( int slices, int rows, int columns ) {
         super();
         matrix = new DenseObjectMatrix3D( slices, rows, columns );
     }
 
-    public DenseObjectMatrix3DNamed( List<S> sliceNames, List<R> rowNames, List<C> colNames ) {
+    public DenseObject3DMatrix( List<S> sliceNames, List<R> rowNames, List<C> colNames ) {
         super();
         setRowNames( rowNames );
         setColumnNames( colNames );
@@ -42,12 +42,12 @@ public class DenseObjectMatrix3DNamed<R, C, S> extends AbstractNamedMatrix3D<R, 
         matrix = new DenseObjectMatrix3D( sliceNames.size(), rowNames.size(), colNames.size() );
     }
 
-    public DenseObjectMatrix3DNamed( Object[][][] data ) {
+    public DenseObject3DMatrix( Object[][][] data ) {
         super();
         matrix = new DenseObjectMatrix3D( data );
     }
 
-    public DenseObjectMatrix3DNamed( Object[][][] data, List<S> sliceNames, List<R> rowNames, List<C> colNames ) {
+    public DenseObject3DMatrix( Object[][][] data, List<S> sliceNames, List<R> rowNames, List<C> colNames ) {
         super();
         matrix = new DenseObjectMatrix3D( data );
         setRowNames( rowNames );

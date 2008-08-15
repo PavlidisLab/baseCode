@@ -21,7 +21,7 @@ package ubic.basecode.io.reader;
 import java.io.InputStream;
 
 import junit.framework.TestCase;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.math.Constants;
 
 /**
@@ -29,7 +29,7 @@ import ubic.basecode.math.Constants;
  * @version $Id$
  */
 public class TestSparseDoubleMatrixReader extends TestCase {
-    DoubleMatrixNamed<String, String> matrix = null;
+    DoubleMatrix<String, String> matrix = null;
     InputStream is = null;
     InputStream isa = null;
     SparseDoubleMatrixReader reader = null;

@@ -21,7 +21,7 @@ package ubic.basecode.dataStructure.matrix;
 import java.io.InputStream;
 
 import junit.framework.TestCase;
-import ubic.basecode.io.reader.SparseRaggedDouble2DNamedMatrixReader;
+import ubic.basecode.io.reader.SparseRaggedMatrixReader;
 import ubic.basecode.io.reader.TestSparseDoubleMatrixReader;
 import ubic.basecode.util.RegressionTesting;
 import cern.colt.list.DoubleArrayList;
@@ -32,10 +32,10 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @version $Id$
  */
 public class TestSparseRaggedDoubleMatrix2DNamed extends TestCase {
-    SparseRaggedDoubleMatrix2DNamed matrix = null;
+    SparseRaggedDoubleMatrix matrix = null;
     InputStream is = null;
     InputStream isa = null;
-    SparseRaggedDouble2DNamedMatrixReader reader = null;
+    SparseRaggedMatrixReader reader = null;
 
     public void testColumns() {
         int actualReturn = matrix.columns();
@@ -81,10 +81,10 @@ public class TestSparseRaggedDoubleMatrix2DNamed extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        reader = new SparseRaggedDouble2DNamedMatrixReader();
+        reader = new SparseRaggedMatrixReader();
         is = TestSparseDoubleMatrixReader.class.getResourceAsStream( "/data/JW-testmatrix.txt" );
         isa = TestSparseDoubleMatrixReader.class.getResourceAsStream( "/data/adjacencylist-testmatrix.txt" );
-        matrix = ( SparseRaggedDoubleMatrix2DNamed ) reader.read( is, 1 );
+        matrix = ( SparseRaggedDoubleMatrix ) reader.read( is, 1 );
     }
 
 }

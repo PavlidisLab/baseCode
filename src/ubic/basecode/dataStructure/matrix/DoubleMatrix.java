@@ -30,10 +30,9 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public abstract class DoubleMatrixNamed<R, C> extends AbstractNamedMatrix<R, C, Double> implements
-        NamedPrimitiveMatrix<R, C, Double> {
+public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> implements PrimitiveMatrix<R, C, Double> {
 
-    protected static Log log = LogFactory.getLog( DoubleMatrixNamed.class.getName() );
+    protected static Log log = LogFactory.getLog( DoubleMatrix.class.getName() );
 
     /**
      * @param s String
@@ -41,6 +40,14 @@ public abstract class DoubleMatrixNamed<R, C> extends AbstractNamedMatrix<R, C, 
      */
     public double[] getColumnByName( C s ) {
         return getColumn( getColIndexByName( s ) );
+    }
+
+    public double[][] getRawMatrix() {
+        double[][] result = new double[this.rows()][];
+        for ( int i = 0; i < this.rows(); i++ ) {
+            result[i] = this.getRow( i );
+        }
+        return result;
     }
 
     public abstract double[] getRow( int i );
@@ -61,18 +68,17 @@ public abstract class DoubleMatrixNamed<R, C> extends AbstractNamedMatrix<R, C, 
         this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }
 
-    public Double getByKeys( R r, C c) {
-        return this.get( getRowIndexByName( r ), getColIndexByName( c ));
+    public Double getByKeys( R r, C c ) {
+        return this.get( getRowIndexByName( r ), getColIndexByName( c ) );
     }
 
-    public abstract DoubleMatrixNamed<R, C> copy();
+    public abstract DoubleMatrix<R, C> copy();
 
     public abstract double[][] asArray();
 
     /*
-     * For more advanced matrix writing see the MatrixWriter class
+     * For more advanced matrix writing see the MatrixWriter class (non-Javadoc)
      * 
-     * (non-Javadoc)
      * @see java.lang.Object#toString()
      * @see ubic.basecode.io.writer.MatrixWriter
      */

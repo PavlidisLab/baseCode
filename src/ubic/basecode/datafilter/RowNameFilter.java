@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import ubic.basecode.dataStructure.matrix.NamedMatrix;
-import ubic.basecode.dataStructure.matrix.NamedMatrixUtil;
+import ubic.basecode.dataStructure.matrix.Matrix2D;
+import ubic.basecode.dataStructure.matrix.MatrixUtil;
 
 /**
  * Remove or retain rows that are on a list.
@@ -31,7 +31,7 @@ import ubic.basecode.dataStructure.matrix.NamedMatrixUtil;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class RowNameFilter<M extends NamedMatrix<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
+public class RowNameFilter<M extends Matrix2D<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
 
     private boolean exclude = false;
     private Set filterNames;
@@ -77,7 +77,7 @@ public class RowNameFilter<M extends NamedMatrix<R, C, V>, R, C, V> extends Abst
                 if ( exclude ) {
                     continue;
                 }
-                MTemp.add( NamedMatrixUtil.getRow( data, i ) );
+                MTemp.add( MatrixUtil.getRow( data, i ) );
                 rowNames.add( name );
                 kept++;
                 if ( kept >= numNeeded ) {
@@ -86,7 +86,7 @@ public class RowNameFilter<M extends NamedMatrix<R, C, V>, R, C, V> extends Abst
             }
 
             if ( exclude ) {
-                MTemp.add( NamedMatrixUtil.getRow( data, i ) );
+                MTemp.add( MatrixUtil.getRow( data, i ) );
                 rowNames.add( name );
                 kept++;
             }

@@ -35,17 +35,17 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixFactory;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import cern.colt.list.DoubleArrayList;
 
 /**
- * Reader for {@link basecode.dataStructure.matrix.DoubleMatrixNamed}.
+ * Reader for {@link basecode.dataStructure.matrix.DoubleMatrix}.
  * 
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class DoubleMatrixReader extends AbstractNamedMatrixReader<DoubleMatrixNamed<String, String>, Double> {
+public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String, String>, Double> {
 
     private int numHeadings;
     private List<String> colNames;
@@ -56,7 +56,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader<DoubleMatrixNa
      * @throws IOException
      */
     @Override
-    public DoubleMatrixNamed<String, String> read( InputStream stream ) throws IOException {
+    public DoubleMatrix<String, String> read( InputStream stream ) throws IOException {
         return read( stream, null );
     }
 
@@ -67,7 +67,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader<DoubleMatrixNa
      *         true.
      * @throws IOException
      */
-    public DoubleMatrixNamed<String, String> read( InputStream stream, Collection<String> wantedRowNames )
+    public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames )
             throws IOException {
         return read( stream, wantedRowNames, true );
     }
@@ -80,7 +80,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader<DoubleMatrixNa
      * @return matrix
      * @throws IOException
      */
-    public DoubleMatrixNamed<String, String> read( InputStream stream, Collection<String> wantedRowNames,
+    public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames,
             boolean createEmptyRows ) throws IOException {
 
         BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
@@ -155,7 +155,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader<DoubleMatrixNa
      * @throws IOException
      */
     @Override
-    public DoubleMatrixNamed<String, String> read( String filename ) throws IOException {
+    public DoubleMatrix<String, String> read( String filename ) throws IOException {
         return read( filename, null );
     }
 
@@ -167,7 +167,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader<DoubleMatrixNa
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
      */
-    public DoubleMatrixNamed<String, String> read( String filename, Collection<String> wantedRowNames )
+    public DoubleMatrix<String, String> read( String filename, Collection<String> wantedRowNames )
             throws IOException {
         File infile = new File( filename );
         if ( !infile.exists() || !infile.canRead() ) {
@@ -183,7 +183,7 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader<DoubleMatrixNa
      * @see basecode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
      */
     @Override
-    public DoubleMatrixNamed<String, String> readOneRow( BufferedReader dis ) throws IOException {
+    public DoubleMatrix<String, String> readOneRow( BufferedReader dis ) throws IOException {
         String row = dis.readLine();
         List<DoubleArrayList> MTemp = new Vector<DoubleArrayList>();
 
@@ -205,10 +205,10 @@ public class DoubleMatrixReader extends AbstractNamedMatrixReader<DoubleMatrixNa
     // protected methods
     // -----------------------------------------------------------------
 
-    protected DoubleMatrixNamed<String, String> createMatrix( List MTemp, int rowCount, int colCount,
+    protected DoubleMatrix<String, String> createMatrix( List MTemp, int rowCount, int colCount,
             List<String> rowNames, List<String> colNames1 ) {
 
-        DoubleMatrixNamed<String, String> matrix = DoubleMatrix2DNamedFactory.fastrow( rowCount, colCount );
+        DoubleMatrix<String, String> matrix = DoubleMatrixFactory.fastrow( rowCount, colCount );
 
         for ( int i = 0; i < matrix.rows(); i++ ) {
             for ( int j = 0; j < matrix.columns(); j++ ) {

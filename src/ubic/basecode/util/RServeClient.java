@@ -43,8 +43,8 @@ import org.rosuda.REngine.RList;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
 
-import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
 /**
  * @author pavlidis
@@ -321,7 +321,7 @@ public class RServeClient extends AbstractRClient {
      * 
      * @see ubic.basecode.util.RClient#retrieveMatrix(java.lang.String)
      */
-    public DoubleMatrixNamed<String, String> retrieveMatrix( String variableName ) {
+    public DoubleMatrix<String, String> retrieveMatrix( String variableName ) {
         try {
             log.debug( "Retrieving " + variableName );
 
@@ -343,7 +343,7 @@ public class RServeClient extends AbstractRClient {
                 i++;
             }
 
-            DoubleMatrixNamed<String, String> resultObject = new DenseDoubleMatrix2DNamed<String, String>( results );
+            DoubleMatrix<String, String> resultObject = new DenseDoubleMatrix<String, String>( results );
 
             retrieveRowAndColumnNames( variableName, resultObject );
             return resultObject;
@@ -514,7 +514,7 @@ public class RServeClient extends AbstractRClient {
      * @param resultObject
      * @throws REXPMismatchException
      */
-    private void retrieveRowAndColumnNames( String variableName, DoubleMatrixNamed<String, String> resultObject ) {
+    private void retrieveRowAndColumnNames( String variableName, DoubleMatrix<String, String> resultObject ) {
         List<String> rowNames = this.stringListEval( "dimnames(" + variableName + ")[1][[1]]" );
 
         resultObject.setRowNames( rowNames );

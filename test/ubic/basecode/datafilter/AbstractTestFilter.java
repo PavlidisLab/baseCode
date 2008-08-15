@@ -19,8 +19,8 @@
 package ubic.basecode.datafilter;
 
 import junit.framework.TestCase;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
-import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.dataStructure.matrix.StringMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.io.reader.StringMatrixReader;
 
@@ -32,10 +32,10 @@ import ubic.basecode.io.reader.StringMatrixReader;
  */
 public abstract class AbstractTestFilter extends TestCase {
 
-    protected DoubleMatrixNamed<String, String> testdata = null;
-    protected StringMatrix2DNamed<String, String> teststringdata = null;
-    protected DoubleMatrixNamed<String, String> testmissingdata = null;
-    protected StringMatrix2DNamed<String, String> teststringmissingdata = null;
+    protected DoubleMatrix<String, String> testdata = null;
+    protected StringMatrix<String, String> teststringdata = null;
+    protected DoubleMatrix<String, String> testmissingdata = null;
+    protected StringMatrix<String, String> teststringmissingdata = null;
 
     public AbstractTestFilter() {
         super();

@@ -25,7 +25,7 @@ import java.util.List;
  * @author ?
  * @version $Id$
  */
-public interface NamedMatrix3D<R, C, S, V> {
+public interface Matrix3D<R, C, S, V> {
     /**
      * Add a column name associated with an index.
      * 

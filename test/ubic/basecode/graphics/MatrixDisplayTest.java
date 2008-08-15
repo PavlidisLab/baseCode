@@ -29,8 +29,8 @@ import junit.framework.TestCase;
 
 import ubic.basecode.graphics.ColorMatrix;
 import ubic.basecode.graphics.MatrixDisplay;
-import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
 /**
  * @author keshav
@@ -56,7 +56,7 @@ public class MatrixDisplayTest extends TestCase {
      */
     public void testSaveImage() {
 
-        DoubleMatrixNamed<String, String> matrix = new DenseDoubleMatrix2DNamed<String, String>( array );
+        DoubleMatrix<String, String> matrix = new DenseDoubleMatrix<String, String>( array );
         matrix.setRowNames( rowNames );
         matrix.setColumnNames( colNames );
         ColorMatrix colorMatrix = new ColorMatrix( matrix );
@@ -80,7 +80,7 @@ public class MatrixDisplayTest extends TestCase {
      */
     public void testSaveImageStandardize() {
 
-        DoubleMatrixNamed<String, String> matrix = new DenseDoubleMatrix2DNamed<String, String>( array );
+        DoubleMatrix<String, String> matrix = new DenseDoubleMatrix<String, String>( array );
         matrix.setRowNames( rowNames );
         matrix.setColumnNames( colNames );
         ColorMatrix colorMatrix = new ColorMatrix( matrix );
@@ -103,7 +103,7 @@ public class MatrixDisplayTest extends TestCase {
      *
      */
     public void testWriteOutAsPNG() {
-        DoubleMatrixNamed<String, String> matrix = new DenseDoubleMatrix2DNamed<String, String>( array );
+        DoubleMatrix<String, String> matrix = new DenseDoubleMatrix<String, String>( array );
         matrix.setRowNames( rowNames );
         matrix.setColumnNames( colNames );
         ColorMatrix colorMatrix = new ColorMatrix( matrix );

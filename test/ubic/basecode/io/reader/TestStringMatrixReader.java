@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import junit.framework.TestCase;
-import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
+import ubic.basecode.dataStructure.matrix.StringMatrix;
 
 /** 
  * 
@@ -31,7 +31,7 @@ import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
  */
 public class TestStringMatrixReader extends TestCase {
 
-    StringMatrix2DNamed<String, String> matrix = null;
+    StringMatrix<String, String> matrix = null;
     InputStream is = null;
     StringMatrixReader reader = null;
 

@@ -29,8 +29,8 @@ import org.rosuda.JRI.REXP;
 import org.rosuda.JRI.RList;
 import org.rosuda.JRI.Rengine;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixFactory;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
 /**
  * R connection implementation that uses the dynamic library interface JRI. For this to work the user must have
@@ -210,7 +210,7 @@ public class JRIClient extends AbstractRClient {
      * 
      * @see ubic.basecode.util.RClient#retrieveMatrix(java.lang.String)
      */
-    public DoubleMatrixNamed<String, String> retrieveMatrix( String variableName ) {
+    public DoubleMatrix<String, String> retrieveMatrix( String variableName ) {
         log.debug( "Retrieving " + variableName );
         REXP r = this.eval( variableName );
         if ( r == null ) throw new IllegalArgumentException( variableName + " not found in R context" );
@@ -219,7 +219,7 @@ public class JRIClient extends AbstractRClient {
 
         if ( results == null ) throw new RuntimeException( "Failed to get back matrix for variable " + variableName );
 
-        DoubleMatrixNamed<String, String> resultObject = DoubleMatrix2DNamedFactory.dense( results );
+        DoubleMatrix<String, String> resultObject = DoubleMatrixFactory.dense( results );
 
         retrieveRowAndColumnNames( variableName, resultObject );
         return resultObject;
@@ -278,7 +278,7 @@ public class JRIClient extends AbstractRClient {
      * @param variableName a matrix in R
      * @param resultObject corresponding NamedMatrix we are filling in.
      */
-    private void retrieveRowAndColumnNames( String variableName, DoubleMatrixNamed<String, String> resultObject ) {
+    private void retrieveRowAndColumnNames( String variableName, DoubleMatrix<String, String> resultObject ) {
         log.debug( "Getting row & column names names" );
 
         List rowNamesREXP = this.eval( "dimnames(" + variableName + ")[1][[1]]" ).asVector();

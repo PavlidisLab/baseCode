@@ -21,8 +21,8 @@ package ubic.basecode.datafilter;
 import java.util.List;
 import java.util.Vector;
 
-import ubic.basecode.dataStructure.matrix.NamedMatrix;
-import ubic.basecode.dataStructure.matrix.NamedMatrixUtil;
+import ubic.basecode.dataStructure.matrix.Matrix2D;
+import ubic.basecode.dataStructure.matrix.MatrixUtil;
 import cern.colt.list.IntArrayList;
 
 /**
@@ -31,7 +31,7 @@ import cern.colt.list.IntArrayList;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class RowMissingFilter<M extends NamedMatrix<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
+public class RowMissingFilter<M extends Matrix2D<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
 
     private static final int ABSOLUTEMINPRESENT = 1;
     private int minPresentCount = 5;
@@ -74,7 +74,7 @@ public class RowMissingFilter<M extends NamedMatrix<R, C, V>, R, C, V> extends A
             present.add( missingCount );
             if ( missingCount >= ABSOLUTEMINPRESENT && missingCount >= minPresentCount ) {
                 kept++;
-                MTemp.add( NamedMatrixUtil.getRow( data, i ) );
+                MTemp.add( MatrixUtil.getRow( data, i ) );
                 rowNames.add( data.getRowName( i ) );
             }
         }
@@ -97,7 +97,7 @@ public class RowMissingFilter<M extends NamedMatrix<R, C, V>, R, C, V> extends A
             for ( int i = 0; i < numRows; i++ ) {
                 if ( present.get( i ) >= minPresentCount && present.get( i ) >= ABSOLUTEMINPRESENT ) {
                     kept++;
-                    MTemp.add( NamedMatrixUtil.getRow( data, i ) );
+                    MTemp.add( MatrixUtil.getRow( data, i ) );
                     if ( !rowNames.contains( data.getRowName( i ) ) ) {
                         rowNames.add( data.getRowName( i ) );
                     }

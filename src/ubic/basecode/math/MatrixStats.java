@@ -18,9 +18,9 @@
  */
 package ubic.basecode.math;
 
-import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
-import ubic.basecode.dataStructure.matrix.SparseDoubleMatrix2DNamed;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.dataStructure.matrix.SparseDoubleMatrix;
 import cern.colt.function.DoubleFunction;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
@@ -39,8 +39,8 @@ public class MatrixStats {
      * @return a symmetric matrix that has the rows and columns set to be the names of the rows of the input.
      */
     @SuppressWarnings("unchecked")
-    public static DoubleMatrixNamed correlationMatrix( DoubleMatrixNamed data ) {
-        DoubleMatrixNamed result = new DenseDoubleMatrix2DNamed( data.rows(), data.rows() );
+    public static DoubleMatrix correlationMatrix( DoubleMatrix data ) {
+        DoubleMatrix result = new DenseDoubleMatrix( data.rows(), data.rows() );
 
         for ( int i = 0; i < data.rows(); i++ ) {
             DoubleArrayList irow = new DoubleArrayList( data.getRow( i ) );
@@ -67,8 +67,8 @@ public class MatrixStats {
      * @return a sparse symmetric matrix that has the rows and columns set to be the names of the rows of the input.
      */
     @SuppressWarnings("unchecked")
-    public static SparseDoubleMatrix2DNamed correlationMatrix( DoubleMatrixNamed data, double threshold ) {
-        SparseDoubleMatrix2DNamed result = new SparseDoubleMatrix2DNamed( data.rows(), data.rows() );
+    public static SparseDoubleMatrix correlationMatrix( DoubleMatrix data, double threshold ) {
+        SparseDoubleMatrix result = new SparseDoubleMatrix( data.rows(), data.rows() );
 
         for ( int i = 0; i < data.rows(); i++ ) {
             DoubleArrayList irow = new DoubleArrayList( data.getRow( i ) );
@@ -93,7 +93,7 @@ public class MatrixStats {
      * 
      * @param matrixToNormalize
      */
-    public static void countsNormalize( DoubleMatrixNamed matrixToNormalize ) {
+    public static void countsNormalize( DoubleMatrix matrixToNormalize ) {
 
         final double min = MatrixStats.min( matrixToNormalize );
         DoubleFunction f = new DoubleFunction() {
@@ -116,7 +116,7 @@ public class MatrixStats {
      * @param matrix DenseDoubleMatrix2DNamed
      * @return the largest value in the matrix
      */
-    public static double max( DoubleMatrixNamed matrix ) {
+    public static double max( DoubleMatrix matrix ) {
 
         int totalRows = matrix.rows();
         int totalColumns = matrix.columns();
@@ -150,7 +150,7 @@ public class MatrixStats {
      * @param matrix DenseDoubleMatrix2DNamed
      * @return the smallest value in the matrix
      */
-    public static double min( DoubleMatrixNamed matrix ) {
+    public static double min( DoubleMatrix matrix ) {
 
         int totalRows = matrix.rows();
         int totalColumns = matrix.columns();
@@ -203,7 +203,7 @@ public class MatrixStats {
      * @param matrixToNormalize
      * @param sigma a scaling factor for the input values.
      */
-    public static void rbfNormalize( DoubleMatrixNamed matrixToNormalize, final double sigma ) {
+    public static void rbfNormalize( DoubleMatrix matrixToNormalize, final double sigma ) {
 
         // define the function we will use.
         DoubleFunction f = new DoubleFunction() {

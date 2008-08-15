@@ -18,7 +18,7 @@
  */
 package ubic.basecode.datafilter;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.math.Stats;
 
 /**
@@ -28,7 +28,7 @@ import ubic.basecode.math.Stats;
  * @author pavlidis
  * @version $Id$
  */
-public abstract class AbstractLevelFilter<R, C> extends AbstractFilter<DoubleMatrixNamed<R, C>, R, C, Double> {
+public abstract class AbstractLevelFilter<R, C> extends AbstractFilter<DoubleMatrix<R, C>, R, C, Double> {
 
     protected double lowCut = -Double.MAX_VALUE;
     protected double highCut = Double.MAX_VALUE;

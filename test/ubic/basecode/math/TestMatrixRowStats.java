@@ -19,7 +19,7 @@
 package ubic.basecode.math;
 
 import junit.framework.TestCase;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.datafilter.AbstractTestFilter;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.util.RegressionTesting;
@@ -31,7 +31,7 @@ import cern.colt.list.DoubleArrayList;
  */
 public class TestMatrixRowStats extends TestCase {
 
-    protected DoubleMatrixNamed testdata = null;
+    protected DoubleMatrix testdata = null;
 
     public final void testMeans() {
         DoubleArrayList actualReturn = MatrixRowStats.means( testdata );

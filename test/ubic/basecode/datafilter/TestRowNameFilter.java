@@ -21,8 +21,8 @@ package ubic.basecode.datafilter;
 import java.util.HashSet;
 import java.util.Set;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
-import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.dataStructure.matrix.StringMatrix;
 
 /**
  * @author Pavlidis
@@ -34,36 +34,36 @@ public class TestRowNameFilter extends AbstractTestFilter {
     protected Set<String> testfilterlist;
 
     public void testFilter() {
-        RowNameFilter<DoubleMatrixNamed<String, String>, String, String, Double> fi = new RowNameFilter<DoubleMatrixNamed<String, String>, String, String, Double>(
+        RowNameFilter<DoubleMatrix<String, String>, String, String, Double> fi = new RowNameFilter<DoubleMatrix<String, String>, String, String, Double>(
                 testfilterlist );
-        DoubleMatrixNamed filtered = fi.filter( testdata );
+        DoubleMatrix filtered = fi.filter( testdata );
         int expectedReturn = 4;
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
     public void testFilterExclude() {
-        RowNameFilter<DoubleMatrixNamed<String, String>, String, String, Double> fi = new RowNameFilter<DoubleMatrixNamed<String, String>, String, String, Double>(
+        RowNameFilter<DoubleMatrix<String, String>, String, String, Double> fi = new RowNameFilter<DoubleMatrix<String, String>, String, String, Double>(
                 testfilterlist, true );
-        DoubleMatrixNamed filtered = fi.filter( testdata );
+        DoubleMatrix filtered = fi.filter( testdata );
         int expectedReturn = testdata.rows() - 4;
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
     public void testFilterString() {
-        RowNameFilter<StringMatrix2DNamed<String, String>, String, String, String> fi = new RowNameFilter<StringMatrix2DNamed<String, String>, String, String, String>(
+        RowNameFilter<StringMatrix<String, String>, String, String, String> fi = new RowNameFilter<StringMatrix<String, String>, String, String, String>(
                 testfilterlist );
-        StringMatrix2DNamed filtered = fi.filter( teststringdata );
+        StringMatrix filtered = fi.filter( teststringdata );
         int expectedReturn = 4;
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
     public void testFilterStringExclude() {
-        RowNameFilter<StringMatrix2DNamed<String, String>, String, String, String> fi = new RowNameFilter<StringMatrix2DNamed<String, String>, String, String, String>(
+        RowNameFilter<StringMatrix<String, String>, String, String, String> fi = new RowNameFilter<StringMatrix<String, String>, String, String, String>(
                 testfilterlist, true );
-        StringMatrix2DNamed filtered = fi.filter( teststringdata );
+        StringMatrix filtered = fi.filter( teststringdata );
         int expectedReturn = teststringdata.rows() - 4;
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );

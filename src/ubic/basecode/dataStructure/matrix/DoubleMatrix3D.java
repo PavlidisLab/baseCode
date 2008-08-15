@@ -32,10 +32,10 @@ import cern.colt.matrix.DoubleMatrix2D;
  * @param <C> Column label type
  * @param <S> Slice label type
  */
-public abstract class DoubleMatrixNamed3D<R, C, S> extends AbstractNamedMatrix3D<R, C, S, Double> {
+public abstract class DoubleMatrix3D<R, C, S> extends AbstractMatrix3D<R, C, S, Double> {
     protected static final int MAX_ROWS_TO_PRINT = 20;
     protected static final int MAX_SLICES_TO_PRINT = 10;
-    protected static Log log = LogFactory.getLog( DoubleMatrixNamed.class.getName() );
+    protected static Log log = LogFactory.getLog( DoubleMatrix.class.getName() );
 
     /**
      * @param s String

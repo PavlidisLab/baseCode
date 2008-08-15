@@ -20,7 +20,7 @@ package ubic.basecode.util;
 
 import java.util.List;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
 /**
  * ion of a connection to R
@@ -60,7 +60,7 @@ public interface RClient {
      * @param matrix
      * @return the name of the variable by which the R matrix can be referred.
      */
-    public String assignMatrix( DoubleMatrixNamed matrix );
+    public String assignMatrix( DoubleMatrix matrix );
 
     /**
      * Define a variable corresponding to a character array in the R context, given a List of Strings.
@@ -164,7 +164,7 @@ public interface RClient {
      * @param variableName
      * @return
      */
-    public DoubleMatrixNamed<String, String> retrieveMatrix( String variableName );
+    public DoubleMatrix<String, String> retrieveMatrix( String variableName );
 
     /*
      * (non-Javadoc)

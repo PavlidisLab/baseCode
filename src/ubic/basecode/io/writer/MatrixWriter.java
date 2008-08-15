@@ -27,9 +27,9 @@ import java.io.Writer;
 import java.text.Format;
 import java.util.Iterator;
 import java.util.Map;
-import ubic.basecode.dataStructure.matrix.NamedMatrix;
-import ubic.basecode.dataStructure.matrix.NamedMatrix3D;
-import ubic.basecode.dataStructure.matrix.NamedMatrixUtil;
+import ubic.basecode.dataStructure.matrix.Matrix2D;
+import ubic.basecode.dataStructure.matrix.Matrix3D;
+import ubic.basecode.dataStructure.matrix.MatrixUtil;
 
 /**
  * Class for writing matrices to disk
@@ -119,7 +119,7 @@ public class MatrixWriter {
      * @param printNames
      * @throws IOException
      */
-    public <R, C, V> void writeMatrix( NamedMatrix<R, C, V> matrix, boolean printNames ) throws IOException {
+    public <R, C, V> void writeMatrix( Matrix2D<R, C, V> matrix, boolean printNames ) throws IOException {
         // write headers
         StringBuffer buf = new StringBuffer( topLeft );
         if ( printNames ) {
@@ -140,7 +140,7 @@ public class MatrixWriter {
             for ( Iterator<C> colIt = matrix.getColNames().iterator(); colIt.hasNext(); ) {
                 C colName = colIt.next();
                 int colIndex = matrix.getColIndexByName( colName );
-                Object val = NamedMatrixUtil.getObject( matrix, rowIndex, colIndex );
+                Object val = MatrixUtil.getObject( matrix, rowIndex, colIndex );
 
                 if ( val != null ) {
                     String s = val.toString();
@@ -165,7 +165,7 @@ public class MatrixWriter {
      * @param printNames
      * @throws IOException
      */
-    public void writeMatrix( NamedMatrix3D matrix, boolean printNames ) throws IOException {
+    public void writeMatrix( Matrix3D matrix, boolean printNames ) throws IOException {
         if ( printNames ) {
             StringBuffer buf = new StringBuffer( topLeft );
             for ( Iterator it = matrix.getSliceNameIterator(); it.hasNext(); ) {

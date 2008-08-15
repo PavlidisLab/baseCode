@@ -21,9 +21,9 @@ package ubic.basecode.math;
 import java.io.IOException;
 
 import junit.framework.TestCase;
-import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
-import ubic.basecode.dataStructure.matrix.DoubleMatrix2DNamedFactory;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixFactory;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.datafilter.AbstractTestFilter;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.util.RegressionTesting;
@@ -34,16 +34,16 @@ import ubic.basecode.util.RegressionTesting;
  */
 public class TestMatrixStats extends TestCase {
 
-    protected DoubleMatrixNamed testdata = null;
-    protected DoubleMatrixNamed testdatahuge = null;
-    DoubleMatrixNamed<String, String> smallT = null;
+    protected DoubleMatrix testdata = null;
+    protected DoubleMatrix testdatahuge = null;
+    DoubleMatrix<String, String> smallT = null;
 
     double[][] testrdm = { { 1, 2, 3, 4 }, { 11, 12, 13, 14 }, { 21, Double.NaN, 23, 24 } };
 
     public final void testCorrelationMatrix() throws Exception {
-        DoubleMatrixNamed actualReturn = MatrixStats.correlationMatrix( testdata );
+        DoubleMatrix actualReturn = MatrixStats.correlationMatrix( testdata );
         DoubleMatrixReader f = new DoubleMatrixReader();
-        DoubleMatrixNamed expectedReturn = null;
+        DoubleMatrix expectedReturn = null;
         try {
             expectedReturn = f.read( AbstractTestFilter.class
                     .getResourceAsStream( "/data/correlation-matrix-testoutput.txt" ) );
@@ -74,11 +74,11 @@ public class TestMatrixStats extends TestCase {
 
     public final void testRbfNormalize() throws Exception {
         double[][] actual = { { 0.001, 0.2, 0.13, 0.4 }, { 0.11, 0.12, 0.00013, 0.14 }, { 0.21, 0.0001, 0.99, 0.24 } };
-        DenseDoubleMatrix2DNamed av = new DenseDoubleMatrix2DNamed( actual );
+        DenseDoubleMatrix av = new DenseDoubleMatrix( actual );
         MatrixStats.rbfNormalize( av, 1 );
         double[][] expected = { { 0.2968, 0.2432, 0.2609, 0.1991 }, { 0.2453, 0.2429, 0.2738, 0.2381 },
                 { 0.273, 0.3368, 0.1252, 0.265 } };
-        assertEquals( true, RegressionTesting.closeEnough( new DenseDoubleMatrix2DNamed( expected ), av, 0.001 ) );
+        assertEquals( true, RegressionTesting.closeEnough( new DenseDoubleMatrix( expected ), av, 0.001 ) );
         for ( int i = 0; i < 3; i++ ) {
             assertEquals( 1.0, av.viewRow( i ).zSum(), 0.0001 );
         }
@@ -100,7 +100,7 @@ public class TestMatrixStats extends TestCase {
 
         testdata = f.read( AbstractTestFilter.class.getResourceAsStream( "/data/testdata.txt" ) );
 
-        smallT = DoubleMatrix2DNamedFactory.dense( testrdm );
+        smallT = DoubleMatrixFactory.dense( testrdm );
         smallT.setRowNames( java.util.Arrays.asList( new String[] { "a", "b", "c" } ) );
         smallT.setColumnNames( java.util.Arrays.asList( new String[] { "w", "x", "y", "z" } ) );
 

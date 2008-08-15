@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.math.Constants;
 
@@ -38,7 +38,7 @@ public class JRIClientTest extends TestCase {
 
     JRIClient rc;
     boolean connected = true;
-    DoubleMatrixNamed<String, String> tester;
+    DoubleMatrix<String, String> tester;
     double[] test1 = new double[] { -1.2241396, -0.6794486, -0.8475404, -0.4119554, -2.1980083 };
     double[] test2 = new double[] { 0.67676154, 0.20346679, 0.09289084, 0.68850551, 0.61120011 };
 
@@ -72,7 +72,7 @@ public class JRIClientTest extends TestCase {
             log.warn( "Cannot load JRI, skipping test" );
             return;
         }
-        DoubleMatrixNamed result = rc.retrieveMatrix( rc.assignMatrix( tester ) );
+        DoubleMatrix result = rc.retrieveMatrix( rc.assignMatrix( tester ) );
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
     }
 
@@ -92,7 +92,7 @@ public class JRIClientTest extends TestCase {
             return;
         }
         String m = rc.assignMatrix( tester.asArray() );
-        DoubleMatrixNamed result = rc.retrieveMatrix( m );
+        DoubleMatrix result = rc.retrieveMatrix( m );
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
     }
 

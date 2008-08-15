@@ -23,23 +23,23 @@ package ubic.basecode.dataStructure.matrix;
  * @author Paul
  * @version $Id$
  */
-public class NamedMatrixUtil {
+public class MatrixUtil {
 
-    public static <R, C, V> V getObject( NamedMatrix<R, C, V> matrix, int rowIndex, int colIndex ) {
-        if ( matrix instanceof NamedObjectMatrix ) {
-            return ( ( NamedObjectMatrix<R, C, V> ) matrix ).get( rowIndex, colIndex );
-        } else if ( matrix instanceof NamedPrimitiveMatrix ) {
-            return ( ( NamedPrimitiveMatrix<R, C, V> ) matrix ).getObject( rowIndex, colIndex );
+    public static <R, C, V> V getObject( Matrix2D<R, C, V> matrix, int rowIndex, int colIndex ) {
+        if ( matrix instanceof ObjectMatrix ) {
+            return ( ( ObjectMatrix<R, C, V> ) matrix ).get( rowIndex, colIndex );
+        } else if ( matrix instanceof PrimitiveMatrix ) {
+            return ( ( PrimitiveMatrix<R, C, V> ) matrix ).getObject( rowIndex, colIndex );
         } else {
             throw new UnsupportedOperationException();
         }
     }
 
-    public static <R, C, V> V[] getRow( NamedMatrix<R, C, V> matrix, int rowIndex ) {
-        if ( matrix instanceof NamedObjectMatrix ) {
-            return ( ( NamedObjectMatrix<R, C, V> ) matrix ).getRow( rowIndex );
-        } else if ( matrix instanceof NamedPrimitiveMatrix ) {
-            return ( ( NamedPrimitiveMatrix<R, C, V> ) matrix ).getRowObj( rowIndex );
+    public static <R, C, V> V[] getRow( Matrix2D<R, C, V> matrix, int rowIndex ) {
+        if ( matrix instanceof ObjectMatrix ) {
+            return ( ( ObjectMatrix<R, C, V> ) matrix ).getRow( rowIndex );
+        } else if ( matrix instanceof PrimitiveMatrix ) {
+            return ( ( PrimitiveMatrix<R, C, V> ) matrix ).getRowObj( rowIndex );
         } else {
             throw new UnsupportedOperationException();
         }

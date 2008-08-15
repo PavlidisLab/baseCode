@@ -27,7 +27,7 @@ import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.math.Constants;
 
@@ -40,7 +40,7 @@ public class RServeClientTest extends TestCase {
 
     RServeClient rc = null;
     boolean connected = false;
-    DoubleMatrixNamed<String, String> tester;
+    DoubleMatrix<String, String> tester;
     double[] test1 = new double[] { -1.2241396, -0.6794486, -0.8475404, -0.4119554, -2.1980083 };
     double[] test2 = new double[] { 0.67676154, 0.20346679, 0.09289084, 0.68850551, 0.61120011 };
 
@@ -69,7 +69,7 @@ public class RServeClientTest extends TestCase {
             return;
         }
         String mat = rc.assignMatrix( tester );
-        DoubleMatrixNamed result = rc.retrieveMatrix( mat );
+        DoubleMatrix result = rc.retrieveMatrix( mat );
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
 
         for ( int i = 0; i < tester.rows(); i++ ) {
@@ -132,7 +132,7 @@ public class RServeClientTest extends TestCase {
             log.warn( "Could not connect to RServe, skipping test." );
             return;
         }
-        DoubleMatrixNamed result = rc.retrieveMatrix( rc.assignMatrix( tester.asArray() ) );
+        DoubleMatrix result = rc.retrieveMatrix( rc.assignMatrix( tester.asArray() ) );
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
 
     }

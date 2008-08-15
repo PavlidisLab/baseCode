@@ -24,7 +24,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
 /**
  * Base class for RClients
@@ -73,7 +73,7 @@ public abstract class AbstractRClient implements RClient {
      * @param matrix
      * @return array representation of the matrix.
      */
-    private static double[] unrollMatrix( DoubleMatrixNamed matrix ) {
+    private static double[] unrollMatrix( DoubleMatrix matrix ) {
         // unroll the matrix into an array Unfortunately this makes a
         // copy of the data...and R will probably make yet
         // another copy. If there was a way to get the raw element array from the DoubleMatrixNamed, that would
@@ -117,7 +117,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#assignMatrix(ubic.basecode.dataStructure.matrix.DoubleMatrixNamed)
      */
-    public String assignMatrix( DoubleMatrixNamed matrix ) {
+    public String assignMatrix( DoubleMatrix matrix ) {
         String matrixVarName = "Matrix_" + variableIdentityNumber( matrix );
         log.debug( "Assigning matrix with variable name " + matrixVarName );
         int rows = matrix.rows();
@@ -181,7 +181,7 @@ public abstract class AbstractRClient implements RClient {
      * @param matrixVarName
      * @return
      */
-    private void assignRowAndColumnNames( DoubleMatrixNamed matrix, String matrixVarName ) {
+    private void assignRowAndColumnNames( DoubleMatrix matrix, String matrixVarName ) {
 
         String rowNameVar = assignStringList( matrix.getRowNames() );
         String colNameVar = assignStringList( matrix.getColNames() );

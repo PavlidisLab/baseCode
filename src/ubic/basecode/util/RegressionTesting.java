@@ -36,7 +36,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
@@ -64,7 +64,7 @@ public class RegressionTesting {
      * @param tolerance
      * @return try if all the values in both matrices are within 'tolerance' of each other.
      */
-    public static boolean closeEnough( DoubleMatrixNamed a, DoubleMatrixNamed b, double tolerance ) {
+    public static boolean closeEnough( DoubleMatrix a, DoubleMatrix b, double tolerance ) {
         if ( a.rows() != b.rows() || a.columns() != b.columns() ) {
             log.error( "Unequal rows and/or columns" );
             return false;

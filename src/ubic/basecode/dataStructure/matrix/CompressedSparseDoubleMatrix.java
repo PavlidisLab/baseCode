@@ -32,7 +32,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @see no.uib.cipr.matrix.sparse.FlexCompRowMatrix for how this is implemented under the hood.
  * @version $Id$
  */
-public class CompressedSparseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
+public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     /**
      * 
      */
@@ -43,7 +43,7 @@ public class CompressedSparseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed
      * @param rows int
      * @param cols int
      */
-    public CompressedSparseDoubleMatrix2DNamed( int rows, int cols ) {
+    public CompressedSparseDoubleMatrix( int rows, int cols ) {
         super();
         matrix = new FlexCompRowMatrix( rows, cols );
     }
@@ -51,7 +51,7 @@ public class CompressedSparseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed
     /**
      * @param mat
      */
-    public CompressedSparseDoubleMatrix2DNamed( double[][] mat ) {
+    public CompressedSparseDoubleMatrix( double[][] mat ) {
         super();
         matrix = new FlexCompRowMatrix( new DenseMatrix( mat ) );
     }
@@ -239,8 +239,8 @@ public class CompressedSparseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed
      * @see ubic.basecode.dataStructure.matrix.DoubleMatrixNamed#copy()
      */
     @Override
-    public DoubleMatrixNamed<R, C> copy() {
-        DoubleMatrixNamed<R, C> returnval = new CompressedSparseDoubleMatrix2DNamed<R, C>( this.rows(), this.columns() );
+    public DoubleMatrix<R, C> copy() {
+        DoubleMatrix<R, C> returnval = new CompressedSparseDoubleMatrix<R, C>( this.rows(), this.columns() );
 
         for ( int i = 0; i < this.rows(); i++ ) {
             returnval.addRowName( this.getRowName( i ), i );

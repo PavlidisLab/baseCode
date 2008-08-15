@@ -30,7 +30,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public class FastRowAccessDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
+public class FastRowAccessDoubleMatrix2DNamed<R, C> extends DoubleMatrix<R, C> {
 
     /**
      * 
@@ -190,8 +190,8 @@ public class FastRowAccessDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R,
      * @see ubic.basecode.dataStructure.matrix.DoubleMatrixNamed#copy()
      */
     @Override
-    public DoubleMatrixNamed<R, C> copy() {
-        DoubleMatrixNamed<R, C> returnval = new FastRowAccessDoubleMatrix2DNamed<R, C>( this.rows(), this.columns() );
+    public DoubleMatrix<R, C> copy() {
+        DoubleMatrix<R, C> returnval = new FastRowAccessDoubleMatrix2DNamed<R, C>( this.rows(), this.columns() );
 
         for ( int i = 0; i < this.rows(); i++ ) {
             returnval.addRowName( this.getRowName( i ), i );

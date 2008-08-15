@@ -23,7 +23,7 @@ import java.io.InputStream;
 import java.util.zip.ZipInputStream;
 
 import junit.framework.TestCase;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
 /**
  * @author pavlidis
@@ -31,7 +31,7 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
  */
 public class TestDoubleMatrixReader extends TestCase {
 
-    DoubleMatrixNamed<String, String> matrix = null;
+    DoubleMatrix<String, String> matrix = null;
     InputStream is = null;
     DoubleMatrixReader reader = null;
     InputStream ism = null;

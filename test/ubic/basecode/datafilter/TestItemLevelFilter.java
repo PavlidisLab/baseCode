@@ -18,7 +18,7 @@
  */
 package ubic.basecode.datafilter;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
 /**
  * @author pavlidis
@@ -30,7 +30,7 @@ public class TestItemLevelFilter extends AbstractTestFilter {
 
     public final void testFilter() {
         f.setLowCut( 0.0 );
-        DoubleMatrixNamed result = f.filter( testdata );
+        DoubleMatrix result = f.filter( testdata );
         int expectedReturn = 283;
         int actualReturn = result.rows() * result.columns() - result.numMissing();
         assertEquals( "return value", expectedReturn, actualReturn );

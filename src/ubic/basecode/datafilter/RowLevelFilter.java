@@ -21,9 +21,9 @@ package ubic.basecode.datafilter;
 import java.util.List;
 import java.util.Vector;
 
-import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
-import ubic.basecode.dataStructure.matrix.NamedMatrixUtil;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.dataStructure.matrix.MatrixUtil;
 import ubic.basecode.math.DescriptiveWithMissing;
 import ubic.basecode.math.Stats;
 import cern.colt.list.DoubleArrayList;
@@ -101,7 +101,7 @@ public class RowLevelFilter<R, C> extends AbstractLevelFilter<R, C> {
      * @param data
      * @return
      */
-    public DoubleMatrixNamed<R, C> filter( DoubleMatrixNamed<R, C> data ) {
+    public DoubleMatrix<R, C> filter( DoubleMatrix<R, C> data ) {
 
         if ( lowCut == -Double.MAX_VALUE && highCut == Double.MAX_VALUE ) {
             log.info( "No filtering requested" );
@@ -119,7 +119,7 @@ public class RowLevelFilter<R, C> extends AbstractLevelFilter<R, C> {
         DoubleArrayList rowAsList = new DoubleArrayList( new double[numCols] );
         int numAllNeg = 0;
         for ( int i = 0; i < numRows; i++ ) {
-            Double[] row = NamedMatrixUtil.getRow( data, i );
+            Double[] row = MatrixUtil.getRow( data, i );
             int numNeg = 0;
             /* stupid, copy into a DoubleArrayList so we can do stats */
             for ( int j = 0; j < numCols; j++ ) {
@@ -214,12 +214,12 @@ public class RowLevelFilter<R, C> extends AbstractLevelFilter<R, C> {
         for ( int i = 0; i < numRows; i++ ) {
             if ( criteria.get( i ) >= realLowCut && criteria.get( i ) <= realHighCut ) {
                 kept++;
-                rowsToKeep.add( NamedMatrixUtil.getRow( data, i ) );
+                rowsToKeep.add( MatrixUtil.getRow( data, i ) );
                 rowNames.add( data.getRowName( i ) );
             }
         }
 
-        DoubleMatrixNamed<R, C> returnval = new DenseDoubleMatrix2DNamed<R, C>( rowsToKeep.size(), numCols );
+        DoubleMatrix<R, C> returnval = new DenseDoubleMatrix<R, C>( rowsToKeep.size(), numCols );
         for ( int i = 0; i < kept; i++ ) {
             Double[] row = ( Double[] ) rowsToKeep.get( i );
             for ( int j = 0; j < numCols; j++ ) {

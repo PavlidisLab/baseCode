@@ -18,7 +18,7 @@
  */
 package ubic.basecode.math;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import cern.colt.list.DoubleArrayList;
 
 /**
@@ -37,7 +37,7 @@ public class MatrixRowStats {
      * @param M DoubleMatrixNamed
      * @return DoubleArrayList
      */
-    public static DoubleArrayList means( DoubleMatrixNamed M ) {
+    public static DoubleArrayList means( DoubleMatrix M ) {
         DoubleArrayList r = new DoubleArrayList();
         for ( int i = 0; i < M.rows(); i++ ) {
             r.add( DescriptiveWithMissing.mean( new DoubleArrayList( M.getRow( i ) ) ) );
@@ -51,7 +51,7 @@ public class MatrixRowStats {
      * @param M DoubleMatrixNamed
      * @return DoubleArrayList
      */
-    public static DoubleArrayList sampleStandardDeviations( DoubleMatrixNamed M ) {
+    public static DoubleArrayList sampleStandardDeviations( DoubleMatrix M ) {
         DoubleArrayList r = new DoubleArrayList();
         for ( int i = 0; i < M.rows(); i++ ) {
             DoubleArrayList row = new DoubleArrayList( M.getRow( i ) );
@@ -67,7 +67,7 @@ public class MatrixRowStats {
      * @param M DoubleMatrixNamed
      * @return DoubleArrayList
      */
-    public static DoubleArrayList sumOfSquares( DoubleMatrixNamed M ) {
+    public static DoubleArrayList sumOfSquares( DoubleMatrix M ) {
         DoubleArrayList r = new DoubleArrayList();
 
         for ( int i = 0; i < M.rows(); i++ ) {
@@ -84,7 +84,7 @@ public class MatrixRowStats {
      * @param M DoubleMatrixNamed
      * @return DoubleArrayList
      */
-    public static DoubleArrayList sums( DoubleMatrixNamed M ) {
+    public static DoubleArrayList sums( DoubleMatrix M ) {
         DoubleArrayList r = new DoubleArrayList();
         for ( int i = 0; i < M.rows(); i++ ) {
             r.add( DescriptiveWithMissing.sum( new DoubleArrayList( M.getRow( i ) ) ) );

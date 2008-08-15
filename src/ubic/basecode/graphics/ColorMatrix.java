@@ -20,8 +20,8 @@ package ubic.basecode.graphics;
 
 import java.awt.Color;
 
-import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.math.DescriptiveWithMissing;
 import ubic.basecode.math.MatrixStats;
@@ -52,7 +52,7 @@ public class ColorMatrix implements Cloneable {
     protected Color missingColor = Color.lightGray;
     protected Color[] colorMap = ColorMap.BLACKBODY_COLORMAP;
 
-    protected DoubleMatrixNamed maxtrix;
+    protected DoubleMatrix maxtrix;
     protected DoubleMatrixReader m_matrixReader;
 
     protected int m_totalRows, m_totalColumns;
@@ -60,7 +60,7 @@ public class ColorMatrix implements Cloneable {
     /** to be able to sort the rows by an arbitrary key */
     protected int m_rowKeys[];
 
-    public ColorMatrix( DoubleMatrixNamed matrix ) {
+    public ColorMatrix( DoubleMatrix matrix ) {
         init( matrix );
     }
 
@@ -69,7 +69,7 @@ public class ColorMatrix implements Cloneable {
      * @param colorMap the simplest color map is one with just two colors: { minColor, maxColor }
      * @param missingColor values missing from the matrix or non-numeric entries will be displayed using this color
      */
-    public ColorMatrix( DoubleMatrixNamed matrix, Color[] colorMap, Color missingColor ) {
+    public ColorMatrix( DoubleMatrix matrix, Color[] colorMap, Color missingColor ) {
         this.missingColor = missingColor;
         this.colorMap = colorMap;
         init( matrix );
@@ -78,7 +78,7 @@ public class ColorMatrix implements Cloneable {
     @Override
     public ColorMatrix clone() {
         // create another double matrix
-        DenseDoubleMatrix2DNamed matrix = new DenseDoubleMatrix2DNamed( m_totalRows, m_totalColumns );
+        DenseDoubleMatrix matrix = new DenseDoubleMatrix( m_totalRows, m_totalColumns );
         // copy the row and column names
         for ( int i = 0; i < m_totalRows; i++ ) {
             matrix.addRowName( maxtrix.getRowName( i ).toString(), i );
@@ -151,7 +151,7 @@ public class ColorMatrix implements Cloneable {
     /**
      * @return a DenseDoubleMatrix2DNamed object
      */
-    public DoubleMatrixNamed getMatrix() {
+    public DoubleMatrix getMatrix() {
         return maxtrix;
     }
 
@@ -213,7 +213,7 @@ public class ColorMatrix implements Cloneable {
         return maxtrix.get( row, column );
     }
 
-    public void init( DoubleMatrixNamed matrix ) {
+    public void init( DoubleMatrix matrix ) {
 
         maxtrix = matrix; // by reference, or should we clone?
         m_totalRows = maxtrix.rows();
@@ -408,7 +408,7 @@ public class ColorMatrix implements Cloneable {
         return missingColor;
     }
 
-    public DoubleMatrixNamed getMaxtrix() {
+    public DoubleMatrix getMaxtrix() {
         return maxtrix;
     }
 

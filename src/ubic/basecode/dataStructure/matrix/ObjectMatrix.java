@@ -19,30 +19,13 @@
 package ubic.basecode.dataStructure.matrix;
 
 /**
- * Matrix that holds primitives, with an available object representation of the values.
- * 
  * @author Paul
  * @version $Id$
  */
-public interface NamedPrimitiveMatrix<R, C, V> extends NamedMatrix<R, C, V> {
+public interface ObjectMatrix<R, C, V> extends Matrix2D<R, C, V> {
 
-    /**
-     * @param r
-     * @param c
-     * @return
-     */
-    public V getObject( int r, int c );
+    public V get( int row, int col );
 
-    /**
-     * @param col
-     * @return
-     */
-    public V[] getColObj( int col );
-
-    /**
-     * @param row
-     * @return
-     */
-    public V[] getRowObj( int row );
+    public V[] getRow( int row );
 
 }

@@ -21,8 +21,8 @@ package ubic.basecode.datafilter;
 import java.util.List;
 import java.util.Vector;
 
-import ubic.basecode.dataStructure.matrix.NamedMatrix;
-import ubic.basecode.dataStructure.matrix.NamedMatrixUtil;
+import ubic.basecode.dataStructure.matrix.Matrix2D;
+import ubic.basecode.dataStructure.matrix.MatrixUtil;
 
 /**
  * Remove probes that have names meeting certain rules indicating they may have low reliability. This is targeted at
@@ -31,7 +31,7 @@ import ubic.basecode.dataStructure.matrix.NamedMatrixUtil;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class AffymetrixProbeNameFilter<M extends NamedMatrix<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
+public class AffymetrixProbeNameFilter<M extends Matrix2D<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
 
     /**
      * Filter probes that contain the '_st' (sense strand) tag
@@ -108,7 +108,7 @@ public class AffymetrixProbeNameFilter<M extends NamedMatrix<R, C, V>, R, C, V> 
             if ( skip_G && name.contains( "_g_at" ) ) {
                 continue;
             }
-            MTemp.add( NamedMatrixUtil.getRow( data, i ) );
+            MTemp.add( MatrixUtil.getRow( data, i ) );
             rowNames.add( data.getRowName( i ) );
             kept++;
         }

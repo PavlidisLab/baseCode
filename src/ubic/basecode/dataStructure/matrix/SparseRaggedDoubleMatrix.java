@@ -30,7 +30,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public class SparseRaggedDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
+public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
 
     /**
      * 
@@ -42,7 +42,7 @@ public class SparseRaggedDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, 
     private Vector<DoubleMatrix1D> matrix; // a vector of DoubleMatrix1D containing the values of the matrix
     private boolean isDirty = true;
 
-    public SparseRaggedDoubleMatrix2DNamed() {
+    public SparseRaggedDoubleMatrix() {
         matrix = new Vector<DoubleMatrix1D>();
     }
 
@@ -83,7 +83,7 @@ public class SparseRaggedDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, 
     /**
      * Returns the size of the widest row.
      * 
-     * @see basecode.dataStructure.matrix.NamedMatrix#columns()
+     * @see basecode.dataStructure.matrix.Matrix2D#columns()
      */
     public int columns() {
 
@@ -191,7 +191,7 @@ public class SparseRaggedDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, 
     /**
      * (non-Javadoc) Note that in a sparse matrix, zero values are considered "missing"!
      * 
-     * @see basecode.dataStructure.matrix.NamedMatrix#isMissing(int, int)
+     * @see basecode.dataStructure.matrix.Matrix2D#isMissing(int, int)
      */
     public boolean isMissing( int i, int j ) {
         return get( i, j ) == 0.0;
@@ -226,8 +226,8 @@ public class SparseRaggedDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, 
      * @see ubic.basecode.dataStructure.matrix.DoubleMatrixNamed#copy()
      */
     @Override
-    public DoubleMatrixNamed<R, C> copy() {
-        DoubleMatrixNamed<R, C> returnval = new SparseRaggedDoubleMatrix2DNamed<R, C>();
+    public DoubleMatrix<R, C> copy() {
+        DoubleMatrix<R, C> returnval = new SparseRaggedDoubleMatrix<R, C>();
 
         for ( int i = 0; i < this.rows(); i++ ) {
             returnval.addRowName( this.getRowName( i ), i );

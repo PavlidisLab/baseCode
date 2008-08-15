@@ -34,8 +34,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
-import ubic.basecode.dataStructure.matrix.SparseDoubleMatrix2DNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.dataStructure.matrix.SparseDoubleMatrix;
 
 /**
  * @author pavlidis
@@ -62,7 +62,7 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
      * @return NamedMatrix
      * @throws IOException
      */
-    public DoubleMatrixNamed<String, String> read( InputStream stream, Set<String> wantedRowNames ) throws IOException {
+    public DoubleMatrix<String, String> read( InputStream stream, Set<String> wantedRowNames ) throws IOException {
 
         Set<String> itemNames = new HashSet<String>();
         Map<String, Collection<IndexScoreDyad>> rows = new HashMap<String, Collection<IndexScoreDyad>>();
@@ -114,7 +114,7 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
             rows.get( itemB ).add( new IndexScoreDyad( nameIndexMap.get( itemA ).intValue(), weight ) );
         }
 
-        SparseDoubleMatrix2DNamed<String, String> matrix = new SparseDoubleMatrix2DNamed<String, String>( itemNames
+        SparseDoubleMatrix<String, String> matrix = new SparseDoubleMatrix<String, String>( itemNames
                 .size(), itemNames.size() );
 
         List<String> itemVec = new Vector<String>( itemNames );
@@ -165,7 +165,7 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
      * @return
      * @throws IOException
      */
-    public DoubleMatrixNamed<String, String> readJW( InputStream stream ) throws IOException {
+    public DoubleMatrix<String, String> readJW( InputStream stream ) throws IOException {
 
         BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
 
@@ -176,7 +176,7 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
         double eval = 0;
 
         int dim = Integer.parseInt( dis.readLine() );
-        SparseDoubleMatrix2DNamed<String, String> returnVal = new SparseDoubleMatrix2DNamed<String, String>( dim, dim );
+        SparseDoubleMatrix<String, String> returnVal = new SparseDoubleMatrix<String, String>( dim, dim );
 
         for ( int k = 1; k <= dim; k++ ) {
 
@@ -220,7 +220,7 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
      */
     @Override
     @SuppressWarnings("unused")
-    public DoubleMatrixNamed<String, String> readOneRow( BufferedReader dis ) {
+    public DoubleMatrix<String, String> readOneRow( BufferedReader dis ) {
         // this is impossible for the pair method.
         throw new UnsupportedOperationException();
     }

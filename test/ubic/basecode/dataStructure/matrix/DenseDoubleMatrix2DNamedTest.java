@@ -28,20 +28,20 @@ import junit.framework.TestCase;
  */
 public class DenseDoubleMatrix2DNamedTest extends TestCase {
 
-    DenseDoubleMatrix2DNamed<String, String> testM;
+    DenseDoubleMatrix<String, String> testM;
     double[][] testData = { { 1, 2, 3, 4 }, { 11, 12, 13, 14 }, { 21, Double.NaN, 23, 24 } };
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        testM = DoubleMatrix2DNamedFactory.dense( testData );
+        testM = DoubleMatrixFactory.dense( testData );
         testM.setRowNames( java.util.Arrays.asList( new String[] { "a", "b", "c" } ) );
         testM.setColumnNames( java.util.Arrays.asList( new String[] { "w", "x", "y", "z" } ) );
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed#getRow(int)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#getRow(int)}.
      */
     public void testGetRow() {
         double[] actual = testM.getRow( 1 );
@@ -53,7 +53,7 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed#getColumn(int)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#getColumn(int)}.
      */
     public void testGetColumn() {
         double[] actual = testM.getColumn( 1 );
@@ -64,7 +64,7 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed#getRowArrayList(int)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#getRowArrayList(int)}.
      */
     public void testGetRowArrayList() {
         DoubleArrayList actual = testM.getRowArrayList( 2 );
@@ -77,7 +77,7 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
 
     /**
      * Test method for
-     * {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed#getRowByName(java.lang.Object)}.
+     * {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#getRowByName(java.lang.Object)}.
      */
     public void testGetRowByName() {
         double[] actual = testM.getRowByName( "b" );
@@ -89,7 +89,7 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed#set(int, int, double)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#set(int, int, double)}.
      */
     public void testSet() {
         testM.set( 2, 2, 666.0 );
@@ -98,7 +98,7 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed#toString()}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#toString()}.
      */
     public void testToString() {
         String actual = testM.toString();
@@ -108,7 +108,7 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed#get(int, int)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#get(int, int)}.
      */
     public void testGet() {
         assertEquals( 24.0, testM.get( 2, 3 ) );
@@ -119,7 +119,7 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed#getByKeys(Object, Object)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#getByKeys(Object, Object)}.
      */
     public void testGetByKeys() {
         assertEquals( 24.0, testM.getByKeys( "c", "z") );
@@ -130,7 +130,7 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed#viewRow(int)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#viewRow(int)}.
      */
     public void testViewRow() {
         DoubleMatrix1D actual = testM.viewRow( 0 );
@@ -143,7 +143,7 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed#columns()}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#columns()}.
      */
     public void testColumns() {
         assertEquals( 4, testM.columns() );
@@ -151,7 +151,7 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
 
     /**
      * Test method for
-     * {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed#getColByName(java.lang.Object)}.
+     * {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#getColByName(java.lang.Object)}.
      */
     public void testGetColByName() {
         double[] actual = testM.getColumnByName( "x" );
@@ -161,7 +161,7 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed#getColObj(int)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#getColObj(int)}.
      */
     public void testGetColObj() {
         Double[] actual = testM.getColObj( 0 );
@@ -172,14 +172,14 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed#getObject(int, int)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#getObject(int, int)}.
      */
     public void testGetObject() {
         assertEquals( 4.0, testM.getObject( 0, 3 ), 0.000001 );
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed#getRowObj(int)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#getRowObj(int)}.
      */
     public void testGetRowObj() {
         Double[] actual = testM.getRowObj( 0 );
@@ -191,7 +191,7 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed#isMissing(int, int)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#isMissing(int, int)}.
      */
     public void testIsMissing() {
         assertFalse( testM.isMissing( 2, 2 ) );
@@ -199,7 +199,7 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix2DNamed#rows()}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#rows()}.
      */
     public void testRows() {
         assertEquals( 3, testM.rows() );
@@ -221,7 +221,7 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     public void testCopy() {
-        DoubleMatrixNamed<String, String> actual = testM.copy();
+        DoubleMatrix<String, String> actual = testM.copy();
         for ( int i = 0; i < testData.length; i++ ) {
             assertEquals( testM.getRowName( i ), actual.getRowName( i ) );
             int len = testData[i].length;

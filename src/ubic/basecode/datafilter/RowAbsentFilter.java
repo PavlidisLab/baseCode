@@ -21,9 +21,9 @@ package ubic.basecode.datafilter;
 import java.util.List;
 import java.util.Vector;
 
-import ubic.basecode.dataStructure.matrix.NamedMatrix;
-import ubic.basecode.dataStructure.matrix.NamedMatrixUtil;
-import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
+import ubic.basecode.dataStructure.matrix.Matrix2D;
+import ubic.basecode.dataStructure.matrix.MatrixUtil;
+import ubic.basecode.dataStructure.matrix.StringMatrix;
 
 /**
  * Filter a data matrix according to flags given in a separate matrix.
@@ -34,9 +34,9 @@ import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class RowAbsentFilter<M extends NamedMatrix<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
+public class RowAbsentFilter<M extends Matrix2D<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
 
-    private StringMatrix2DNamed<R, C> flags = null;
+    private StringMatrix<R, C> flags = null;
 
     private double minPresentFraction = 0.0;
     private int minPresentCount = 0;
@@ -131,7 +131,7 @@ public class RowAbsentFilter<M extends NamedMatrix<R, C, V>, R, C, V> extends Ab
             /* decide whether this row is a keeper */
             if ( countIsSet && numPresent >= minPresentCount || fractionIsSet
                     && ( double ) numPresent / numCols >= minPresentFraction ) {
-                MTemp.add( NamedMatrixUtil.getRow( data, i ) );
+                MTemp.add( MatrixUtil.getRow( data, i ) );
                 rowNames.add( rowName );
                 kept++;
             }
@@ -154,7 +154,7 @@ public class RowAbsentFilter<M extends NamedMatrix<R, C, V>, R, C, V> extends Ab
     /**
      * @param f the matrix containing the flags.
      */
-    public void setFlagMatrix( StringMatrix2DNamed<R, C> f ) {
+    public void setFlagMatrix( StringMatrix<R, C> f ) {
         if ( f == null ) {
             throw new IllegalArgumentException( "Flag matrix is null" );
         }
@@ -194,7 +194,7 @@ public class RowAbsentFilter<M extends NamedMatrix<R, C, V>, R, C, V> extends Ab
      * @param data NamedMatrix
      * @todo this should check more carefully - actually test that the rows are all the same.
      */
-    private void validateFlags( NamedMatrix data ) {
+    private void validateFlags( Matrix2D data ) {
         if ( flags == null || flags.rows() < data.rows() || flags.columns() < data.columns() ) {
             throw new IllegalStateException( "Flags do not match data." );
         }

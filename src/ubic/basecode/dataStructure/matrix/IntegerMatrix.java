@@ -24,18 +24,18 @@ import cern.colt.matrix.ObjectMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public class IntegerMatrix2DNamed<R, C> extends AbstractNamedMatrix<R, C, Integer> implements
-        NamedPrimitiveMatrix<R, C, Integer> {
+public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implements
+        PrimitiveMatrix<R, C, Integer> {
 
     /**
      * 
      */
     private static final long serialVersionUID = -8413796057024940237L;
-    private ObjectMatrix2DNamed<R, C, Integer> matrix;
+    private ObjectMatrixImpl<R, C, Integer> matrix;
 
-    public IntegerMatrix2DNamed( int x, int y ) {
+    public IntegerMatrix( int x, int y ) {
         super();
-        matrix = new ObjectMatrix2DNamed<R, C, Integer>( x, y );
+        matrix = new ObjectMatrixImpl<R, C, Integer>( x, y );
     }
 
     /**

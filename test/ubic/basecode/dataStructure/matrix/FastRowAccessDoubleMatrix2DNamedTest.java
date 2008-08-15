@@ -29,7 +29,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  */
 public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
 
-    DoubleMatrixNamed<String, String> testdata;
+    DoubleMatrix<String, String> testdata;
     DoubleMatrixReader f = new DoubleMatrixReader();
 
     /*
@@ -54,7 +54,7 @@ public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
     }
 
     public void testCopy() {
-        DoubleMatrixNamed<String, String> actual = testdata.copy();
+        DoubleMatrix<String, String> actual = testdata.copy();
         double[][] testM = testdata.asArray();
 
         for ( int i = 0; i < testM.length; i++ ) {

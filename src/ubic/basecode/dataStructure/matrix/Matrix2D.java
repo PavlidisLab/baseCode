@@ -28,7 +28,7 @@ import java.util.List;
  * @version $Id$
  * @see ObjectMatrix for matrix storing objects.
  */
-public abstract interface NamedMatrix<R, C, V> {
+public abstract interface Matrix2D<R, C, V> {
 
     /**
      * Add a column name associated with an index.

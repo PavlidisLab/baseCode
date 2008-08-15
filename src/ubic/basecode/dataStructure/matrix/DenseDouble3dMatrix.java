@@ -21,40 +21,39 @@ package ubic.basecode.dataStructure.matrix;
 import java.util.List;
 
 import cern.colt.matrix.DoubleMatrix2D;
-import cern.colt.matrix.impl.DenseDoubleMatrix3D;
 
 /**
- * @author ?
+ * @author Xwan
  * @version $Id$
  */
-public class DenseDoubleMatrix3DNamed<R, C, S> extends DoubleMatrixNamed3D<R, C, S> {
+public class DenseDouble3dMatrix<R, C, S> extends DoubleMatrix3D<R, C, S> {
 
-    private DenseDoubleMatrix3D matrix;
+    private cern.colt.matrix.impl.DenseDoubleMatrix3D matrix;
 
-    public DenseDoubleMatrix3DNamed( double[][][] data ) {
+    public DenseDouble3dMatrix( double[][][] data ) {
         super();
-        matrix = new DenseDoubleMatrix3D( data );
+        matrix = new cern.colt.matrix.impl.DenseDoubleMatrix3D( data );
     }
 
-    public DenseDoubleMatrix3DNamed( double[][][] data, List<S> sliceNames, List<R> rowNames, List<C> colNames ) {
+    public DenseDouble3dMatrix( double[][][] data, List<S> sliceNames, List<R> rowNames, List<C> colNames ) {
         super();
-        matrix = new DenseDoubleMatrix3D( data );
+        matrix = new cern.colt.matrix.impl.DenseDoubleMatrix3D( data );
         setRowNames( rowNames );
         setColumnNames( colNames );
         setSliceNames( sliceNames );
     }
 
-    public DenseDoubleMatrix3DNamed( int slices, int rows, int columns ) {
+    public DenseDouble3dMatrix( int slices, int rows, int columns ) {
         super();
-        matrix = new DenseDoubleMatrix3D( slices, rows, columns );
+        matrix = new cern.colt.matrix.impl.DenseDoubleMatrix3D( slices, rows, columns );
     }
 
-    public DenseDoubleMatrix3DNamed( List<S> sliceNames, List<R> rowNames, List<C> colNames ) {
+    public DenseDouble3dMatrix( List<S> sliceNames, List<R> rowNames, List<C> colNames ) {
         super();
         setRowNames( rowNames );
         setColumnNames( colNames );
         setSliceNames( sliceNames );
-        matrix = new DenseDoubleMatrix3D( sliceNames.size(), rowNames.size(), colNames.size() );
+        matrix = new cern.colt.matrix.impl.DenseDoubleMatrix3D( sliceNames.size(), rowNames.size(), colNames.size() );
     }
 
     @Override

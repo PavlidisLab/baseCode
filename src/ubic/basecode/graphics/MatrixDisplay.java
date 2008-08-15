@@ -35,7 +35,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.graphics.text.Util;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 
@@ -79,13 +79,13 @@ public class MatrixDisplay extends JPanel {
         init( matrix );
     }
 
-    public MatrixDisplay( DoubleMatrixNamed<String, String> matrix ) {
+    public MatrixDisplay( DoubleMatrix<String, String> matrix ) {
         this( new ColorMatrix( matrix ) );
     }
 
     public MatrixDisplay( String filename ) throws IOException {
         DoubleMatrixReader m_matrixReader = new DoubleMatrixReader();
-        DoubleMatrixNamed<String, String> matrix = m_matrixReader.read( filename );
+        DoubleMatrix<String, String> matrix = m_matrixReader.read( filename );
         ColorMatrix m = new ColorMatrix( matrix );
         init( m );
     }
@@ -129,7 +129,7 @@ public class MatrixDisplay extends JPanel {
         return colorMatrix.getDisplayMax() - getDisplayMin();
     }
 
-    public DoubleMatrixNamed getMatrix() {
+    public DoubleMatrix getMatrix() {
         return colorMatrix.getMatrix();
     }
 

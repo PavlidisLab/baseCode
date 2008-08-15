@@ -28,9 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
-import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix3DNamed;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed3D;
+import ubic.basecode.dataStructure.matrix.DenseDouble3dMatrix;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix3D;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.io.reader.TestStringMatrixReader;
 import ubic.basecode.util.RegressionTesting;
@@ -40,7 +40,7 @@ import ubic.basecode.util.RegressionTesting;
  * @version $Id$
  */
 public class MatrixWriterTest extends TestCase {
-    DoubleMatrixNamed<String, String> matrix = null;
+    DoubleMatrix<String, String> matrix = null;
 
     Writer w;
 
@@ -75,7 +75,7 @@ public class MatrixWriterTest extends TestCase {
 
     public void testWrite3DMatrix() throws Exception {
         MatrixWriter writer = new MatrixWriter( w );
-        DoubleMatrixNamed3D<String, String, String> m3 = new DenseDoubleMatrix3DNamed<String, String, String>( data3d );
+        DoubleMatrix3D<String, String, String> m3 = new DenseDouble3dMatrix<String, String, String>( data3d );
         List<String> sln = new ArrayList<String>();
         sln.add( "Slice1" );
         sln.add( "Slice2" );

@@ -29,19 +29,19 @@ import junit.framework.TestCase;
  * @version $Id$
  */
 public class CompressedSparseDoubleMatrix2DNamedTest extends TestCase {
-    CompressedSparseDoubleMatrix2DNamed<String, String> testM;
+    CompressedSparseDoubleMatrix<String, String> testM;
     double[][] testData = { { 1, 2, 3, 4 }, { 11, 12, 13, 14 }, { 21, Double.NaN, 23, 24 } };
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        testM = new CompressedSparseDoubleMatrix2DNamed<String, String>( testData );
+        testM = new CompressedSparseDoubleMatrix<String, String>( testData );
         testM.setRowNames( java.util.Arrays.asList( new String[] { "a", "b", "c" } ) );
         testM.setColumnNames( java.util.Arrays.asList( new String[] { "w", "x", "y", "z" } ) );
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix2DNamed#getRow(int)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#getRow(int)}.
      */
     public void testGetRow() {
         double[] actual = testM.getRow( 1 );
@@ -53,7 +53,7 @@ public class CompressedSparseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix2DNamed#getColumn(int)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#getColumn(int)}.
      */
     public void testGetColumn() {
         double[] actual = testM.getColumn( 1 );
@@ -65,7 +65,7 @@ public class CompressedSparseDoubleMatrix2DNamedTest extends TestCase {
 
     /**
      * Test method for
-     * {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix2DNamed#getRowArrayList(int)}.
+     * {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#getRowArrayList(int)}.
      */
     public void testGetRowArrayList() {
         DoubleArrayList actual = testM.getRowArrayList( 2 );
@@ -78,7 +78,7 @@ public class CompressedSparseDoubleMatrix2DNamedTest extends TestCase {
 
     /**
      * Test method for
-     * {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix2DNamed#getRowByName(java.lang.Object)}.
+     * {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#getRowByName(java.lang.Object)}.
      */
     public void testGetRowByName() {
         double[] actual = testM.getRowByName( "b" );
@@ -91,7 +91,7 @@ public class CompressedSparseDoubleMatrix2DNamedTest extends TestCase {
 
     /**
      * Test method for
-     * {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix2DNamed#set(int, int, double)}.
+     * {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#set(int, int, double)}.
      */
     public void testSet() {
         testM.set( 2, 2, 666.0 );
@@ -100,7 +100,7 @@ public class CompressedSparseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix2DNamed#toString()}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#toString()}.
      */
     public void testToString() {
         String actual = testM.toString();
@@ -110,7 +110,7 @@ public class CompressedSparseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix2DNamed#get(int, int)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#get(int, int)}.
      */
     public void testGet() {
         assertEquals( 24.0, testM.get( 2, 3 ) );
@@ -121,7 +121,7 @@ public class CompressedSparseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix2DNamed#viewRow(int)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#viewRow(int)}.
      */
     public void testViewRow() {
         DoubleMatrix1D actual = testM.viewRow( 0 );
@@ -134,7 +134,7 @@ public class CompressedSparseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix2DNamed#columns()}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#columns()}.
      */
     public void testColumns() {
         assertEquals( 4, testM.columns() );
@@ -142,7 +142,7 @@ public class CompressedSparseDoubleMatrix2DNamedTest extends TestCase {
 
     /**
      * Test method for
-     * {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix2DNamed#getColByName(java.lang.Object)}.
+     * {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#getColByName(java.lang.Object)}.
      */
     public void testGetColByName() {
         double[] actual = testM.getColumnByName( "x" );
@@ -152,7 +152,7 @@ public class CompressedSparseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix2DNamed#getColObj(int)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#getColObj(int)}.
      */
     public void testGetColObj() {
         Double[] actual = testM.getColObj( 0 );
@@ -164,14 +164,14 @@ public class CompressedSparseDoubleMatrix2DNamedTest extends TestCase {
 
     /**
      * Test method for
-     * {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix2DNamed#getObject(int, int)}.
+     * {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#getObject(int, int)}.
      */
     public void testGetObject() {
         assertEquals( 4.0, testM.getObject( 0, 3 ), 0.000001 );
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix2DNamed#getRowObj(int)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#getRowObj(int)}.
      */
     public void testGetRowObj() {
         Double[] actual = testM.getRowObj( 0 );
@@ -184,7 +184,7 @@ public class CompressedSparseDoubleMatrix2DNamedTest extends TestCase {
 
     /**
      * Test method for
-     * {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix2DNamed#isMissing(int, int)}.
+     * {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#isMissing(int, int)}.
      */
     public void testIsMissing() {
         assertFalse( testM.isMissing( 2, 2 ) );
@@ -192,7 +192,7 @@ public class CompressedSparseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix2DNamed#rows()}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#rows()}.
      */
     public void testRows() {
         assertEquals( 3, testM.rows() );
@@ -214,7 +214,7 @@ public class CompressedSparseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     public void testCopy() {
-        DoubleMatrixNamed<String, String> actual = testM.copy();
+        DoubleMatrix<String, String> actual = testM.copy();
         for ( int i = 0; i < testData.length; i++ ) {
             assertEquals( testM.getRowName( i ), actual.getRowName( i ) );
             int len = testData[i].length;

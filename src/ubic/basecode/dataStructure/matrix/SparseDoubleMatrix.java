@@ -20,72 +20,94 @@ package ubic.basecode.dataStructure.matrix;
 
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
-import cern.colt.matrix.DoubleMatrix2D;
-import cern.colt.matrix.impl.AbstractMatrix2D;
-import cern.colt.matrix.impl.DenseDoubleMatrix2D;
+import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 
 /**
- * A dense matrix of doubles that knows about row and column names.
+ * A sparse matrix that knows about row and column names.
  * 
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class DenseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
+public class SparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
 
     /**
      * 
      */
-    private static final long serialVersionUID = -239226762166912931L;
-    private DenseDoubleMatrix2D matrix;
+    private static final long serialVersionUID = -1651885517252689369L;
+    private SparseDoubleMatrix2D matrix;
 
     /**
      * @param T double[][]
      */
-    public DenseDoubleMatrix2DNamed( double T[][] ) {
+    public SparseDoubleMatrix( double T[][] ) {
         super();
-        matrix = new DenseDoubleMatrix2D( T );
+        matrix = new SparseDoubleMatrix2D( T );
     }
 
     /**
      * @param rows int
      * @param cols int
      */
-    public DenseDoubleMatrix2DNamed( int rows, int cols ) {
+    public SparseDoubleMatrix( int rows, int cols ) {
         super();
-        matrix = new DenseDoubleMatrix2D( rows, cols );
+        matrix = new SparseDoubleMatrix2D( rows, cols );
     }
+
+    /**
+     * @return double[][]
+     */
+    @Override
+    public double[][] asArray() {
+        double[][] result = new double[rows()][];
+        for ( int i = 0; i < rows(); i++ ) {
+            result[i] = getRow( i );
+        }
+        return result;
+    }
+
+    /**
+     * @param rows int
+     * @param cols int
+     * @param initlalCapacity int
+     * @param minLoadFactor double
+     * @param maxLoadFactor double
+     */
+    public SparseDoubleMatrix( int rows, int cols, int initialCapacity, double minLoadFactor,
+            double maxLoadFactor ) {
+        super();
+        matrix = new SparseDoubleMatrix2D( rows, cols, initialCapacity, minLoadFactor, maxLoadFactor );
+    }
+
+    /**
+     * @return
+     */
+    public int cardinality() {
+        return matrix.cardinality();
+    }
+
+    /**
+     * @return
+     */
 
     public int columns() {
         return matrix.columns();
     }
 
     /**
-     * @return basecode.dataStructure.DenseDoubleMatrix2DNamed
+     * @param minNonZeros
      */
-    @Override
-    public DoubleMatrixNamed<R, C> copy() {
-        DoubleMatrixNamed<R, C> returnval = new DenseDoubleMatrix2DNamed<R, C>( this.rows(), this.columns() );
-        for ( int i = 0, n = this.rows(); i < n; i++ ) {
-            returnval.addRowName( this.getRowName( i ), i );
-            for ( int j = 0, m = this.columns(); j < m; j++ ) {
-                if ( i == 0 ) {
-                    returnval.addColumnName( this.getColName( j ), j );
-                }
-                returnval.set( i, j, this.get( i, j ) );
-            }
-        }
-        return returnval;
+    public void ensureCapacity( int minNonZeros ) {
+        matrix.ensureCapacity( minNonZeros );
     }
 
     /**
-     * @param row int
-     * @param column int
+     * @param row
+     * @param column
      * @return
-     * @see DoubleMatrix2D#get(int, int)
      */
     @Override
     public double get( int row, int column ) {
-        return matrix.getQuick( row, column );
+        return matrix.get( row, column );
     }
 
     /**
@@ -94,8 +116,7 @@ public class DenseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
      * @param col int
      * @return double[]
      */
-    public double[] getColByName( C s ) {
-        int col = getColIndexByName( s );
+    public double[] getCol( int col ) {
         double[] result = new double[rows()];
         for ( int i = 0; i < rows(); i++ ) {
             result[i] = get( i, col );
@@ -125,21 +146,6 @@ public class DenseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
         return result;
     }
 
-    /**
-     * Converts to a String that can be read by read.table in R, using default parameters
-     * 
-     * @return java.lang.String
-     */
-    /*
-     * public String toRReadTableString() { Format nf = new Format( "%.4g" ); StringBuffer result = new StringBuffer(
-     * this.rows() * this.columns() ); if ( this.hasColNames() ) { for ( int i = 0; i < this.columns(); i++ ) {
-     * result.append( "\"" + this.getColName( i ) +"\" "); System.out.println("\"" + this.getColName( i ) +"\" "); }
-     * result.append( "\n" ); } for ( int i = 0; i < this.rows(); i++ ) { if ( this.hasRowNames() ) { result.append("\"" +
-     * this.getRowName( i ) + "\"" ); } for ( int j = 0; j < this.columns(); j++ ) { if ( Double.isNaN( this.get( i, j ) ) ) {
-     * result.append( " NA" ); } else { result.append( " " + nf.format( this.get( i, j ) ) ); } } result.append( "\n" ); }
-     * return result.toString(); }
-     */
-
     public Double getObject( int row, int col ) {
         return new Double( get( row, col ) );
     }
@@ -166,8 +172,6 @@ public class DenseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
     }
 
     /**
-     * Return a reference to a specific row.
-     * 
      * @param s String
      * @return double[]
      */
@@ -188,6 +192,9 @@ public class DenseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
         return Double.isNaN( get( i, j ) );
     }
 
+    /**
+     * @return
+     */
     public int rows() {
         return matrix.rows();
     }
@@ -197,37 +204,51 @@ public class DenseDoubleMatrix2DNamed<R, C> extends DoubleMatrixNamed<R, C> {
     }
 
     /**
-     * @return int
-     * @see AbstractMatrix2D#size()
+     * @return
      */
     public int size() {
         return matrix.size();
     }
 
     /**
-     * @return double[][]
+     * 
      */
-    @Override
-    public double[][] asArray() {
-        return matrix.toArray();
+    public void trimToSize() {
+        matrix.trimToSize();
     }
 
     /**
-     * @param column int
-     * @return cern.colt.matrix.DoubleMatrix1D
+     * @param column
+     * @return
      */
     public DoubleMatrix1D viewColumn( int column ) {
         return matrix.viewColumn( column );
     }
 
     /**
-     * @param row int
-     * @return DoubleMatrix1D
-     * @see DenseDoubleMatrix2D#viewRow(int)
+     * @param row
+     * @return
      */
     @Override
     public DoubleMatrix1D viewRow( int row ) {
         return matrix.viewRow( row );
+    }
+
+    @Override
+    public DoubleMatrix<R, C> copy() {
+        DoubleMatrix<R, C> returnval = new SparseDoubleMatrix<R, C>( this.rows(), this.columns() );
+
+        for ( int i = 0; i < this.rows(); i++ ) {
+            returnval.addRowName( this.getRowName( i ), i );
+            for ( int j = 0; j < this.columns(); j++ ) {
+                if ( i == 0 ) {
+                    returnval.addColumnName( this.getColName( j ), j );
+                }
+                returnval.set( i, j, this.get( i, j ) );
+            }
+        }
+        return returnval;
+
     }
 
 }

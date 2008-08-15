@@ -28,17 +28,17 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ubic.basecode.dataStructure.matrix.NamedMatrix;
+import ubic.basecode.dataStructure.matrix.Matrix2D;
 
 /**
- * Abstract class representing an object that can read in a {@link NamedMatrix}from a file.
+ * Abstract class representing an object that can read in a {@link Matrix2D}from a file.
  * 
  * @author Paul Pavlidis
  * @version $Id$
  */
-public abstract class AbstractNamedMatrixReader<M extends NamedMatrix<String, String, V>, V> {
+public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>, V> {
 
-    protected static final Log log = LogFactory.getLog( AbstractNamedMatrixReader.class );
+    protected static final Log log = LogFactory.getLog( AbstractMatrixReader.class );
 
     public abstract M read( InputStream stream ) throws IOException;
 

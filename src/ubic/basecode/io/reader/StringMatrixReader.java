@@ -28,15 +28,15 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import ubic.basecode.dataStructure.matrix.StringMatrix2DNamed;
+import ubic.basecode.dataStructure.matrix.StringMatrix;
 
 /**
- * Reader for {@link basecode.dataStructure.matrix.StringMatrix2DNamed}
+ * Reader for {@link basecode.dataStructure.matrix.StringMatrix}
  * 
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class StringMatrixReader extends AbstractNamedMatrixReader<StringMatrix2DNamed<String, String>, String> {
+public class StringMatrixReader extends AbstractMatrixReader<StringMatrix<String, String>, String> {
 
     /**
      * Missing values are entered as an empty string.
@@ -46,8 +46,8 @@ public class StringMatrixReader extends AbstractNamedMatrixReader<StringMatrix2D
      * @throws IOException
      */
     @Override
-    public StringMatrix2DNamed<String, String> read( InputStream stream ) throws IOException {
-        StringMatrix2DNamed<String, String> matrix = null;
+    public StringMatrix<String, String> read( InputStream stream ) throws IOException {
+        StringMatrix<String, String> matrix = null;
         List<List<String>> MTemp = new Vector<List<String>>();
         List<String> rowNames = new Vector<String>();
         List<String> columnNames;
@@ -108,7 +108,7 @@ public class StringMatrixReader extends AbstractNamedMatrixReader<StringMatrix2D
             rowNumber++;
         }
 
-        matrix = new StringMatrix2DNamed<String, String>( rowNumber, numHeadings );
+        matrix = new StringMatrix<String, String>( rowNumber, numHeadings );
         matrix.setColumnNames( columnNames );
         matrix.setRowNames( rowNames );
 
@@ -128,7 +128,7 @@ public class StringMatrixReader extends AbstractNamedMatrixReader<StringMatrix2D
     }
 
     @Override
-    public StringMatrix2DNamed<String, String> read( String filename ) throws IOException {
+    public StringMatrix<String, String> read( String filename ) throws IOException {
         File infile = new File( filename );
         if ( !infile.exists() || !infile.canRead() ) {
             throw new IllegalArgumentException( "Could not read from " + filename );
@@ -144,7 +144,7 @@ public class StringMatrixReader extends AbstractNamedMatrixReader<StringMatrix2D
      */
     @Override
     @SuppressWarnings("unused")
-    public StringMatrix2DNamed<String, String> readOneRow( BufferedReader dis ) throws IOException {
+    public StringMatrix<String, String> readOneRow( BufferedReader dis ) throws IOException {
         throw new UnsupportedOperationException();
     }
 }

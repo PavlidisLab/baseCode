@@ -29,7 +29,7 @@ import java.util.List;
  * @author Raymond
  * @version $Id$
  */
-public abstract class AbstractNamedMatrix3D<R, C, S, V> implements NamedMatrix3D<R, C, S, V> {
+public abstract class AbstractMatrix3D<R, C, S, V> implements Matrix3D<R, C, S, V> {
     public LinkedHashMap<C, Integer> colMap;
     public LinkedHashMap<R, Integer> rowMap;
     public LinkedHashMap<S, Integer> sliceMap;
@@ -37,7 +37,7 @@ public abstract class AbstractNamedMatrix3D<R, C, S, V> implements NamedMatrix3D
     public List<R> rowNames;
     public List<S> sliceNames;
 
-    public AbstractNamedMatrix3D() {
+    public AbstractMatrix3D() {
         colMap = new LinkedHashMap<C, Integer>();
         rowMap = new LinkedHashMap<R, Integer>();
         sliceMap = new LinkedHashMap<S, Integer>();

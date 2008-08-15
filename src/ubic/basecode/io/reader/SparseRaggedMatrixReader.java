@@ -29,9 +29,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixNamed;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.RCDoubleMatrix1D;
-import ubic.basecode.dataStructure.matrix.SparseRaggedDoubleMatrix2DNamed;
+import ubic.basecode.dataStructure.matrix.SparseRaggedDoubleMatrix;
 import ubic.basecode.util.FileTools;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
@@ -48,7 +48,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @version $Id$
  * @see DoubleMatrixReader
  */
-public class SparseRaggedDouble2DNamedMatrixReader extends DoubleMatrixReader {
+public class SparseRaggedMatrixReader extends DoubleMatrixReader {
 
     /**
      * Read an entire sparse matrix from a stream (JW format).
@@ -59,9 +59,9 @@ public class SparseRaggedDouble2DNamedMatrixReader extends DoubleMatrixReader {
      * @return
      * @throws IOException
      */
-    public DoubleMatrixNamed<String, String> read( InputStream stream, int offset ) throws IOException {
+    public DoubleMatrix<String, String> read( InputStream stream, int offset ) throws IOException {
         BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
-        SparseRaggedDoubleMatrix2DNamed<String, String> returnVal = new SparseRaggedDoubleMatrix2DNamed<String, String>();
+        SparseRaggedDoubleMatrix<String, String> returnVal = new SparseRaggedDoubleMatrix<String, String>();
 
         String row;
         int k = 1;
@@ -110,7 +110,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends DoubleMatrixReader {
      * @param stream
      * @return
      */
-    public DoubleMatrixNamed<String, String> readFromAdjList( InputStream stream ) throws NumberFormatException,
+    public DoubleMatrix<String, String> readFromAdjList( InputStream stream ) throws NumberFormatException,
             IOException {
         Set<String> itemNames = new HashSet<String>();
         Map<String, OpenIntDoubleHashMap> rows = new HashMap<String, OpenIntDoubleHashMap>();
@@ -182,7 +182,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends DoubleMatrixReader {
         }
         dis.close();
 
-        SparseRaggedDoubleMatrix2DNamed<String, String> matrix = new SparseRaggedDoubleMatrix2DNamed<String, String>();
+        SparseRaggedDoubleMatrix<String, String> matrix = new SparseRaggedDoubleMatrix<String, String>();
 
         for ( int i = 0; i < indexNameMap.size(); i++ ) {
             Object itemName = indexNameMap.get( i );
@@ -229,7 +229,7 @@ public class SparseRaggedDouble2DNamedMatrixReader extends DoubleMatrixReader {
      * @param name of file
      * @return
      */
-    public DoubleMatrixNamed<String, String> readFromAdjList( String fileName ) throws IOException {
+    public DoubleMatrix<String, String> readFromAdjList( String fileName ) throws IOException {
         if ( !FileTools.testFile( fileName ) ) {
             throw new IOException( "Could not read from file " + fileName );
         }
@@ -247,8 +247,8 @@ public class SparseRaggedDouble2DNamedMatrixReader extends DoubleMatrixReader {
      * @return
      * @throws IOException
      */
-    public DoubleMatrixNamed<String, String> readOneRow( BufferedReader dis, int offset ) throws IOException {
-        SparseRaggedDoubleMatrix2DNamed<String, String> returnVal = new SparseRaggedDoubleMatrix2DNamed<String, String>();
+    public DoubleMatrix<String, String> readOneRow( BufferedReader dis, int offset ) throws IOException {
+        SparseRaggedDoubleMatrix<String, String> returnVal = new SparseRaggedDoubleMatrix<String, String>();
 
         String row = dis.readLine(); // line containing the id and the number of edges.
         StringTokenizer tok = new StringTokenizer( row, " \t" );

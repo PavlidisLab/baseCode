@@ -30,8 +30,8 @@ import no.uib.cipr.matrix.sparse.SparseVector;
  * 
  * @author xwan
  */
-public class CompressedNamedBitMatrix<R, C> extends AbstractNamedMatrix<R, C, double[]> implements
-        NamedObjectMatrix<R, C, double[]> {
+public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> implements
+        ObjectMatrix<R, C, double[]> {
 
     public static int BITS_PER_ELEMENT = Double.SIZE - 1;
 
@@ -63,7 +63,7 @@ public class CompressedNamedBitMatrix<R, C> extends AbstractNamedMatrix<R, C, do
      * @param cols - number of columns in the matrix
      * @param totalBitsPerItem - the number of bits for each element
      */
-    public CompressedNamedBitMatrix( int rows, int cols, int totalBitsPerItem ) {
+    public CompressedBitMatrix( int rows, int cols, int totalBitsPerItem ) {
         super();
         // calculate number of matrices required
         int num = ( int ) Math.floor( ( double ) totalBitsPerItem / BITS_PER_ELEMENT ) + 1;
@@ -114,10 +114,10 @@ public class CompressedNamedBitMatrix<R, C> extends AbstractNamedMatrix<R, C, do
         if ( index >= this.totalBitsPerItem || row > this.rows || col > this.cols )
             throw new ArrayIndexOutOfBoundsException( "Attempt to access row=" + row + " col=" + col + " index="
                     + index );
-        int num = ( int ) Math.floor( ( double ) index / CompressedNamedBitMatrix.BITS_PER_ELEMENT );
-        int bit_index = index % CompressedNamedBitMatrix.BITS_PER_ELEMENT;
+        int num = ( int ) Math.floor( ( double ) index / CompressedBitMatrix.BITS_PER_ELEMENT );
+        int bit_index = index % CompressedBitMatrix.BITS_PER_ELEMENT;
         long binVal = Double.doubleToRawLongBits( matrix[num].get( row, col ) );
-        long res = binVal & CompressedNamedBitMatrix.BIT1 << bit_index;
+        long res = binVal & CompressedBitMatrix.BIT1 << bit_index;
         if ( res == 0 ) return false;
         return true;
     }
@@ -286,7 +286,7 @@ public class CompressedNamedBitMatrix<R, C> extends AbstractNamedMatrix<R, C, do
         assert num >= 0 && num < matrix.length;
         int whichBitToSet = index % BITS_PER_ELEMENT;
         long currentValue = Double.doubleToRawLongBits( matrix[num].get( row, col ) );
-        double res = Double.longBitsToDouble( currentValue | CompressedNamedBitMatrix.BIT1 << whichBitToSet );
+        double res = Double.longBitsToDouble( currentValue | CompressedBitMatrix.BIT1 << whichBitToSet );
         matrix[num].set( row, col, res );
     }
 
