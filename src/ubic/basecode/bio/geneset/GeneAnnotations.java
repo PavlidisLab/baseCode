@@ -85,6 +85,8 @@ public class GeneAnnotations {
      */
     public static final int DEFAULT = 0;
 
+    public static final boolean DEFAULT_FILTER_NONSPECIFIC = false;
+
     /**
      * The minimum size of a 'set' of genes.
      */
@@ -134,6 +136,8 @@ public class GeneAnnotations {
 
     private Collection<String> activeGeneSetCache;
 
+    private boolean filterNonSpecific = DEFAULT_FILTER_NONSPECIFIC;
+
     public GeneAnnotations() {
         this.setUpdataStructures();
     }
@@ -178,6 +182,7 @@ public class GeneAnnotations {
         geneToGeneSetMap = new HashMap<String, Collection<String>>( geneData.geneToGeneSetMap ); // shallow copy,
         // okay?
         geneSetToRedundantMap = new HashMap<String, Collection<String>>( geneData.geneSetToRedundantMap );
+        filterNonSpecific = geneData.getFilterNonSpecific();
 
         List<String> allProbes = new Vector<String>( probeToGeneName.keySet() );
         for ( String probe : allProbes ) {
@@ -207,13 +212,20 @@ public class GeneAnnotations {
      * @param goNames
      * @throws IOException
      */
-    public GeneAnnotations( InputStream stream, Set activeGenes, StatusViewer messenger, GONames goNames )
-            throws IOException {
+    public GeneAnnotations( InputStream stream, Set activeGenes, StatusViewer messenger, GONames goNames,
+            boolean filterNonSpecific ) throws IOException {
+        this.filterNonSpecific = filterNonSpecific;
         this.messenger = messenger;
         setUpdataStructures();
         this.read( stream, activeGenes );
         this.activeProbes = null; // using all.
         setUp( goNames );
+    }
+
+    public GeneAnnotations( InputStream stream, Set activeGenes, StatusViewer messenger, GONames goNames )
+            throws IOException {
+        this( stream, activeGenes, messenger, goNames, DEFAULT_FILTER_NONSPECIFIC );
+
     }
 
     /**
@@ -282,8 +294,8 @@ public class GeneAnnotations {
      * @param goNames
      * @param fileName
      */
-    public GeneAnnotations( String fileName, Set activeGenes, StatusViewer messenger, GONames goNames )
-            throws IOException {
+    public GeneAnnotations( String fileName, Set activeGenes, StatusViewer messenger, GONames goNames,
+            boolean filterNonSpecific ) throws IOException {
         this.messenger = messenger;
 
         setUpdataStructures();
@@ -292,6 +304,11 @@ public class GeneAnnotations {
         this.activeProbes = this.probeToGeneName.keySet();
         if ( activeProbes != null ) activeProbesDirty();
         setUp( goNames );
+    }
+
+    public GeneAnnotations( String fileName, Set activeGenes, StatusViewer messenger, GONames goNames )
+            throws IOException {
+        this( fileName, activeGenes, messenger, goNames, DEFAULT_FILTER_NONSPECIFIC );
     }
 
     /**
@@ -303,8 +320,13 @@ public class GeneAnnotations {
      * @throws IOException
      */
     public GeneAnnotations( String filename, StatusViewer messenger, GONames goNames ) throws IOException {
-        this( filename, messenger, goNames, DEFAULT );
+        this( filename, messenger, goNames, DEFAULT, DEFAULT_FILTER_NONSPECIFIC );
     }
+    
+    public GeneAnnotations( String filename, StatusViewer messenger, GONames goNames, boolean filterNonSpecific ) throws IOException {
+        this( filename, messenger, goNames, DEFAULT, filterNonSpecific );
+    }
+    
 
     /**
      * Create GeneAnnotations by reading from a file, with a selected input file format.
@@ -315,7 +337,8 @@ public class GeneAnnotations {
      * @param format
      * @throws IOException
      */
-    public GeneAnnotations( String filename, StatusViewer messenger, GONames goNames, int format ) throws IOException {
+    public GeneAnnotations( String filename, StatusViewer messenger, GONames goNames, int format,
+            boolean filterNonSpecific ) throws IOException {
         log.debug( "Entering GeneAnnotations constructor" );
         setUpdataStructures();
         this.messenger = messenger;
@@ -331,6 +354,10 @@ public class GeneAnnotations {
         }
         this.activeProbes = null; // using all.
         setUp( goNames );
+    }
+
+    public GeneAnnotations( String filename, StatusViewer messenger, GONames goNames, int format ) throws IOException {
+        this( filename, messenger, goNames, format, DEFAULT_FILTER_NONSPECIFIC );
     }
 
     /**
@@ -1390,6 +1417,10 @@ public class GeneAnnotations {
             String probe = tokens[0].intern();
             String gene = tokens[1].intern();
 
+            if ( filterNonSpecific && ( gene.contains( "|" ) || gene.contains( "," ) ) ) {
+                continue;
+            }
+
             if ( activeGenes != null && !activeGenes.contains( probe ) ) {
                 continue;
             }
@@ -1792,6 +1823,14 @@ public class GeneAnnotations {
     public void setActiveProbes( Collection<String> set ) {
         this.activeProbes = set;
         activeProbesDirty();
+    }
+
+    public boolean getFilterNonSpecific() {
+        return filterNonSpecific;
+    }
+
+    public void setFilterNonSpecific( boolean filterNonSpecific ) {
+        this.filterNonSpecific = filterNonSpecific;
     }
 
 }
