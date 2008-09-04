@@ -99,7 +99,7 @@ public class Stats {
      */
     public static double cv( DoubleArrayList data ) {
         double mean = DescriptiveWithMissing.mean( data );
-        return mean / Math.sqrt( DescriptiveWithMissing.sampleVariance( data, mean ) );
+        return Math.sqrt( DescriptiveWithMissing.sampleVariance( data, mean ) ) / mean;
     }
 
     /**
