@@ -52,7 +52,7 @@ public class TestStats extends TestCase {
     }
 
     public final void testCv() {
-        double expectedReturn = 1.975525931;
+        double expectedReturn = 1 / 1.975525931;
         double actualReturn = Stats.cv( data1Nomissing );
         assertEquals( expectedReturn, actualReturn, 0.000001 );
     }
@@ -133,8 +133,8 @@ public class TestStats extends TestCase {
                 0.487896010852323, 0.714714352227883, } );
 
     } /*
-     * @see TestCase#tearDown()
-     */
+         * @see TestCase#tearDown()
+         */
 
     @Override
     protected void tearDown() throws Exception {
