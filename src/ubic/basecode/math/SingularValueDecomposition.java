@@ -18,8 +18,11 @@
  */
 package ubic.basecode.math;
 
+import java.util.List;
+
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
 /**
@@ -31,6 +34,36 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 public class SingularValueDecomposition<R, C> {
 
     private cern.colt.matrix.linalg.SingularValueDecomposition svd;
+    private List<C> columnNames;
+    private List<R> rowNames;
+    private DoubleMatrix<C, C> cMatrix;
+
+    private DoubleMatrix<R, C> uMatrix;
+
+    private DenseDoubleMatrix<R, C> vMatrix;
+
+    /**
+     * @param matrix
+     */
+    public SingularValueDecomposition( DoubleMatrix<R, C> matrix ) {
+        double[][] mat = matrix.getRawMatrix();
+        DoubleMatrix2D dm = new DenseDoubleMatrix2D( mat );
+        this.rowNames = matrix.getRowNames();
+        this.columnNames = matrix.getColNames();
+        this.svd = new cern.colt.matrix.linalg.SingularValueDecomposition( dm );
+
+        this.uMatrix = new DenseDoubleMatrix<R, C>( svd.getU().toArray() );
+        uMatrix.setRowNames( this.rowNames );
+        uMatrix.setColumnNames( this.columnNames ); // not really
+
+        this.vMatrix = new DenseDoubleMatrix<R, C>( svd.getV().toArray() );
+        vMatrix.setRowNames( this.rowNames );
+        vMatrix.setColumnNames( this.columnNames );
+
+        this.cMatrix = new DenseDoubleMatrix<C, C>( svd.getS().toArray() );
+        cMatrix.setRowNames( this.columnNames ); // not really
+        cMatrix.setColumnNames( this.columnNames );
+    }
 
     /**
      * @return
@@ -44,8 +77,8 @@ public class SingularValueDecomposition<R, C> {
      * @return
      * @see cern.colt.matrix.linalg.SingularValueDecomposition#getS()
      */
-    public DoubleMatrix2D getS() {
-        return svd.getS();
+    public DoubleMatrix<C, C> getS() {
+        return this.cMatrix;
     }
 
     /**
@@ -60,16 +93,17 @@ public class SingularValueDecomposition<R, C> {
      * @return
      * @see cern.colt.matrix.linalg.SingularValueDecomposition#getU()
      */
-    public DoubleMatrix2D getU() {
-        return svd.getU();
+    public DoubleMatrix<R, C> getU() {
+        return this.uMatrix;
+
     }
 
     /**
      * @return
      * @see cern.colt.matrix.linalg.SingularValueDecomposition#getV()
      */
-    public DoubleMatrix2D getV() {
-        return svd.getV();
+    public DoubleMatrix<R, C> getV() {
+        return this.vMatrix;
     }
 
     /**
@@ -96,13 +130,4 @@ public class SingularValueDecomposition<R, C> {
         return svd.toString();
     }
 
-    /**
-     * @param matrix
-     */
-    public SingularValueDecomposition( DoubleMatrix<R, C> matrix ) {
-        double[][] mat = matrix.getRawMatrix();
-        DoubleMatrix2D dm = new DenseDoubleMatrix2D( mat );
-        this.svd = new cern.colt.matrix.linalg.SingularValueDecomposition( dm );
-    }
- 
 }
