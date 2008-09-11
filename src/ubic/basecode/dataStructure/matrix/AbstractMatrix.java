@@ -59,6 +59,10 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
      */
     public final void addColumnName( C s ) {
 
+        if ( s == null ) {
+            throw new IllegalArgumentException( "Column name cannot be null" );
+        }
+
         if ( colMap.containsKey( s ) ) {
             throw new IllegalArgumentException( "Duplicate column name " + s );
         }
@@ -70,6 +74,10 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
     }
 
     public final void addColumnName( C s, int i ) {
+
+        if ( s == null ) {
+            throw new IllegalArgumentException( "Column name cannot be null" );
+        }
 
         if ( colMap.containsKey( s ) ) {
             throw new IllegalArgumentException( "Duplicate column name " + s );
@@ -87,6 +95,9 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
      */
     public final void addRowName( R s ) {
 
+        if ( s == null ) {
+            throw new IllegalArgumentException( "Row name cannot be null" );
+        }
         if ( rowMap.containsKey( s ) ) {
             throw new IllegalArgumentException( "Duplicate row name " + s );
         }
@@ -102,7 +113,9 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
      * @see basecode.dataStructure.NamedMatrix#addRowName(java.lang.String, int)
      */
     public final void addRowName( R s, int i ) {
-
+        if ( s == null ) {
+            throw new IllegalArgumentException( "Row name cannot be null" );
+        }
         if ( rowMap.containsKey( s ) ) {
             throw new IllegalArgumentException( "Duplicate row name " + s );
         }
