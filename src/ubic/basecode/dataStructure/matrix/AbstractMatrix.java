@@ -214,12 +214,14 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
     }
 
     public void setColumnNames( List<C> v ) {
+        this.colNames.clear();
         for ( int i = 0; i < v.size(); i++ ) {
             addColumnName( v.get( i ), i );
         }
     }
 
     public final void setRowNames( List<R> v ) {
+        this.rowNames.clear();
         for ( int i = 0; i < v.size(); i++ ) {
             addRowName( v.get( i ), i );
         }

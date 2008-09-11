@@ -66,10 +66,13 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     public DoubleMatrix<R, C> copy() {
         DoubleMatrix<R, C> returnval = new DenseDoubleMatrix<R, C>( this.rows(), this.columns() );
         for ( int i = 0, n = this.rows(); i < n; i++ ) {
-            returnval.addRowName( this.getRowName( i ), i );
+            R rowName = this.getRowName( i );
+            assert rowName != null : "Row " + i + " has null name";
+            returnval.addRowName( rowName, i );
             for ( int j = 0, m = this.columns(); j < m; j++ ) {
                 if ( i == 0 ) {
-                    returnval.addColumnName( this.getColName( j ), j );
+                    C colName = this.getColName( j );
+                    returnval.addColumnName( colName, j );
                 }
                 returnval.set( i, j, this.get( i, j ) );
             }
