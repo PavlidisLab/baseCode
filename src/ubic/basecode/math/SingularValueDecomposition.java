@@ -55,7 +55,12 @@ public class SingularValueDecomposition<R, C> {
         this.svd = new cern.colt.matrix.linalg.SingularValueDecomposition( dm );
 
         List<Integer> componentIds = new ArrayList<Integer>();
-        for ( int i = 0; i < columnNames.size(); i++ ) {
+
+        if ( rowNames.size() == 0 ) { // sanity check
+            throw new IllegalStateException( "No row names!" );
+        }
+
+        for ( int i = 0; i < matrix.columns(); i++ ) {
             componentIds.add( i );
         }
 
