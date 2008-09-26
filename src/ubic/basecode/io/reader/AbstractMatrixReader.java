@@ -48,7 +48,19 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
 
     protected List<String> readHeader( BufferedReader dis ) throws IOException {
         List<String> headerVec = new Vector<String>();
-        String header = dis.readLine();
+        String header;
+
+        /*
+         * Read past comments.
+         */
+        while ( ( header = dis.readLine() ) != null ) {
+            if ( header.startsWith( "#" ) || header.startsWith( "!" ) ) {
+                continue;
+            } else {
+                break;
+            }
+        }
+
         StringTokenizer st = new StringTokenizer( header, "\t", true ); // return
         // delims.
 

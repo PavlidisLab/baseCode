@@ -40,7 +40,7 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import cern.colt.list.DoubleArrayList;
 
 /**
- * Reader for {@link basecode.dataStructure.matrix.DoubleMatrix}.
+ * Reader for {@link basecode.dataStructure.matrix.DoubleMatrix}. Lines beginning with "#" or "!" will be ignored.
  * 
  * @author Paul Pavlidis
  * @version $Id$
@@ -167,8 +167,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
      */
-    public DoubleMatrix<String, String> read( String filename, Collection<String> wantedRowNames )
-            throws IOException {
+    public DoubleMatrix<String, String> read( String filename, Collection<String> wantedRowNames ) throws IOException {
         File infile = new File( filename );
         if ( !infile.exists() || !infile.canRead() ) {
             throw new IOException( "Could not read from file " + filename );
@@ -205,8 +204,8 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
     // protected methods
     // -----------------------------------------------------------------
 
-    protected DoubleMatrix<String, String> createMatrix( List MTemp, int rowCount, int colCount,
-            List<String> rowNames, List<String> colNames1 ) {
+    protected DoubleMatrix<String, String> createMatrix( List MTemp, int rowCount, int colCount, List<String> rowNames,
+            List<String> colNames1 ) {
 
         DoubleMatrix<String, String> matrix = DoubleMatrixFactory.fastrow( rowCount, colCount );
 
@@ -237,6 +236,10 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
      */
     private String parseRow( String row, Collection<String> rowNames, List<DoubleArrayList> MTemp,
             Collection<String> wantedRowNames ) throws IOException {
+
+        if ( row.startsWith( "#" ) || row.startsWith( "!" ) ) {
+            return null;
+        }
 
         String[] tokens = StringUtils.splitPreserveAllTokens( row, "\t" );
 
@@ -271,7 +274,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
                 } else {
                     NumberFormat nf = NumberFormat.getInstance( Locale.getDefault() );
                     try {
-//                        if ( log.isDebugEnabled() ) log.debug( "" + nf.parse( s ).doubleValue() );
+                        // if ( log.isDebugEnabled() ) log.debug( "" + nf.parse( s ).doubleValue() );
                         rowTemp.add( nf.parse( s ).doubleValue() );
                         // rowTemp.add( Double.parseDouble( s ) );
                     } catch ( ParseException e ) {
