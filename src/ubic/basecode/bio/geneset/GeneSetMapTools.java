@@ -414,7 +414,7 @@ public class GeneSetMapTools {
      * Helper function for ignoreSimilar.
      */
     private static boolean areSimilarClasses( Collection biggerClass, Collection smallerClass,
-            double fractionSameThreshold  ) {
+            double fractionSameThreshold ) {
 
         if ( biggerClass.size() < smallerClass.size() ) {
             throw new IllegalArgumentException( "Invalid sizes" );
@@ -478,15 +478,15 @@ public class GeneSetMapTools {
      * @param goNames
      */
     public static void addParents( GeneAnnotations ga, GONames gon, StatusViewer messenger ) {
-        Collection genes = ga.getGenes();
+        Collection<String> genes = ga.getGenes();
         if ( messenger != null ) {
             messenger.showStatus( "Adding parent terms (" + ga.numGeneSets() + " gene sets now)" );
         }
         Map<String, Collection<String>> toBeAdded = new HashMap<String, Collection<String>>();
         Map<String, Collection<String>> parentCache = new HashMap<String, Collection<String>>();
         int count = 0;
-        for ( Iterator iter = genes.iterator(); iter.hasNext(); ) {
-            String gene = ( String ) iter.next();
+        for ( Iterator<String> iter = genes.iterator(); iter.hasNext(); ) {
+            String gene = iter.next();
 
             Collection<String> geneSets = ga.getGeneGeneSets( gene );
 
@@ -503,8 +503,8 @@ public class GeneSetMapTools {
             }
         }
         parentCache = null;
-        for ( Iterator iter = toBeAdded.keySet().iterator(); iter.hasNext(); ) {
-            String gene = ( String ) iter.next();
+        for ( Iterator<String> iter = toBeAdded.keySet().iterator(); iter.hasNext(); ) {
+            String gene = iter.next();
             Collection<String> parents = toBeAdded.get( gene );
             ga.addGoTermsToGene( gene, parents );
         }

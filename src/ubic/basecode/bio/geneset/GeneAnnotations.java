@@ -212,7 +212,7 @@ public class GeneAnnotations {
      * @param goNames
      * @throws IOException
      */
-    public GeneAnnotations( InputStream stream, Set activeGenes, StatusViewer messenger, GONames goNames,
+    public GeneAnnotations( InputStream stream, Set<String> activeGenes, StatusViewer messenger, GONames goNames,
             boolean filterNonSpecific ) throws IOException {
         this.filterNonSpecific = filterNonSpecific;
         this.messenger = messenger;
@@ -222,7 +222,7 @@ public class GeneAnnotations {
         setUp( goNames );
     }
 
-    public GeneAnnotations( InputStream stream, Set activeGenes, StatusViewer messenger, GONames goNames )
+    public GeneAnnotations( InputStream stream, Set<String> activeGenes, StatusViewer messenger, GONames goNames )
             throws IOException {
         this( stream, activeGenes, messenger, goNames, DEFAULT_FILTER_NONSPECIFIC );
 
@@ -241,13 +241,11 @@ public class GeneAnnotations {
     public GeneAnnotations( List<String> probes, List<String> geneSymbols, List<String> geneNames,
             List<Collection<String>> goTerms ) {
         checkValidData( probes, geneSymbols, geneNames, goTerms );
-
+        assert probes != null;
         setUpdataStructures();
 
-        if ( probes != null ) {
-            this.activeProbes = probes;
-            activeProbesDirty();
-        }
+        this.activeProbes = probes;
+        activeProbesDirty();
 
         Collection<String> probeIds = new ArrayList<String>();
         for ( int i = 0; i < probes.size(); i++ ) {
@@ -294,7 +292,7 @@ public class GeneAnnotations {
      * @param goNames
      * @param fileName
      */
-    public GeneAnnotations( String fileName, Set activeGenes, StatusViewer messenger, GONames goNames,
+    public GeneAnnotations( String fileName, Set<String> activeGenes, StatusViewer messenger, GONames goNames,
             boolean filterNonSpecific ) throws IOException {
         this.messenger = messenger;
 
@@ -306,7 +304,7 @@ public class GeneAnnotations {
         setUp( goNames );
     }
 
-    public GeneAnnotations( String fileName, Set activeGenes, StatusViewer messenger, GONames goNames )
+    public GeneAnnotations( String fileName, Set<String> activeGenes, StatusViewer messenger, GONames goNames )
             throws IOException {
         this( fileName, activeGenes, messenger, goNames, DEFAULT_FILTER_NONSPECIFIC );
     }
@@ -322,11 +320,11 @@ public class GeneAnnotations {
     public GeneAnnotations( String filename, StatusViewer messenger, GONames goNames ) throws IOException {
         this( filename, messenger, goNames, DEFAULT, DEFAULT_FILTER_NONSPECIFIC );
     }
-    
-    public GeneAnnotations( String filename, StatusViewer messenger, GONames goNames, boolean filterNonSpecific ) throws IOException {
+
+    public GeneAnnotations( String filename, StatusViewer messenger, GONames goNames, boolean filterNonSpecific )
+            throws IOException {
         this( filename, messenger, goNames, DEFAULT, filterNonSpecific );
     }
-    
 
     /**
      * Create GeneAnnotations by reading from a file, with a selected input file format.
@@ -496,7 +494,7 @@ public class GeneAnnotations {
      * 
      * @return
      */
-    public Collection getGenes() {
+    public Collection<String> getGenes() {
         if ( activeProbes == null ) return geneToGeneSetMap.keySet();
 
         if ( genesForActiveProbesCache == null ) {
@@ -655,7 +653,7 @@ public class GeneAnnotations {
     /**
      * @return Map
      */
-    public Map getProbeToGeneSetMap() {
+    public Map<String, Collection<String>> getProbeToGeneSetMap() {
         return probeToGeneSetMap;
     }
 
@@ -663,7 +661,7 @@ public class GeneAnnotations {
      * @return the list of selected probes. Note that selected probes are distinct from active probes. Selected probes
      *         is more transient.
      */
-    public List getSelectedProbes() {
+    public List<String> getSelectedProbes() {
         return selectedProbes;
     }
 
@@ -774,7 +772,7 @@ public class GeneAnnotations {
         if ( !geneSetToGeneMap.containsKey( id ) ) {
             return 0;
         }
-        return ( ( Collection ) geneSetToGeneMap.get( id ) ).size();
+        return geneSetToGeneMap.get( id ).size();
     }
 
     /**
@@ -785,7 +783,7 @@ public class GeneAnnotations {
      */
     public int numProbesForGene( String g ) {
         if ( !geneToProbeMap.containsKey( g ) ) return 0;
-        if ( activeProbes == null ) return ( ( Collection ) geneToProbeMap.get( g ) ).size();
+        if ( activeProbes == null ) return geneToProbeMap.get( g ).size();
 
         return this.getGeneProbeList( g ).size();
     }
@@ -801,12 +799,12 @@ public class GeneAnnotations {
             log.debug( "No such gene set " + id );
             return 0;
         }
-        if ( activeProbes == null ) return ( ( Collection ) geneSetToProbeMap.get( id ) ).size();
+        if ( activeProbes == null ) return geneSetToProbeMap.get( id ).size();
 
         int result = 0;
-        Collection startingList = geneSetToProbeMap.get( id );
-        for ( Iterator iter = startingList.iterator(); iter.hasNext(); ) {
-            String probe = ( String ) iter.next();
+        Collection<String> startingList = geneSetToProbeMap.get( id );
+        for ( Iterator<String> iter = startingList.iterator(); iter.hasNext(); ) {
+            String probe = iter.next();
             if ( activeProbes.contains( probe ) ) {
                 result++;
             }
@@ -814,12 +812,16 @@ public class GeneAnnotations {
         return result;
     }
 
+    /**
+     * @param id
+     * @return
+     */
     public int numProbesInGeneSet( String id ) {
         if ( !geneSetToProbeMap.containsKey( id ) ) {
             log.debug( "No such gene set " + id );
             return 0;
         }
-        return ( ( Collection ) this.geneSetToProbeMap.get( id ) ).size();
+        return this.geneSetToProbeMap.get( id ).size();
     }
 
     /**
@@ -854,9 +856,8 @@ public class GeneAnnotations {
     public void removeClassFromMaps( String id ) {
         if ( geneSetToProbeMap.containsKey( id ) ) {
             for ( String probe : geneSetToProbeMap.get( id ) ) {
-                if ( probeToGeneSetMap.containsKey( probe )
-                        && ( ( Collection ) probeToGeneSetMap.get( probe ) ).contains( id ) ) {
-                    if ( !( ( Collection ) probeToGeneSetMap.get( probe ) ).remove( id ) ) {
+                if ( probeToGeneSetMap.containsKey( probe ) && probeToGeneSetMap.get( probe ).contains( id ) ) {
+                    if ( !probeToGeneSetMap.get( probe ).remove( id ) ) {
                         log.error( "Couldn't remove " + id + " from probe to class map for" + probe );
                     }
                 }
@@ -1014,18 +1015,18 @@ public class GeneAnnotations {
      */
     public void sortGeneSets() {
 
-        if ( geneSetToProbeMap.size() == 0 ) {
-            throw new IllegalStateException( "Could not sort because there are no gene sets in the classToProbeMap" );
+        if ( this.geneSetToProbeMap.size() == 0 ) {
+            throw new IllegalStateException( "Could not sort because there are no gene sets in the geneSetToProbeMap" );
         }
 
-        if ( sortedGeneSets == null ) {
-            sortedGeneSets = new Vector<String>();
+        if ( this.sortedGeneSets == null ) {
+            this.sortedGeneSets = new Vector<String>();
         }
 
         List<String> vec = new Vector<String>( geneSetToProbeMap.keySet() );
         Collections.sort( vec );
         for ( String string : vec ) {
-            sortedGeneSets.add( string );
+            this.sortedGeneSets.add( string );
         }
     }
 
@@ -1060,6 +1061,7 @@ public class GeneAnnotations {
                 return 3;
             }
 
+            @Override
             public String getColumnName( int i ) {
                 return columnNames[i];
             }
@@ -1157,6 +1159,16 @@ public class GeneAnnotations {
         return findField( header, ",", pattern );
     }
 
+    private int getAffyAlternateGeneSymbolIndex( String header ) throws IOException {
+
+        String[] alternates = new String[] { "Transcript ID(Array Design)", "UniGene ID" };
+        for ( String pattern : alternates ) {
+            int i = findField( header, ",", pattern );
+            if ( i >= 0 ) return i;
+        }
+        return -1;
+    }
+
     /**
      * @throws IOException
      * @param header
@@ -1243,12 +1255,15 @@ public class GeneAnnotations {
             String go = goi.substring( start, end );
 
             go = padGoTerm( go );
-            probeToGeneSetMap.get( probe ).add( go );
+
+            assert go.startsWith( "GO:" );
+
+            this.probeToGeneSetMap.get( probe ).add( go );
 
             if ( !geneSetToProbeMap.containsKey( go ) ) {
                 geneSetToProbeMap.put( go, new HashSet<String>() );
             }
-            geneSetToProbeMap.get( go ).add( probe );
+            this.geneSetToProbeMap.get( go ).add( probe );
         }
     }
 
@@ -1262,11 +1277,18 @@ public class GeneAnnotations {
      */
     private void prune( int lowThreshold, int highThreshold ) {
 
+        if ( this.geneSetToProbeMap.isEmpty() ) {
+            throw new IllegalStateException( "No gene sets!" );
+        }
+
         Set<String> removeUs = new HashSet<String>();
-        for ( Object element : geneSetToProbeMap.keySet() ) {
-            String id = ( String ) element;
-            if ( numActiveProbesInGeneSet( id ) < lowThreshold || numActiveGenesInGeneSet( id ) < lowThreshold
-                    || numActiveProbesInGeneSet( id ) > highThreshold || numActiveGenesInGeneSet( id ) > highThreshold ) {
+        for ( String id : geneSetToProbeMap.keySet() ) {
+            int numActiveProbesInGeneSet = numActiveProbesInGeneSet( id );
+            int numActiveGenesInGeneSet = numActiveGenesInGeneSet( id );
+            if ( numActiveProbesInGeneSet < lowThreshold || numActiveGenesInGeneSet < lowThreshold
+                    || numActiveProbesInGeneSet > highThreshold || numActiveGenesInGeneSet > highThreshold ) {
+                log.debug( "Pruning gene set : " + id + ", size =" + numActiveProbesInGeneSet + " probes, "
+                        + numActiveGenesInGeneSet + " genes." );
                 removeUs.add( id );
             }
         }
@@ -1274,6 +1296,12 @@ public class GeneAnnotations {
         for ( Object element : removeUs ) {
             String id = ( String ) element;
             removeClassFromMaps( id );
+        }
+
+        if ( this.geneSetToProbeMap.isEmpty() ) {
+            throw new IllegalStateException(
+                    "All gene sets were removed due to being too small or too big; size range=" + lowThreshold + " - "
+                            + highThreshold + ". Your annotation file may contain too few GO terms." );
         }
 
         sortGeneSets();
@@ -1324,15 +1352,15 @@ public class GeneAnnotations {
             String gene = probeToGeneName.get( probe );
             probeToGeneName.remove( probe );
             if ( geneToProbeMap.containsKey( gene ) ) {
-                ( ( Collection ) geneToProbeMap.get( gene ) ).remove( probe );
+                geneToProbeMap.get( gene ).remove( probe );
             }
         }
         if ( probeToGeneSetMap.containsKey( probe ) ) {
-            Iterator cit = ( ( Collection ) probeToGeneSetMap.get( probe ) ).iterator();
+            Iterator<String> cit = probeToGeneSetMap.get( probe ).iterator();
             while ( cit.hasNext() ) {
-                String geneSet = ( String ) cit.next();
+                String geneSet = cit.next();
                 if ( geneSetToProbeMap.containsKey( geneSet ) ) {
-                    ( ( Collection ) geneSetToProbeMap.get( geneSet ) ).remove( probe );
+                    geneSetToProbeMap.get( geneSet ).remove( probe );
                 }
             }
             if ( probeToGeneSetMap.remove( probe ) == null ) {
@@ -1366,13 +1394,21 @@ public class GeneAnnotations {
      * @param geneSymbol
      */
     private void storeProbeAndGene( Collection<String> probeIds, String probe, String geneSymbol ) {
-        probeToGeneName.put( probe.intern(), geneSymbol.intern() );
+
+        if ( StringUtils.isBlank( geneSymbol ) ) {
+            throw new IllegalArgumentException( "Blank gene symbol" );
+        }
+        if ( StringUtils.isBlank( probe ) ) {
+            throw new IllegalArgumentException( "Blank probe name" );
+        }
+
+        probeToGeneName.put( probe, geneSymbol );
 
         // create the list if need be.
         if ( geneToProbeMap.get( geneSymbol ) == null ) {
-            geneToProbeMap.put( geneSymbol.intern(), new HashSet<String>() );
+            geneToProbeMap.put( geneSymbol, new HashSet<String>() );
         }
-        geneToProbeMap.get( geneSymbol ).add( probe.intern() );
+        geneToProbeMap.get( geneSymbol ).add( probe );
 
         probeIds.add( probe );
         if ( !probeToGeneSetMap.containsKey( probe ) ) {
@@ -1386,7 +1422,7 @@ public class GeneAnnotations {
      * @param activeGenes
      * @throws IOException
      */
-    protected void read( InputStream bis, Set activeGenes ) throws IOException {
+    protected void read( InputStream bis, Set<String> activeGenes ) throws IOException {
         log.debug( "Entering GeneAnnotations.read" );
         if ( bis == null ) {
             throw new IOException( "Inputstream was null" );
@@ -1514,6 +1550,26 @@ public class GeneAnnotations {
         int geneNameIndex = getAffyGeneNameIndex( header );
         int geneSymbolIndex = getAffyGeneSymbolIndex( header );
 
+        int alternateGeneSymbolIndex = getAffyAlternateGeneSymbolIndex( header );
+
+        if ( probeIndex < 0 ) {
+            throw new IllegalStateException( "Invalid AFFY file format: could not find the probe set id column" );
+        }
+        if ( geneNameIndex < 0 ) {
+            throw new IllegalStateException( "Invalid AFFY file format: could not find the gene name column" );
+        }
+        if ( geneSymbolIndex < 0 ) {
+            throw new IllegalStateException( "Invalid AFFY file format: could not find the gene symbol column" );
+        }
+
+        if ( goBpIndex < 0 ) {
+            throw new IllegalStateException( "Invalid AFFY file format: No biological process data were found" );
+        } else if ( goCcIndex < 0 ) {
+            throw new IllegalStateException( "Invalid AFFY file format: No cellular component data were found" );
+        } else if ( goMfIndex < 0 ) {
+            throw new IllegalStateException( "Invalid AFFY file format: No molecular function data were found" );
+        }
+
         log.debug( "Read header" );
 
         tick();
@@ -1541,6 +1597,19 @@ public class GeneAnnotations {
             String probe = fields[probeIndex];
             String gene = fields[geneSymbolIndex];
 
+            if ( StringUtils.isBlank( probe ) || probe.equals( "---" ) ) {
+                throw new IllegalStateException( "Probe name was missing or invalid at line " + n
+                        + "; it is possible the file format is not readable; contact the developers." );
+            }
+
+            if ( StringUtils.isBlank( gene ) || gene.equals( "---" ) ) {
+                gene = fields[alternateGeneSymbolIndex];
+                if ( StringUtils.isBlank( gene ) || gene.equals( "---" ) ) {
+                    throw new IllegalStateException( "Gene name was missing or invalid at line " + n
+                            + "; it is possible the file format is not readable; contact the developers." );
+                }
+            }
+
             if ( activeGenes != null && !activeGenes.contains( gene ) ) {
                 continue;
             }
@@ -1553,19 +1622,26 @@ public class GeneAnnotations {
 
             String description = fields[geneNameIndex].intern();
             if ( !description.startsWith( "GO:" ) ) {
-                probeToDescription.put( probe.intern(), description.intern() );
+                this.probeToDescription.put( probe.intern(), description.intern() );
             } else {
-                probeToDescription.put( probe.intern(), NO_DESCRIPTION );
+                this.probeToDescription.put( probe.intern(), NO_DESCRIPTION );
             }
+
+            /*
+             * Each field is like this: 0000166 // nucleotide binding // inferred from electronic annotation
+             */
 
             classIds = " // " + fields[goBpIndex] + " // " + fields[goMfIndex] + " // " + fields[goCcIndex];
             String[] goinfo = classIds.split( "/+" );
             for ( String element : goinfo ) {
-                String goi = element.intern();
-                parseGoTerm( probe, pat, goi );
+                if ( StringUtils.isBlank( element ) ) {
+                    continue;
+                }
+                element = StringUtils.strip( element );
+                parseGoTerm( probe, pat, element );
             }
 
-            if ( messenger != null && n % 500 == 0 ) {
+            if ( messenger != null && n % 5000 == 0 ) {
                 messenger.showStatus( "Read " + n + " probes" );
                 try {
                     Thread.sleep( 10 );
@@ -1583,7 +1659,7 @@ public class GeneAnnotations {
         tick();
         resetSelectedProbes();
 
-        if ( probeToGeneName.size() == 0 || geneSetToProbeMap.size() == 0 ) {
+        if ( this.probeToGeneName.size() == 0 || this.geneSetToProbeMap.size() == 0 ) {
             throw new IllegalArgumentException(
                     "The gene annotations had invalid information. Please check the format." );
         }
@@ -1595,7 +1671,7 @@ public class GeneAnnotations {
      * @param activeGenes
      * @throws IOException
      */
-    protected void readAgilent( InputStream bis, Set activeGenes ) throws IOException {
+    protected void readAgilent( InputStream bis, Set<String> activeGenes ) throws IOException {
         if ( bis == null ) {
             throw new IOException( "Inputstream was null" );
         }
@@ -1839,7 +1915,6 @@ class ClassSizeComparator implements Comparator<GeneSet> {
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
     public int compare( GeneSet a, GeneSet b ) {
@@ -1871,7 +1946,7 @@ class GeneSet {
     /**
      * @return Returns the items.
      */
-    public Collection getItems() {
+    public Collection<String> getItems() {
         return items;
     }
 
