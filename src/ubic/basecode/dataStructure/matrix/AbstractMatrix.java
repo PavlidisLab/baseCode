@@ -24,6 +24,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * @author pavlidis
  * @version $Id$
@@ -31,13 +34,15 @@ import java.util.Map;
 public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java.io.Serializable {
 
     protected static final int MAX_ROWS_TO_PRINT = 20;
-    private List<R> rowNames;
-    private List<C> colNames;
-    private Map<R, Integer> rowMap; // contains a map of each row and elements in the row
+    private static Log log = LogFactory.getLog( AbstractMatrix.class.getClass() );
     private Map<C, Integer> colMap;
-
+    private List<C> colNames;
     private int lastColumnIndex = 0;
+
     private int lastRowIndex = 0;
+    private Map<R, Integer> rowMap; // contains a map of each row and elements in the row
+
+    private List<R> rowNames;
 
     /**
      * 
@@ -109,14 +114,13 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
 
     /*
      * (non-Javadoc)
-     * 
      * @see basecode.dataStructure.NamedMatrix#addRowName(java.lang.String, int)
      */
     public final void addRowName( R s, int i ) {
         if ( s == null ) {
             throw new IllegalArgumentException( "Row name cannot be null" );
         }
-        if ( rowMap.containsKey( s ) ) {
+        if ( this.hasRow( s ) ) {
             throw new IllegalArgumentException( "Duplicate row name " + s );
         }
 
@@ -196,7 +200,6 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
 
     /*
      * (non-Javadoc)
-     * 
      * @see basecode.dataStructure.NamedMatrix#numMissing()
      */
     public int numMissing() {
@@ -222,9 +225,15 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
 
     public final void setRowNames( List<R> v ) {
         this.rowNames.clear();
+
+        if ( v.size() != this.rows() ) {
+            throw new IllegalArgumentException( "Cannot add " + v.size() + " row names to a matrix with " + this.rows()
+                    + " rows" );
+        }
+
         for ( int i = 0; i < v.size(); i++ ) {
-            addRowName( v.get( i ), i );
+            R rowName = v.get( i );
+            this.addRowName( rowName, i );
         }
     }
-
 }

@@ -52,7 +52,7 @@ public class ColorMatrix implements Cloneable {
     protected Color missingColor = Color.lightGray;
     protected Color[] colorMap = ColorMap.BLACKBODY_COLORMAP;
 
-    protected DoubleMatrix maxtrix;
+    protected DoubleMatrix<String, String> maxtrix;
     protected DoubleMatrixReader m_matrixReader;
 
     protected int m_totalRows, m_totalColumns;
@@ -78,10 +78,11 @@ public class ColorMatrix implements Cloneable {
     @Override
     public ColorMatrix clone() {
         // create another double matrix
-        DenseDoubleMatrix matrix = new DenseDoubleMatrix( m_totalRows, m_totalColumns );
+        DenseDoubleMatrix<String, String> matrix = new DenseDoubleMatrix<String, String>( m_totalRows, m_totalColumns );
         // copy the row and column names
         for ( int i = 0; i < m_totalRows; i++ ) {
-            matrix.addRowName( maxtrix.getRowName( i ).toString(), i );
+            Object rowName = maxtrix.getRowName( i );
+            matrix.addRowName( rowName.toString(), i );
         }
         for ( int i = 0; i < m_totalColumns; i++ ) {
             matrix.addColumnName( maxtrix.getColName( i ).toString(), i );
@@ -151,7 +152,7 @@ public class ColorMatrix implements Cloneable {
     /**
      * @return a DenseDoubleMatrix2DNamed object
      */
-    public DoubleMatrix getMatrix() {
+    public DoubleMatrix<String, String> getMatrix() {
         return maxtrix;
     }
 
@@ -193,7 +194,9 @@ public class ColorMatrix implements Cloneable {
         String[] rowNames = new String[m_totalRows];
         for ( int i = 0; i < m_totalRows; i++ ) {
             int row = getTrueRowIndex( i );
-            rowNames[i] = getRowName( row ).toString();
+            Object rowName = getRowName( row );
+            String rowNameString = rowName.toString();
+            rowNames[i] = rowNameString;
         }
         return rowNames;
     }

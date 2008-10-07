@@ -88,8 +88,6 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
         List<DoubleArrayList> MTemp = new Vector<DoubleArrayList>();
 
         List<String> rowNames = new Vector<String>();
-
-        int rowNumber = 0;
         String row;
 
         //
@@ -97,10 +95,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
         // because will want to add empty rows for each row name we didn't find
         // (if createEmptyRows == true).
         //
-        Collection<String> wantedRowsFound = null;
-        if ( wantedRowNames != null && createEmptyRows ) {
-            wantedRowsFound = new HashSet<String>();
-        }
+        Collection<String> wantedRowsFound = new HashSet<String>();
 
         colNames = readHeader( dis );
 
@@ -113,39 +108,37 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
             if ( wantedRowNames != null ) {
 
                 // if we already have all the rows we want, then bail out
-                if ( rowNumber >= wantedRowNames.size() ) {
-                    return createMatrix( MTemp, rowNumber, numHeadings, rowNames, colNames );
+                if ( wantedRowsFound.size() >= wantedRowNames.size() ) {
+                    assert wantedRowsFound.containsAll( wantedRowNames );
+                    log.info( "Found all rows needed" );
+                    return createMatrix( MTemp, rowNames, colNames );
                 }
-                // skip this row if it's not in wantedRowNames
-                else if ( !wantedRowNames.contains( rowName ) ) {
-                    continue;
-                } else if ( createEmptyRows ) {
-                    // we found the row we want in the file
+
+                if ( wantedRowNames.contains( rowName ) ) {
                     wantedRowsFound.add( rowName );
                 }
             }
-            rowNumber++;
+
         }
         stream.close();
 
         //
         // Add empty rows for each row name we didn't find in the file
         //
-        if ( wantedRowNames != null && createEmptyRows ) {
-            Iterator iterator = wantedRowNames.iterator();
+        if ( wantedRowNames != null && wantedRowNames.size() != wantedRowsFound.size() && createEmptyRows ) {
+            Iterator<String> iterator = wantedRowNames.iterator();
             while ( iterator.hasNext() ) {
-                String s = ( String ) iterator.next();
+                String s = iterator.next();
                 if ( !wantedRowsFound.contains( s ) ) {
-                    // add an empty row
+                    log.info( s + " was not found, adding empty row" );
                     DoubleArrayList emptyRow = createEmptyRow( numHeadings );
                     rowNames.add( s );
                     MTemp.add( emptyRow );
-                    rowNumber++;
                 }
             }
         }
-
-        return createMatrix( MTemp, rowNumber, numHeadings, rowNames, colNames );
+        assert rowNames.size() == MTemp.size();
+        return createMatrix( MTemp, rowNames, colNames );
 
     }
 
@@ -178,7 +171,6 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
 
     /*
      * (non-Javadoc)
-     * 
      * @see basecode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
      */
     @Override
@@ -188,7 +180,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
 
         List<String> rowNames = new Vector<String>();
         parseRow( row, rowNames, MTemp, null );
-        return createMatrix( MTemp, 1, numHeadings, rowNames, colNames );
+        return createMatrix( MTemp, rowNames, colNames );
     }
 
     protected DoubleArrayList createEmptyRow( int numColumns ) {
@@ -204,22 +196,27 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
     // protected methods
     // -----------------------------------------------------------------
 
-    protected DoubleMatrix<String, String> createMatrix( List MTemp, int rowCount, int colCount, List<String> rowNames,
+    protected DoubleMatrix<String, String> createMatrix( List<DoubleArrayList> MTemp, List<String> rowNames,
             List<String> colNames1 ) {
 
-        DoubleMatrix<String, String> matrix = DoubleMatrixFactory.fastrow( rowCount, colCount );
+        DoubleMatrix<String, String> matrix = DoubleMatrixFactory.fastrow( MTemp.size(), MTemp.get( 0 ).size() );
 
         for ( int i = 0; i < matrix.rows(); i++ ) {
             for ( int j = 0; j < matrix.columns(); j++ ) {
-                if ( ( ( DoubleArrayList ) MTemp.get( i ) ).size() < j + 1 ) {
+                if ( MTemp.get( i ).size() < j + 1 ) {
                     matrix.set( i, j, Double.NaN );
                     // this allows the input file to have ragged ends.
                     // todo I'm not sure allowing ragged inputs is a good idea -PP
                 } else {
-                    matrix.set( i, j, ( ( DoubleArrayList ) MTemp.get( i ) ).elements()[j] );
+                    matrix.set( i, j, MTemp.get( i ).elements()[j] );
                 }
             }
         }
+
+        assert matrix.rows() == MTemp.size();
+        assert matrix.rows() == rowNames.size();
+        assert matrix.columns() == colNames.size();
+
         matrix.setRowNames( rowNames );
         matrix.setColumnNames( colNames1 );
         return matrix;
@@ -246,25 +243,24 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
         DoubleArrayList rowTemp = new DoubleArrayList();
         int columnNumber = 0;
         String previousToken = "";
-        String s = null;
-
+        String currentRowName = null;
         for ( int i = 0; i < tokens.length; i++ ) {
-            s = tokens[i];
+            String tok = tokens[i];
             boolean missing = false;
 
-            if ( s.compareTo( "\t" ) == 0 ) {
+            if ( tok.compareTo( "\t" ) == 0 ) {
                 /* two tabs in a row */
                 if ( previousToken.compareTo( "\t" ) == 0 ) {
                     missing = true;
                 } else if ( i == tokens.length - 1 ) { // at end of line.
                     missing = true;
                 } else {
-                    previousToken = s;
+                    previousToken = tok;
                     continue;
                 }
-            } else if ( s.compareTo( " " ) == 0 || s.compareTo( "" ) == 0 ) {
+            } else if ( tok.compareTo( " " ) == 0 || tok.compareTo( "" ) == 0 ) {
                 missing = true;
-            } else if ( s.compareTo( "NaN" ) == 0 || s.compareTo( "NA" ) == 0 ) {
+            } else if ( tok.compareTo( "NaN" ) == 0 || tok.compareTo( "NA" ) == 0 ) {
                 missing = true;
             }
 
@@ -275,24 +271,31 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
                     NumberFormat nf = NumberFormat.getInstance( Locale.getDefault() );
                     try {
                         // if ( log.isDebugEnabled() ) log.debug( "" + nf.parse( s ).doubleValue() );
-                        rowTemp.add( nf.parse( s ).doubleValue() );
+                        rowTemp.add( nf.parse( tok ).doubleValue() );
                         // rowTemp.add( Double.parseDouble( s ) );
                     } catch ( ParseException e ) {
                         throw new RuntimeException( e );
                     }
                 }
             } else {
+                // First field is the row label.
+
                 if ( missing ) {
                     throw new IOException( "Missing values not allowed for row labels" );
                 }
-                if ( wantedRowNames != null && !wantedRowNames.contains( s ) ) {
-                    return s;
+
+                currentRowName = tok;
+
+                // Skip rows. Return the row name anyway.
+                if ( wantedRowNames != null && !wantedRowNames.contains( currentRowName ) ) {
+                    return currentRowName;
                 }
-                rowNames.add( s.intern() );
+
+                rowNames.add( currentRowName );
             }
 
             columnNumber++;
-            previousToken = s;
+            previousToken = tok;
         } // end while (st.hasMoreTokens())
         // done parsing one row -- no more tokens
 
@@ -302,7 +305,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
         }
 
         MTemp.add( rowTemp );
-        return s;
+        return currentRowName;
 
     }
 
