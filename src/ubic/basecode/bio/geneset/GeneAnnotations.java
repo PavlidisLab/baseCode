@@ -1126,7 +1126,7 @@ public class GeneAnnotations {
                 return i;
             }
         }
-        throw new IOException( "Couldn't find '" + pattern + "' field in header" );
+        return -1;
     }
 
     /**
@@ -1161,7 +1161,7 @@ public class GeneAnnotations {
 
     private int getAffyAlternateGeneSymbolIndex( String header ) throws IOException {
 
-        String[] alternates = new String[] { "Transcript ID(Array Design)", "UniGene ID" };
+        String[] alternates = new String[] { "Transcript ID", "Transcript ID(Array Design)", "UniGene ID" };
         for ( String pattern : alternates ) {
             int i = findField( header, ",", pattern );
             if ( i >= 0 ) return i;
