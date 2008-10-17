@@ -85,7 +85,8 @@ public class ColorMatrix implements Cloneable {
             matrix.addRowName( rowName.toString(), i );
         }
         for ( int i = 0; i < m_totalColumns; i++ ) {
-            matrix.addColumnName( maxtrix.getColName( i ).toString(), i );
+            Object colName = maxtrix.getColName(i);
+            matrix.addColumnName( colName.toString(), i );
             // copy the data
         }
         for ( int r = 0; r < m_totalRows; r++ ) {
