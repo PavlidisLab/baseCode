@@ -107,4 +107,21 @@ public class BitUtil {
         return count;
     }
 
+    public static String prettyPrint( byte[] bytes ) {
+        StringBuilder buf = new StringBuilder();
+        int numbits = bytes.length * Byte.SIZE;
+        for ( int position = 0; position < numbits; position++ ) {
+            int bytepos = position >> 3;
+            if ( bytepos < numbits ) {
+                int bitpos = 7 - position % 8;
+                if ( ( bytes[bytepos] & 1 << bitpos ) != 0 ) {
+                    buf.append( "1" );
+                }
+                buf.append( "0" );
+            }
+        }
+        return buf.toString();
+
+    }
+
 }
