@@ -57,12 +57,12 @@ public class DoubleMatrixFactory {
         return new DenseDoubleMatrix<String, String>( rows, cols );
     }
 
-    public static FastRowAccessDoubleMatrix2DNamed<String, String> fastrow( double T[][] ) {
-        return new FastRowAccessDoubleMatrix2DNamed<String, String>( T );
+    public static FastRowAccessDoubleMatrix<String, String> fastrow( double T[][] ) {
+        return new FastRowAccessDoubleMatrix<String, String>( T );
     }
 
-    public static FastRowAccessDoubleMatrix2DNamed<String, String> fastrow( int rows, int cols ) {
-        return new FastRowAccessDoubleMatrix2DNamed<String, String>( rows, cols );
+    public static FastRowAccessDoubleMatrix<String, String> fastrow( int rows, int cols ) {
+        return new FastRowAccessDoubleMatrix<String, String>( rows, cols );
     }
 
     public static SparseDoubleMatrix<String, String> sparse( double T[][] ) {

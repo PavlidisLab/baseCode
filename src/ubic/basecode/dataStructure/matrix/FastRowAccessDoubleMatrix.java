@@ -30,7 +30,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public class FastRowAccessDoubleMatrix2DNamed<R, C> extends DoubleMatrix<R, C> {
+public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
 
     /**
      * 
@@ -44,7 +44,7 @@ public class FastRowAccessDoubleMatrix2DNamed<R, C> extends DoubleMatrix<R, C> {
      * 
      * @param t
      */
-    public FastRowAccessDoubleMatrix2DNamed( double[][] t ) {
+    public FastRowAccessDoubleMatrix( double[][] t ) {
         super();
         data = new DoubleArrayList[t.length];
         for ( int i = 0; i < t.length; i++ ) {
@@ -56,7 +56,7 @@ public class FastRowAccessDoubleMatrix2DNamed<R, C> extends DoubleMatrix<R, C> {
      * @param rows
      * @param cols
      */
-    public FastRowAccessDoubleMatrix2DNamed( int rows, int cols ) {
+    public FastRowAccessDoubleMatrix( int rows, int cols ) {
         super();
         data = new DoubleArrayList[rows];
         for ( int i = 0; i < rows; i++ ) {
@@ -191,7 +191,7 @@ public class FastRowAccessDoubleMatrix2DNamed<R, C> extends DoubleMatrix<R, C> {
      */
     @Override
     public DoubleMatrix<R, C> copy() {
-        DoubleMatrix<R, C> returnval = new FastRowAccessDoubleMatrix2DNamed<R, C>( this.rows(), this.columns() );
+        DoubleMatrix<R, C> returnval = new FastRowAccessDoubleMatrix<R, C>( this.rows(), this.columns() );
 
         for ( int i = 0; i < this.rows(); i++ ) {
             returnval.addRowName( this.getRowName( i ), i );

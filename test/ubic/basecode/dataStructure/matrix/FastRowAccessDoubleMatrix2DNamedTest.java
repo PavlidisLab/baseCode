@@ -135,7 +135,7 @@ public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
     }
 
     public void testConstructFromArray() {
-        FastRowAccessDoubleMatrix2DNamed actual = new FastRowAccessDoubleMatrix2DNamed( testdata.asArray() );
+        FastRowAccessDoubleMatrix actual = new FastRowAccessDoubleMatrix( testdata.asArray() );
         double[][] testM = testdata.asArray();
 
         for ( int i = 0; i < testM.length; i++ ) {
@@ -152,7 +152,7 @@ public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         testdata = f.read( FastRowAccessDoubleMatrix2DNamedTest.class.getResourceAsStream( "/data/testdata.txt" ) );
-        assert testdata instanceof FastRowAccessDoubleMatrix2DNamed;
+        assert testdata instanceof FastRowAccessDoubleMatrix;
         super.setUp();
     }
 
