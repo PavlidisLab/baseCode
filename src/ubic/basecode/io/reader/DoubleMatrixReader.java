@@ -103,7 +103,16 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
 
         while ( ( row = dis.readLine() ) != null ) {
 
+            if ( StringUtils.isBlank( row ) ) {
+                continue;
+            }
+
             String rowName = parseRow( row, rowNames, MTemp, wantedRowNames );
+
+            if ( rowName == null ) {
+                // signals a blank or skipped row.
+                continue;
+            }
 
             if ( wantedRowNames != null ) {
 

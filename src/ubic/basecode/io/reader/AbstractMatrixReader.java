@@ -56,9 +56,8 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
         while ( ( header = dis.readLine() ) != null ) {
             if ( header.startsWith( "#" ) || header.startsWith( "!" ) ) {
                 continue;
-            } else {
-                break;
             }
+            break;
         }
 
         StringTokenizer st = new StringTokenizer( header, "\t", true ); // return
@@ -71,10 +70,11 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
             boolean missing = false;
 
             if ( s.compareTo( "\t" ) == 0 ) {
-                /* two tabs in a row */
-                if ( previousToken.compareTo( "\t" ) == 0 ) {
+
+                if ( previousToken.compareTo( "\t" ) == 0 ) { /* two tabs in a row */
                     missing = true;
-                } else if ( !st.hasMoreTokens() ) { // at end of line.
+                } else if ( !st.hasMoreTokens() ) {
+                    // tab at end of line.
                     missing = true;
                 } else {
                     previousToken = s;
