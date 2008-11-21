@@ -49,6 +49,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
 
     private int numHeadings;
     private List<String> colNames;
+    private NumberFormat nf = NumberFormat.getInstance( Locale.getDefault() );
 
     /**
      * @param stream InputStream stream to read from
@@ -277,11 +278,15 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
                 if ( missing ) {
                     rowTemp.add( Double.NaN );
                 } else {
-                    NumberFormat nf = NumberFormat.getInstance( Locale.getDefault() );
                     try {
-                        // if ( log.isDebugEnabled() ) log.debug( "" + nf.parse( s ).doubleValue() );
+                        /*
+                         * NumberFormat.parse thinks things like 9101001_at are okay. Try to catch such cases.
+                         */
+                        if ( tok.matches( "[a-zA-Z_=]" ) ) {
+                            throw new NumberFormatException( "Unexpected non-numeric value found in column "
+                                    + columnNumber );
+                        }
                         rowTemp.add( nf.parse( tok ).doubleValue() );
-                        // rowTemp.add( Double.parseDouble( s ) );
                     } catch ( ParseException e ) {
                         throw new RuntimeException( e );
                     }
