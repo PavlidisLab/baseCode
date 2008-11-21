@@ -280,7 +280,9 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
                 } else {
                     try {
                         /*
-                         * NumberFormat.parse thinks things like 9101001_at are okay. Try to catch such cases.
+                         * NumberFormat.parse thinks things like 9101001_at are okay. Try to catch such cases. Note that
+                         * we can't use Double.parseDouble because that doesn't seem to handle locale-specific number formats
+                         * like european decimals (0,001 etc.)
                          */
                         if ( tok.matches( "[a-zA-Z_=]" ) ) {
                             throw new NumberFormatException( "Unexpected non-numeric value found in column "
