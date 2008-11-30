@@ -91,12 +91,32 @@ public class RServeClient extends AbstractRClient {
         return rserveExecutable;
     }
 
+    /**
+     * @param host
+     * @throws IOException
+     */
+    protected RServeClient( String host ) throws IOException {
+        // 6311 is default port for Rserve.
+        if ( !connect( host, 6311 ) ) {
+            throw new IOException( "Could not connect to Rserve" );
+        }
+    }
+
+    /**
+     * Gets connection on default host (localhost) and port (6311)
+     * 
+     * @throws IOException
+     */
     protected RServeClient() throws IOException {
         if ( !connect() ) {
             throw new IOException( "Could not connect to Rserve" );
         }
     }
 
+    /**
+     * @param startServer
+     * @throws IOException
+     */
     protected RServeClient( boolean startServer ) throws IOException {
         if ( startServer ) {
             this.startServer();
@@ -456,6 +476,24 @@ public class RServeClient extends AbstractRClient {
      */
     private void checkConnection() {
         if ( !this.isConnected() ) throw new RuntimeException( "Not connected" );
+    }
+
+    /**
+     * @param host
+     * @param port
+     * @return
+     */
+    private boolean connect( String host, int port ) {
+        if ( connection != null && connection.isConnected() ) {
+            return true;
+        }
+        try {
+            connection = new RConnection( host, port );
+        } catch ( RserveException e ) {
+            log.error( "Could not connect to RServe: " + e.getMessage() );
+            return false;
+        }
+        return true;
     }
 
     /**

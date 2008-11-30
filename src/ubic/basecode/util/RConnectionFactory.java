@@ -35,12 +35,13 @@ public class RConnectionFactory {
     private static Log log = LogFactory.getLog( RConnectionFactory.class.getName() );
 
     /**
+     * @param hostName The host to use for rserve connections. Ignored if JRI is available.
      * @return
      */
-    public static RClient getRConnection() {
+    public static RClient getRConnection( String hostName ) {
         RClient rc = null;
         try {
-            rc = new RServeClient();
+            rc = new RServeClient( hostName );
             if ( rc.isConnected() ) {
                 return rc;
             }
@@ -50,6 +51,18 @@ public class RConnectionFactory {
         }
     }
 
+    /**
+     * Get connection; if Rserve is used, connect to localhost.
+     * 
+     * @return
+     */
+    public static RClient getRConnection() {
+        return getRConnection( "localhost" );
+    }
+
+    /**
+     * @return
+     */
     private static RClient getJRIClient() {
         log.info( "Trying to get JRI connection instead" );
         try {
