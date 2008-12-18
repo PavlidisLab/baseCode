@@ -53,7 +53,7 @@ public class NetUtils {
     public static FTPClient connect( int mode, String host, String loginName, String password ) throws SocketException,
             IOException {
         FTPClient f = new FTPClient();
-        f.enterLocalActiveMode();
+        f.enterLocalPassiveMode();
 
         boolean success = false;
         f.connect( host );
@@ -81,7 +81,7 @@ public class NetUtils {
         boolean success = false;
 
         assert f != null && f.isConnected() : "No FTP connection is available";
-        f.enterLocalActiveMode();
+        f.enterLocalPassiveMode();
 
         long expectedSize = checkForFile( f, seekFile );
 
@@ -111,7 +111,7 @@ public class NetUtils {
      * @throws IOException on other IO errors.
      */
     public static long checkForFile( FTPClient f, String seekFile ) throws IOException {
-        f.enterLocalActiveMode();
+        f.enterLocalPassiveMode();
         FTPFile[] allfilesInGroup = f.listFiles( seekFile );
         if ( allfilesInGroup == null || allfilesInGroup.length == 0 ) {
             throw new FileNotFoundException( "File " + seekFile + " does not seem to exist on the remote host" );
@@ -130,7 +130,7 @@ public class NetUtils {
      */
     public static boolean ftpDownloadFile( FTPClient f, String seekFile, String outputFileName, boolean force )
             throws IOException, FileNotFoundException {
-        f.enterLocalActiveMode();
+        f.enterLocalPassiveMode();
         return ftpDownloadFile( f, seekFile, new File( outputFileName ), force );
     }
 
@@ -143,6 +143,7 @@ public class NetUtils {
      * @throws IOException
      */
     public static long ftpFileSize( FTPClient f, String seekFile ) throws IOException {
+        f.enterLocalPassiveMode();
         FTPFile[] files = f.listFiles( seekFile );
 
         if ( files.length == 1 ) {
