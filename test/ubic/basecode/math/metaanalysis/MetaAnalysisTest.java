@@ -44,4 +44,19 @@ public class MetaAnalysisTest extends TestCase {
 
     }
 
+    public final void testFisherCombinePvaluesB() throws Exception {
+
+        /*
+         * Example from gemma
+         */
+        DoubleArrayList values = new DoubleArrayList( new double[] { 4.453e-27, 1.482e-11, 0.003, 0.078, 0.316, 0.609,
+                0.662, 0.832 } );
+        double actualResult = MetaAnalysis.fisherCombinePvalues( values );
+
+        // R gives pvalues of zero, this number comes from feeding log sum values = 192.4316 (computed in R) and dof=16
+        // to colt.
+        assertEquals( 2.67e-32, actualResult, 1e-33 );
+
+    }
+
 }
