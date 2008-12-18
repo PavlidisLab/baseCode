@@ -37,7 +37,7 @@ public abstract class MetaAnalysis {
      * Fisher's method for combining p values. (Cooper and Hedges 15-8)
      * 
      * @param pvals DoubleArrayList
-     * @return double
+     * @return double upper tail
      */
     public static double fisherCombinePvalues( DoubleArrayList pvals ) {
         double r = 0.0;
@@ -45,7 +45,8 @@ public abstract class MetaAnalysis {
             r += Math.log( pvals.getQuick( i ) );
         }
         r *= -2.0;
-        return Probability.chiSquare( r, 2.0 * pvals.size() );
+        // NOTE: dof is first argument.
+        return Probability.chiSquareComplemented( 2.0 * pvals.size(), r );
     }
 
     /**
@@ -57,6 +58,7 @@ public abstract class MetaAnalysis {
      * @return The upper tail chi-square probability for Q with N - degrees of freedom.
      */
     public double qTest( double Q, double N ) {
+        // NOTE: dof is first argument.
         return Probability.chiSquareComplemented( N - 1, Q );
     }
 
@@ -66,7 +68,7 @@ public abstract class MetaAnalysis {
      * Use for p values that have already been log transformed.
      * 
      * @param pvals DoubleArrayList
-     * @return double
+     * @return double upper tail
      */
     protected double fisherCombineLogPvalues( DoubleArrayList pvals ) {
         double r = 0.0;
@@ -74,7 +76,8 @@ public abstract class MetaAnalysis {
             r += pvals.getQuick( i );
         }
         r *= -2.0;
-        return Probability.chiSquare( r, 2.0 * pvals.size() );
+        // NOTE: dof is first argument.
+        return Probability.chiSquareComplemented( 2.0 * pvals.size(), r );
     }
 
     /**
@@ -125,25 +128,13 @@ public abstract class MetaAnalysis {
      * This is non-zero only if Q is larger than expected under the null hypothesis that the variance is zero.
      * 
      * <pre>
-     *   
-     *    
-     *     
      *      s&circ;2 = [Q - ( k - 1 ) ] / c
-     *      
-     *     
-     *    
      * </pre>
      * 
      * where
      * 
      * <pre>
-     *   
-     *    
-     *     
      *      c = Max(sum_i=1&circ;k w_i - [ sum_i&circ;k w_i&circ;2 / sum_i&circ;k w_i ], 0)
-     *      
-     *     
-     *    
      * </pre>
      * 
      * @param effectSizes
@@ -168,13 +159,7 @@ public abstract class MetaAnalysis {
      * between-sample variance and the conditional variance.
      * 
      * <pre>
-     *   
-     *    
-     *       
      *      v_i&circ;* = sigma-hat_theta&circ;2 + v_i.
-     *      
-     *     
-     *    
      * </pre>
      * 
      * @param variances Conditional variances
@@ -198,8 +183,8 @@ public abstract class MetaAnalysis {
      * CH 18-3. Can be used for fixed or random effects model, the variances just have to computed differently.
      * 
      * <pre>
-     *        
-     *            v_dot = 1/sum_i=1&circ;k ( 1/v_i) 
+     * 
+     *            v_dot = 1/sum_i=1&circ;k ( 1/v_i)
      * </pre>
      * 
      * @param variances
@@ -221,21 +206,7 @@ public abstract class MetaAnalysis {
      * CH 18-3 version 2 for quality weighted. ( page 266 ) in Fixed effects model.
      * 
      * <pre>
-     *   
-     *    
-     *     
-     *      
-     *       
-     *        
-     *         
      *            v_dot = [ sum_i=1&circ;k ( q_i &circ; 2 * w_i) ]/[ sum_i=1&circ;k  q_i * w_i ]&circ;2
-     *          
-     *         
-     *        
-     *       
-     *      
-     *     
-     *    
      * </pre>
      * 
      * @param variances
