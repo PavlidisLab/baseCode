@@ -181,7 +181,7 @@ public abstract class AbstractRClient implements RClient {
      * @param matrixVarName
      * @return
      */
-    private void assignRowAndColumnNames( DoubleMatrix matrix, String matrixVarName ) {
+    protected void assignRowAndColumnNames( DoubleMatrix matrix, String matrixVarName ) {
 
         String rowNameVar = assignStringList( matrix.getRowNames() );
         String colNameVar = assignStringList( matrix.getColNames() );

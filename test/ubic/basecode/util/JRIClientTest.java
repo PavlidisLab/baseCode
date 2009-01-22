@@ -73,6 +73,8 @@ public class JRIClientTest extends TestCase {
             return;
         }
         DoubleMatrix result = rc.retrieveMatrix( rc.assignMatrix( tester ) );
+        assertEquals( "gene1_at", result.getRowName( 0 ) );
+        assertEquals( "sample1", result.getColName( 0 ) );
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
     }
 
