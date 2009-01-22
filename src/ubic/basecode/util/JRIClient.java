@@ -273,11 +273,13 @@ public class JRIClient extends AbstractRClient {
         REXP r1 = this.eval( "dimnames(" + variableName + ")" );
         RList asList = r1.asList();
 
-        REXP rowNamesREXP = asList.at( 0 );
+        if ( asList == null ) {
+            return;
+        }
 
+        REXP rowNamesREXP = asList.at( 0 );
         REXP colNamesREXP = asList.at( 1 );
 
-        // List rowNamesREXP = this.eval( "dimnames(" + variableName + ")[1][[1]]" ).asVector();
         if ( rowNamesREXP != null ) {
             log.debug( "Got row names" );
             String[] rowNamesAr = rowNamesREXP.asStringArray();
