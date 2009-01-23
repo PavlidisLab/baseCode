@@ -18,7 +18,7 @@
 		<connection>scm:cvs:ext:@krusty.chibi.ubc.ca:/space/cvs:baseCode</connection>
 		<developerConnection>scm:cvs:ext:@krusty.chibi.ubc.ca:/space/cvs:baseCode</developerConnection>
 		<url>http://www.chibi.ubc.ca/faculty/pavlidis/fisheye/browse/pavlab/baseCode</url>
-  </scm>
+   </scm>
 	<issueManagement>
 		<system>Bugzilla</system>
 		<url>
@@ -398,12 +398,12 @@
 				<repository>
 					<id>repo</id>
 					<name>Pavlab</name>
-					<url>file:///www/maven2</url>
+					<url>file:///space/maven2</url>
 				</repository>
 				<snapshotRepository>
 					<id>repo</id>
 					<name>Pavlab</name>
-					<url>file:///www/maven2</url>
+					<url>file:///space/maven2</url>
 				</snapshotRepository>
 			</distributionManagement>
 		</profile>
