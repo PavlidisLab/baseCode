@@ -35,19 +35,25 @@ public class RConnectionFactory {
     private static Log log = LogFactory.getLog( RConnectionFactory.class.getName() );
 
     /**
+     * Tries JRI connection, then Rserve connection.
+     * 
      * @param hostName The host to use for rserve connections. Ignored if JRI is available.
      * @return
      */
     public static RClient getRConnection( String hostName ) {
+
         RClient rc = null;
-        try {
-            rc = new RServeClient( hostName );
-            if ( rc.isConnected() ) {
-                return rc;
+
+        rc = getJRIClient();
+        if ( rc != null ) {
+            return rc;
+        } else {
+            try {
+                rc = new RServeClient( hostName );
+            } catch ( Exception e ) {
+                log.error( e );
             }
-            return getJRIClient();
-        } catch ( IOException e ) {
-            return getJRIClient();
+            return rc;
         }
     }
 
@@ -64,11 +70,11 @@ public class RConnectionFactory {
      * @return
      */
     private static RClient getJRIClient() {
-        log.info( "Trying to get JRI connection instead" );
+        log.info( "Trying to get JRI connection" );
         try {
             return new JRIClient();
         } catch ( IOException e ) {
-            log.warn( "Was unable to get an R connection", e );
+            log.warn( "Was unable to get a JRI connection", e );
             return null;
         }
 

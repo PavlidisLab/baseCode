@@ -128,6 +128,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, double[])
      */
     public void assign( String argName, double[] arg ) {
@@ -143,6 +144,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, int[])
      */
     public void assign( String arg0, int[] arg1 ) {
@@ -159,10 +161,12 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, java.lang.String)
      */
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String)
      */
     public void assign( String sym, String ct ) {
@@ -178,6 +182,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String[])
      */
     public void assign( String argName, String[] array ) {
@@ -197,6 +202,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#booleanDoubleArrayEval(java.lang.String, java.lang.String, double[])
      */
     public boolean booleanDoubleArrayEval( String command, String argName, double[] arg ) {
@@ -229,6 +235,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#doubleArrayDoubleArrayEval(java.lang.String, java.lang.String, double[])
      */
     public double[] doubleArrayDoubleArrayEval( String command, String argName, double[] arg ) {
@@ -243,6 +250,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#doubleArrayEval(java.lang.String)
      */
     public double[] doubleArrayEval( String command ) {
@@ -255,8 +263,9 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#doubleArrayTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
-     * java.lang.String, double[])
+     *      java.lang.String, double[])
      */
     public double[] doubleArrayTwoDoubleArrayEval( String command, String argName, double[] arg, String argName2,
             double[] arg2 ) {
@@ -271,8 +280,9 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#doubleTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
-     * java.lang.String, double[])
+     *      java.lang.String, double[])
      */
     public double doubleTwoDoubleArrayEval( String command, String argName, double[] arg, String argName2, double[] arg2 ) {
         checkConnection();
@@ -288,6 +298,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see java.lang.Object#finalize()
      */
     @Override
@@ -297,6 +308,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#getLastError()
      */
     public String getLastError() {
@@ -305,6 +317,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#intArrayEval(java.lang.String)
      */
     public int[] intArrayEval( String command ) {
@@ -325,6 +338,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#retrieveMatrix(java.lang.String)
      */
     public DoubleMatrix<String, String> retrieveMatrix( String variableName ) {
@@ -413,6 +427,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#stringEval(java.lang.String)
      */
     public String stringEval( String command ) {
@@ -452,10 +467,12 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.rosuda.JRclient.Rconnection#voidEval(java.lang.String)
      */
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#voidEval(java.lang.String)
      */
     public void voidEval( String command ) {
@@ -488,11 +505,13 @@ public class RServeClient extends AbstractRClient {
             return true;
         }
         try {
+            log.info( "Trying Rserve connection ..." );
             connection = new RConnection( host, port );
         } catch ( RserveException e ) {
             log.error( "Could not connect to RServe: " + e.getMessage() );
             return false;
         }
+        log.info( "Rserve connection looks good!" );
         return true;
     }
 
@@ -516,6 +535,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#eval(java.lang.String)
      */
     private REXP eval( String command ) {
