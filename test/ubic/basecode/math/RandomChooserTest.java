@@ -34,6 +34,7 @@ public class RandomChooserTest extends TestCase {
 
     double[] sourceData = new double[] { 0, 1, 2, 3, 4, 5 };
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
 
@@ -53,23 +54,54 @@ public class RandomChooserTest extends TestCase {
         }
     }
 
+    /**
+     * Check correctness of the sampling algorithm for choosing subsets of size 2. The average value should come out
+     * very close to k/2.
+     * 
+     * @throws Exception
+     */
     public void testRepeat() throws Exception {
-        List<Integer> k = new ArrayList<Integer>();
-        for ( int i = 0; i < 1000; i++ ) {
-            k.add( i );
-        }
+        int max = 1000;
 
         double total = 0.0;
-        int reps = 100;
-        for ( int i = 0; i < reps; i++ ) {
-            List<Integer> r = new ArrayList<Integer>( RandomChooser.chooseRandomSubset( 2, k ) );
-            int m = r.get( 0 ) + r.get( 1 );
+        int reps = 500;
+        for ( int j = 0; j < reps; j++ ) {
 
-            total += m / 2.0;
+            for ( int i = 0; i < reps; i++ ) {
+                int[] r = RandomChooser.chooserandom( max, 200 );
+                int m = r[0] + r[1];
 
+                total += m / 2.0;
+
+            }
         }
-       // System.err.print( total / reps + " " );
-        assertEquals(total/reps, 512.72, 0.01);
+
+        assertEquals( 500, total / ( reps * reps ), 0.5 );
+    }
+
+    /**
+     * Check correctness of the sampling algorithm for choosing subsets of size 2. The average value should come out
+     * very close to k/2.
+     * 
+     * @throws Exception
+     */
+    public void testRepeatSubset() throws Exception {
+        List<Integer> k = new ArrayList<Integer>();
+        int max = 1000;
+        for ( int i = 0; i < max; i++ ) {
+            k.add( i );
+        }
+        double total = 0.0;
+        int reps = 500;
+        for ( int j = 0; j < reps; j++ ) {
+            for ( int i = 0; i < reps; i++ ) {
+                List<Integer> r = new ArrayList<Integer>( RandomChooser.chooseRandomSubset( 2, k ) );
+                int m = r.get( 0 ) + r.get( 1 );
+                total += m / 2.0;
+
+            }
+        }
+        assertEquals( 500, total / ( reps * reps ), 0.5 );
     }
 
     public void testRandomSubset() throws Exception {
