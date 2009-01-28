@@ -18,9 +18,10 @@
  */
 package ubic.basecode.math;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -31,57 +32,71 @@ import junit.framework.TestCase;
  */
 public class RandomChooserTest extends TestCase {
 
-	double[] sourceData = new double[] { 0, 1, 2, 3, 4, 5 };
+    double[] sourceData = new double[] { 0, 1, 2, 3, 4, 5 };
 
-	public void setUp() throws Exception {
-		super.setUp();
+    public void setUp() throws Exception {
+        super.setUp();
 
-		// Note that this does not make algorithm 100% reproducible across all
-		// java/platform versions.
-		RandomChooser.init(0);
-	}
+        // Note that this does not make algorithm 100% reproducible across all
+        // java/platform versions.
+        RandomChooser.init( 0 );
+    }
 
-	/**
-	 * Test method for
-	 * {@link ubic.basecode.math.RandomChooser#chooserandom(int[], boolean[], int, int)}
-	 * .
-	 */
-	public void testChooserandomIntArrayBooleanArrayIntInt() throws Exception {
-		int[] result = RandomChooser.chooserandom(100, 10);
-		int[] expected = { 60, 48, 29, 47, 15, 53, 91, 61, 19, 54 };
-		for (int i = 0; i < result.length; i++) {
-			assertEquals(expected[i], result[i]);
-		}
-	}
+    /**
+     * Test method for {@link ubic.basecode.math.RandomChooser#chooserandom(int[], boolean[], int, int)} .
+     */
+    public void testChooserandomIntArrayBooleanArrayIntInt() throws Exception {
+        int[] result = RandomChooser.chooserandom( 100, 10 );
+        int[] expected = { 60, 48, 29, 47, 15, 53, 91, 61, 19, 54 };
+        for ( int i = 0; i < result.length; i++ ) {
+            assertEquals( expected[i], result[i] );
+        }
+    }
 
-	public void testRandomSubset() throws Exception {
-		Collection<String> vals = new HashSet<String>();
-		vals.add("a");
-		vals.add("b");
-		vals.add("c");
-		vals.add("d");
-		vals.add("e");
-		vals.add("f");
-		Set<String> result = RandomChooser.chooseRandomSubset(2, vals);
+    public void testRepeat() throws Exception {
+        List<Integer> k = new ArrayList<Integer>();
+        for ( int i = 0; i < 1000; i++ ) {
+            k.add( i );
+        }
 
-		/*
-		 * Note: this used to test for specific values but for some reason this
-		 * doesn't work on latest java+winxp?
-		 */
-		assertEquals(2, result.size());
-	}
+        double total = 0.0;
+        int reps = 100;
+        for ( int i = 0; i < reps; i++ ) {
+            List<Integer> r = new ArrayList<Integer>( RandomChooser.chooseRandomSubset( 2, k ) );
+            int m = r.get( 0 ) + r.get( 1 );
 
-	/**
-	 * Test method for
-	 * {@link ubic.basecode.math.RandomChooser#chooserandomWrep(int[], int, int)}
-	 * .
-	 */
-	public void testChooserandomWrep() {
-		int[] result = RandomChooser.chooserandomWrep(100, 500);
-		assertEquals(500, result.length);
-		assertEquals(76, result[0]);
-		assertEquals(55, result[10]);
-		assertEquals(55, result[11]);
-	}
+            total += m / 2.0;
+
+        }
+       // System.err.print( total / reps + " " );
+        assertEquals(total/reps, 512.72, 0.01);
+    }
+
+    public void testRandomSubset() throws Exception {
+        Collection<String> vals = new HashSet<String>();
+        vals.add( "a" );
+        vals.add( "b" );
+        vals.add( "c" );
+        vals.add( "d" );
+        vals.add( "e" );
+        vals.add( "f" );
+        Set<String> result = RandomChooser.chooseRandomSubset( 2, vals );
+
+        /*
+         * Note: this used to test for specific values but for some reason this doesn't work on latest java+winxp?
+         */
+        assertEquals( 2, result.size() );
+    }
+
+    /**
+     * Test method for {@link ubic.basecode.math.RandomChooser#chooserandomWrep(int[], int, int)} .
+     */
+    public void testChooserandomWrep() {
+        int[] result = RandomChooser.chooserandomWrep( 100, 500 );
+        assertEquals( 500, result.length );
+        assertEquals( 76, result[0] );
+        assertEquals( 55, result[10] );
+        assertEquals( 55, result[11] );
+    }
 
 }
