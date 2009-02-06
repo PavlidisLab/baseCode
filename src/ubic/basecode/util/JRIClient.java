@@ -20,14 +20,17 @@ package ubic.basecode.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.rosuda.JRI.REXP;
 import org.rosuda.JRI.RList;
 import org.rosuda.JRI.Rengine;
 
+import ubic.basecode.TwoWayAnovaResult;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixFactory;
 
@@ -69,6 +72,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, double[])
      */
     public void assign( String argName, double[] arg ) {
@@ -77,6 +81,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, int[])
      */
     public void assign( String arg0, int[] arg1 ) {
@@ -85,6 +90,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, org.rosuda.REngine.REXP)
      */
     public void assign( String arg0, REXP arg1 ) {
@@ -93,6 +99,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String)
      */
     public void assign( String sym, String ct ) {
@@ -101,6 +108,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String[])
      */
     public void assign( String argName, String[] array ) {
@@ -109,6 +117,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#booleanDoubleArrayEval(java.lang.String, java.lang.String, double[])
      */
     public boolean booleanDoubleArrayEval( String command, String argName, double[] arg ) {
@@ -123,6 +132,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#doubleArrayDoubleArrayEval(java.lang.String, java.lang.String, double[])
      */
     public double[] doubleArrayDoubleArrayEval( String command, String argName, double[] arg ) {
@@ -133,6 +143,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#doubleArrayEval(java.lang.String)
      */
     public double[] doubleArrayEval( String command ) {
@@ -149,8 +160,9 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#doubleArrayTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
-     * java.lang.String, double[])
+     *      java.lang.String, double[])
      */
     public double[] doubleArrayTwoDoubleArrayEval( String command, String argName, double[] arg, String argName2,
             double[] arg2 ) {
@@ -162,8 +174,9 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#doubleTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
-     * java.lang.String, double[])
+     *      java.lang.String, double[])
      */
     public double doubleTwoDoubleArrayEval( String command, String argName, double[] arg, String argName2, double[] arg2 ) {
         this.assign( argName, arg );
@@ -175,6 +188,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#getLastError()
      */
     public String getLastError() {
@@ -183,6 +197,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#intArrayEval(java.lang.String)
      */
     public int[] intArrayEval( String command ) {
@@ -195,6 +210,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#retrieveMatrix(java.lang.String)
      */
     public DoubleMatrix<String, String> retrieveMatrix( String variableName ) {
@@ -215,6 +231,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#stringEval(java.lang.String)
      */
     public String stringEval( String command ) {
@@ -239,8 +256,68 @@ public class JRIClient extends AbstractRClient {
 
     }
 
+    /**
+     * @param command
+     * @return
+     */
+    public TwoWayAnovaResult twoWayAnovaEval( String command ) {
+
+        REXP regularExp = this.eval( command );
+
+        RList mainList = regularExp.asList();
+        if ( mainList == null ) {
+            log.warn( "No string list in R: " + command );
+            return null;
+        }
+
+        // FIXME The values are in the correct order, but the keys in the mainList
+        // are not for some reason so I'm not using them. In the debugger, the key is the composite sequence,
+        // but this isn't the same composite sequence I see directly in R. The order
+        // of the p values and statistics are correct, however.
+        LinkedHashMap<String, double[]> pvalues = new LinkedHashMap<String, double[]>();
+        LinkedHashMap<String, double[]> statistics = new LinkedHashMap<String, double[]>();
+
+        for ( int i = 0; i < mainList.keys().length; i++ ) {
+            REXP r1 = mainList.at( i );
+            RList l1 = r1.asList();
+            if ( l1 == null ) {
+                log.warn( "No string list in R: " + command );
+                return null;
+            }
+
+            String[] keys = l1.keys();
+            for ( String key : keys ) {
+                if ( StringUtils.equals( "Pr(>F)", key ) ) {
+                    REXP r2 = l1.at( key );
+                    double[] pValsFromR = ( double[] ) r2.getContent();
+                    double[] pValsToUse = new double[pValsFromR.length - 1];
+                    for ( int j = 0; j < pValsToUse.length; j++ ) {
+                        pValsToUse[j] = pValsFromR[j];
+                    }
+
+                    pvalues.put( Integer.toString( i ), pValsToUse );
+                } else if ( StringUtils.equals( "F value", key ) ) {
+                    REXP r2 = l1.at( key );
+                    double[] statisticsFromR = ( double[] ) r2.getContent();
+                    double[] statisticsToUse = new double[statisticsFromR.length - 1];
+                    for ( int j = 0; j < statisticsToUse.length; j++ ) {
+                        statisticsToUse[j] = statisticsFromR[j];
+                    }
+                    statistics.put( Integer.toString( i ), statisticsToUse );
+                }
+
+            }
+        }
+
+        TwoWayAnovaResult result = new TwoWayAnovaResult( pvalues, statistics );
+
+        return result;
+
+    }
+
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#voidEval(java.lang.String)
      */
     public void voidEval( String command ) {
@@ -252,6 +329,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#eval(java.lang.String)
      */
     private REXP eval( String command ) {

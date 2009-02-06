@@ -20,6 +20,7 @@ package ubic.basecode.util;
 
 import java.util.List;
 
+import ubic.basecode.TwoWayAnovaResult;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
 /**
@@ -37,6 +38,8 @@ public interface RClient {
     public void assign( String argName, double[] arg );
 
     public List<String> stringListEval( String command );
+    
+    public TwoWayAnovaResult twoWayAnovaEval( String command );
 
     /*
      * (non-Javadoc)
