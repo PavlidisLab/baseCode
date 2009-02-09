@@ -20,7 +20,6 @@ package ubic.basecode.util;
 
 import java.util.List;
 
-import ubic.basecode.TwoWayAnovaResult;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
 /**

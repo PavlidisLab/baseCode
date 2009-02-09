@@ -1,4 +1,4 @@
-package ubic.basecode;
+package ubic.basecode.util;
 
 import java.util.ArrayList;
 import java.util.Iterator;
