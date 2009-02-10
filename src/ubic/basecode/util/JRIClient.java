@@ -260,7 +260,6 @@ public class JRIClient extends AbstractRClient {
      * @return
      */
     public TwoWayAnovaResult twoWayAnovaEval( String command ) {
-
         REXP regularExp = this.eval( command );
 
         RList mainList = regularExp.asList();
@@ -269,10 +268,11 @@ public class JRIClient extends AbstractRClient {
             return null;
         }
 
-        // FIXME The values are in the correct order, but the keys in the mainList
-        // are not for some reason so I'm not using them. In the debugger, the key is the composite sequence,
-        // but this isn't the same composite sequence I see directly in R. The order
-        // of the p values and statistics are correct, however.
+        /*
+         * The values are in the correct order, but the keys in the mainList (from mainList.keys()) are not for some
+         * reason so I'm not using them. In the debugger, the key is the composite sequence, but this isn't the same
+         * composite sequence I see directly in R. The order of the p values and statistics are correct, however.
+         */
         LinkedHashMap<String, double[]> pvalues = new LinkedHashMap<String, double[]>();
         LinkedHashMap<String, double[]> statistics = new LinkedHashMap<String, double[]>();
 
