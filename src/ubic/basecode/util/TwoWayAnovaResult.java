@@ -50,17 +50,23 @@ public class TwoWayAnovaResult {
         this.statistics = new double[statisticsAsList.size()];
         Iterator<Double> pIter = pvalsAsList.iterator();
         Iterator<Double> sIter = statisticsAsList.iterator();
-        for ( int i = 0; i < pvalues.size(); i++ ) {
+        for ( int i = 0; i < this.pvalues.length; i++ ) {
             this.pvalues[i] = pIter.next();
             this.statistics[i] = sIter.next();
         }
     }
 
+    /**
+     * @return
+     */
     public double[] getPvalues() {
         return this.pvalues;
     }
 
+    /**
+     * @return
+     */
     public double[] getStatistics() {
-        return statistics;
+        return this.statistics;
     }
 }
