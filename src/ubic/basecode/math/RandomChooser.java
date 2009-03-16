@@ -33,7 +33,7 @@ import java.util.Set;
  */
 public class RandomChooser {
 
-    private static Random generator = new Random( System.currentTimeMillis() );
+    private static Random generator = new Random();
 
     /**
      * Fill randomvals with random things from sourcedata, without replacement.
@@ -69,11 +69,13 @@ public class RandomChooser {
             throw new IllegalArgumentException(
                     "n must be less than or equal to max (and should be much smaller, actually)" );
         }
+        // Initialize a boolean vector to keep track of which values have been used already
         int[] result = new int[n];
         boolean[] recLog = new boolean[max];
         for ( int i = 0; i < max; i++ ) {
             recLog[i] = false;
         }
+
         int numgot = 0;
         while ( numgot < n ) { /* numgot is the index of the last gotten item */
             int newnum = generator.nextInt( max );

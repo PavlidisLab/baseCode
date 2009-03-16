@@ -47,14 +47,13 @@ public class RConnectionFactory {
         rc = getJRIClient();
         if ( rc != null ) {
             return rc;
-        } else {
-            try {
-                rc = new RServeClient( hostName );
-            } catch ( Exception e ) {
-                log.error( e );
-            }
-            return rc;
         }
+        try {
+            rc = new RServeClient( hostName );
+        } catch ( Exception e ) {
+            log.error( e );
+        }
+        return rc;
     }
 
     /**
