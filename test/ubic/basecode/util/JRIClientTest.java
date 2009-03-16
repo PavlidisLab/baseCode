@@ -48,7 +48,7 @@ public class JRIClientTest extends TestCase {
         try {
             rc = new JRIClient();
 
-            if ( rc == null ) {
+            if ( rc == null || !rc.isConnected() ) {
                 connected = false;
                 return;
             }
@@ -60,11 +60,14 @@ public class JRIClientTest extends TestCase {
         DoubleMatrixReader reader = new DoubleMatrixReader();
 
         tester = reader.read( this.getClass().getResourceAsStream( "/data/testdata.txt" ) );
+        assert rc.isConnected();
     }
 
     @Override
     public void tearDown() throws Exception {
         tester = null;
+        // rc.disconnect();
+        rc = null;
     }
 
     public void testAssignAndRetrieveMatrix() throws Exception {
@@ -72,7 +75,7 @@ public class JRIClientTest extends TestCase {
             log.warn( "Cannot load JRI, skipping test" );
             return;
         }
-        DoubleMatrix result = rc.retrieveMatrix( rc.assignMatrix( tester ) );
+        DoubleMatrix<String, String> result = rc.retrieveMatrix( rc.assignMatrix( tester ) );
         assertEquals( "gene1_at", result.getRowName( 0 ) );
         assertEquals( "sample1", result.getColName( 0 ) );
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
@@ -80,7 +83,7 @@ public class JRIClientTest extends TestCase {
 
     public void testDoubleTwoDoubleArrayEval() throws Exception {
         if ( !connected ) {
-            log.warn( "Could not connect to RServe, skipping test." );
+            log.warn( "Cannot load JRI, skipping test" );
             return;
         }
         double actual = rc.doubleTwoDoubleArrayEval( "cor(a,b)", "a", test1, "b", test2 );
@@ -94,7 +97,7 @@ public class JRIClientTest extends TestCase {
             return;
         }
         String m = rc.assignMatrix( tester.asArray() );
-        DoubleMatrix result = rc.retrieveMatrix( m );
+        DoubleMatrix<String, String> result = rc.retrieveMatrix( m );
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
     }
 
@@ -110,7 +113,7 @@ public class JRIClientTest extends TestCase {
     }
 
     /*
-     * Test method for 'edu.columbia.gemma.tools.RCommand.exec(String)'
+     * Test method for 'RCommand.exec(String)'
      */
     public void testExec() throws Exception {
         if ( !connected ) {
@@ -132,7 +135,8 @@ public class JRIClientTest extends TestCase {
             log.warn( "Cannot load JRI, skipping test" );
             return;
         }
-        assertTrue( RegressionTesting.closeEnough( new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, rc
-                .doubleArrayEval( "rep(1, 10)" ), 0.001 ) );
+        double[] dd = rc.doubleArrayEval( "rep(1, 10)" );
+        assertNotNull( dd );
+        assertTrue( RegressionTesting.closeEnough( new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, dd, 0.001 ) );
     }
 }
