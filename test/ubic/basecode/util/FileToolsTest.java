@@ -213,7 +213,6 @@ public class FileToolsTest extends TestCase {
     public void testGetInputStreamFromPlainOrCompressedFile() throws Exception {
         InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile( plain.getPath() );
         assertTrue( is != null && is.available() > 0 );
-        is.close();
     }
 
     /*
@@ -304,7 +303,7 @@ public class FileToolsTest extends TestCase {
             out.closeEntry();
         }
         out.close();
-        Collection result = FileTools.unZipFiles( zipped.getAbsolutePath() );
+        Collection<File> result = FileTools.unZipFiles( zipped.getAbsolutePath() );
         assertEquals( 3, result.size() );
     }
 

@@ -247,7 +247,7 @@ public class FileTools {
      * @return Collection of File objects
      * @throws IOException
      */
-    public static Collection unZipFiles( final String seekFile ) throws IOException {
+    public static Collection<File> unZipFiles( final String seekFile ) throws IOException {
 
         if ( !isZipped( seekFile ) ) {
             throw new IllegalArgumentException();
@@ -260,8 +260,8 @@ public class FileTools {
         Collection<File> result = new HashSet<File>();
         try {
             ZipFile f = new ZipFile( seekFile );
-            for ( Enumeration entries = f.entries(); entries.hasMoreElements(); ) {
-                ZipEntry entry = ( ZipEntry ) entries.nextElement();
+            for ( Enumeration<? extends ZipEntry> entries = f.entries(); entries.hasMoreElements(); ) {
+                ZipEntry entry = entries.nextElement();
                 String outputFileTitle = entry.getName();
                 InputStream is = f.getInputStream( entry );
 
@@ -349,6 +349,11 @@ public class FileTools {
             ZipFile f = new ZipFile( fileName );
             ZipEntry entry = f.entries().nextElement();
             if ( entry == null ) throw new IOException( "No zip entries" );
+
+            if ( f.entries().hasMoreElements() ) {
+                throw new IllegalArgumentException( "ZIP archive has more then one file, don't know which one to read." );
+            }
+
             i = f.getInputStream( entry );
         } else if ( FileTools.isGZipped( fileName ) ) {
             log.debug( "Reading from gzipped file" );
@@ -367,7 +372,7 @@ public class FileTools {
      * @param directory
      * @return
      */
-    public static Collection listDirectoryFiles( File directory ) {
+    public static Collection<File> listDirectoryFiles( File directory ) {
 
         if ( !directory.isDirectory() ) throw new IllegalArgumentException( "Must be a directory" );
 
@@ -389,7 +394,7 @@ public class FileTools {
      * @param directory
      * @return
      */
-    public static Collection listSubDirectories( File directory ) {
+    public static Collection<File> listSubDirectories( File directory ) {
 
         if ( !directory.isDirectory() ) throw new IllegalArgumentException( "Must be a directory" );
 
@@ -425,14 +430,14 @@ public class FileTools {
      * @return int The number of files deleted.
      * @see java.io.File#delete()
      */
-    public static int deleteFiles( Collection files ) {
+    public static int deleteFiles( Collection<File> files ) {
 
         int numDeleted = 0;
 
-        Iterator iter = files.iterator();
+        Iterator<File> iter = files.iterator();
         while ( iter.hasNext() ) {
 
-            File file = ( File ) iter.next();
+            File file = iter.next();
             if ( file.isDirectory() ) {
                 log.warn( "Cannot delete a directory." );
                 continue;
@@ -457,11 +462,11 @@ public class FileTools {
      */
     public static int deleteDir( File directory ) {
         int numDeleted = 0;
-        Collection directories = listSubDirectories( directory );
+        Collection<File> directories = listSubDirectories( directory );
 
-        Iterator iter = directories.iterator();
+        Iterator<File> iter = directories.iterator();
         while ( iter.hasNext() ) {
-            File dir = ( File ) iter.next();
+            File dir = iter.next();
 
             if ( dir.listFiles().length == 0 ) {
                 dir.getAbsoluteFile().delete();
