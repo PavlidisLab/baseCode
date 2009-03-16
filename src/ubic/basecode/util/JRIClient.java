@@ -61,9 +61,12 @@ public class JRIClient extends AbstractRClient {
                 throw new IOException( "Couldn't load jri library, looked in: "
                         + System.getProperty( "java.library.path" ) );
             }
+            if (!Rengine.versionCheck()) {
+                throw new RuntimeException("Version check for R failed, will not load JRI.");
+            }
             connection = new Rengine( new String[] { "--no-save" }, false, null );
             if ( !connection.waitForR() ) {
-                throw new IOException( "Cannot load R" );
+                throw new IOException( "Cannot get R connection via JRI" );
             }
             log.info( "JRI looks good!" );
         }
