@@ -351,7 +351,7 @@ public class FileTools {
             if ( entry == null ) throw new IOException( "No zip entries" );
 
             if ( f.entries().hasMoreElements() ) {
-                throw new IllegalArgumentException( "ZIP archive has more then one file, don't know which one to read." );
+                log.warn( "ZIP archive has more then one file, reading the first one." );
             }
 
             i = f.getInputStream( entry );
