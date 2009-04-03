@@ -253,6 +253,7 @@ public class JRIClient extends AbstractRClient {
 
         if ( rawResult == null ) {
             log.error( "R command returned null: " + command );
+            return null;
         }
 
         RList mainList = rawResult.asList();
