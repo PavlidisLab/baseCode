@@ -61,8 +61,8 @@ public class JRIClient extends AbstractRClient {
                 throw new IOException( "Couldn't load jri library, looked in: "
                         + System.getProperty( "java.library.path" ) );
             }
-            if (!Rengine.versionCheck()) {
-                throw new RuntimeException("Version check for R failed, will not load JRI.");
+            if ( !Rengine.versionCheck() ) {
+                throw new RuntimeException( "Version check for R failed, will not load JRI." );
             }
             connection = new Rengine( new String[] { "--no-save" }, false, null );
             if ( !connection.waitForR() ) {
@@ -74,6 +74,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, double[])
      */
     public void assign( String argName, double[] arg ) {
@@ -82,6 +83,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, int[])
      */
     public void assign( String arg0, int[] arg1 ) {
@@ -90,6 +92,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, org.rosuda.REngine.REXP)
      */
     public void assign( String arg0, REXP arg1 ) {
@@ -98,6 +101,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String)
      */
     public void assign( String sym, String ct ) {
@@ -106,6 +110,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String[])
      */
     public void assign( String argName, String[] array ) {
@@ -114,6 +119,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#booleanDoubleArrayEval(java.lang.String, java.lang.String, double[])
      */
     public boolean booleanDoubleArrayEval( String command, String argName, double[] arg ) {
@@ -128,6 +134,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#doubleArrayDoubleArrayEval(java.lang.String, java.lang.String, double[])
      */
     public double[] doubleArrayDoubleArrayEval( String command, String argName, double[] arg ) {
@@ -138,6 +145,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#doubleArrayEval(java.lang.String)
      */
     public double[] doubleArrayEval( String command ) {
@@ -154,8 +162,9 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#doubleArrayTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
-     * java.lang.String, double[])
+     *      java.lang.String, double[])
      */
     public double[] doubleArrayTwoDoubleArrayEval( String command, String argName, double[] arg, String argName2,
             double[] arg2 ) {
@@ -167,8 +176,9 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#doubleTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
-     * java.lang.String, double[])
+     *      java.lang.String, double[])
      */
     public double doubleTwoDoubleArrayEval( String command, String argName, double[] arg, String argName2, double[] arg2 ) {
         this.assign( argName, arg );
@@ -180,6 +190,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#getLastError()
      */
     public String getLastError() {
@@ -188,6 +199,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#intArrayEval(java.lang.String)
      */
     public int[] intArrayEval( String command ) {
@@ -200,6 +212,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#retrieveMatrix(java.lang.String)
      */
     public DoubleMatrix<String, String> retrieveMatrix( String variableName ) {
@@ -220,6 +233,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#stringEval(java.lang.String)
      */
     public String stringEval( String command ) {
@@ -246,6 +260,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#twoWayAnovaEval(java.lang.String)
      */
     public TwoWayAnovaResult twoWayAnovaEval( String command ) {
@@ -310,6 +325,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#voidEval(java.lang.String)
      */
     public void voidEval( String command ) {
@@ -321,6 +337,7 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#eval(java.lang.String)
      */
     private REXP eval( String command ) {
@@ -372,6 +389,50 @@ public class JRIClient extends AbstractRClient {
             log.debug( "No column names" );
         }
         if ( log.isDebugEnabled() ) log.debug( resultObject );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#doubleArrayEvalWithLogging(java.lang.String)
+     */
+    public double[] doubleArrayEvalWithLogging( String command ) {
+        RLoggingThread rLoggingThread = null;
+        double[] doubleArray = null;
+        try {
+            rLoggingThread = RLoggingThreadFactory.createRLoggingThread();
+            doubleArray = this.doubleArrayEval( command );
+        } catch ( Exception e ) {
+            log.error( "Problems executing R command " + command.toString(), e );
+        } finally {
+            if ( rLoggingThread != null ) {
+                log.debug( "Shutting down logging thread." );
+                rLoggingThread.done();
+            }
+        }
+        return doubleArray;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#twoWayAnovaEvalWithLogging(java.lang.String)
+     */
+    public TwoWayAnovaResult twoWayAnovaEvalWithLogging( String command ) {
+        RLoggingThread rLoggingThread = null;
+        TwoWayAnovaResult twoWayAnovaResult = null;
+        try {
+            rLoggingThread = RLoggingThreadFactory.createRLoggingThread();
+            twoWayAnovaResult = this.twoWayAnovaEval( command );
+        } catch ( Exception e ) {
+            log.error( "Problems executing R command " + command.toString(), e );
+        } finally {
+            if ( rLoggingThread != null ) {
+                log.debug( "Shutting down logging thread." );
+                rLoggingThread.done();
+            }
+        }
+        return twoWayAnovaResult;
     }
 
 }

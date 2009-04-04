@@ -37,7 +37,21 @@ public interface RClient {
     public void assign( String argName, double[] arg );
 
     public List<String> stringListEval( String command );
-    
+
+    /**
+     * Evaluates two way anova commands of the form
+     * <p>
+     * apply(matrix,1,function(x){anova(aov(x~farea+ftreat))}
+     * </p>
+     * and
+     * <p>
+     * apply(matrix,1,function(x){anova(aov(x~farea+ftreat+farea*ftreat))}
+     * </p>
+     * where farea and ftreat have already been transposed and had factor called on them.
+     * 
+     * @param command
+     * @return
+     */
     public TwoWayAnovaResult twoWayAnovaEval( String command );
 
     /*
@@ -178,5 +192,25 @@ public interface RClient {
     public boolean isConnected();
 
     public void disconnect();
+
+    /**
+     * Spawns a thread to log R progress before calling doubleArrayEvalWithLogging.
+     * 
+     * @param command
+     * @return
+     * @see RClient#doubleArrayEval(String)
+     */
+    public double[] doubleArrayEvalWithLogging( String command );
+    // TODO spawing of the logging thread could probably happen in the method doubleArrayEval
+
+    /**
+     * Spawns a thread to log R progress before calling twoWayAnovaEval.
+     * 
+     * @param command
+     * @return
+     * @see RClient#twoWayAnovaEval(String)
+     */
+    public TwoWayAnovaResult twoWayAnovaEvalWithLogging( String command );
+    // TODO spawing of the logging thread could probably happen in the method twoWayAnovaEvalWithLogging
 
 }

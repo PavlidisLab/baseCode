@@ -464,14 +464,6 @@ public class RServeClient extends AbstractRClient {
             throw new RuntimeException( e );
         }
     }
-    
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#anovaEval(java.lang.String)
-     */
-    public TwoWayAnovaResult twoWayAnovaEval( String command ) {
-        throw new UnsupportedOperationException( "Method not yet implemented!" );
-    }
 
     /*
      * (non-Javadoc)
@@ -613,6 +605,33 @@ public class RServeClient extends AbstractRClient {
         } catch ( InterruptedException e ) {
             //
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#anovaEval(java.lang.String)
+     */
+    public TwoWayAnovaResult twoWayAnovaEval( String command ) {
+        throw new UnsupportedOperationException( "Method not yet implemented!" );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#doubleArrayEvalWithLogging(java.lang.String)
+     */
+    public double[] doubleArrayEvalWithLogging( String command ) {
+        throw new UnsupportedOperationException( "Method not yet implemented!" );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.RClient#twoWayAnovaEvalWithLogging(java.lang.String)
+     */
+    public TwoWayAnovaResult twoWayAnovaEvalWithLogging( String command ) {
+        throw new UnsupportedOperationException( "Method not yet implemented!" );
     }
 
 }
