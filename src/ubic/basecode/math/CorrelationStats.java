@@ -335,12 +335,15 @@ public class CorrelationStats {
         if ( count > 1290 ) { // this is the threshold used by R (cor.test.R), to avoid overflows.
             double t = correlationTstat( acorrel, dof );
             p = Probability.studentT( dof, -t );
+            // studentT returns the lower tail so we use -t to effectively get the
+            // upper tail.
         } else {
-            p = spearmanPvalueSmallSample( correl, count );
+            p = spearmanPvalueSmallSample( acorrel, count ); // returns the upper tail for rho>0.
         }
+
         assert p <= 0.5 : "Pvalue was " + p + " for correl=" + correl + ", count=" + count
                 + ", expected value less than 0.5";
-        p = Math.min( 1.0, 2 * p );
+        p = Math.min( 1.0, 2.0 * p ); // two-tailed.
         if ( count < MAXCOUNT ) {
             spearmanPvalLookup.setQuick( bin, dof, p );
         }
@@ -366,8 +369,9 @@ public class CorrelationStats {
      * to be due to differences in roundoff.
      * 
      * @param rho Spearman rank correlation
-     * @param n number of sample
-     * @return one-sided pvalue. This is the upper tail if rho is positive, lower tail if rho is negative.
+     * @param n number of sample -- NOT degrees of freedom.
+     * @return one-sided pvalue. This is the upper tail if rho is positive, lower tail if rho is negative (this is
+     *         potentially confusing, basically we always return a value <=0.5)
      */
     private static double spearmanPvalueSmallSample( double rho, int n ) {
 
@@ -377,7 +381,7 @@ public class CorrelationStats {
          * In R, sStat (is) is the S statistic, and gets computed in cor.test.R and passed into prho(). It's the sum
          * squared error of the ranks (the usual spearman test stat). We backcompute it here.
          */
-        double sStat = ( Math.pow( n, 3 ) - n ) * ( 1.0 - rho ) / 6;
+        double sStat = ( Math.pow( n, 3 ) - n ) * ( 1.0 - Math.abs( rho ) ) / 6;
         double pv = 1.0;
         // pv = lower_tail ? 0.0 : 1.0; // lower_tail is always false.
 
@@ -437,7 +441,7 @@ public class CorrelationStats {
                 }
             }
             pv = ifr / ( double ) nfac;
-            if ( pv > 0.5 ) pv = 1.0 - pv;
+
         } else { /* Evaluation by Edgeworth series expansion */
 
             double b = 1.0 / n;
@@ -455,6 +459,8 @@ public class CorrelationStats {
             double pp = Probability.normal( x ); // mean 0, variance 1.
             pv = y + pp;
         }
+
+        if ( pv > 0.5 ) pv = 1.0 - pv; // here we enforce our possibly confusing tail rule.
         if ( pv < 0.0 ) pv = 0.0;
         if ( pv > 1.0 ) pv = 1.0;
         return pv;

@@ -68,13 +68,13 @@ public class CorrelationStatsTest extends TestCase {
      */
     public void testSpearmanPvalueA() {
         double actual = CorrelationStats.spearmanPvalue( -0.8, 5 );
-        double expected = 0.1333;
-        assertEquals( expected, actual, 0.0001 );
+        double expected = 0.08333;
+            assertEquals( expected, actual, 0.0001 );
     }
 
     public void testSpearmanPvalueA2() {
         double actual = CorrelationStats.spearmanPvalue( 0.8, 5 );
-        double expected = 0.1333;
+        double expected = 0.08333;
         assertEquals( expected, actual, 0.0001 );
     }
 
@@ -115,6 +115,12 @@ public class CorrelationStatsTest extends TestCase {
         double actual = CorrelationStats.spearmanPvalue( -0.983333, 9 );
         double expected = 4.96e-5; // value from R
         assertEquals( expected, actual, 0.0000001 );
+    }
+
+    public void testSpearmanPvalueF() throws Exception {
+        double actual = CorrelationStats.spearmanPvalue( 0.9759, 10 );
+        double expected = 0.007483989; // value from R is basically 0. But using the same algorithm we get 0.00748.
+        assertEquals( expected, actual, 0.00001 );
     }
 
     public void testSpearmanPvalueTDist() {
