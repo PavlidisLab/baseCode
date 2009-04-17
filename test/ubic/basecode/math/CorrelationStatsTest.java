@@ -21,6 +21,16 @@ package ubic.basecode.math;
 import junit.framework.TestCase;
 
 /**
+ * Most benchmarks come from R, using things like cor.test(rnorm(50), rnorm(50), method="spearman",
+ * alternative="two.sided"),
+ * <p>
+ * OR (where the first argument is n, second is S (rounded off)
+ * <p>
+ * 
+ * <pre>
+ * 1-.C(&quot;prho&quot;,as.integer(10),as.double(4),double(1),integer(1),as.logical(FALSE),PACKAGE=&quot;stats&quot;)[[3]]
+ * </pre>
+ * 
  * @author paul
  * @version $Id$
  */
@@ -63,13 +73,10 @@ public class CorrelationStatsTest extends TestCase {
         assertEquals( 1.0 - 0.691, CorrelationStats.pvalue( 0.180, 10 ), 0.001 );
     }
 
-    /*
-     * Values come from R, using things like cor.test(rnorm(50), rnorm(50), method="spearman", alternative="two.sided")
-     */
     public void testSpearmanPvalueA() {
         double actual = CorrelationStats.spearmanPvalue( -0.8, 5 );
         double expected = 0.08333;
-            assertEquals( expected, actual, 0.0001 );
+        assertEquals( expected, actual, 0.0001 );
     }
 
     public void testSpearmanPvalueA2() {
@@ -79,29 +86,29 @@ public class CorrelationStatsTest extends TestCase {
     }
 
     public void testSpearmanPvalueB() {
-        double actual = CorrelationStats.spearmanPvalue( -0.6, 10 );
-        // double expected = 0.07312; // value from R
-        double expected = 0.0739814; // our value
+        double actual = CorrelationStats.spearmanPvalue( -0.6484848, 10 );
+        // double expected = 0.04904; // value from R
+        double expected = 0.0440265; // our value
         assertEquals( expected, actual, 0.0001 );
     }
 
     public void testSpearmanPvalueD() {
         double actual = CorrelationStats.spearmanPvalue( -0.03788715, 50 );
         // double expected = 0.7934; // value from R
-        double expected = 0.78851988243; // our value
+        double expected = 0.7929; // our value
         assertEquals( expected, actual, 0.0001 );
     }
 
     public void testSpearmanPvalueD2() {
-        double actual = CorrelationStats.spearmanPvalue( -0.6108523, 50 );
-        // double expected = 4.089e-6; // value from R
-        double expected = 3.397260e-5; // our value
+        double actual = CorrelationStats.spearmanPvalue( -0.602401, 50 );
+        // double expected = 5.889e-06; // value from R
+        double expected = 5.889e-06; // our value
         assertEquals( expected, actual, 0.0000001 );
     }
 
     public void testSpearmanPvalueE() {
         double actual = CorrelationStats.spearmanPvalue( 0.983333, 9 );
-        double expected = 4.96e-5; // value from R
+        double expected = 5.511464e-6; // value from R for N=9,S=2
         assertEquals( expected, actual, 0.0000001 );
     }
 
@@ -112,14 +119,26 @@ public class CorrelationStatsTest extends TestCase {
     }
 
     public void testSpearmanPvalueEm() {
-        double actual = CorrelationStats.spearmanPvalue( -0.983333, 9 );
-        double expected = 4.96e-5; // value from R
+        double actual = CorrelationStats.spearmanPvalue( -0.966667, 9 );
+        double expected = 4.960317e-5; // value from R for N=9,S=4
         assertEquals( expected, actual, 0.0000001 );
     }
 
     public void testSpearmanPvalueF() throws Exception {
         double actual = CorrelationStats.spearmanPvalue( 0.9759, 10 );
-        double expected = 0.007483989; // value from R is basically 0. But using the same algorithm we get 0.00748.
+        double expected = 0.0; // value from R is basically 0
+        assertEquals( expected, actual, 0.00001 );
+    }
+
+    public void testSpearmanPvalueG() throws Exception {
+        double actual = CorrelationStats.spearmanPvalue( 0.9166667, 9 );
+        double expected = 0.0007495591; // R result for S=10, N=9
+        assertEquals( expected, actual, 0.00001 );
+    }
+
+    public void testSpearmanPvalueG2() throws Exception {
+        double actual = CorrelationStats.spearmanPvalue( 0.9166667, 6 );
+        double expected = 0.016667; // R result.
         assertEquals( expected, actual, 0.00001 );
     }
 

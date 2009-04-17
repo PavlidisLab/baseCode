@@ -50,7 +50,7 @@ public class CorrelationStats {
     // 10^e-256/PVALCHOP are
     // 'clipped'.
 
-    /* Edgeworth coefficients for spearman computation : */
+    /* Edgeworth coefficients for spearman p-value computation : */
     private static final double c1 = 0.2274, c2 = 0.2531, c3 = 0.1745, c4 = 0.0758, c5 = 0.1033, c6 = 0.3932,
             c7 = 0.0879, c8 = 0.0151, c9 = 0.0072, c10 = 0.0831, c11 = 0.0131, c12 = 4.6e-4;
 
@@ -365,25 +365,25 @@ public class CorrelationStats {
      * Statistics 1975 p 377-379). We compute exact probabilities for very small values (< 9) and use a special
      * algorithm for larger values. At very large values the t-distribution can be used, this method will be slow.
      * <p>
-     * NOTE that for "medium-sized" values of n, we get slightly different values from the R implementation. This seems
-     * to be due to differences in roundoff.
+     * The pvalues returned are based on the assumption of no tied ranks.
      * 
      * @param rho Spearman rank correlation
-     * @param n number of sample -- NOT degrees of freedom.
+     * @param n number of samples -- NOT degrees of freedom. If there were missing values, you should compute n as the
+     *        number of complete cases.
      * @return one-sided pvalue. This is the upper tail if rho is positive, lower tail if rho is negative (this is
      *         potentially confusing, basically we always return a value <=0.5)
      */
     private static double spearmanPvalueSmallSample( double rho, int n ) {
 
-        // boolean lower_tail = false;
-
         /*
          * In R, sStat (is) is the S statistic, and gets computed in cor.test.R and passed into prho(). It's the sum
-         * squared error of the ranks (the usual spearman test stat). We backcompute it here.
+         * squared error of the ranks (the usual spearman test stat). We backcompute it here. As in the R version we
+         * round it off, as properly S should be an integer.
          */
-        double sStat = ( Math.pow( n, 3 ) - n ) * ( 1.0 - Math.abs( rho ) ) / 6;
-        double pv = 1.0;
-        // pv = lower_tail ? 0.0 : 1.0; // lower_tail is always false.
+        double sStat = Math.round( ( Math.pow( n, 3 ) - n ) * ( 1.0 - Math.abs( rho ) ) / 6.0 );
+
+        // invaluable for debugging!
+        // System.out.println( "rho=" + rho + "; N=" + n + "; S=" + sStat );
 
         if ( n <= 1 ) {
             throw new IllegalArgumentException();
@@ -396,19 +396,22 @@ public class CorrelationStats {
             return 1.0;
         }
 
+        double pv = 1.0;
+
         /*
-         * Exact evaluation of probability
+         * Exact evaluation of probability for very small n
          */
         if ( n <= n_small ) {
             int[] ar = new int[n_small];
             int ifr;
-            int nfac = 1;
+
             double n3 = n;
             n3 *= ( n3 * n3 - 1.0 ) / 3.0;/* = (n^3 - n)/3 */
             if ( sStat > n3 ) { /* larger than maximal value */
                 return 0.0; // best possible pvalue...
             }
 
+            int nfac = 1;
             for ( int i = 1; i <= n; ++i ) {
                 nfac *= i;
                 ar[i - 1] = i;
@@ -442,11 +445,18 @@ public class CorrelationStats {
             }
             pv = ifr / ( double ) nfac;
 
-        } else { /* Evaluation by Edgeworth series expansion */
+        } else {
+            /*
+             * Evaluation by Edgeworth series expansion. For most sample-wise genomics data sets this is what is used,
+             * as N is typically on the order of magnitude 10-100.
+             */
 
             double b = 1.0 / n;
 
-            double x = rho * Math.sqrt( n - 1.0 );
+            /*
+             * This wasteful backcomputation of rho is designed to mimic the behaviour of R's implementation
+             */
+            double x = ( 6.0 * ( sStat - 1 ) * b / ( n * n - 1 ) - 1 ) * Math.sqrt( n - 1 );
 
             double y = x * x;
             double u = x
@@ -456,7 +466,7 @@ public class CorrelationStats {
                                     * ( c7 + c8 * b - y * ( c9 - c10 * b + y * b * ( c11 - c12 * y ) ) ) ) );
             y = u / Math.exp( y / 2.0 );
 
-            double pp = Probability.normal( x ); // mean 0, variance 1.
+            double pp = 1.0 - Probability.normal( x ); // mean 0, variance 1.
             pv = y + pp;
         }
 
