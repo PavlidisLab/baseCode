@@ -4,7 +4,7 @@
 	<name>baseCode</name>
 	<groupId>baseCode</groupId>
 	<artifactId>baseCode</artifactId>
-	<version>1.0.7-SNAPSHOT</version>
+	<version>1.0.6-SNAPSHOT</version>
 	<inceptionYear>2003</inceptionYear>
 	<description>
 		<![CDATA[Data structures, math and statistics tools, and utilities that are often needed across projects.]]>
@@ -18,7 +18,7 @@
 		<connection>scm:cvs:ext:@krusty.chibi.ubc.ca:/space/cvs:baseCode</connection>
 		<developerConnection>scm:cvs:ext:@krusty.chibi.ubc.ca:/space/cvs:baseCode</developerConnection>
 		<url>http://www.chibi.ubc.ca/faculty/pavlidis/fisheye/browse/pavlab/baseCode</url>
-  </scm>
+   </scm>
 	<issueManagement>
 		<system>Bugzilla</system>
 		<url>
