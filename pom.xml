@@ -395,6 +395,11 @@
 				</property>
 			</activation>
 			<distributionManagement>
+				<site>
+					<id>localDeploy</id>
+					<name>localDeploy</name>
+					<url>file:///space/gemmaData/baseCode-site</url>
+				</site> 
 				<repository>
 					<id>repo</id>
 					<name>Pavlab</name>
