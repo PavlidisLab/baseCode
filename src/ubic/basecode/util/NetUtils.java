@@ -143,6 +143,11 @@ public class NetUtils {
      * @throws IOException
      */
     public static long ftpFileSize( FTPClient f, String seekFile ) throws IOException {
+
+        if ( f == null || !f.isConnected() ) {
+            throw new IOException( "No FTP connection" );
+        }
+
         f.enterLocalPassiveMode();
         FTPFile[] files = f.listFiles( seekFile );
 
