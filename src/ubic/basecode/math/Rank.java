@@ -18,7 +18,7 @@
  */
 package ubic.basecode.math;
 
-import java.util.ArrayList; 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,8 +40,8 @@ public class Rank {
 
     /**
      * Return a permutation which puts the array in sorted order. In other words, the values returned indicate the
-     * positions of the sorted values in the <em>original</em> array (the lowest value has the lowest rank, but it
-     * could be located anywhere in the array). Indexes start from 0. Tied values are put in an arbitrary ordering.
+     * positions of the sorted values in the <em>original</em> array (the lowest value has the lowest rank, but it could
+     * be located anywhere in the array). Indexes start from 0. Tied values are put in an arbitrary ordering.
      * 
      * @param array
      * @return
@@ -68,10 +68,9 @@ public class Rank {
      * @param ranks
      * @return
      */
-    public static int rankSum( Collection ranks ) {
+    public static int rankSum( Collection<Integer> ranks ) {
         int sum = 0;
-        for ( Iterator iter = ranks.iterator(); iter.hasNext(); ) {
-            Integer rank = ( Integer ) iter.next();
+        for ( Integer rank : ranks ) {
             sum += rank.intValue();
         }
         return sum;
@@ -83,6 +82,9 @@ public class Rank {
      * <p>
      * Ties are resolved by assigning the average rank for tied values. For example, instead of arbitrarily assigning
      * ties ranks 3,4,5, all three values would get a rank of 4 and no value would get a rank of 3 or 5.
+     * <p>
+     * Missing values are not handled particularly gracefully: missing values (Double.NaN) are treated as per their
+     * natural sort order.
      * 
      * @param array DoubleArrayList
      * @return cern.colt.list.DoubleArrayList
@@ -237,7 +239,7 @@ public class Rank {
 /*
  * Helper class for rankTransform map.
  */
-class KeyAndValueData<K> implements Comparable<KeyAndValueData> {
+class KeyAndValueData<K> implements Comparable<KeyAndValueData<K>> {
     private K key;
 
     private double value;
@@ -247,7 +249,7 @@ class KeyAndValueData<K> implements Comparable<KeyAndValueData> {
         this.value = v;
     }
 
-    public int compareTo( KeyAndValueData other ) {
+    public int compareTo( KeyAndValueData<K> other ) {
 
         if ( this.value < other.value ) {
             return -1;
@@ -270,7 +272,7 @@ class KeyAndValueData<K> implements Comparable<KeyAndValueData> {
 /*
  * Helper class for rankTransform .
  */
-class RankData implements Comparable {
+class RankData implements Comparable<RankData> {
 
     private int index;
     private double value;
@@ -280,8 +282,7 @@ class RankData implements Comparable {
         value = tvalue;
     }
 
-    public int compareTo( Object a ) {
-        RankData other = ( RankData ) a;
+    public int compareTo( RankData other ) {
         if ( this.value < other.getValue() ) {
             return -1;
         } else if ( this.value > other.getValue() ) {
