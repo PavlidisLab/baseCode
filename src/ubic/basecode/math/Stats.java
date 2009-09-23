@@ -91,7 +91,9 @@ public class Stats {
     }
 
     /**
-     * Compute the coefficient of variation of an array (standard deviation / mean)
+     * Compute the coefficient of variation of an array (standard deviation / mean). If the variance is zero, this
+     * returns zero. If the mean is zero, NaN is returned. If the mean is negative, the CV is computed relative to the
+     * absolute value of the mean; that is, negative values are treated as magnitudes.
      * 
      * @param data DoubleArrayList
      * @return the cv
@@ -99,7 +101,16 @@ public class Stats {
      */
     public static double cv( DoubleArrayList data ) {
         double mean = DescriptiveWithMissing.mean( data );
-        return Math.sqrt( DescriptiveWithMissing.sampleVariance( data, mean ) ) / mean;
+
+        double sampleVariance = DescriptiveWithMissing.sampleVariance( data, mean );
+
+        if ( sampleVariance == 0.0 ) return 0.0;
+
+        if ( mean == 0.0 ) {
+            return 0.0;
+        }
+
+        return Math.sqrt( sampleVariance ) / Math.abs( mean );
     }
 
     /**
