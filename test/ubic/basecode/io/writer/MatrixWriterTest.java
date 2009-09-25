@@ -48,7 +48,8 @@ public class MatrixWriterTest extends TestCase {
 
     /**
      * Test method for
-     * {@link ubic.basecode.io.writer.MatrixWriter#writeMatrix(ubic.basecode.dataStructure.matrix.NamedMatrix, boolean)}.
+     * {@link ubic.basecode.io.writer.MatrixWriter#writeMatrix(ubic.basecode.dataStructure.matrix.NamedMatrix, boolean)}
+     * .
      */
     public void testWriteMatrix() throws Exception {
         MatrixWriter writer = new MatrixWriter( w, "\t" );
@@ -96,6 +97,7 @@ public class MatrixWriterTest extends TestCase {
 
     }
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         DoubleMatrixReader reader = new DoubleMatrixReader();
