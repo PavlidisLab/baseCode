@@ -138,6 +138,7 @@ public class SingularValueDecomposition<R, C> {
      * @return
      * @see cern.colt.matrix.linalg.SingularValueDecomposition#toString()
      */
+    @Override
     public String toString() {
         return svd.toString();
     }
