@@ -133,18 +133,23 @@ public class AffymetrixProbeNameFilter<M extends Matrix2D<R, C, V>, R, C, V> ext
             switch ( element ) {
                 case ST: {
                     skip_ST = true;
+                    break;
                 }
                 case AFFX: {
                     skip_AFFX = true;
+                    break;
                 }
                 case F: {
                     skip_F = true;
+                    break;
                 }
                 case X: {
                     skip_X = true;
+                    break;
                 }
                 case G: {
                     skip_G = true;
+                    break;
                 }
                 default: {
                     break;
