@@ -90,22 +90,27 @@ public class AffymetrixProbeNameFilter<M extends Matrix2D<R, C, V>, R, C, V> ext
 
             // apply the rules.
             if ( skip_ST && name.contains( "_st" ) ) { // 'st' means sense strand.
+                log.debug( "skipping " + name );
                 continue;
             }
 
             if ( skip_AFFX && name.contains( "AFFX" ) ) {
+                log.debug( "skipping " + name );
                 continue;
             }
 
             if ( skip_F && name.contains( "_f_at" ) ) { // gene family. We don't
                 // like.
+                log.debug( "skipping " + name );
                 continue;
             }
 
             if ( skip_X && name.contains( "_x_at" ) ) {
+                log.debug( "skipping " + name );
                 continue;
             }
             if ( skip_G && name.contains( "_g_at" ) ) {
+                log.debug( "skipping " + name );
                 continue;
             }
             MTemp.add( MatrixUtil.getRow( data, i ) );
