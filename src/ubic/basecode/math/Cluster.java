@@ -29,9 +29,9 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 public class Cluster {
 
     class Node {
-        private int left;
-        private int right;
-        private double distance;
+        int left;
+        int right;
+        double distance;
     }
 
     /**
