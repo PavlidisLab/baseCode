@@ -111,6 +111,19 @@ public class MatrixStats {
     }
 
     /**
+     * Log-transform the values in a matrix (log base 2). Values that are zero are left as Double.NaN.
+     * 
+     * @param matrixToNormalize
+     */
+    public static void logTransform( DoubleMatrix matrix ) {
+
+        for ( int j = 0; j < matrix.rows(); j++ ) { // do each row in turn ...
+            DoubleMatrix1D row = matrix.viewRow( j );
+            row.assign( Functions.log2 );
+        }
+    }
+
+    /**
      * Compute the maximum value in the matrix.
      * 
      * @param matrix DenseDoubleMatrix2DNamed
