@@ -32,6 +32,11 @@ import cern.colt.matrix.DoubleMatrix1D;
  */
 public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> implements PrimitiveMatrix<R, C, Double> {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     protected static Log log = LogFactory.getLog( DoubleMatrix.class.getName() );
 
     /**
@@ -78,7 +83,6 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
 
     /*
      * For more advanced matrix writing see the MatrixWriter class (non-Javadoc)
-     * 
      * @see java.lang.Object#toString()
      * @see ubic.basecode.io.writer.MatrixWriter
      */

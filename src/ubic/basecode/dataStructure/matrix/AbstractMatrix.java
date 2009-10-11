@@ -24,17 +24,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * @author pavlidis
  * @version $Id$
  */
 public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java.io.Serializable {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     protected static final int MAX_ROWS_TO_PRINT = 20;
-    private static Log log = LogFactory.getLog( AbstractMatrix.class.getClass() );
     private Map<C, Integer> colMap;
     private List<C> colNames;
     private int lastColumnIndex = 0;
