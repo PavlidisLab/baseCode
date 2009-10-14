@@ -62,7 +62,7 @@ public class JRIClient extends AbstractRClient {
                         + System.getProperty( "java.library.path" ) );
             }
             if ( !Rengine.versionCheck() ) {
-                throw new RuntimeException( "Version check for Rengine failed, will not load JRI. (Rengine version = "
+                log.warn( "Version check for Rengine failed, proceeding but failures might occur (Rengine version = "
                         + Rengine.getVersion() + ", RNI version=" + Rengine.rniGetVersion() + ")" );
             }
             connection = new Rengine( new String[] { "--no-save" }, false, null );
