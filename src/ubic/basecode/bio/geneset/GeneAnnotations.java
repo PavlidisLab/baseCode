@@ -1055,6 +1055,7 @@ public class GeneAnnotations {
      */
     public TableModel toTableModel() {
         return new AbstractTableModel() {
+            private static final long serialVersionUID = 1L;
             private String[] columnNames = { "Probe", "Gene", "Description" };
 
             public int getColumnCount() {
@@ -1118,7 +1119,7 @@ public class GeneAnnotations {
      * @param header
      * @param pattern
      */
-    private int findField( String header, String sep, String pattern ) throws IOException {
+    private int findField( String header, String sep, String pattern ) {
         String[] fields = header.split( sep );
         if ( fields == null || fields.length == 0 ) throw new IllegalArgumentException( "No header!" );
         for ( int i = 0; i < fields.length; i++ ) {
@@ -1159,7 +1160,7 @@ public class GeneAnnotations {
         return findField( header, ",", pattern );
     }
 
-    private int getAffyAlternateGeneSymbolIndex( String header ) throws IOException {
+    private int getAffyAlternateGeneSymbolIndex( String header ) {
 
         String[] alternates = new String[] { "Transcript ID", "Transcript ID(Array Design)", "UniGene ID" };
         for ( String pattern : alternates ) {
@@ -1766,7 +1767,7 @@ public class GeneAnnotations {
      * @param header
      * @return
      */
-    private int getAgilentGeneSymbolIndex( String header ) throws IOException {
+    private int getAgilentGeneSymbolIndex( String header ) {
         String pattern = "GeneSymbol";
         return findField( header, "\t", pattern );
     }
@@ -1775,7 +1776,7 @@ public class GeneAnnotations {
      * @param header
      * @return
      */
-    private int getAgilentGeneNameIndex( String header ) throws IOException {
+    private int getAgilentGeneNameIndex( String header ) {
         String pattern = "GeneName";
         return findField( header, "\t", pattern );
     }
@@ -1784,7 +1785,7 @@ public class GeneAnnotations {
      * @param header
      * @return
      */
-    private int getAgilentGoIndex( String header ) throws IOException {
+    private int getAgilentGoIndex( String header ) {
         String pattern = "GO";
         return findField( header, "\t", pattern );
     }
@@ -1793,7 +1794,7 @@ public class GeneAnnotations {
      * @param header
      * @return
      */
-    private int getAgilentProbeIndex( String header ) throws IOException {
+    private int getAgilentProbeIndex( String header ) {
         String pattern = "ProbeID";
         return findField( header, "\t", pattern );
     }

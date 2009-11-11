@@ -61,11 +61,11 @@ public class GOParser {
      * @return Map
      */
     public Map<String, String> getGONameMap() {
-        Map nodes = m.getItems();
+        Map<String, DirectedGraphNode<String, GOEntry>> nodes = m.getItems();
         Map<String, String> result = new HashMap<String, String>();
-        for ( Iterator it = nodes.keySet().iterator(); it.hasNext(); ) {
-            DirectedGraphNode node = ( DirectedGraphNode ) nodes.get( it.next() );
-            GOEntry e = ( GOEntry ) node.getItem();
+        for ( Iterator<String> it = nodes.keySet().iterator(); it.hasNext(); ) {
+            DirectedGraphNode<String, GOEntry> node = nodes.get( it.next() );
+            GOEntry e = node.getItem();
             result.put( e.getId().intern(), e.getName().intern() );
         }
         return result;
@@ -121,7 +121,6 @@ class GOHandler extends DefaultHandler {
     private StringBuffer defBuf;
 
     @Override
-    @SuppressWarnings("unused")
     public void startElement( String uri, String name, String qName, Attributes atts ) {
 
         if ( name.equals( "term" ) ) {
@@ -169,7 +168,6 @@ class GOHandler extends DefaultHandler {
     }
 
     @Override
-    @SuppressWarnings("unused")
     public void endElement( String uri, String name, String qName ) {
         if ( name.equals( "term" ) ) {
             inTerm = false;

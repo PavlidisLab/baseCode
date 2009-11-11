@@ -265,15 +265,15 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      * @param nodeClass The class to be used for TreeNodes. Defaults to DefaultMutableTreeNode.
      * @return javax.swing.JTree
      */
-    public JTree treeView( Class nodeClass ) {
+    public JTree treeView( Class<DefaultMutableTreeNode> nodeClass ) {
         log.debug( "Constructing tree view of graph" );
-        DirectedGraphNode root = getRoot();
-        Constructor constructor;
+        DirectedGraphNode<K, V> root = getRoot();
+        Constructor<DefaultMutableTreeNode> constructor;
         DefaultMutableTreeNode top = null;
         treeView = null;
         try {
             constructor = nodeClass.getConstructor( new Class[] { root.getClass() } );
-            top = ( DefaultMutableTreeNode ) constructor.newInstance( new Object[] { root } );
+            top = constructor.newInstance( new Object[] { root } );
             log.debug( "Starting tree with: " + top.getClass().getName() );
             root.mark();
             addJTreeNode( top, root, constructor );
@@ -286,17 +286,17 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
         return treeView;
     }
 
-    private void addJTreeNode( DefaultMutableTreeNode startJTreeNode, DirectedGraphNode startNode,
-            Constructor constructor ) {
+    private void addJTreeNode( DefaultMutableTreeNode startJTreeNode, DirectedGraphNode<K, V> startNode,
+            Constructor<DefaultMutableTreeNode> constructor ) {
         if ( startJTreeNode == null ) return;
-        Set children = startNode.getChildNodes();
+        Set<DirectedGraphNode<K, V>> children = startNode.getChildNodes();
 
-        for ( Iterator it = children.iterator(); it.hasNext(); ) {
-            DirectedGraphNode nextNode = ( DirectedGraphNode ) it.next();
+        for ( Iterator<DirectedGraphNode<K, V>> it = children.iterator(); it.hasNext(); ) {
+            DirectedGraphNode<K, V> nextNode = it.next();
             if ( !nextNode.isVisited() ) {
                 DefaultMutableTreeNode newJTreeNode = null;
                 try {
-                    newJTreeNode = ( DefaultMutableTreeNode ) constructor.newInstance( new Object[] { nextNode } );
+                    newJTreeNode = constructor.newInstance( new Object[] { nextNode } );
                 } catch ( Exception e ) {
                     log.error( e, e );
                 }
@@ -310,21 +310,21 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
     /*
      * Helper for toString. Together with toString, demonstrates how to iterate over the tree
      */
-    private String makeString( DirectedGraphNode startNode, StringBuffer buf, int tabLevel ) {
+    private String makeString( DirectedGraphNode<K, V> startNode, StringBuffer buf, int tabLevel ) {
 
         if ( buf == null ) {
             buf = new StringBuffer();
         }
 
-        Set children = startNode.getChildNodes();
+        Set<DirectedGraphNode<K, V>> children = startNode.getChildNodes();
 
         if ( !startNode.isVisited() ) {
             buf.append( startNode + "\n" );
             startNode.mark();
         }
         tabLevel++;
-        for ( Iterator it = children.iterator(); it.hasNext(); ) {
-            DirectedGraphNode f = ( DirectedGraphNode ) it.next();
+        for ( Iterator<DirectedGraphNode<K, V>> it = children.iterator(); it.hasNext(); ) {
+            DirectedGraphNode<K, V> f = it.next();
             if ( !f.isVisited() ) {
                 for ( int i = 0; i < tabLevel; i++ ) {
                     buf.append( "\t" );
@@ -340,7 +340,6 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.dataStructure.graph.AbstractGraph#containsKey(java.lang.Object)
      */
     @Override
@@ -350,7 +349,6 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.dataStructure.graph.AbstractGraph#getItems()
      */
     @Override

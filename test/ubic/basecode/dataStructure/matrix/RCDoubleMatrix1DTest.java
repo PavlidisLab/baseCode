@@ -34,6 +34,7 @@ public class RCDoubleMatrix1DTest extends TestCase {
      * 
      * @see junit.framework.TestCase#setUp()
      */
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         tester = new RCDoubleMatrix1D( new double[] { 1.0, 2.0, 3.0, Double.NaN, 5.0, 8.0 } );

@@ -49,19 +49,19 @@ public class BinaryTreeNode<T> extends Visitable {
         this.contents = contents;
     }
 
-    public BinaryTreeNode<T> insertLeft( T contents ) {
+    public BinaryTreeNode<T> insertLeft( T c ) {
         if ( this.getLeft() != null ) {
             throw new IllegalArgumentException( "Already has left" );
         }
-        this.left = new BinaryTreeNode<T>( contents );
+        this.left = new BinaryTreeNode<T>( c );
         return left;
     }
 
-    public BinaryTreeNode<T> insertRight( T contents ) {
+    public BinaryTreeNode<T> insertRight( T c ) {
         if ( this.getRight() != null ) {
             throw new IllegalArgumentException( "Already has right" );
         }
-        this.right = new BinaryTreeNode<T>( contents );
+        this.right = new BinaryTreeNode<T>( c );
         return right;
     }
 

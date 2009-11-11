@@ -29,9 +29,9 @@ import no.uib.cipr.matrix.sparse.SparseVector;
  * Named compressed sparse bit matrix.
  * 
  * @author xwan
+ * @version $Id$
  */
-public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> implements
-        ObjectMatrix<R, C, double[]> {
+public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> implements ObjectMatrix<R, C, double[]> {
 
     public static int BITS_PER_ELEMENT = Double.SIZE - 1;
 
@@ -83,11 +83,11 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
      * @param cols
      * @return
      */
-    public int bitCount( int rows, int cols ) {
+    public int bitCount( int r, int c ) {
         int bits = 0;
-        if ( rows > this.rows || cols > this.cols ) return bits;
+        if ( r > this.rows || c > this.cols ) return bits;
         for ( FlexCompRowMatrix element : this.matrix ) {
-            double val = element.get( rows, cols );
+            double val = element.get( r, cols );
             if ( val != 0 ) bits = bits + countBits( val );
         }
         return bits;
@@ -97,7 +97,6 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
         return this.cols;
     }
 
-    @SuppressWarnings("unused")
     public double[] get( int row, int col ) {
         throw new UnsupportedOperationException();
     }
@@ -124,7 +123,6 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.dataStructure.matrix.NamedMatrix#get(java.lang.Object, java.lang.Object)
      */
     @SuppressWarnings("unused")
@@ -157,7 +155,6 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#getColObj(int)
      */
     @SuppressWarnings("unused")
@@ -167,10 +164,8 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#getRowObj(int)
      */
-    @SuppressWarnings("unused")
     public double[][] getRow( int i ) {
         throw new UnsupportedOperationException();
     }
@@ -199,10 +194,8 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#isMissing(int, int)
      */
-    @SuppressWarnings("unused")
     public boolean isMissing( int i, int j ) {
         throw new UnsupportedOperationException();
     }
@@ -230,15 +223,14 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
         return bits;
     }
 
-    public void reset( int rows, int cols ) {
+    public void reset( int r, int c ) {
         for ( FlexCompRowMatrix element : this.matrix ) {
-            element.set( rows, cols, 0 );
+            element.set( r, c, 0 );
         }
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#rows()
      */
     public int rows() {
@@ -292,7 +284,6 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#set(int, int, java.lang.Object)
      */
     @SuppressWarnings("unused")
@@ -363,16 +354,14 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(java.lang.Object, java.lang.Object, java.lang.Object)
      */
     public void setByKeys( R r, C c, double[] v ) {
         this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }
 
-    public double[] getByKeys( R r, C c) {
-        return this.get( getRowIndexByName( r ), getColIndexByName( c ));
+    public double[] getByKeys( R r, C c ) {
+        return this.get( getRowIndexByName( r ), getColIndexByName( c ) );
     }
 
-    
 }

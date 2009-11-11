@@ -155,8 +155,8 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
      * 
      * @return Set containing the child nodes of this node.
      */
-    public Set<DirectedGraphNode> getChildNodes() {
-        Set<DirectedGraphNode> f = new LinkedHashSet<DirectedGraphNode>();
+    public Set<DirectedGraphNode<K, V>> getChildNodes() {
+        Set<DirectedGraphNode<K, V>> f = new LinkedHashSet<DirectedGraphNode<K, V>>();
         for ( Iterator<K> i = this.getChildIterator(); i.hasNext(); ) {
             K k = i.next();
             f.add( getGraph().get( k ) );
