@@ -56,6 +56,7 @@ public class TestSparseDoubleMatrixReader extends TestCase {
         assertEquals( 0.8, matrix.get( 2, 2 ), Constants.SMALL );
     }
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         reader = new SparseDoubleMatrixReader();
