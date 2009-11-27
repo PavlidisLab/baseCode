@@ -40,6 +40,7 @@ public class RLoggingThread extends Thread {
      * 
      * @see java.lang.Thread#run()
      */
+    @Override
     public void run() {
 
         int count = 1;

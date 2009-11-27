@@ -646,6 +646,7 @@ public class GeneAnnotations {
     /**
      * @deprecated
      */
+    @Deprecated
     public Map getGeneToProbeMap() {
         return geneToProbeMap;
     }
