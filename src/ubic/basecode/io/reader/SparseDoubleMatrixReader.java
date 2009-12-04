@@ -50,7 +50,6 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
      *  item1 item2 weight
      *  item1 item5 weight
      * </pre>
-     * 
      * <p>
      * By definition the resulting matrix is square and symmetric.
      * </p>
@@ -114,8 +113,8 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
             rows.get( itemB ).add( new IndexScoreDyad( nameIndexMap.get( itemA ).intValue(), weight ) );
         }
 
-        SparseDoubleMatrix<String, String> matrix = new SparseDoubleMatrix<String, String>( itemNames
-                .size(), itemNames.size() );
+        SparseDoubleMatrix<String, String> matrix = new SparseDoubleMatrix<String, String>( itemNames.size(), itemNames
+                .size() );
 
         List<String> itemVec = new Vector<String>( itemNames );
         Collections.sort( itemVec );
@@ -125,9 +124,9 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
         for ( Object element2 : itemNames ) {
             String itemA = ( String ) element2;
             int rowIndex = matrix.getRowIndexByName( itemA );
-            Set arow = ( Set ) rows.get( itemA );
-            for ( Iterator iterator = arow.iterator(); iterator.hasNext(); ) {
-                IndexScoreDyad element = ( IndexScoreDyad ) iterator.next();
+            Collection<IndexScoreDyad> arow = rows.get( itemA );
+            for ( Iterator<IndexScoreDyad> iterator = arow.iterator(); iterator.hasNext(); ) {
+                IndexScoreDyad element = iterator.next();
                 int ind = element.getKey();
                 double weight = element.getValue();
 
@@ -153,7 +152,6 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
      * 1 2        &lt;--- edge indices are also to items 1 &amp; 2 (fully connected)
      * 100 0.1    &lt;--- with the following weights
      * </pre>
-     * 
      * <p>
      * Note that the item numbering starts at 1. This is a requirement.
      * <p>
@@ -215,11 +213,9 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
 
     /*
      * (non-Javadoc)
-     * 
      * @see basecode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
      */
     @Override
-    @SuppressWarnings("unused")
     public DoubleMatrix<String, String> readOneRow( BufferedReader dis ) {
         // this is impossible for the pair method.
         throw new UnsupportedOperationException();

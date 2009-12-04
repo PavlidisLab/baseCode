@@ -36,8 +36,7 @@ public class GenericStreamConsumer extends Thread {
         this.is = is;
     }
 
-    @Override
-    @SuppressWarnings("unused")
+    @Override 
     public void run() {
         try {
             InputStreamReader isr = new InputStreamReader( is );

@@ -225,8 +225,7 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
      * 
      * @see cern.colt.matrix.DoubleMatrix1D#viewSelectionLike(int[])
      */
-    @Override
-    @SuppressWarnings("unused")
+    @Override 
     protected DoubleMatrix1D viewSelectionLike( int[] offsets ) {
         throw new UnsupportedOperationException(); // should never be called
     }

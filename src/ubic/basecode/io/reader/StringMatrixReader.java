@@ -142,8 +142,7 @@ public class StringMatrixReader extends AbstractMatrixReader<StringMatrix<String
      * 
      * @see basecode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
      */
-    @Override
-    @SuppressWarnings("unused")
+    @Override 
     public StringMatrix<String, String> readOneRow( BufferedReader dis ) throws IOException {
         throw new UnsupportedOperationException();
     }
