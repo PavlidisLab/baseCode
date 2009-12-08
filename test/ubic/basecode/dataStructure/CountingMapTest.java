@@ -70,6 +70,16 @@ public class CountingMapTest extends TestCase
         }
     }
     
+    public void testSummation() {
+        CountingMap<String> map = new CountingMap<String>();
+        map.increment( KEY_1 );
+        map.increment( KEY_2 ); map.increment( KEY_2 );
+        map.increment( KEY_3 ); map.increment( KEY_3 );
+        map.increment( KEY_4 ); map.increment( KEY_4 ); map.increment( KEY_4 );
+        assertEquals( map.summation(), 8);
+    }
+    
+    
     /**
      * Test method for {@link ca.elmonline.util.CountingMap#sortedEntrySet(boolean)}.
      */
