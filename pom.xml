@@ -57,6 +57,11 @@
 		</developer>
 	</developers>
 	<dependencies>
+	  	<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.0-FINAL</version>
+		</dependency>
 		<dependency>
 			<groupId>colt</groupId>
 			<artifactId>colt</artifactId>
