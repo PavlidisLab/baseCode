@@ -30,6 +30,9 @@ import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -76,6 +79,11 @@ public class MatrixDisplay extends JPanel {
     boolean m_isShowingStandardizedMatrix = false;
 
     public MatrixDisplay( ColorMatrix matrix ) {
+        try {
+            UIManager.setLookAndFeel(new MetalLookAndFeel());
+        } catch ( UnsupportedLookAndFeelException e ) {
+            log.error( "Couldn't set look and feel. Error is:  " + e);
+        }
         init( matrix );
     }
 
