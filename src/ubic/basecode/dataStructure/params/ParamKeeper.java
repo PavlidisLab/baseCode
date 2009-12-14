@@ -55,14 +55,6 @@ public class ParamKeeper {
             result += ParameterGrabber.paramsToLine( params ) + "\n";
         }
         return result;
-    }
-
-    /**
-     * @param args
-     */
-    public static void main( String[] args ) {
-        // TODO Auto-generated method stub
-
-    }
+    } 
 
 }
