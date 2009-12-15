@@ -36,8 +36,6 @@ import java.util.zip.ZipOutputStream;
 import junit.framework.TestCase;
 
 import org.apache.commons.lang.RandomStringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author keshav
@@ -51,7 +49,6 @@ public class FileToolsTest extends TestCase {
     File tempoutput;
     File tempdir;
     File zipped;
-    private Log log = LogFactory.getLog( this.getClass() );
 
     /*
      * Test method for 'basecode.util.FileTools.addDataExtension(String)'
@@ -273,7 +270,6 @@ public class FileToolsTest extends TestCase {
 
     public void testUnzipFile() throws Exception {
         zipped = File.createTempFile( "test", ".zip" );
-        log.info( "Created " + zipped );
         ZipOutputStream out = new ZipOutputStream( new FileOutputStream( zipped ) );
         for ( int i = 0; i < 3; i++ ) {
             out.putNextEntry( new ZipEntry( "foo" + i ) );
@@ -312,7 +308,8 @@ public class FileToolsTest extends TestCase {
         cos.close();
         tempoutput = File.createTempFile( "junkme", ".txt" );
 
-        tempdir = FileTools.createDir( System.getProperty( "java.io.tmpdir" ) + File.separatorChar + "junk.tmpdir" );
+        tempdir = FileTools.createDir( System.getProperty( "java.io.tmpdir" ) + File.separatorChar + "junk.tmpdir."
+                + RandomStringUtils.randomAlphabetic( 10 ) );
 
     }
 
