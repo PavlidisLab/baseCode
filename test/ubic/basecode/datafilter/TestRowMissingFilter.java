@@ -70,7 +70,7 @@ public class TestRowMissingFilter extends AbstractTestFilter {
     }
 
     public void testFilterNoFiltering() {
-        DoubleMatrix filtered = f.filter( testdata );
+        DoubleMatrix<String, String> filtered = f.filter( testdata );
         int expectedReturn = testdata.rows();
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );
@@ -89,7 +89,6 @@ public class TestRowMissingFilter extends AbstractTestFilter {
 
     public void testFilterStringMatrix() {
         fss.setMinPresentCount( 12 );
-        System.err.println( teststringmissingdata.rows() );
         StringMatrix<String, String> filtered = fss.filter( teststringmissingdata );
         int expectedReturn = 21;
         int actualReturn = filtered.rows();
