@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<name>baseCode</name>
 	<groupId>baseCode</groupId>
@@ -18,7 +19,7 @@
 		<connection>scm:cvs:ext:@krusty.chibi.ubc.ca:/space/cvs:baseCode</connection>
 		<developerConnection>scm:cvs:ext:@krusty.chibi.ubc.ca:/space/cvs:baseCode</developerConnection>
 		<url>http://www.chibi.ubc.ca/faculty/pavlidis/fisheye/browse/pavlab/baseCode</url>
-  </scm>
+	</scm>
 	<issueManagement>
 		<system>Bugzilla</system>
 		<url>
@@ -119,19 +120,20 @@
 		<dependency>
 			<groupId>RoSuDA</groupId>
 			<artifactId>Rserve</artifactId>
-			<version>0.5-3</version>
+			<version>0.6-0</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
+			<!-- needed for Rserve -->
 			<groupId>RoSuDA</groupId>
 			<artifactId>REngine</artifactId>
-			<version>0.5-3</version>
+			<version>0.6-0</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>RoSuDA</groupId>
 			<artifactId>JRI</artifactId>
-			<version>0.4-3</version>
+			<version>0.5-0</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>

@@ -10,7 +10,7 @@
 	</classpathentry>
 	<classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-lang/commons-lang/2.3/commons-lang-2.3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/RoSuDA/Rserve/0.5-3/Rserve-0.5-3.jar" sourcepath="/JAR_SOURCE/Rserve/src/client/java-old">
+	<classpathentry kind="var" path="M2_REPO/RoSuDA/Rserve/0.6-0/Rserve-0.6-0.jar" sourcepath="/JAR_SOURCE/Rserve/src/client/java-old">
 		<attributes>
 			<attribute name="javadoc_location" value="http://icbtools.med.cornell.edu/javadocs/Rserve/"/>
 		</attributes>
@@ -29,12 +29,12 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="var" path="M2_REPO/commons-collections/commons-collections/3.1/commons-collections-3.1.jar" sourcepath="/JAR_SOURCE/commons-collections-3.1/src/java"/>
-	<classpathentry kind="var" path="M2_REPO/RoSuDA/REngine/0.5-3/REngine-0.5-3.jar">
+	<classpathentry kind="var" path="M2_REPO/RoSuDA/REngine/0.6-0/REngine-0.6-0.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="http://icbtools.med.cornell.edu/javadocs/Rserve/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="var" path="M2_REPO/RoSuDA/JRI/0.4-3/JRI-0.4-3.jar" sourcepath="/JAR_SOURCE/JRI/src">
+	<classpathentry kind="var" path="M2_REPO/RoSuDA/JRI/0.5-0/JRI-0.5-0.jar" sourcepath="/JAR_SRC/rJava/jri">
 		<attributes>
 			<attribute name="javadoc_location" value="http://www.rosuda.org/R/nightly/JavaDoc/"/>
 		</attributes>
