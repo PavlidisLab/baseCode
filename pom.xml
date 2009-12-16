@@ -16,8 +16,8 @@
 	</organization>
 	<packaging>jar</packaging>
 	<scm>
-		<connection>scm:cvs:ext:@krusty.chibi.ubc.ca:/space/cvs:baseCode</connection>
-		<developerConnection>scm:cvs:ext:@krusty.chibi.ubc.ca:/space/cvs:baseCode</developerConnection>
+		<connection>scm:cvs:ext:@katz.pavlab.chibi.ubc.ca:/space/cvs:baseCode</connection>
+		<developerConnection>scm:cvs:ext:@katz.pavlab.chibi.ubc.ca:/space/cvs:baseCode</developerConnection>
 		<url>http://www.chibi.ubc.ca/faculty/pavlidis/fisheye/browse/pavlab/baseCode</url>
 	</scm>
 	<issueManagement>
@@ -300,17 +300,17 @@
 		<site>
 			<id>broca</id>
 			<name>broca</name>
-			<url>scp://krusty.chibi.ubc.ca:/space/gemmaData/baseCode-site</url>
+			<url>scp://katz.pavlab.chibi.ubc.ca:/space/gemmaData/baseCode-site</url>
 		</site> 
 		<repository>
 			<id>repo</id>
 			<name>Pavlab</name>
-			<url>scp://krusty.chibi.ubc.ca:/space/maven2</url>
+			<url>scp://katz.pavlab.chibi.ubc.ca:/space/maven2</url>
 		</repository>
 		<snapshotRepository>
 			<id>repo</id>
 			<name>Pavlab</name>
-			<url>scp://krusty.chibi.ubc.ca:/space/maven2</url>
+			<url>scp://katz.pavlab.chibi.ubc.ca:/space/maven2</url>
 		</snapshotRepository>
 	</distributionManagement> 
 	<repositories>
