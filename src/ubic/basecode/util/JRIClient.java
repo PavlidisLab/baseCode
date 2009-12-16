@@ -62,8 +62,8 @@ public class JRIClient extends AbstractRClient {
                         + System.getProperty( "java.library.path" ) );
             }
             if ( !Rengine.versionCheck() ) {
-                log.warn( "Version check for Rengine failed, proceeding but failures might occur (Rengine version = "
-                        + Rengine.getVersion() + ", RNI version=" + Rengine.rniGetVersion() + ")" );
+                log.warn( "Version check for Rengine failed, proceeding but failures might occur (java Rengine version = "
+                        + Rengine.getVersion() + ", native library version=" + Rengine.rniGetVersion() + ")" );
             }
             connection = new Rengine( new String[] { "--no-save" }, false, null );
             if ( !connection.waitForR() ) {
