@@ -56,7 +56,6 @@ public interface RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, int[])
      */
     public void assign( String arg0, int[] arg1 );
@@ -65,7 +64,6 @@ public interface RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, java.lang.String)
      */
     public void assign( String sym, String ct );
@@ -76,7 +74,7 @@ public interface RClient {
      * @param matrix
      * @return the name of the variable by which the R matrix can be referred.
      */
-    public String assignMatrix( DoubleMatrix matrix );
+    public String assignMatrix( DoubleMatrix<?, ?> matrix );
 
     /**
      * Define a variable corresponding to a character array in the R context, given a List of Strings.
@@ -161,7 +159,6 @@ public interface RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.rosuda.JRclient.Rconnection#getLastError()
      */
     public String getLastError();
@@ -184,7 +181,6 @@ public interface RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.rosuda.JRclient.Rconnection#voidEval(java.lang.String)
      */
     public void voidEval( String command );
@@ -201,7 +197,6 @@ public interface RClient {
      * @see RClient#doubleArrayEval(String)
      */
     public double[] doubleArrayEvalWithLogging( String command );
-    // TODO spawing of the logging thread could probably happen in the method doubleArrayEval
 
     /**
      * Spawns a thread to log R progress before calling twoWayAnovaEval.
@@ -211,6 +206,5 @@ public interface RClient {
      * @see RClient#twoWayAnovaEval(String)
      */
     public TwoWayAnovaResult twoWayAnovaEvalWithLogging( String command );
-    // TODO spawing of the logging thread could probably happen in the method twoWayAnovaEvalWithLogging
 
 }

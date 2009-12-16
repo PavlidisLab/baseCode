@@ -34,7 +34,7 @@ import ubic.basecode.dataStructure.matrix.MatrixUtil;
 public class RowNameFilter<M extends Matrix2D<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
 
     private boolean exclude = false;
-    private Set filterNames;
+    private Set<R> filterNames;
 
     public RowNameFilter() {
         filterNames = null;

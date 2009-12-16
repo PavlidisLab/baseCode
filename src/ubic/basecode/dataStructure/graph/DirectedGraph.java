@@ -159,7 +159,7 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      * @param user_defined
      * @param classID
      */
-    public void deleteChildFrom( K parent, K childKey ) {
+    public void deleteChildFrom( @SuppressWarnings("unused") K parent, K childKey ) {
         items.remove( childKey ); // minor memory leak danger.
     }
 
@@ -265,14 +265,16 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      * @param nodeClass The class to be used for TreeNodes. Defaults to DefaultMutableTreeNode.
      * @return javax.swing.JTree
      */
-    public JTree treeView( Class<DefaultMutableTreeNode> nodeClass ) {
+    @SuppressWarnings("unchecked")
+    public JTree treeView( Class<? extends DefaultMutableTreeNode> nodeClass ) {
         log.debug( "Constructing tree view of graph" );
         DirectedGraphNode<K, V> root = getRoot();
         Constructor<DefaultMutableTreeNode> constructor;
         DefaultMutableTreeNode top = null;
         treeView = null;
         try {
-            constructor = nodeClass.getConstructor( new Class[] { root.getClass() } );
+            constructor = ( Constructor<DefaultMutableTreeNode> ) nodeClass.getConstructor( new Class[] { root
+                    .getClass() } );
             top = constructor.newInstance( new Object[] { root } );
             log.debug( "Starting tree with: " + top.getClass().getName() );
             root.mark();

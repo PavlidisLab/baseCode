@@ -27,7 +27,7 @@ import java.text.NumberFormat;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class Link extends Point implements Comparable {
+public class Link extends Point implements Comparable<Link> {
 
     private double weight;
 
@@ -41,17 +41,19 @@ public class Link extends Point implements Comparable {
         this.weight = weight;
     }
 
-    public int compareTo( Object arg ) {
-        Link a = ( Link ) arg;
-
-        if ( a.getx() < this.getx() ) {
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo( Link arg ) {
+        if ( arg.getx() < this.getx() ) {
             return -1;
-        } else if ( a.getx() > this.getx() ) {
+        } else if ( arg.getx() > this.getx() ) {
             return 1;
         } else {
-            if ( a.gety() < this.gety() ) {
+            if ( arg.gety() < this.gety() ) {
                 return -1;
-            } else if ( a.gety() > this.gety() ) {
+            } else if ( arg.gety() > this.gety() ) {
                 return 1;
             }
             return 0;

@@ -137,7 +137,7 @@ public class RowAbsentFilter<M extends Matrix2D<R, C, V>, R, C, V> extends Abstr
             }
         }
 
-       M returnval = getOutputMatrix( data, MTemp.size(), numCols );
+        M returnval = getOutputMatrix( data, MTemp.size(), numCols );
         for ( int i = 0; i < MTemp.size(); i++ ) {
             for ( int j = 0; j < numCols; j++ ) {
                 returnval.set( i, j, MTemp.get( i )[j] );
@@ -194,7 +194,7 @@ public class RowAbsentFilter<M extends Matrix2D<R, C, V>, R, C, V> extends Abstr
      * @param data NamedMatrix
      * @todo this should check more carefully - actually test that the rows are all the same.
      */
-    private void validateFlags( Matrix2D data ) {
+    private void validateFlags( Matrix2D<?, ?, ?> data ) {
         if ( flags == null || flags.rows() < data.rows() || flags.columns() < data.columns() ) {
             throw new IllegalStateException( "Flags do not match data." );
         }

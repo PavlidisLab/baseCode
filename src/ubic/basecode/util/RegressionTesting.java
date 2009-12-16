@@ -64,7 +64,7 @@ public class RegressionTesting {
      * @param tolerance
      * @return try if all the values in both matrices are within 'tolerance' of each other.
      */
-    public static boolean closeEnough( DoubleMatrix a, DoubleMatrix b, double tolerance ) {
+    public static boolean closeEnough( DoubleMatrix<?, ?> a, DoubleMatrix<?, ?> b, double tolerance ) {
         if ( a.rows() != b.rows() || a.columns() != b.columns() ) {
             log.error( "Unequal rows and/or columns" );
             return false;

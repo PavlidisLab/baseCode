@@ -151,9 +151,10 @@ public class GeneSetMapTools {
      * @param classesToRedundantMap
      * @return
      */
-    public static List getRedundancies( String classId, Map classesToRedundantMap ) {
+    public static Collection<String> getRedundancies( String classId,
+            Map<String, Collection<String>> classesToRedundantMap ) {
         if ( classesToRedundantMap != null && classesToRedundantMap.containsKey( classId ) ) {
-            return ( List ) classesToRedundantMap.get( classId );
+            return classesToRedundantMap.get( classId );
         }
         return null;
     }
@@ -163,9 +164,10 @@ public class GeneSetMapTools {
      * @param classesToSimilarMap
      * @return
      */
-    public static List getSimilarities( String classId, Map classesToSimilarMap ) {
+    public static Collection<String> getSimilarities( String classId,
+            Map<String, Collection<String>> classesToSimilarMap ) {
         if ( classesToSimilarMap != null && classesToSimilarMap.containsKey( classId ) ) {
-            return ( List ) classesToSimilarMap.get( classId );
+            return classesToSimilarMap.get( classId );
         }
         return null;
     }

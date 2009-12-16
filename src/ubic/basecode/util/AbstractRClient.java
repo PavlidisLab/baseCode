@@ -73,7 +73,7 @@ public abstract class AbstractRClient implements RClient {
      * @param matrix
      * @return array representation of the matrix.
      */
-    private static double[] unrollMatrix( DoubleMatrix matrix ) {
+    private static double[] unrollMatrix( DoubleMatrix<?, ?> matrix ) {
         // unroll the matrix into an array Unfortunately this makes a
         // copy of the data...and R will probably make yet
         // another copy. If there was a way to get the raw element array from the DoubleMatrixNamed, that would
@@ -94,7 +94,6 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#assignMatrix(double[][])
      */
     public String assignMatrix( double[][] matrix ) {
@@ -114,10 +113,9 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#assignMatrix(ubic.basecode.dataStructure.matrix.DoubleMatrixNamed)
      */
-    public String assignMatrix( DoubleMatrix matrix ) {
+    public String assignMatrix( DoubleMatrix<?, ?> matrix ) {
         String matrixVarName = "Matrix_" + variableIdentityNumber( matrix );
         log.debug( "Assigning matrix with variable name " + matrixVarName );
         int rows = matrix.rows();
@@ -136,7 +134,6 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#assignStringList(java.util.List)
      */
     @SuppressWarnings("unchecked")
@@ -155,7 +152,6 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#loadLibrary(java.lang.String)
      */
     public boolean loadLibrary( String libraryName ) {
@@ -169,7 +165,6 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#remove(java.lang.String)
      */
     public void remove( String variableName ) {

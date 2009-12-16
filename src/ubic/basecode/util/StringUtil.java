@@ -20,8 +20,7 @@ package ubic.basecode.util;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collection; 
 
 import org.apache.commons.lang.StringUtils;
 import au.com.bytecode.opencsv.CSVReader;
@@ -109,7 +108,7 @@ public class StringUtil {
      * @param strings
      * @return the commons suffix, null if there isn't one.
      */
-    public static String commonSuffix( Collection strings ) {
+    public static String commonSuffix( Collection<String> strings ) {
         String shortest = shortestString( strings );
 
         if ( shortest == null || shortest.length() == 0 ) return null;
@@ -117,8 +116,7 @@ public class StringUtil {
         String test = shortest;
         while ( test.length() > 0 ) {
             boolean found = true;
-            for ( Iterator it = strings.iterator(); it.hasNext(); ) {
-                String string = ( String ) it.next();
+            for ( String string : strings ) {
                 if ( !string.endsWith( test ) ) {
                     found = false;
                     break;
@@ -136,7 +134,7 @@ public class StringUtil {
      * @param strings
      * @return the common prefix, null if there isn't one.
      */
-    public static String commonPrefix( Collection strings ) {
+    public static String commonPrefix( Collection<String> strings ) {
         // find the shortest string; this is the maximum length of the prefix. It is itself the prefix to look for.
         String shortest = shortestString( strings );
 
@@ -145,8 +143,7 @@ public class StringUtil {
         String test = shortest;
         while ( test.length() > 0 ) {
             boolean found = true;
-            for ( Iterator it = strings.iterator(); it.hasNext(); ) {
-                String string = ( String ) it.next();
+            for ( String string : strings ) {
                 if ( !string.startsWith( test ) ) {
                     found = false;
                     break;
@@ -158,10 +155,9 @@ public class StringUtil {
         return null;
     }
 
-    private static String shortestString( Collection strings ) {
+    private static String shortestString( Collection<String> strings ) {
         String shortest = null;
-        for ( Iterator it = strings.iterator(); it.hasNext(); ) {
-            String string = ( String ) it.next();
+        for ( String string : strings ) {
             if ( shortest == null || string.length() < shortest.length() ) shortest = string;
         }
         return shortest;
