@@ -34,16 +34,16 @@ import ubic.basecode.util.RegressionTesting;
  */
 public class TestMatrixStats extends TestCase {
 
-    protected DoubleMatrix testdata = null;
-    protected DoubleMatrix testdatahuge = null;
+    protected DoubleMatrix<String, String> testdata = null;
+    protected DoubleMatrix<String, String> testdatahuge = null;
     DoubleMatrix<String, String> smallT = null;
 
     double[][] testrdm = { { 1, 2, 3, 4 }, { 11, 12, 13, 14 }, { 21, Double.NaN, 23, 24 } };
 
     public final void testCorrelationMatrix() throws Exception {
-        DoubleMatrix actualReturn = MatrixStats.correlationMatrix( testdata );
+        DoubleMatrix<String, String> actualReturn = MatrixStats.correlationMatrix( testdata );
         DoubleMatrixReader f = new DoubleMatrixReader();
-        DoubleMatrix expectedReturn = null;
+        DoubleMatrix<String, String> expectedReturn = null;
         try {
             expectedReturn = f.read( AbstractTestFilter.class
                     .getResourceAsStream( "/data/correlation-matrix-testoutput.txt" ) );
@@ -74,11 +74,12 @@ public class TestMatrixStats extends TestCase {
 
     public final void testRbfNormalize() throws Exception {
         double[][] actual = { { 0.001, 0.2, 0.13, 0.4 }, { 0.11, 0.12, 0.00013, 0.14 }, { 0.21, 0.0001, 0.99, 0.24 } };
-        DenseDoubleMatrix av = new DenseDoubleMatrix( actual );
+        DenseDoubleMatrix<String, String> av = new DenseDoubleMatrix<String, String>( actual );
         MatrixStats.rbfNormalize( av, 1 );
         double[][] expected = { { 0.2968, 0.2432, 0.2609, 0.1991 }, { 0.2453, 0.2429, 0.2738, 0.2381 },
                 { 0.273, 0.3368, 0.1252, 0.265 } };
-        assertEquals( true, RegressionTesting.closeEnough( new DenseDoubleMatrix( expected ), av, 0.001 ) );
+        assertEquals( true, RegressionTesting
+                .closeEnough( new DenseDoubleMatrix<String, String>( expected ), av, 0.001 ) );
         for ( int i = 0; i < 3; i++ ) {
             assertEquals( 1.0, av.viewRow( i ).zSum(), 0.0001 );
         }

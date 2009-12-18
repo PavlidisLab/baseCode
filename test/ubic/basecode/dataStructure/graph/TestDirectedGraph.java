@@ -79,7 +79,7 @@ public class TestDirectedGraph extends TestCase {
     }
 
     public void testGetChildren() {
-        DirectedGraphNode n = testGraph.get( "c" );
+        DirectedGraphNode<String, String> n = testGraph.get( "c" );
         String actualReturn = n.getChildGraph().toString();
         String expectedReturn = "cee.\n\tdee.\n\teee.\n\teff.\n";
         assertEquals( "return", expectedReturn, actualReturn );
@@ -91,7 +91,7 @@ public class TestDirectedGraph extends TestCase {
                 .getItems().values() );
         Collections.sort( nodes );
         StringBuffer buf = new StringBuffer();
-        for ( Iterator it = nodes.iterator(); it.hasNext(); ) {
+        for ( Iterator<DirectedGraphNode<String, String>> it = nodes.iterator(); it.hasNext(); ) {
             buf.append( it.next().toString() );
         }
         String actualReturn = buf.toString();

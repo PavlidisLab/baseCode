@@ -30,7 +30,7 @@ public class TestItemLevelFilter extends AbstractTestFilter {
 
     public final void testFilter() {
         f.setLowCut( 0.0 );
-        DoubleMatrix result = f.filter( testdata );
+        DoubleMatrix<String, String> result = f.filter( testdata );
         int expectedReturn = 283;
         int actualReturn = result.rows() * result.columns() - result.numMissing();
         assertEquals( "return value", expectedReturn, actualReturn );

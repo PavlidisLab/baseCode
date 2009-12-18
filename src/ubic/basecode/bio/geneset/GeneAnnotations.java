@@ -85,6 +85,9 @@ public class GeneAnnotations {
      */
     public static final int DEFAULT = 0;
 
+    /**
+     * Whether to filter out probes that hit more than one gene
+     */
     public static final boolean DEFAULT_FILTER_NONSPECIFIC = false;
 
     /**
@@ -295,7 +298,7 @@ public class GeneAnnotations {
     public GeneAnnotations( String fileName, Set<String> activeGenes, StatusViewer messenger, GONames goNames,
             boolean filterNonSpecific ) throws IOException {
         this.messenger = messenger;
-
+        this.filterNonSpecific = filterNonSpecific;
         setUpdataStructures();
         InputStream i = FileTools.getInputStreamFromPlainOrCompressedFile( fileName );
         this.read( i, activeGenes );
@@ -340,6 +343,7 @@ public class GeneAnnotations {
         log.debug( "Entering GeneAnnotations constructor" );
         setUpdataStructures();
         this.messenger = messenger;
+        this.filterNonSpecific = filterNonSpecific;
 
         if ( format == DEFAULT ) {
             this.read( filename );
@@ -643,11 +647,9 @@ public class GeneAnnotations {
         return probeToGeneName;
     }
 
-    /**
-     * @deprecated
+    /** 
      */
-    @Deprecated
-    public Map getGeneToProbeMap() {
+    public Map<String, Collection<String>> getGeneToProbeMap() {
         return geneToProbeMap;
     }
 

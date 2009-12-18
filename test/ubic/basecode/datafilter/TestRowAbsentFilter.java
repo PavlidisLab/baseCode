@@ -46,7 +46,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
     public void testFilter() {
         fd.setFlagMatrix( testpdata );
         fd.setMinPresentCount( 12 );
-        DoubleMatrix filtered = fd.filter( testdata );
+        DoubleMatrix<String, String> filtered = fd.filter( testdata );
         int expectedReturn = testdata.rows() - 7; // 7 rows have some absent or
         // marginal.
         int actualReturn = filtered.rows();
@@ -56,7 +56,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
     public void testFilterFraction() {
         fd.setFlagMatrix( testpdata );
         fd.setMinPresentFraction( 1.0 );
-        DoubleMatrix filtered = fd.filter( testdata );
+        DoubleMatrix<String, String> filtered = fd.filter( testdata );
         int expectedReturn = testdata.rows() - 7; // 7 rows have some missing or
         // marginal.
         int actualReturn = filtered.rows();
@@ -79,7 +79,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
         fd.setFlagMatrix( testpdata );
         fd.setKeepMarginal( true );
         fd.setMinPresentCount( 12 );
-        DoubleMatrix filtered = fd.filter( testdata );
+        DoubleMatrix<String, String> filtered = fd.filter( testdata );
         int expectedReturn = testdata.rows() - 6; // 6 rows have some absent
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );
@@ -111,7 +111,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
     public void testFilterStringMatrix() {
         fs.setFlagMatrix( testpdata );
         fs.setMinPresentCount( 12 );
-        StringMatrix filtered = fs.filter( teststringdata );
+        StringMatrix<String, String> filtered = fs.filter( teststringdata );
         int expectedReturn = testdata.rows() - 7; // 7 rows have some missing or
         // marginal OR absent.
         int actualReturn = filtered.rows();
@@ -121,7 +121,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
     public void testFilterWithMissing() {
         fd.setFlagMatrix( testpdata );
         fd.setMinPresentCount( 12 );
-        DoubleMatrix filtered = fd.filter( testmissingdata );
+        DoubleMatrix<String, String> filtered = fd.filter( testmissingdata );
         int expectedReturn = 17;
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );
@@ -130,7 +130,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
     public void testFilterWithMissingLessStringent() {
         fd.setFlagMatrix( testpdata );
         fd.setMinPresentCount( 8 );
-        DoubleMatrix filtered = fd.filter( testmissingdata );
+        DoubleMatrix<String, String> filtered = fd.filter( testmissingdata );
         int expectedReturn = 24;
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );

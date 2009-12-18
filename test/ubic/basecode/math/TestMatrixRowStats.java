@@ -31,7 +31,7 @@ import cern.colt.list.DoubleArrayList;
  */
 public class TestMatrixRowStats extends TestCase {
 
-    protected DoubleMatrix testdata = null;
+    protected DoubleMatrix<String, String> testdata = null;
 
     public final void testMeans() {
         DoubleArrayList actualReturn = MatrixRowStats.means( testdata );

@@ -27,7 +27,7 @@ import junit.framework.TestCase;
 public class CompressedNamedBitMatrixTest extends TestCase {
 
     public void testGetRowBitCount() throws Exception {
-        CompressedBitMatrix mat = new CompressedBitMatrix( 2, 2, 2 );
+        CompressedBitMatrix<String, String> mat = new CompressedBitMatrix<String, String>( 2, 2, 2 );
         mat.set( 0, 0, 0 );
         mat.set( 0, 1, 1 );
         mat.set( 1, 1, 0 );
@@ -42,7 +42,7 @@ public class CompressedNamedBitMatrixTest extends TestCase {
     }
 
     public final void testTotalBitCount() throws Exception {
-        CompressedBitMatrix mat = new CompressedBitMatrix( 2, 2, 2 );
+        CompressedBitMatrix<String, String> mat = new CompressedBitMatrix<String, String>( 2, 2, 2 );
         mat.set( 0, 0, 0 );
         mat.set( 0, 1, 1 );
         mat.set( 1, 1, 0 );

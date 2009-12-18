@@ -101,8 +101,8 @@ public class GONames {
     }
 
     /**
-     * @param filename <code>String</code> The XML file containing class to name mappings. First column is the class
-     *        id, second is a description that will be used int program output.
+     * @param filename <code>String</code> The XML file containing class to name mappings. First column is the class id,
+     *        second is a description that will be used int program output.
      * @throws IOException
      * @throws SAXException
      */
@@ -181,11 +181,11 @@ public class GONames {
     public Set<String> getChildren( String id ) {
         if ( getGraph() == null ) return null;
         Set<String> returnVal = new HashSet<String>();
-        Set children = ( ( DirectedGraphNode ) getGraph().get( id ) ).getChildNodes();
-        for ( Iterator it = children.iterator(); it.hasNext(); ) {
-            DirectedGraphNode child = ( DirectedGraphNode ) it.next();
-            String childKey = ( ( GOEntry ) child.getItem() ).getId().intern();
-            returnVal.add( childKey.intern() );
+        Set<DirectedGraphNode<String, GOEntry>> children = getGraph().get( id ).getChildNodes();
+        for ( Iterator<DirectedGraphNode<String, GOEntry>> it = children.iterator(); it.hasNext(); ) {
+            DirectedGraphNode<String, GOEntry> child = it.next();
+            String childKey = child.getItem().getId();
+            returnVal.add( childKey );
         }
         return returnVal;
     }
@@ -218,7 +218,7 @@ public class GONames {
     /**
      * @return Map representation of the GO id - name associations.
      */
-    public Map getMap() {
+    public Map<String, String> getMap() {
         return goNameMap;
     }
 
@@ -248,14 +248,14 @@ public class GONames {
             return returnVal;
         }
 
-        Set parents = ( ( DirectedGraphNode ) getGraph().get( id ) ).getParentNodes();
-        for ( Iterator it = parents.iterator(); it.hasNext(); ) {
-            DirectedGraphNode parent = ( DirectedGraphNode ) it.next();
+        Set<DirectedGraphNode<String, GOEntry>> parents = getGraph().get( id ).getParentNodes();
+        for ( Iterator<DirectedGraphNode<String, GOEntry>> it = parents.iterator(); it.hasNext(); ) {
+            DirectedGraphNode<String, GOEntry> parent = it.next();
             if ( parent == null ) continue;
-            GOEntry goEntry = ( GOEntry ) parent.getItem();
+            GOEntry goEntry = parent.getItem();
             if ( goEntry == null ) continue;
             String parentKey = ( goEntry ).getId();
-            returnVal.add( parentKey.intern() );
+            returnVal.add( parentKey );
         }
         return returnVal;
     }

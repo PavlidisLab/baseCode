@@ -69,7 +69,7 @@ public class RServeClientTest extends TestCase {
             return;
         }
         String mat = rc.assignMatrix( tester );
-        DoubleMatrix result = rc.retrieveMatrix( mat );
+        DoubleMatrix<String, String> result = rc.retrieveMatrix( mat );
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
 
         for ( int i = 0; i < tester.rows(); i++ ) {
@@ -132,7 +132,7 @@ public class RServeClientTest extends TestCase {
             log.warn( "Could not connect to RServe, skipping test." );
             return;
         }
-        DoubleMatrix result = rc.retrieveMatrix( rc.assignMatrix( tester.asArray() ) );
+        DoubleMatrix<String, String> result = rc.retrieveMatrix( rc.assignMatrix( tester.asArray() ) );
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
 
     }

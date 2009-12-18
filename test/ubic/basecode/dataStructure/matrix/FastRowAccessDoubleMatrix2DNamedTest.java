@@ -135,7 +135,7 @@ public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
     }
 
     public void testConstructFromArray() {
-        FastRowAccessDoubleMatrix actual = new FastRowAccessDoubleMatrix( testdata.asArray() );
+        FastRowAccessDoubleMatrix<String, String> actual = new FastRowAccessDoubleMatrix<String, String>( testdata.asArray() );
         double[][] testM = testdata.asArray();
 
         for ( int i = 0; i < testM.length; i++ ) {

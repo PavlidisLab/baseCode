@@ -38,7 +38,7 @@ import ubic.basecode.dataStructure.matrix.MatrixUtil;
  * @author paul
  * @version $Id$
  */
-public class MatrixWriter {
+public class MatrixWriter<R, C> {
 
     public static final String DEFAULT_SEP = "\t";
     public static final String DEFAULT_TOP_LEFT = "ID";
@@ -48,9 +48,9 @@ public class MatrixWriter {
 
     protected String topLeft;
 
-    protected Map sliceNameMap;
-    protected Map colNameMap;
-    protected Map rowNameMap;
+    protected Map<?, String> sliceNameMap;
+    protected Map<C, String> colNameMap;
+    protected Map<R, String> rowNameMap;
 
     public MatrixWriter( OutputStream out ) {
         this( out, null, DEFAULT_SEP );
@@ -91,11 +91,11 @@ public class MatrixWriter {
         this( out, null, sep );
     }
 
-    public void setColNameMap( Map colNameMap ) {
+    public void setColNameMap( Map<C, String> colNameMap ) {
         this.colNameMap = colNameMap;
     }
 
-    public void setRowNameMap( Map rowNameMap ) {
+    public void setRowNameMap( Map<R, String> rowNameMap ) {
         this.rowNameMap = rowNameMap;
     }
 
@@ -103,7 +103,7 @@ public class MatrixWriter {
         this.sep = sep;
     }
 
-    public void setSliceNameMap( Map sliceNameMap ) {
+    public void setSliceNameMap( Map<?, String> sliceNameMap ) {
         this.sliceNameMap = sliceNameMap;
     }
 
@@ -119,7 +119,7 @@ public class MatrixWriter {
      * @param printNames
      * @throws IOException
      */
-    public <R, C, V> void writeMatrix( Matrix2D<R, C, V> matrix, boolean printNames ) throws IOException {
+    public <V> void writeMatrix( Matrix2D<R, C, V> matrix, boolean printNames ) throws IOException {
         // write headers
         StringBuffer buf = new StringBuffer( topLeft );
         if ( printNames ) {
@@ -165,10 +165,10 @@ public class MatrixWriter {
      * @param printNames
      * @throws IOException
      */
-    public <R, C, S, V> void writeMatrix( Matrix3D<R, C, S, V> matrix, boolean printNames ) throws IOException {
+    public <S, V> void writeMatrix( Matrix3D<R, C, S, V> matrix, boolean printNames ) throws IOException {
         if ( printNames ) {
             StringBuffer buf = new StringBuffer( topLeft );
-            for ( Iterator it = matrix.getSliceNameIterator(); it.hasNext(); ) {
+            for ( Iterator<S> it = matrix.getSliceNameIterator(); it.hasNext(); ) {
                 Object sliceObj = it.next();
                 String sliceName = sliceObj.toString();
                 if ( sliceNameMap != null && sliceNameMap.get( sliceObj ) != null )

@@ -37,7 +37,6 @@ import org.apache.commons.logging.LogFactory;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.graphics.text.Util;
-import ubic.basecode.io.reader.DoubleMatrixReader;
 
 /**
  * A visual component for displaying a color matrix
@@ -45,7 +44,7 @@ import ubic.basecode.io.reader.DoubleMatrixReader;
  * @author Will Braynen
  * @version $Id$
  */
-public class MatrixDisplay extends JPanel {
+public class MatrixDisplay<R, C> extends JPanel {
 
     private static final long serialVersionUID = -8078532270193813539L;
 
@@ -69,25 +68,18 @@ public class MatrixDisplay extends JPanel {
     protected int m_maxColumnLength = 0;
     protected Dimension m_cellSize = new Dimension( 10, 10 ); // in pixels
     // data fields
-    ColorMatrix colorMatrix; // reference to standardized or unstandardized matrix
-    ColorMatrix m_unstandardizedMatrix;
-    ColorMatrix m_standardizedMatrix;
+    ColorMatrix<R, C> colorMatrix; // reference to standardized or unstandardized matrix
+    ColorMatrix<R, C> m_unstandardizedMatrix;
+    ColorMatrix<R, C> m_standardizedMatrix;
 
     boolean m_isShowingStandardizedMatrix = false;
 
-    public MatrixDisplay( ColorMatrix matrix ) {
+    public MatrixDisplay( ColorMatrix<R, C> matrix ) {
         init( matrix );
     }
 
-    public MatrixDisplay( DoubleMatrix<String, String> matrix ) {
-        this( new ColorMatrix( matrix ) );
-    }
-
-    public MatrixDisplay( String filename ) throws IOException {
-        DoubleMatrixReader m_matrixReader = new DoubleMatrixReader();
-        DoubleMatrix<String, String> matrix = m_matrixReader.read( filename );
-        ColorMatrix m = new ColorMatrix( matrix );
-        init( m );
+    public MatrixDisplay( DoubleMatrix<R, C> matrix ) {
+        this( new ColorMatrix<R, C>( matrix ) );
     }
 
     public Color getColor( int row, int column ) {
@@ -101,7 +93,7 @@ public class MatrixDisplay extends JPanel {
         return colorMatrix.getColorMap();
     }
 
-    public ColorMatrix getColorMatrix() {
+    public ColorMatrix<R, C> getColorMatrix() {
         return colorMatrix;
     }
 
@@ -129,7 +121,7 @@ public class MatrixDisplay extends JPanel {
         return colorMatrix.getDisplayMax() - getDisplayMin();
     }
 
-    public DoubleMatrix getMatrix() {
+    public DoubleMatrix<R, C> getMatrix() {
         return colorMatrix.getMatrix();
     }
 
@@ -165,7 +157,7 @@ public class MatrixDisplay extends JPanel {
         return colorMatrix.getRow( row );
     }
 
-    public double[] getRowByName( String rowName ) {
+    public double[] getRowByName( R rowName ) {
         return colorMatrix.getRowByName( rowName );
     }
 
@@ -177,7 +169,7 @@ public class MatrixDisplay extends JPanel {
         return m_cellSize.height;
     }
 
-    public int getRowIndexByName( String rowName ) {
+    public int getRowIndexByName( R rowName ) {
         return colorMatrix.getRowIndexByName( rowName );
     }
 
@@ -198,7 +190,7 @@ public class MatrixDisplay extends JPanel {
         return colorMatrix.getValue( row, column );
     } // end getValue
 
-    public void init( ColorMatrix matrix ) {
+    public void init( ColorMatrix<R, C> matrix ) {
 
         m_unstandardizedMatrix = colorMatrix = matrix;
         initSize();
@@ -220,7 +212,7 @@ public class MatrixDisplay extends JPanel {
      * @todo never read
      * @throws IOException
      */
-    public void saveImage( ColorMatrix matrix, String outPngFilename, boolean showLabels, boolean standardize )
+    public void saveImage( ColorMatrix<R, C> matrix, String outPngFilename, boolean showLabels, boolean standardize )
             throws java.io.IOException {
 
         Graphics2D g = null;
@@ -274,7 +266,7 @@ public class MatrixDisplay extends JPanel {
      * @param showLabels
      * @param standardize
      */
-    public void saveImageToPng( ColorMatrix matrix, OutputStream stream, boolean showLabels, boolean standardize ) {
+    public void saveImageToPng( ColorMatrix<R, C> matrix, OutputStream stream, boolean showLabels, boolean standardize ) {
 
         // Include row and column labels?
         boolean wereLabelsShown = m_isShowLabels;
@@ -327,7 +319,7 @@ public class MatrixDisplay extends JPanel {
     /**
      * @param matrix the new matrix to use; will resize this display component as necessary
      */
-    public void setMatrix( ColorMatrix matrix ) {
+    public void setMatrix( ColorMatrix<R, C> matrix ) {
         colorMatrix = matrix;
         initSize();
     }
@@ -358,7 +350,7 @@ public class MatrixDisplay extends JPanel {
         }
     } // end setStandardizedEnabled
 
-    public void writeToPng( ColorMatrix matrix, OutputStream stream, boolean showLabels ) {
+    public void writeToPng( ColorMatrix<R, C> matrix, OutputStream stream, boolean showLabels ) {
         // Draw the image to a buffer
         Dimension d = getSize( showLabels ); // how big is the image with row and
         // column labels
@@ -422,7 +414,7 @@ public class MatrixDisplay extends JPanel {
      * @param g Graphics
      * @param leaveRoomForLabels boolean
      */
-    protected void drawMatrix( ColorMatrix matrix, Graphics g, boolean leaveRoomForLabels ) {
+    protected void drawMatrix( ColorMatrix<R, C> matrix, Graphics g, boolean leaveRoomForLabels ) {
 
         g.setColor( Color.white );
         g.fillRect( 0, 0, this.getWidth(), this.getHeight() );
@@ -541,7 +533,6 @@ public class MatrixDisplay extends JPanel {
 
     /*
      * (non-Javadoc)
-     * 
      * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
      */
     @Override

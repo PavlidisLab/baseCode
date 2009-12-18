@@ -124,7 +124,7 @@ public class ColorMatrix<A,B> implements Cloneable {
         return m_totalColumns;
     }
 
-    public Object getColumnName( int column ) throws ArrayIndexOutOfBoundsException {
+    public B getColumnName( int column ) throws ArrayIndexOutOfBoundsException {
 
         if ( column >= m_totalColumns )
             throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalColumns

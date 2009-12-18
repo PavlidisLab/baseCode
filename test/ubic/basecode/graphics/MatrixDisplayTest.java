@@ -59,8 +59,8 @@ public class MatrixDisplayTest extends TestCase {
         DoubleMatrix<String, String> matrix = new DenseDoubleMatrix<String, String>( array );
         matrix.setRowNames( rowNames );
         matrix.setColumnNames( colNames );
-        ColorMatrix colorMatrix = new ColorMatrix( matrix );
-        MatrixDisplay display = new MatrixDisplay( colorMatrix );
+        ColorMatrix<String, String> colorMatrix = new ColorMatrix<String, String>( matrix );
+        MatrixDisplay<String, String> display = new MatrixDisplay<String, String>( colorMatrix );
         display.setLabelsVisible( true );
 
         boolean fail = false;
@@ -83,8 +83,8 @@ public class MatrixDisplayTest extends TestCase {
         DoubleMatrix<String, String> matrix = new DenseDoubleMatrix<String, String>( array );
         matrix.setRowNames( rowNames );
         matrix.setColumnNames( colNames );
-        ColorMatrix colorMatrix = new ColorMatrix( matrix );
-        MatrixDisplay display = new MatrixDisplay( colorMatrix );
+        ColorMatrix<String, String> colorMatrix = new ColorMatrix<String, String>( matrix );
+        MatrixDisplay<String, String> display = new MatrixDisplay<String, String>( colorMatrix );
         display.setLabelsVisible( true );
 
         boolean fail = false;
@@ -106,8 +106,8 @@ public class MatrixDisplayTest extends TestCase {
         DoubleMatrix<String, String> matrix = new DenseDoubleMatrix<String, String>( array );
         matrix.setRowNames( rowNames );
         matrix.setColumnNames( colNames );
-        ColorMatrix colorMatrix = new ColorMatrix( matrix );
-        MatrixDisplay display = new MatrixDisplay( colorMatrix );
+        ColorMatrix<String, String> colorMatrix = new ColorMatrix<String, String>( matrix );
+        MatrixDisplay<String, String> display = new MatrixDisplay<String, String>( colorMatrix );
         display.setLabelsVisible( true );
 
         boolean fail = false;

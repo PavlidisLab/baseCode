@@ -60,7 +60,7 @@ public class Wilcoxon {
      * @param ranks of items in the class
      * @return
      */
-    public static double wilcoxonP( int N, Collection ranks ) {
+    public static double wilcoxonP( int N, Collection<Integer> ranks ) {
         return wilcoxonP( N, ranks.size(), Rank.rankSum( ranks ) );
     }
 
@@ -143,11 +143,11 @@ public class Wilcoxon {
         Integer R_i = new Integer( R );
         if ( !cache.containsKey( N_i ) ) return false;
 
-        Map nVals = cache.get( N_i );
+        Map<Integer, Map<Integer, BigInteger>> nVals = cache.get( N_i );
 
         if ( !nVals.containsKey( n_i ) ) return false;
 
-        Map rVals = ( Map ) nVals.get( n_i );
+        Map<Integer, BigInteger> rVals = nVals.get( n_i );
 
         if ( !rVals.containsKey( R_i ) ) return false;
 
@@ -236,15 +236,15 @@ public class Wilcoxon {
 
         // if ( !cache.containsKey( N_i ) ) return -1;
 
-        Map nVals = cache.get( N_i );
+        Map<Integer, Map<Integer, BigInteger>> nVals = cache.get( N_i );
 
         // if ( !nVals.containsKey( n_i ) ) return -1;
 
-        Map rVals = ( Map ) nVals.get( n_i );
+        Map<Integer, BigInteger> rVals = nVals.get( n_i );
 
         // if ( !rVals.containsKey( R_i ) ) return -1;
 
-        return ( BigInteger ) rVals.get( R_i );
+        return rVals.get( R_i );
 
         // assert result.longValue() >= 0 : "N=" + N + " n=" + n + " R=" + R + " val=" + result.longValue();
 

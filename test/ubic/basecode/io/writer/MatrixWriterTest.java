@@ -52,7 +52,7 @@ public class MatrixWriterTest extends TestCase {
      * .
      */
     public void testWriteMatrix() throws Exception {
-        MatrixWriter writer = new MatrixWriter( w, "\t" );
+        MatrixWriter<String, String> writer = new MatrixWriter<String, String>( w, "\t" );
         writer.setTopLeft( "gene" );
         writer.writeMatrix( matrix, true );
         String actual = w.toString();
@@ -64,7 +64,7 @@ public class MatrixWriterTest extends TestCase {
         File file = File.createTempFile( "foo", "bar" );
         OutputStream os = new PrintStream( file );
         assertNotNull( os );
-        MatrixWriter writer = new MatrixWriter( os );
+        MatrixWriter<String, String> writer = new MatrixWriter<String, String>( os );
         writer.setTopLeft( "gene" );
         writer.writeMatrix( matrix, true );
         os.close();
@@ -75,7 +75,7 @@ public class MatrixWriterTest extends TestCase {
     }
 
     public void testWrite3DMatrix() throws Exception {
-        MatrixWriter writer = new MatrixWriter( w );
+        MatrixWriter<String, String> writer = new MatrixWriter<String, String>( w );
         DoubleMatrix3D<String, String, String> m3 = new DenseDouble3dMatrix<String, String, String>( data3d );
         List<String> sln = new ArrayList<String>();
         sln.add( "Slice1" );

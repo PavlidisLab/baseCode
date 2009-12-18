@@ -45,7 +45,7 @@ public class Cluster {
      *         nelements-1 nodes. Depending on whether genes (rows) or microarrays (columns) were clustered, nelements
      *         is equal to nrows or ncolumns. See src/cluster.h for a description of the Node structure.
      */
-    public Node[] averageLinkage( DoubleMatrix distanceMatrix ) {
+    public <R> Node[] averageLinkage( DoubleMatrix<R, R> distanceMatrix ) {
         int j;
         int n;
         int[] clusterid;

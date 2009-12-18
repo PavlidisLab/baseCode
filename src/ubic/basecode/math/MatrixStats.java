@@ -38,9 +38,8 @@ public class MatrixStats {
      * @param data
      * @return a symmetric matrix that has the rows and columns set to be the names of the rows of the input.
      */
-    @SuppressWarnings("unchecked")
-    public static DoubleMatrix correlationMatrix( DoubleMatrix data ) {
-        DoubleMatrix result = new DenseDoubleMatrix( data.rows(), data.rows() );
+    public static <R, C> DoubleMatrix<R, R> correlationMatrix( DoubleMatrix<R, C> data ) {
+        DoubleMatrix<R, R> result = new DenseDoubleMatrix<R, R>( data.rows(), data.rows() );
 
         for ( int i = 0; i < data.rows(); i++ ) {
             DoubleArrayList irow = new DoubleArrayList( data.getRow( i ) );
@@ -66,9 +65,8 @@ public class MatrixStats {
      * @param threshold only correlations with absolute values above this level are stored.
      * @return a sparse symmetric matrix that has the rows and columns set to be the names of the rows of the input.
      */
-    @SuppressWarnings("unchecked")
-    public static SparseDoubleMatrix correlationMatrix( DoubleMatrix data, double threshold ) {
-        SparseDoubleMatrix result = new SparseDoubleMatrix( data.rows(), data.rows() );
+    public static <R, C> SparseDoubleMatrix<R, R> correlationMatrix( DoubleMatrix<R, C> data, double threshold ) {
+        SparseDoubleMatrix<R, R> result = new SparseDoubleMatrix<R, R>( data.rows(), data.rows() );
 
         for ( int i = 0; i < data.rows(); i++ ) {
             DoubleArrayList irow = new DoubleArrayList( data.getRow( i ) );
@@ -93,7 +91,7 @@ public class MatrixStats {
      * 
      * @param matrixToNormalize
      */
-    public static void countsNormalize( DoubleMatrix matrixToNormalize ) {
+    public static <R, C> void countsNormalize( DoubleMatrix<R, C> matrixToNormalize ) {
 
         final double min = MatrixStats.min( matrixToNormalize );
         DoubleFunction f = new DoubleFunction() {
@@ -115,7 +113,7 @@ public class MatrixStats {
      * 
      * @param matrixToNormalize
      */
-    public static void logTransform( DoubleMatrix matrix ) {
+    public static <R, C> void logTransform( DoubleMatrix<R, C> matrix ) {
 
         for ( int j = 0; j < matrix.rows(); j++ ) { // do each row in turn ...
             DoubleMatrix1D row = matrix.viewRow( j );
@@ -129,7 +127,7 @@ public class MatrixStats {
      * @param matrix DenseDoubleMatrix2DNamed
      * @return the largest value in the matrix
      */
-    public static double max( DoubleMatrix matrix ) {
+    public static <R, C> double max( DoubleMatrix<R, C> matrix ) {
 
         int totalRows = matrix.rows();
         int totalColumns = matrix.columns();
@@ -163,7 +161,7 @@ public class MatrixStats {
      * @param matrix DenseDoubleMatrix2DNamed
      * @return the smallest value in the matrix
      */
-    public static double min( DoubleMatrix matrix ) {
+    public static <R, C> double min( DoubleMatrix<R, C> matrix ) {
 
         int totalRows = matrix.rows();
         int totalColumns = matrix.columns();
@@ -216,7 +214,7 @@ public class MatrixStats {
      * @param matrixToNormalize
      * @param sigma a scaling factor for the input values.
      */
-    public static void rbfNormalize( DoubleMatrix matrixToNormalize, final double sigma ) {
+    public static <R, C> void rbfNormalize( DoubleMatrix<R, C> matrixToNormalize, final double sigma ) {
 
         // define the function we will use.
         DoubleFunction f = new DoubleFunction() {

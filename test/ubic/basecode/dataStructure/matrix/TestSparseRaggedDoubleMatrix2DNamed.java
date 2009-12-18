@@ -32,7 +32,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @version $Id$
  */
 public class TestSparseRaggedDoubleMatrix2DNamed extends TestCase {
-    SparseRaggedDoubleMatrix matrix = null;
+    SparseRaggedDoubleMatrix<String, String> matrix = null;
     InputStream is = null;
     InputStream isa = null;
     SparseRaggedMatrixReader reader = null;
@@ -84,7 +84,7 @@ public class TestSparseRaggedDoubleMatrix2DNamed extends TestCase {
         reader = new SparseRaggedMatrixReader();
         is = TestSparseDoubleMatrixReader.class.getResourceAsStream( "/data/JW-testmatrix.txt" );
         isa = TestSparseDoubleMatrixReader.class.getResourceAsStream( "/data/adjacencylist-testmatrix.txt" );
-        matrix = ( SparseRaggedDoubleMatrix ) reader.read( is, 1 );
+        matrix = ( SparseRaggedDoubleMatrix<String, String> ) reader.read( is, 1 );
     }
 
 }

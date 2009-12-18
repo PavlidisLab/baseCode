@@ -155,7 +155,7 @@ public class TestGeneAnnotations extends TestCase {
     public void testReadAgilent() throws Exception {
         GeneAnnotations ga = new GeneAnnotations();
         ga.readAgilent( ia, null );
-        int actualValue = ( ( Collection ) ga.getProbeToGeneSetMap().get( "A_52_P311491" ) ).size();
+        int actualValue = ga.getProbeToGeneSetMap().get( "A_52_P311491" ).size();
         int expectedValue = 5;
         assertEquals( expectedValue, actualValue );
     }
@@ -163,7 +163,7 @@ public class TestGeneAnnotations extends TestCase {
     public void testReadCommaDelimited() throws Exception {
         GeneAnnotations ga = new GeneAnnotations();
         ga.read( imb, null );
-        int actualValue = ( ( Collection ) ga.getProbeToGeneSetMap().get( "32304_at" ) ).size();
+        int actualValue = ga.getProbeToGeneSetMap().get( "32304_at" ).size();
         int expectedValue = 31;
         assertEquals( expectedValue, actualValue );
     }
@@ -179,7 +179,7 @@ public class TestGeneAnnotations extends TestCase {
     public void testReadPipeDelimited() throws Exception {
         GeneAnnotations ga = new GeneAnnotations();
         ga.read( im, null );
-        int actualValue = ( ( Collection ) ga.getProbeToGeneSetMap().get( "32304_at" ) ).size();
+        int actualValue = ga.getProbeToGeneSetMap().get( "32304_at" ).size();
         int expectedValue = 31;
         assertEquals( expectedValue, actualValue );
     }

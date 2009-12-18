@@ -68,8 +68,8 @@ public class TestSparseRaggedDouble2DNamedMatrixReader extends TestCase {
         columnNames.add( "3" );
         matrix.setColumnNames( columnNames );
 
-        DoubleMatrixReader reader = new DoubleMatrixReader();
-        DoubleMatrix<String, String> expectedReturn = reader.read( TestSparseDoubleMatrixReader.class
+        DoubleMatrixReader r = new DoubleMatrixReader();
+        DoubleMatrix<String, String> expectedReturn = r.read( TestSparseDoubleMatrixReader.class
                 .getResourceAsStream( "/data/JW-testoutputSym.txt" ) );
         assertTrue( RegressionTesting.closeEnough( expectedReturn, matrix, 0.0001 ) );
 

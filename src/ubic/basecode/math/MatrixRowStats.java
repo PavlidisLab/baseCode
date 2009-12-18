@@ -37,7 +37,7 @@ public class MatrixRowStats {
      * @param M DoubleMatrixNamed
      * @return DoubleArrayList
      */
-    public static DoubleArrayList means( DoubleMatrix M ) {
+    public static <R, C> DoubleArrayList means( DoubleMatrix<R, C> M ) {
         DoubleArrayList r = new DoubleArrayList();
         for ( int i = 0; i < M.rows(); i++ ) {
             r.add( DescriptiveWithMissing.mean( new DoubleArrayList( M.getRow( i ) ) ) );
@@ -51,7 +51,7 @@ public class MatrixRowStats {
      * @param M DoubleMatrixNamed
      * @return DoubleArrayList
      */
-    public static DoubleArrayList sampleStandardDeviations( DoubleMatrix M ) {
+    public static <R, C> DoubleArrayList sampleStandardDeviations( DoubleMatrix<R, C> M ) {
         DoubleArrayList r = new DoubleArrayList();
         for ( int i = 0; i < M.rows(); i++ ) {
             DoubleArrayList row = new DoubleArrayList( M.getRow( i ) );
@@ -67,7 +67,7 @@ public class MatrixRowStats {
      * @param M DoubleMatrixNamed
      * @return DoubleArrayList
      */
-    public static DoubleArrayList sumOfSquares( DoubleMatrix M ) {
+    public static <R, C> DoubleArrayList sumOfSquares( DoubleMatrix<R, C> M ) {
         DoubleArrayList r = new DoubleArrayList();
 
         for ( int i = 0; i < M.rows(); i++ ) {
@@ -84,7 +84,7 @@ public class MatrixRowStats {
      * @param M DoubleMatrixNamed
      * @return DoubleArrayList
      */
-    public static DoubleArrayList sums( DoubleMatrix M ) {
+    public static <R, C> DoubleArrayList sums( DoubleMatrix<R, C> M ) {
         DoubleArrayList r = new DoubleArrayList();
         for ( int i = 0; i < M.rows(); i++ ) {
             r.add( DescriptiveWithMissing.sum( new DoubleArrayList( M.getRow( i ) ) ) );
