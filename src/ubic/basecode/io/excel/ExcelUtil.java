@@ -19,6 +19,7 @@
 package ubic.basecode.io.excel;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,41 +32,49 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
-
+/**
+ * TODO Document Me
+ * 
+ * @author lfrench
+ * @version $Id$
+ */
 public class ExcelUtil {
 
-    public static HSSFSheet getSheetFromFile( String filename, String sheetName ) throws Exception {
+    /**
+     * @param filename
+     * @param sheetName
+     * @return
+     * @throws IOException
+     */
+    public static HSSFSheet getSheetFromFile( String filename, String sheetName ) throws IOException {
         POIFSFileSystem fs = new POIFSFileSystem( new FileInputStream( filename ) );
         HSSFWorkbook wb = new HSSFWorkbook( fs );
         return wb.getSheet( sheetName );
     }
 
+    /**
+     * @param sheet
+     * @param row
+     * @param col
+     * @return
+     */
     public static String getValue( HSSFSheet sheet, int row, int col ) {
         if ( col > 255 ) {
             throw new RuntimeException( "Column position is over 255" );
         }
-        return getValue( sheet, row, ( short ) col );
-    }
-
-    public static String getValue( HSSFSheet sheet, int row, short col ) {
         if ( sheet.getRow( row ) == null ) return null;
         HSSFCell cell = sheet.getRow( row ).getCell( col );
         if ( cell == null ) {
             return null;
         }
-        try {
-            if ( cell.getCellType() == HSSFCell.CELL_TYPE_STRING ) return cell.getRichStringCellValue().getString();
-            if ( cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC ) {
-                // WARNING bad for doubles
-                return "" + cell.getNumericCellValue();
-            }
-            if ( cell.getCellType() == HSSFCell.CELL_TYPE_FORMULA ) return cell.getCellFormula();
 
-        } catch ( Exception e ) {
-            System.err.println( "row:" + row + " col:" + col );
-            e.printStackTrace();
-            System.exit( 0 );
+        if ( cell.getCellType() == HSSFCell.CELL_TYPE_STRING ) return cell.getRichStringCellValue().getString();
+        if ( cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC ) {
+            // WARNING bad for doubles
+            return "" + cell.getNumericCellValue();
         }
+        if ( cell.getCellType() == HSSFCell.CELL_TYPE_FORMULA ) return cell.getCellFormula();
+
         return "";
     }
 
@@ -76,48 +85,86 @@ public class ExcelUtil {
 
     }
 
+    /**
+     * @param sheet
+     * @param row
+     * @param col
+     * @param value
+     */
     public static void setFormula( HSSFSheet sheet, int row, int col, String value ) {
         HSSFRow r = sheet.getRow( row );
         if ( r == null ) {
             r = sheet.createRow( row );
         }
-        HSSFCell c = r.createCell( ( short ) col );
+        HSSFCell c = r.createCell( col );
         c.setCellType( HSSFCell.CELL_TYPE_FORMULA );
         c.setCellFormula( value );
     }
 
+    /**
+     * @param sheet
+     * @param row
+     * @param col
+     * @param value
+     */
     public static void setValue( HSSFSheet sheet, int row, int col, int value ) {
         setValue( sheet, row, col, ( double ) value );
     }
 
+    /**
+     * @param sheet
+     * @param row
+     * @param col
+     * @param value
+     */
     public static void setValue( HSSFSheet sheet, int row, int col, double value ) {
         HSSFRow r = sheet.getRow( row );
         if ( r == null ) {
             r = sheet.createRow( row );
         }
-        HSSFCell c = r.createCell( ( short ) col );
+        HSSFCell c = r.createCell( col );
         c.setCellType( HSSFCell.CELL_TYPE_NUMERIC );
         c.setCellValue( value );
 
     }
 
+    /**
+     * @param sheet
+     * @param row
+     * @param col
+     * @param value
+     */
     public static void setValue( HSSFSheet sheet, int row, int col, String value ) {
         HSSFRow r = sheet.getRow( row );
         if ( r == null ) {
             r = sheet.createRow( row );
         }
-        HSSFCell c = r.createCell( ( short ) col );
+        HSSFCell c = r.createCell( col );
         c.setCellType( HSSFCell.CELL_TYPE_STRING );
         c.setCellValue( new HSSFRichTextString( value ) );
     }
 
+    /**
+     * @param sheet
+     * @param column
+     * @param header
+     * @param clean
+     * @return
+     */
     public static Set<String> grabColumnValues( HSSFSheet sheet, int column, boolean header, boolean clean ) {
         return new HashSet<String>( grabColumnValuesList( sheet, column, header, clean ) );
     }
 
+    /**
+     * @param sheet
+     * @param column
+     * @param header
+     * @param clean
+     * @return
+     */
     public static List<String> grabColumnValuesList( HSSFSheet sheet, int column, boolean header, boolean clean ) {
         return grabColumnValuesList( sheet, column, header, clean, new SpreadSheetFilter() {
-            public boolean accept( HSSFSheet sheet, int row ) {
+            public boolean accept( HSSFSheet s, int row ) {
                 return true;
             }
         } );
@@ -137,6 +184,14 @@ public class ExcelUtil {
         return new HashSet<String>( grabColumnValuesList( sheet, column, header, clean, f ) );
     }
 
+    /**
+     * @param sheet
+     * @param column
+     * @param header
+     * @param clean
+     * @param f
+     * @return
+     */
     public static List<String> grabColumnValuesList( HSSFSheet sheet, int column, boolean header, boolean clean,
             SpreadSheetFilter f ) {
         List<String> result = new LinkedList<String>();

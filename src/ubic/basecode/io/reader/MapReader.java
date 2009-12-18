@@ -79,7 +79,7 @@ public class MapReader {
      * @throws IOException
      * @return Map
      */
-    public Map read( String filename ) throws IOException {
+    public Map<String, String> read( String filename ) throws IOException {
         return this.read( filename, false );
     }
 
@@ -89,7 +89,7 @@ public class MapReader {
      * @return Map from the file.
      * @throws IOException
      */
-    public Map read( String filename, boolean hasHeader ) throws IOException {
+    public Map<String, String> read( String filename, boolean hasHeader ) throws IOException {
         File infile = new File( filename );
         if ( !infile.exists() || !infile.canRead() ) {
             throw new IllegalArgumentException( "Could not read from " + filename );

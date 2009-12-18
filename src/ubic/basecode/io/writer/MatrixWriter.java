@@ -123,7 +123,7 @@ public class MatrixWriter {
         // write headers
         StringBuffer buf = new StringBuffer( topLeft );
         if ( printNames ) {
-            for ( Iterator it = matrix.getColNames().iterator(); it.hasNext(); ) {
+            for ( Iterator<C> it = matrix.getColNames().iterator(); it.hasNext(); ) {
                 Object colName = it.next();
                 buf.append( sep );
                 buf.append( colName );
@@ -165,7 +165,7 @@ public class MatrixWriter {
      * @param printNames
      * @throws IOException
      */
-    public void writeMatrix( Matrix3D matrix, boolean printNames ) throws IOException {
+    public <R, C, S, V> void writeMatrix( Matrix3D<R, C, S, V> matrix, boolean printNames ) throws IOException {
         if ( printNames ) {
             StringBuffer buf = new StringBuffer( topLeft );
             for ( Iterator it = matrix.getSliceNameIterator(); it.hasNext(); ) {

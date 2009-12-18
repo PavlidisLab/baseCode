@@ -28,7 +28,7 @@
 	</issueManagement>
 	<ciManagement>
 		<system>continuum</system>
-		<url>http://chibi.ubc.ca/faculty/pavlidis/continuum/</url>
+		<url>http://chibi.ubc.ca/faculty/pavlidis/bamboo/</url>
 		<notifiers>
 			<notifier>
 				<type>mail</type>
@@ -61,7 +61,7 @@
 	  	<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>3.0-FINAL</version>
+			<version>3.5-beta6</version>
 		</dependency>
 		<dependency>
 			<groupId>colt</groupId>
@@ -96,7 +96,7 @@
 		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
-			<version>1.1</version>
+			<version>1.5</version>
 			<type>jar</type>
 			<exclusions>
 				<exclusion>
@@ -154,6 +154,33 @@
 			<artifactId>mtj</artifactId>
 			<version>0.9.8</version>
 			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>com.hp.hpl.jena</groupId>
+			<artifactId>jena</artifactId>
+			<version>2.6.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.lucene</groupId>
+					<artifactId>lucene-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.hp.hpl.jena</groupId>
+			<artifactId>iri</artifactId>
+			<version>0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>com.hp.hpl.jena</groupId>
+			<artifactId>arq</artifactId>
+			<version>2.8.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm.icu</groupId>
+			<artifactId>icu4j</artifactId>
+			<version>3.4.4</version>
+			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 	<build>

@@ -22,7 +22,7 @@ package ubic.basecode.io.reader;
  * @author pavlidis
  * @version $Id$
  */
-final class IndexScoreDyad implements Comparable {
+final class IndexScoreDyad implements Comparable<IndexScoreDyad> {
 
     int key;
     double value;
@@ -38,12 +38,10 @@ final class IndexScoreDyad implements Comparable {
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo( Object o ) {
-        IndexScoreDyad other = ( IndexScoreDyad ) o;
-        return other.getKey() - key;
+    public int compareTo( IndexScoreDyad o ) {
+        return o.getKey() - key;
     }
 
     /**

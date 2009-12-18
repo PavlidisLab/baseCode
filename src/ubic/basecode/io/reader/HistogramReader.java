@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Reads histograms stored in flat files
@@ -68,10 +69,10 @@ public class HistogramReader {
         int numBins = binCountMap.keySet().size();
 
         Histogram1D hist = new Histogram1D( title, numBins, min.doubleValue(), max.doubleValue() );
-        for ( Object element : binCountMap.entrySet() ) {
-            Map.Entry entry = ( Map.Entry ) element;
-            Double bin = ( Double ) entry.getKey();
-            Integer count = ( Integer ) entry.getValue();
+        for ( Entry<Double, Integer> element : binCountMap.entrySet() ) {
+            Entry<Double, Integer> entry = element;
+            Double bin = entry.getKey();
+            Integer count = entry.getValue();
             hist.fill( bin.doubleValue(), count.doubleValue() );
         }
         return hist;

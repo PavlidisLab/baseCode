@@ -289,7 +289,7 @@ public class ByteArrayConverter {
      * @return
      * @throws UnsupportedOperationException if Class is a type that can't be converted by this.
      */
-    public String byteArrayToTabbedString( byte[] bytes, Class type ) {
+    public String byteArrayToTabbedString( byte[] bytes, Class<?> type ) {
         if ( bytes == null ) return null;
 
         if ( type.equals( Double.class ) ) {
