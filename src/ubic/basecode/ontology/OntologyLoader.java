@@ -89,12 +89,7 @@ public class OntologyLoader {
     public static Collection<OntologyResource> initialize( String url, OntModel model ) {
 
         Collection<OntologyResource> result = new HashSet<OntologyResource>();
-
-        if ( StringUtils.isBlank( url ) ) {
-            log.warn( "Null url" );
-            return result;
-        }
-
+ 
         ExtendedIterator<OntClass> classIt = model.listClasses();
         int count = 0;
         log.info( "Reading classes for ontology: " + url );
