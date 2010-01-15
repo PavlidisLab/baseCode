@@ -36,11 +36,11 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 public class OntologyLoader {
     private static Log log = LogFactory.getLog( OntologyLoader.class.getName() );
 
-    private static String dbUrl = Configuration.getString( "gemma.jena.db.url" );
-    private static String driver = Configuration.getString( "gemma.jena.db.driver" );
-    private static String pwd = Configuration.getString( "gemma.jena.db.password" );
-    private static String type = Configuration.getString( "gemma.jena.db.type" );
-    private static String user = Configuration.getString( "gemma.jena.db.user" );
+    private static String dbUrl = Configuration.getString( "jena.db.url" );
+    private static String driver = Configuration.getString( "jena.db.driver" );
+    private static String pwd = Configuration.getString( "jena.db.password" );
+    private static String type = Configuration.getString( "jena.db.type" );
+    private static String user = Configuration.getString( "jena.db.user" );
 
     /**
      * @return
