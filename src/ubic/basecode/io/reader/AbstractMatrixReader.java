@@ -37,6 +37,7 @@ import ubic.basecode.dataStructure.matrix.Matrix2D;
  * @version $Id$
  */
 public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>, V> {
+    boolean topLeft = true;
 
     protected static final Log log = LogFactory.getLog( AbstractMatrixReader.class );
 
@@ -45,6 +46,15 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
     public abstract M read( String filename ) throws IOException;
 
     public abstract M readOneRow( BufferedReader dis ) throws IOException;
+
+    /**
+     * Flag to indicate the top left entry exists or not. 
+     * 
+     * @param topLeft true if a top left string exists
+     */
+    public void setTopLeft( boolean topLeft ) {
+        this.topLeft = topLeft;
+    }
 
     protected List<String> readHeader( BufferedReader dis ) throws IOException {
         List<String> headerVec = new Vector<String>();
@@ -65,6 +75,8 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
 
         String previousToken = "";
         int columnNumber = 0;
+        if ( !topLeft ) columnNumber = 1;
+
         while ( st.hasMoreTokens() ) {
             String s = st.nextToken();
             boolean missing = false;
@@ -105,5 +117,4 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
         return headerVec;
 
     }
-
 }
