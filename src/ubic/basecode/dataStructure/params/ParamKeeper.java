@@ -33,6 +33,7 @@ public class ParamKeeper {
         for ( Map<String, String> params : paramLines ) {
             keySet.addAll( params.keySet() );
         }
+
         List<String> header = new LinkedList<String>( keySet );
         // sort?
         Map<String, Integer> positions = new HashMap<String, Integer>();
@@ -45,8 +46,8 @@ public class ParamKeeper {
 
         s.populate( paramLines );
 
-        s.save();
         // write file
+        s.save();
     }
 
     public String toCSVString() {
@@ -55,6 +56,6 @@ public class ParamKeeper {
             result += ParameterGrabber.paramsToLine( params ) + "\n";
         }
         return result;
-    } 
+    }
 
 }
