@@ -67,7 +67,7 @@ public class CreateSpreadSheet {
     private void createHeader() {
         String[] header = schema.getHeaderRow();
         for ( int i = 0; i < header.length; i++ ) {
-            System.out.println( header[i] );
+            //System.out.println( header[i] );
             ExcelUtil.setValue( spreadsheet, 0, i, header[i] );
 
         }
