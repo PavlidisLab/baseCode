@@ -3,14 +3,16 @@ package ubic.basecode.dataStructure.params;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.ss.formula.FormulaParser;
+
 import ubic.basecode.io.excel.CreateSpreadSheet;
 import ubic.basecode.io.excel.ExcelUtil;
 import ubic.basecode.io.excel.SpreadSheetSchema;
 
 /**
- * A class to convert parametergrabber information/instances into excel speadsheet lines  
+ * A class to convert parametergrabber information/instances into excel speadsheet lines
+ * 
  * @author leon
- *
  */
 public class ParamSpreadSheet extends CreateSpreadSheet {
 
@@ -30,10 +32,14 @@ public class ParamSpreadSheet extends CreateSpreadSheet {
                     if ( Double.isNaN( dValue ) ) throw new NumberFormatException();
                     ExcelUtil.setValue( spreadsheet, row, pos, dValue );
                 } catch ( NumberFormatException e ) {
-                    ExcelUtil.setValue( spreadsheet, row, pos, value );
+                    try {
+                        ExcelUtil.setFormula( spreadsheet, row, pos, value );
+                        // having trouble finding the exception to catch
+                    } catch ( Exception xe ) {
+                        ExcelUtil.setValue( spreadsheet, row, pos, value );
+                    }
                 }
             }
         }
-    } 
-
+    }
 }
