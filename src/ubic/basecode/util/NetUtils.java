@@ -149,16 +149,22 @@ public class NetUtils {
         }
 
         f.enterLocalPassiveMode();
-        FTPFile[] files = f.listFiles( seekFile );
 
-        if ( files.length == 1 ) {
-            return files[0].getSize();
+        int maxTries = 3;
+
+        for ( int i = 0; i < maxTries; i++ ) {
+
+            FTPFile[] files = f.listFiles( seekFile );
+
+            if ( files.length == 1 ) {
+                return files[0].getSize();
+            } else if ( files.length > 1 ) {
+                throw new IOException( files.length + " files found when expecting one" );
+            } // otherwise keep trying.
         }
 
-        if ( files.length == 0 ) {
-            throw new FileNotFoundException( "Didn't get expected file information for " + seekFile );
-        }
-        throw new IOException( files.length + " files found when expecting one" );
+        throw new FileNotFoundException( "Didn't get expected file information for " + seekFile + " (" + maxTries
+                + " attempts)" );
 
     }
 
