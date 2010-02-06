@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.StringUtils;
@@ -417,6 +418,11 @@ public abstract class AbstractOntologyService {
             if ( term instanceof OntologyTerm ) terms.put( term.getUri(), ( OntologyTerm ) term );
             if ( term instanceof OntologyIndividual ) individuals.put( term.getUri(), ( OntologyIndividual ) term );
         }
+    }
+
+    public Set<String> getAllURIs() {
+        if ( terms == null ) return null;
+        return new HashSet<String>(terms.keySet());
     }
 
     private synchronized void startKeepAliveThread() {
