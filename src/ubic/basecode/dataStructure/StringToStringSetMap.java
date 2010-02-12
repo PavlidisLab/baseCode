@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+
 /**
  * Implemented to store string based many to many relationships.
  * 
@@ -99,5 +102,20 @@ public class StringToStringSetMap extends HashMap<String, Set<String>> {
             if ( get( key ).contains( value ) ) keySet.add( key );
         }
         return keySet;
+    }
+
+    public static DoubleMatrix<String, String> setMapToMatrix( StringToStringSetMap input ) {
+        DoubleMatrix<String, String> resultMatrix = new DenseDoubleMatrix<String, String>( input.keySet().size(), input
+                .getSeenValues().size() );
+        resultMatrix.setRowNames( new LinkedList<String>( input.keySet() ) );
+        resultMatrix.setColumnNames( new LinkedList<String>( input.getSeenValues() ) );
+
+        for ( String experiment : resultMatrix.getRowNames() ) {
+            for ( String annotation : input.get( experiment ) ) {
+
+                resultMatrix.setByKeys( experiment, annotation, 1.0 );
+            }
+        }
+        return resultMatrix;
     }
 }
