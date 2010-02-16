@@ -62,6 +62,12 @@ public interface RClient {
 
     public void assign( String argName, String[] array );
 
+    /**
+     * @param strings
+     * @return the name of the factor generated.
+     */
+    public String assignFactor( List<String> strings );
+
     /*
      * (non-Javadoc)
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, java.lang.String)

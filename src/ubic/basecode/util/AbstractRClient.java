@@ -152,6 +152,23 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#assignFactor(java.util.List)
+     */
+    public String assignFactor( List<String> strings ) {
+        String variableName = "factor." + variableIdentityNumber( strings );
+        Object[] array = strings.toArray();
+        String[] sa = new String[array.length];
+        for ( int i = 0; i < array.length; i++ ) {
+            sa[i] = array[i].toString();
+        }
+
+        String l = assignStringList( strings );
+        this.voidEval( variableName + "<-factor(" + l + ")" );
+        return variableName;
+    }
+
+    /*
+     * (non-Javadoc)
      * @see ubic.basecode.util.RClient#loadLibrary(java.lang.String)
      */
     public boolean loadLibrary( String libraryName ) {
