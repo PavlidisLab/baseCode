@@ -169,6 +169,19 @@ public class RServeClientTest extends TestCase {
                 actualValue.startsWith( expectedValue ) );
     }
 
+    public void testFactorAssign() throws Exception {
+        if ( !connected ) {
+            log.warn( "Could not connect to RServe, skipping test." );
+            return;
+        }
+
+        List<String> list = new ArrayList<String>();
+        list.add( "a" );
+        list.add( "b" );
+        String factor = rc.assignFactor( list );
+        assertNotNull( factor );
+    }
+
     /*
      * Test method for ' RCommand.exec(String)'
      */

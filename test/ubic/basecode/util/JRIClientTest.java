@@ -18,6 +18,7 @@
  */
 package ubic.basecode.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -112,6 +113,19 @@ public class JRIClientTest extends TestCase {
         assertEquals( 2, actual.size() );
         assertEquals( "a", actual.get( 0 ) );
         assertEquals( "b", actual.get( 1 ) );
+    }
+
+    public void testFactorAssign() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        List<String> list = new ArrayList<String>();
+        list.add( "a" );
+        list.add( "b" );
+        String factor = rc.assignFactor( list );
+        assertNotNull( factor );
     }
 
     /*
