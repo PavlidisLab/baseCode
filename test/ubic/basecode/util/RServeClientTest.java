@@ -27,6 +27,7 @@ import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.math.Constants;
@@ -152,6 +153,77 @@ public class RServeClientTest extends TestCase {
         assertEquals( "foo", actualValue );
         actualValue = rc.stringEval( varname + "[2]" );
         assertEquals( "bar", actualValue );
+    }
+
+    public void testTTest() throws Exception {
+        if ( !connected ) {
+            log.warn( "Could not connect to RServe, skipping test." );
+            return;
+        }
+        List<String> rFactors = new ArrayList<String>();
+        rFactors.add( "f" );
+        rFactors.add( "f" );
+        rFactors.add( "g" );
+        rFactors.add( "g" );
+
+        String facts = rc.assignStringList( rFactors );
+
+        String tfacts = "t(" + facts + ")";
+
+        String factor = "factor(" + tfacts + ")";
+
+        DoubleMatrix<String, String> m = new DenseDoubleMatrix<String, String>( 1, 4 );
+        m.set( 0, 0, 4.0 );
+        m.set( 0, 1, 5.0 );
+        m.set( 0, 2, 2.0 );
+        m.set( 0, 3, 1.0 );
+        String matrixName = rc.assignMatrix( m );
+
+        /* handle the p-values */
+        StringBuffer pvalueCommand = new StringBuffer();
+        pvalueCommand.append( "apply(" );
+        pvalueCommand.append( matrixName );
+        pvalueCommand.append( ", 1, function(x) {t.test(x ~ " + factor + ")$p.value}" );
+        pvalueCommand.append( ")" );
+
+        double[] pvalues = rc.doubleArrayEvalWithLogging( pvalueCommand.toString() );
+        assertEquals( 1, pvalues.length );
+        assertEquals( 0.05, pvalues[0], 0.01 );
+    }
+
+    public void testTTestFail() throws Exception {
+        if ( !connected ) {
+            log.warn( "Could not connect to RServe, skipping test." );
+            return;
+        }
+        List<String> rFactors = new ArrayList<String>();
+        rFactors.add( "f" );
+        rFactors.add( "f" );
+        rFactors.add( "g" );
+        rFactors.add( "g" );
+
+        String facts = rc.assignStringList( rFactors );
+        String tfacts = "t(" + facts + ")";
+        String factor = "factor(" + tfacts + ")";
+
+        DoubleMatrix<String, String> m = new DenseDoubleMatrix<String, String>( 1, 4 );
+        // will fail with "data are essentially constant"
+        m.set( 0, 0, 4.0 );
+        m.set( 0, 1, 4.0 );
+        m.set( 0, 2, 2.0 );
+        m.set( 0, 3, 2.0 );
+        String matrixName = rc.assignMatrix( m );
+
+        /* handle the p-values - will fail internally, but we silently return 1.0 */
+        StringBuffer pvalueCommand = new StringBuffer();
+        pvalueCommand.append( "apply(" + matrixName + ", 1, function(x) {  tryCatch( t.test(x ~ " + factor
+                + ")$p.value, error=function(e) { 1.0})})" );
+
+        double[] r = rc.doubleArrayEvalWithLogging( pvalueCommand.toString() );
+
+        assertEquals( 1, r.length );
+        assertEquals( 1.0, r[0], 0.00001 );
+
     }
 
     /*

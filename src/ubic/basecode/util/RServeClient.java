@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -526,7 +527,7 @@ public class RServeClient extends AbstractRClient {
         try {
             return connection.eval( command );
         } catch ( RserveException e ) {
-            log.error( "Error excecuting " + command, e );
+            log.error( "Error excecuting " + command + ":" + e.getMessage(), e );
             throw new RuntimeException( e );
         }
     }
@@ -594,7 +595,67 @@ public class RServeClient extends AbstractRClient {
      * @see ubic.basecode.util.RClient#anovaEval(java.lang.String)
      */
     public TwoWayAnovaResult twoWayAnovaEval( String command ) {
-        throw new UnsupportedOperationException( "Method not yet implemented!" );
+        try {
+            REXP rawResult = this.eval( command );
+
+            if ( rawResult == null ) {
+                log.error( "R command returned null: " + command );
+                return null;
+            }
+
+            RList mainList = rawResult.asList();
+            if ( mainList == null ) {
+                log.warn( "No string list in R: " + command );
+                return null;
+            }
+
+            /*
+             * The values are in the correct order, but the keys in the mainList (from mainList.keys()) are not for some
+             * reason so I'm not using them. In the debugger, the key is the composite sequence, but this isn't the same
+             * composite sequence I see directly in R. The order of the p values and statistics are correct, however.
+             */
+            LinkedHashMap<String, double[]> pvalues = new LinkedHashMap<String, double[]>();
+            LinkedHashMap<String, double[]> statistics = new LinkedHashMap<String, double[]>();
+
+            for ( int i = 0; i < mainList.keys().length; i++ ) {
+                REXP r1 = mainList.at( i );
+                RList l1 = r1.asList();
+                if ( l1 == null ) {
+                    log.warn( "No string list in R: " + command );
+                    return null;
+                }
+
+                String[] keys = l1.keys();
+                for ( String key : keys ) {
+                    if ( StringUtils.equals( "Pr(>F)", key ) ) {
+                        REXP r2 = l1.at( key );
+                        double[] pValsFromR = ( double[] ) r2.asDoubles();
+                        double[] pValsToUse = new double[pValsFromR.length - 1];
+                        for ( int j = 0; j < pValsToUse.length; j++ ) {
+                            pValsToUse[j] = pValsFromR[j];
+                        }
+
+                        pvalues.put( Integer.toString( i ), pValsToUse );
+                    } else if ( StringUtils.equals( "F value", key ) ) {
+                        REXP r2 = l1.at( key );
+                        double[] statisticsFromR = ( double[] ) r2.asDoubles();
+                        double[] statisticsToUse = new double[statisticsFromR.length - 1];
+                        for ( int j = 0; j < statisticsToUse.length; j++ ) {
+                            statisticsToUse[j] = statisticsFromR[j];
+                        }
+                        statistics.put( Integer.toString( i ), statisticsToUse );
+                    }
+
+                }
+            }
+
+            TwoWayAnovaResult result = new TwoWayAnovaResult( pvalues, statistics );
+
+            return result;
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
+
     }
 
     /*
@@ -602,7 +663,20 @@ public class RServeClient extends AbstractRClient {
      * @see ubic.basecode.util.RClient#doubleArrayEvalWithLogging(java.lang.String)
      */
     public double[] doubleArrayEvalWithLogging( String command ) {
-        throw new UnsupportedOperationException( "Method not yet implemented!" );
+        RLoggingThread rLoggingThread = null;
+        double[] doubleArray = null;
+        try {
+            rLoggingThread = RLoggingThreadFactory.createRLoggingThread();
+            doubleArray = this.doubleArrayEval( command );
+        } catch ( Exception e ) {
+            throw new RuntimeException( "Problems executing R command " + command + ": " + e.getMessage() );
+        } finally {
+            if ( rLoggingThread != null ) {
+                log.debug( "Shutting down logging thread." );
+                rLoggingThread.done();
+            }
+        }
+        return doubleArray;
     }
 
     /*
@@ -610,7 +684,20 @@ public class RServeClient extends AbstractRClient {
      * @see ubic.basecode.util.RClient#twoWayAnovaEvalWithLogging(java.lang.String)
      */
     public TwoWayAnovaResult twoWayAnovaEvalWithLogging( String command ) {
-        throw new UnsupportedOperationException( "Method not yet implemented!" );
+        RLoggingThread rLoggingThread = null;
+        TwoWayAnovaResult twoWayAnovaResult = null;
+        try {
+            rLoggingThread = RLoggingThreadFactory.createRLoggingThread();
+            twoWayAnovaResult = this.twoWayAnovaEval( command );
+        } catch ( Exception e ) {
+            throw new RuntimeException( "Problems executing R command " + command + ": " + e.getMessage(), e );
+        } finally {
+            if ( rLoggingThread != null ) {
+                log.debug( "Shutting down logging thread." );
+                rLoggingThread.done();
+            }
+        }
+        return twoWayAnovaResult;
     }
 
 }
