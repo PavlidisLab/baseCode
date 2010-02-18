@@ -241,6 +241,19 @@ public class RServeClientTest extends TestCase {
                 actualValue.startsWith( expectedValue ) );
     }
 
+    public void testExecError() throws Exception {
+        if ( !connected ) {
+            log.warn( "Could not connect to RServe, skipping test." );
+            return;
+        }
+        try {
+            rc.stringEval( "library(fooblydoobly)" );
+            fail( "Should have gotten an exception" );
+        } catch ( Exception e ) {
+            assertTrue( e.getMessage().startsWith( "Error from R" ) );
+        }
+    }
+
     public void testFactorAssign() throws Exception {
         if ( !connected ) {
             log.warn( "Could not connect to RServe, skipping test." );

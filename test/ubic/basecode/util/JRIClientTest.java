@@ -1,7 +1,7 @@
 /*
  * The baseCode project
  * 
- * Copyright (c) 2006 University of British Columbia
+ * Copyright (c) 2006-2010 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -143,8 +143,39 @@ public class JRIClientTest extends TestCase {
                 actualValue.startsWith( expectedValue ) );
     }
 
+    public void testExecError() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test." );
+            return;
+        }
+        try {
+            rc.stringEval( "library(fooblydoobly)" );
+            fail( "Should have gotten an exception" );
+        } catch ( Exception e ) {
+            assertTrue( e.getMessage().startsWith( "Error from R" ) );
+        }
+        try {
+            rc.stringEval( "t.test(dadx,ymom)" );
+            fail( "Should have gotten an exception" );
+        } catch ( Exception e ) {
+            assertTrue( e.getMessage().startsWith( "Error from R" ) );
+        }
+        try {
+            rc.stringEval( "wwfollck(1)" );
+            fail( "Should have gotten an exception" );
+        } catch ( Exception e ) {
+            assertTrue( e.getMessage().startsWith( "Error from R" ) );
+        }
+        try {
+            rc.stringEval( "sqrt(\"A\")" );
+            fail( "Should have gotten an exception" );
+        } catch ( Exception e ) {
+            assertTrue( e.getMessage().startsWith( "Error from R" ) );
+        }
+    }
+
     /*
-     * Test method for 'edu.columbia.gemma.tools.RCommand.exec(String)'
+     * Test method for 'exec(String)'
      */
     public void testExecDoubleArray() throws Exception {
         if ( !connected ) {

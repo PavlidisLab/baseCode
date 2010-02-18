@@ -62,8 +62,9 @@ public class JRIClient extends AbstractRClient {
                         + System.getProperty( "java.library.path" ) );
             }
             if ( !Rengine.versionCheck() ) {
-                log.warn( "Version check for Rengine failed, proceeding but failures might occur (java Rengine version = "
-                        + Rengine.getVersion() + ", native library version=" + Rengine.rniGetVersion() + ")" );
+                log
+                        .warn( "Version check for Rengine failed, proceeding but failures might occur (java Rengine version = "
+                                + Rengine.getVersion() + ", native library version=" + Rengine.rniGetVersion() + ")" );
             }
             connection = new Rengine( new String[] { "--no-save" }, false, null );
             if ( !connection.waitForR() ) {
@@ -142,9 +143,6 @@ public class JRIClient extends AbstractRClient {
      * @see ubic.basecode.util.RClient#doubleArrayEval(java.lang.String)
      */
     public double[] doubleArrayEval( String command ) {
-        if ( !isConnected() ) {
-            return null;
-        }
         REXP r = this.eval( command );
         if ( r == null ) {
             log.warn( "No result for " + command );
@@ -224,7 +222,8 @@ public class JRIClient extends AbstractRClient {
      * @see ubic.basecode.util.RClient#stringEval(java.lang.String)
      */
     public String stringEval( String command ) {
-        return this.eval( command ).asString();
+        REXP result = this.eval( command );
+        return result.asString();
     }
 
     /**
@@ -314,10 +313,7 @@ public class JRIClient extends AbstractRClient {
      * @see ubic.basecode.util.RClient#voidEval(java.lang.String)
      */
     public void voidEval( String command ) {
-        REXP result = connection.eval( command );
-        if ( result == null ) {
-            throw new RuntimeException( "Unknown error" );
-        }
+        eval( command );
     }
 
     /*
@@ -325,7 +321,20 @@ public class JRIClient extends AbstractRClient {
      * @see ubic.basecode.util.RClient#eval(java.lang.String)
      */
     private REXP eval( String command ) {
-        return connection.eval( command );
+        REXP result = connection.eval( "try(" + command + ", silent=T)" );
+
+        String a = result.asString();
+        /*
+         * There is no better way to do this, apparently.
+         */
+        if ( a != null && a.startsWith( "Error" ) ) {
+            throw new RuntimeException( "Error from R when running " + command + ": " + a );
+        }
+
+        if ( result == null ) {
+            throw new RuntimeException( "Error from R, could not sucessfully evaluate: " + command );
+        }
+        return result;
     }
 
     /**
