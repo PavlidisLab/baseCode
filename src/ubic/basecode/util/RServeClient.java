@@ -431,6 +431,7 @@ public class RServeClient extends AbstractRClient {
     public List<String> stringListEval( String command ) {
         try {
             REXP eval = this.eval( command );
+
             RList v;
             List<String> results = new ArrayList<String>();
             if ( eval instanceof REXPString ) {
@@ -525,10 +526,14 @@ public class RServeClient extends AbstractRClient {
         log.debug( "eval: " + command );
         checkConnection();
         try {
-            return connection.eval( command );
+            REXP r = connection.eval( "try(" + command + ", silent=T)" );
+            if ( r.inherits( "try-error" ) ) throw new RuntimeException( "Error from R: " + r.asString() );
+            return r;
         } catch ( RserveException e ) {
-            log.error( "Error excecuting " + command + ":" + e.getMessage(), e );
-            throw new RuntimeException( e );
+            throw new RuntimeException( "Error excecuting " + command + ":" + e.getMessage(), e );
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( "Error processing apparent error object returned by " + command + ":"
+                    + e.getMessage(), e );
         }
     }
 
