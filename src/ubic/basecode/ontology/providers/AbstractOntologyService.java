@@ -20,6 +20,7 @@
 package ubic.basecode.ontology.providers;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ import ubic.basecode.ontology.search.OntologyIndexer;
 import ubic.basecode.ontology.search.OntologySearch;
 
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.larq.IndexLARQ;
 
 /**
@@ -71,31 +73,6 @@ public abstract class AbstractOntologyService {
     }
 
     protected static final Log log = LogFactory.getLog( AbstractOntologyService.class );
-    protected Map<String, OntologyTerm> terms;
-
-    protected Map<String, OntologyIndividual> individuals;
-
-    private boolean enabled = false;
-
-    protected AtomicBoolean ready = new AtomicBoolean( false );
-    protected AtomicBoolean modelReady = new AtomicBoolean( false );
-    protected AtomicBoolean indexReady = new AtomicBoolean( false );
-
-    protected AtomicBoolean cacheReady = new AtomicBoolean( false );
-    protected AtomicBoolean running = new AtomicBoolean( false );
-    protected String ontology_URL;
-    protected String ontologyName;
-    protected OntModel model;
-
-    protected IndexLARQ index;
-
-    /*
-     * a collection of the keep-alive threads for each concrete subclass; a single variable here wouldn't work because
-     * all of the subclasses would be using the same variable.
-     */
-    private static Map<Class<?>, Thread> keepAliveThreads = Collections
-            .synchronizedMap( new HashMap<Class<?>, Thread>() );
-
     /*
      * the number of milliseconds between keep-alive queries; this should be less than or equal to MySQL wait_timeout
      * server variable. Currently 4 hours. (half of wait_timeout)
@@ -106,6 +83,31 @@ public abstract class AbstractOntologyService {
      * a term to search for; matters not at all...
      */
     private static final String KEEPALIVE_SEARCH_TERM = "dummy";
+
+    /*
+     * a collection of the keep-alive threads for each concrete subclass; a single variable here wouldn't work because
+     * all of the subclasses would be using the same variable.
+     */
+    private static Map<Class<?>, Thread> keepAliveThreads = Collections
+            .synchronizedMap( new HashMap<Class<?>, Thread>() );
+
+    protected AtomicBoolean cacheReady = new AtomicBoolean( false );
+    protected IndexLARQ index;
+    protected AtomicBoolean indexReady = new AtomicBoolean( false );
+
+    protected Map<String, OntologyIndividual> individuals;
+    protected OntModel model;
+    protected AtomicBoolean modelReady = new AtomicBoolean( false );
+    protected String ontology_URL;
+    protected String ontologyName;
+
+    protected AtomicBoolean ready = new AtomicBoolean( false );
+
+    protected AtomicBoolean running = new AtomicBoolean( false );
+
+    protected Map<String, OntologyTerm> terms;
+
+    private boolean enabled = false;
 
     public AbstractOntologyService() {
         super();
@@ -163,6 +165,11 @@ public abstract class AbstractOntologyService {
         assert index != null : "attempt to search " + this.getOntologyName() + " when index is null";
         Collection<OntologyTerm> matches = OntologySearch.matchClasses( model, index, search );
         return matches;
+    }
+
+    public Set<String> getAllURIs() {
+        if ( terms == null ) return null;
+        return new HashSet<String>( terms.keySet() );
     }
 
     /**
@@ -358,6 +365,33 @@ public abstract class AbstractOntologyService {
     }
 
     /**
+     * For testing! Overrides normal way of loading the ontology.
+     * 
+     * @param is
+     * @throws IOException
+     */
+    public synchronized void loadTermsInNameSpace( InputStream is ) {
+        if ( running.get() ) {
+            log.warn( ontology_URL + " initialization is already running, will not load from input stream" );
+            return;
+        }
+
+        running.set( true );
+
+        this.model = OntologyLoader.loadMemoryModel( is, this.ontology_URL, OntModelSpec.OWL_MEM );
+        assert this.model != null;
+        index = OntologyIndexer.indexOntology( ontologyName, model );
+
+        addTerms( OntologyLoader.initialize( this.ontology_URL, model ) );
+
+        assert index != null;
+
+        indexReady.set( true );
+        running.set( false );
+        ready.set( true );
+    }
+
+    /**
      * Use this to turn this ontology on or off.
      * 
      * @param enabled If false, the ontology will not be loaded.
@@ -418,11 +452,6 @@ public abstract class AbstractOntologyService {
             if ( term instanceof OntologyTerm ) terms.put( term.getUri(), ( OntologyTerm ) term );
             if ( term instanceof OntologyIndividual ) individuals.put( term.getUri(), ( OntologyIndividual ) term );
         }
-    }
-
-    public Set<String> getAllURIs() {
-        if ( terms == null ) return null;
-        return new HashSet<String>(terms.keySet());
     }
 
     private synchronized void startKeepAliveThread() {
