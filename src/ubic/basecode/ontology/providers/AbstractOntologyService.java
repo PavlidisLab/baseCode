@@ -158,9 +158,9 @@ public abstract class AbstractOntologyService {
      */
     public Collection<OntologyTerm> findTerm( String search ) {
 
-        if ( !isOntologyLoaded() ) return null;
+        if ( !isOntologyLoaded() ) return new HashSet<OntologyTerm>();
 
-        log.debug( "Searching " + this.getOntologyName() + " for '" + search + "'" );
+        if ( log.isDebugEnabled() ) log.debug( "Searching " + this.getOntologyName() + " for '" + search + "'" );
 
         assert index != null : "attempt to search " + this.getOntologyName() + " when index is null";
         Collection<OntologyTerm> matches = OntologySearch.matchClasses( model, index, search );
