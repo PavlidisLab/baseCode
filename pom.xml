@@ -422,6 +422,7 @@
 			</build>
 		</profile>
 		<profile>
+		<!-- For deployment where host is local (and ssh isn't available for builder, e.g. CI) -->
 			<id>local-deploy</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>
