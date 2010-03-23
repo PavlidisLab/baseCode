@@ -135,6 +135,11 @@
 			<artifactId>JRI</artifactId>
 			<version>0.5-0</version>
 			<type>jar</type>
+		</dependency><dependency>
+			<groupId>RoSuDA</groupId>
+			<artifactId>JRIEngine</artifactId>
+			<version>0.5-0</version>
+			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

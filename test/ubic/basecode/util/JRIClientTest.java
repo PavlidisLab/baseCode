@@ -37,7 +37,7 @@ import ubic.basecode.math.Constants;
 public class JRIClientTest extends TestCase {
     private static Log log = LogFactory.getLog( JRIClientTest.class.getName() );
 
-    JRIClient rc;
+    JRIClient rc = null;
     boolean connected = true;
     DoubleMatrix<String, String> tester;
     double[] test1 = new double[] { -1.2241396, -0.6794486, -0.8475404, -0.4119554, -2.1980083 };
@@ -46,18 +46,19 @@ public class JRIClientTest extends TestCase {
     @Override
     public void setUp() throws Exception {
 
-        log.debug( "java.library.path: " + System.getProperty( "java.library.path" ) );
+        if ( rc == null ) {
 
-        try {
-            rc = new JRIClient();
-
-            if ( rc == null || !rc.isConnected() ) {
+            try {
+                rc = new JRIClient();
+                if ( rc == null || !rc.isConnected() ) {
+                    connected = false;
+                    return;
+                }
+            } catch ( RuntimeException e ) {
+                log.error( e, e );
                 connected = false;
                 return;
             }
-        } catch ( RuntimeException e ) {
-            connected = false;
-            return;
         }
 
         DoubleMatrixReader reader = new DoubleMatrixReader();
@@ -82,16 +83,6 @@ public class JRIClientTest extends TestCase {
         assertEquals( "gene1_at", result.getRowName( 0 ) );
         assertEquals( "sample1", result.getColName( 0 ) );
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
-    }
-
-    public void testDoubleTwoDoubleArrayEval() throws Exception {
-        if ( !connected ) {
-            log.warn( "Cannot load JRI, skipping test" );
-            return;
-        }
-        double actual = rc.doubleTwoDoubleArrayEval( "cor(a,b)", "a", test1, "b", test2 );
-        double expected = -0.29843518070456654;
-        assertEquals( expected, actual, Constants.SMALLISH );
     }
 
     public void testAssignAndRetrieveMatrixB() throws Exception {
@@ -185,5 +176,15 @@ public class JRIClientTest extends TestCase {
         double[] dd = rc.doubleArrayEval( "rep(1, 10)" );
         assertNotNull( dd );
         assertTrue( RegressionTesting.closeEnough( new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, dd, 0.001 ) );
+    }
+
+    public void testDoubleTwoDoubleArrayEval() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+        double actual = rc.doubleTwoDoubleArrayEval( "cor(a,b)", "a", test1, "b", test2 );
+        double expected = -0.29843518070456654;
+        assertEquals( expected, actual, Constants.SMALLISH );
     }
 }

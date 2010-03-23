@@ -26,16 +26,19 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.rosuda.JRI.REXP;
-import org.rosuda.JRI.RList;
-import org.rosuda.JRI.Rengine;
+import org.rosuda.REngine.REXP;
+import org.rosuda.REngine.REXPMismatchException;
+import org.rosuda.REngine.REngine;
+import org.rosuda.REngine.REngineException;
+import org.rosuda.REngine.RList;
+import org.rosuda.REngine.JRI.JRIEngine;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixFactory;
 
 /**
  * R connection implementation that uses the dynamic library interface JRI. For this to work the user must have
- * libjri.so or jir.dll and libr.so in their java.library.path.
+ * libjri.so or jri.dll and libr.so in their java.library.path.
  * 
  * @author paul
  * @version $Id$
@@ -43,34 +46,29 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrixFactory;
  */
 public class JRIClient extends AbstractRClient {
 
-    static Rengine connection;
+    private static REngine connection = null;
 
     private static Log log = LogFactory.getLog( JRIClient.class.getName() );
+
+    static {
+        try {
+            connection = new JRIEngine( new String[] { "--no-save", "--vanilla" }, null );
+        } catch ( REngineException e ) {
+            throw new RuntimeException( e );
+        }
+    }
 
     /**
      * @throws IOException if the JRI library could not e loaded.
      */
     public JRIClient() throws IOException {
 
-        if ( connection == null ) {
-            log.info( "Loading JRI library, looking in " + System.getProperty( "java.library.path" ) );
-            try {
-                System.loadLibrary( "jri" );
-            } catch ( UnsatisfiedLinkError e ) {
-                log.error( e, e );
-                throw new IOException( "Couldn't load jri library, looked in: "
-                        + System.getProperty( "java.library.path" ) );
-            }
-            if ( !Rengine.versionCheck() ) {
-                log
-                        .warn( "Version check for Rengine failed, proceeding but failures might occur (java Rengine version = "
-                                + Rengine.getVersion() + ", native library version=" + Rengine.rniGetVersion() + ")" );
-            }
-            connection = new Rengine( new String[] { "--no-save" }, false, null );
-            if ( !connection.waitForR() ) {
-                throw new IOException( "Cannot get R connection via JRI" );
-            }
-            log.info( "JRI looks good!" );
+        try {
+            // / couple of very quick tests.
+            connection.assign( "testtomakesurethedamnthingworks", "1" );
+            this.eval( "cor(c(2,3),c(1,2))" );
+        } catch ( REngineException e ) {
+            throw new RuntimeException( e );
         }
     }
 
@@ -79,7 +77,11 @@ public class JRIClient extends AbstractRClient {
      * @see ubic.basecode.util.RClient#assign(java.lang.String, double[])
      */
     public void assign( String argName, double[] arg ) {
-        connection.assign( argName, arg );
+        try {
+            connection.assign( argName, arg );
+        } catch ( REngineException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     /*
@@ -87,15 +89,11 @@ public class JRIClient extends AbstractRClient {
      * @see ubic.basecode.util.RClient#assign(java.lang.String, int[])
      */
     public void assign( String arg0, int[] arg1 ) {
-        connection.assign( arg0, arg1 );
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#assign(java.lang.String, org.rosuda.REngine.REXP)
-     */
-    public void assign( String arg0, REXP arg1 ) {
-        connection.assign( arg0, arg1 );
+        try {
+            connection.assign( arg0, arg1 );
+        } catch ( REngineException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     /*
@@ -103,7 +101,11 @@ public class JRIClient extends AbstractRClient {
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String)
      */
     public void assign( String sym, String ct ) {
-        connection.assign( sym, ct );
+        try {
+            connection.assign( sym, ct );
+        } catch ( REngineException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     /*
@@ -111,7 +113,11 @@ public class JRIClient extends AbstractRClient {
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String[])
      */
     public void assign( String argName, String[] array ) {
-        connection.assign( argName, array );
+        try {
+            connection.assign( argName, array );
+        } catch ( REngineException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     /*
@@ -119,13 +125,14 @@ public class JRIClient extends AbstractRClient {
      * @see ubic.basecode.util.RClient#booleanDoubleArrayEval(java.lang.String, java.lang.String, double[])
      */
     public boolean booleanDoubleArrayEval( String command, String argName, double[] arg ) {
-        this.assign( argName, arg );
-        REXP x = this.eval( command );
-        return x.asBool().isTRUE();
+        // this.assign( argName, arg );
+        // REXP x = this.eval( command );
+        // return x.asBool().isTRUE();
+        return false;
     }
 
     public void disconnect() {
-        connection.end();
+        connection.close();
     }
 
     /*
@@ -134,8 +141,14 @@ public class JRIClient extends AbstractRClient {
      */
     public double[] doubleArrayDoubleArrayEval( String command, String argName, double[] arg ) {
         this.assign( argName, arg );
-        RList l = this.eval( command ).asList();
-        return l.at( argName ).asDoubleArray();
+        org.rosuda.REngine.RList l;
+        try {
+            l = this.eval( command ).asList();
+
+            return l.at( argName ).asDoubles();
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     /*
@@ -145,243 +158,13 @@ public class JRIClient extends AbstractRClient {
     public double[] doubleArrayEval( String command ) {
         REXP r = this.eval( command );
         if ( r == null ) {
-            log.warn( "No result for " + command );
             return null;
         }
-        return r.asDoubleArray();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#doubleArrayTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
-     * java.lang.String, double[])
-     */
-    public double[] doubleArrayTwoDoubleArrayEval( String command, String argName, double[] arg, String argName2,
-            double[] arg2 ) {
-        this.assign( argName, arg );
-        this.assign( argName2, arg2 );
-
-        return this.eval( command ).asDoubleArray();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#doubleTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
-     * java.lang.String, double[])
-     */
-    public double doubleTwoDoubleArrayEval( String command, String argName, double[] arg, String argName2, double[] arg2 ) {
-        this.assign( argName, arg );
-        this.assign( argName2, arg2 );
-        REXP x = this.eval( command );
-
-        return x.asDouble();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#getLastError()
-     */
-    public String getLastError() {
-        return "Sorry, no information";
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#intArrayEval(java.lang.String)
-     */
-    public int[] intArrayEval( String command ) {
-        return this.eval( command ).asIntArray();
-    }
-
-    public boolean isConnected() {
-        return connection.isAlive();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#retrieveMatrix(java.lang.String)
-     */
-    public DoubleMatrix<String, String> retrieveMatrix( String variableName ) {
-        log.debug( "Retrieving " + variableName );
-        REXP r = this.eval( variableName );
-        if ( r == null ) throw new IllegalArgumentException( variableName + " not found in R context" );
-
-        double[][] results = r.asDoubleMatrix();
-
-        if ( results == null ) throw new RuntimeException( "Failed to get back matrix for variable " + variableName );
-
-        DoubleMatrix<String, String> resultObject = DoubleMatrixFactory.dense( results );
-
-        retrieveRowAndColumnNames( variableName, resultObject );
-        return resultObject;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#stringEval(java.lang.String)
-     */
-    public String stringEval( String command ) {
-        REXP result = this.eval( command );
-        return result.asString();
-    }
-
-    /**
-     * @param string
-     * @return
-     */
-    public List<String> stringListEval( String command ) {
-        String[] ar = this.eval( command ).asStringArray();
-        if ( ar == null ) {
-            log.warn( "No string list in R: " + command );
-            return null;
+        try {
+            return r.asDoubles();
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
         }
-        List<String> results = new ArrayList<String>();
-        for ( String s : ar ) {
-            results.add( s );
-        }
-        return results;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#twoWayAnovaEval(java.lang.String)
-     */
-    public TwoWayAnovaResult twoWayAnovaEval( String command ) {
-        REXP rawResult = this.eval( command );
-
-        if ( rawResult == null ) {
-            log.error( "R command returned null: " + command );
-            return null;
-        }
-
-        RList mainList = rawResult.asList();
-        if ( mainList == null ) {
-            log.warn( "No string list in R: " + command );
-            return null;
-        }
-
-        /*
-         * The values are in the correct order, but the keys in the mainList (from mainList.keys()) are not for some
-         * reason so I'm not using them. In the debugger, the key is the composite sequence, but this isn't the same
-         * composite sequence I see directly in R. The order of the p values and statistics are correct, however.
-         */
-        LinkedHashMap<String, double[]> pvalues = new LinkedHashMap<String, double[]>();
-        LinkedHashMap<String, double[]> statistics = new LinkedHashMap<String, double[]>();
-
-        for ( int i = 0; i < mainList.keys().length; i++ ) {
-            REXP r1 = mainList.at( i );
-            RList l1 = r1.asList();
-            if ( l1 == null ) {
-                log.warn( "No string list in R: " + command );
-                return null;
-            }
-
-            String[] keys = l1.keys();
-            for ( String key : keys ) {
-                if ( StringUtils.equals( "Pr(>F)", key ) ) {
-                    REXP r2 = l1.at( key );
-                    double[] pValsFromR = ( double[] ) r2.getContent();
-                    double[] pValsToUse = new double[pValsFromR.length - 1];
-                    for ( int j = 0; j < pValsToUse.length; j++ ) {
-                        pValsToUse[j] = pValsFromR[j];
-                    }
-
-                    pvalues.put( Integer.toString( i ), pValsToUse );
-                } else if ( StringUtils.equals( "F value", key ) ) {
-                    REXP r2 = l1.at( key );
-                    double[] statisticsFromR = ( double[] ) r2.getContent();
-                    double[] statisticsToUse = new double[statisticsFromR.length - 1];
-                    for ( int j = 0; j < statisticsToUse.length; j++ ) {
-                        statisticsToUse[j] = statisticsFromR[j];
-                    }
-                    statistics.put( Integer.toString( i ), statisticsToUse );
-                }
-
-            }
-        }
-
-        TwoWayAnovaResult result = new TwoWayAnovaResult( pvalues, statistics );
-
-        return result;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#voidEval(java.lang.String)
-     */
-    public void voidEval( String command ) {
-        eval( command );
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#eval(java.lang.String)
-     */
-    private REXP eval( String command ) {
-        REXP result = connection.eval( "try(" + command + ", silent=T)" );
-
-        String a = result.asString();
-        /*
-         * There is no better way to do this, apparently.
-         */
-        if ( a != null && a.startsWith( "Error" ) ) {
-            throw new RuntimeException( "Error from R when running " + command + ": " + a );
-        }
-
-        if ( result == null ) {
-            throw new RuntimeException( "Error from R, could not sucessfully evaluate: " + command );
-        }
-        return result;
-    }
-
-    /**
-     * Get the dimnames associated with the matrix variable row and column names, if any, and assign them to the
-     * resultObject NamedMatrix
-     * 
-     * @param variableName a matrix in R
-     * @param resultObject corresponding NamedMatrix we are filling in.
-     */
-    private void retrieveRowAndColumnNames( String variableName, DoubleMatrix<String, String> resultObject ) {
-        log.debug( "Getting row & column names names" );
-
-        REXP r1 = this.eval( "dimnames(" + variableName + ")" );
-        RList asList = r1.asList();
-
-        if ( asList == null ) {
-            return;
-        }
-
-        REXP rowNamesREXP = asList.at( 0 );
-        REXP colNamesREXP = asList.at( 1 );
-
-        if ( rowNamesREXP != null ) {
-            log.debug( "Got row names" );
-            String[] rowNamesAr = rowNamesREXP.asStringArray();
-            List<String> rowNames = new ArrayList<String>();
-            for ( String rowName : rowNamesAr ) {
-                rowNames.add( rowName );
-            }
-            resultObject.setRowNames( rowNames );
-        } else {
-            log.debug( "No row names" );
-        }
-
-        // Getting the column names.
-        if ( colNamesREXP != null ) {
-            String[] colNamesAr = colNamesREXP.asStringArray();
-            log.debug( "Got column names" );
-            List<String> colNames = new ArrayList<String>();
-            for ( String colName : colNamesAr ) {
-                colNames.add( colName );
-            }
-            resultObject.setColumnNames( colNames );
-        } else {
-            log.debug( "No column names" );
-        }
-        if ( log.isDebugEnabled() ) log.debug( resultObject );
     }
 
     /*
@@ -407,6 +190,199 @@ public class JRIClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#doubleArrayTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
+     * java.lang.String, double[])
+     */
+    public double[] doubleArrayTwoDoubleArrayEval( String command, String argName, double[] arg, String argName2,
+            double[] arg2 ) {
+        this.assign( argName, arg );
+        this.assign( argName2, arg2 );
+
+        try {
+            return this.eval( command ).asDoubles();
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#doubleTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
+     * java.lang.String, double[])
+     */
+    public double doubleTwoDoubleArrayEval( String command, String argName, double[] arg, String argName2, double[] arg2 ) {
+        this.assign( argName, arg );
+        this.assign( argName2, arg2 );
+        REXP x = this.eval( command );
+
+        try {
+            return x.asDouble();
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#getLastError()
+     */
+    public String getLastError() {
+        return "Sorry, no information";
+    }
+
+    // public boolean isConnected() {
+    // return connection.isAlive();
+    // }
+
+    /*
+     * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#intArrayEval(java.lang.String)
+     */
+    public int[] intArrayEval( String command ) {
+        try {
+            return this.eval( command ).asIntegers();
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    public boolean isConnected() {
+        return true;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#retrieveMatrix(java.lang.String)
+     */
+    public DoubleMatrix<String, String> retrieveMatrix( String variableName ) {
+        log.debug( "Retrieving " + variableName );
+        REXP r = this.eval( variableName );
+        if ( r == null ) throw new IllegalArgumentException( variableName + " not found in R context" );
+
+        double[][] results;
+        try {
+            results = r.asDoubleMatrix();
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
+
+        if ( results == null ) throw new RuntimeException( "Failed to get back matrix for variable " + variableName );
+
+        DoubleMatrix<String, String> resultObject = DoubleMatrixFactory.dense( results );
+
+        retrieveRowAndColumnNames( variableName, resultObject );
+        return resultObject;
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#stringEval(java.lang.String)
+     */
+    public String stringEval( String command ) {
+        REXP result = this.eval( command );
+        try {
+            return result.asString();
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    /**
+     * @param string
+     * @return
+     */
+    public List<String> stringListEval( String command ) {
+        String[] ar;
+        try {
+            ar = this.eval( command ).asStrings();
+        } catch ( REXPMismatchException e ) {
+            return null;
+        }
+        if ( ar == null ) {
+            return null;
+        }
+        List<String> results = new ArrayList<String>();
+        for ( String s : ar ) {
+            results.add( s );
+        }
+        return results;
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#twoWayAnovaEval(java.lang.String)
+     */
+    public TwoWayAnovaResult twoWayAnovaEval( String command ) {
+        REXP rawResult = this.eval( command );
+
+        if ( rawResult == null ) {
+            return null;
+        }
+
+        org.rosuda.REngine.RList mainList;
+        try {
+            mainList = rawResult.asList();
+        } catch ( REXPMismatchException e1 ) {
+            throw new RuntimeException( e1 );
+        }
+        if ( mainList == null ) {
+            return null;
+        }
+
+        /*
+         * The values are in the correct order, but the keys in the mainList (from mainList.keys()) are not for some
+         * reason so I'm not using them. In the debugger, the key is the composite sequence, but this isn't the same
+         * composite sequence I see directly in R. The order of the p values and statistics are correct, however.
+         */
+        LinkedHashMap<String, double[]> pvalues = new LinkedHashMap<String, double[]>();
+        LinkedHashMap<String, double[]> statistics = new LinkedHashMap<String, double[]>();
+        try {
+            for ( int i = 0; i < mainList.keys().length; i++ ) {
+                REXP r1 = mainList.at( i );
+                org.rosuda.REngine.RList l1 = r1.asList();
+                if ( l1 == null ) {
+                    return null;
+                }
+
+                String[] keys = l1.keys();
+                for ( String key : keys ) {
+                    if ( StringUtils.equals( "Pr(>F)", key ) ) {
+                        REXP r2 = l1.at( key );
+                        double[] pValsFromR;
+
+                        pValsFromR = r2.asDoubles();
+
+                        double[] pValsToUse = new double[pValsFromR.length - 1];
+                        for ( int j = 0; j < pValsToUse.length; j++ ) {
+                            pValsToUse[j] = pValsFromR[j];
+                        }
+
+                        pvalues.put( Integer.toString( i ), pValsToUse );
+                    } else if ( StringUtils.equals( "F value", key ) ) {
+                        REXP r2 = l1.at( key );
+                        double[] statisticsFromR = r2.asDoubles();
+                        double[] statisticsToUse = new double[statisticsFromR.length - 1];
+                        for ( int j = 0; j < statisticsToUse.length; j++ ) {
+                            statisticsToUse[j] = statisticsFromR[j];
+                        }
+                        statistics.put( Integer.toString( i ), statisticsToUse );
+                    }
+
+                }
+            }
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
+        TwoWayAnovaResult result = new TwoWayAnovaResult( pvalues, statistics );
+
+        return result;
+
+    }
+
+    /*
+     * (non-Javadoc)
      * @see ubic.basecode.util.RClient#twoWayAnovaEvalWithLogging(java.lang.String)
      */
     public TwoWayAnovaResult twoWayAnovaEvalWithLogging( String command ) {
@@ -424,6 +400,112 @@ public class JRIClient extends AbstractRClient {
             }
         }
         return twoWayAnovaResult;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#voidEval(java.lang.String)
+     */
+    public void voidEval( String command ) {
+        eval( command );
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#eval(java.lang.String)
+     */
+    private org.rosuda.REngine.REXP eval( String command ) {
+        org.rosuda.REngine.REXP result;
+        int key = connection.lock();
+        try {
+
+            result = connection.parseAndEval( "try(" + command + ", silent=T)" );
+
+            if ( !result.isString() ) {
+                return result;
+            }
+            String a = result.asString();
+
+            /*
+             * There is no better way to do this, apparently.
+             */
+            if ( a != null && a.startsWith( "Error" ) ) {
+                throw new RuntimeException( "Error from R when running " + command + ": " + a );
+            }
+
+            if ( result == null ) {
+                throw new RuntimeException( "Error from R, could not sucessfully evaluate: " + command );
+            }
+            return result;
+        } catch ( REngineException e ) {
+            throw new RuntimeException( e );
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        } finally {
+            connection.unlock( key );
+        }
+    }
+
+    /**
+     * Get the dimnames associated with the matrix variable row and column names, if any, and assign them to the
+     * resultObject NamedMatrix
+     * 
+     * @param variableName a matrix in R
+     * @param resultObject corresponding NamedMatrix we are filling in.
+     */
+    private void retrieveRowAndColumnNames( String variableName, DoubleMatrix<String, String> resultObject ) {
+        log.debug( "Getting row & column names names" );
+
+        REXP r1 = this.eval( "dimnames(" + variableName + ")" );
+        RList asList;
+        try {
+            asList = r1.asList();
+        } catch ( REXPMismatchException e1 ) {
+            return;
+        }
+
+        if ( asList == null ) {
+            return;
+        }
+
+        REXP rowNamesREXP = asList.at( 0 );
+        REXP colNamesREXP = asList.at( 1 );
+
+        if ( rowNamesREXP != null ) {
+            log.debug( "Got row names" );
+            String[] rowNamesAr;
+            try {
+                rowNamesAr = rowNamesREXP.asStrings();
+            } catch ( REXPMismatchException e ) {
+                return;
+            }
+            List<String> rowNames = new ArrayList<String>();
+            for ( String rowName : rowNamesAr ) {
+                rowNames.add( rowName );
+            }
+            resultObject.setRowNames( rowNames );
+        } else {
+            log.debug( "No row names" );
+        }
+
+        // Getting the column names.
+        if ( colNamesREXP != null ) {
+            String[] colNamesAr;
+            try {
+                colNamesAr = colNamesREXP.asStrings();
+            } catch ( REXPMismatchException e ) {
+                return;
+            }
+            log.debug( "Got column names" );
+            List<String> colNames = new ArrayList<String>();
+            for ( String colName : colNamesAr ) {
+                colNames.add( colName );
+            }
+            resultObject.setColumnNames( colNames );
+        } else {
+            log.debug( "No column names" );
+        }
+        if ( log.isDebugEnabled() ) log.debug( resultObject );
     }
 
 }

@@ -248,7 +248,11 @@ public class RServeClient extends AbstractRClient {
      */
     public double[] doubleArrayEval( String command ) {
         try {
-            return this.eval( command ).asDoubles();
+            REXP r = this.eval( command );
+            if ( r == null ) {
+                return null;
+            }
+            return r.asDoubles();
         } catch ( REXPMismatchException e ) {
             throw new RuntimeException( e );
         }
@@ -634,7 +638,7 @@ public class RServeClient extends AbstractRClient {
                 for ( String key : keys ) {
                     if ( StringUtils.equals( "Pr(>F)", key ) ) {
                         REXP r2 = l1.at( key );
-                        double[] pValsFromR = ( double[] ) r2.asDoubles();
+                        double[] pValsFromR = r2.asDoubles();
                         double[] pValsToUse = new double[pValsFromR.length - 1];
                         for ( int j = 0; j < pValsToUse.length; j++ ) {
                             pValsToUse[j] = pValsFromR[j];
@@ -643,7 +647,7 @@ public class RServeClient extends AbstractRClient {
                         pvalues.put( Integer.toString( i ), pValsToUse );
                     } else if ( StringUtils.equals( "F value", key ) ) {
                         REXP r2 = l1.at( key );
-                        double[] statisticsFromR = ( double[] ) r2.asDoubles();
+                        double[] statisticsFromR = r2.asDoubles();
                         double[] statisticsToUse = new double[statisticsFromR.length - 1];
                         for ( int j = 0; j < statisticsToUse.length; j++ ) {
                             statisticsToUse[j] = statisticsFromR[j];
