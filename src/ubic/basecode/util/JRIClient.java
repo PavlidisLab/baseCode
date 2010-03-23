@@ -64,7 +64,7 @@ public class JRIClient extends AbstractRClient {
     public JRIClient() throws IOException {
 
         try {
-            // / couple of very quick tests.
+            // / couple of very quick tests to ensure everything is in order.
             connection.assign( "testtomakesurethedamnthingworks", "1" );
             this.eval( "cor(c(2,3),c(1,2))" );
         } catch ( REngineException e ) {
