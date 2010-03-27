@@ -18,6 +18,8 @@
  */
 package ubic.basecode.ontology;
 
+import java.util.Iterator;
+
 import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -31,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
  * @author paul
  * @version $Id$
  */
+@SuppressWarnings("unchecked")
 public class Configuration {
 
     private static Log log = LogFactory.getLog( Configuration.class );
@@ -69,10 +72,21 @@ public class Configuration {
         }
 
         try {
-            // Default comes first.
             config.addConfiguration( new PropertiesConfiguration( DEFAULT_CONFIGURATION ) );
         } catch ( ConfigurationException e ) {
             log.error( DEFAULT_CONFIGURATION + " is missing, ontology loading may fail" );
+        }
+
+        // step through the result and do a final round of variable substitution
+        for ( Iterator<String> it = config.getKeys(); it.hasNext(); ) {
+            String key = it.next();
+            String property = config.getString( key );
+            if ( property != null && property.startsWith( "${" ) && property.endsWith( "}" ) ) {
+                String keyToSubstitute = property.substring( 2, property.length() - 1 );
+                String valueToSubstitute = config.getString( keyToSubstitute );
+                log.debug( key + "=" + property + " -> " + valueToSubstitute );
+                config.setProperty( key, valueToSubstitute );
+            }
         }
 
     }
