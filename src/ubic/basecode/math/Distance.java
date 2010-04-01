@@ -142,31 +142,40 @@ public class Distance {
     }
 
     /**
-     * Spearman Rank Correlation. This does the rank transformation of the data.
+     * Spearman Rank Correlation. This does the rank transformation of the data. Only mutually non-NaN values are used.
      * 
      * @param x DoubleArrayList
      * @param y DoubleArrayList
-     * @return Spearman's rank correlation between x and y.
+     * @return Spearman's rank correlation between x and y or NaN if it could not be computed.
      */
     public static double spearmanRankCorrelation( DoubleArrayList x, DoubleArrayList y ) {
+
+        if ( x.size() != y.size() ) {
+            throw new IllegalArgumentException( "x and y must have equal sizes." );
+        }
+
+        DoubleArrayList mx = new DoubleArrayList();
+        DoubleArrayList my = new DoubleArrayList();
+
+        for ( int i = 0; i < x.size(); i++ ) {
+            if ( Double.isNaN( x.get( i ) ) || Double.isNaN( y.get( i ) ) ) {
+                continue;
+            }
+            mx.add( x.get( i ) );
+            my.add( y.get( i ) );
+        }
+
+        assert mx.size() == my.size();
+        if ( mx.size() < 2 ) return Double.NaN;
+
+        DoubleArrayList rx = Rank.rankTransform( mx );
+        DoubleArrayList ry = Rank.rankTransform( my );
+
         double sum = 0.0;
-
-        int n = 0;
-        for ( int i = 0; i < x.size() && i < y.size(); i++ ) {
-            if ( !Double.isNaN( x.get( i ) ) && !Double.isNaN( y.get( i ) ) ) n++;
+        for ( int i = 0; i < mx.size(); i++ ) {
+            sum += Math.pow( rx.elements()[i] - ry.elements()[i], 2 );
         }
 
-        DoubleArrayList rx = Rank.rankTransform( x );
-        DoubleArrayList ry = Rank.rankTransform( y );
-
-        int numUsed = 0;
-
-        for ( int j = 0; j < n; j++ ) {
-            if ( Double.isNaN( x.get( j ) ) || Double.isNaN( y.get( j ) ) ) continue;
-            sum += ( rx.elements()[j] - ry.elements()[j] ) * ( rx.elements()[j] - ry.elements()[j] );
-            numUsed++;
-        }
-
-        return 1.0 - 6.0 * sum / ( Math.pow( numUsed, 3 ) - numUsed );
+        return 1.0 - 6.0 * sum / ( Math.pow( mx.size(), 3 ) - mx.size() );
     }
 }
