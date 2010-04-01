@@ -159,11 +159,14 @@ public class Distance {
         DoubleArrayList rx = Rank.rankTransform( x );
         DoubleArrayList ry = Rank.rankTransform( y );
 
+        int numUsed = 0;
+
         for ( int j = 0; j < n; j++ ) {
-            if ( !Double.isNaN( x.get( j ) ) && !Double.isNaN( y.get( j ) ) ) continue;
-            sum += rx.elements()[j] - ry.elements()[j] * ( rx.elements()[j] - ry.elements()[j] );
+            if ( Double.isNaN( x.get( j ) ) || Double.isNaN( y.get( j ) ) ) continue;
+            sum += ( rx.elements()[j] - ry.elements()[j] ) * ( rx.elements()[j] - ry.elements()[j] );
+            numUsed++;
         }
 
-        return 1.0 - 6.0 * sum / ( Math.pow( n, 3 ) - n );
+        return 1.0 - 6.0 * sum / ( Math.pow( numUsed, 3 ) - numUsed );
     }
 }
