@@ -67,4 +67,15 @@ public class DistanceTest extends TestCase {
         double expectedValue = 1.0;
         assertEquals( expectedValue, actualValue, 0.001 );
     }
+
+    public void testSpearmanRankCorrelation2() {
+        // Example - R returns 0.3356643, below returns 1.0
+        double[] a = new double[] { 98.0, 91.0, 23.0, 58.0, 106.0, 31.0, 30.0, 69.0, 27.0, 9.0, 22.0, 40.0 };
+        double[] b = new double[] { 40.0, 744.0, 13.0, 5282.0, 2031.0, 27.0, 965.0, 170.0, 874.0, 191.0, 32.0, 90.0 };
+
+        double actualValue = Distance.spearmanRankCorrelation( new DoubleArrayList( a ), new DoubleArrayList( b ) );
+        double expectedValue = 0.3356643;
+        assertEquals( expectedValue, actualValue, 0.001 );
+    }
+
 }
