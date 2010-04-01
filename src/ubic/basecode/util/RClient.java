@@ -21,6 +21,7 @@ package ubic.basecode.util;
 import java.util.List;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.util.r.type.TwoWayAnovaResult;
 
 /**
  * ion of a connection to R
@@ -52,7 +53,7 @@ public interface RClient {
      * @param command
      * @return
      */
-    public TwoWayAnovaResult twoWayAnovaEval( String command );
+    public TwoWayAnovaResult twoWayAnovaEval( String command, boolean withInteractions );
 
     /*
      * (non-Javadoc)
@@ -193,8 +194,6 @@ public interface RClient {
 
     public boolean isConnected();
 
-    public void disconnect();
-
     /**
      * Spawns a thread to log R progress before calling doubleArrayEvalWithLogging.
      * 
@@ -211,7 +210,7 @@ public interface RClient {
      * @return
      * @see RClient#twoWayAnovaEval(String)
      */
-    public TwoWayAnovaResult twoWayAnovaEvalWithLogging( String command );
+    public TwoWayAnovaResult twoWayAnovaEvalWithLogging( String command, boolean withInteractions );
 
     /**
      * @param listEntryType a hint about what type of object you want the list to contain. If you set this to be null,

@@ -21,9 +21,7 @@ package ubic.basecode.util;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -35,10 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.rosuda.REngine.REXP;
-import org.rosuda.REngine.REXPList;
-import org.rosuda.REngine.REXPLogical;
 import org.rosuda.REngine.REXPMismatchException;
-import org.rosuda.REngine.REXPString;
 import org.rosuda.REngine.REngineException;
 import org.rosuda.REngine.RList;
 import org.rosuda.REngine.Rserve.RConnection;
@@ -196,25 +191,6 @@ public class RServeClient extends AbstractRClient {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#booleanDoubleArrayEval(java.lang.String, java.lang.String, double[])
-     */
-    public boolean booleanDoubleArrayEval( String command, String argName, double[] arg ) {
-        checkConnection();
-        this.assign( argName, arg );
-        REXP x = this.eval( command );
-        if ( x.isLogical() ) {
-            try {
-                REXPLogical b = new REXPLogical( new boolean[1], new REXPList( x.asList() ) );
-                return b.isTRUE()[0];
-            } catch ( REXPMismatchException e ) {
-                throw new RuntimeException( e );
-            }
-        }
-        return false;
-    }
-
     /**
      * 
      *
@@ -226,69 +202,6 @@ public class RServeClient extends AbstractRClient {
     public void disconnect() {
         if ( connection != null && connection.isConnected() ) connection.close();
         connection = null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#doubleArrayDoubleArrayEval(java.lang.String, java.lang.String, double[])
-     */
-    public double[] doubleArrayDoubleArrayEval( String command, String argName, double[] arg ) {
-        try {
-            this.assign( argName, arg );
-            RList l = this.eval( command ).asList();
-            return l.at( argName ).asDoubles();
-        } catch ( REXPMismatchException e ) {
-            throw new RuntimeException( e );
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#doubleArrayEval(java.lang.String)
-     */
-    public double[] doubleArrayEval( String command ) {
-        try {
-            REXP r = this.eval( command );
-            if ( r == null ) {
-                return null;
-            }
-            return r.asDoubles();
-        } catch ( REXPMismatchException e ) {
-            throw new RuntimeException( e );
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#doubleArrayTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
-     * java.lang.String, double[])
-     */
-    public double[] doubleArrayTwoDoubleArrayEval( String command, String argName, double[] arg, String argName2,
-            double[] arg2 ) {
-        this.assign( argName, arg );
-        this.assign( argName2, arg2 );
-        try {
-            return this.eval( command ).asDoubles();
-        } catch ( REXPMismatchException e ) {
-            throw new RuntimeException( e );
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#doubleTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
-     * java.lang.String, double[])
-     */
-    public double doubleTwoDoubleArrayEval( String command, String argName, double[] arg, String argName2, double[] arg2 ) {
-        checkConnection();
-        this.assign( argName, arg );
-        this.assign( argName2, arg2 );
-        REXP x = this.eval( command );
-        try {
-            return x.asDouble();
-        } catch ( REXPMismatchException e ) {
-            throw new RuntimeException( e );
-        }
     }
 
     /*
@@ -306,18 +219,6 @@ public class RServeClient extends AbstractRClient {
      */
     public String getLastError() {
         return connection.getLastError();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#intArrayEval(java.lang.String)
-     */
-    public int[] intArrayEval( String command ) {
-        try {
-            return eval( command ).asIntegers();
-        } catch ( REXPMismatchException e ) {
-            throw new RuntimeException( e );
-        }
     }
 
     /**
@@ -418,46 +319,6 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#stringEval(java.lang.String)
-     */
-    public String stringEval( String command ) {
-        try {
-            return this.eval( command ).asString();
-        } catch ( REXPMismatchException e ) {
-            throw new RuntimeException( e );
-        }
-    }
-
-    /**
-     * @param string
-     * @return
-     */
-    public List<String> stringListEval( String command ) {
-        try {
-            REXP eval = this.eval( command );
-
-            RList v;
-            List<String> results = new ArrayList<String>();
-            if ( eval instanceof REXPString ) {
-                String[] strs = ( ( REXPString ) eval ).asStrings();
-                for ( String string : strs ) {
-                    results.add( string );
-                }
-            } else {
-                v = eval.asList();
-                for ( Iterator<?> it = v.iterator(); it.hasNext(); ) {
-                    results.add( ( ( REXPString ) it.next() ).asString() );
-                }
-            }
-
-            return results;
-        } catch ( REXPMismatchException e ) {
-            throw new RuntimeException( e );
-        }
-    }
-
-    /*
-     * (non-Javadoc)
      * @see org.rosuda.JRclient.Rconnection#voidEval(java.lang.String)
      */
     /*
@@ -522,6 +383,7 @@ public class RServeClient extends AbstractRClient {
         return true;
     }
 
+    @Override
     protected REXP eval( String command ) {
         log.debug( "eval: " + command );
         checkConnection();
@@ -593,116 +455,6 @@ public class RServeClient extends AbstractRClient {
         } catch ( InterruptedException e ) {
             //
         }
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#anovaEval(java.lang.String)
-     */
-    public TwoWayAnovaResult twoWayAnovaEval( String command ) {
-        try {
-            REXP rawResult = this.eval( command );
-
-            if ( rawResult == null ) {
-                log.error( "R command returned null: " + command );
-                return null;
-            }
-
-            RList mainList = rawResult.asList();
-            if ( mainList == null ) {
-                log.warn( "No string list in R: " + command );
-                return null;
-            }
-
-            /*
-             * The values are in the correct order, but the keys in the mainList (from mainList.keys()) are not for some
-             * reason so I'm not using them. In the debugger, the key is the composite sequence, but this isn't the same
-             * composite sequence I see directly in R. The order of the p values and statistics are correct, however.
-             */
-            LinkedHashMap<String, double[]> pvalues = new LinkedHashMap<String, double[]>();
-            LinkedHashMap<String, double[]> statistics = new LinkedHashMap<String, double[]>();
-
-            for ( int i = 0; i < mainList.keys().length; i++ ) {
-                REXP r1 = mainList.at( i );
-                RList l1 = r1.asList();
-                if ( l1 == null ) {
-                    log.warn( "No string list in R: " + command );
-                    return null;
-                }
-
-                String[] keys = l1.keys();
-                for ( String key : keys ) {
-                    if ( StringUtils.equals( "Pr(>F)", key ) ) {
-                        REXP r2 = l1.at( key );
-                        double[] pValsFromR = r2.asDoubles();
-                        double[] pValsToUse = new double[pValsFromR.length - 1];
-                        for ( int j = 0; j < pValsToUse.length; j++ ) {
-                            pValsToUse[j] = pValsFromR[j];
-                        }
-
-                        pvalues.put( Integer.toString( i ), pValsToUse );
-                    } else if ( StringUtils.equals( "F value", key ) ) {
-                        REXP r2 = l1.at( key );
-                        double[] statisticsFromR = r2.asDoubles();
-                        double[] statisticsToUse = new double[statisticsFromR.length - 1];
-                        for ( int j = 0; j < statisticsToUse.length; j++ ) {
-                            statisticsToUse[j] = statisticsFromR[j];
-                        }
-                        statistics.put( Integer.toString( i ), statisticsToUse );
-                    }
-
-                }
-            }
-
-            TwoWayAnovaResult result = new TwoWayAnovaResult( pvalues, statistics );
-
-            return result;
-        } catch ( REXPMismatchException e ) {
-            throw new RuntimeException( e );
-        }
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#doubleArrayEvalWithLogging(java.lang.String)
-     */
-    public double[] doubleArrayEvalWithLogging( String command ) {
-        RLoggingThread rLoggingThread = null;
-        double[] doubleArray = null;
-        try {
-            rLoggingThread = RLoggingThreadFactory.createRLoggingThread();
-            doubleArray = this.doubleArrayEval( command );
-        } catch ( Exception e ) {
-            throw new RuntimeException( "Problems executing R command " + command + ": " + e.getMessage() );
-        } finally {
-            if ( rLoggingThread != null ) {
-                log.debug( "Shutting down logging thread." );
-                rLoggingThread.done();
-            }
-        }
-        return doubleArray;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#twoWayAnovaEvalWithLogging(java.lang.String)
-     */
-    public TwoWayAnovaResult twoWayAnovaEvalWithLogging( String command ) {
-        RLoggingThread rLoggingThread = null;
-        TwoWayAnovaResult twoWayAnovaResult = null;
-        try {
-            rLoggingThread = RLoggingThreadFactory.createRLoggingThread();
-            twoWayAnovaResult = this.twoWayAnovaEval( command );
-        } catch ( Exception e ) {
-            throw new RuntimeException( "Problems executing R command " + command + ": " + e.getMessage(), e );
-        } finally {
-            if ( rLoggingThread != null ) {
-                log.debug( "Shutting down logging thread." );
-                rLoggingThread.done();
-            }
-        }
-        return twoWayAnovaResult;
     }
 
 }
