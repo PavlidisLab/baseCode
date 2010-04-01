@@ -522,11 +522,7 @@ public class RServeClient extends AbstractRClient {
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#eval(java.lang.String)
-     */
-    private REXP eval( String command ) {
+    protected REXP eval( String command ) {
         log.debug( "eval: " + command );
         checkConnection();
         try {

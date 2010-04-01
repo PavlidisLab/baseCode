@@ -213,4 +213,20 @@ public interface RClient {
      */
     public TwoWayAnovaResult twoWayAnovaEvalWithLogging( String command );
 
+    /**
+     * @param listEntryType a hint about what type of object you want the list to contain. If you set this to be null,
+     *        the method will try to guess, but caution is advised.
+     * @param command R command
+     * @return
+     */
+    public List<?> listEval( Class<?> listEntryType, String command );
+
+    /**
+     * @param listEntryType
+     * @param command
+     * @return
+     * @see listEval
+     */
+    public List<?> listEvalWithLogging( Class<?> listEntryType, String command );
+
 }

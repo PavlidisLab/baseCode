@@ -25,10 +25,13 @@ import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.rosuda.REngine.REXPGenericVector;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.math.Constants;
+import ubic.basecode.math.MatrixRowStats;
+import ubic.basecode.util.r.type.HTest;
 
 /**
  * @author pavlidis
@@ -186,5 +189,46 @@ public class JRIClientTest extends TestCase {
         double actual = rc.doubleTwoDoubleArrayEval( "cor(a,b)", "a", test1, "b", test2 );
         double expected = -0.29843518070456654;
         assertEquals( expected, actual, Constants.SMALLISH );
+    }
+
+    public void testListEvalA() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        DoubleMatrixReader r = new DoubleMatrixReader();
+        DoubleMatrix<String, String> read = r.read( this.getClass().getResourceAsStream( "/data/testdata.txt" ) );
+        String matrixName = rc.assignMatrix( read );
+        List results;
+
+        results = rc.listEval( double[].class, "apply(" + matrixName + ", 1, function(x) {summary(x)})" );
+        assertNotNull( results );
+
+        for ( Object o : results ) {
+            assertTrue( o instanceof double[] );
+        }
+
+    }
+
+    public void testListEvalB() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        DoubleMatrixReader r = new DoubleMatrixReader();
+        DoubleMatrix<String, String> read = r.read( this.getClass().getResourceAsStream( "/data/testdata.txt" ) );
+        String matrixName = rc.assignMatrix( read );
+        List results;
+
+        results = rc.listEval( HTest.class, "apply(" + matrixName + ", 1, function(x) {cor.test(x, " + matrixName
+                + "[1,])})" );
+        assertNotNull( results );
+
+        for ( Object o : results ) {
+            assertNotNull( ( ( HTest ) o ).getPvalue() );
+        }
+
     }
 }

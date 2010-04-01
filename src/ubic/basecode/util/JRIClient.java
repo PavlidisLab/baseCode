@@ -178,7 +178,7 @@ public class JRIClient extends AbstractRClient {
             rLoggingThread = RLoggingThreadFactory.createRLoggingThread();
             doubleArray = this.doubleArrayEval( command );
         } catch ( Exception e ) {
-            log.error( "Problems executing R command " + command.toString(), e );
+            throw new RuntimeException( "Problems executing R command " + command.toString(), e );
         } finally {
             if ( rLoggingThread != null ) {
                 log.debug( "Shutting down logging thread." );
@@ -410,12 +410,8 @@ public class JRIClient extends AbstractRClient {
         eval( command );
     }
 
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#eval(java.lang.String)
-     */
-    private org.rosuda.REngine.REXP eval( String command ) {
-        org.rosuda.REngine.REXP result;
+    public REXP eval( String command ) {
+        REXP result;
         int key = connection.lock();
         try {
 

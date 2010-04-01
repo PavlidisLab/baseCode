@@ -18,13 +18,22 @@
  */
 package ubic.basecode.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.rosuda.REngine.REXP;
+import org.rosuda.REngine.REXPDouble;
+import org.rosuda.REngine.REXPFactor;
+import org.rosuda.REngine.REXPGenericVector;
+import org.rosuda.REngine.REXPInteger;
+import org.rosuda.REngine.REXPList;
+import org.rosuda.REngine.REXPMismatchException;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.util.r.type.HTest;
 
 /**
  * Base class for RClients
@@ -35,14 +44,6 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 public abstract class AbstractRClient implements RClient {
 
     private static Log log = LogFactory.getLog( AbstractRClient.class.getName() );
-
-    /**
-     * @param ob
-     * @return
-     */
-    public static String variableIdentityNumber( Object ob ) {
-        return Integer.toString( Math.abs( ob.hashCode() ) ) + RandomStringUtils.randomAlphabetic( 6 );
-    }
 
     /**
      * Copy a matrix into an array, so that rows are represented consecutively in the array. (RServe has no interface
@@ -92,6 +93,31 @@ public abstract class AbstractRClient implements RClient {
         return unrolledMatrix;
     }
 
+    /**
+     * @param ob
+     * @return
+     */
+    public static String variableIdentityNumber( Object ob ) {
+        return Integer.toString( Math.abs( ob.hashCode() ) ) + RandomStringUtils.randomAlphabetic( 6 );
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#assignFactor(java.util.List)
+     */
+    public String assignFactor( List<String> strings ) {
+        String variableName = "factor." + variableIdentityNumber( strings );
+        Object[] array = strings.toArray();
+        String[] sa = new String[array.length];
+        for ( int i = 0; i < array.length; i++ ) {
+            sa[i] = array[i].toString();
+        }
+
+        String l = assignStringList( strings );
+        this.voidEval( variableName + "<-factor(" + l + ")" );
+        return variableName;
+    }
+
     /*
      * (non-Javadoc)
      * @see ubic.basecode.util.RClient#assignMatrix(double[][])
@@ -132,6 +158,20 @@ public abstract class AbstractRClient implements RClient {
         return matrixVarName;
     }
 
+    /**
+     * @param matrix
+     * @param matrixVarName
+     * @return
+     */
+    protected <R, C> void assignRowAndColumnNames( DoubleMatrix<R, C> matrix, String matrixVarName ) {
+
+        String rowNameVar = assignStringList( matrix.getRowNames() );
+        String colNameVar = assignStringList( matrix.getColNames() );
+
+        String dimcmd = "dimnames(" + matrixVarName + ")<-list(" + rowNameVar + ", " + colNameVar + ")";
+        this.voidEval( dimcmd );
+    }
+
     /*
      * (non-Javadoc)
      * @see ubic.basecode.util.RClient#assignStringList(java.util.List)
@@ -150,21 +190,109 @@ public abstract class AbstractRClient implements RClient {
         return variableName;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#assignFactor(java.util.List)
-     */
-    public String assignFactor( List<String> strings ) {
-        String variableName = "factor." + variableIdentityNumber( strings );
-        Object[] array = strings.toArray();
-        String[] sa = new String[array.length];
-        for ( int i = 0; i < array.length; i++ ) {
-            sa[i] = array[i].toString();
+    protected abstract REXP eval( String command );
+
+    public List<?> listEval( Class<?> listEntryType, String command ) {
+
+        REXP rexp = this.eval( command );
+
+        List<Object> result = new ArrayList<Object>();
+        try {
+            if ( !rexp.isVector() ) {
+                throw new IllegalArgumentException( "Command did not return some kind of vector" );
+            }
+
+            if ( rexp instanceof REXPInteger ) {
+                log.debug( "integer" );
+                double[][] asDoubleMatrix = rexp.asDoubleMatrix();
+                for ( double[] ds : asDoubleMatrix ) {
+                    result.add( ds );
+                }
+
+                if ( rexp instanceof REXPFactor ) {
+                    log.info( "factor" );
+                    // not sure what to do...
+                }
+            } else if ( rexp instanceof REXPGenericVector ) {
+                log.debug( "generic" );
+                REXPGenericVector v = ( REXPGenericVector ) rexp;
+                List<?> tmp = new ArrayList<Object>( v.asList().values() );
+
+                if ( tmp.size() == 0 ) return tmp;
+
+                for ( Object t : tmp ) {
+                    String clazz = ( ( REXP ) t ).getAttribute( "class" ).asString();
+                    /*
+                     * FIXME!!!!
+                     */
+                    if ( clazz.equals( "htest" ) ) {
+                        try {
+                            result.add( new HTest( ( ( REXP ) t ).asList() ) );
+                        } catch ( REXPMismatchException e ) {
+                            result.add( new HTest() );
+                        }
+                    } else if ( clazz.equals( "lm" ) ) {
+                        throw new UnsupportedOperationException();
+                    } else {
+                        result.add( new HTest() ); // e.g. failed result or something we don't know about yet
+                    }
+                    /*
+                     * todo: support lm objects, anova objects others? pair.htest?
+                     */
+                }
+
+            } else if ( rexp instanceof REXPDouble ) {
+                log.debug( "double" );
+                double[][] asDoubleMatrix = rexp.asDoubleMatrix();
+                for ( double[] ds : asDoubleMatrix ) {
+                    result.add( ds );
+                }
+
+            } else if ( rexp instanceof REXPList ) {
+                log.debug( "list" );
+                if ( rexp.isPairList() ) {
+                    // log.info( "pairlist" ); always true for REXPList.
+                }
+
+                if ( rexp.isLanguage() ) {
+                    throw new UnsupportedOperationException( "Don't know how to deal with vector type of "
+                            + rexp.getClass().getName() );
+                } else {
+
+                    log.debug( rexp.getClass().getName() );
+                    result = new ArrayList<Object>( rexp.asList().values() );
+                }
+            } else {
+                throw new UnsupportedOperationException( "Don't know how to deal with vector type of "
+                        + rexp.getClass().getName() );
+            }
+
+            return result;
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
         }
 
-        String l = assignStringList( strings );
-        this.voidEval( variableName + "<-factor(" + l + ")" );
-        return variableName;
+    }
+
+    /* (non-Javadoc)
+     * @see ubic.basecode.util.RClient#listEvalWithLogging(java.lang.Class, java.lang.String)
+     */
+    public List<?> listEvalWithLogging( Class<?> listEntryType, String command ) { 
+        RLoggingThread rLoggingThread = null;
+        List<?> result = null;
+        try {
+            rLoggingThread = RLoggingThreadFactory.createRLoggingThread();
+            result = this.listEval( listEntryType, command );
+        } catch ( Exception e ) {
+            throw new RuntimeException( "Problems executing R command " + command.toString(), e );
+        } finally {
+            if ( rLoggingThread != null ) {
+                log.debug( "Shutting down logging thread." );
+                rLoggingThread.done();
+            }
+        }
+        return result;
+
     }
 
     /*
@@ -186,20 +314,6 @@ public abstract class AbstractRClient implements RClient {
      */
     public void remove( String variableName ) {
         this.voidEval( "rm(" + variableName + ")" );
-    }
-
-    /**
-     * @param matrix
-     * @param matrixVarName
-     * @return
-     */
-    protected <R, C> void assignRowAndColumnNames( DoubleMatrix<R, C> matrix, String matrixVarName ) {
-
-        String rowNameVar = assignStringList( matrix.getRowNames() );
-        String colNameVar = assignStringList( matrix.getColNames() );
-
-        String dimcmd = "dimnames(" + matrixVarName + ")<-list(" + rowNameVar + ", " + colNameVar + ")";
-        this.voidEval( dimcmd );
     }
 
 }

@@ -37,7 +37,6 @@ public class RLoggingThread extends Thread {
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Thread#run()
      */
     @Override
@@ -48,10 +47,10 @@ public class RLoggingThread extends Thread {
             try {
                 Thread.sleep( ONE_MIN_IN_MILLISEC );
             } catch ( InterruptedException e ) {
-                log.debug( "Thread interrupted.  R Analysis must have finished." );
+                log.debug( "Thread interrupted. Analysis must have finished." );
                 break;
             }
-            log.info( "R is still running.  " + count + " min elapsed." );
+            log.info( "Analysis is still running.  " + count + " min elapsed." );
             count++;
         }
         return;

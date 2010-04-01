@@ -59,6 +59,8 @@ public abstract class AbstractOntologyService {
                 try {
                     Thread.sleep( KEEPALIVE_PING_DELAY );
                 } catch ( InterruptedException e ) {
+                    log.info( "Ending keep-alive" );
+                    return;
                 }
                 if ( isOntologyLoaded() ) {
                     log.info( "sending keep-alive query to " + getOntologyName() );
