@@ -19,12 +19,15 @@
 package ubic.basecode.util;
 
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections.Transformer;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.util.r.type.TwoWayAnovaResult;
 
 /**
- * ion of a connection to R
+ * Abstraction of a connection to R
  * 
  * @author Paul
  * @version $Id$
@@ -53,7 +56,7 @@ public interface RClient {
      * @param command
      * @return
      */
-    public TwoWayAnovaResult twoWayAnovaEval( String command, boolean withInteractions );
+    public Map<String, TwoWayAnovaResult> twoWayAnovaEval( String command, boolean withInteractions );
 
     /*
      * (non-Javadoc)
@@ -82,6 +85,15 @@ public interface RClient {
      * @return the name of the variable by which the R matrix can be referred.
      */
     public String assignMatrix( DoubleMatrix<?, ?> matrix );
+
+    /**
+     * Assign a 2-d matrix.
+     * 
+     * @param matrix
+     * @param rowNameExtractor
+     * @return the name of the variable by which the R matrix can be referred.
+     */
+    public String assignMatrix( DoubleMatrix<?, ?> matrix, Transformer rowNameExtractor );
 
     /**
      * Define a variable corresponding to a character array in the R context, given a List of Strings.
@@ -206,11 +218,23 @@ public interface RClient {
     /**
      * Spawns a thread to log R progress before calling twoWayAnovaEval.
      * 
-     * @param command
-     * @return
+     * @param command that returns a list of ANOVA tables.
+     * @return map of results
      * @see RClient#twoWayAnovaEval(String)
      */
-    public TwoWayAnovaResult twoWayAnovaEvalWithLogging( String command, boolean withInteractions );
+    public Map<String, TwoWayAnovaResult> twoWayAnovaEvalWithLogging( String command, boolean withInteractions );
+
+    /**
+     * Lower-level access to two-way anova
+     * 
+     * @param data
+     * @param factor1
+     * @param factor2
+     * @param includeInteraction
+     * @return result with interaction term information null if includeInteraction = false
+     */
+    public TwoWayAnovaResult twoWayAnova( double[] data, List<String> factor1, List<String> factor2,
+            boolean includeInteraction );
 
     /**
      * @param listEntryType a hint about what type of object you want the list to contain. If you set this to be null,

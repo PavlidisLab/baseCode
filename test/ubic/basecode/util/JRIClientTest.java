@@ -19,19 +19,19 @@
 package ubic.basecode.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.rosuda.REngine.REXPGenericVector;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.math.Constants;
-import ubic.basecode.math.MatrixRowStats;
 import ubic.basecode.util.r.type.HTest;
+import ubic.basecode.util.r.type.TwoWayAnovaResult;
 
 /**
  * @author pavlidis
@@ -200,7 +200,7 @@ public class JRIClientTest extends TestCase {
         DoubleMatrixReader r = new DoubleMatrixReader();
         DoubleMatrix<String, String> read = r.read( this.getClass().getResourceAsStream( "/data/testdata.txt" ) );
         String matrixName = rc.assignMatrix( read );
-        List results;
+        List<?> results;
 
         results = rc.listEval( double[].class, "apply(" + matrixName + ", 1, function(x) {summary(x)})" );
         assertNotNull( results );
@@ -220,7 +220,7 @@ public class JRIClientTest extends TestCase {
         DoubleMatrixReader r = new DoubleMatrixReader();
         DoubleMatrix<String, String> read = r.read( this.getClass().getResourceAsStream( "/data/testdata.txt" ) );
         String matrixName = rc.assignMatrix( read );
-        List results;
+        List<?> results;
 
         results = rc.listEval( HTest.class, "apply(" + matrixName + ", 1, function(x) {cor.test(x, " + matrixName
                 + "[1,])})" );
@@ -230,5 +230,98 @@ public class JRIClientTest extends TestCase {
             assertNotNull( ( ( HTest ) o ).getPvalue() );
         }
 
+    }
+
+    public void testAnovaA() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        /*
+         * foo<-c(212.1979, 8.8645, 8.4814, 11.915); a<-factor(c( "A", "B", "B", "B" )); b<-factor(c( "D", "C", "D", "D"
+         * )); anova(aov(foo ~ a+b));
+         */
+
+        double[] data = new double[] { 212.1979, 8.8645, 8.4814, 11.915 };
+        String[] f1 = new String[] { "A", "B", "B", "B" };
+        String[] f2 = new String[] { "D", "C", "D", "D" };
+
+        TwoWayAnovaResult r = rc.twoWayAnova( data, Arrays.asList( f1 ), Arrays.asList( f2 ), false );
+        assertEquals( 0.008816, r.getMainEffectAPval(), 0.0001 );
+        assertEquals( 0.731589, r.getMainEffectBPval(), 0.0001 );
+        assertEquals( 5214.3817, r.getMainEffectAfVal(), 0.0001 );
+        assertEquals( 0.2012, r.getMainEffectBfVal(), 0.0001 );
+    }
+
+    public void testAnovaB() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        /*
+         * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074); a<-factor(c( "A", "A", "A", "A", "B",
+         * "B", "B", "B" )); b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" )); anova(aov(foo ~ a+b));
+         */
+
+        double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
+        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
+        String[] f2 = new String[] { "C", "C", "D", "D", "C", "C", "D", "D" };
+
+        TwoWayAnovaResult r = rc.twoWayAnova( data, Arrays.asList( f1 ), Arrays.asList( f2 ), false );
+        assertEquals( 0.1567, r.getMainEffectAPval(), 0.0001 );
+        assertEquals( 0.8323, r.getMainEffectBPval(), 0.0001 );
+        assertEquals( 3.0294, r.getMainEffectAfVal(), 0.0001 );
+        assertEquals( 0.0511, r.getMainEffectBfVal(), 0.0001 );
+    }
+
+    public void testAnovaC() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        /*
+         * foo<-c( 213.7725, 211.6383, NA, 212.589, 10.3011, 10.1182, 13.486, 12.916); a<-factor(c( "A", "A", "A", "A",
+         * "B", "B", "B", "B" )); b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" )); anova(aov(foo ~ a+b));
+         */
+
+        double[] data = new double[] { 213.7725, 211.6383, Double.NaN, 212.589, 10.3011, 10.1182, 13.486, 12.916 };
+        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
+        String[] f2 = new String[] { "C", "C", "D", "D", "C", "C", "D", "D" };
+
+        TwoWayAnovaResult r = rc.twoWayAnova( data, Arrays.asList( f1 ), Arrays.asList( f2 ), true );
+        assertEquals( 8.97e-08, r.getMainEffectAPval(), 0.0000001 );
+        assertEquals( 0.08816, r.getMainEffectBPval(), 0.0001 );
+        assertEquals( 0.11823, r.getInteractionPval(), 0.0001 );
+        assertEquals( 84546.9846, r.getMainEffectAfVal(), 0.0001 );
+        assertEquals( 6.2208, r.getMainEffectBfVal(), 0.0001 );
+        assertEquals( 4.7178, r.getInteractionfVal(), 0.0001 );
+    }
+
+    public void testAnovaD() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        /*
+         * foo<-c( 206.2209 , NA , 205.6038 , 203.0751 , NA , NA , 4.6569 , NA ); a<-factor(c( "A", "A", "A", "A", "B",
+         * "B", "B", "B" )); b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" )); anova(aov(foo ~ a+b));
+         */
+
+        double[] data = new double[] { 206.2209, Double.NaN, 205.6038, 203.0751, Double.NaN, Double.NaN, 4.6569,
+                Double.NaN };
+        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
+        String[] f2 = new String[] { "C", "C", "D", "D", "C", "C", "D", "D" };
+
+        TwoWayAnovaResult r = rc.twoWayAnova( data, Arrays.asList( f1 ), Arrays.asList( f2 ), true );
+        assertEquals( 0.006562, r.getMainEffectAPval(), 0.00001 );
+        assertEquals( 0.548142, r.getMainEffectBPval(), 0.0001 );
+        assertEquals( Double.NaN, r.getInteractionPval() );
+        assertEquals( 9412.4049, r.getMainEffectAfVal(), 0.0001 );
+        assertEquals( 0.7381, r.getMainEffectBfVal(), 0.0001 );
+        assertEquals( Double.NaN, r.getInteractionfVal() );
     }
 }

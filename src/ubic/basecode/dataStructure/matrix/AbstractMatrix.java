@@ -108,13 +108,12 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
         }
 
         this.rowNames.add( s );
-        this.rowMap.put( s, new Integer( lastRowIndex ) );
+        this.rowMap.put( s, lastRowIndex );
         lastRowIndex++;
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see basecode.dataStructure.NamedMatrix#addRowName(java.lang.String, int)
      */
     public final void addRowName( R s, int i ) {
@@ -126,7 +125,7 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
         }
 
         this.rowNames.add( s );
-        this.rowMap.put( s, new Integer( i ) );
+        this.rowMap.put( s, i );
     }
 
     public final boolean containsColumnName( C columnName ) {
@@ -201,7 +200,6 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
 
     /*
      * (non-Javadoc)
-     * 
      * @see basecode.dataStructure.NamedMatrix#numMissing()
      */
     public int numMissing() {

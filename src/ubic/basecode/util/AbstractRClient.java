@@ -19,12 +19,14 @@
 package ubic.basecode.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.functors.StringValueTransformer;
 import org.apache.commons.lang.RandomStringUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.rosuda.REngine.REXP;
@@ -113,13 +115,7 @@ public abstract class AbstractRClient implements RClient {
      * @see ubic.basecode.util.RClient#assignFactor(java.util.List)
      */
     public String assignFactor( List<String> strings ) {
-        String variableName = "factor." + variableIdentityNumber( strings );
-        Object[] array = strings.toArray();
-        String[] sa = new String[array.length];
-        for ( int i = 0; i < array.length; i++ ) {
-            sa[i] = array[i].toString();
-        }
-
+        String variableName = "f." + variableIdentityNumber( strings );
         String l = assignStringList( strings );
         this.voidEval( variableName + "<-factor(" + l + ")" );
         return variableName;
@@ -146,9 +142,10 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#assignMatrix(ubic.basecode.dataStructure.matrix.DoubleMatrixNamed)
+     * @see ubic.basecode.util.RClient#assignMatrix(ubic.basecode.dataStructure.matrix.DoubleMatrix,
+     * org.apache.commons.collections.Transformer)
      */
-    public String assignMatrix( DoubleMatrix<?, ?> matrix ) {
+    public String assignMatrix( DoubleMatrix<?, ?> matrix, Transformer rowNameExtractor ) {
         String matrixVarName = "Matrix_" + variableIdentityNumber( matrix );
         log.debug( "Assigning matrix with variable name " + matrixVarName );
         int rows = matrix.rows();
@@ -161,15 +158,23 @@ public abstract class AbstractRClient implements RClient {
                 + ", byrow=TRUE)" );
         this.voidEval( "rm(U" + matrixVarName + ")" ); // maybe this saves memory...
 
-        if ( matrix.hasColNames() && matrix.hasRowNames() ) assignRowAndColumnNames( matrix, matrixVarName );
+        if ( matrix.hasColNames() && matrix.hasRowNames() )
+            assignRowAndColumnNames( matrix, matrixVarName, rowNameExtractor );
         return matrixVarName;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#assignMatrix(ubic.basecode.dataStructure.matrix.DoubleMatrixNamed)
+     */
+    public String assignMatrix( DoubleMatrix<?, ?> matrix ) {
+        return assignMatrix( matrix, StringValueTransformer.getInstance() );
     }
 
     /*
      * (non-Javadoc)
      * @see ubic.basecode.util.RClient#assignStringList(java.util.List)
      */
-    @SuppressWarnings("unchecked")
     public String assignStringList( List strings ) {
         String variableName = "stringList." + variableIdentityNumber( strings );
 
@@ -423,114 +428,44 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#twoWayAnovaEval(java.lang.String)
+     * @see ubic.basecode.util.RClient#twoWayAnovaEval(java.lang.String, boolean)
      */
-    public TwoWayAnovaResult twoWayAnovaEval( String command, boolean withInteractions ) {
+    public Map<String, TwoWayAnovaResult> twoWayAnovaEval( String command, boolean withInteractions ) {
         REXP rawResult = this.eval( command );
 
         if ( rawResult == null ) {
             return null;
         }
 
-        RList mainList;
+        Map<String, TwoWayAnovaResult> result = new HashMap<String, TwoWayAnovaResult>();
         try {
-            mainList = rawResult.asList();
-        } catch ( REXPMismatchException e1 ) {
-            throw new RuntimeException( e1 );
-        }
-        if ( mainList == null ) {
-            return null;
-        }
+            RList mainList = rawResult.asList();
+            if ( mainList == null ) {
+                return null;
+            }
 
-        double[] missingData;
-        int numPvalsPerExample;
-        if ( withInteractions ) {
-            numPvalsPerExample = 3;
-            missingData = new double[] { Double.NaN, Double.NaN, Double.NaN };
-        } else {
-            numPvalsPerExample = 2;
-            missingData = new double[] { Double.NaN, Double.NaN };
-        }
+            log.debug( mainList.keys().length + " results." );
 
-        /*
-         * The values are in the correct order, but the keys in the mainList (from mainList.keys()) are not for some
-         * reason so I'm not using them. In the debugger, the key is the composite sequence, but this isn't the same
-         * composite sequence I see directly in R. The order of the p values and statistics are correct, however.
-         */
-        LinkedHashMap<String, double[]> pvalues = new LinkedHashMap<String, double[]>();
-        LinkedHashMap<String, double[]> statistics = new LinkedHashMap<String, double[]>();
-        log.debug( mainList.keys().length + " results." );
-        try {
             for ( int i = 0; i < mainList.keys().length; i++ ) {
 
                 if ( log.isDebugEnabled() ) log.debug( "Key: " + mainList.keyAt( i ) );
 
-                REXP r1 = mainList.at( i );
+                REXP anovaTable = mainList.at( i );
 
-                String probeKeyPlaceholder = Integer.toString( i );
+                String elementIdentifier = mainList.keyAt( i );
 
-                if ( !r1.isList() ) { // like a failed result?
-                    log.debug( "No anovaresult for " + probeKeyPlaceholder );
-                    pvalues.put( probeKeyPlaceholder, missingData );
-                    statistics.put( probeKeyPlaceholder, missingData );
+                if ( !anovaTable.isList() || !anovaTable.hasAttribute( "row.names" ) ) {
+                    log.debug( "No anovaresult for " + elementIdentifier );
+                    result.put( elementIdentifier, new TwoWayAnovaResult() );
                     continue;
                 }
 
-                RList l1 = r1.asList();
-
-                String[] keys = l1.keys();
-
-                for ( String key : keys ) {
-
-                    /*
-                     * Ensure we put something in.
-                     */
-                    pvalues.put( probeKeyPlaceholder, missingData );
-                    statistics.put( probeKeyPlaceholder, missingData );
-
-                    if ( StringUtils.equalsIgnoreCase( "Pr(>F)", key ) ) {
-                        REXP r2 = l1.at( key );
-                        double[] pValsFromR = r2.asDoubles();
-
-                        if ( pValsFromR.length != numPvalsPerExample + 1 ) { // extra value from row for residuals.
-                            /*
-                             * This can happen if the interaction could not be estimated.
-                             */
-                            log
-                                    .info( "No valid anovaresult for " + probeKeyPlaceholder + ", got "
-                                            + r2.toDebugString() );
-                            continue;
-                        }
-
-                        double[] pValsToUse = new double[numPvalsPerExample];
-
-                        for ( int j = 0; j < numPvalsPerExample; j++ ) {
-                            pValsToUse[j] = pValsFromR[j];
-                        }
-
-                        pvalues.put( probeKeyPlaceholder, pValsToUse );
-                    } else if ( StringUtils.equalsIgnoreCase( "F value", key ) ) {
-                        REXP r2 = l1.at( key );
-                        double[] statisticsFromR = r2.asDoubles();
-                        double[] statisticsToUse = new double[numPvalsPerExample];
-                        for ( int j = 0; j < numPvalsPerExample; j++ ) {
-                            statisticsToUse[j] = statisticsFromR[j];
-                        }
-                        assert statisticsToUse.length == numPvalsPerExample;
-                        statistics.put( probeKeyPlaceholder, statisticsToUse );
-                    }
-
-                }
+                result.put( elementIdentifier, new TwoWayAnovaResult( anovaTable ) );
 
             }
         } catch ( REXPMismatchException e ) {
             throw new RuntimeException( e );
         }
-
-        assert statistics.size() == mainList.size();
-        assert pvalues.size() == mainList.size();
-
-        TwoWayAnovaResult result = new TwoWayAnovaResult( pvalues, statistics, withInteractions );
 
         return result;
 
@@ -580,37 +515,72 @@ public abstract class AbstractRClient implements RClient {
      * (non-Javadoc)
      * @see ubic.basecode.util.RClient#twoWayAnovaEvalWithLogging(java.lang.String)
      */
-    public TwoWayAnovaResult twoWayAnovaEvalWithLogging( String command, boolean withInteractions ) {
+    public Map<String, TwoWayAnovaResult> twoWayAnovaEvalWithLogging( String command, boolean withInteractions ) {
         RLoggingThread rLoggingThread = null;
-        TwoWayAnovaResult twoWayAnovaResult = null;
+
         try {
             rLoggingThread = RLoggingThreadFactory.createRLoggingThread();
-            twoWayAnovaResult = this.twoWayAnovaEval( command, withInteractions );
+            return this.twoWayAnovaEval( command, withInteractions );
         } catch ( Exception e ) {
-            log.error( "Problems executing R command " + command.toString(), e );
+            throw new RuntimeException( e );
         } finally {
             if ( rLoggingThread != null ) {
                 log.debug( "Shutting down logging thread." );
                 rLoggingThread.done();
             }
         }
-        return twoWayAnovaResult;
+    }
+
+    public TwoWayAnovaResult twoWayAnova( double[] data, List<String> factor1, List<String> factor2,
+            boolean includeInteraction ) {
+
+        String factorA = assignFactor( factor1 );
+        String factorB = assignFactor( factor2 );
+        StringBuffer command = new StringBuffer();
+
+        assign( "foo", data );
+
+        String modelDeclaration;
+
+        if ( includeInteraction ) {
+            modelDeclaration = "foo  ~ " + factorA + "*" + factorB;
+        } else {
+            modelDeclaration = "foo  ~ " + factorA + "+" + factorB;
+        }
+
+        command.append( "anova(aov(" + modelDeclaration + "))" );
+
+        REXP eval = eval( command.toString() );
+
+        return new TwoWayAnovaResult( eval );
     }
 
     /**
      * @param matrix
      * @param matrixVarName
+     * @param rowNameExtractor e.g. you could use StringValueTransformer.getInstance()
      * @return
      */
-    protected <R, C> void assignRowAndColumnNames( DoubleMatrix<R, C> matrix, String matrixVarName ) {
+    private void assignRowAndColumnNames( DoubleMatrix<?, ?> matrix, String matrixVarName, Transformer rowNameExtractor ) {
 
-        String rowNameVar = assignStringList( matrix.getRowNames() );
+        List<Object> rown = new ArrayList<Object>();
+        for ( Object o : matrix.getRowNames() ) {
+            rown.add( rowNameExtractor.transform( o ) );
+        }
+
+        String rowNameVar = assignStringList( rown );
         String colNameVar = assignStringList( matrix.getColNames() );
 
         String dimcmd = "dimnames(" + matrixVarName + ")<-list(" + rowNameVar + ", " + colNameVar + ")";
         this.voidEval( dimcmd );
     }
 
+    /**
+     * Evaluate the given command
+     * 
+     * @param command
+     * @return
+     */
     protected abstract REXP eval( String command );
 
 }

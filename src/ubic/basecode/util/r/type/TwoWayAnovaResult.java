@@ -18,92 +18,191 @@
  */
 package ubic.basecode.util.r.type;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang.ArrayUtils;
+import org.rosuda.REngine.REXP;
+import org.rosuda.REngine.REXPMismatchException;
 
 /**
- * A simple (flat) structure to hold Two Way Anova results. The user must know how they are storing the results for two
- * way anova with and without interactions. For example, for two way anova with interactions, the user may wish to store
- * the pvalue for main effect 1, main effect 2, and interaction effect like:
- * <p>
- * pvalue[0] -> p value for main effect 1
- * <p>
- * pvalue[1] -> p value for main effect 2
- * <p>
- * pvalue[2] -> p value for interaction effect
+ * Represents a two-way ANOVA table
  * 
- * @author keshav
+ * @author paul
  * @version $Id$
  */
 public class TwoWayAnovaResult {
 
-    private double[] pvalues = null;
-    private double[] statistics = null;
+    private String factorAName = null;
 
-    private boolean withInteractions;
+    private String factorBName = null;
+
+    private boolean hasInteractionEstimate = false;
+
+    private Integer interactionDf = null;
+
+    private Double interactionfVal = Double.NaN;
+
+    private Double interactionPval = Double.NaN;
+
+    private Integer mainEffectADf = null;
+
+    private Double mainEffectAfVal = Double.NaN;
+
+    private Double mainEffectAPval = Double.NaN;
+
+    private Integer mainEffectBDf = null;
+
+    private Double mainEffectBfVal = Double.NaN;
+
+    private Double mainEffectBPval = Double.NaN;
+
+    private Integer residualDf = null;
 
     /**
-     * @param pvalues
-     * @param statistics
+     * A null result.
      */
-    public TwoWayAnovaResult( LinkedHashMap<String, double[]> pvalues, LinkedHashMap<String, double[]> statistics,
-            boolean withInteractions ) {
+    public TwoWayAnovaResult() {
+    };
 
-        if ( pvalues.size() != statistics.size() ) {
-            throw new RuntimeException( "Number of pvalues and statistics must match." );
-        }
+    /**
+     * @param rAnovaTable from R
+     */
+    public TwoWayAnovaResult( REXP rAnovaTable ) {
 
-        this.withInteractions = withInteractions;
+        try {
 
-        Set<String> keys = pvalues.keySet();
-        List<Double> pvalsAsList = new ArrayList<Double>();
-        List<Double> statisticsAsList = new ArrayList<Double>();
+            String[] names = rAnovaTable.getAttribute( "row.names" ).asStrings();
+            this.factorAName = names[0];
+            this.factorBName = names[1];
 
-        /*
-         * Unrolling the results.
-         */
-        for ( String key : keys ) {
-            double[] pvs = pvalues.get( key );
-            double[] sts = statistics.get( key );
+            double[] pvs = rAnovaTable.asList().at( "Pr(>F)" ).asDoubles();
 
-            assert pvs.length == sts.length;
+            this.mainEffectAPval = pvs[0];
+            this.mainEffectBPval = pvs[1];
 
-            assert withInteractions ? pvs.length == 3 : pvs.length == 2;
-
-            for ( int j = 0; j < pvs.length; j++ ) {
-                pvalsAsList.add( pvs[j] );
-                statisticsAsList.add( sts[j] );
+            if ( pvs.length > 2 ) {
+                this.hasInteractionEstimate = true;
+                this.interactionPval = pvs[2];
             }
+
+            int[] dfs = rAnovaTable.asList().at( "Df" ).asIntegers();
+
+            this.mainEffectADf = dfs[0];
+            this.mainEffectBDf = dfs[1];
+            if ( dfs.length == 4 ) {
+                this.interactionDf = dfs[2];
+                this.residualDf = dfs[3];
+            } else {
+                this.residualDf = dfs[2];
+            }
+
+            double[] fs = rAnovaTable.asList().at( "F value" ).asDoubles();
+
+            this.mainEffectAfVal = fs[0];
+            this.mainEffectBfVal = fs[1];
+            if ( hasInteractionEstimate ) this.interactionfVal = fs[2];
+
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
         }
 
-        this.pvalues = ArrayUtils.toPrimitive( pvalsAsList.toArray( new Double[] {} ) );
-        this.statistics = ArrayUtils.toPrimitive( statisticsAsList.toArray( new Double[] {} ) );
-
-        assert this.pvalues.length == this.statistics.length;
-
-        assert this.pvalues.length == pvalues.size() * ( withInteractions ? 3 : 2 );
-        assert this.statistics.length == statistics.size() * ( withInteractions ? 3 : 2 );
-    }
-
-    public boolean isWithInteractions() {
-        return this.withInteractions;
     }
 
     /**
-     * @return
+     * @return the factorAName
      */
-    public double[] getPvalues() {
-        return this.pvalues;
+    public String getFactorAName() {
+        return factorAName;
     }
 
     /**
-     * @return
+     * @return the factorBName
      */
-    public double[] getStatistics() {
-        return this.statistics;
+    public String getFactorBName() {
+        return factorBName;
     }
+
+    /**
+     * @return the interactionDf
+     */
+    public Integer getInteractionDf() {
+        return interactionDf;
+    }
+
+    /**
+     * @return the interactionfVal
+     */
+    public Double getInteractionfVal() {
+        return interactionfVal;
+    }
+
+    /**
+     * @return the interactionPval
+     */
+    public Double getInteractionPval() {
+        return interactionPval;
+    }
+
+    /**
+     * @return the mainEffectADf
+     */
+    public Integer getMainEffectADf() {
+        return mainEffectADf;
+    }
+
+    /**
+     * @return the mainEffectAfVal
+     */
+    public Double getMainEffectAfVal() {
+        return mainEffectAfVal;
+    }
+
+    /**
+     * @return the mainEffectAPval
+     */
+    public Double getMainEffectAPval() {
+        return mainEffectAPval;
+    }
+
+    /**
+     * @return the mainEffectBDf
+     */
+    public Integer getMainEffectBDf() {
+        return mainEffectBDf;
+    }
+
+    /**
+     * @return the mainEffectBfVal
+     */
+    public Double getMainEffectBfVal() {
+        return mainEffectBfVal;
+    }
+
+    /**
+     * @return the mainEffectBPval
+     */
+    public Double getMainEffectBPval() {
+        return mainEffectBPval;
+    }
+
+    /**
+     * @return the residualDf
+     */
+    public Integer getResidualDf() {
+        return residualDf;
+    }
+
+    /**
+     * @return the hasInteractionEstimate
+     */
+    public boolean isHasInteractionEstimate() {
+        return hasInteractionEstimate;
+    }
+
+    @Override
+    public String toString() {
+
+        return String.format(
+                "Factor\tDf\tF\tP\n%s\t%d\t%.2f\t%.3g\n%s\t%d\t%.2f\t%.3g\nInteraction\t%d\t%.2f\t%.3g\nResidual\t%d",
+                factorAName, mainEffectADf, mainEffectAfVal, mainEffectAPval, factorBName, mainEffectBDf,
+                mainEffectBfVal, mainEffectBPval, interactionDf, interactionfVal, interactionPval, residualDf );
+    }
+
 }
