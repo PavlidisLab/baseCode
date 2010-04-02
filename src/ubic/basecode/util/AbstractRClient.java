@@ -42,6 +42,7 @@ import org.rosuda.REngine.RList;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.util.r.type.HTest;
+import ubic.basecode.util.r.type.OneWayAnovaResult;
 import ubic.basecode.util.r.type.TwoWayAnovaResult;
 
 /**
@@ -142,6 +143,14 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#assignMatrix(ubic.basecode.dataStructure.matrix.DoubleMatrixNamed)
+     */
+    public String assignMatrix( DoubleMatrix<?, ?> matrix ) {
+        return assignMatrix( matrix, StringValueTransformer.getInstance() );
+    }
+
+    /*
+     * (non-Javadoc)
      * @see ubic.basecode.util.RClient#assignMatrix(ubic.basecode.dataStructure.matrix.DoubleMatrix,
      * org.apache.commons.collections.Transformer)
      */
@@ -161,14 +170,6 @@ public abstract class AbstractRClient implements RClient {
         if ( matrix.hasColNames() && matrix.hasRowNames() )
             assignRowAndColumnNames( matrix, matrixVarName, rowNameExtractor );
         return matrixVarName;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#assignMatrix(ubic.basecode.dataStructure.matrix.DoubleMatrixNamed)
-     */
-    public String assignMatrix( DoubleMatrix<?, ?> matrix ) {
-        return assignMatrix( matrix, StringValueTransformer.getInstance() );
     }
 
     /*
@@ -420,10 +421,160 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#oneWayAnova(double[], java.util.List)
+     */
+    public OneWayAnovaResult oneWayAnova( double[] data, List<String> factor ) {
+        String f = assignFactor( factor );
+        StringBuffer command = new StringBuffer();
+
+        assign( "foo", data );
+
+        String modelDeclaration;
+
+        modelDeclaration = "foo  ~ " + f;
+
+        command.append( "anova(aov(" + modelDeclaration + "))" );
+
+        REXP eval = eval( command.toString() );
+
+        return new OneWayAnovaResult( eval );
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#oneWayAnovaEval(java.lang.String)
+     */
+    public Map<String, OneWayAnovaResult> oneWayAnovaEval( String command ) {
+        REXP rawResult = this.eval( command );
+
+        if ( rawResult == null ) {
+            return null;
+        }
+
+        Map<String, OneWayAnovaResult> result = new HashMap<String, OneWayAnovaResult>();
+        try {
+            RList mainList = rawResult.asList();
+            if ( mainList == null ) {
+                return null;
+            }
+
+            log.debug( mainList.keys().length + " results." );
+
+            for ( int i = 0; i < mainList.keys().length; i++ ) {
+
+                if ( log.isDebugEnabled() ) log.debug( "Key: " + mainList.keyAt( i ) );
+
+                REXP anovaTable = mainList.at( i );
+
+                String elementIdentifier = mainList.keyAt( i );
+
+                if ( !anovaTable.isList() || !anovaTable.hasAttribute( "row.names" ) ) {
+                    log.debug( "No anovaresult for " + elementIdentifier );
+                    result.put( elementIdentifier, new OneWayAnovaResult() );
+                    continue;
+                }
+
+                result.put( elementIdentifier, new OneWayAnovaResult( anovaTable ) );
+
+            }
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
+
+        return result;
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#oneWayAnovaEvalWithLogging(java.lang.String)
+     */
+    public Map<String, OneWayAnovaResult> oneWayAnovaEvalWithLogging( String command ) {
+        RLoggingThread rLoggingThread = null;
+
+        try {
+            rLoggingThread = RLoggingThreadFactory.createRLoggingThread();
+            return this.oneWayAnovaEval( command );
+        } catch ( Exception e ) {
+            throw new RuntimeException( e );
+        } finally {
+            if ( rLoggingThread != null ) {
+                log.debug( "Shutting down logging thread." );
+                rLoggingThread.done();
+            }
+        }
+    }
+
+    /*
+     * (non-Javadoc)
      * @see ubic.basecode.util.RClient#remove(java.lang.String)
      */
     public void remove( String variableName ) {
         this.voidEval( "rm(" + variableName + ")" );
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#stringEval(java.lang.String)
+     */
+    public String stringEval( String command ) {
+        try {
+            return this.eval( command ).asString();
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    /**
+     * @param string
+     * @return
+     */
+    public List<String> stringListEval( String command ) {
+        try {
+            REXP eval = this.eval( command );
+
+            RList v;
+            List<String> results = new ArrayList<String>();
+            if ( eval instanceof REXPString ) {
+                String[] strs = ( ( REXPString ) eval ).asStrings();
+                for ( String string : strs ) {
+                    results.add( string );
+                }
+            } else {
+                v = eval.asList();
+                for ( Iterator<?> it = v.iterator(); it.hasNext(); ) {
+                    results.add( ( ( REXPString ) it.next() ).asString() );
+                }
+            }
+
+            return results;
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    public TwoWayAnovaResult twoWayAnova( double[] data, List<String> factor1, List<String> factor2,
+            boolean includeInteraction ) {
+
+        String factorA = assignFactor( factor1 );
+        String factorB = assignFactor( factor2 );
+        StringBuffer command = new StringBuffer();
+
+        assign( "foo", data );
+
+        String modelDeclaration;
+
+        if ( includeInteraction ) {
+            modelDeclaration = "foo  ~ " + factorA + "*" + factorB;
+        } else {
+            modelDeclaration = "foo  ~ " + factorA + "+" + factorB;
+        }
+
+        command.append( "anova(aov(" + modelDeclaration + "))" );
+
+        REXP eval = eval( command.toString() );
+
+        return new TwoWayAnovaResult( eval );
     }
 
     /*
@@ -473,46 +624,6 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * @see ubic.basecode.util.RClient#stringEval(java.lang.String)
-     */
-    public String stringEval( String command ) {
-        try {
-            return this.eval( command ).asString();
-        } catch ( REXPMismatchException e ) {
-            throw new RuntimeException( e );
-        }
-    }
-
-    /**
-     * @param string
-     * @return
-     */
-    public List<String> stringListEval( String command ) {
-        try {
-            REXP eval = this.eval( command );
-
-            RList v;
-            List<String> results = new ArrayList<String>();
-            if ( eval instanceof REXPString ) {
-                String[] strs = ( ( REXPString ) eval ).asStrings();
-                for ( String string : strs ) {
-                    results.add( string );
-                }
-            } else {
-                v = eval.asList();
-                for ( Iterator<?> it = v.iterator(); it.hasNext(); ) {
-                    results.add( ( ( REXPString ) it.next() ).asString() );
-                }
-            }
-
-            return results;
-        } catch ( REXPMismatchException e ) {
-            throw new RuntimeException( e );
-        }
-    }
-
-    /*
-     * (non-Javadoc)
      * @see ubic.basecode.util.RClient#twoWayAnovaEvalWithLogging(java.lang.String)
      */
     public Map<String, TwoWayAnovaResult> twoWayAnovaEvalWithLogging( String command, boolean withInteractions ) {
@@ -531,29 +642,13 @@ public abstract class AbstractRClient implements RClient {
         }
     }
 
-    public TwoWayAnovaResult twoWayAnova( double[] data, List<String> factor1, List<String> factor2,
-            boolean includeInteraction ) {
-
-        String factorA = assignFactor( factor1 );
-        String factorB = assignFactor( factor2 );
-        StringBuffer command = new StringBuffer();
-
-        assign( "foo", data );
-
-        String modelDeclaration;
-
-        if ( includeInteraction ) {
-            modelDeclaration = "foo  ~ " + factorA + "*" + factorB;
-        } else {
-            modelDeclaration = "foo  ~ " + factorA + "+" + factorB;
-        }
-
-        command.append( "anova(aov(" + modelDeclaration + "))" );
-
-        REXP eval = eval( command.toString() );
-
-        return new TwoWayAnovaResult( eval );
-    }
+    /**
+     * Evaluate the given command
+     * 
+     * @param command
+     * @return
+     */
+    protected abstract REXP eval( String command );
 
     /**
      * @param matrix
@@ -574,13 +669,5 @@ public abstract class AbstractRClient implements RClient {
         String dimcmd = "dimnames(" + matrixVarName + ")<-list(" + rowNameVar + ", " + colNameVar + ")";
         this.voidEval( dimcmd );
     }
-
-    /**
-     * Evaluate the given command
-     * 
-     * @param command
-     * @return
-     */
-    protected abstract REXP eval( String command );
 
 }

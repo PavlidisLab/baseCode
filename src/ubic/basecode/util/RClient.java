@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.commons.collections.Transformer;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.util.r.type.OneWayAnovaResult;
 import ubic.basecode.util.r.type.TwoWayAnovaResult;
 
 /**
@@ -57,6 +58,10 @@ public interface RClient {
      * @return
      */
     public Map<String, TwoWayAnovaResult> twoWayAnovaEval( String command, boolean withInteractions );
+
+    public Map<String, OneWayAnovaResult> oneWayAnovaEval( String command );
+
+    public Map<String, OneWayAnovaResult> oneWayAnovaEvalWithLogging( String command );
 
     /*
      * (non-Javadoc)
@@ -225,7 +230,7 @@ public interface RClient {
     public Map<String, TwoWayAnovaResult> twoWayAnovaEvalWithLogging( String command, boolean withInteractions );
 
     /**
-     * Lower-level access to two-way anova
+     * Lower-level access to two-way ANOVA
      * 
      * @param data
      * @param factor1
@@ -235,6 +240,15 @@ public interface RClient {
      */
     public TwoWayAnovaResult twoWayAnova( double[] data, List<String> factor1, List<String> factor2,
             boolean includeInteraction );
+
+    /**
+     * Lower-level access to a simple one-way ANOVA
+     * 
+     * @param data
+     * @param factor
+     * @return
+     */
+    public OneWayAnovaResult oneWayAnova( double[] data, List<String> factor );
 
     /**
      * @param listEntryType a hint about what type of object you want the list to contain. If you set this to be null,

@@ -27,7 +27,7 @@ import org.rosuda.REngine.REXPMismatchException;
  * @author paul
  * @version $Id$
  */
-public class TwoWayAnovaResult {
+public class TwoWayAnovaResult extends LinearModelFitResult {
 
     private String factorAName = null;
 
@@ -52,8 +52,6 @@ public class TwoWayAnovaResult {
     private Double mainEffectBfVal = Double.NaN;
 
     private Double mainEffectBPval = Double.NaN;
-
-    private Integer residualDf = null;
 
     /**
      * A null result.
@@ -180,13 +178,6 @@ public class TwoWayAnovaResult {
      */
     public Double getMainEffectBPval() {
         return mainEffectBPval;
-    }
-
-    /**
-     * @return the residualDf
-     */
-    public Integer getResidualDf() {
-        return residualDf;
     }
 
     /**

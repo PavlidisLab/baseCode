@@ -31,6 +31,7 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.math.Constants;
 import ubic.basecode.util.r.type.HTest;
+import ubic.basecode.util.r.type.OneWayAnovaResult;
 import ubic.basecode.util.r.type.TwoWayAnovaResult;
 
 /**
@@ -324,4 +325,42 @@ public class JRIClientTest extends TestCase {
         assertEquals( 0.7381, r.getMainEffectBfVal(), 0.0001 );
         assertEquals( Double.NaN, r.getInteractionfVal() );
     }
+
+    public void testAnovaE() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        /*
+         * foo<-c(212.1979, 8.8645, 8.4814, 11.915); a<-factor(c( "A", "B", "B", "B" )); anova(aov(foo ~ a));
+         */
+
+        double[] data = new double[] { 212.1979, 8.8645, 8.4814, 11.915 };
+        String[] f1 = new String[] { "A", "B", "B", "B" };
+
+        OneWayAnovaResult r = rc.oneWayAnova( data, Arrays.asList( f1 ) );
+        assertEquals( 0.0001152, r.getPval(), 0.0001 );
+        assertEquals( 8682.2, r.getFVal(), 0.01 );
+    }
+
+    public void testAnovaF() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        /*
+         * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074); a<-factor(c( "A", "A", "A", "A", "B",
+         * "B", "B", "B" )); anova(aov(foo ~ a));
+         */
+
+        double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
+        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
+
+        OneWayAnovaResult r = rc.oneWayAnova( data, Arrays.asList( f1 ) );
+        assertEquals( 0.1110, r.getPval(), 0.0001 );
+        assertEquals( 3.739, r.getFVal(), 0.001 );
+    }
+
 }

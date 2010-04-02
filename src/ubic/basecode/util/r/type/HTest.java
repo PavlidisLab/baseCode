@@ -7,7 +7,7 @@ import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.RList;
 
 /**
- * Representation of the R htest class
+ * Representation of the R htest class. This class is returned by the t.test and cor.test methods in R.
  * 
  * @author paul
  * @version $Id$
@@ -33,6 +33,7 @@ public class HTest {
     public HTest() {
     }
 
+    @SuppressWarnings("unchecked")
     public HTest( RList rexp ) {
 
         if ( rexp == null || rexp.size() == 0 ) {
