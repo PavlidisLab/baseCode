@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.commons.collections.Transformer;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.util.r.type.LinearModelSummary;
 import ubic.basecode.util.r.type.OneWayAnovaResult;
 import ubic.basecode.util.r.type.TwoWayAnovaResult;
 
@@ -77,6 +78,13 @@ public interface RClient {
      */
     public String assignFactor( List<String> strings );
 
+    /**
+     * @param factorName
+     * @param list
+     * @return the factor name
+     */
+    public String assignFactor( String factorName, List<String> list );
+
     /*
      * (non-Javadoc)
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, java.lang.String)
@@ -103,10 +111,10 @@ public interface RClient {
     /**
      * Define a variable corresponding to a character array in the R context, given a List of Strings.
      * 
-     * @param strings
+     * @param objects, which will be stringified if they are not strings.
      * @return the name of the variable in the R context.
      */
-    public String assignStringList( List<String> strings );
+    public String assignStringList( List<?> objects );
 
     /**
      * Assign a 2-d matrix.
@@ -230,6 +238,18 @@ public interface RClient {
     public Map<String, TwoWayAnovaResult> twoWayAnovaEvalWithLogging( String command, boolean withInteractions );
 
     /**
+     * @param command
+     * @return
+     */
+    public Map<String, LinearModelSummary> linearModelEvalWithLogging( String command );
+
+    /**
+     * @param command
+     * @return
+     */
+    public Map<String, LinearModelSummary> linearModelEval( String command );
+
+    /**
      * Lower-level access to two-way ANOVA
      * 
      * @param data
@@ -240,6 +260,15 @@ public interface RClient {
      */
     public TwoWayAnovaResult twoWayAnova( double[] data, List<String> factor1, List<String> factor2,
             boolean includeInteraction );
+
+    /**
+     * Lower level access to linear model. Fairly simple. Factors are assigned in turn.
+     * 
+     * @param data
+     * @param factors Map of factorNames to factors (which can be expressed as Strings or Doubles). If you care about
+     *        the order the factors are introduced into the model, use a LinkedHashMap.
+     */
+    public LinearModelSummary linearModel( double[] data, Map<String, List<?>> factors );
 
     /**
      * Lower-level access to a simple one-way ANOVA

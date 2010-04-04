@@ -22,7 +22,7 @@ package ubic.basecode.util.r.type;
  * @author paul
  * @version $Id$
  */
-public abstract class LinearModelFitResult {
+public abstract class AnovaResult {
 
     protected Integer residualDf = null;
 

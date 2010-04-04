@@ -20,17 +20,22 @@ package ubic.basecode.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.rosuda.REngine.REXP;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.math.Constants;
 import ubic.basecode.util.r.type.HTest;
+import ubic.basecode.util.r.type.LinearModelSummary;
 import ubic.basecode.util.r.type.OneWayAnovaResult;
 import ubic.basecode.util.r.type.TwoWayAnovaResult;
 
@@ -366,6 +371,89 @@ public class JRIClientTest extends TestCase {
         OneWayAnovaResult r = rc.oneWayAnova( data, Arrays.asList( f1 ) );
         assertEquals( 0.1110, r.getPval(), 0.0001 );
         assertEquals( 3.739, r.getFVal(), 0.001 );
+    }
+
+    /**
+     * Like a two-sample t-test where the intercept is also of interest.
+     * 
+     * @throws Exception
+     */
+    public void testLinearModelA() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        /*
+         * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074); a<-factor(c( "A", "A", "A", "A", "B",
+         * "B", "B", "B" )); summary(lm(foo ~ a));
+         */
+
+        double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
+        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
+
+        rc.assign( "foo", data );
+        String facN = rc.assignFactor( Arrays.asList( f1 ) );
+        REXP result = rc.eval( "summary(lm(foo ~ " + facN + ") )" );
+        LinearModelSummary lms = new LinearModelSummary( result );
+
+        Double p = lms.getP( facN );
+        Double t = lms.getT( facN );
+        Double ip = lms.getInterceptP();
+        Double it = lms.getInterceptT();
+
+        assertEquals( 0.11096, p, 0.0001 );
+        assertEquals( 1.933653, t, 0.0001 );
+        assertEquals( 1.101509e-08, ip, 0.0001 );
+        assertEquals( 70.319382, it, 0.0001 );
+
+    }
+
+    /**
+     * Like a two-sample t-test where the intercept is also of interest.
+     * 
+     * @throws Exception
+     */
+    public void testLinearModelB() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        /*
+         * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074); a<-factor(c( "A", "A", "A", "A", "B",
+         * "B", "B", "B" )); summary(lm(foo ~ a));
+         */
+
+        double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
+        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
+
+        List<String> fac1 = Arrays.asList( f1 );
+
+        double[] fac2 = new double[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+        Map<String, List<?>> factors = new LinkedHashMap<String, List<?>>();
+        factors.put( "foo", fac1 );
+        factors.put( "bar", Arrays.asList( ArrayUtils.toObject( fac2 ) ) );
+
+        LinearModelSummary lms = rc.linearModel( data, factors );
+
+        Double p = lms.getP( "foo" );
+        Double t = lms.getT( "foo" );
+
+        Double pp = lms.getP( "bar" );
+        Double tt = lms.getT( "bar" );
+
+        Double ip = lms.getInterceptP();
+        Double it = lms.getInterceptT();
+
+        assertEquals( 5.563023e-01, p, 0.0001 );
+        assertEquals( 0.64117305, t, 0.0001 );
+        assertEquals( 9.443222e-01, pp, 0.0001 );
+        assertEquals( 0.07432241, tt, 0.0001 );
+        assertEquals( 2.821526e-06, ip, 0.0001 );
+        assertEquals( 38.14344686, it, 0.0001 );
+
     }
 
 }

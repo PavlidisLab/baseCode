@@ -26,7 +26,9 @@ import java.util.Map;
 
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.functors.StringValueTransformer;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.rosuda.REngine.REXP;
@@ -42,6 +44,7 @@ import org.rosuda.REngine.RList;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.util.r.type.HTest;
+import ubic.basecode.util.r.type.LinearModelSummary;
 import ubic.basecode.util.r.type.OneWayAnovaResult;
 import ubic.basecode.util.r.type.TwoWayAnovaResult;
 
@@ -117,9 +120,17 @@ public abstract class AbstractRClient implements RClient {
      */
     public String assignFactor( List<String> strings ) {
         String variableName = "f." + variableIdentityNumber( strings );
-        String l = assignStringList( strings );
-        this.voidEval( variableName + "<-factor(" + l + ")" );
-        return variableName;
+        return assignFactor( variableName, strings );
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#assignFactor(java.lang.String, java.util.List)
+     */
+    public String assignFactor( String factorName, List<String> list ) {
+        String l = assignStringList( list );
+        this.voidEval( factorName + "<-factor(" + l + ")" );
+        return factorName;
     }
 
     /*
@@ -176,7 +187,7 @@ public abstract class AbstractRClient implements RClient {
      * (non-Javadoc)
      * @see ubic.basecode.util.RClient#assignStringList(java.util.List)
      */
-    public String assignStringList( List strings ) {
+    public String assignStringList( List<?> strings ) {
         String variableName = "stringList." + variableIdentityNumber( strings );
 
         Object[] array = strings.toArray();
@@ -304,6 +315,109 @@ public abstract class AbstractRClient implements RClient {
             return eval( command ).asIntegers();
         } catch ( REXPMismatchException e ) {
             throw new RuntimeException( e );
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#linearModel(double[], java.util.List)
+     */
+    @SuppressWarnings( { "unchecked", "cast" })
+    public LinearModelSummary linearModel( double[] data, Map<String, List<?>> factors ) {
+
+        String datName = RandomStringUtils.randomAlphabetic( 10 );
+        assign( datName, data );
+
+        for ( String factorName : factors.keySet() ) {
+            List list = factors.get( factorName );
+            if ( list.iterator().next() instanceof String ) {
+                assignFactor( factorName, ( List<String> ) list );
+            } else {
+                // treat is as a numeric covariate
+                List<Double> d = new ArrayList<Double>();
+                for ( Object object : list ) {
+                    d.add( ( Double ) object );
+                }
+
+                assign( factorName, ArrayUtils.toPrimitive( d.toArray( new Double[] {} ) ) );
+            }
+        }
+
+        String modelDeclaration = datName + " ~ " + StringUtils.join( factors.keySet(), "+" );
+
+        String command = "summary(lm(" + modelDeclaration + "))";
+
+        log.info( command );
+
+        REXP eval = eval( command );
+
+        return new LinearModelSummary( eval );
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#linearModelEval(java.lang.String)
+     */
+    public Map<String, LinearModelSummary> linearModelEval( String command ) {
+        REXP rawResult = this.eval( command );
+
+        if ( rawResult == null ) {
+            return null;
+        }
+
+        Map<String, LinearModelSummary> result = new HashMap<String, LinearModelSummary>();
+        try {
+            RList mainList = rawResult.asList();
+            if ( mainList == null ) {
+                return null;
+            }
+
+            log.debug( mainList.size() + " results." );
+
+            for ( int i = 0; i < mainList.size(); i++ ) {
+
+                REXP lmSummary = mainList.at( i );
+
+                String elementIdentifier = mainList.keyAt( i );
+
+                assert elementIdentifier != null;
+
+                if ( log.isDebugEnabled() ) log.debug( "Key: " + elementIdentifier );
+
+                if ( !lmSummary.isList() || !lmSummary.hasAttribute( "row.names" ) ) {
+                    log.debug( "No lm for " + elementIdentifier );
+                    result.put( elementIdentifier, new LinearModelSummary() );
+                    continue;
+                }
+
+                result.put( elementIdentifier, new LinearModelSummary( lmSummary ) );
+
+            }
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
+
+        return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ubic.basecode.util.RClient#linearModelEvalWithLogging(java.lang.String)
+     */
+    public Map<String, LinearModelSummary> linearModelEvalWithLogging( String command ) {
+        RLoggingThread rLoggingThread = null;
+
+        try {
+            rLoggingThread = RLoggingThreadFactory.createRLoggingThread();
+            return this.linearModelEval( command );
+        } catch ( Exception e ) {
+            throw new RuntimeException( e );
+        } finally {
+            if ( rLoggingThread != null ) {
+                log.debug( "Shutting down logging thread." );
+                rLoggingThread.done();
+            }
         }
     }
 

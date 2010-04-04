@@ -25,7 +25,7 @@ import org.rosuda.REngine.REXPMismatchException;
  * @author paul
  * @version $Id$
  */
-public class OneWayAnovaResult extends LinearModelFitResult {
+public class OneWayAnovaResult extends AnovaResult {
 
     private Integer df = null;
 
