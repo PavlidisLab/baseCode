@@ -27,47 +27,19 @@ import org.rosuda.REngine.REXPMismatchException;
  */
 public class OneWayAnovaResult extends LinearModelFitResult {
 
-    private String factorName = null;
-
     private Integer df = null;
 
-    private Double pval = Double.NaN;
-
-    /**
-     * @return the factorName
-     */
-    public String getFactorName() {
-        return factorName;
-    }
-
-    /**
-     * @return the df
-     */
-    public Integer getDf() {
-        return df;
-    }
-
-    /**
-     * @return the pval
-     */
-    public Double getPval() {
-        return pval;
-    }
-
-    /**
-     * @return the fVal
-     */
-    public Double getFVal() {
-        return fVal;
-    }
+    private String factorName = null;
 
     private Double fVal = Double.NaN;
+
+    private Double pval = Double.NaN;
 
     /**
      * A null result.
      */
     public OneWayAnovaResult() {
-    };
+    }
 
     /**
      * @param rAnovaTable from R
@@ -97,6 +69,34 @@ public class OneWayAnovaResult extends LinearModelFitResult {
             throw new RuntimeException( e );
         }
 
+    }
+
+    /**
+     * @return the df
+     */
+    public Integer getDf() {
+        return df;
+    }
+
+    /**
+     * @return the factorName
+     */
+    public String getFactorName() {
+        return factorName;
+    }
+
+    /**
+     * @return the fVal
+     */
+    public Double getFVal() {
+        return fVal;
+    };
+
+    /**
+     * @return the pval
+     */
+    public Double getPval() {
+        return pval;
     }
 
     @Override

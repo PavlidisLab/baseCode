@@ -344,6 +344,11 @@ public class JRIClientTest extends TestCase {
         assertEquals( 8682.2, r.getFVal(), 0.01 );
     }
 
+    /**
+     * One way
+     * 
+     * @throws Exception
+     */
     public void testAnovaF() throws Exception {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );

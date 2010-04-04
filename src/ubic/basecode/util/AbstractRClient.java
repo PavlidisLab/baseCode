@@ -230,6 +230,11 @@ public abstract class AbstractRClient implements RClient {
         if ( r == null ) {
             return null;
         }
+
+        if ( !r.isNumeric() ) {
+            throw new RuntimeException( "Command did not return numbers: " + command + ", result was: " + r );
+        }
+
         try {
             return r.asDoubles();
         } catch ( REXPMismatchException e ) {
@@ -458,15 +463,17 @@ public abstract class AbstractRClient implements RClient {
                 return null;
             }
 
-            log.debug( mainList.keys().length + " results." );
+            log.debug( mainList.size() + " results." );
 
-            for ( int i = 0; i < mainList.keys().length; i++ ) {
-
-                if ( log.isDebugEnabled() ) log.debug( "Key: " + mainList.keyAt( i ) );
+            for ( int i = 0; i < mainList.size(); i++ ) {
 
                 REXP anovaTable = mainList.at( i );
 
                 String elementIdentifier = mainList.keyAt( i );
+
+                assert elementIdentifier != null;
+
+                if ( log.isDebugEnabled() ) log.debug( "Key: " + elementIdentifier );
 
                 if ( !anovaTable.isList() || !anovaTable.hasAttribute( "row.names" ) ) {
                     log.debug( "No anovaresult for " + elementIdentifier );
@@ -595,15 +602,17 @@ public abstract class AbstractRClient implements RClient {
                 return null;
             }
 
-            log.debug( mainList.keys().length + " results." );
+            log.debug( mainList.size() + " results." );
 
-            for ( int i = 0; i < mainList.keys().length; i++ ) {
-
-                if ( log.isDebugEnabled() ) log.debug( "Key: " + mainList.keyAt( i ) );
+            for ( int i = 0; i < mainList.size(); i++ ) {
 
                 REXP anovaTable = mainList.at( i );
 
                 String elementIdentifier = mainList.keyAt( i );
+
+                assert elementIdentifier != null;
+
+                if ( log.isDebugEnabled() ) log.debug( "Key: " + elementIdentifier );
 
                 if ( !anovaTable.isList() || !anovaTable.hasAttribute( "row.names" ) ) {
                     log.debug( "No anovaresult for " + elementIdentifier );
