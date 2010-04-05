@@ -1,3 +1,4 @@
+# 3x3 matrix: showing up to 100 rows
 label	1	2	3
 1	0.1000	100.0	0.000
 2	100.0	0.1000	0.000

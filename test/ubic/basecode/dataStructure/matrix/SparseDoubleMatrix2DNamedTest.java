@@ -104,7 +104,7 @@ public class SparseDoubleMatrix2DNamedTest extends TestCase {
     public void testToString() {
         String actual = testM.toString();
         assertEquals(
-                "label\tw\tx\ty\tz\na\t1.000\t2.000\t3.000\t4.000\nb\t11.00\t12.00\t13.00\t14.00\nc\t21.00\t\t23.00\t24.00\n",
+                "# 3x4 matrix: showing up to 100 rows\nlabel\tw\tx\ty\tz\na\t1.000\t2.000\t3.000\t4.000\nb\t11.00\t12.00\t13.00\t14.00\nc\t21.00\t\t23.00\t24.00\n",
                 actual );
     }
 
