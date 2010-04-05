@@ -39,6 +39,10 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
 
     private static final long serialVersionUID = 1775002416710933373L;
 
+    public double[] getEntry( int row, int column ) {
+        return get( row, column );
+    }
+
     /**
      * Count the number of one-bits of the passed-in <code>double</code> val.
      * 
@@ -123,6 +127,7 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.dataStructure.matrix.NamedMatrix#get(java.lang.Object, java.lang.Object)
      */
     @SuppressWarnings("unused")
@@ -155,6 +160,7 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#getColObj(int)
      */
     @SuppressWarnings("unused")
@@ -164,6 +170,7 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#getRowObj(int)
      */
     public double[][] getRow( int i ) {
@@ -194,6 +201,7 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#isMissing(int, int)
      */
     public boolean isMissing( int i, int j ) {
@@ -231,6 +239,7 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#rows()
      */
     public int rows() {
@@ -284,6 +293,7 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#set(int, int, java.lang.Object)
      */
     @SuppressWarnings("unused")
@@ -354,6 +364,7 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(java.lang.Object, java.lang.Object, java.lang.Object)
      */
     public void setByKeys( R r, C c, double[] v ) {

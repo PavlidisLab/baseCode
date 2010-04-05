@@ -29,8 +29,7 @@ import cern.colt.matrix.impl.DenseObjectMatrix2D;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements
-        ObjectMatrix<R, C, String> {
+public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements ObjectMatrix<R, C, String> {
 
     /**
      * 
@@ -41,6 +40,10 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements
     public StringMatrix( int x, int y ) {
         super();
         matrix = new DenseObjectMatrix2D( x, y );
+    }
+
+    public String getEntry( int row, int column ) {
+        return get( row, column );
     }
 
     /**
@@ -173,8 +176,8 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements
         this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }
 
-    public String getByKeys( R r, C c) {
-        return this.get( getRowIndexByName( r ), getColIndexByName( c ));
+    public String getByKeys( R r, C c ) {
+        return this.get( getRowIndexByName( r ), getColIndexByName( c ) );
     }
 
 }

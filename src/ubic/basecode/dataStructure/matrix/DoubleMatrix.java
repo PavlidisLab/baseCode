@@ -39,6 +39,10 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
 
     protected static Log log = LogFactory.getLog( DoubleMatrix.class.getName() );
 
+    public Double getEntry( int row, int column ) {
+        return get( row, column );
+    }
+
     /**
      * @param s String
      * @return double[]
@@ -83,7 +87,9 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
 
     /*
      * For more advanced matrix writing see the MatrixWriter class (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
+     * 
      * @see ubic.basecode.io.writer.MatrixWriter
      */
     @Override
@@ -92,6 +98,7 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
         int columns = this.columns();
         StringBuffer buf = new StringBuffer();
         int stop = 0;
+        buf.append( "# " + rows + "x" + columns + " matrix: showing up to " + MAX_ROWS_TO_PRINT + " rows\n" );
         buf.append( "label" );
 
         for ( int i = 0; i < columns; i++ ) {

@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.commons.collections.Transformer;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.dataStructure.matrix.ObjectMatrix;
 import ubic.basecode.util.r.type.LinearModelSummary;
 import ubic.basecode.util.r.type.OneWayAnovaResult;
 import ubic.basecode.util.r.type.TwoWayAnovaResult;
@@ -66,6 +67,7 @@ public interface RClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, int[])
      */
     public void assign( String arg0, int[] arg1 );
@@ -87,6 +89,7 @@ public interface RClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, java.lang.String)
      */
     public void assign( String sym, String ct );
@@ -191,6 +194,7 @@ public interface RClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.rosuda.JRclient.Rconnection#getLastError()
      */
     public String getLastError();
@@ -203,6 +207,15 @@ public interface RClient {
     public void remove( String variableName );
 
     /**
+     * Convert an object matrix into an R data frame. Columns that look numeric are treated as numbers. Booleans and
+     * Strings are treated as factors.
+     * 
+     * @param matrix
+     * @return variable name in R-land.
+     */
+    public String dataFrame( ObjectMatrix<String, String, Object> matrix );
+
+    /**
      * Get a matrix back out of the R context. Row and Column names are filled in for the resulting object, if they are
      * present.
      * 
@@ -213,6 +226,7 @@ public interface RClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.rosuda.JRclient.Rconnection#voidEval(java.lang.String)
      */
     public void voidEval( String command );
@@ -269,6 +283,15 @@ public interface RClient {
      *        the order the factors are introduced into the model, use a LinkedHashMap.
      */
     public LinearModelSummary linearModel( double[] data, Map<String, List<?>> factors );
+
+    /**
+     * @param data
+     * @param design which will be converted to factors or continuous covariates depending on whether the columns are
+     *        booleans, strings or numerical. Names of factors are the column names of the design matrix, and the rows
+     *        are assumed to be in the same order as the data.
+     * @return
+     */
+    public LinearModelSummary linearModel( double[] data, ObjectMatrix<String, String, Object> design );
 
     /**
      * Lower-level access to a simple one-way ANOVA

@@ -18,7 +18,10 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,11 +33,9 @@ import java.util.Map;
  */
 public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java.io.Serializable {
 
-    /**
-     * 
-     */
+    protected static final int MAX_ROWS_TO_PRINT = 100;
+
     private static final long serialVersionUID = 1L;
-    protected static final int MAX_ROWS_TO_PRINT = 20;
     private Map<C, Integer> colMap;
     private List<C> colNames;
     private int lastColumnIndex = 0;
@@ -114,6 +115,7 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
 
     /*
      * (non-Javadoc)
+     * 
      * @see basecode.dataStructure.NamedMatrix#addRowName(java.lang.String, int)
      */
     public final void addRowName( R s, int i ) {
@@ -200,6 +202,7 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
 
     /*
      * (non-Javadoc)
+     * 
      * @see basecode.dataStructure.NamedMatrix#numMissing()
      */
     public int numMissing() {
@@ -223,6 +226,53 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
         for ( int i = 0; i < v.size(); i++ ) {
             addColumnName( v.get( i ), i );
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.Matrix2D#asDoubles()
+     */
+    public double[][] asDoubles() {
+        double[][] result = new double[rows()][columns()];
+
+        int n = this.rows();
+        int m = this.columns();
+        for ( int i = 0; i < n; i++ ) {
+
+            for ( int j = 0; j < m; j++ ) {
+
+                V value = getEntry( i, j );
+
+                if ( isMissing( i, j ) ) {
+                    result[i][j] = Double.NaN;
+                } else if ( value instanceof Integer ) {
+                    result[i][j] = ( ( Integer ) value ).doubleValue();
+                } else if ( value instanceof Long ) {
+                    result[i][j] = ( ( Long ) value ).doubleValue();
+                } else if ( value instanceof Double ) {
+                    result[i][j] = ( Double ) value;
+                } else if ( value instanceof Boolean ) {
+                    result[i][j] = ( ( Boolean ) value ) ? 1.0 : 0.0;
+                } else if ( value instanceof String ) {
+                    try {
+                        result[i][j] = Double.parseDouble( ( String ) value );
+                    } catch ( NumberFormatException e ) {
+                        result[i][j] = value.hashCode();
+                    }
+                } else if ( value instanceof BigDecimal ) {
+                    result[i][j] = ( ( BigDecimal ) value ).doubleValue();
+                } else if ( value instanceof BigInteger ) {
+                    result[i][j] = ( ( BigInteger ) value ).doubleValue();
+                } else if ( value instanceof Date ) {
+                    result[i][j] = ( ( Date ) value ).getTime();
+                } else {
+                    result[i][j] = value.hashCode();
+                }
+            }
+        }
+
+        return result;
     }
 
     public final void setRowNames( List<R> v ) {

@@ -32,6 +32,8 @@ import org.apache.commons.logging.LogFactory;
 import org.rosuda.REngine.REXP;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.dataStructure.matrix.ObjectMatrix;
+import ubic.basecode.dataStructure.matrix.ObjectMatrixImpl;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.math.Constants;
 import ubic.basecode.util.r.type.HTest;
@@ -456,4 +458,87 @@ public class JRIClientTest extends TestCase {
 
     }
 
+    public void testDataFrameA() throws Exception {
+
+        double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
+        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
+
+        double[] f2 = new double[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+        ObjectMatrix<String, String, Object> d = new ObjectMatrixImpl<String, String, Object>( 8, 3 );
+
+        d.setColumnNames( Arrays.asList( new String[] { "foo", "bar", "ack" } ) );
+        d.setRowNames( Arrays.asList( new String[] { "a", "b", "c", "d", "e", "f", "g", "i" } ) );
+
+        for ( int i = 0; i < 8; i++ ) {
+            for ( int j = 0; j < 3; j++ ) {
+                if ( j == 0 ) {
+                    d.set( i, j, f1[i] );
+                } else if ( j == 1 ) {
+                    d.set( i, j, f2[i] );
+                } else {
+                    d.set( i, j, data[i] );
+                }
+            }
+        }
+
+        String dataFrame = rc.dataFrame( d );
+
+        assertNotNull( dataFrame );
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLinearModelC() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        /*
+         * Another was of running a linear model.
+         */
+
+        double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
+        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
+
+        double[] f2 = new double[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+        ObjectMatrix<String, String, Object> d = new ObjectMatrixImpl<String, String, Object>( 8, 2 );
+
+        for ( int i = 0; i < 8; i++ ) {
+            for ( int j = 0; j < 2; j++ ) {
+                if ( j == 0 ) {
+                    d.set( i, j, f1[i] );
+                } else {
+                    d.set( i, j, f2[i] );
+                }
+            }
+        }
+
+        d.setColumnNames( Arrays.asList( new String[] { "foo", "bar" } ) );
+
+        log.info( d.asDoubles() );
+
+        LinearModelSummary lms = rc.linearModel( data, d );
+
+        Double p = lms.getP( "foo" );
+        Double t = lms.getT( "foo" );
+
+        Double pp = lms.getP( "bar" );
+        Double tt = lms.getT( "bar" );
+
+        Double ip = lms.getInterceptP();
+        Double it = lms.getInterceptT();
+
+        assertEquals( 5.563023e-01, p, 0.0001 );
+        assertEquals( 0.64117305, t, 0.0001 );
+        assertEquals( 9.443222e-01, pp, 0.0001 );
+        assertEquals( 0.07432241, tt, 0.0001 );
+        assertEquals( 2.821526e-06, ip, 0.0001 );
+        assertEquals( 38.14344686, it, 0.0001 );
+
+    }
 }

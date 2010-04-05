@@ -35,6 +35,10 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
         matrix = new DenseObjectMatrix2D( x, y );
     }
 
+    public V getEntry( int row, int column ) {
+        return get( row, column );
+    }
+
     /**
      * @return
      */

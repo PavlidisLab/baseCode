@@ -78,7 +78,7 @@ public class SingularValueDecomposition<R, C> {
     }
 
     /**
-     * @return
+     * @return the condition number of the matrix
      * @see cern.colt.matrix.linalg.SingularValueDecomposition#cond()
      */
     public double cond() {

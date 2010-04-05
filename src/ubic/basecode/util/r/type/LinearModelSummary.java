@@ -39,7 +39,12 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrixFactory;
  */
 public class LinearModelSummary {
 
-    private Double adjRSquared = null;
+    /**
+     * 
+     */
+    private static final String INTERCEPT_COEFFICIENT_NAME_IN_R = "(Intercept)";
+
+    private Double adjRSquared = Double.NaN;
 
     private DoubleMatrix<String, String> coefficients = null;
 
@@ -56,7 +61,7 @@ public class LinearModelSummary {
         return factorNames;
     }
 
-    private Double rSquared = null;
+    private Double rSquared = Double.NaN;
 
     private List<String> factorNames = null;
 
@@ -67,45 +72,106 @@ public class LinearModelSummary {
     }
 
     /**
-     * Construct from the result of evaluation of an R call like 'summary(lm(...))'.
+     * Construct from the result of evaluatio of an R call where design matrix is defined explicitly like 'summary(lm( x
+     * ~ designMatrix))'.
      * 
      * @param summaryLm
+     * @param factorNames
      */
-    public LinearModelSummary( REXP summaryLm ) {
-
+    public LinearModelSummary( REXP summaryLm, String[] factorNames ) {
         try {
-            RList li = summaryLm.asList();
+            basicSetup( summaryLm );
 
-            REXPDouble coraw = ( REXPDouble ) li.get( "coefficients" );
+            this.factorNames = Arrays.asList( factorNames );
+            setupFactorNames( factorNames );
 
-            RList dimnames = coraw.getAttribute( "dimnames" ).asList();
-            String[] itemnames = ( ( REXP ) dimnames.get( 0 ) ).asStrings();
-            String[] colNames = ( ( REXP ) dimnames.get( 1 ) ).asStrings();
-
-            double[][] coef = coraw.asDoubleMatrix();
-            coefficients = DoubleMatrixFactory.dense( coef );
-            coefficients.setRowNames( Arrays.asList( itemnames ) );
-            coefficients.setColumnNames( Arrays.asList( colNames ) );
-
-            String[] termLabels = ( ( REXP ) li.get( "terms" ) ).getAttribute( "term.labels" ).asStrings();
-            LinkedList<String> v = new LinkedList<String>();
-            this.factorNames = Arrays.asList( termLabels );
-            v.addAll( factorNames );
-            v.add( 0, "(Intercept)" );
-            coefficients.setRowNames( v );
-            assert coefficients.getRowNames().get( 0 ).equals( "(Intercept)" );
-
-            this.residuals = ArrayUtils.toObject( ( ( REXP ) li.get( "residuals" ) ).asDoubles() );
-
-            this.rSquared = ( ( REXP ) li.get( "r.squared" ) ).asDouble();
-
-            this.adjRSquared = ( ( REXP ) li.get( "adj.r.squared" ) ).asDouble();
-
-            this.df = ( ( REXP ) li.get( "df" ) ).asInteger();
         } catch ( REXPMismatchException e ) {
             throw new RuntimeException( e );
         }
 
+    }
+
+    /**
+     * Construct from the result of evaluation of an R call where factors are listed separately like 'summary(lm( x ~ f
+     * + g + h))'
+     * 
+     * @param summaryLm
+     */
+    public LinearModelSummary( REXP summaryLm ) {
+        try {
+            RList li = basicSetup( summaryLm );
+
+            // factor name setup
+            String[] termLabels = ( ( REXP ) li.get( "terms" ) ).getAttribute( "term.labels" ).asStrings();
+            setupFactorNames( termLabels );
+
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
+
+    }
+
+    private void setupFactorNames( String[] termLabels ) {
+        LinkedList<String> v = new LinkedList<String>();
+        this.factorNames = Arrays.asList( termLabels );
+
+        if ( coefficients.rows() < this.factorNames.size() + 1 ) { // one more to allow for the Intercept.
+            /*
+             * Missing...?
+             */
+            List<String> coefRowNames = coefficients.getRowNames();
+            for ( String coefNameFromR : coefRowNames ) {
+                if ( coefNameFromR.equals( INTERCEPT_COEFFICIENT_NAME_IN_R ) ) {
+                    continue;
+                }
+                boolean matched = false;
+                for ( String factorName : factorNames ) {
+                    if ( coefNameFromR.startsWith( factorName ) ) {
+                        if ( matched ) {
+                            throw new IllegalStateException( "Ambiguous factor name in lm result: " + coefNameFromR );
+                        }
+                        v.add( factorName );
+                        matched = true;
+                    }
+                }
+                if ( !matched ) {
+                    throw new IllegalStateException( "Unrecognized factor name in lm result: " + coefNameFromR );
+                }
+            }
+
+        } else {
+            v.addAll( factorNames );
+        }
+
+        v.add( 0, INTERCEPT_COEFFICIENT_NAME_IN_R );
+        assert v.size() == coefficients.rows();
+        coefficients.setRowNames( v );
+
+        assert coefficients.getRowNames().get( 0 ).equals( INTERCEPT_COEFFICIENT_NAME_IN_R );
+    }
+
+    private RList basicSetup( REXP summaryLm ) throws REXPMismatchException {
+        RList li = summaryLm.asList();
+
+        REXPDouble coraw = ( REXPDouble ) li.get( "coefficients" );
+
+        RList dimnames = coraw.getAttribute( "dimnames" ).asList();
+        String[] itemnames = ( ( REXP ) dimnames.get( 0 ) ).asStrings();
+        String[] colNames = ( ( REXP ) dimnames.get( 1 ) ).asStrings();
+
+        double[][] coef = coraw.asDoubleMatrix();
+        coefficients = DoubleMatrixFactory.dense( coef );
+        coefficients.setRowNames( Arrays.asList( itemnames ) );
+        coefficients.setColumnNames( Arrays.asList( colNames ) );
+
+        this.residuals = ArrayUtils.toObject( ( ( REXP ) li.get( "residuals" ) ).asDoubles() );
+
+        this.rSquared = ( ( REXP ) li.get( "r.squared" ) ).asDouble();
+
+        this.adjRSquared = ( ( REXP ) li.get( "adj.r.squared" ) ).asDouble();
+
+        this.df = ( ( REXP ) li.get( "df" ) ).asInteger();
+        return li;
     }
 
     /**
@@ -137,18 +203,21 @@ public class LinearModelSummary {
     }
 
     public Double getInterceptP() {
-        if ( coefficients.hasRow( "(Intercept)" ) ) return coefficients.getByKeys( "(Intercept)", "Pr(>|t|)" );
-        return null;
+        if ( coefficients != null && coefficients.hasRow( INTERCEPT_COEFFICIENT_NAME_IN_R ) )
+            return coefficients.getByKeys( INTERCEPT_COEFFICIENT_NAME_IN_R, "Pr(>|t|)" );
+        return Double.NaN;
     }
 
     public Double getInterceptT() {
-        if ( coefficients.hasRow( "(Intercept)" ) ) return coefficients.getByKeys( "(Intercept)", "t value" );
-        return null;
+        if ( coefficients != null && coefficients.hasRow( INTERCEPT_COEFFICIENT_NAME_IN_R ) )
+            return coefficients.getByKeys( INTERCEPT_COEFFICIENT_NAME_IN_R, "t value" );
+        return Double.NaN;
     }
 
     public Double getP( String factorName ) {
-        if ( coefficients.hasRow( factorName ) ) return coefficients.getByKeys( factorName, "Pr(>|t|)" );
-        return null;
+        if ( coefficients != null && coefficients.hasRow( factorName ) )
+            return coefficients.getByKeys( factorName, "Pr(>|t|)" );
+        return Double.NaN;
     }
 
     /**
@@ -166,8 +235,9 @@ public class LinearModelSummary {
     }
 
     public Double getT( String factorName ) {
-        if ( coefficients.hasRow( factorName ) ) return coefficients.getByKeys( factorName, "t value" );
-        return null;
+        if ( coefficients != null && coefficients.hasRow( factorName ) )
+            return coefficients.getByKeys( factorName, "t value" );
+        return Double.NaN;
     }
 
 }

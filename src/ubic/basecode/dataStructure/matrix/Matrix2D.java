@@ -120,6 +120,13 @@ public abstract interface Matrix2D<R, C, V> {
     public boolean hasColNames();
 
     /**
+     * @param i
+     * @param j
+     * @return
+     */
+    public V getEntry( int i, int j );
+
+    /**
      * @param r Object
      * @return boolean
      */
@@ -182,6 +189,16 @@ public abstract interface Matrix2D<R, C, V> {
      * @param c
      */
     public V getByKeys( R r, C c );
-    
-    
+
+    /**
+     * Attempt to coerce the entries into doubles.
+     * <p>
+     * Numeric entries (Double, BigDecimal, Integer, BigInteger) and Strings that can be parsed as doubles are
+     * converted. Booleans are converted to 1 or 0. Dates are converted via Date.getDate(). Null entries are rendered as
+     * Double.NaN. For entries that are other types of objects, the HashCode is used.
+     * 
+     * @return
+     */
+    public double[][] asDoubles();
+
 }

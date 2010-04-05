@@ -24,8 +24,7 @@ import cern.colt.matrix.ObjectMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implements
-        PrimitiveMatrix<R, C, Integer> {
+public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implements PrimitiveMatrix<R, C, Integer> {
 
     /**
      * 
@@ -36,6 +35,10 @@ public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implement
     public IntegerMatrix( int x, int y ) {
         super();
         matrix = new ObjectMatrixImpl<R, C, Integer>( x, y );
+    }
+
+    public Integer getEntry( int row, int column ) {
+        return get( row, column );
     }
 
     /**
@@ -67,12 +70,10 @@ public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implement
         this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }
 
-    public Integer getByKeys( R r, C c) {
-        return this.get( getRowIndexByName( r ), getColIndexByName( c ));
+    public Integer getByKeys( R r, C c ) {
+        return this.get( getRowIndexByName( r ), getColIndexByName( c ) );
     }
 
-    
-    
     public Integer[] getColObj( int col ) {
         Integer[] result = new Integer[rows()];
         for ( int i = 0; i < rows(); i++ ) {
