@@ -137,10 +137,10 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * public String toRReadTableString() { Format nf = new Format( "%.4g" ); StringBuffer result = new StringBuffer(
      * this.rows() * this.columns() ); if ( this.hasColNames() ) { for ( int i = 0; i < this.columns(); i++ ) {
      * result.append( "\"" + this.getColName( i ) +"\" "); System.out.println("\"" + this.getColName( i ) +"\" "); }
-     * result.append( "\n" ); } for ( int i = 0; i < this.rows(); i++ ) { if ( this.hasRowNames() ) { result.append("\"" +
-     * this.getRowName( i ) + "\"" ); } for ( int j = 0; j < this.columns(); j++ ) { if ( Double.isNaN( this.get( i, j ) ) ) {
-     * result.append( " NA" ); } else { result.append( " " + nf.format( this.get( i, j ) ) ); } } result.append( "\n" ); }
-     * return result.toString(); }
+     * result.append( "\n" ); } for ( int i = 0; i < this.rows(); i++ ) { if ( this.hasRowNames() ) { result.append("\""
+     * + this.getRowName( i ) + "\"" ); } for ( int j = 0; j < this.columns(); j++ ) { if ( Double.isNaN( this.get( i, j
+     * ) ) ) { result.append( " NA" ); } else { result.append( " " + nf.format( this.get( i, j ) ) ); } } result.append(
+     * "\n" ); } return result.toString(); }
      */
 
     public Double getObject( int row, int col ) {
@@ -231,6 +231,32 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     @Override
     public DoubleMatrix1D viewRow( int row ) {
         return matrix.viewRow( row );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.Matrix2D#getRowRange(int, int)
+     */
+    @Override
+    public DoubleMatrix<R, C> getRowRange( int startRow, int endRow ) {
+        super.checkRowRange( startRow, endRow );
+
+        DoubleMatrix<R, C> returnval = new DenseDoubleMatrix<R, C>( endRow - startRow, this.columns() );
+        for ( int i = startRow; i <= endRow; i++ ) {
+            R rowName = this.getRowName( i );
+            if ( rowName != null ) {
+                returnval.addRowName( rowName, i );
+            }
+            for ( int j = 0, m = this.columns(); j < m; j++ ) {
+                if ( i == 0 ) {
+                    C colName = this.getColName( j );
+                    returnval.addColumnName( colName, j );
+                }
+                returnval.set( i, j, this.get( i, j ) );
+            }
+        }
+        return returnval;
     }
 
 }

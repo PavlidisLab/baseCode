@@ -161,6 +161,16 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
         return colNames;
     }
 
+    protected void checkRowRange( int startRow, int endRow ) {
+        if ( startRow < 0 || startRow > rows() - 1 || startRow >= endRow ) {
+            throw new IllegalArgumentException( "Invalid start row" );
+        }
+        if ( endRow <= startRow || endRow > rows() - 1 ) {
+            throw new IllegalArgumentException( "Invalid end row" );
+        }
+
+    }
+
     /**
      * @param s String
      * @return int

@@ -32,16 +32,29 @@ import cern.colt.matrix.DoubleMatrix1D;
  */
 public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> implements PrimitiveMatrix<R, C, Double> {
 
+    protected static Log log = LogFactory.getLog( DoubleMatrix.class.getName() );
+
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
-    protected static Log log = LogFactory.getLog( DoubleMatrix.class.getName() );
+    public abstract double[][] asArray();
 
-    public Double getEntry( int row, int column ) {
-        return get( row, column );
+    public abstract DoubleMatrix<R, C> copy();
+
+    /**
+     * @param j
+     * @param i
+     * @return
+     */
+    public abstract double get( int j, int i );
+
+    public Double getByKeys( R r, C c ) {
+        return this.get( getRowIndexByName( r ), getColIndexByName( c ) );
     }
+
+    public abstract double[] getColumn( int j );
 
     /**
      * @param s String
@@ -49,6 +62,10 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
      */
     public double[] getColumnByName( C s ) {
         return getColumn( getColIndexByName( s ) );
+    }
+
+    public Double getEntry( int row, int column ) {
+        return get( row, column );
     }
 
     public double[][] getRawMatrix() {
@@ -60,8 +77,6 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
     }
 
     public abstract double[] getRow( int i );
-
-    public abstract double[] getColumn( int j );
 
     public abstract DoubleArrayList getRowArrayList( int i );
 
@@ -77,13 +92,12 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
         this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }
 
-    public Double getByKeys( R r, C c ) {
-        return this.get( getRowIndexByName( r ), getColIndexByName( c ) );
-    }
-
-    public abstract DoubleMatrix<R, C> copy();
-
-    public abstract double[][] asArray();
+    /**
+     * @param startRow inclusive
+     * @param endRow inclusive
+     * @return
+     */
+    public abstract DoubleMatrix<R, C> getRowRange( int startRow, int endRow );
 
     /*
      * For more advanced matrix writing see the MatrixWriter class (non-Javadoc)
@@ -133,13 +147,6 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
         }
         return buf.toString();
     }
-
-    /**
-     * @param j
-     * @param i
-     * @return
-     */
-    public abstract double get( int j, int i );
 
     /**
      * @param j

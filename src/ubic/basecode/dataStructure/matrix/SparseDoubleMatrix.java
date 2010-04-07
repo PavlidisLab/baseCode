@@ -72,8 +72,7 @@ public class SparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * @param minLoadFactor double
      * @param maxLoadFactor double
      */
-    public SparseDoubleMatrix( int rows, int cols, int initialCapacity, double minLoadFactor,
-            double maxLoadFactor ) {
+    public SparseDoubleMatrix( int rows, int cols, int initialCapacity, double minLoadFactor, double maxLoadFactor ) {
         super();
         matrix = new SparseDoubleMatrix2D( rows, cols, initialCapacity, minLoadFactor, maxLoadFactor );
     }
@@ -249,6 +248,32 @@ public class SparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         }
         return returnval;
 
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.Matrix2D#getRowRange(int, int)
+     */
+    @Override
+    public DoubleMatrix<R, C> getRowRange( int startRow, int endRow ) {
+        super.checkRowRange( startRow, endRow );
+
+        DoubleMatrix<R, C> returnval = new SparseDoubleMatrix<R, C>( endRow - startRow, this.columns() );
+        for ( int i = startRow; i <= endRow; i++ ) {
+            R rowName = this.getRowName( i );
+            if ( rowName != null ) {
+                returnval.addRowName( rowName, i );
+            }
+            for ( int j = 0, m = this.columns(); j < m; j++ ) {
+                if ( i == 0 ) {
+                    C colName = this.getColName( j );
+                    returnval.addColumnName( colName, j );
+                }
+                returnval.set( i, j, this.get( i, j ) );
+            }
+        }
+        return returnval;
     }
 
 }
