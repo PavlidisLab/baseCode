@@ -48,11 +48,11 @@ import ubic.basecode.util.r.type.TwoWayAnovaResult;
 public class JRIClientTest extends TestCase {
     private static Log log = LogFactory.getLog( JRIClientTest.class.getName() );
 
-    JRIClient rc = null;
     boolean connected = true;
-    DoubleMatrix<String, String> tester;
+    JRIClient rc = null;
     double[] test1 = new double[] { -1.2241396, -0.6794486, -0.8475404, -0.4119554, -2.1980083 };
     double[] test2 = new double[] { 0.67676154, 0.20346679, 0.09289084, 0.68850551, 0.61120011 };
+    DoubleMatrix<String, String> tester;
 
     @Override
     public void setUp() throws Exception {
@@ -85,6 +85,168 @@ public class JRIClientTest extends TestCase {
         rc = null;
     }
 
+    public void testAnovaA() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        /*
+         * foo<-c(212.1979, 8.8645, 8.4814, 11.915);
+         * 
+         * a<-factor(c( "A", "B", "B", "B" ));
+         * 
+         * b<-factor(c( "D", "C", "D", "D" ));
+         * 
+         * anova(aov(foo ~ a+b));
+         */
+
+        double[] data = new double[] { 212.1979, 8.8645, 8.4814, 11.915 };
+        String[] f1 = new String[] { "A", "B", "B", "B" };
+        String[] f2 = new String[] { "D", "C", "D", "D" };
+
+        TwoWayAnovaResult r = rc.twoWayAnova( data, Arrays.asList( f1 ), Arrays.asList( f2 ), false );
+        assertEquals( 0.008816, r.getMainEffectAPval(), 0.0001 );
+        assertEquals( 0.731589, r.getMainEffectBPval(), 0.0001 );
+        assertEquals( 5214.3817, r.getMainEffectAfVal(), 0.0001 );
+        assertEquals( 0.2012, r.getMainEffectBfVal(), 0.0001 );
+    }
+
+    public void testAnovaB() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        /*
+         * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074);
+         * 
+         * a<-factor(c( "A", "A", "A", "A", "B", "B", "B", "B" ));
+         * 
+         * b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" ));
+         * 
+         * anova(aov(foo ~ a+b));
+         */
+
+        double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
+        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
+        String[] f2 = new String[] { "C", "C", "D", "D", "C", "C", "D", "D" };
+
+        TwoWayAnovaResult r = rc.twoWayAnova( data, Arrays.asList( f1 ), Arrays.asList( f2 ), false );
+        assertEquals( 0.1567, r.getMainEffectAPval(), 0.0001 );
+        assertEquals( 0.8323, r.getMainEffectBPval(), 0.0001 );
+        assertEquals( 3.0294, r.getMainEffectAfVal(), 0.0001 );
+        assertEquals( 0.0511, r.getMainEffectBfVal(), 0.0001 );
+    }
+
+    public void testAnovaC() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        /*
+         * foo<-c( 213.7725, 211.6383, NA, 212.589, 10.3011, 10.1182, 13.486, 12.916);
+         * 
+         * a<-factor(c( "A", "A", "A", "A", "B", "B", "B", "B" ));
+         * 
+         * b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" ));
+         * 
+         * anova(aov(foo ~ a+b));
+         */
+
+        double[] data = new double[] { 213.7725, 211.6383, Double.NaN, 212.589, 10.3011, 10.1182, 13.486, 12.916 };
+        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
+        String[] f2 = new String[] { "C", "C", "D", "D", "C", "C", "D", "D" };
+
+        TwoWayAnovaResult r = rc.twoWayAnova( data, Arrays.asList( f1 ), Arrays.asList( f2 ), true );
+        assertEquals( 8.97e-08, r.getMainEffectAPval(), 0.0000001 );
+        assertEquals( 0.08816, r.getMainEffectBPval(), 0.0001 );
+        assertEquals( 0.11823, r.getInteractionPval(), 0.0001 );
+        assertEquals( 84546.9846, r.getMainEffectAfVal(), 0.0001 );
+        assertEquals( 6.2208, r.getMainEffectBfVal(), 0.0001 );
+        assertEquals( 4.7178, r.getInteractionfVal(), 0.0001 );
+    }
+
+    public void testAnovaD() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        /*
+         * foo<-c( 206.2209 , NA , 205.6038 , 203.0751 , NA , NA , 4.6569 , NA );
+         * 
+         * a<-factor(c( "A", "A", "A", "A", "B", "B", "B", "B" ));
+         * 
+         * b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" ));
+         * 
+         * anova(aov(foo ~ a+b));
+         */
+
+        double[] data = new double[] { 206.2209, Double.NaN, 205.6038, 203.0751, Double.NaN, Double.NaN, 4.6569,
+                Double.NaN };
+        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
+        String[] f2 = new String[] { "C", "C", "D", "D", "C", "C", "D", "D" };
+
+        TwoWayAnovaResult r = rc.twoWayAnova( data, Arrays.asList( f1 ), Arrays.asList( f2 ), true );
+        assertEquals( 0.006562, r.getMainEffectAPval(), 0.00001 );
+        assertEquals( 0.548142, r.getMainEffectBPval(), 0.0001 );
+        assertEquals( Double.NaN, r.getInteractionPval() );
+        assertEquals( 9412.4049, r.getMainEffectAfVal(), 0.0001 );
+        assertEquals( 0.7381, r.getMainEffectBfVal(), 0.0001 );
+        assertEquals( Double.NaN, r.getInteractionfVal() );
+    }
+
+    public void testAnovaE() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        /*
+         * foo<-c(212.1979, 8.8645, 8.4814, 11.915);
+         * 
+         * a<-factor(c( "A", "B", "B", "B" ));
+         * 
+         * anova(aov(foo ~ a));
+         */
+
+        double[] data = new double[] { 212.1979, 8.8645, 8.4814, 11.915 };
+        String[] f1 = new String[] { "A", "B", "B", "B" };
+
+        OneWayAnovaResult r = rc.oneWayAnova( data, Arrays.asList( f1 ) );
+        assertEquals( 0.0001152, r.getPval(), 0.0001 );
+        assertEquals( 8682.2, r.getFVal(), 0.01 );
+    }
+
+    /**
+     * One way
+     * 
+     * @throws Exception
+     */
+    public void testAnovaF() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        /*
+         * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074);
+         * 
+         * a<-factor(c( "A", "A", "A", "A", "B", "B", "B", "B" ));
+         * 
+         * anova(aov(foo ~ a));
+         */
+
+        double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
+        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
+
+        OneWayAnovaResult r = rc.oneWayAnova( data, Arrays.asList( f1 ) );
+        assertEquals( 0.1110, r.getPval(), 0.0001 );
+        assertEquals( 3.739, r.getFVal(), 0.001 );
+    }
+
     public void testAssignAndRetrieveMatrix() throws Exception {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -106,28 +268,44 @@ public class JRIClientTest extends TestCase {
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
     }
 
-    public void testStringListEval() throws Exception {
-        if ( !connected ) {
-            log.warn( "Cannot load JRI, skipping test" );
-            return;
+    public void testDataFrameA() throws Exception {
+
+        double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
+        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
+
+        double[] f2 = new double[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+        ObjectMatrix<String, String, Object> d = new ObjectMatrixImpl<String, String, Object>( 8, 3 );
+
+        d.setColumnNames( Arrays.asList( new String[] { "foo", "bar", "ack" } ) );
+        d.setRowNames( Arrays.asList( new String[] { "a", "b", "c", "d", "e", "f", "g", "i" } ) );
+
+        for ( int i = 0; i < 8; i++ ) {
+            for ( int j = 0; j < 3; j++ ) {
+                if ( j == 0 ) {
+                    d.set( i, j, f1[i] );
+                } else if ( j == 1 ) {
+                    d.set( i, j, f2[i] );
+                } else {
+                    d.set( i, j, data[i] );
+                }
+            }
         }
-        List<String> actual = rc.stringListEval( "c('a','b')" );
-        assertEquals( 2, actual.size() );
-        assertEquals( "a", actual.get( 0 ) );
-        assertEquals( "b", actual.get( 1 ) );
+
+        String dataFrame = rc.dataFrame( d );
+
+        assertNotNull( dataFrame );
+
     }
 
-    public void testFactorAssign() throws Exception {
+    public void testDoubleTwoDoubleArrayEval() throws Exception {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
         }
-
-        List<String> list = new ArrayList<String>();
-        list.add( "a" );
-        list.add( "b" );
-        String factor = rc.assignFactor( list );
-        assertNotNull( factor );
+        double actual = rc.doubleTwoDoubleArrayEval( "cor(a,b)", "a", test1, "b", test2 );
+        double expected = -0.29843518070456654;
+        assertEquals( expected, actual, Constants.SMALLISH );
     }
 
     /*
@@ -143,6 +321,19 @@ public class JRIClientTest extends TestCase {
 
         assertTrue( "rc.eval() returned version '" + actualValue + "', expected something starting with R version 2",
                 actualValue.startsWith( expectedValue ) );
+    }
+
+    /*
+     * Test method for 'exec(String)'
+     */
+    public void testExecDoubleArray() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+        double[] dd = rc.doubleArrayEval( "rep(1, 10)" );
+        assertNotNull( dd );
+        assertTrue( RegressionTesting.closeEnough( new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, dd, 0.001 ) );
     }
 
     public void testExecError() throws Exception {
@@ -176,27 +367,219 @@ public class JRIClientTest extends TestCase {
         }
     }
 
-    /*
-     * Test method for 'exec(String)'
-     */
-    public void testExecDoubleArray() throws Exception {
+    public void testFactorAssign() throws Exception {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
         }
-        double[] dd = rc.doubleArrayEval( "rep(1, 10)" );
-        assertNotNull( dd );
-        assertTrue( RegressionTesting.closeEnough( new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, dd, 0.001 ) );
+
+        List<String> list = new ArrayList<String>();
+        list.add( "a" );
+        list.add( "b" );
+        String factor = rc.assignFactor( list );
+        assertNotNull( factor );
     }
 
-    public void testDoubleTwoDoubleArrayEval() throws Exception {
+    /**
+     * Like a two-sample t-test where the intercept is also of interest.
+     * 
+     * @throws Exception
+     */
+    public void testLinearModelA() throws Exception {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
         }
-        double actual = rc.doubleTwoDoubleArrayEval( "cor(a,b)", "a", test1, "b", test2 );
-        double expected = -0.29843518070456654;
-        assertEquals( expected, actual, Constants.SMALLISH );
+
+        /*
+         * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074);
+         * 
+         * a<-factor(c( "A", "A", "A", "A", "B", "B", "B", "B" ));
+         * 
+         * summary(lm(foo ~ a)); anova(lm(foo ~ a));
+         */
+
+        double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
+        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
+
+        rc.assign( "foo", data );
+        String facN = rc.assignFactor( "f1", Arrays.asList( f1 ) );
+        REXP result = rc.eval( "summary(lm(foo ~ " + facN + ") )" );
+        REXP anova = rc.eval( "anova(lm(foo ~ " + facN + ") )" );
+        LinearModelSummary lms = new LinearModelSummary( result, anova, new String[] { "f1" } );
+
+        Double p = lms.getMainEffectP( facN );
+        Double t = lms.getMainEffectT( facN )[0];
+        Double ip = lms.getInterceptP();
+        Double it = lms.getInterceptT();
+
+        assertEquals( 0.11096, p, 0.0001 );
+        assertEquals( 1.933653, t, 0.0001 );
+        assertEquals( 1.10e-08, ip, 1e-10 );
+        assertEquals( 70.319382, it, 0.0001 );
+
+        // assertEquals( 3.739, lms.getFStat(), 0.001 );
+        // assertEquals( 0.1110, lms.getPForF(), 0.001 );
+    }
+
+    /**
+     * With a continuous covariate as well a categorical one.
+     * 
+     * @throws Exception
+     */
+    public void testLinearModelB() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        /*
+         * dat<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074);
+         * 
+         * a<-factor(c( "A", "A", "A", "A", "B", "B", "B", "B" ));
+         * 
+         * b<-c(1, 2, 3, 4, 5, 6, 7, 8)
+         * 
+         * bar<-lm(dat ~ a + b);
+         * 
+         * summary(bar)
+         * 
+         * anova(bar)
+         */
+
+        double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
+        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
+
+        List<String> fac1 = Arrays.asList( f1 );
+
+        double[] fac2 = new double[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+        Map<String, List<?>> factors = new LinkedHashMap<String, List<?>>();
+        factors.put( "foo", fac1 );
+        factors.put( "bar", Arrays.asList( ArrayUtils.toObject( fac2 ) ) );
+
+        LinearModelSummary lms = rc.linearModel( data, factors );
+
+        Double p = lms.getMainEffectP( "foo" );
+        Double t = lms.getMainEffectT( "foo" )[0];
+
+        Double pp = lms.getMainEffectP( "bar" );
+        Double tt = lms.getMainEffectT( "bar" )[0];
+
+        Double ip = lms.getInterceptP();
+        Double it = lms.getInterceptT();
+
+        assertEquals( 0.1586, p, 0.0001 );
+        assertEquals( 0.64117305, t, 0.0001 );
+        assertEquals( 0.9443, pp, 0.0001 );
+        assertEquals( 0.07432241, tt, 0.0001 );
+        assertEquals( 2.821526e-06, ip, 0.0001 );
+        assertEquals( 38.14344686, it, 0.0001 );
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLinearModelC() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        /*
+         * Another way of running a linear model.
+         */
+
+        double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
+        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
+
+        double[] f2 = new double[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+        ObjectMatrix<String, String, Object> d = new ObjectMatrixImpl<String, String, Object>( 8, 2 );
+
+        for ( int i = 0; i < 8; i++ ) {
+            for ( int j = 0; j < 2; j++ ) {
+                if ( j == 0 ) {
+                    d.set( i, j, f1[i] );
+                } else {
+                    d.set( i, j, f2[i] );
+                }
+            }
+        }
+
+        d.setColumnNames( Arrays.asList( new String[] { "foo", "bar" } ) );
+
+        log.info( d.asDoubles() );
+
+        LinearModelSummary lms = rc.linearModel( data, d );
+
+        Double p = lms.getMainEffectP( "foo" );
+        Double t = lms.getMainEffectT( "foo" )[0];
+
+        Double pp = lms.getMainEffectP( "bar" );
+        Double tt = lms.getMainEffectT( "bar" )[0];
+
+        Double ip = lms.getInterceptP();
+        Double it = lms.getInterceptT();
+
+        assertEquals( 0.1586, p, 0.0001 );
+        assertEquals( 0.64117305, t, 0.0001 );
+        assertEquals( 9.443222e-01, pp, 0.0001 );
+        assertEquals( 0.07432241, tt, 0.0001 );
+        assertEquals( 2.821526e-06, ip, 0.0001 );
+        assertEquals( 38.14344686, it, 0.0001 );
+
+    }
+
+    /**
+     * Basically a one-way anova with 4 levels in the factor.
+     * 
+     * @throws Exception
+     */
+    public void testLinearModelD() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        /*
+         * foo<-c( 3.2969, 3.1856, 4.1638, 4.59, 3.2342, 3.3533, 3.4347, 3.3074);
+         * 
+         * d<-factor(c( "y", "y", "z", "z", "x", "x", "w", "w" ));
+         * 
+         * a<-factor(c( "A", "A", "A", "A", "B", "B", "B", "B" ));
+         * 
+         * b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" ));
+         * 
+         * c<-c(1, 2, 3, 4, 5, 6, 7, 8)
+         * 
+         * summary(lm(foo ~ d)); anova(lm(foo ~ d));
+         */
+
+        double[] data = new double[] { 3.2969, 3.1856, 4.1638, 4.59, 3.2342, 3.3533, 3.4347, 3.3074 };
+        String[] f1 = new String[] { "y", "y", "z", "z", "x", "x", "w", "w" };
+
+        List<String> fac1 = Arrays.asList( f1 );
+
+        Map<String, List<?>> factors = new LinkedHashMap<String, List<?>>();
+        factors.put( "foo", fac1 );
+
+        LinearModelSummary lms = rc.linearModel( data, factors );
+
+        Double p = lms.getMainEffectP( "foo" );
+        Double t = lms.getMainEffectT( "foo" )[0];
+
+        Double ip = lms.getInterceptP();
+        Double it = lms.getInterceptT();
+
+        assertEquals( 0.006669, p, 0.0001 );
+        assertEquals( -0.462, t, 0.001 );
+        assertEquals( 2.821526e-06, ip, 0.0001 );
+        assertEquals( 28.464, it, 0.001 );
+
+        // assertEquals( 3.739, lms.getFStat(), 0.001 );
+        // assertEquals( 0.1110, lms.getPForF(), 0.001 );
     }
 
     public void testListEvalA() throws Exception {
@@ -240,305 +623,14 @@ public class JRIClientTest extends TestCase {
 
     }
 
-    public void testAnovaA() throws Exception {
+    public void testStringListEval() throws Exception {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
         }
-
-        /*
-         * foo<-c(212.1979, 8.8645, 8.4814, 11.915); a<-factor(c( "A", "B", "B", "B" )); b<-factor(c( "D", "C", "D", "D"
-         * )); anova(aov(foo ~ a+b));
-         */
-
-        double[] data = new double[] { 212.1979, 8.8645, 8.4814, 11.915 };
-        String[] f1 = new String[] { "A", "B", "B", "B" };
-        String[] f2 = new String[] { "D", "C", "D", "D" };
-
-        TwoWayAnovaResult r = rc.twoWayAnova( data, Arrays.asList( f1 ), Arrays.asList( f2 ), false );
-        assertEquals( 0.008816, r.getMainEffectAPval(), 0.0001 );
-        assertEquals( 0.731589, r.getMainEffectBPval(), 0.0001 );
-        assertEquals( 5214.3817, r.getMainEffectAfVal(), 0.0001 );
-        assertEquals( 0.2012, r.getMainEffectBfVal(), 0.0001 );
-    }
-
-    public void testAnovaB() throws Exception {
-        if ( !connected ) {
-            log.warn( "Cannot load JRI, skipping test" );
-            return;
-        }
-
-        /*
-         * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074); a<-factor(c( "A", "A", "A", "A", "B",
-         * "B", "B", "B" )); b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" )); anova(aov(foo ~ a+b));
-         */
-
-        double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
-        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
-        String[] f2 = new String[] { "C", "C", "D", "D", "C", "C", "D", "D" };
-
-        TwoWayAnovaResult r = rc.twoWayAnova( data, Arrays.asList( f1 ), Arrays.asList( f2 ), false );
-        assertEquals( 0.1567, r.getMainEffectAPval(), 0.0001 );
-        assertEquals( 0.8323, r.getMainEffectBPval(), 0.0001 );
-        assertEquals( 3.0294, r.getMainEffectAfVal(), 0.0001 );
-        assertEquals( 0.0511, r.getMainEffectBfVal(), 0.0001 );
-    }
-
-    public void testAnovaC() throws Exception {
-        if ( !connected ) {
-            log.warn( "Cannot load JRI, skipping test" );
-            return;
-        }
-
-        /*
-         * foo<-c( 213.7725, 211.6383, NA, 212.589, 10.3011, 10.1182, 13.486, 12.916); a<-factor(c( "A", "A", "A", "A",
-         * "B", "B", "B", "B" )); b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" )); anova(aov(foo ~ a+b));
-         */
-
-        double[] data = new double[] { 213.7725, 211.6383, Double.NaN, 212.589, 10.3011, 10.1182, 13.486, 12.916 };
-        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
-        String[] f2 = new String[] { "C", "C", "D", "D", "C", "C", "D", "D" };
-
-        TwoWayAnovaResult r = rc.twoWayAnova( data, Arrays.asList( f1 ), Arrays.asList( f2 ), true );
-        assertEquals( 8.97e-08, r.getMainEffectAPval(), 0.0000001 );
-        assertEquals( 0.08816, r.getMainEffectBPval(), 0.0001 );
-        assertEquals( 0.11823, r.getInteractionPval(), 0.0001 );
-        assertEquals( 84546.9846, r.getMainEffectAfVal(), 0.0001 );
-        assertEquals( 6.2208, r.getMainEffectBfVal(), 0.0001 );
-        assertEquals( 4.7178, r.getInteractionfVal(), 0.0001 );
-    }
-
-    public void testAnovaD() throws Exception {
-        if ( !connected ) {
-            log.warn( "Cannot load JRI, skipping test" );
-            return;
-        }
-
-        /*
-         * foo<-c( 206.2209 , NA , 205.6038 , 203.0751 , NA , NA , 4.6569 , NA ); a<-factor(c( "A", "A", "A", "A", "B",
-         * "B", "B", "B" )); b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" )); anova(aov(foo ~ a+b));
-         */
-
-        double[] data = new double[] { 206.2209, Double.NaN, 205.6038, 203.0751, Double.NaN, Double.NaN, 4.6569,
-                Double.NaN };
-        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
-        String[] f2 = new String[] { "C", "C", "D", "D", "C", "C", "D", "D" };
-
-        TwoWayAnovaResult r = rc.twoWayAnova( data, Arrays.asList( f1 ), Arrays.asList( f2 ), true );
-        assertEquals( 0.006562, r.getMainEffectAPval(), 0.00001 );
-        assertEquals( 0.548142, r.getMainEffectBPval(), 0.0001 );
-        assertEquals( Double.NaN, r.getInteractionPval() );
-        assertEquals( 9412.4049, r.getMainEffectAfVal(), 0.0001 );
-        assertEquals( 0.7381, r.getMainEffectBfVal(), 0.0001 );
-        assertEquals( Double.NaN, r.getInteractionfVal() );
-    }
-
-    public void testAnovaE() throws Exception {
-        if ( !connected ) {
-            log.warn( "Cannot load JRI, skipping test" );
-            return;
-        }
-
-        /*
-         * foo<-c(212.1979, 8.8645, 8.4814, 11.915); a<-factor(c( "A", "B", "B", "B" )); anova(aov(foo ~ a));
-         */
-
-        double[] data = new double[] { 212.1979, 8.8645, 8.4814, 11.915 };
-        String[] f1 = new String[] { "A", "B", "B", "B" };
-
-        OneWayAnovaResult r = rc.oneWayAnova( data, Arrays.asList( f1 ) );
-        assertEquals( 0.0001152, r.getPval(), 0.0001 );
-        assertEquals( 8682.2, r.getFVal(), 0.01 );
-    }
-
-    /**
-     * One way
-     * 
-     * @throws Exception
-     */
-    public void testAnovaF() throws Exception {
-        if ( !connected ) {
-            log.warn( "Cannot load JRI, skipping test" );
-            return;
-        }
-
-        /*
-         * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074); a<-factor(c( "A", "A", "A", "A", "B",
-         * "B", "B", "B" )); anova(aov(foo ~ a));
-         */
-
-        double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
-        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
-
-        OneWayAnovaResult r = rc.oneWayAnova( data, Arrays.asList( f1 ) );
-        assertEquals( 0.1110, r.getPval(), 0.0001 );
-        assertEquals( 3.739, r.getFVal(), 0.001 );
-    }
-
-    /**
-     * Like a two-sample t-test where the intercept is also of interest.
-     * 
-     * @throws Exception
-     */
-    public void testLinearModelA() throws Exception {
-        if ( !connected ) {
-            log.warn( "Cannot load JRI, skipping test" );
-            return;
-        }
-
-        /*
-         * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074); a<-factor(c( "A", "A", "A", "A", "B",
-         * "B", "B", "B" )); summary(lm(foo ~ a));
-         */
-
-        double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
-        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
-
-        rc.assign( "foo", data );
-        String facN = rc.assignFactor( Arrays.asList( f1 ) );
-        REXP result = rc.eval( "summary(lm(foo ~ " + facN + ") )" );
-        LinearModelSummary lms = new LinearModelSummary( result );
-
-        Double p = lms.getP( facN );
-        Double t = lms.getT( facN );
-        Double ip = lms.getInterceptP();
-        Double it = lms.getInterceptT();
-
-        assertEquals( 0.11096, p, 0.0001 );
-        assertEquals( 1.933653, t, 0.0001 );
-        assertEquals( 1.101509e-08, ip, 0.0001 );
-        assertEquals( 70.319382, it, 0.0001 );
-
-    }
-
-    /**
-     * Like a two-sample t-test where the intercept is also of interest.
-     * 
-     * @throws Exception
-     */
-    public void testLinearModelB() throws Exception {
-        if ( !connected ) {
-            log.warn( "Cannot load JRI, skipping test" );
-            return;
-        }
-
-        /*
-         * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074); a<-factor(c( "A", "A", "A", "A", "B",
-         * "B", "B", "B" )); summary(lm(foo ~ a));
-         */
-
-        double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
-        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
-
-        List<String> fac1 = Arrays.asList( f1 );
-
-        double[] fac2 = new double[] { 1, 2, 3, 4, 5, 6, 7, 8 };
-
-        Map<String, List<?>> factors = new LinkedHashMap<String, List<?>>();
-        factors.put( "foo", fac1 );
-        factors.put( "bar", Arrays.asList( ArrayUtils.toObject( fac2 ) ) );
-
-        LinearModelSummary lms = rc.linearModel( data, factors );
-
-        Double p = lms.getP( "foo" );
-        Double t = lms.getT( "foo" );
-
-        Double pp = lms.getP( "bar" );
-        Double tt = lms.getT( "bar" );
-
-        Double ip = lms.getInterceptP();
-        Double it = lms.getInterceptT();
-
-        assertEquals( 5.563023e-01, p, 0.0001 );
-        assertEquals( 0.64117305, t, 0.0001 );
-        assertEquals( 9.443222e-01, pp, 0.0001 );
-        assertEquals( 0.07432241, tt, 0.0001 );
-        assertEquals( 2.821526e-06, ip, 0.0001 );
-        assertEquals( 38.14344686, it, 0.0001 );
-
-    }
-
-    public void testDataFrameA() throws Exception {
-
-        double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
-        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
-
-        double[] f2 = new double[] { 1, 2, 3, 4, 5, 6, 7, 8 };
-
-        ObjectMatrix<String, String, Object> d = new ObjectMatrixImpl<String, String, Object>( 8, 3 );
-
-        d.setColumnNames( Arrays.asList( new String[] { "foo", "bar", "ack" } ) );
-        d.setRowNames( Arrays.asList( new String[] { "a", "b", "c", "d", "e", "f", "g", "i" } ) );
-
-        for ( int i = 0; i < 8; i++ ) {
-            for ( int j = 0; j < 3; j++ ) {
-                if ( j == 0 ) {
-                    d.set( i, j, f1[i] );
-                } else if ( j == 1 ) {
-                    d.set( i, j, f2[i] );
-                } else {
-                    d.set( i, j, data[i] );
-                }
-            }
-        }
-
-        String dataFrame = rc.dataFrame( d );
-
-        assertNotNull( dataFrame );
-
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testLinearModelC() throws Exception {
-        if ( !connected ) {
-            log.warn( "Cannot load JRI, skipping test" );
-            return;
-        }
-
-        /*
-         * Another was of running a linear model.
-         */
-
-        double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
-        String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
-
-        double[] f2 = new double[] { 1, 2, 3, 4, 5, 6, 7, 8 };
-
-        ObjectMatrix<String, String, Object> d = new ObjectMatrixImpl<String, String, Object>( 8, 2 );
-
-        for ( int i = 0; i < 8; i++ ) {
-            for ( int j = 0; j < 2; j++ ) {
-                if ( j == 0 ) {
-                    d.set( i, j, f1[i] );
-                } else {
-                    d.set( i, j, f2[i] );
-                }
-            }
-        }
-
-        d.setColumnNames( Arrays.asList( new String[] { "foo", "bar" } ) );
-
-        log.info( d.asDoubles() );
-
-        LinearModelSummary lms = rc.linearModel( data, d );
-
-        Double p = lms.getP( "foo" );
-        Double t = lms.getT( "foo" );
-
-        Double pp = lms.getP( "bar" );
-        Double tt = lms.getT( "bar" );
-
-        Double ip = lms.getInterceptP();
-        Double it = lms.getInterceptT();
-
-        assertEquals( 5.563023e-01, p, 0.0001 );
-        assertEquals( 0.64117305, t, 0.0001 );
-        assertEquals( 9.443222e-01, pp, 0.0001 );
-        assertEquals( 0.07432241, tt, 0.0001 );
-        assertEquals( 2.821526e-06, ip, 0.0001 );
-        assertEquals( 38.14344686, it, 0.0001 );
-
+        List<String> actual = rc.stringListEval( "c('a','b')" );
+        assertEquals( 2, actual.size() );
+        assertEquals( "a", actual.get( 0 ) );
+        assertEquals( "b", actual.get( 1 ) );
     }
 }

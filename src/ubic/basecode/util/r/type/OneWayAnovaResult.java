@@ -71,6 +71,15 @@ public class OneWayAnovaResult extends AnovaResult {
 
     }
 
+    /* *//**
+     * @param linearModelSummary
+     */
+    /*
+     * public OneWayAnovaResult( LinearModelSummary linearModelSummary ) { this.factorName =
+     * linearModelSummary.getFactorNames().iterator().next(); this.pval = linearModelSummary.getP( this.factorName );
+     * this.tstat = linearModel }
+     */
+
     /**
      * @return the df
      */

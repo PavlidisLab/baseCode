@@ -18,9 +18,14 @@
  */
 package ubic.basecode.util.r.type;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.rosuda.REngine.REXP;
@@ -32,38 +37,31 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixFactory;
 
 /**
- * Represents a summary.lm object from R.
+ * Represents the results of a linear model analysis from R. Both the summary.lm and anova objects are represented.
+ * <p>
  * 
  * @author paul
  * @version $Id$
  */
-public class LinearModelSummary {
+public class LinearModelSummary implements Serializable {
 
-    /**
-     * 
-     */
     private static final String INTERCEPT_COEFFICIENT_NAME_IN_R = "(Intercept)";
 
     private Double adjRSquared = Double.NaN;
 
+    private GenericAnovaResult anovaResult;
+
     private DoubleMatrix<String, String> coefficients = null;
 
-    private Integer df = null;
+    private List<String> factorNames = null;
+
+    private Map<String, List<String>> factorValueNames = new HashMap<String, List<String>>();
 
     private String formula = null;
 
     private Double[] residuals = null;
 
-    /**
-     * @return the factorNames
-     */
-    public List<String> getFactorNames() {
-        return factorNames;
-    }
-
     private Double rSquared = Double.NaN;
-
-    private List<String> factorNames = null;
 
     /**
      * Construct an empty summary. Use for failed tests.
@@ -72,18 +70,23 @@ public class LinearModelSummary {
     }
 
     /**
-     * Construct from the result of evaluatio of an R call where design matrix is defined explicitly like 'summary(lm( x
-     * ~ designMatrix))'.
+     * Construct from the result of evaluation of an R call.
      * 
      * @param summaryLm
-     * @param factorNames
+     * @param anova
+     * @param factorNames as referred to in the model. Used as keys to keep track of coefficients etc.
      */
-    public LinearModelSummary( REXP summaryLm, String[] factorNames ) {
+    public LinearModelSummary( REXP summaryLm, REXP anova, String[] factorNames ) {
         try {
             basicSetup( summaryLm );
 
             this.factorNames = Arrays.asList( factorNames );
-            setupFactorNames( factorNames );
+
+            if ( anova != null ) {
+                this.anovaResult = new GenericAnovaResult( anova );
+            }
+
+            setupCoefficientNames( factorNames );
 
         } catch ( REXPMismatchException e ) {
             throw new RuntimeException( e );
@@ -92,64 +95,153 @@ public class LinearModelSummary {
     }
 
     /**
-     * Construct from the result of evaluation of an R call where factors are listed separately like 'summary(lm( x ~ f
-     * + g + h))'
-     * 
      * @param summaryLm
+     * @param factorNames used as keys to keep track of coefficients etc.
      */
-    public LinearModelSummary( REXP summaryLm ) {
-        try {
-            RList li = basicSetup( summaryLm );
+    public LinearModelSummary( REXP summaryLm, String[] factorNames ) {
+        this( summaryLm, null, factorNames );
+    }
 
-            // factor name setup
-            String[] termLabels = ( ( REXP ) li.get( "terms" ) ).getAttribute( "term.labels" ).asStrings();
-            setupFactorNames( termLabels );
+    /**
+     * @return the adjRSquared
+     */
+    public Double getAdjRSquared() {
+        return adjRSquared;
+    }
 
-        } catch ( REXPMismatchException e ) {
-            throw new RuntimeException( e );
+    /**
+     * @return the coefficients. Row names are the contrasts, for example for a model with one factor "f" with two
+     *         levels "a" and "b": {"(Intercept)", "fb"}. columns are always {"Estimate" ,"Std. Error", "t value",
+     *         "Pr(>|t|)"}
+     */
+    public DoubleMatrix<String, String> getCoefficients() {
+        return coefficients;
+    }
+
+    /**
+     * @return the factorNames
+     */
+    public List<String> getFactorNames() {
+        return factorNames;
+    }
+
+    public List<String> getFactorValueNames( String factorName ) {
+        return factorValueNames.get( factorName );
+    }
+
+    /**
+     * @return the formula
+     */
+    public String getFormula() {
+        return formula;
+    }
+
+    /**
+     * @param fnames names of the factors
+     * @return
+     * @see ubic.basecode.util.r.type.GenericAnovaResult#getInteractionEffectP(java.lang.String)
+     */
+    public Double getInteractionEffectP( String... fnames ) {
+        if ( anovaResult == null ) return Double.NaN;
+        return anovaResult.getInteractionEffectP( fnames );
+    }
+
+    public Double getInterceptP() {
+        if ( coefficients != null && coefficients.hasRow( INTERCEPT_COEFFICIENT_NAME_IN_R ) )
+            return coefficients.getByKeys( INTERCEPT_COEFFICIENT_NAME_IN_R, "Pr(>|t|)" );
+        return Double.NaN;
+    }
+
+    public Double getInterceptT() {
+        if ( coefficients != null && coefficients.hasRow( INTERCEPT_COEFFICIENT_NAME_IN_R ) )
+            return coefficients.getByKeys( INTERCEPT_COEFFICIENT_NAME_IN_R, "t value" );
+        return Double.NaN;
+    }
+
+    /**
+     * @return
+     * @see ubic.basecode.util.r.type.GenericAnovaResult#getMainEffectFactorNames()
+     */
+    public Collection<String> getMainEffectFactorNames() {
+        if ( anovaResult == null ) return null;
+        return anovaResult.getMainEffectFactorNames();
+    }
+
+    /**
+     * @param factorName
+     * @return
+     * @see ubic.basecode.util.r.type.GenericAnovaResult#getMainEffectP(java.lang.String)
+     */
+    public Double getMainEffectP( String factorName ) {
+        if ( anovaResult == null ) return Double.NaN;
+        return anovaResult.getMainEffectP( factorName );
+    }
+
+    /**
+     * @param factorName
+     * @return array of T statistics for the given factor. For continuous factors or factors with only one level, there
+     *         will be just one value. For factors with N>2 levels, there will be N-1 values.
+     */
+    public Double[] getMainEffectT( String factorName ) {
+        Collection<String> terms = term2CoefficientNames.get( factorName );
+
+        if ( terms == null ) return null;
+
+        List<Double> ts = new ArrayList<Double>();
+        for ( String term : terms ) {
+            ts.add( coefficients.getByKeys( term, "t value" ) );
         }
+
+        return ts.toArray( new Double[] {} );
 
     }
 
-    private void setupFactorNames( String[] termLabels ) {
-        LinkedList<String> v = new LinkedList<String>();
-        this.factorNames = Arrays.asList( termLabels );
-
-        if ( coefficients.rows() < this.factorNames.size() + 1 ) { // one more to allow for the Intercept.
-            /*
-             * Missing...?
-             */
-            List<String> coefRowNames = coefficients.getRowNames();
-            for ( String coefNameFromR : coefRowNames ) {
-                if ( coefNameFromR.equals( INTERCEPT_COEFFICIENT_NAME_IN_R ) ) {
-                    continue;
-                }
-                boolean matched = false;
-                for ( String factorName : factorNames ) {
-                    if ( coefNameFromR.startsWith( factorName ) ) {
-                        if ( matched ) {
-                            throw new IllegalStateException( "Ambiguous factor name in lm result: " + coefNameFromR );
-                        }
-                        v.add( factorName );
-                        matched = true;
-                    }
-                }
-                if ( !matched ) {
-                    throw new IllegalStateException( "Unrecognized factor name in lm result: " + coefNameFromR );
-                }
-            }
-
-        } else {
-            v.addAll( factorNames );
-        }
-
-        v.add( 0, INTERCEPT_COEFFICIENT_NAME_IN_R );
-        assert v.size() == coefficients.rows();
-        coefficients.setRowNames( v );
-
-        assert coefficients.getRowNames().get( 0 ).equals( INTERCEPT_COEFFICIENT_NAME_IN_R );
+    /**
+     * @param factorNames
+     * @return
+     */
+    public Double[] getInteractionEffectT( String... factorNames ) {
+        // Collection<String> terms = term2CoefficientNames.get( factorName );
+        //
+        // if ( terms == null ) return null;
+        /*
+         * FIXME
+         */
+        return null;
     }
 
+    /**
+     * @return the residuals
+     */
+    public Double[] getResiduals() {
+        return residuals;
+    }
+
+    /**
+     * @return the rSquared
+     */
+    public Double getRSquared() {
+        return rSquared;
+    }
+
+    /**
+     * @return
+     * @see ubic.basecode.util.r.type.GenericAnovaResult#hasInteractions()
+     */
+    public boolean hasInteractions() {
+        if ( anovaResult == null ) return false;
+        return anovaResult.hasInteractions();
+    }
+
+    public boolean isBaseline( String factorValueName ) {
+        return !coefficients.hasRow( factorValueName );
+    }
+
+    /**
+     * @param summaryLm
+     * @return
+     * @throws REXPMismatchException
+     */
     private RList basicSetup( REXP summaryLm ) throws REXPMismatchException {
         RList li = summaryLm.asList();
 
@@ -170,74 +262,61 @@ public class LinearModelSummary {
 
         this.adjRSquared = ( ( REXP ) li.get( "adj.r.squared" ) ).asDouble();
 
-        this.df = ( ( REXP ) li.get( "df" ) ).asInteger();
         return li;
     }
 
-    /**
-     * @return the adjRSquared
-     */
-    public Double getAdjRSquared() {
-        return adjRSquared;
-    }
+    private Map<String, Collection<String>> term2CoefficientNames = new HashMap<String, Collection<String>>();
 
     /**
-     * @return the coefficients
+     * @param factorNames
      */
-    public DoubleMatrix<String, String> getCoefficients() {
-        return coefficients;
-    }
+    private void setupCoefficientNames( String[] factorNames ) {
 
-    /**
-     * @return the df
-     */
-    public Integer getDf() {
-        return df;
-    }
+        for ( String string : factorNames ) {
+            term2CoefficientNames.put( string, new HashSet<String>() );
+        }
 
-    /**
-     * @return the formula
-     */
-    public String getFormula() {
-        return formula;
-    }
+        /*
+         * We have multiple statistics for each factor (only one if it is two-level or continuous, but two if 3-level
+         * etc.)
+         * 
+         * If there is more than one level for a given factor, we need to choose how to represent the 'effect' compared
+         * to the baseline. Bear in mind that often we only care about the sign (direction) of the difference. There are
+         * a couple of options. One is to report each contrast separately; that is certainly the most sensible. If we
+         * want just one number, we could use the largest (absolute value). I think it is better to report all the
+         * contrasts that are available and let the client decide what to do with it.
+         */
 
-    public Double getInterceptP() {
-        if ( coefficients != null && coefficients.hasRow( INTERCEPT_COEFFICIENT_NAME_IN_R ) )
-            return coefficients.getByKeys( INTERCEPT_COEFFICIENT_NAME_IN_R, "Pr(>|t|)" );
-        return Double.NaN;
-    }
+        assert this.coefficients != null;
 
-    public Double getInterceptT() {
-        if ( coefficients != null && coefficients.hasRow( INTERCEPT_COEFFICIENT_NAME_IN_R ) )
-            return coefficients.getByKeys( INTERCEPT_COEFFICIENT_NAME_IN_R, "t value" );
-        return Double.NaN;
-    }
+        List<String> coefRowNames = coefficients.getRowNames();
 
-    public Double getP( String factorName ) {
-        if ( coefficients != null && coefficients.hasRow( factorName ) )
-            return coefficients.getByKeys( factorName, "Pr(>|t|)" );
-        return Double.NaN;
-    }
+        for ( String coefNameFromR : coefRowNames ) {
 
-    /**
-     * @return the residuals
-     */
-    public Double[] getResiduals() {
-        return residuals;
-    }
+            if ( coefNameFromR.equals( INTERCEPT_COEFFICIENT_NAME_IN_R ) ) {
+                continue; // ?
+            } else if ( coefNameFromR.contains( ":" ) ) {
 
-    /**
-     * @return the rSquared
-     */
-    public Double getRSquared() {
-        return rSquared;
-    }
+                String[] interactionTermNames = coefNameFromR.split( ":" );
 
-    public Double getT( String factorName ) {
-        if ( coefficients != null && coefficients.hasRow( factorName ) )
-            return coefficients.getByKeys( factorName, "t value" );
-        return Double.NaN;
+                /*
+                 * FIXME
+                 */
+
+            } else {
+
+                for ( String factorName : factorNames ) {
+
+                    if ( coefNameFromR.startsWith( factorName ) ) {
+
+                        assert term2CoefficientNames.containsKey( factorName );
+
+                        term2CoefficientNames.get( factorName ).add( coefNameFromR );
+
+                    }
+                }
+            }
+        }
     }
 
 }

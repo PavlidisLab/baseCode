@@ -255,13 +255,20 @@ public interface RClient {
      * @param command
      * @return
      */
-    public Map<String, LinearModelSummary> linearModelEvalWithLogging( String command );
+    public Map<String, LinearModelSummary> rowApplyLinearModelWithLogging( String dataMatrixVarName, String modelFormula,
+            String[] factorNames );
 
     /**
-     * @param command
-     * @return
+     * Run lm with anova on all the rows of a matrix
+     * 
+     * @param dataMatrixVarName from an assignment of a matrix
+     * @param modelFormula and other options that will be passed as the argument to 'lm(...)', that refers to factor
+     *        variables that have already been assigned, using x as the outcome. Example might be x ~ f1 + f2.
+     * @param names of the factors like {"f1", "f2"}.
+     * @return map of row identifiers to populated LinearModelSummaries.
      */
-    public Map<String, LinearModelSummary> linearModelEval( String command );
+    public Map<String, LinearModelSummary> rowApplyLinearModel( String dataMatrixVarName, String modelFormula,
+            String[] factorNames );
 
     /**
      * Lower-level access to two-way ANOVA

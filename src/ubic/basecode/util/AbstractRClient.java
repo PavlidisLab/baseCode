@@ -423,13 +423,14 @@ public abstract class AbstractRClient implements RClient {
 
         String varNames = StringUtils.join( d.getColNames(), "+" );
 
-        String command = "summary(lm(" + datName + " ~ " + varNames + ", data=" + df + ", singular.ok = FALSE))";
+        String lmName = RandomStringUtils.randomAlphabetic( 10 );
+        String command = lmName + "<-lm(" + datName + " ~ " + varNames + ", data=" + df + ", na.action=na.exclude)";
+        voidEval( command );
 
-        log.info( command );
+        REXP lmsum = eval( "summary(" + lmName + ")" );
+        REXP anova = eval( "anova(" + lmName + ")" );
 
-        REXP eval = eval( command );
-
-        return new LinearModelSummary( eval, d.getColNames().toArray( new String[] {} ) );
+        return new LinearModelSummary( lmsum, anova, d.getColNames().toArray( new String[] {} ) );
 
     }
 
@@ -461,42 +462,68 @@ public abstract class AbstractRClient implements RClient {
 
         String modelDeclaration = datName + " ~ " + StringUtils.join( factors.keySet(), "+" );
 
-        String command = "summary(lm(" + modelDeclaration + "))";
+        String lmName = RandomStringUtils.randomAlphabetic( 10 );
+        String command = lmName + "<-lm(" + modelDeclaration + ", na.action=na.exclude)";
+        log.info( command );
+        voidEval( command );
 
-        REXP eval = eval( command );
+        REXP lmsum = eval( "summary(" + lmName + ")" );
+        REXP anova = eval( "anova(" + lmName + ")" );
 
-        return new LinearModelSummary( eval );
+        return new LinearModelSummary( lmsum, anova, factors.keySet().toArray( new String[] {} ) );
 
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see ubic.basecode.util.RClient#linearModelEval(java.lang.String)
+     * @see ubic.basecode.util.RClient#rowApplyLinearModel(java.lang.String, java.lang.String, java.lang.String[])
      */
-    public Map<String, LinearModelSummary> linearModelEval( String command ) {
-        REXP rawResult = this.eval( command );
+    public Map<String, LinearModelSummary> rowApplyLinearModel( String dataMatrixVarName, String modelFormula,
+            String[] factorNames ) {
 
-        if ( rawResult == null ) {
+        String lmres = "lmlist." + RandomStringUtils.randomAlphanumeric( 10 );
+        String command = lmres + "<-apply(" + dataMatrixVarName + ", 1, function(x){ try(lm(" + modelFormula
+                + ", na.action=na.exclude), silent=T)})";
+
+        log.info( command );
+        this.voidEval( command );
+
+        REXP rawLmSummaries = this.eval( "lapply(" + lmres + ", function(x){ try(summary(x), silent=T)})" );
+
+        if ( rawLmSummaries == null ) {
+            log.warn( "No results from apply(... lm)" );
             return null;
         }
 
+        REXP rawAnova = this.eval( "lapply(" + lmres + ", function(x){ try(anova(x), silent=T)})" );
+
         Map<String, LinearModelSummary> result = new HashMap<String, LinearModelSummary>();
         try {
-            RList mainList = rawResult.asList();
-            if ( mainList == null ) {
+            RList rawLmList = rawLmSummaries.asList();
+            if ( rawLmList == null ) {
                 return null;
             }
 
-            log.debug( mainList.size() + " results." );
+            RList rawAnovaList = rawAnova.asList();
+            if ( rawAnovaList == null ) {
+                return null;
+            }
 
-            for ( int i = 0; i < mainList.size(); i++ ) {
+            log.debug( rawLmList.size() + " results." );
 
-                REXP lmSummary = mainList.at( i );
+            assert rawLmList.size() == rawAnovaList.size();
 
-                String elementIdentifier = mainList.keyAt( i );
+            for ( int i = 0; i < rawLmList.size(); i++ ) {
+
+                REXP lmSummary = rawLmList.at( i );
+                REXP anova = rawAnovaList.at( i );
+
+                String elementIdentifier = rawLmList.keyAt( i );
 
                 assert elementIdentifier != null;
+
+                assert elementIdentifier.equals( rawAnovaList.keyAt( i ) );
 
                 if ( log.isDebugEnabled() ) log.debug( "Key: " + elementIdentifier );
 
@@ -504,7 +531,7 @@ public abstract class AbstractRClient implements RClient {
                     log.debug( "No lm for " + elementIdentifier );
                     result.put( elementIdentifier, new LinearModelSummary() );
                 } else {
-                    result.put( elementIdentifier, new LinearModelSummary( lmSummary ) );
+                    result.put( elementIdentifier, new LinearModelSummary( lmSummary, anova, factorNames ) );
                 }
 
             }
@@ -518,14 +545,16 @@ public abstract class AbstractRClient implements RClient {
     /*
      * (non-Javadoc)
      * 
-     * @see ubic.basecode.util.RClient#linearModelEvalWithLogging(java.lang.String)
+     * @see ubic.basecode.util.RClient#rowApplyLinearModelWithLogging(java.lang.String, java.lang.String,
+     * java.lang.String[])
      */
-    public Map<String, LinearModelSummary> linearModelEvalWithLogging( String command ) {
+    public Map<String, LinearModelSummary> rowApplyLinearModelWithLogging( String dataMatrixVarName,
+            String modelFormula, String[] factorNames ) {
         RLoggingThread rLoggingThread = null;
 
         try {
             rLoggingThread = RLoggingThreadFactory.createRLoggingThread();
-            return this.linearModelEval( command );
+            return this.rowApplyLinearModel( dataMatrixVarName, modelFormula, factorNames );
         } catch ( Exception e ) {
             throw new RuntimeException( e );
         } finally {
@@ -713,7 +742,7 @@ public abstract class AbstractRClient implements RClient {
                 if ( log.isDebugEnabled() ) log.debug( "Key: " + elementIdentifier );
 
                 if ( !anovaTable.isList() || !anovaTable.hasAttribute( "row.names" ) ) {
-                    log.debug( "No anovaresult for " + elementIdentifier );
+                    log.info( "No anovaresult for " + elementIdentifier );
                     result.put( elementIdentifier, new OneWayAnovaResult() );
                     continue;
                 }
