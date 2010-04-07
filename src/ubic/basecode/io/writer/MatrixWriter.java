@@ -112,11 +112,9 @@ public class MatrixWriter<R, C> {
     }
 
     /**
-     * @param <R>
-     * @param <C>
      * @param <V>
      * @param matrix
-     * @param printNames
+     * @param printNames Should the row names be included
      * @throws IOException
      */
     public <V> void writeMatrix( Matrix2D<R, C, V> matrix, boolean printNames ) throws IOException {
