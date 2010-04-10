@@ -242,19 +242,21 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     public DoubleMatrix<R, C> getRowRange( int startRow, int endRow ) {
         super.checkRowRange( startRow, endRow );
 
-        DoubleMatrix<R, C> returnval = new DenseDoubleMatrix<R, C>( endRow - startRow, this.columns() );
+        DoubleMatrix<R, C> returnval = new DenseDoubleMatrix<R, C>( 1 + endRow - startRow, this.columns() );
+        int k = 0;
         for ( int i = startRow; i <= endRow; i++ ) {
             R rowName = this.getRowName( i );
             if ( rowName != null ) {
                 returnval.addRowName( rowName, i );
             }
             for ( int j = 0, m = this.columns(); j < m; j++ ) {
-                if ( i == 0 ) {
+                if ( i == startRow ) {
                     C colName = this.getColName( j );
                     returnval.addColumnName( colName, j );
                 }
-                returnval.set( i, j, this.get( i, j ) );
+                returnval.set( k, j, this.get( i, j ) );
             }
+            k++;
         }
         return returnval;
     }

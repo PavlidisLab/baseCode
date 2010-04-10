@@ -146,4 +146,10 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
 
     }
 
+    @Override
+    public String toString() {
+        // TODO
+        return super.toString();
+    }
+
 }

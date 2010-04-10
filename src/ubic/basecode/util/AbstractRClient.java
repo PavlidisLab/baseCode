@@ -464,7 +464,7 @@ public abstract class AbstractRClient implements RClient {
 
         String lmName = RandomStringUtils.randomAlphabetic( 10 );
         String command = lmName + "<-lm(" + modelDeclaration + ", na.action=na.exclude)";
-        log.info( command );
+        log.debug( command );
         voidEval( command );
 
         REXP lmsum = eval( "summary(" + lmName + ")" );
@@ -483,11 +483,47 @@ public abstract class AbstractRClient implements RClient {
             String[] factorNames ) {
 
         String lmres = "lmlist." + RandomStringUtils.randomAlphanumeric( 10 );
-        String command = lmres + "<-apply(" + dataMatrixVarName + ", 1, function(x){ try(lm(" + modelFormula
+
+        // Is 'snow' available?
+        // boolean snowIsAvailable = this.loadLibrary( "snow" );
+
+        // is 'multicore' available?
+        // boolean multiCoreIsAvailable = this.loadLibrary( "multicore" );
+
+        String command = "";
+        // String clusterName = RandomStringUtils.randomAlphanumeric( 10 );
+        // if ( snowIsAvailable ) {
+        // /*
+        // * EXPERIMENTAL - does not work with JRI
+        // */
+        //
+        // /*
+        // * Possibly check first if there are enough rows to bother.
+        // */
+        // log.info( "Running parallelized with snow" );
+        // voidEval( clusterName + "<-makeCluster(2)" );
+        // log.info( "got cluster" );
+        // command = lmres + "<-parApply(cl," + dataMatrixVarName + ", 1, function(x){ try(lm(" + modelFormula
+        // + ", na.action=na.exclude), silent=T)})"; } else
+
+        // if (multiCoreIsAvailable){
+        // log.info("Running multicore");
+        // command = lmres + "<-mclapply(" + dataMatrixVarName + ", 1, function(x){ try(lm(" + modelFormula
+        // + ", na.action=na.exclude), silent=T)})";
+        // } else {
+
+        command = lmres + "<-apply(" + dataMatrixVarName + ", 1, function(x){ try(lm(" + modelFormula
                 + ", na.action=na.exclude), silent=T)})";
 
-        log.info( command );
+        // }
+
+        log.debug( command );
         this.voidEval( command );
+        //
+        // if ( snowIsAvailable ) {
+        // voidEval( "stopCluster(" + clusterName + ")" );
+        // voidEval( "rm(" + clusterName + ")" );
+        // }
 
         REXP rawLmSummaries = this.eval( "lapply(" + lmres + ", function(x){ try(summary(x), silent=T)})" );
 
@@ -742,7 +778,7 @@ public abstract class AbstractRClient implements RClient {
                 if ( log.isDebugEnabled() ) log.debug( "Key: " + elementIdentifier );
 
                 if ( !anovaTable.isList() || !anovaTable.hasAttribute( "row.names" ) ) {
-                    log.info( "No anovaresult for " + elementIdentifier );
+                    log.debug( "No anovaresult for " + elementIdentifier );
                     result.put( elementIdentifier, new OneWayAnovaResult() );
                     continue;
                 }

@@ -197,20 +197,6 @@ public class LinearModelSummary implements Serializable {
     }
 
     /**
-     * @param factorNames
-     * @return
-     */
-    public Double[] getInteractionEffectT( String... factorNames ) {
-        // Collection<String> terms = term2CoefficientNames.get( factorName );
-        //
-        // if ( terms == null ) return null;
-        /*
-         * FIXME
-         */
-        return null;
-    }
-
-    /**
      * @return the residuals
      */
     public Double[] getResiduals() {
@@ -276,17 +262,6 @@ public class LinearModelSummary implements Serializable {
             term2CoefficientNames.put( string, new HashSet<String>() );
         }
 
-        /*
-         * We have multiple statistics for each factor (only one if it is two-level or continuous, but two if 3-level
-         * etc.)
-         * 
-         * If there is more than one level for a given factor, we need to choose how to represent the 'effect' compared
-         * to the baseline. Bear in mind that often we only care about the sign (direction) of the difference. There are
-         * a couple of options. One is to report each contrast separately; that is certainly the most sensible. If we
-         * want just one number, we could use the largest (absolute value). I think it is better to report all the
-         * contrasts that are available and let the client decide what to do with it.
-         */
-
         assert this.coefficients != null;
 
         List<String> coefRowNames = coefficients.getRowNames();
@@ -296,13 +271,9 @@ public class LinearModelSummary implements Serializable {
             if ( coefNameFromR.equals( INTERCEPT_COEFFICIENT_NAME_IN_R ) ) {
                 continue; // ?
             } else if ( coefNameFromR.contains( ":" ) ) {
-
-                String[] interactionTermNames = coefNameFromR.split( ":" );
-
-                /*
-                 * FIXME
-                 */
-
+                // String[] interactionTermNames = coefNameFromR.split( ":" );
+                // currently not using.
+                continue;
             } else {
 
                 for ( String factorName : factorNames ) {
@@ -317,6 +288,16 @@ public class LinearModelSummary implements Serializable {
                 }
             }
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return coefficients.toString();
     }
 
 }

@@ -71,7 +71,7 @@ public class RConnectionFactory {
     private static RClient getJRIClient() {
         try {
             RClient j = new JRIClient();
-            log.info("Got JRI connection");
+            log.debug( "Got JRI connection" );
             return j;
         } catch ( IOException e ) {
             log.warn( "Was unable to get a JRI connection", e );
