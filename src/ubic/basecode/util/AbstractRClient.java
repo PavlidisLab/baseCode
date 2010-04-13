@@ -343,28 +343,6 @@ public abstract class AbstractRClient implements RClient {
     /*
      * (non-Javadoc)
      * 
-     * @see ubic.basecode.util.RClient#doubleArrayEvalWithLogging(java.lang.String)
-     */
-    public double[] doubleArrayEvalWithLogging( String command ) {
-        RLoggingThread rLoggingThread = null;
-        double[] doubleArray = null;
-        try {
-            rLoggingThread = RLoggingThreadFactory.createRLoggingThread();
-            doubleArray = this.doubleArrayEval( command );
-        } catch ( Exception e ) {
-            throw new RuntimeException( "Problems executing R command " + command + ": " + e.getMessage() );
-        } finally {
-            if ( rLoggingThread != null ) {
-                log.debug( "Shutting down logging thread." );
-                rLoggingThread.done();
-            }
-        }
-        return doubleArray;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#doubleArrayTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
      * java.lang.String, double[])
      */
@@ -578,29 +556,6 @@ public abstract class AbstractRClient implements RClient {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.util.RClient#rowApplyLinearModelWithLogging(java.lang.String, java.lang.String,
-     * java.lang.String[])
-     */
-    public Map<String, LinearModelSummary> rowApplyLinearModelWithLogging( String dataMatrixVarName,
-            String modelFormula, String[] factorNames ) {
-        RLoggingThread rLoggingThread = null;
-
-        try {
-            rLoggingThread = RLoggingThreadFactory.createRLoggingThread();
-            return this.rowApplyLinearModel( dataMatrixVarName, modelFormula, factorNames );
-        } catch ( Exception e ) {
-            throw new RuntimeException( e );
-        } finally {
-            if ( rLoggingThread != null ) {
-                log.debug( "Shutting down logging thread." );
-                rLoggingThread.done();
-            }
-        }
-    }
-
     /**
      * FIXME only partly implemented, possibly not going to stay.
      */
@@ -690,29 +645,6 @@ public abstract class AbstractRClient implements RClient {
     /*
      * (non-Javadoc)
      * 
-     * @see ubic.basecode.util.RClient#listEvalWithLogging(java.lang.Class, java.lang.String)
-     */
-    public List<?> listEvalWithLogging( Class<?> listEntryType, String command ) {
-        RLoggingThread rLoggingThread = null;
-        List<?> result = null;
-        try {
-            rLoggingThread = RLoggingThreadFactory.createRLoggingThread();
-            result = this.listEval( listEntryType, command );
-        } catch ( Exception e ) {
-            throw new RuntimeException( "Problems executing R command " + command.toString(), e );
-        } finally {
-            if ( rLoggingThread != null ) {
-                log.debug( "Shutting down logging thread." );
-                rLoggingThread.done();
-            }
-        }
-        return result;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#loadLibrary(java.lang.String)
      */
     public boolean loadLibrary( String libraryName ) {
@@ -792,27 +724,6 @@ public abstract class AbstractRClient implements RClient {
 
         return result;
 
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.util.RClient#oneWayAnovaEvalWithLogging(java.lang.String)
-     */
-    public Map<String, OneWayAnovaResult> oneWayAnovaEvalWithLogging( String command ) {
-        RLoggingThread rLoggingThread = null;
-
-        try {
-            rLoggingThread = RLoggingThreadFactory.createRLoggingThread();
-            return this.oneWayAnovaEval( command );
-        } catch ( Exception e ) {
-            throw new RuntimeException( e );
-        } finally {
-            if ( rLoggingThread != null ) {
-                log.debug( "Shutting down logging thread." );
-                rLoggingThread.done();
-            }
-        }
     }
 
     /*
@@ -935,27 +846,6 @@ public abstract class AbstractRClient implements RClient {
 
         return result;
 
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.util.RClient#twoWayAnovaEvalWithLogging(java.lang.String)
-     */
-    public Map<String, TwoWayAnovaResult> twoWayAnovaEvalWithLogging( String command, boolean withInteractions ) {
-        RLoggingThread rLoggingThread = null;
-
-        try {
-            rLoggingThread = RLoggingThreadFactory.createRLoggingThread();
-            return this.twoWayAnovaEval( command, withInteractions );
-        } catch ( Exception e ) {
-            throw new RuntimeException( e );
-        } finally {
-            if ( rLoggingThread != null ) {
-                log.debug( "Shutting down logging thread." );
-                rLoggingThread.done();
-            }
-        }
     }
 
     /**

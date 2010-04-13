@@ -63,8 +63,6 @@ public interface RClient {
 
     public Map<String, OneWayAnovaResult> oneWayAnovaEval( String command );
 
-    public Map<String, OneWayAnovaResult> oneWayAnovaEvalWithLogging( String command );
-
     /*
      * (non-Javadoc)
      * 
@@ -234,31 +232,6 @@ public interface RClient {
     public boolean isConnected();
 
     /**
-     * Spawns a thread to log R progress before calling doubleArrayEvalWithLogging.
-     * 
-     * @param command
-     * @return
-     * @see RClient#doubleArrayEval(String)
-     */
-    public double[] doubleArrayEvalWithLogging( String command );
-
-    /**
-     * Spawns a thread to log R progress before calling twoWayAnovaEval.
-     * 
-     * @param command that returns a list of ANOVA tables.
-     * @return map of results
-     * @see RClient#twoWayAnovaEval(String)
-     */
-    public Map<String, TwoWayAnovaResult> twoWayAnovaEvalWithLogging( String command, boolean withInteractions );
-
-    /**
-     * @param command
-     * @return
-     */
-    public Map<String, LinearModelSummary> rowApplyLinearModelWithLogging( String dataMatrixVarName, String modelFormula,
-            String[] factorNames );
-
-    /**
      * Run lm with anova on all the rows of a matrix
      * 
      * @param dataMatrixVarName from an assignment of a matrix
@@ -316,13 +289,5 @@ public interface RClient {
      * @return
      */
     public List<?> listEval( Class<?> listEntryType, String command );
-
-    /**
-     * @param listEntryType
-     * @param command
-     * @return
-     * @see listEval
-     */
-    public List<?> listEvalWithLogging( Class<?> listEntryType, String command );
 
 }
