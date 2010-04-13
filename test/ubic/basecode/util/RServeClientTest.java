@@ -186,7 +186,7 @@ public class RServeClientTest extends TestCase {
         pvalueCommand.append( ", 1, function(x) {t.test(x ~ " + factor + ")$p.value}" );
         pvalueCommand.append( ")" );
 
-        double[] pvalues = rc.doubleArrayEvalWithLogging( pvalueCommand.toString() );
+        double[] pvalues = rc.doubleArrayEval( pvalueCommand.toString() );
         assertEquals( 1, pvalues.length );
         assertEquals( 0.05, pvalues[0], 0.01 );
     }
@@ -219,7 +219,7 @@ public class RServeClientTest extends TestCase {
         pvalueCommand.append( "apply(" + matrixName + ", 1, function(x) {  tryCatch( t.test(x ~ " + factor
                 + ")$p.value, error=function(e) { 1.0})})" );
 
-        double[] r = rc.doubleArrayEvalWithLogging( pvalueCommand.toString() );
+        double[] r = rc.doubleArrayEval( pvalueCommand.toString() );
 
         assertEquals( 1, r.length );
         assertEquals( 1.0, r[0], 0.00001 );
