@@ -510,8 +510,6 @@ public class JRIClientTest extends TestCase {
 
         d.setColumnNames( Arrays.asList( new String[] { "foo", "bar" } ) );
 
-        log.info( d.asDoubles() );
-
         LinearModelSummary lms = rc.linearModel( data, d );
 
         Double p = lms.getMainEffectP( "foo" );
