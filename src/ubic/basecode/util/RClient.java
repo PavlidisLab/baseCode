@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.Transformer;
+import org.rosuda.REngine.REXP;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrix;
@@ -214,6 +215,14 @@ public interface RClient {
     public String dataFrame( ObjectMatrix<String, String, Object> matrix );
 
     /**
+     * Evaluate a command that returns a dataFrame
+     * 
+     * @param command
+     * @return an ObjectMatrix representation of the data frame.
+     */
+    public ObjectMatrix<String, String, Object> dataFrameEval( String command );
+
+    /**
      * Get a matrix back out of the R context. Row and Column names are filled in for the resulting object, if they are
      * present.
      * 
@@ -272,6 +281,14 @@ public interface RClient {
      * @return
      */
     public LinearModelSummary linearModel( double[] data, ObjectMatrix<String, String, Object> design );
+
+    /**
+     * Evaluate the given command
+     * 
+     * @param command
+     * @return
+     */
+    public abstract REXP eval( String command );
 
     /**
      * Lower-level access to a simple one-way ANOVA

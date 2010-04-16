@@ -45,6 +45,7 @@ import org.rosuda.REngine.RList;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrix;
+import ubic.basecode.dataStructure.matrix.ObjectMatrixImpl;
 import ubic.basecode.util.r.type.HTest;
 import ubic.basecode.util.r.type.LinearModelSummary;
 import ubic.basecode.util.r.type.OneWayAnovaResult;
@@ -225,6 +226,59 @@ public abstract class AbstractRClient implements RClient {
             }
         }
         return false;
+    }
+
+    public ObjectMatrix<String, String, Object> dataFrameEval( String command ) {
+
+        REXP df = eval( command );
+
+        try {
+
+            RList dfl = df.asList();
+
+            if ( !df.getAttribute( "class" ).asString().equals( "data.frame" ) ) {
+                throw new IllegalArgumentException( "Command did not return a dataframe" );
+            }
+
+            String[] rowNames = df.getAttribute( "row.names" ).asStrings();
+            String[] colNames = df.getAttribute( "names" ).asStrings();
+
+            assert dfl.size() == colNames.length;
+
+            ObjectMatrix<String, String, Object> result = new ObjectMatrixImpl<String, String, Object>(
+                    rowNames.length, colNames.length );
+
+            result.setRowNames( Arrays.asList( rowNames ) );
+            result.setColumnNames( Arrays.asList( colNames ) );
+
+            for ( int i = 0; i < dfl.size(); i++ ) {
+                REXP column = ( REXP ) dfl.get( i );
+
+                if ( column.isNumeric() ) {
+                    double[] asDoubles = column.asDoubles();
+
+                    for ( int j = 0; j < rowNames.length; j++ ) {
+                        result.set( j, i, asDoubles[j] );
+                    }
+
+                } else {
+                    String[] asStrings = column.asStrings();
+
+                    for ( int j = 0; j < rowNames.length; j++ ) {
+                        result.set( j, i, asStrings[j] );
+                    }
+
+                }
+
+            }
+
+            return result;
+        } catch ( REXPMismatchException e ) {
+
+            throw new RuntimeException( e );
+
+        }
+
     }
 
     /*
@@ -462,55 +516,23 @@ public abstract class AbstractRClient implements RClient {
 
         String lmres = "lmlist." + RandomStringUtils.randomAlphanumeric( 10 );
 
-        // Is 'snow' available?
-        // boolean snowIsAvailable = this.loadLibrary( "snow" );
-
-        // is 'multicore' available?
-        // boolean multiCoreIsAvailable = this.loadLibrary( "multicore" );
-
         String command = "";
-        // String clusterName = RandomStringUtils.randomAlphanumeric( 10 );
-        // if ( snowIsAvailable ) {
-        // /*
-        // * EXPERIMENTAL - does not work with JRI
-        // */
-        //
-        // /*
-        // * Possibly check first if there are enough rows to bother.
-        // */
-        // log.info( "Running parallelized with snow" );
-        // voidEval( clusterName + "<-makeCluster(2)" );
-        // log.info( "got cluster" );
-        // command = lmres + "<-parApply(cl," + dataMatrixVarName + ", 1, function(x){ try(lm(" + modelFormula
-        // + ", na.action=na.exclude), silent=T)})"; } else
-
-        // if (multiCoreIsAvailable){
-        // log.info("Running multicore");
-        // command = lmres + "<-mclapply(" + dataMatrixVarName + ", 1, function(x){ try(lm(" + modelFormula
-        // + ", na.action=na.exclude), silent=T)})";
-        // } else {
 
         command = lmres + "<-apply(" + dataMatrixVarName + ", 1, function(x){ try(lm(" + modelFormula
                 + ", na.action=na.exclude), silent=T)})";
 
-        // }
-
         log.debug( command );
         this.voidEval( command );
-        //
-        // if ( snowIsAvailable ) {
-        // voidEval( "stopCluster(" + clusterName + ")" );
-        // voidEval( "rm(" + clusterName + ")" );
-        // }
 
-        REXP rawLmSummaries = this.eval( "lapply(" + lmres + ", function(x){ try(summary(x), silent=T)})" );
+        REXP rawLmSummaries = this.eval( "lapply(" + lmres + ", function(x){  try(summary(x), silent=T)})" );
 
         if ( rawLmSummaries == null ) {
             log.warn( "No results from apply(... lm)" );
             return null;
         }
 
-        REXP rawAnova = this.eval( "lapply(" + lmres + ", function(x){ try(anova(x), silent=T)})" );
+        REXP rawAnova = this.eval( "lapply(" + lmres
+                + ", function(x){if (class(x) == \"lm\") {  try(anova(x), silent=T); } else { 0; }  })" );
 
         Map<String, LinearModelSummary> result = new HashMap<String, LinearModelSummary>();
         try {
@@ -847,14 +869,6 @@ public abstract class AbstractRClient implements RClient {
         return result;
 
     }
-
-    /**
-     * Evaluate the given command
-     * 
-     * @param command
-     * @return
-     */
-    protected abstract REXP eval( String command );
 
     /**
      * @param matrix

@@ -124,6 +124,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, double[])
      */
     public void assign( String argName, double[] arg ) {
@@ -139,6 +140,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, int[])
      */
     public void assign( String arg0, int[] arg1 ) {
@@ -155,10 +157,12 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, java.lang.String)
      */
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String)
      */
     public void assign( String sym, String ct ) {
@@ -174,6 +178,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String[])
      */
     public void assign( String argName, String[] array ) {
@@ -206,6 +211,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see java.lang.Object#finalize()
      */
     @Override
@@ -215,6 +221,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#getLastError()
      */
     public String getLastError() {
@@ -231,6 +238,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#retrieveMatrix(java.lang.String)
      */
     public DoubleMatrix<String, String> retrieveMatrix( String variableName ) {
@@ -319,10 +327,12 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.rosuda.JRclient.Rconnection#voidEval(java.lang.String)
      */
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#voidEval(java.lang.String)
      */
     public void voidEval( String command ) {
@@ -384,7 +394,7 @@ public class RServeClient extends AbstractRClient {
     }
 
     @Override
-    protected REXP eval( String command ) {
+    public REXP eval( String command ) {
         log.debug( "eval: " + command );
         checkConnection();
         try {

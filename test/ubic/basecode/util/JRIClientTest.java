@@ -621,6 +621,71 @@ public class JRIClientTest extends TestCase {
 
     }
 
+    /**
+     * Also exercises dataFrameEval
+     * 
+     * <pre>
+     * dat&lt;-read.table(&quot;testdata.txt&quot;, header=T, row.names=1)
+     * 
+     * f1&lt;-factor(c(&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, &quot;B&quot;, &quot;B&quot;, &quot;B&quot;, &quot;B&quot;, &quot;B&quot;));
+     * 
+     * f2&lt;-factor(c(&quot;X&quot;, &quot;X&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Z&quot;, &quot;Z&quot;, &quot;X&quot;, &quot;X&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Z&quot;, &quot;Z&quot;));
+     * 
+     * cov1&lt;-c( -0.230 , 1.400, -0.210, 0.570, -0.064, 0.980 ,-0.082, -0.094, 0.630, -2.000, 0.640, -0.870);
+     * 
+     * mo&lt;-model.matrix(&tilde; f1 + f2 + cov1 - 1);
+     * 
+     * contr&lt;-makeContrasts(A-B, levels=mo);
+     * 
+     * fit&lt;-lmFit(dat, mo);
+     * 
+     * fit&lt;-contrasts.fit(fit, contr);
+     * 
+     * fit&lt;-eBayes(fit)
+     * 
+     * res&lt;-topTable(fit)
+     * </pre>
+     * 
+     * @throws Exception
+     */
+    public void testLimmaA() throws Exception {
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
+
+        boolean haveLimma = rc.loadLibrary( "limma" );
+        if ( !haveLimma ) {
+            log.warn( "Cannot load limma, skipping test" );
+            return;
+        }
+
+        DoubleMatrixReader r = new DoubleMatrixReader();
+        DoubleMatrix<String, String> read = r.read( this.getClass().getResourceAsStream( "/data/testdata.txt" ) );
+        String matrixName = rc.assignMatrix( read );
+
+        String[] f1 = new String[] { "A", "A", "A", "A", "A", "A", "B", "B", "B", "B", "B", "B" };
+
+        String facN = rc.assignFactor( Arrays.asList( f1 ) );
+
+        rc.voidEval( "mo<-model.matrix(~ " + facN + " - 1)" );
+        rc.voidEval( "colnames(mo)<-levels(" + facN + ")" );
+        rc.voidEval( "fit<-lmFit(" + matrixName + ", mo)" );
+        rc.voidEval( "contr<-makeContrasts(A-B, levels=mo)" );
+        rc.voidEval( "fit<-contrasts.fit(fit,contr)" );
+        rc.voidEval( "fit<-eBayes(fit)" );
+        ObjectMatrix<String, String, Object> dataFrameEval = rc.dataFrameEval( "topTable(fit, number=Inf)" );
+
+        // log.info( dataFrameEval );
+
+        /*
+         * The 'ID' column has our original probe ids.
+         */
+        assertEquals( "gene8_at", dataFrameEval.get( 1, 0 ) );
+        assertEquals( 0.684, ( Double ) dataFrameEval.get( 6, 4 ), 0.001 );
+
+    }
+
     public void testStringListEval() throws Exception {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );

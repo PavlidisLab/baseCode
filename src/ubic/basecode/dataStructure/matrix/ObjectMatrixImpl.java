@@ -107,7 +107,14 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
         for ( int i = 0; i < rows(); i++ ) {
             buf.append( getRowName( i ) );
             for ( int j = 0; j < columns(); j++ ) {
-                buf.append( "\t" + get( i, j ) );
+                V v = get( i, j );
+
+                if ( v instanceof Double ) {
+                    buf.append( String.format( "\t%.3g", v ) );
+
+                } else {
+                    buf.append( "\t" + v );
+                }
             }
             buf.append( "\n" );
         }
