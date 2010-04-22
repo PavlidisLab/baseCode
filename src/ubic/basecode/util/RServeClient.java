@@ -124,7 +124,6 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, double[])
      */
     public void assign( String argName, double[] arg ) {
@@ -140,7 +139,6 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, int[])
      */
     public void assign( String arg0, int[] arg1 ) {
@@ -157,12 +155,10 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, java.lang.String)
      */
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String)
      */
     public void assign( String sym, String ct ) {
@@ -170,6 +166,7 @@ public class RServeClient extends AbstractRClient {
             throw new IllegalArgumentException( "Must supply valid variable name" );
         }
         try {
+            this.checkConnection();
             connection.assign( sym, ct );
         } catch ( RserveException e ) {
             throw new RuntimeException( "Assignment failed: " + sym + " value " + ct, e );
@@ -178,7 +175,6 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String[])
      */
     public void assign( String argName, String[] array ) {
@@ -190,6 +186,7 @@ public class RServeClient extends AbstractRClient {
         }
         try {
             log.debug( "assign: " + argName + "<-" + array.length + " strings." );
+            this.checkConnection();
             connection.assign( argName, array );
         } catch ( REngineException e ) {
             throw new RuntimeException( "Failure with assignment: " + argName + "<-" + array.length + " strings." + e );
@@ -201,7 +198,7 @@ public class RServeClient extends AbstractRClient {
      *
      */
     public boolean connect() {
-        return connect( false );
+        return connect( true );
     }
 
     public void disconnect() {
@@ -211,7 +208,6 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#finalize()
      */
     @Override
@@ -221,7 +217,6 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#getLastError()
      */
     public String getLastError() {
@@ -238,7 +233,6 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#retrieveMatrix(java.lang.String)
      */
     public DoubleMatrix<String, String> retrieveMatrix( String variableName ) {
@@ -327,12 +321,10 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.rosuda.JRclient.Rconnection#voidEval(java.lang.String)
      */
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#voidEval(java.lang.String)
      */
     public void voidEval( String command ) {
@@ -352,7 +344,23 @@ public class RServeClient extends AbstractRClient {
      * 
      */
     private void checkConnection() {
-        if ( !this.isConnected() ) throw new RuntimeException( "Not connected" );
+        if ( !this.isConnected() ) {
+
+            log.warn( "Not connected, trying to reconnect" );
+            boolean ok = false;
+            for ( int i = 0; i < MAX_TRIES; i++ ) {
+                try {
+                    Thread.sleep( 200 );
+                } catch ( InterruptedException e ) {
+                    return;
+                }
+                ok = this.connect();
+                if ( ok ) break;
+            }
+            if ( !ok ) {
+                throw new RuntimeException( "Not connected" );
+            }
+        }
     }
 
     /**
@@ -393,7 +401,6 @@ public class RServeClient extends AbstractRClient {
         return true;
     }
 
-    @Override
     public REXP eval( String command ) {
         log.debug( "eval: " + command );
         checkConnection();

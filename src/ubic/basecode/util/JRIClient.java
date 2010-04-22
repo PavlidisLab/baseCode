@@ -162,8 +162,7 @@ public class JRIClient extends AbstractRClient {
     public void voidEval( String command ) {
         eval( command );
     }
-
-    @Override
+ 
     public REXP eval( String command ) {
         REXP result;
         int key = connection.lock();

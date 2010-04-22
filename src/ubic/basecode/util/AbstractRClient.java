@@ -130,6 +130,7 @@ public abstract class AbstractRClient implements RClient {
     /*
      * (non-Javadoc)
      * 
+     * 
      * @see ubic.basecode.util.RClient#assignFactor(java.lang.String, java.util.List)
      */
     public String assignFactor( String factorName, List<String> list ) {
@@ -193,7 +194,6 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#assignStringList(java.util.List)
      */
     public String assignStringList( List<?> strings ) {
@@ -211,7 +211,6 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#booleanDoubleArrayEval(java.lang.String, java.lang.String, double[])
      */
     public boolean booleanDoubleArrayEval( String command, String argName, double[] arg ) {
@@ -283,7 +282,6 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#dataFrame(ubic.basecode.dataStructure.matrix.ObjectMatrix)
      */
     public String dataFrame( ObjectMatrix<String, String, Object> matrix ) {
@@ -359,7 +357,6 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#doubleArrayDoubleArrayEval(java.lang.String, java.lang.String, double[])
      */
     public double[] doubleArrayDoubleArrayEval( String command, String argName, double[] arg ) {
@@ -374,7 +371,6 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#doubleArrayEval(java.lang.String)
      */
     public double[] doubleArrayEval( String command ) {
@@ -396,7 +392,6 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#doubleArrayTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
      * java.lang.String, double[])
      */
@@ -413,7 +408,6 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#doubleTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
      * java.lang.String, double[])
      */
@@ -430,7 +424,6 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#intArrayEval(java.lang.String)
      */
     public int[] intArrayEval( String command ) {
@@ -443,7 +436,6 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#linearModel(double[], ubic.basecode.dataStructure.matrix.ObjectMatrix)
      */
     public LinearModelSummary linearModel( double[] data, ObjectMatrix<String, String, Object> d ) {
@@ -468,7 +460,6 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#linearModel(double[], java.util.List)
      */
     @SuppressWarnings( { "unchecked", "cast" })
@@ -508,7 +499,6 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#rowApplyLinearModel(java.lang.String, java.lang.String, java.lang.String[])
      */
     public Map<String, LinearModelSummary> rowApplyLinearModel( String dataMatrixVarName, String modelFormula,
@@ -516,28 +506,33 @@ public abstract class AbstractRClient implements RClient {
 
         String lmres = "lmlist." + RandomStringUtils.randomAlphanumeric( 10 );
 
-        String command = "";
+        log.info( "Starting model fitting ..." );
 
-        command = lmres + "<-apply(" + dataMatrixVarName + ", 1, function(x){ try(lm(" + modelFormula
+        String command = lmres + "<-apply(" + dataMatrixVarName + ", 1, function(x){ try(lm(" + modelFormula
                 + ", na.action=na.exclude), silent=T)})";
 
         log.debug( command );
         this.voidEval( command );
 
-        REXP rawLmSummaries = this.eval( "lapply(" + lmres + ", function(x){  try(summary(x), silent=T)})" );
+        log.info( "Model fits complete, summarizing ..." );
+        REXP rawLmSummaries = this.eval( "lapply(" + lmres + ", function(x){ try(summary(x), silent=T)})" );
 
         if ( rawLmSummaries == null ) {
             log.warn( "No results from apply(... lm)" );
             return null;
         }
 
-        REXP rawAnova = this.eval( "lapply(" + lmres
-                + ", function(x){if (class(x) == \"lm\") {  try(anova(x), silent=T); } else { 0; }  })" );
+        log.info( "Summaries done, doing hypothesis tests ..." );
+
+        REXP rawAnova = this.eval( "lapply(" + lmres + ", function(x){ try(anova(x), silent=T)})" );
 
         Map<String, LinearModelSummary> result = new HashMap<String, LinearModelSummary>();
         try {
+            log.info( "Processing the results ..." );
+
             RList rawLmList = rawLmSummaries.asList();
             if ( rawLmList == null ) {
+                log.warn("Raw lm summary results were null");
                 return null;
             }
 
