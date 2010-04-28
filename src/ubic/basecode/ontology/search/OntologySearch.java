@@ -33,7 +33,6 @@ import ubic.basecode.ontology.model.OntologyResource;
 import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.model.OntologyTermImpl;
 
-
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -68,7 +67,7 @@ public class OntologySearch {
         Set<OntologyTerm> results = new HashSet<OntologyTerm>();
         NodeIterator iterator = runSearch( model, index, queryString );
 
-        while ( iterator.hasNext() ) {
+        while ( iterator != null && iterator.hasNext() ) {
             RDFNode r = iterator.next();
             r = r.inModel( model );
             if ( log.isDebugEnabled() ) log.debug( "Search results: " + r );
@@ -110,7 +109,7 @@ public class OntologySearch {
         Set<OntologyIndividual> results = new HashSet<OntologyIndividual>();
         NodeIterator iterator = runSearch( model, index, queryString );
 
-        while ( iterator.hasNext() ) {
+        while ( iterator != null && iterator.hasNext() ) {
             RDFNode r = iterator.next();
             r = r.inModel( model );
             if ( log.isDebugEnabled() ) log.debug( "Search results: " + r );
@@ -174,7 +173,7 @@ public class OntologySearch {
         Set<OntologyResource> results = new HashSet<OntologyResource>();
         NodeIterator iterator = runSearch( model, index, queryString );
 
-        while ( iterator.hasNext() ) {
+        while ( iterator != null && iterator.hasNext() ) {
             RDFNode r = iterator.next();
             r = r.inModel( model );
             if ( log.isDebugEnabled() ) log.debug( "Search results: " + r );
@@ -255,7 +254,13 @@ public class OntologySearch {
         if ( StringUtils.isBlank( strippedQuery ) ) {
             throw new IllegalArgumentException( "Query cannot be blank" );
         }
-        NodeIterator iterator = index.searchModelByIndex( model, strippedQuery );
-        return iterator;
+        try{
+            NodeIterator iterator = index.searchModelByIndex( model, strippedQuery );
+            return iterator;
+
+        }catch(Exception e){
+            log.warn( "Failed Search for query: " + queryString + " Error was: " +e );            
+        }
+        return null;
     }
 }
