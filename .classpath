@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" output="target/test-classes" path="test"/>
+	<classpathentry kind="src" output="test-classes" path="test"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="var" path="M2_REPO/com/hp/hpl/jena/arq/2.7.0/arq-2.7.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/colt/colt/1.2.0/colt-1.2.0.jar"/>
@@ -50,5 +50,5 @@
 			<attribute name="javadoc_location" value="http://commons.apache.org/math/api-2.0/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="output" path="target/classes"/>
+	<classpathentry kind="output" path="classes"/>
 </classpath>
