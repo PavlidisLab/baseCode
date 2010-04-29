@@ -37,7 +37,6 @@ import org.xml.sax.SAXException;
 import ubic.basecode.bio.GOEntry;
 import ubic.basecode.dataStructure.graph.DirectedGraph;
 import ubic.basecode.dataStructure.graph.DirectedGraphNode;
-import ubic.basecode.dataStructure.graph.TreeModel;
 import ubic.basecode.util.FileTools;
 import ubic.basecode.xml.GOParser;
 
@@ -264,7 +263,7 @@ public class GONames {
     /*
      * 
      */
-    public TreeModel getTreeModel() {
+    public DefaultTreeModel getTreeModel() {
         if ( getGraph() == null ) return null;
         return getGraph().getTreeModel();
     }
