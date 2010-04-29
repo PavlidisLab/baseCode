@@ -19,7 +19,7 @@
 package ubic.basecode.dataStructure;
 
 /**
- * A class representing a descriptive term that can be associated with things. Copyright (c) 2004 University of British Columbia
+ * A class representing a descriptive term that can be associated with things.
  * 
  * @author Paul Pavlidis
  * @version $Id$
@@ -34,7 +34,7 @@ public class OntologyEntry {
      * @param id
      */
     public OntologyEntry( String id ) {
-        this( id, null, null );
+        this.id = id;
     }
 
     /**
@@ -43,9 +43,9 @@ public class OntologyEntry {
      * @param def
      */
     public OntologyEntry( String id, String name, String def ) {
-        this.id = id.intern();
-        this.name = name.intern();
-        this.definition = def.intern();
+        this.id = id;
+        this.name = name;
+        this.definition = def;
     }
 
     /**
@@ -85,7 +85,7 @@ public class OntologyEntry {
 
     @Override
     public String toString() {
-        return new String( id + ": \t" + name );
+        return id + ": \t" + name;
     }
 
 }

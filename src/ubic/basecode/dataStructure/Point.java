@@ -69,7 +69,7 @@ public class Point {
      */
     @Override
     public String toString() {
-        return new String( x + "\t" + y );
+        return x + "\t" + y;
     }
 
 }

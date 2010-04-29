@@ -81,10 +81,10 @@ public class SparseRaggedMatrixReader extends DoubleMatrixReader {
             int amount = Integer.parseInt( tok.nextToken() );
 
             if ( index % 500 == 0 ) {
-                log.info( new String( "loading  " + index + "th entry" ) );
+                log.info( "loading  " + index + "th entry" );
             }
 
-            returnVal.addRow( new Integer( k ).toString(), readOneRow( dis, amount, offset ) );
+            returnVal.addRow( Integer.valueOf( k ).toString(), readOneRow( dis, amount, offset ) );
 
             k++;
         }
@@ -98,20 +98,18 @@ public class SparseRaggedMatrixReader extends DoubleMatrixReader {
      * @throws NumberFormatException Read a sparse symmetric square matrix that is expressed as an adjacency list in a
      *         tab-delimited file:
      * 
-     * <pre>
+     *         <pre>
      * item1 item2 weight
      * item1 item5 weight
      * </pre>
-     * 
-     * <p>
+     *         <p>
      *         IMPORTANT: By definition the resulting matrix is square and symmetric, even if the symmetric edges are
      *         not explicitly listed.
      *         </p>
      * @param stream
      * @return
      */
-    public DoubleMatrix<String, String> readFromAdjList( InputStream stream ) throws NumberFormatException,
-            IOException {
+    public DoubleMatrix<String, String> readFromAdjList( InputStream stream ) throws NumberFormatException, IOException {
         Set<String> itemNames = new HashSet<String>();
         Map<String, OpenIntDoubleHashMap> rows = new HashMap<String, OpenIntDoubleHashMap>();
 
@@ -152,7 +150,7 @@ public class SparseRaggedMatrixReader extends DoubleMatrixReader {
                     rows.put( itemB, new OpenIntDoubleHashMap() );
                     itemNames.add( itemB );
                     indexNameMap.put( index, itemB );
-                    nameIndexMap.put( itemB, new Integer( index ) );
+                    nameIndexMap.put( itemB, index );
                     rows.get( itemB ).put( index, 0 ); // to itself. - in case it isn't
                     // there.
                     index++;
@@ -177,7 +175,7 @@ public class SparseRaggedMatrixReader extends DoubleMatrixReader {
             rows.get( itemB ).put( aind, weight ); // link b to a.
 
             if ( rows.size() % 500 == 0 ) {
-                log.info( new String( "loading  " + index + "th pair" ) );
+                log.info( "loading  " + index + "th pair" );
             }
         }
         dis.close();
@@ -206,7 +204,7 @@ public class SparseRaggedMatrixReader extends DoubleMatrixReader {
             matrix.addRow( ( String ) itemName, rowMatrix );
 
             if ( i > 0 && i % 500 == 0 ) {
-                log.info( new String( "Adding  " + i + "th row" ) );
+                log.info( "Adding  " + i + "th row" );
             }
         }
         return matrix;
@@ -216,12 +214,11 @@ public class SparseRaggedMatrixReader extends DoubleMatrixReader {
      * Read a sparse symmetric square matrix that is expressed as an adjacency list in a tab-delimited file:
      * 
      * <pre>
-     *           
+     * 
      *                                       item1 item2 weight
      *                                       item1 item5 weight
-     *            
-     * </pre>
      * 
+     * </pre>
      * <p>
      * IMPORTANT: By definition the resulting matrix is square and symmetric, even if the symmetric edges are not
      * explicitly listed.
@@ -251,11 +248,14 @@ public class SparseRaggedMatrixReader extends DoubleMatrixReader {
         SparseRaggedDoubleMatrix<String, String> returnVal = new SparseRaggedDoubleMatrix<String, String>();
 
         String row = dis.readLine(); // line containing the id and the number of edges.
+        if ( row == null ) {
+            return null;
+        }
         StringTokenizer tok = new StringTokenizer( row, " \t" );
 
         int index = Integer.parseInt( tok.nextToken() );
         int amount = Integer.parseInt( tok.nextToken() );
-        String rowName = new Integer( index ).toString();
+        String rowName = Integer.valueOf( index ).toString();
         returnVal.addRow( rowName, readOneRow( dis, amount, offset ) );
         return returnVal;
     }
@@ -276,6 +276,10 @@ public class SparseRaggedMatrixReader extends DoubleMatrixReader {
         // while ( rowWei.length() < 2 ) {
         rowWei = dis.readLine(); // row with weights.
         // }
+
+        if ( rowInd == null || rowWei == null ) {
+            return null;
+        }
 
         StringTokenizer tokw = new StringTokenizer( rowWei, " \t" );
         StringTokenizer toki = new StringTokenizer( rowInd, " \t" );

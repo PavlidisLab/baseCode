@@ -18,6 +18,13 @@
  */
 package ubic.basecode.util;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -66,7 +73,7 @@ public abstract class AbstractRClient implements RClient {
      * @return
      */
     public static String variableIdentityNumber( Object ob ) {
-        return Integer.toString( Math.abs( ob.hashCode() ) ) + RandomStringUtils.randomAlphabetic( 6 );
+        return Integer.toString( Math.abs( ob.hashCode() + 1 ) ) + RandomStringUtils.randomAlphabetic( 6 );
     }
 
     /**
@@ -194,6 +201,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assignStringList(java.util.List)
      */
     public String assignStringList( List<?> strings ) {
@@ -211,6 +219,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#booleanDoubleArrayEval(java.lang.String, java.lang.String, double[])
      */
     public boolean booleanDoubleArrayEval( String command, String argName, double[] arg ) {
@@ -282,6 +291,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#dataFrame(ubic.basecode.dataStructure.matrix.ObjectMatrix)
      */
     public String dataFrame( ObjectMatrix<String, String, Object> matrix ) {
@@ -357,6 +367,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#doubleArrayDoubleArrayEval(java.lang.String, java.lang.String, double[])
      */
     public double[] doubleArrayDoubleArrayEval( String command, String argName, double[] arg ) {
@@ -371,6 +382,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#doubleArrayEval(java.lang.String)
      */
     public double[] doubleArrayEval( String command ) {
@@ -392,6 +404,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#doubleArrayTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
      * java.lang.String, double[])
      */
@@ -408,6 +421,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#doubleTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
      * java.lang.String, double[])
      */
@@ -424,6 +438,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#intArrayEval(java.lang.String)
      */
     public int[] intArrayEval( String command ) {
@@ -436,6 +451,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#linearModel(double[], ubic.basecode.dataStructure.matrix.ObjectMatrix)
      */
     public LinearModelSummary linearModel( double[] data, ObjectMatrix<String, String, Object> d ) {
@@ -460,6 +476,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#linearModel(double[], java.util.List)
      */
     @SuppressWarnings( { "unchecked", "cast" })
@@ -499,6 +516,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#rowApplyLinearModel(java.lang.String, java.lang.String, java.lang.String[])
      */
     public Map<String, LinearModelSummary> rowApplyLinearModel( String dataMatrixVarName, String modelFormula,
@@ -508,8 +526,21 @@ public abstract class AbstractRClient implements RClient {
 
         log.info( "Starting model fitting ..." );
 
-        String command = lmres + "<-apply(" + dataMatrixVarName + ", 1, function(x){ try(lm(" + modelFormula
-                + ", na.action=na.exclude), silent=T)})";
+        File sb = loadLmScript();
+
+        try {
+            this.eval( "source(\"" + sb.toURI().toURL().toString().replaceFirst( "file:/([^/])", "file://$1" ) + "\")" );
+        } catch ( MalformedURLException e ) {
+            throw new RuntimeException( e );
+        }
+
+        String command;
+        if ( StringUtils.isBlank( modelFormula ) ) {
+            // One-sample t-test.
+            command = lmres + "<-rowTtest( data=data.frame(" + dataMatrixVarName + ") )";
+        } else {
+            command = lmres + "<-rowlm(" + modelFormula + ", data.frame(" + dataMatrixVarName + ") )";
+        }
 
         log.debug( command );
         this.voidEval( command );
@@ -532,7 +563,7 @@ public abstract class AbstractRClient implements RClient {
 
             RList rawLmList = rawLmSummaries.asList();
             if ( rawLmList == null ) {
-                log.warn("Raw lm summary results were null");
+                log.warn( "Raw lm summary results were null" );
                 return null;
             }
 
@@ -553,7 +584,6 @@ public abstract class AbstractRClient implements RClient {
                 String elementIdentifier = rawLmList.keyAt( i );
 
                 assert elementIdentifier != null;
-
                 assert elementIdentifier.equals( rawAnovaList.keyAt( i ) );
 
                 if ( log.isDebugEnabled() ) log.debug( "Key: " + elementIdentifier );
@@ -571,6 +601,25 @@ public abstract class AbstractRClient implements RClient {
         }
 
         return result;
+    }
+
+    private File loadLmScript() {
+        try {
+            InputStream is = this.getClass().getResourceAsStream( "/ubic/gemma/r/linearModels.R" );
+            BufferedReader reader = new BufferedReader( new InputStreamReader( is ) );
+            String line = null;
+            File f = File.createTempFile( "lmscript.", ".R" );
+            FileWriter fo = new FileWriter( f );
+
+            while ( ( line = reader.readLine() ) != null ) {
+                fo.write( line + "\n" );
+            }
+            is.close();
+            fo.close();
+            return f;
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     /**

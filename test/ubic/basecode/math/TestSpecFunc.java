@@ -62,6 +62,16 @@ public class TestSpecFunc extends TestCase {
         assertEquals( expectedReturn, actualReturn, 1e-5 );
     }
 
+    
+    public final void testCumHyperGeometricB() {
+        // GO:0043371 ingroupoverthresh=0 setsize=5 totalinputsize=15799 totaloverthresh=24 oraP=0.007573332171226688
+        double expectedReturn = 0.00757333;
+        // phyper(0, 5, 15794, 24, lower.tail=F);
+        
+        double actualReturn = SpecFunc.phyper( 0, 5, 15799-5, 24, false );
+        assertEquals( expectedReturn, actualReturn, 1e-5 );
+    }
+    
     /*
      * @see TestCase#setUp()
      */

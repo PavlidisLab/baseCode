@@ -45,7 +45,7 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
     /**
      * Represents a set of factors in an interaction term.
      */
-    class InteractionFactor {
+    private static class InteractionFactor {
 
         // Treeset - keep them sorted to be consistent across instances.
         private Set<String> factorNames = new TreeSet<String>();

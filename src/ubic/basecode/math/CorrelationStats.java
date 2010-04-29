@@ -380,7 +380,7 @@ public class CorrelationStats {
          * squared error of the ranks (the usual spearman test stat). We backcompute it here. As in the R version we
          * round it off, as properly S should be an integer.
          */
-        double sStat = Math.round( ( Math.pow( n, 3 ) - n ) * ( 1.0 - Math.abs( rho ) ) / 6.0 );
+        int sStat = ( int ) Math.round( ( Math.pow( n, 3 ) - n ) * ( 1.0 - Math.abs( rho ) ) / 6.0 );
 
         // invaluable for debugging!
         // System.out.println( "rho=" + rho + "; N=" + n + "; S=" + sStat );
@@ -405,8 +405,8 @@ public class CorrelationStats {
             int[] ar = new int[n_small];
             int ifr;
 
-            double n3 = n;
-            n3 *= ( n3 * n3 - 1.0 ) / 3.0;/* = (n^3 - n)/3 */
+            int n3 = n;
+            n3 *= ( n3 * n3 - 1 ) / 3.0;/* = (n^3 - n)/3 */
             if ( sStat > n3 ) { /* larger than maximal value */
                 return 0.0; // best possible pvalue...
             }

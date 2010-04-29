@@ -44,10 +44,8 @@ public class RConnectionFactory {
 
         try {
             rc = new RServeClient( hostName );
-
         } catch ( Exception e ) {
-
-            log.error( e );
+            // OK, just that RServe is not available.
         }
 
         if ( rc == null ) {

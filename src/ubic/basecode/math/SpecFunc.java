@@ -53,7 +53,7 @@ public class SpecFunc {
         double d, pd;
 
         if ( NR < 0 || NB < 0 || n < 0 || n > NR + NB ) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Need NR>=0, NB>=0,n>=0,n>NR+NB");
         }
 
         if ( x * ( NR + NB ) > n * NR ) {

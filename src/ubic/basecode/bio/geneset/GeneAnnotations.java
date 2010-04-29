@@ -387,7 +387,7 @@ public class GeneAnnotations {
         geneSetToProbeMap.put( geneSetId, new HashSet<String>( probesForNew ) );
         Set<String> genes = new HashSet<String>();
         for ( Object element : probesForNew ) {
-            String probe = new String( ( String ) element );
+            String probe = ( String ) element;
             if ( !probeToGeneSetMap.containsKey( probe ) ) {
                 probeToGeneSetMap.put( probe, new HashSet<String>() );
             }
@@ -1546,6 +1546,11 @@ public class GeneAnnotations {
         String classIds = null;
 
         String header = dis.readLine();
+
+        if ( header == null ) {
+            throw new IOException( "File had no header" );
+        }
+
         int numFields = getAffyNumFields( header );
         int probeIndex = getAffyProbeIndex( header );
         int goBpIndex = getAffyBpIndex( header );
@@ -1919,6 +1924,7 @@ class ClassSizeComparator implements Comparator<GeneSet> {
 
     /*
      * (non-Javadoc)
+     * 
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
     public int compare( GeneSet a, GeneSet b ) {

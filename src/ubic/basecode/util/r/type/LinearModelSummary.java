@@ -146,15 +146,44 @@ public class LinearModelSummary implements Serializable {
         return anovaResult.getInteractionEffectP( fnames );
     }
 
+    /**
+     * @return
+     */
     public Double getInterceptP() {
-        if ( coefficients != null && coefficients.hasRow( INTERCEPT_COEFFICIENT_NAME_IN_R ) )
-            return coefficients.getByKeys( INTERCEPT_COEFFICIENT_NAME_IN_R, "Pr(>|t|)" );
+        if ( coefficients != null ) {
+            if ( coefficients.hasRow( INTERCEPT_COEFFICIENT_NAME_IN_R ) ) {
+                return coefficients.getByKeys( INTERCEPT_COEFFICIENT_NAME_IN_R, "Pr(>|t|)" );
+            } else if ( coefficients.rows() == 1 ) {
+                /*
+                 * This is a bit of a kludge. When we use lm.fit instead of lm, we end up with a somewhat screwy
+                 * coefficent matrix in the case of one-sample ttest, and R put in x1 (I think it starts as 1 and it
+                 * prepends the x).
+                 */
+                assert coefficients.getRowName( 0 ).equals( "x1" );
+                return coefficients.getByKeys( coefficients.getRowName( 0 ), "Pr(>|t|)" );
+            }
+        }
         return Double.NaN;
     }
 
+    /**
+     * @return
+     */
     public Double getInterceptT() {
-        if ( coefficients != null && coefficients.hasRow( INTERCEPT_COEFFICIENT_NAME_IN_R ) )
-            return coefficients.getByKeys( INTERCEPT_COEFFICIENT_NAME_IN_R, "t value" );
+        if ( coefficients != null ) {
+            if ( coefficients.hasRow( INTERCEPT_COEFFICIENT_NAME_IN_R ) ) {
+                return coefficients.getByKeys( INTERCEPT_COEFFICIENT_NAME_IN_R, "t value" );
+            } else if ( coefficients.rows() == 1 ) {
+                /*
+                 * This is a bit of a kludge. When we use lm.fit instead of lm, we end up with a somewhat screwy
+                 * coefficent matrix in the case of one-sample ttest, and R put in x1 (I think it starts as 1 and it
+                 * prepends the x).
+                 */
+                assert coefficients.getRowName( 0 ).equals( "x1" );
+                return coefficients.getByKeys( coefficients.getRowName( 0 ), "t value" );
+            }
+        }
+
         return Double.NaN;
     }
 
