@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.util;
+package ubic.basecode.util.r;
 
 import java.util.List;
 import java.util.Map;

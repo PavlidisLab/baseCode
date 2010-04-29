@@ -18,8 +18,8 @@
  */
 package ubic.basecode.math;
 
-import ubic.basecode.util.RClient;
-import ubic.basecode.util.RConnectionFactory;
+import ubic.basecode.util.r.RClient;
+import ubic.basecode.util.r.RConnectionFactory;
 
 /**
  * @author pavlidis

@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.util;
+package ubic.basecode.util.r;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +36,8 @@ import ubic.basecode.dataStructure.matrix.ObjectMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrixImpl;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.math.Constants;
+import ubic.basecode.util.RegressionTesting;
+import ubic.basecode.util.r.JRIClient;
 import ubic.basecode.util.r.type.HTest;
 import ubic.basecode.util.r.type.LinearModelSummary;
 import ubic.basecode.util.r.type.OneWayAnovaResult;

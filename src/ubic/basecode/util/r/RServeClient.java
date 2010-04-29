@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.util;
+package ubic.basecode.util.r;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,6 +41,7 @@ import org.rosuda.REngine.Rserve.RserveException;
 
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.util.GenericStreamConsumer;
 
 /**
  * @author pavlidis

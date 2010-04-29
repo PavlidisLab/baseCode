@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.util;
+package ubic.basecode.util.r;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -605,7 +605,7 @@ public abstract class AbstractRClient implements RClient {
 
     private File loadLmScript() {
         try {
-            InputStream is = this.getClass().getResourceAsStream( "/ubic/gemma/r/linearModels.R" );
+            InputStream is = this.getClass().getResourceAsStream( "/ubic/basecode/util/r/linearModels.R" );
             BufferedReader reader = new BufferedReader( new InputStreamReader( is ) );
             String line = null;
             File f = File.createTempFile( "lmscript.", ".R" );

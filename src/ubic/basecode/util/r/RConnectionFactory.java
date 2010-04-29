@@ -17,7 +17,7 @@
  *
  */
 
-package ubic.basecode.util;
+package ubic.basecode.util.r;
 
 import java.io.IOException;
 

@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.util;
+package ubic.basecode.util.r;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +31,8 @@ import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.math.Constants;
+import ubic.basecode.util.RegressionTesting;
+import ubic.basecode.util.r.RServeClient;
 
 /**
  * @author pavlidis
