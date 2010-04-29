@@ -145,7 +145,7 @@ public class RandomChooser {
     public static int[] chooserandomWrep( int max, int n ) {
         int[] randomnums = new int[n];
         for ( int i = 0; i < n; i++ ) {
-            int newnum = Math.abs( generator.nextInt() + 1 ) % max;
+            int newnum = Math.abs( generator.nextInt() ) % max;
             randomnums[i] = newnum;
         }
         return randomnums;
