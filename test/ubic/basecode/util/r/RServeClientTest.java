@@ -18,12 +18,15 @@
  */
 package ubic.basecode.util.r;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -83,6 +86,42 @@ public class RServeClientTest extends TestCase {
             assertEquals( tester.getColName( i ), result.getColName( i ) );
         }
 
+    }
+
+    public void testLoadScript() throws Exception {
+        if ( !connected ) {
+            log.warn( "Could not connect to RServe, skipping test." );
+            return;
+        }
+
+        BufferedReader reader = new BufferedReader( new InputStreamReader( this.getClass().getResourceAsStream(
+                "/ubic/basecode/util/r/testScript.R" ) ) );
+        String line = null;
+        StringBuilder buf = new StringBuilder();
+        while ( ( line = reader.readLine() ) != null ) {
+            if ( line.startsWith( "#" ) || StringUtils.isBlank( line ) ) {
+                continue;
+            }
+            buf.append( StringUtils.trim( line ) + "\n" );
+        }
+        String sc = buf.toString();
+
+        rc.loadScript( this.getClass().getResourceAsStream( "/ubic/basecode/util/r/linearModels.R" ) );
+        String rawscript = "rowlm<-function(formula,data)" + "{\nmf<-lm(formula,data,method=\"model.frame\")\n"
+                + "mt <- attr(mf, \"terms\")\n" + "x <- model.matrix(mt, mf)\n"
+                + "design<-model.matrix(formula)\ncl <- match.call()\n" + "r<-nrow(data)\nres<-vector(\"list\",r)\n"
+                + "lev<-.getXlevels(mt, mf)\nclz<-c(\"lm\")\n" + "D<-as.matrix(data)\n" + "ids<-row.names(data)\n"
+                + "for(i in 1:r) {\n" + "y<-as.vector(D[i,])\n" + "id<-ids[i]\n" + "m<-is.finite(y)\n"
+                + "if (sum(m) > 0) {\n" + "X<-design[m,,drop=FALSE]\n"
+                + "attr(X,\"assign\")<-attr(design,\"assign\")\n" + "y<-y[m]\n" + "z<-lm.fit(X,y)\n"
+                + "class(z) <- clz\n" + "z$na.action <- na.exclude\n" + "z$contrasts <- attr(x, \"contrasts\")\n"
+                + "z$xlevels <- lev\n" + "z$call <- cl\n" + "z$terms <- mt\n" + "z$model <- mf\n" + "res[[i]]<-z"
+                + "\n}\n" + "}\n" + "names(res)<-row.names(data)\n" + "return(res)\n" + "}\n";
+
+        rc.voidEval( rawscript );
+        rc.voidEval( sc );
+
+        rc.loadScript( this.getClass().getResourceAsStream( "/ubic/basecode/util/r/linearModels.R" ) );
     }
 
     public void testDoubleArrayTwoDoubleArrayEval() throws Exception {

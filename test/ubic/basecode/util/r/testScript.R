@@ -1,14 +1,8 @@
-rowlm<-function(formula=NULL,data) {
-	if (is.null(formula)) {
-		mf<-lm("~1",data,method="model.frame")
-    	design<-matrix(1,ncol(data),1)
-    	attr(design, "assign")<-0
-	} else {
-    	mf<-lm(formula,data,method="model.frame")
-    	design<-model.matrix(formula)
-    }
+c(rowlm<-function(formula,data){
+    mf<-lm(formula,data,method="model.frame")
     mt <- attr(mf, "terms")
     x <- model.matrix(mt, mf)
+    design<-model.matrix(formula)
     cl <- match.call()
     r<-nrow(data)
     res<-vector("list",r)
@@ -19,7 +13,7 @@ rowlm<-function(formula=NULL,data) {
     for(i in 1:r) {
         y<-as.vector(D[i,])
         id<-ids[i]
-        m<-is.finite(y) 
+        m<-is.finite(y)
         if (sum(m) > 0) {
             X<-design[m,,drop=FALSE]
             attr(X,"assign")<-attr(design,"assign")
@@ -37,4 +31,5 @@ rowlm<-function(formula=NULL,data) {
     }
     names(res)<-row.names(data)
     return(res)
-}
+},
+k<-1)

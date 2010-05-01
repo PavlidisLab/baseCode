@@ -322,23 +322,15 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
-     * @see org.rosuda.JRclient.Rconnection#voidEval(java.lang.String)
-     */
-    /*
-     * (non-Javadoc)
      * @see ubic.basecode.util.RClient#voidEval(java.lang.String)
      */
     public void voidEval( String command ) {
         if ( command == null ) throw new IllegalArgumentException( "Null command" );
         this.checkConnection();
-        try {
-            log.debug( "voidEval: " + command );
-            connection.voidEval( command );
-        } catch ( RserveException e ) {
-            throw new RuntimeException( "R failure with command " + command, e );
-        } catch ( Exception e ) {
-            throw new RuntimeException( "R failure with command " + command, e );
-        }
+
+        log.debug( "voidEval: " + command );
+        eval( command );
+
     }
 
     /**
@@ -391,15 +383,24 @@ public class RServeClient extends AbstractRClient {
         if ( connection != null && connection.isConnected() ) {
             return true;
         }
-        try {
-            connection = new RConnection();
-        } catch ( RserveException e ) {
-            if ( !beQuiet ) {
-                log.error( "Could not connect to RServe: " + e.getMessage() );
+        int tries = 3;
+        Exception ex = null;
+        for ( int i = 0; i < tries; i++ ) {
+            try {
+                connection = new RConnection();
+                return true;
+            } catch ( RserveException e ) {
+                ex = e;
+                try {
+                    Thread.sleep( 100 );
+                } catch ( InterruptedException e1 ) {
+                }
             }
-            return false;
         }
-        return true;
+        if ( !beQuiet ) {
+            log.error( "Could not connect to RServe: " + ex.getMessage() );
+        }
+        return false;
     }
 
     public REXP eval( String command ) {
@@ -407,6 +408,7 @@ public class RServeClient extends AbstractRClient {
         checkConnection();
         try {
             REXP r = connection.eval( "try(" + command + ", silent=T)" );
+            if ( r == null ) return null;
             if ( r.inherits( "try-error" ) ) throw new RuntimeException( "Error from R: " + r.asString() );
             return r;
         } catch ( RserveException e ) {

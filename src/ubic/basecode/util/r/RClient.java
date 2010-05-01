@@ -66,7 +66,6 @@ public interface RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, int[])
      */
     public void assign( String arg0, int[] arg1 );
@@ -88,7 +87,6 @@ public interface RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, java.lang.String)
      */
     public void assign( String sym, String ct );
@@ -193,7 +191,6 @@ public interface RClient {
 
     /*
      * (non-Javadoc)
-     * 
      * @see org.rosuda.JRclient.Rconnection#getLastError()
      */
     public String getLastError();
@@ -231,11 +228,6 @@ public interface RClient {
      */
     public DoubleMatrix<String, String> retrieveMatrix( String variableName );
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.rosuda.JRclient.Rconnection#voidEval(java.lang.String)
-     */
     public void voidEval( String command );
 
     public boolean isConnected();
