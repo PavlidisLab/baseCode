@@ -94,13 +94,8 @@ public class JRIClientTest extends TestCase {
         }
 
         /*
-         * foo<-c(212.1979, 8.8645, 8.4814, 11.915);
-         * 
-         * a<-factor(c( "A", "B", "B", "B" ));
-         * 
-         * b<-factor(c( "D", "C", "D", "D" ));
-         * 
-         * anova(aov(foo ~ a+b));
+         * foo<-c(212.1979, 8.8645, 8.4814, 11.915); a<-factor(c( "A", "B", "B", "B" )); b<-factor(c( "D", "C", "D", "D"
+         * )); anova(aov(foo ~ a+b));
          */
 
         double[] data = new double[] { 212.1979, 8.8645, 8.4814, 11.915 };
@@ -121,13 +116,8 @@ public class JRIClientTest extends TestCase {
         }
 
         /*
-         * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074);
-         * 
-         * a<-factor(c( "A", "A", "A", "A", "B", "B", "B", "B" ));
-         * 
-         * b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" ));
-         * 
-         * anova(aov(foo ~ a+b));
+         * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074); a<-factor(c( "A", "A", "A", "A", "B",
+         * "B", "B", "B" )); b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" )); anova(aov(foo ~ a+b));
          */
 
         double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
@@ -148,13 +138,8 @@ public class JRIClientTest extends TestCase {
         }
 
         /*
-         * foo<-c( 213.7725, 211.6383, NA, 212.589, 10.3011, 10.1182, 13.486, 12.916);
-         * 
-         * a<-factor(c( "A", "A", "A", "A", "B", "B", "B", "B" ));
-         * 
-         * b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" ));
-         * 
-         * anova(aov(foo ~ a+b));
+         * foo<-c( 213.7725, 211.6383, NA, 212.589, 10.3011, 10.1182, 13.486, 12.916); a<-factor(c( "A", "A", "A", "A",
+         * "B", "B", "B", "B" )); b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" )); anova(aov(foo ~ a+b));
          */
 
         double[] data = new double[] { 213.7725, 211.6383, Double.NaN, 212.589, 10.3011, 10.1182, 13.486, 12.916 };
@@ -177,13 +162,8 @@ public class JRIClientTest extends TestCase {
         }
 
         /*
-         * foo<-c( 206.2209 , NA , 205.6038 , 203.0751 , NA , NA , 4.6569 , NA );
-         * 
-         * a<-factor(c( "A", "A", "A", "A", "B", "B", "B", "B" ));
-         * 
-         * b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" ));
-         * 
-         * anova(aov(foo ~ a+b));
+         * foo<-c( 206.2209 , NA , 205.6038 , 203.0751 , NA , NA , 4.6569 , NA ); a<-factor(c( "A", "A", "A", "A", "B",
+         * "B", "B", "B" )); b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" )); anova(aov(foo ~ a+b));
          */
 
         double[] data = new double[] { 206.2209, Double.NaN, 205.6038, 203.0751, Double.NaN, Double.NaN, 4.6569,
@@ -207,11 +187,7 @@ public class JRIClientTest extends TestCase {
         }
 
         /*
-         * foo<-c(212.1979, 8.8645, 8.4814, 11.915);
-         * 
-         * a<-factor(c( "A", "B", "B", "B" ));
-         * 
-         * anova(aov(foo ~ a));
+         * foo<-c(212.1979, 8.8645, 8.4814, 11.915); a<-factor(c( "A", "B", "B", "B" )); anova(aov(foo ~ a));
          */
 
         double[] data = new double[] { 212.1979, 8.8645, 8.4814, 11.915 };
@@ -234,11 +210,8 @@ public class JRIClientTest extends TestCase {
         }
 
         /*
-         * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074);
-         * 
-         * a<-factor(c( "A", "A", "A", "A", "B", "B", "B", "B" ));
-         * 
-         * anova(aov(foo ~ a));
+         * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074); a<-factor(c( "A", "A", "A", "A", "B",
+         * "B", "B", "B" )); anova(aov(foo ~ a));
          */
 
         double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
@@ -394,11 +367,8 @@ public class JRIClientTest extends TestCase {
         }
 
         /*
-         * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074);
-         * 
-         * a<-factor(c( "A", "A", "A", "A", "B", "B", "B", "B" ));
-         * 
-         * summary(lm(foo ~ a)); anova(lm(foo ~ a));
+         * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074); a<-factor(c( "A", "A", "A", "A", "B",
+         * "B", "B", "B" )); summary(lm(foo ~ a)); anova(lm(foo ~ a));
          */
 
         double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
@@ -436,17 +406,8 @@ public class JRIClientTest extends TestCase {
         }
 
         /*
-         * dat<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074);
-         * 
-         * a<-factor(c( "A", "A", "A", "A", "B", "B", "B", "B" ));
-         * 
-         * b<-c(1, 2, 3, 4, 5, 6, 7, 8)
-         * 
-         * bar<-lm(dat ~ a + b);
-         * 
-         * summary(bar)
-         * 
-         * anova(bar)
+         * dat<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074); a<-factor(c( "A", "A", "A", "A", "B",
+         * "B", "B", "B" )); b<-c(1, 2, 3, 4, 5, 6, 7, 8) bar<-lm(dat ~ a + b); summary(bar) anova(bar)
          */
 
         double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
@@ -511,6 +472,7 @@ public class JRIClientTest extends TestCase {
         }
 
         d.setColumnNames( Arrays.asList( new String[] { "foo", "bar" } ) );
+        d.setRowNames( Arrays.asList( new String[] { "k", "m", "n", "o", "p", "q", "r", "s" } ) );
 
         LinearModelSummary lms = rc.linearModel( data, d );
 
@@ -544,17 +506,9 @@ public class JRIClientTest extends TestCase {
         }
 
         /*
-         * foo<-c( 3.2969, 3.1856, 4.1638, 4.59, 3.2342, 3.3533, 3.4347, 3.3074);
-         * 
-         * d<-factor(c( "y", "y", "z", "z", "x", "x", "w", "w" ));
-         * 
-         * a<-factor(c( "A", "A", "A", "A", "B", "B", "B", "B" ));
-         * 
-         * b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" ));
-         * 
-         * c<-c(1, 2, 3, 4, 5, 6, 7, 8)
-         * 
-         * summary(lm(foo ~ d)); anova(lm(foo ~ d));
+         * foo<-c( 3.2969, 3.1856, 4.1638, 4.59, 3.2342, 3.3533, 3.4347, 3.3074); d<-factor(c( "y", "y", "z", "z", "x",
+         * "x", "w", "w" )); a<-factor(c( "A", "A", "A", "A", "B", "B", "B", "B" )); b<-factor(c( "C", "C", "D", "D",
+         * "C", "C", "D", "D" )); c<-c(1, 2, 3, 4, 5, 6, 7, 8) summary(lm(foo ~ d)); anova(lm(foo ~ d));
          */
 
         double[] data = new double[] { 3.2969, 3.1856, 4.1638, 4.59, 3.2342, 3.3533, 3.4347, 3.3074 };
