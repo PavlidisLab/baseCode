@@ -1,4 +1,4 @@
-rowlm<-function(formula=NULL,data) {
+c(rowlm<-function(formula=NULL,data) {
 	if (is.null(formula)) {
 		mf<-lm("~1",data,method="model.frame")
     	design<-matrix(1,ncol(data),1)
@@ -37,4 +37,4 @@ rowlm<-function(formula=NULL,data) {
     }
     names(res)<-row.names(data)
     return(res)
-}
+})
