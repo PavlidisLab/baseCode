@@ -386,8 +386,7 @@ public class GeneAnnotations {
 
         geneSetToProbeMap.put( geneSetId, new HashSet<String>( probesForNew ) );
         Set<String> genes = new HashSet<String>();
-        for ( Object element : probesForNew ) {
-            String probe = ( String ) element;
+        for ( String probe : probesForNew ) {
             if ( !probeToGeneSetMap.containsKey( probe ) ) {
                 probeToGeneSetMap.put( probe, new HashSet<String>() );
             }
