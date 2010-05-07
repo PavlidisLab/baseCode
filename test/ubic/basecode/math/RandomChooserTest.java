@@ -32,8 +32,6 @@ import junit.framework.TestCase;
  */
 public class RandomChooserTest extends TestCase {
 
-    double[] sourceData = new double[] { 0, 1, 2, 3, 4, 5 };
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
