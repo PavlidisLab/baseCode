@@ -53,11 +53,13 @@ public class RServeClient extends AbstractRClient {
 
     static Process serverProcess;
 
-    private static final int MAX_TRIES = 10;
+    private static final int MAX_CONNECT_TRIES = 10;
 
     private final static String os = System.getProperty( "os.name" ).toLowerCase();
 
     private static final boolean QUIET = true;
+
+    private static final int MAX_EVAL_TRIES = 3;
 
     private static RConnection connection = null;
 
@@ -125,6 +127,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, double[])
      */
     public void assign( String argName, double[] arg ) {
@@ -140,6 +143,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, int[])
      */
     public void assign( String arg0, int[] arg1 ) {
@@ -156,10 +160,12 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, java.lang.String)
      */
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String)
      */
     public void assign( String sym, String ct ) {
@@ -176,6 +182,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String[])
      */
     public void assign( String argName, String[] array ) {
@@ -209,6 +216,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see java.lang.Object#finalize()
      */
     @Override
@@ -218,6 +226,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#getLastError()
      */
     public String getLastError() {
@@ -234,6 +243,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#retrieveMatrix(java.lang.String)
      */
     public DoubleMatrix<String, String> retrieveMatrix( String variableName ) {
@@ -322,6 +332,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#voidEval(java.lang.String)
      */
     public void voidEval( String command ) {
@@ -341,7 +352,7 @@ public class RServeClient extends AbstractRClient {
 
             log.warn( "Not connected, trying to reconnect" );
             boolean ok = false;
-            for ( int i = 0; i < MAX_TRIES; i++ ) {
+            for ( int i = 0; i < MAX_CONNECT_TRIES; i++ ) {
                 try {
                     Thread.sleep( 200 );
                 } catch ( InterruptedException e ) {
@@ -394,29 +405,59 @@ public class RServeClient extends AbstractRClient {
                 try {
                     Thread.sleep( 100 );
                 } catch ( InterruptedException e1 ) {
+                    return false;
                 }
             }
         }
         if ( !beQuiet ) {
-            log.error( "Could not connect to RServe: " + ex.getMessage() );
+            log.error( "Could not connect to RServe: " + ( ex == null ? "" : ex.getMessage() ) );
         }
         return false;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.r.RClient#eval(java.lang.String)
+     */
     public REXP eval( String command ) {
         log.debug( "eval: " + command );
         checkConnection();
-        try {
-            REXP r = connection.eval( "try(" + command + ", silent=T)" );
-            if ( r == null ) return null;
-            if ( r.inherits( "try-error" ) ) throw new RuntimeException( "Error from R: " + r.asString() );
-            return r;
-        } catch ( RserveException e ) {
-            throw new RuntimeException( "Error excecuting " + command + ":" + e.getMessage(), e );
-        } catch ( REXPMismatchException e ) {
-            throw new RuntimeException( "Error processing apparent error object returned by " + command + ":"
-                    + e.getMessage(), e );
+
+        /*
+         * Failures due to communication... try repeatedly.
+         */
+        for ( int i = 0; i < MAX_EVAL_TRIES + 1; i++ ) {
+            RuntimeException ex = null;
+            try {
+                REXP r = connection.eval( "try(" + command + ", silent=T)" );
+                if ( r == null ) return null;
+
+                if ( r.inherits( "try-error" ) ) {
+                    ex = new RuntimeException( "Error from R: " + r.asString() );
+                } else {
+                    return r;
+                }
+            } catch ( RserveException e ) {
+                ex = new RuntimeException( "Error excecuting " + command + ":" + e.getMessage(), e );
+            } catch ( REXPMismatchException e ) {
+                ex = new RuntimeException( "Error processing apparent error object returned by " + command + ":"
+                        + e.getMessage(), e );
+            }
+
+            if ( i == MAX_EVAL_TRIES ) {
+                throw ex;
+            }
+
+            try {
+                Thread.sleep( 200 );
+            } catch ( InterruptedException e ) {
+                return null;
+            }
+
         }
+
+        throw new RuntimeException( "Evaluation failed! No details available" );
     }
 
     /**
@@ -463,8 +504,9 @@ public class RServeClient extends AbstractRClient {
                     log.warn( "Rserve process is dead." );
                     return;
                 }
-                if ( tries > MAX_TRIES ) {
-                    log.warn( "Could not get a connection to R server: timed out after " + MAX_TRIES + " attempts." );
+                if ( tries > MAX_CONNECT_TRIES ) {
+                    log.warn( "Could not get a connection to R server: timed out after " + MAX_CONNECT_TRIES
+                            + " attempts." );
                     waiting = false;
                 }
             }
