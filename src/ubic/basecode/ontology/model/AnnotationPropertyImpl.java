@@ -37,8 +37,6 @@ public class AnnotationPropertyImpl implements AnnotationProperty {
 
     private String contents;
 
-    private String sourceOntology;
-
     /**
      * @param prop property for the statement
      * @param source ontology this relates to.
@@ -87,10 +85,6 @@ public class AnnotationPropertyImpl implements AnnotationProperty {
         } else {
             return property.toString();
         }
-    }
-
-    public String getSourceOntology() {
-        return sourceOntology;
     }
 
     @Override

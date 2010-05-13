@@ -28,5 +28,4 @@ public interface AnnotationProperty {
 
     public String getProperty();
 
-    public String getSourceOntology();
 }

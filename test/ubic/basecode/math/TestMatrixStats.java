@@ -43,13 +43,9 @@ public class TestMatrixStats extends TestCase {
     public final void testCorrelationMatrix() throws Exception {
         DoubleMatrix<String, String> actualReturn = MatrixStats.correlationMatrix( testdata );
         DoubleMatrixReader f = new DoubleMatrixReader();
-        DoubleMatrix<String, String> expectedReturn = null;
-        try {
-            expectedReturn = f.read( AbstractTestFilter.class
-                    .getResourceAsStream( "/data/correlation-matrix-testoutput.txt" ) );
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
+        DoubleMatrix<String, String> expectedReturn = f.read( AbstractTestFilter.class
+                .getResourceAsStream( "/data/correlation-matrix-testoutput.txt" ) );
+
         assertEquals( true, RegressionTesting.closeEnough( expectedReturn, actualReturn, 0.001 ) );
     }
 
