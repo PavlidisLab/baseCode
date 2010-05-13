@@ -423,41 +423,51 @@ public class RServeClient extends AbstractRClient {
     public REXP eval( String command ) {
         log.debug( "eval: " + command );
         checkConnection();
+        int lockValue = 0;
+        try {
+            lockValue = connection.lock();
 
-        /*
-         * Failures due to communication... try repeatedly.
-         */
-        for ( int i = 0; i < MAX_EVAL_TRIES + 1; i++ ) {
-            RuntimeException ex = null;
-            try {
-                REXP r = connection.eval( "try(" + command + ", silent=T)" );
-                if ( r == null ) return null;
+            /*
+             * Failures due to communication? try repeatedly.
+             */
+            for ( int i = 0; i < MAX_EVAL_TRIES + 1; i++ ) {
+                RuntimeException ex = null;
+                try {
+                    REXP r = connection.eval( "try(" + command + ", silent=T)" );
+                    if ( r == null ) return null;
 
-                if ( r.inherits( "try-error" ) ) {
-                    ex = new RuntimeException( "Error from R: " + r.asString() );
-                } else {
-                    return r;
+                    if ( r.inherits( "try-error" ) ) {
+                        /*
+                         * This is not an eval error that would warrant a retry.
+                         */
+                        throw new RuntimeException( "Error from R: " + r.asString() );
+                    } else {
+                        return r;
+                    }
+                } catch ( RserveException e ) {
+                    ex = new RuntimeException( "Error excecuting " + command + ": " + e.getMessage(), e );
+                } catch ( REXPMismatchException e ) {
+                    throw new RuntimeException( "Error processing apparent error object returned by " + command + ": "
+                            + e.getMessage(), e );
                 }
-            } catch ( RserveException e ) {
-                ex = new RuntimeException( "Error excecuting " + command + ":" + e.getMessage(), e );
-            } catch ( REXPMismatchException e ) {
-                ex = new RuntimeException( "Error processing apparent error object returned by " + command + ":"
-                        + e.getMessage(), e );
+
+                if ( i == MAX_EVAL_TRIES ) {
+                    throw ex;
+                }
+
+                try {
+                    log.debug( "Eval failed, retrying" );
+                    Thread.sleep( 200 );
+                } catch ( InterruptedException e ) {
+                    return null;
+                }
+
             }
 
-            if ( i == MAX_EVAL_TRIES ) {
-                throw ex;
-            }
-
-            try {
-                Thread.sleep( 200 );
-            } catch ( InterruptedException e ) {
-                return null;
-            }
-
+            throw new RuntimeException( "Evaluation failed! No details available" );
+        } finally {
+            if ( lockValue != 0 ) connection.unlock( lockValue );
         }
-
-        throw new RuntimeException( "Evaluation failed! No details available" );
     }
 
     /**
