@@ -48,7 +48,7 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
     public abstract M readOneRow( BufferedReader dis ) throws IOException;
 
     /**
-     * Flag to indicate the top left entry exists or not. 
+     * Flag to indicate the top left entry exists or not.
      * 
      * @param topLeft true if a top left string exists
      */
@@ -58,7 +58,7 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
 
     protected List<String> readHeader( BufferedReader dis ) throws IOException {
         List<String> headerVec = new Vector<String>();
-        String header;
+        String header = null;
 
         /*
          * Read past comments.
@@ -69,6 +69,8 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
             }
             break;
         }
+
+        if ( header == null ) return headerVec;
 
         StringTokenizer st = new StringTokenizer( header, "\t", true ); // return
         // delims.
