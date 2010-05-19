@@ -377,13 +377,12 @@ public class RServeClient extends AbstractRClient {
             return true;
         }
         try {
-            log.info( "Trying Rserve connection ..." );
             connection = new RConnection( host, port );
         } catch ( RserveException e ) {
             log.error( "Could not connect to RServe: " + e.getMessage() );
             return false;
         }
-        log.info( "Rserve connection looks good!" );
+        log.info( "Connected vis RServe." );
         return true;
     }
 
@@ -441,9 +440,9 @@ public class RServeClient extends AbstractRClient {
                          * This is not an eval error that would warrant a retry.
                          */
                         throw new RuntimeException( "Error from R: " + r.asString() );
-                    } else {
-                        return r;
                     }
+                    return r;
+
                 } catch ( RserveException e ) {
                     ex = new RuntimeException( "Error excecuting " + command + ": " + e.getMessage(), e );
                 } catch ( REXPMismatchException e ) {
