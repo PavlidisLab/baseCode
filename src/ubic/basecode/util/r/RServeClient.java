@@ -350,6 +350,9 @@ public class RServeClient extends AbstractRClient {
     private void checkConnection() {
         if ( !this.isConnected() ) {
 
+            /*
+             * This often won't work. Even if we reconnect, state will have been lost.
+             */
             log.warn( "Not connected, trying to reconnect" );
             boolean ok = false;
             for ( int i = 0; i < MAX_CONNECT_TRIES; i++ ) {
@@ -421,10 +424,9 @@ public class RServeClient extends AbstractRClient {
      */
     public REXP eval( String command ) {
         log.debug( "eval: " + command );
-        checkConnection();
+
         int lockValue = 0;
         try {
-            lockValue = connection.lock();
 
             /*
              * Failures due to communication? try repeatedly.
@@ -432,6 +434,8 @@ public class RServeClient extends AbstractRClient {
             for ( int i = 0; i < MAX_EVAL_TRIES + 1; i++ ) {
                 RuntimeException ex = null;
                 try {
+                    checkConnection();
+                    lockValue = connection.lock();
                     REXP r = connection.eval( "try(" + command + ", silent=T)" );
                     if ( r == null ) return null;
 
