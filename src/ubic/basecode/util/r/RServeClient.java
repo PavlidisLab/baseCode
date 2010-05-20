@@ -382,7 +382,7 @@ public class RServeClient extends AbstractRClient {
             log.error( "Could not connect to RServe: " + e.getMessage() );
             return false;
         }
-        log.info( "Connected vis RServe." );
+        log.info( "Connected via RServe." );
         return true;
     }
 
