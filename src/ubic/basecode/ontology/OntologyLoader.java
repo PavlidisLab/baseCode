@@ -103,7 +103,7 @@ public class OntologyLoader {
             }
         }
 
-        log.info( "Loaded " + count + " terms" );
+        log.debug( "Loaded " + count + " terms" );
 
         ExtendedIterator<com.hp.hpl.jena.ontology.ObjectProperty> propIt = model.listObjectProperties();
         count = 0;
@@ -119,7 +119,7 @@ public class OntologyLoader {
         }
 
         ExtendedIterator<com.hp.hpl.jena.ontology.DatatypeProperty> dtPropIt = model.listDatatypeProperties();
-        log.info( "Reading datatype properties..." );
+        log.debug( "Reading datatype properties..." );
         while ( dtPropIt.hasNext() ) {
             com.hp.hpl.jena.ontology.DatatypeProperty element = dtPropIt.next();
             OntologyProperty ontologyTerm = PropertyFactory.asProperty( element );
@@ -134,7 +134,7 @@ public class OntologyLoader {
 
         ExtendedIterator<Individual> indiIt = model.listIndividuals();
         count = 0;
-        log.info( "Reading individuals..." );
+        log.debug( "Reading individuals..." );
         while ( indiIt.hasNext() ) {
             Individual element = indiIt.next();
             if ( element.isAnon() ) continue;

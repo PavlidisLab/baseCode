@@ -57,7 +57,7 @@ public class OntologyIndexer {
      * @return
      */
     public static IndexLARQ getSubjectIndex( String name ) {
-        log.info( "Loading index: " + name );
+        log.debug( "Loading index: " + name );
         File indexdir = getIndexPath( name );
         try {
             FSDirectory directory = FSDirectory.getDirectory( indexdir );

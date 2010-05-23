@@ -248,7 +248,7 @@ public abstract class AbstractOntologyService {
 
         // if loading ontologies is disabled in the configuration, return
         if ( !force && !loadOntology ) {
-            log.info( "Loading " + ontologyName + " is disabled (force=" + force + ", " + configParameter + "="
+            log.debug( "Loading " + ontologyName + " is disabled (force=" + force + ", " + configParameter + "="
                     + loadOntology + ")" );
             return;
         }
