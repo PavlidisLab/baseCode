@@ -34,7 +34,7 @@ import com.hp.hpl.jena.rdf.model.ModelMaker;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 public class OntologyLoader {
-    private static Log log = LogFactory.getLog( OntologyLoader.class.getName() );
+    private static Log log = LogFactory.getLog( OntologyLoader.class );
 
     private static String dbUrl = Configuration.getString( "jena.db.url" );
     private static String driver = Configuration.getString( "jena.db.driver" );
@@ -89,7 +89,7 @@ public class OntologyLoader {
     public static Collection<OntologyResource> initialize( String url, OntModel model ) {
 
         Collection<OntologyResource> result = new HashSet<OntologyResource>();
- 
+
         ExtendedIterator<OntClass> classIt = model.listClasses();
         int count = 0;
         log.debug( "Reading classes for ontology: " + url );
@@ -280,7 +280,7 @@ public class OntologyLoader {
      * @return
      */
     private static OntModel persistModelIfNecessary( String url, boolean force ) {
-        log.info( "Getting model ..." );
+        log.debug( "Getting model ..." );
         OntModel model = getRDBModel( url );
         if ( model.isEmpty() ) {
             log.info( url + ": New ontology, loading..." );
