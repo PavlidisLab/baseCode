@@ -19,8 +19,6 @@
 
 package ubic.basecode.util.r;
 
-import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -71,15 +69,9 @@ public class RConnectionFactory {
      * @return
      */
     private static RClient getJRIClient() {
-        try {
-            RClient j = new JRIClient();
-            log.debug( "Got JRI connection" );
-            return j;
-        } catch ( IOException e ) {
-            log.warn( "Was unable to get a JRI connection", e );
-            return null;
-        }
-
+        RClient j = new JRIClient();
+        log.debug( "Got JRI connection" );
+        return j;
     }
 
 }

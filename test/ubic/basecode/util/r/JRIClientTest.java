@@ -59,19 +59,16 @@ public class JRIClientTest extends TestCase {
     @Override
     public void setUp() throws Exception {
 
-        if ( rc == null ) {
-
-            try {
-                rc = new JRIClient();
-                if ( rc == null || !rc.isConnected() ) {
-                    connected = false;
-                    return;
-                }
-            } catch ( RuntimeException e ) {
-                log.error( e, e );
+        try {
+            rc = new JRIClient();
+            if ( rc == null || !rc.isConnected() ) {
                 connected = false;
                 return;
             }
+        } catch ( RuntimeException e ) {
+            log.error( e, e );
+            connected = false;
+            return;
         }
 
         DoubleMatrixReader reader = new DoubleMatrixReader();
@@ -83,7 +80,6 @@ public class JRIClientTest extends TestCase {
     @Override
     public void tearDown() throws Exception {
         tester = null;
-        // rc.disconnect();
         rc = null;
     }
 
@@ -244,7 +240,10 @@ public class JRIClientTest extends TestCase {
     }
 
     public void testDataFrameA() throws Exception {
-
+        if ( !connected ) {
+            log.warn( "Cannot load JRI, skipping test" );
+            return;
+        }
         double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
         String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
 
