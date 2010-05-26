@@ -284,7 +284,8 @@ public class RServeClient extends AbstractRClient {
         if ( !this.isConnected() ) {
 
             /*
-             * This often won't work. Even if we reconnect, state will have been lost.
+             * This often won't work. Even if we reconnect, state will have been lost. However, under normal
+             * circumstances (over a local network) connection loss should be very rare.
              */
             log.warn( "Not connected, trying to reconnect" );
             boolean ok = false;
