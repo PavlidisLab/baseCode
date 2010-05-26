@@ -48,14 +48,6 @@ public class JRIClient extends AbstractRClient {
 
     private static Log log = LogFactory.getLog( JRIClient.class.getName() );
 
-    static {
-        try {
-            connection = new JRIEngine( new String[] { "--no-save", "--vanilla" }, null );
-        } catch ( REngineException e ) {
-            throw new RuntimeException( e );
-        }
-    }
-
     /**
      * @throws IOException if the JRI library could not e loaded.
      */
@@ -63,6 +55,7 @@ public class JRIClient extends AbstractRClient {
 
         try {
             // / couple of very quick tests to ensure everything is in order.
+            connection = new JRIEngine( new String[] { "--no-save", "--vanilla" }, null );
             connection.assign( "testtomakesurethedamnthingworks", "1" );
             this.eval( "cor(c(2,3),c(1,2))" );
         } catch ( REngineException e ) {

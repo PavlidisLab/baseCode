@@ -58,8 +58,6 @@ public class RServeClient extends AbstractRClient {
 
     private final static String os = System.getProperty( "os.name" ).toLowerCase();
 
-    private static final boolean QUIET = true;
-
     private static final int MAX_EVAL_TRIES = 3;
 
     private RConnection connection = null;
