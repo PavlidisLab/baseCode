@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -41,7 +40,6 @@ import org.rosuda.REngine.Rserve.RserveException;
 
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
-import ubic.basecode.util.GenericStreamConsumer;
 
 /**
  * @author pavlidis
@@ -49,9 +47,12 @@ import ubic.basecode.util.GenericStreamConsumer;
  */
 public class RServeClient extends AbstractRClient {
 
-    final static Log log = LogFactory.getLog( RServeClient.class.getName() );
+    /**
+     * 
+     */
+    private static final int DEFAULT_PORT = 6311;
 
-    static Process serverProcess;
+    final static Log log = LogFactory.getLog( RServeClient.class );
 
     private static final int MAX_CONNECT_TRIES = 10;
 
@@ -61,7 +62,7 @@ public class RServeClient extends AbstractRClient {
 
     private static final int MAX_EVAL_TRIES = 3;
 
-    private static RConnection connection = null;
+    private RConnection connection = null;
 
     /**
      * @return
@@ -95,8 +96,7 @@ public class RServeClient extends AbstractRClient {
      * @throws IOException
      */
     protected RServeClient( String host ) throws IOException {
-        // 6311 is default port for Rserve.
-        if ( !connect( host, 6311 ) ) {
+        if ( !connect( host, DEFAULT_PORT ) ) {
             throw new IOException( "Could not connect to Rserve" );
         }
     }
@@ -107,19 +107,6 @@ public class RServeClient extends AbstractRClient {
      * @throws IOException
      */
     protected RServeClient() throws IOException {
-        if ( !connect() ) {
-            throw new IOException( "Could not connect to Rserve" );
-        }
-    }
-
-    /**
-     * @param startServer
-     * @throws IOException
-     */
-    protected RServeClient( boolean startServer ) throws IOException {
-        if ( startServer ) {
-            this.startServer();
-        }
         if ( !connect() ) {
             throw new IOException( "Could not connect to Rserve" );
         }
@@ -276,58 +263,6 @@ public class RServeClient extends AbstractRClient {
             throw new RuntimeException( "Failed to get back matrix for variable " + variableName, e );
         }
 
-    }
-
-    /**
-     * Starts the RServe server, unless one is already running.
-     */
-    public void startServer() {
-
-        try {
-            boolean connected = connect( QUIET );
-            if ( connected ) {
-                log.info( "RServer is already running" );
-                return;
-            }
-            log.error( "Server is running but can't connect?" ); // shouldn't hit this, but just in case.
-        } catch ( RuntimeException e1 ) {
-            // okay, not running
-        }
-
-        try {
-
-            String rserveExecutable = findRserveCommand();
-
-            log.info( "Starting Rserve with command " + rserveExecutable );
-            serverProcess = Runtime.getRuntime().exec( rserveExecutable );
-
-            GenericStreamConsumer gscErr = new GenericStreamConsumer( serverProcess.getErrorStream() );
-            GenericStreamConsumer gscIn = new GenericStreamConsumer( serverProcess.getInputStream() );
-            gscErr.start();
-            gscIn.start();
-
-            waitForServerStart();
-
-        } catch ( IOException e ) {
-            log.error( "Could not start Rserver", e );
-        } catch ( ConfigurationException e ) {
-            log.error( "Could not connect to RServe: server executable is not configured", e );
-            throw new RuntimeException( e );
-        } catch ( NoSuchElementException e ) {
-            log.error( "Could not connect to RServe, make sure you configure"
-                    + " 'rserve.start.command' in your build.properties", e );
-            throw new RuntimeException( e );
-        }
-    }
-
-    /**
-     * Stop the server, if it was started by this.
-     */
-    public void stopServer() {
-        if ( serverProcess != null ) {
-            log.info( "Stopping server by killing it." );
-            serverProcess.destroy();
-        }
     }
 
     /*
@@ -489,46 +424,6 @@ public class RServeClient extends AbstractRClient {
 
         if ( colNames.size() == resultObject.columns() ) {
             resultObject.setColumnNames( colNames );
-        }
-    }
-
-    /**
-     * Wait until we can get a connection to the server - if there is a better way to monitor when the server is up, we
-     * should us it.
-     */
-    private void waitForServerStart() {
-        try {
-            int exitValue = Integer.MIN_VALUE;
-            boolean waiting = true;
-            int tries = 0;
-            while ( waiting ) {
-                try {
-                    // exitValue = serverProcess.exitValue();
-                    boolean connected = connect( QUIET );
-                    if ( connected ) {
-                        waiting = false;
-                        return;
-                    }
-                    // not running, keep trying
-                    tries++;
-                    Thread.sleep( 2000 );
-
-                } catch ( IllegalThreadStateException e ) {
-                    log.warn( "Rserve process is dead." );
-                    return;
-                }
-                if ( tries > MAX_CONNECT_TRIES ) {
-                    log.warn( "Could not get a connection to R server: timed out after " + MAX_CONNECT_TRIES
-                            + " attempts." );
-                    waiting = false;
-                }
-            }
-
-            log.error( "Could not get a connection to the server: " + exitValue );
-        } catch ( IllegalThreadStateException e ) {
-            log.info( "Rserver seems to have started" );
-        } catch ( InterruptedException e ) {
-            //
         }
     }
 

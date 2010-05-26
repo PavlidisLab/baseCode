@@ -53,7 +53,7 @@ public class RServeClientTest extends TestCase {
     @Override
     public void setUp() throws Exception {
         try {
-            rc = new RServeClient( false );
+            rc = new RServeClient();
             connected = rc.isConnected();
         } catch ( IOException e ) {
             connected = false;
@@ -67,6 +67,7 @@ public class RServeClientTest extends TestCase {
     @Override
     public void tearDown() throws Exception {
         tester = null;
+        if ( rc != null && rc.isConnected() ) rc.disconnect();
     }
 
     public void testAssignAndRetrieveMatrix() throws Exception {
