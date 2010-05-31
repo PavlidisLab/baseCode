@@ -102,7 +102,8 @@ public class OntologyIndexer {
     }
 
     /**
-     * Create an on-disk index from an existing OntModel. Any existing index will be overwritten.
+     * Create an on-disk index from an existing OntModel. Any existing index will be overwritten. See {@link http
+     * ://jena.sourceforge.net/ARQ/lucene-arq.html}
      * 
      * @param datafile or uri
      * @param name used to refer to this index later
@@ -118,6 +119,7 @@ public class OntologyIndexer {
         // -- Create an index based on existing statements
         // TODO: this needs to be refactored.
         larqSubjectBuilder.indexStatements( model.listStatements( new IndexerSelector() ) );
+
         // -- Finish indexing
         larqSubjectBuilder.closeWriter();
         // -- Create the access index
