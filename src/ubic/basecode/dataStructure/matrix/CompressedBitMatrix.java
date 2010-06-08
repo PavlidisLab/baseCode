@@ -162,8 +162,7 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
      * (non-Javadoc)
      * 
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#getColObj(int)
-     */
-    @SuppressWarnings("unused")
+     */ 
     public double[][] getColumn( int i ) {
         throw new UnsupportedOperationException();
     }

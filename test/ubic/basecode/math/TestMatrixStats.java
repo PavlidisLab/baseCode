@@ -16,9 +16,7 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.math;
-
-import java.io.IOException;
+package ubic.basecode.math; 
 
 import junit.framework.TestCase;
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
