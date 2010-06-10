@@ -45,6 +45,8 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrixFactory;
  */
 public class LinearModelSummary implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private static final String INTERCEPT_COEFFICIENT_NAME_IN_R = "(Intercept)";
 
     private Double adjRSquared = Double.NaN;
