@@ -18,9 +18,6 @@
  */
 package ubic.basecode.ontology;
 
-import org.apache.commons.lang.StringUtils;
-
-import com.hp.hpl.jena.db.DBConnection;
 import com.hp.hpl.jena.db.IDBConnection;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
@@ -55,11 +52,10 @@ public class PersistentOntology {
      * @param cleanDB
      * @return
      */
-    public ModelMaker getRDBMaker( String dbURL, String dbUser, String dbPw, String dbType, boolean clean ) {
-        if ( StringUtils.isBlank( dbURL ) ) throw new IllegalArgumentException( "Database URL must be provided" );
+    public ModelMaker getRDBMaker( boolean clean ) {
         try {
             // Create database connection
-            IDBConnection conn = new DBConnection( dbURL, dbUser, dbPw, dbType );
+            IDBConnection conn = OntologyDataSource.getConnection();
 
             if ( clean ) {
                 conn.cleanDB();

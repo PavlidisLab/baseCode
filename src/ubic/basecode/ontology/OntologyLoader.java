@@ -39,7 +39,6 @@ import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.model.OntologyTermImpl;
 import ubic.basecode.ontology.model.PropertyFactory;
 
-import com.hp.hpl.jena.db.DBConnection;
 import com.hp.hpl.jena.db.IDBConnection;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -60,27 +59,13 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 public class OntologyLoader {
     private static Log log = LogFactory.getLog( OntologyLoader.class );
 
-    private static String dbUrl = Configuration.getString( "jena.db.url" );
-    private static String driver = Configuration.getString( "jena.db.driver" );
-    private static String pwd = Configuration.getString( "jena.db.password" );
-    private static String type = Configuration.getString( "jena.db.type" );
-    private static String user = Configuration.getString( "jena.db.user" );
-
     /**
      * @return
      */
     public static ModelMaker getRDBMaker() {
         PersistentOntology po = new PersistentOntology();
 
-        assert driver != null;
-        try {
-            Class.forName( driver );
-        } catch ( Exception e ) {
-            log.error( "Failed to load driver: " + driver );
-            throw new RuntimeException( e );
-        }
-
-        ModelMaker maker = po.getRDBMaker( dbUrl, user, pwd, type, false );
+        ModelMaker maker = po.getRDBMaker( false );
         return maker;
     }
 
@@ -89,12 +74,7 @@ public class OntologyLoader {
      */
     protected static void wipePersistentStore() {
 
-        try {
-            Class.forName( driver );
-        } catch ( Exception e ) {
-            throw new RuntimeException( e );
-        }
-        IDBConnection conn = new DBConnection( dbUrl, user, pwd, type );
+        IDBConnection conn = OntologyDataSource.getConnection();
 
         try {
             conn.cleanDB();
@@ -281,6 +261,7 @@ public class OntologyLoader {
      * @return
      */
     private static OntModel getRDBModel( String url ) {
+
         if ( StringUtils.isBlank( url ) ) {
             throw new IllegalArgumentException( "OWL URL must not be blank" );
         }
@@ -293,8 +274,11 @@ public class OntologyLoader {
         } else {
             base = maker.createModel( url, false );
         }
-
-        return ModelFactory.createOntologyModel( spec, base );
+        try {
+            return ModelFactory.createOntologyModel( spec, base );
+        } finally {
+            maker.close();
+        }
 
     }
 
@@ -313,7 +297,7 @@ public class OntologyLoader {
             log.info( url + ": Reloading..." );
             model.read( url );
         } else {
-            log.info( url + ": Ontology already exists in persistent store" );
+            log.debug( url + ": Ontology already exists in persistent store" );
         }
         return model;
     }
