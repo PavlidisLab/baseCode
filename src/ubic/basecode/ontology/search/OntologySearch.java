@@ -269,7 +269,8 @@ public class OntologySearch {
             return iterator;
 
         } catch ( Exception e ) {
-            log.warn( "Failed Search for query: " + queryString + " Error was: " + e );
+            log.error( "Failed Search for query: " + queryString + " Error was: " + e + " Caused by: "
+                    + e.getCause().getMessage() );
         }
         return null;
     }
