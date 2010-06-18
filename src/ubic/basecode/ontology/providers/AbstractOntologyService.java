@@ -347,7 +347,7 @@ public abstract class AbstractOntologyService {
         loadThread.setDaemon( true ); // So vm doesn't wait on these threads to shutdown (if shutting down)
         loadThread.start();
 
-        startKeepAliveThread();
+        // startKeepAliveThread();
     }
 
     public boolean isEnabled() {
@@ -454,8 +454,11 @@ public abstract class AbstractOntologyService {
         }
     }
 
+    /**
+     * @deprecated should not be necessary with connection pool
+     */
+    @Deprecated
     private synchronized void startKeepAliveThread() {
-
         if ( keepAliveThreads.containsKey( this.getClass() ) ) {
             log.info( "Didn't start keep alive thread for: " + this.getClass() + " because already started" );
             return;
