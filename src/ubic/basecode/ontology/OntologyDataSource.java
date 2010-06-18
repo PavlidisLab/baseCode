@@ -61,7 +61,13 @@ public class OntologyDataSource {
         dataSource.setUsername( user );
         dataSource.setPassword( pwd );
         dataSource.setUrl( dbUrl );
+
+        /*
+         * Connections: how many, how long we wait until failing.
+         */
         dataSource.setMaxActive( 20 );
+        dataSource.setMaxWait( 20000L );
+        dataSource.setInitialSize( 4 );
 
     }
 

@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -171,6 +172,7 @@ public class OntologySearch {
     public static Collection<OntologyResource> matchResources( OntModel model, IndexLARQ index, String queryString ) {
 
         Set<OntologyResource> results = new HashSet<OntologyResource>();
+
         NodeIterator iterator = runSearch( model, index, queryString );
 
         while ( iterator != null && iterator.hasNext() ) {
@@ -254,12 +256,20 @@ public class OntologySearch {
         if ( StringUtils.isBlank( strippedQuery ) ) {
             throw new IllegalArgumentException( "Query cannot be blank" );
         }
-        try{
+        try {
+            StopWatch timer = new StopWatch();
+            timer.start();
+
             NodeIterator iterator = index.searchModelByIndex( model, strippedQuery );
+
+            if ( timer.getTime() > 100 ) {
+                log.info( "Ontology resource search for: " + queryString + ": " + timer.getTime() + "ms" );
+            }
+
             return iterator;
 
-        }catch(Exception e){
-            log.warn( "Failed Search for query: " + queryString + " Error was: " +e );            
+        } catch ( Exception e ) {
+            log.warn( "Failed Search for query: " + queryString + " Error was: " + e );
         }
         return null;
     }
