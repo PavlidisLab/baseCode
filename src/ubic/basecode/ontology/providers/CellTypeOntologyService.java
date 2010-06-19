@@ -1,7 +1,7 @@
 /*
- * The Gemma project
+ * The baseCode project
  * 
- * Copyright (c) 2007 University of British Columbia
+ * Copyright (c) 2010 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,43 +25,25 @@ import ubic.basecode.ontology.OntologyLoader;
 import com.hp.hpl.jena.ontology.OntModel;
 
 /**
- * Loads the CHEBI Ontology at startup in its own thread. Controlled in build.properties by load.chebiOntology
+ * See http://www.obofoundry.org/cgi-bin/detail.cgi?id=cell
  * 
- * @author klc
+ * @author paul
  * @version $Id$
  */
-public class ChebiOntologyService extends AbstractOntologyService {
+public class CellTypeOntologyService extends AbstractOntologyService {
 
-    private static final String CHEBI_ONTOLOGY_URL = "url.chebiOntology";
+    private static final String ONTOLOGY_URL = "url.cellTypeOntology";
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.gemma.ontology.AbstractOntologyService#getOntologyName()
-     */
     @Override
     protected String getOntologyName() {
-
-        return "chebiOntology";
+        return "cellTypeOntology";
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.gemma.ontology.AbstractOntologyService#getOntologyUrl()
-     */
     @Override
     protected String getOntologyUrl() {
-        return Configuration.getString( CHEBI_ONTOLOGY_URL );
-
+        return Configuration.getString( ONTOLOGY_URL );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.gemma.ontology.AbstractOntologyService#loadModel(java.lang.String,
-     * com.hp.hpl.jena.ontology.OntModelSpec)
-     */
     @Override
     protected OntModel loadModel( String url ) {
         return OntologyLoader.loadMemoryModel( url );

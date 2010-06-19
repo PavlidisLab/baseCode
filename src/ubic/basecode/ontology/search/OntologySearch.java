@@ -53,7 +53,7 @@ public class OntologySearch {
 
     // Lucene cannot properly parse these characters... gives a query parse error.
     // OntologyTerms don't contain them anyway
-    private final static char[] INVALID_CHARS = { ':', '(', ')', '?', '^', '[', ']', '{', '}', '!', '~' };
+    private final static char[] INVALID_CHARS = { ':', '(', ')', '?', '^', '[', ']', '{', '}', '!', '~', '"', '\'' };
 
     /**
      * Find classes that match the query string

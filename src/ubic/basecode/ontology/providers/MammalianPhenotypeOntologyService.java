@@ -25,14 +25,12 @@ import ubic.basecode.ontology.OntologyLoader;
 import com.hp.hpl.jena.ontology.OntModel;
 
 /**
- * Loads the CHEBI Ontology at startup in its own thread. Controlled in build.properties by load.chebiOntology
- * 
  * @author klc
  * @version $Id$
  */
-public class ChebiOntologyService extends AbstractOntologyService {
+public class MammalianPhenotypeOntologyService extends AbstractOntologyService {
 
-    private static final String CHEBI_ONTOLOGY_URL = "url.chebiOntology";
+    private static final String ONTOLOGY_URL = "url.mammalPhenotypeOntology";
 
     /*
      * (non-Javadoc)
@@ -42,7 +40,7 @@ public class ChebiOntologyService extends AbstractOntologyService {
     @Override
     protected String getOntologyName() {
 
-        return "chebiOntology";
+        return "mammalPhenotypeOntology";
     }
 
     /*
@@ -52,7 +50,7 @@ public class ChebiOntologyService extends AbstractOntologyService {
      */
     @Override
     protected String getOntologyUrl() {
-        return Configuration.getString( CHEBI_ONTOLOGY_URL );
+        return Configuration.getString( ONTOLOGY_URL );
 
     }
 
