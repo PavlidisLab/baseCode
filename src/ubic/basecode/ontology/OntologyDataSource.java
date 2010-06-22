@@ -65,6 +65,7 @@ public class OntologyDataSource {
         /*
          * Connections: how many, how long we wait until failing.
          */
+        dataSource.setConnectionProperties( "autoReconnect=true" );
         dataSource.setMaxActive( 20 );
         dataSource.setMaxWait( 20000L );
         dataSource.setInitialSize( 4 );

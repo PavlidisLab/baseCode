@@ -25,9 +25,9 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -44,7 +44,6 @@ import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.ModelMaker;
@@ -152,10 +151,6 @@ public class OntologyLoader {
         return result;
     }
 
-    public static OntModel load( String url ) {
-        return loadPersistentModel( url, false );
-    }
-
     /**
      * Added to allow loading of files
      */
@@ -191,8 +186,13 @@ public class OntologyLoader {
     }
 
     public static OntModel loadMemoryModel( String url, OntModelSpec spec ) {
+        StopWatch timer = new StopWatch();
+        timer.start();
         OntModel model = getMemoryModel( url, spec );
         model.read( url );
+        if ( timer.getTime() > 100 ) {
+            log.debug( "Load model: " + timer.getTime() + "ms" );
+        }
         return model;
     }
 
@@ -206,26 +206,6 @@ public class OntologyLoader {
      */
     public static OntModel loadPersistentModel( String url, boolean force ) {
         return persistModelIfNecessary( url, force );
-    }
-
-    /**
-     * @param url
-     * @return
-     */
-    protected static Ontology getOntology( String url ) {
-        OntModel model = getRDBModel( url );
-        Ontology ont = null;
-        Map<String, String> m = model.getNsPrefixMap();
-        for ( String o : m.keySet() ) {
-            if ( StringUtils.isBlank( o ) ) {
-                String prefix = model.getNsPrefixURI( o );
-                if ( prefix == null ) {
-                    continue;
-                }
-                ont = model.getOntology( prefix.replace( "#", "" ) );
-            }
-        }
-        return ont;
     }
 
     /**
@@ -255,13 +235,14 @@ public class OntologyLoader {
     }
 
     /**
-     * Get model backed by persistent store. Slower.
+     * Get model backed by persistent store.
      * 
      * @param url
      * @return
      */
     private static OntModel getRDBModel( String url ) {
-
+        StopWatch timer = new StopWatch();
+        timer.start();
         if ( StringUtils.isBlank( url ) ) {
             throw new IllegalArgumentException( "OWL URL must not be blank" );
         }
@@ -277,6 +258,9 @@ public class OntologyLoader {
         try {
             return ModelFactory.createOntologyModel( spec, base );
         } finally {
+            if ( timer.getTime() > 100 ) {
+                log.debug( "Load model: " + timer.getTime() + "ms" );
+            }
             maker.close();
         }
 
@@ -299,6 +283,7 @@ public class OntologyLoader {
         } else {
             log.debug( url + ": Ontology already exists in persistent store" );
         }
+
         return model;
     }
 }

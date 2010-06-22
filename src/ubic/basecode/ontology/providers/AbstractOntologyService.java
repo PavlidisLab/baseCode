@@ -22,7 +22,6 @@ package ubic.basecode.ontology.providers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -33,6 +32,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.pool.PoolableObjectFactory;
+import org.apache.commons.pool.impl.GenericObjectPool;
 
 import ubic.basecode.ontology.Configuration;
 import ubic.basecode.ontology.OntologyLoader;
@@ -52,56 +53,19 @@ import com.hp.hpl.jena.query.larq.IndexLARQ;
  */
 public abstract class AbstractOntologyService {
 
-    private class KeepAliveThread extends Thread {
-        @Override
-        public void run() {
-            for ( ;; ) {
-                try {
-                    Thread.sleep( KEEPALIVE_PING_DELAY );
-                } catch ( InterruptedException e ) {
-                    log.info( "Ending keep-alive" );
-                    return;
-                }
-                if ( isOntologyLoaded() ) {
-                    log.info( "sending keep-alive query to " + getOntologyName() );
-                    try {
-                        findResources( KEEPALIVE_SEARCH_TERM );
-                    } catch ( Exception e ) {
-                        log.error( "error sending keep-alive query to " + getOntologyName(), e );
-                    }
-                }
-            }
-        }
-    }
-
     protected static final Log log = LogFactory.getLog( AbstractOntologyService.class );
-    /*
-     * the number of milliseconds between keep-alive queries; this should be less than or equal to MySQL wait_timeout
-     * server variable. Currently 4 hours. (half of wait_timeout)
-     */
-    private static final int KEEPALIVE_PING_DELAY = 14400 * 1000;
-
-    /*
-     * a term to search for; matters not at all...
-     */
-    private static final String KEEPALIVE_SEARCH_TERM = "dummy";
-
-    /*
-     * a collection of the keep-alive threads for each concrete subclass; a single variable here wouldn't work because
-     * all of the subclasses would be using the same variable.
-     */
-    private static Map<Class<?>, Thread> keepAliveThreads = Collections
-            .synchronizedMap( new HashMap<Class<?>, Thread>() );
 
     protected AtomicBoolean cacheReady = new AtomicBoolean( false );
     protected IndexLARQ index;
     protected AtomicBoolean indexReady = new AtomicBoolean( false );
 
     protected Map<String, OntologyIndividual> individuals;
-    protected OntModel model;
+
     protected AtomicBoolean modelReady = new AtomicBoolean( false );
     protected String ontology_URL;
     protected String ontologyName;
+
+    private GenericObjectPool pool;
 
     protected AtomicBoolean ready = new AtomicBoolean( false );
 
@@ -111,10 +75,59 @@ public abstract class AbstractOntologyService {
 
     private boolean enabled = false;
 
+    /**
+     * 
+     */
     public AbstractOntologyService() {
         super();
         ontology_URL = getOntologyUrl();
         ontologyName = getOntologyName();
+
+        /*
+         * We use a pool, because each of these holds on to a database connection forever.
+         */
+        this.pool = new GenericObjectPool( new PoolableObjectFactory() {
+
+            @Override
+            public void activateObject( Object obj ) throws Exception {
+                // no op
+            }
+
+            @Override
+            public void destroyObject( Object obj ) throws Exception {
+//                ( ( OntModel ) obj ).close();
+//                obj = null;
+            }
+
+            @Override
+            public Object makeObject() throws Exception {
+                log.warn( "Making model for: " + ontology_URL );
+                OntModel model = loadModel( ontology_URL );
+                modelReady.set( true );
+                return model;
+            }
+
+            @Override
+            public void passivateObject( Object obj ) throws Exception {
+                // no op
+            }
+
+            @Override
+            public boolean validateObject( Object obj ) {
+                return true;
+            }
+        } );
+
+        /*
+         * These could be made into configuration settings (BASECODE)
+         */
+        pool.setMaxActive( 10 );
+        pool.setMinIdle( 0 );
+        pool.setMaxWait( 10000 );
+        pool.setMinEvictableIdleTimeMillis( 1000L * 60L * 60L );
+        pool.setTimeBetweenEvictionRunsMillis( 1000L * 60L );
+        pool.setMaxIdle( 8 );
+
     }
 
     /**
@@ -128,11 +141,32 @@ public abstract class AbstractOntologyService {
         if ( !isOntologyLoaded() ) return null;
 
         assert index != null : "attempt to search " + this.getOntologyName() + " when index is null";
-        // if ( index == null ) index = OntologyIndexer.indexOntology( ontology_name, model );
+
+        OntModel model = getModel();
 
         Collection<OntologyIndividual> indis = OntologySearch.matchIndividuals( model, index, search );
 
+        releaseModel( model );
+
         return indis;
+    }
+
+    private OntModel getModel() {
+        OntModel model = null;
+        try {
+            model = ( OntModel ) pool.borrowObject();
+        } catch ( Exception e ) {
+            throw new RuntimeException( e );
+        }
+        return model;
+    }
+
+    private void releaseModel( OntModel m ) {
+        try {
+            pool.returnObject( m );
+        } catch ( Exception e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     /**
@@ -147,7 +181,11 @@ public abstract class AbstractOntologyService {
 
         assert index != null : "attempt to search " + this.getOntologyName() + " when index is null";
 
+        OntModel model = getModel();
+
         Collection<OntologyResource> res = OntologySearch.matchResources( model, index, search.trim() + "*" );
+
+        releaseModel( model );
 
         return res;
     }
@@ -165,7 +203,13 @@ public abstract class AbstractOntologyService {
         if ( log.isDebugEnabled() ) log.debug( "Searching " + this.getOntologyName() + " for '" + search + "'" );
 
         assert index != null : "attempt to search " + this.getOntologyName() + " when index is null";
+
+        OntModel model = getModel();
+
         Collection<OntologyTerm> matches = OntologySearch.matchClasses( model, index, search );
+
+        releaseModel( model );
+
         return matches;
     }
 
@@ -265,7 +309,6 @@ public abstract class AbstractOntologyService {
 
         Thread loadThread = new Thread( new Runnable() {
             public void run() {
-
                 running.set( true );
 
                 terms = new HashMap<String, OntologyTerm>();
@@ -276,26 +319,18 @@ public abstract class AbstractOntologyService {
                 loadTime.start();
 
                 boolean interrupted = false;
-                int waitMs = 1000;
+                OntModel model = null;
+
                 while ( !interrupted && !modelReady.get() ) {
+                    model = getModel();
                     try {
-                        /*
-                         * We use the OWL_MEM_TRANS_INF spec so we can do 'getChildren' and get _all_ the children in
-                         * one query.
-                         */
-                        model = loadModel( ontology_URL );
-                        modelReady.set( true );
-                    } catch ( Exception e ) {
-                        log.error( "error loading model for " + ontologyName, e );
-                        try {
-                            log.error( "waiting " + waitMs + "ms before trying to reload" );
-                            Thread.sleep( waitMs );
-                            waitMs *= 2;
-                        } catch ( InterruptedException ie ) {
-                            interrupted = true;
-                        }
+                        Thread.sleep( 1000 );
+                    } catch ( InterruptedException e ) {
+                        e.printStackTrace();
                     }
                 }
+
+                assert model != null;
 
                 try {
 
@@ -316,7 +351,8 @@ public abstract class AbstractOntologyService {
                      * This creates a cache of URI (String) --> OntologyTerms. ?? Does Jena provide an easier way to do
                      * this?
                      */
-                    loadTermsInNameSpace( ontology_URL );
+
+                    loadTermsInNameSpace( ontology_URL, model );
 
                     if ( loadTime.getTime() > 5000 ) {
                         log.info( ontology_URL + "  loaded, total of " + terms.size() + " items in "
@@ -338,7 +374,10 @@ public abstract class AbstractOntologyService {
                     log.error( e, e );
                     ready.set( false );
                     running.set( false );
+                } finally {
+                    releaseModel( model );
                 }
+
             }
 
         }, this.ontologyName + "_load_thread" );
@@ -346,8 +385,6 @@ public abstract class AbstractOntologyService {
         if ( running.get() ) return;
         loadThread.setDaemon( true ); // So vm doesn't wait on these threads to shutdown (if shutting down)
         loadThread.start();
-
-        // startKeepAliveThread();
     }
 
     public boolean isEnabled() {
@@ -378,8 +415,8 @@ public abstract class AbstractOntologyService {
 
         running.set( true );
 
-        this.model = OntologyLoader.loadMemoryModel( is, this.ontology_URL, OntModelSpec.OWL_MEM );
-        assert this.model != null;
+        OntModel model = OntologyLoader.loadMemoryModel( is, this.ontology_URL, OntModelSpec.OWL_MEM );
+
         index = OntologyIndexer.indexOntology( ontologyName, model );
 
         addTerms( OntologyLoader.initialize( this.ontology_URL, model ) );
@@ -427,10 +464,11 @@ public abstract class AbstractOntologyService {
 
     /**
      * @param url
+     * @param m
      * @throws IOException
      */
-    protected void loadTermsInNameSpace( String url ) {
-        Collection<OntologyResource> t = OntologyLoader.initialize( url, model );
+    protected void loadTermsInNameSpace( String url, OntModel m ) {
+        Collection<OntologyResource> t = OntologyLoader.initialize( url, m );
         addTerms( t );
     }
 
@@ -454,19 +492,4 @@ public abstract class AbstractOntologyService {
         }
     }
 
-    /**
-     * @deprecated should not be necessary with connection pool
-     */
-    @Deprecated
-    private synchronized void startKeepAliveThread() {
-        if ( keepAliveThreads.containsKey( this.getClass() ) ) {
-            log.info( "Didn't start keep alive thread for: " + this.getClass() + " because already started" );
-            return;
-        }
-
-        Thread keepAliveThread = new KeepAliveThread();
-        keepAliveThread.setDaemon( true ); // needed or else won't shut down cleanly
-        keepAliveThread.start();
-        keepAliveThreads.put( this.getClass(), keepAliveThread );
-    }
 }

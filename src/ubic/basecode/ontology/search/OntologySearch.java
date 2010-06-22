@@ -88,8 +88,10 @@ public class OntologySearch {
                     if ( log.isDebugEnabled() ) log.debug( impl2 );
                 } catch ( ARQLuceneException e ) {
                     throw new RuntimeException( e.getCause() );
+                } catch ( JenaException e ) {
+                    throw new RuntimeException( e.getCause() );
                 } catch ( Exception e ) {
-                    log.error( e, e );
+                    log.error( e.getMessage(), e );
                 }
             }
 
@@ -141,7 +143,6 @@ public class OntologySearch {
                     // retry could end up in a race condition.
 
                     log.error( "Trying again: " + je, je );
-
                     try {
                         Individual cl = r.as( Individual.class );
                         OntologyIndividual impl2 = new OntologyIndividualImpl( cl );
@@ -152,7 +153,7 @@ public class OntologySearch {
                     }
 
                 } catch ( Exception e ) {
-                    log.error( e, e );
+                    log.error( e.getMessage(), e );
                 }
             }
 
@@ -193,7 +194,7 @@ public class OntologySearch {
                     OntologyTermImpl impl2 = new OntologyTermImpl( cl );
                     results.add( impl2 );
                     if ( log.isDebugEnabled() ) log.debug( impl2 );
-                } catch ( ARQLuceneException e ) {
+                } catch ( JenaException e ) {
                     throw new RuntimeException( e.getCause() );
                 } catch ( Exception e ) {
                     log.error( e, e );
@@ -212,10 +213,10 @@ public class OntologySearch {
                     OntologyIndividual impl2 = new OntologyIndividualImpl( cl );
                     results.add( impl2 );
                     if ( log.isDebugEnabled() ) log.debug( impl2 );
-                } catch ( ARQLuceneException e ) {
+                } catch ( JenaException e ) {
                     throw new RuntimeException( e.getCause() );
                 } catch ( Exception e ) {
-                    log.error( e, e );
+                    log.error( e.getMessage(), e );
                 }
             } else if ( log.isDebugEnabled() ) log.debug( "This search term not included in the results: " + r );
 
@@ -259,7 +260,6 @@ public class OntologySearch {
         try {
             StopWatch timer = new StopWatch();
             timer.start();
-
             NodeIterator iterator = index.searchModelByIndex( model, strippedQuery );
 
             if ( timer.getTime() > 100 ) {
