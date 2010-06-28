@@ -37,7 +37,11 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * 
      */
     private static final long serialVersionUID = 5771918031750038719L;
-    private FlexCompRowMatrix matrix;
+
+/*
+* FlexCompRowMatrix isn't serializable, so either is this in any useful way, despite claim.
+*/
+    private transient FlexCompRowMatrix matrix;
 
     /**
      * @param rows int
