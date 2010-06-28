@@ -43,7 +43,6 @@ import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.search.OntologyIndexer;
 import ubic.basecode.ontology.search.OntologySearch;
 
-import com.hp.hpl.jena.db.ModelRDB;
 import com.hp.hpl.jena.db.impl.GraphRDBMaker;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;

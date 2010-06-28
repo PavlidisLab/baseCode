@@ -35,13 +35,13 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
     private static final long serialVersionUID = 1L;
     private static final String NOTHING = "http://www.w3.org/2002/07/owl#Nothing";
     private static final String HAS_ALTERNATE_ID = "http://www.geneontology.org/formats/oboInOwl#hasAlternativeId";
-    OntClass ontResource = null;
-    String label = null;
+    private transient OntClass ontResource = null;
+    private String label = null;
 
-    String localName = null;
+    private String localName = null;
 
-    public OntologyTermImpl( OntClass resource  ) {
-        this.ontResource = resource; 
+    public OntologyTermImpl( OntClass resource ) {
+        this.ontResource = resource;
         this.label = ontResource.getLabel( null );
         this.localName = ontResource.getLocalName();
     }
@@ -92,7 +92,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
             if ( res.isAnnotationProperty() ) {
                 com.hp.hpl.jena.ontology.AnnotationProperty p = res.asAnnotationProperty();
                 RDFNode n = state.getObject();
-                annots.add( new AnnotationPropertyImpl( p,   n ) );
+                annots.add( new AnnotationPropertyImpl( p, n ) );
             }
         }
         return annots;
@@ -100,6 +100,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.gemma.analysis.ontology.OntologyTerm#getChildren(boolean)
      */
     public Collection<OntologyTerm> getChildren( boolean direct ) {
@@ -117,6 +118,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.gemma.ontology.OntologyTerm#getComment()
      */
     public String getComment() {
@@ -126,6 +128,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.gemma.ontology.OntologyTerm#getIndividuals()
      */
     public Collection<OntologyIndividual> getIndividuals() {
@@ -156,6 +159,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.gemma.analysis.ontology.OntologyTerm#getParents(boolean)
      */
     public Collection<OntologyTerm> getParents( boolean direct ) {
@@ -189,7 +193,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
             Restriction r = null;
             try {
                 r = c.asRestriction();
-                result.add( RestrictionFactory.asRestriction( r  ) );
+                result.add( RestrictionFactory.asRestriction( r ) );
             } catch ( Exception e ) {
 
             }
@@ -213,8 +217,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
                         sr = sc.asRestriction();
 
                         // only add it if the class doesn't already have one.
-                        OntologyRestriction candidateRestriction = RestrictionFactory
-                                .asRestriction( sr  );
+                        OntologyRestriction candidateRestriction = RestrictionFactory.asRestriction( sr );
                         for ( OntologyRestriction restr : result ) {
                             if ( restr.getRestrictionOn().equals( candidateRestriction.getRestrictionOn() ) )
                                 continue loop;
@@ -234,6 +237,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.gemma.analysis.ontology.OntologyTerm#getTerm()
      */
     public String getTerm() {
@@ -271,6 +275,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.gemma.analysis.ontology.OntologyTerm#isRoot()
      */
     public boolean isRoot() {
@@ -296,7 +301,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
     }
 
     protected OntologyTerm fromOntClass( OntClass ontClass ) {
-        return new OntologyTermImpl( ontClass  );
+        return new OntologyTermImpl( ontClass );
     }
 
 }
