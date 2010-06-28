@@ -43,6 +43,8 @@ import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.search.OntologyIndexer;
 import ubic.basecode.ontology.search.OntologySearch;
 
+import com.hp.hpl.jena.db.ModelRDB;
+import com.hp.hpl.jena.db.impl.GraphRDBMaker;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.larq.IndexLARQ;
@@ -65,7 +67,7 @@ public abstract class AbstractOntologyService {
     protected String ontology_URL;
     protected String ontologyName;
 
-    private GenericObjectPool pool;
+    private final GenericObjectPool pool;
 
     protected AtomicBoolean ready = new AtomicBoolean( false );
 
@@ -95,14 +97,18 @@ public abstract class AbstractOntologyService {
 
             @Override
             public void destroyObject( Object obj ) throws Exception {
-//                ( ( OntModel ) obj ).close();
-//                obj = null;
+                // ( ( OntModel ) obj ).close();
+                // obj = null;
             }
 
             @Override
             public Object makeObject() throws Exception {
                 log.warn( "Making model for: " + ontology_URL );
                 OntModel model = loadModel( ontology_URL );
+                if ( !( model.getImportModelMaker().getGraphMaker() instanceof GraphRDBMaker ) ) {
+                    pool.setMinIdle( 1 );
+                    pool.setMinEvictableIdleTimeMillis( -1 );
+                }
                 modelReady.set( true );
                 return model;
             }
