@@ -128,7 +128,7 @@ public abstract class AbstractOntologyService {
          */
         pool.setMaxActive( 10 );
         pool.setMinIdle( 0 );
-        pool.setMaxWait( 10000 );
+        pool.setMaxWait( 30000 );
         pool.setMinEvictableIdleTimeMillis( 1000L * 60L * 60L );
         pool.setTimeBetweenEvictionRunsMillis( 1000L * 60L );
         pool.setMaxIdle( 8 );
