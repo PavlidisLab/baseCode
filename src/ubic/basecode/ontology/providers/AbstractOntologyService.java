@@ -188,7 +188,15 @@ public abstract class AbstractOntologyService {
 
         OntModel model = getModel();
 
-        Collection<OntologyResource> res = OntologySearch.matchResources( model, index, search.trim() + "*" );
+        // Add wildcard only if the last word is longer than one character. This is to prevent lucene from
+        // blowing up. See bug#1145
+        search = search.trim();
+        String[] words = search.split("\\s+");
+        if (words[words.length - 1].length() > 1) {
+        	search += "*";
+        }
+        	        
+        Collection<OntologyResource> res = OntologySearch.matchResources( model, index, search );
 
         releaseModel( model );
 
