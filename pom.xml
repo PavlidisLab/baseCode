@@ -245,6 +245,7 @@
 				<configuration>
 					<argLine>-enableassertions -Xmx512m -Djava.awt.headless=true</argLine>
 					<reportsDirectory>target/surefire-reports</reportsDirectory>
+					<redirectTestOutputToFile>true</redirectTestOutputToFile>
 					<includes>
 						<include>**/Test*.java</include>
 						<include>**/*Test.java</include>
