@@ -269,8 +269,10 @@ public class OntologySearch {
 
             return iterator;
 
-        } catch (TooManyClauses e) {
-        	throw e;
+        } catch (ARQLuceneException e) {
+        	// We assume this is lucene's TooManyClauses exception. (see bug#145)
+        	// TODO: maybe we should check. .getCause()? 
+        	throw e;   
         } catch ( Exception e ) {
             log.error( "Failed Search for query: " + queryString + " Error was: " + e + " Caused by: "
                     + e.getCause().getMessage() );

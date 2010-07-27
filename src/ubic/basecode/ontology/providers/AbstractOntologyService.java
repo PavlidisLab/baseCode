@@ -47,6 +47,7 @@ import ubic.basecode.ontology.search.OntologySearch;
 import com.hp.hpl.jena.db.impl.GraphRDBMaker;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.query.larq.ARQLuceneException;
 import com.hp.hpl.jena.query.larq.IndexLARQ;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 
@@ -201,8 +202,8 @@ public abstract class AbstractOntologyService {
         if ( lastWordLength > 1) { 
             try { // Use wildcard search.
             	results = OntologySearch.matchResources( model, index, searchString+"*" );
-            } catch (final TooManyClauses e) {            	
-                log.info("Caught lucene's TooManyClauses exception. Retrying search without wildcard.");
+            } catch (ARQLuceneException e) {            	
+                log.info("Caught "+ e +" caused by "+e.getCause()+" reason "+e.getMessage()+". Retrying search without wildcard.");
             	results = OntologySearch.matchResources( model, index, searchString );                
             }            
         } else {
