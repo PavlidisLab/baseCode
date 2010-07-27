@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.search.BooleanQuery.TooManyClauses;
 
 import ubic.basecode.ontology.model.OntologyIndividual;
 import ubic.basecode.ontology.model.OntologyIndividualImpl;
@@ -268,6 +269,8 @@ public class OntologySearch {
 
             return iterator;
 
+        } catch (TooManyClauses e) {
+        	throw e;
         } catch ( Exception e ) {
             log.error( "Failed Search for query: " + queryString + " Error was: " + e + " Caused by: "
                     + e.getCause().getMessage() );
