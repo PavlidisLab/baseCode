@@ -69,7 +69,9 @@ public class OntologyDataSource {
         dataSource.setMaxActive( 20 );
         dataSource.setMaxWait( 20000L );
         dataSource.setInitialSize( 4 );
-
+        
+        dataSource.setTestOnBorrow(true);
+        dataSource.setValidationQuery("SELECT 1");
     }
 
     /**
