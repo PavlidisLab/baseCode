@@ -34,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.lucene.search.BooleanQuery.TooManyClauses;
 
 import ubic.basecode.ontology.Configuration;
 import ubic.basecode.ontology.OntologyLoader;
@@ -47,6 +48,7 @@ import com.hp.hpl.jena.db.impl.GraphRDBMaker;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.larq.IndexLARQ;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
 
 /**
  * @author kelsey
@@ -180,7 +182,7 @@ public abstract class AbstractOntologyService {
      * @param search
      * @return results, or an empty collection if the results are empty OR the ontology is not available to be searched.
      */
-    public Collection<OntologyResource> findResources( String search ) {
+    public Collection<OntologyResource> findResources( String searchString ) {
 
         if ( !isOntologyLoaded() ) return new HashSet<OntologyResource>();
 
@@ -188,19 +190,28 @@ public abstract class AbstractOntologyService {
 
         OntModel model = getModel();
 
+        Collection<OntologyResource> results = null;
+        searchString = searchString.trim();        
+
         // Add wildcard only if the last word is longer than one character. This is to prevent lucene from
         // blowing up. See bug#1145
-        search = search.trim();
-        String[] words = search.split("\\s+");
-        if (words[words.length - 1].length() > 1) {
-        	search += "*";
+        // TODO: Does this logic belong to this class? It's ontology search engine specific(lucene in this case).
+        String[] words = searchString.split("\\s+");
+        int lastWordLength = words[words.length - 1].length();
+        if ( lastWordLength > 1) { 
+            try { // Use wildcard search.
+            	results = OntologySearch.matchResources( model, index, searchString+"*" );
+            } catch (final TooManyClauses e) {            	
+                log.info("Caught lucene's TooManyClauses exception. Retrying search without wildcard.");
+            	results = OntologySearch.matchResources( model, index, searchString );                
+            }            
+        } else {
+        	results = OntologySearch.matchResources( model, index, searchString );                        	
         }
-        	        
-        Collection<OntologyResource> res = OntologySearch.matchResources( model, index, search );
-
+                
         releaseModel( model );
 
-        return res;
+        return results;
     }
 
     /**
