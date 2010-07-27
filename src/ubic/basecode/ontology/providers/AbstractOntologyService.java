@@ -34,7 +34,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.apache.lucene.search.BooleanQuery.TooManyClauses;
 
 import ubic.basecode.ontology.Configuration;
 import ubic.basecode.ontology.OntologyLoader;
@@ -47,9 +46,7 @@ import ubic.basecode.ontology.search.OntologySearch;
 import com.hp.hpl.jena.db.impl.GraphRDBMaker;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.query.larq.ARQLuceneException;
 import com.hp.hpl.jena.query.larq.IndexLARQ;
-import com.hp.hpl.jena.rdf.model.NodeIterator;
 
 /**
  * @author kelsey
@@ -191,24 +188,7 @@ public abstract class AbstractOntologyService {
 
         OntModel model = getModel();
 
-        Collection<OntologyResource> results = null;
-        searchString = searchString.trim();        
-
-        // Add wildcard only if the last word is longer than one character. This is to prevent lucene from
-        // blowing up. See bug#1145
-        // TODO: Does this logic belong to this class? It's ontology search engine specific(lucene in this case).
-        String[] words = searchString.split("\\s+");
-        int lastWordLength = words[words.length - 1].length();
-        if ( lastWordLength > 1) { 
-            try { // Use wildcard search.
-            	results = OntologySearch.matchResources( model, index, searchString+"*" );
-            } catch (ARQLuceneException e) {            	
-                log.info("Caught "+ e +" caused by "+e.getCause()+" reason "+e.getMessage()+". Retrying search without wildcard.");
-            	results = OntologySearch.matchResources( model, index, searchString );                
-            }            
-        } else {
-        	results = OntologySearch.matchResources( model, index, searchString );                        	
-        }
+        Collection<OntologyResource> results = OntologySearch.matchResources( model, index, searchString );
                 
         releaseModel( model );
 

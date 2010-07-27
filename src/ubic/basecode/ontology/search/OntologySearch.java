@@ -27,7 +27,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.search.BooleanQuery.TooManyClauses;
 
 import ubic.basecode.ontology.model.OntologyIndividual;
 import ubic.basecode.ontology.model.OntologyIndividualImpl;
@@ -164,7 +163,8 @@ public class OntologySearch {
     }
 
     /**
-     * Find OntologyIndividuals and OntologyTerms that match the query string
+     * Find OntologyIndividuals and OntologyTerms that match the query string. 
+     * Search with a wildcard is attempted whenever possible.
      * 
      * @param model that goes with the index
      * @param index to search
@@ -174,8 +174,23 @@ public class OntologySearch {
     public static Collection<OntologyResource> matchResources( OntModel model, IndexLARQ index, String queryString ) {
 
         Set<OntologyResource> results = new HashSet<OntologyResource>();
+        NodeIterator iterator = null;
+        
+        queryString = queryString.trim();        
 
-        NodeIterator iterator = runSearch( model, index, queryString );
+        // Add wildcard only if the last word is longer than one character. This is to prevent lucene from
+        // blowing up. See bug#1145
+        String[] words = queryString.split("\\s+");
+        int lastWordLength = words[words.length - 1].length();
+        if ( lastWordLength > 1) { 
+            try { // Use wildcard search.
+            	iterator = runSearch( model, index, queryString+"*" );
+            } catch (ARQLuceneException e) { // retry without wildcard           	
+                log.info("Caught "+ e +" caused by "+e.getCause()+" reason "+e.getMessage()+". Retrying search without wildcard.");
+                iterator = runSearch( model, index, queryString );            }            
+        } else {
+        	iterator = runSearch( model, index, queryString );
+        }
 
         while ( iterator != null && iterator.hasNext() ) {
             RDFNode r = iterator.next();
@@ -258,7 +273,7 @@ public class OntologySearch {
         if ( StringUtils.isBlank( strippedQuery ) ) {
             throw new IllegalArgumentException( "Query cannot be blank" );
         }
-        try {
+//        try {
             StopWatch timer = new StopWatch();
             timer.start();
             NodeIterator iterator = index.searchModelByIndex( model, strippedQuery );
@@ -268,7 +283,7 @@ public class OntologySearch {
             }
 
             return iterator;
-
+/*
         } catch (ARQLuceneException e) {
         	// We assume this is lucene's TooManyClauses exception. (see bug#145)
         	// TODO: maybe we should check. .getCause()? 
@@ -278,5 +293,7 @@ public class OntologySearch {
                     + e.getCause().getMessage() );
         }
         return null;
+        */
     }
+    
 }
