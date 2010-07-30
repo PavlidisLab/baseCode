@@ -26,7 +26,7 @@ package ubic.basecode.dataStructure.matrix;
 public class MatrixUtil {
 
     public static <R, C, V> V getObject( Matrix2D<R, C, V> matrix, int rowIndex, int colIndex ) {
-        if ( matrix instanceof ObjectMatrix ) {
+        if ( ObjectMatrix.class.isAssignableFrom( matrix.getClass() ) ) {
             return ( ( ObjectMatrix<R, C, V> ) matrix ).get( rowIndex, colIndex );
         } else if ( matrix instanceof PrimitiveMatrix ) {
             return ( ( PrimitiveMatrix<R, C, V> ) matrix ).getObject( rowIndex, colIndex );
@@ -36,7 +36,7 @@ public class MatrixUtil {
     }
 
     public static <R, C, V> V[] getRow( Matrix2D<R, C, V> matrix, int rowIndex ) {
-        if ( matrix instanceof ObjectMatrix ) {
+        if ( ObjectMatrix.class.isAssignableFrom( matrix.getClass() ) ) {
             return ( ( ObjectMatrix<R, C, V> ) matrix ).getRow( rowIndex );
         } else if ( matrix instanceof PrimitiveMatrix ) {
             return ( ( PrimitiveMatrix<R, C, V> ) matrix ).getRowObj( rowIndex );
