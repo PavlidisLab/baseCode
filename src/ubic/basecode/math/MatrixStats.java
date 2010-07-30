@@ -109,7 +109,8 @@ public class MatrixStats {
     }
 
     /**
-     * Log-transform the values in a matrix (log base 2). Values that are zero are left as Double.NaN.
+     * Log-transform the values in a matrix (log base 2). Values that are less than or equal to zero are left as
+     * Double.NaN.
      * 
      * @param matrixToNormalize
      */
