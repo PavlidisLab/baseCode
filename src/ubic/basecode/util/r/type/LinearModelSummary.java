@@ -19,7 +19,6 @@
 package ubic.basecode.util.r.type;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,7 +37,6 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrixFactory;
 
 /**
  * Represents the results of a linear model analysis from R. Both the summary.lm and anova objects are represented.
- * <p>
  * 
  * @author paul
  * @version $Id$
@@ -127,6 +125,13 @@ public class LinearModelSummary implements Serializable {
         return factorNames;
     }
 
+    /**
+     * Return the factor names in the order they are stored here. Pvalues and T statistics for this factor are in the
+     * same order, but the 'baseline' must be accounted for.
+     * 
+     * @param factorName
+     * @return
+     */
     public List<String> getFactorValueNames( String factorName ) {
         return factorValueNames.get( factorName );
     }
@@ -191,6 +196,27 @@ public class LinearModelSummary implements Serializable {
 
     /**
      * @return
+     */
+    public Double getInterceptCoeff() {
+        if ( coefficients != null ) {
+            if ( coefficients.hasRow( INTERCEPT_COEFFICIENT_NAME_IN_R ) ) {
+                return coefficients.getByKeys( INTERCEPT_COEFFICIENT_NAME_IN_R, "Estimate" );
+            } else if ( coefficients.rows() == 1 ) {
+                /*
+                 * This is a bit of a kludge. When we use lm.fit instead of lm, we end up with a somewhat screwy
+                 * coefficent matrix in the case of one-sample ttest, and R put in x1 (I think it starts as 1 and it
+                 * prepends the x).
+                 */
+                assert coefficients.getRowName( 0 ).equals( "x1" );
+                return coefficients.getByKeys( coefficients.getRowName( 0 ), "Estimate" );
+            }
+        }
+
+        return Double.NaN;
+    }
+
+    /**
+     * @return
      * @see ubic.basecode.util.r.type.GenericAnovaResult#getMainEffectFactorNames()
      */
     public Collection<String> getMainEffectFactorNames() {
@@ -200,7 +226,7 @@ public class LinearModelSummary implements Serializable {
 
     /**
      * @param factorName
-     * @return
+     * @return overall p-value for the given factor, corresponding to the F statistic.
      * @see ubic.basecode.util.r.type.GenericAnovaResult#getMainEffectP(java.lang.String)
      */
     public Double getMainEffectP( String factorName ) {
@@ -210,21 +236,52 @@ public class LinearModelSummary implements Serializable {
 
     /**
      * @param factorName
-     * @return array of T statistics for the given factor. For continuous factors or factors with only one level, there
+     * @return Map of T statistics for the given factor. For continuous factors or factors with only one level, there
      *         will be just one value. For factors with N>2 levels, there will be N-1 values.
      */
-    public Double[] getMainEffectT( String factorName ) {
+    public Map<String, Double> getContrastTStats( String factorName ) {
         Collection<String> terms = term2CoefficientNames.get( factorName );
 
         if ( terms == null ) return null;
 
-        List<Double> ts = new ArrayList<Double>();
+        Map<String, Double> results = new HashMap<String, Double>();
         for ( String term : terms ) {
-            ts.add( coefficients.getByKeys( term, "t value" ) );
+            results.put( term, coefficients.getByKeys( term, "t value" ) );
         }
 
-        return ts.toArray( new Double[] {} );
+        return results;
 
+    }
+
+    public Map<String, Double> getContrastCoefficients( String factorName ) {
+        Collection<String> terms = term2CoefficientNames.get( factorName );
+
+        if ( terms == null ) return null;
+
+        Map<String, Double> results = new HashMap<String, Double>();
+        for ( String term : terms ) {
+            results.put( term, coefficients.getByKeys( term, "Estimate" ) );
+        }
+
+        return results;
+    }
+
+    /**
+     * @param factorName
+     * @return Map of pvalues for the given factor. For continuous factors or factors with only one level, there will be
+     *         just one value. For factors with N>2 levels, there will be N-1 values.
+     */
+    public Map<String, Double> getContrastPValues( String factorName ) {
+        Collection<String> terms = term2CoefficientNames.get( factorName );
+
+        if ( terms == null ) return null;
+
+        Map<String, Double> results = new HashMap<String, Double>();
+        for ( String term : terms ) {
+            results.put( term, coefficients.getByKeys( term, "Pr(>|t|)" ) );
+        }
+
+        return results;
     }
 
     /**
@@ -302,17 +359,30 @@ public class LinearModelSummary implements Serializable {
             if ( coefNameFromR.equals( INTERCEPT_COEFFICIENT_NAME_IN_R ) ) {
                 continue; // ?
             } else if ( coefNameFromR.contains( ":" ) ) {
-                // String[] interactionTermNames = coefNameFromR.split( ":" );
-                // currently not using.
-                continue;
+                /*
+                 * We're counting on the interaction terms names ending up like this: f1001fv1005:f1002fv1006 (see
+                 * LinearModelAnalyzer in Gemma, which sets up the factor and factorvalue names in the way that
+                 * generates this). Risky, and it won't work for continuous factors. But R makes kind of a mess from the
+                 * interactions. If we assume there is only one interaction term we can work it out by the presence of
+                 * ":".
+                 */
+                String cleanedInterationTermName = coefNameFromR.replaceAll( "fv_[0-9]+(?=(:|$))", "" );
+
+                for ( String factorName : factorNames ) {
+                    if ( !factorName.contains( ":" ) ) continue;
+
+                    if ( factorName.equals( cleanedInterationTermName ) ) {
+                        assert term2CoefficientNames.containsKey( factorName );
+                        term2CoefficientNames.get( factorName ).add( coefNameFromR );
+                    }
+
+                }
+
             } else {
 
                 for ( String factorName : factorNames ) {
-
                     if ( coefNameFromR.startsWith( factorName ) ) {
-
                         assert term2CoefficientNames.containsKey( factorName );
-
                         term2CoefficientNames.get( factorName ).add( coefNameFromR );
 
                     }

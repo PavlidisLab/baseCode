@@ -380,7 +380,7 @@ public class JRIClientTest extends TestCase {
         LinearModelSummary lms = new LinearModelSummary( result, anova, new String[] { "f1" } );
 
         Double p = lms.getMainEffectP( facN );
-        Double t = lms.getMainEffectT( facN )[0];
+        Double t = lms.getContrastTStats( facN ).get( "f1B" );
         Double ip = lms.getInterceptP();
         Double it = lms.getInterceptT();
 
@@ -389,8 +389,6 @@ public class JRIClientTest extends TestCase {
         assertEquals( 1.10e-08, ip, 1e-10 );
         assertEquals( 70.319382, it, 0.0001 );
 
-        // assertEquals( 3.739, lms.getFStat(), 0.001 );
-        // assertEquals( 0.1110, lms.getPForF(), 0.001 );
     }
 
     /**
@@ -423,10 +421,10 @@ public class JRIClientTest extends TestCase {
         LinearModelSummary lms = rc.linearModel( data, factors );
 
         Double p = lms.getMainEffectP( "foo" );
-        Double t = lms.getMainEffectT( "foo" )[0];
+        Double t = lms.getContrastTStats( "foo" ).get( "fooB" );
 
         Double pp = lms.getMainEffectP( "bar" );
-        Double tt = lms.getMainEffectT( "bar" )[0];
+        Double tt = lms.getContrastTStats( "bar" ).get( "bar" );
 
         Double ip = lms.getInterceptP();
         Double it = lms.getInterceptT();
@@ -476,10 +474,10 @@ public class JRIClientTest extends TestCase {
         LinearModelSummary lms = rc.linearModel( data, d );
 
         Double p = lms.getMainEffectP( "foo" );
-        Double t = lms.getMainEffectT( "foo" )[0];
+        Double t = lms.getContrastTStats( "foo" ).get( "fooB" );
 
         Double pp = lms.getMainEffectP( "bar" );
-        Double tt = lms.getMainEffectT( "bar" )[0];
+        Double tt = lms.getContrastTStats( "bar" ).get( "bar" );
 
         Double ip = lms.getInterceptP();
         Double it = lms.getInterceptT();
@@ -521,7 +519,7 @@ public class JRIClientTest extends TestCase {
         LinearModelSummary lms = rc.linearModel( data, factors );
 
         Double p = lms.getMainEffectP( "foo" );
-        Double t = lms.getMainEffectT( "foo" )[0];
+        Double t = lms.getContrastTStats( "foo" ).get( "foox" );
 
         Double ip = lms.getInterceptP();
         Double it = lms.getInterceptT();
@@ -531,8 +529,6 @@ public class JRIClientTest extends TestCase {
         assertEquals( 2.821526e-06, ip, 0.0001 );
         assertEquals( 28.464, it, 0.001 );
 
-        // assertEquals( 3.739, lms.getFStat(), 0.001 );
-        // assertEquals( 0.1110, lms.getPForF(), 0.001 );
     }
 
     public void testListEvalA() throws Exception {
