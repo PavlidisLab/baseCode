@@ -110,7 +110,23 @@ public class OntologySearch {
     public static Collection<OntologyIndividual> matchIndividuals( OntModel model, IndexLARQ index, String queryString ) {
 
         Set<OntologyIndividual> results = new HashSet<OntologyIndividual>();
-        NodeIterator iterator = runSearch( model, index, queryString );
+        NodeIterator iterator = null;
+
+        queryString = queryString.trim();        
+
+        // Add wildcard only if the last word is longer than one character. This is to prevent lucene from
+        // blowing up. See bug#1145
+        String[] words = queryString.split("\\s+");
+        int lastWordLength = words[words.length - 1].length();
+        if ( lastWordLength > 1) { 
+            try { // Use wildcard search.
+            	iterator = runSearch( model, index, queryString+"*" );
+            } catch (ARQLuceneException e) { // retry without wildcard           	
+                log.info("Caught "+ e +" caused by "+e.getCause()+" reason "+e.getMessage()+". Retrying search without wildcard.");
+                iterator = runSearch( model, index, queryString );            }            
+        } else {
+        	iterator = runSearch( model, index, queryString );
+        }
 
         while ( iterator != null && iterator.hasNext() ) {
             RDFNode r = iterator.next();
