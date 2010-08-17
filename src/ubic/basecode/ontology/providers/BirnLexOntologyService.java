@@ -27,6 +27,7 @@ import ubic.basecode.ontology.model.OntologyTerm;
 
 import com.hp.hpl.jena.ontology.OntModel;
 
+import ubic.basecode.ontology.providers.AbstractOntologyMemoryBackedService;
 /**
  * Holds a complete copy of the BirnLex Ontology. This gets loaded on startup. BirnLex is small, only about 1500 terms
  * (as of 12/2007) so we can hold it in memory.
@@ -34,7 +35,7 @@ import com.hp.hpl.jena.ontology.OntModel;
  * @author klc
  * @version $Id$
  */
-public class BirnLexOntologyService extends AbstractOntologyService {
+public class BirnLexOntologyService extends AbstractOntologyMemoryBackedService {
 
     private static final String BIRNLEX_ONTOLOGY_URL = "url.birnlexOntology";
 
@@ -74,8 +75,4 @@ public class BirnLexOntologyService extends AbstractOntologyService {
         return Configuration.getString( BIRNLEX_ONTOLOGY_URL );
     }
 
-    @Override
-    protected OntModel loadModel( String url ) {
-        return OntologyLoader.loadMemoryModel( url );
-    }
 }

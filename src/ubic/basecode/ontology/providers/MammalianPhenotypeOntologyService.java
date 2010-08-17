@@ -28,7 +28,7 @@ import com.hp.hpl.jena.ontology.OntModel;
  * @author klc
  * @version $Id$
  */
-public class MammalianPhenotypeOntologyService extends AbstractOntologyService {
+public class MammalianPhenotypeOntologyService extends AbstractOntologyMemoryBackedService {
 
     private static final String ONTOLOGY_URL = "url.mammalPhenotypeOntology";
 
@@ -52,17 +52,6 @@ public class MammalianPhenotypeOntologyService extends AbstractOntologyService {
     protected String getOntologyUrl() {
         return Configuration.getString( ONTOLOGY_URL );
 
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.gemma.ontology.AbstractOntologyService#loadModel(java.lang.String,
-     * com.hp.hpl.jena.ontology.OntModelSpec)
-     */
-    @Override
-    protected OntModel loadModel( String url ) {
-        return OntologyLoader.loadMemoryModel( url );
     }
 
 }

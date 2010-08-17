@@ -29,7 +29,7 @@ import com.hp.hpl.jena.ontology.OntModel;
  * @author klc 
  * @version $Id$
  */
-public class DiseaseOntologyService extends AbstractOntologyService {
+public class DiseaseOntologyService extends AbstractOntologyDatabaseBackedService {
 
     private static final String DISEASE_ONTOLOGY_URL = "url.diseaseOntology";
 
@@ -45,11 +45,6 @@ public class DiseaseOntologyService extends AbstractOntologyService {
     @Override
     protected String getOntologyUrl() {
         return Configuration.getString( DISEASE_ONTOLOGY_URL );
-    }
-
-    @Override
-    protected OntModel loadModel( String url ) {
-        return OntologyLoader.loadPersistentModel( url, false );
     }
 
 }

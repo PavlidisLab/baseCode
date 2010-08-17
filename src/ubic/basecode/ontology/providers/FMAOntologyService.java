@@ -30,7 +30,7 @@ import com.hp.hpl.jena.ontology.OntModel;
  * @author klc
  * @version $Id$
  */
-public class FMAOntologyService extends AbstractOntologyService {
+public class FMAOntologyService extends AbstractOntologyMemoryBackedService {
 
     private static final String FMA_ONTOLOGY_URL = "url.fmaOntology";
 
@@ -47,11 +47,6 @@ public class FMAOntologyService extends AbstractOntologyService {
     protected String getOntologyUrl() {
         return Configuration.getString( FMA_ONTOLOGY_URL );
 
-    }
-
-    @Override
-    protected OntModel loadModel( String url ) {
-        return OntologyLoader.loadMemoryModel( url );
     }
 
 }

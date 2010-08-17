@@ -28,7 +28,7 @@ import com.hp.hpl.jena.ontology.OntModel;
  * @author paul
  * @version $Id$
  */
-public class ObiService extends AbstractOntologyService {
+public class ObiService extends AbstractOntologyMemoryBackedService {
 
     private static final String ONTOLOGY_URL = "url.obi";
 
@@ -50,16 +50,6 @@ public class ObiService extends AbstractOntologyService {
     @Override
     protected String getOntologyUrl() {
         return Configuration.getString( ONTOLOGY_URL );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.ontology.providers.AbstractOntologyService#loadModel(java.lang.String)
-     */
-    @Override
-    protected OntModel loadModel( String url ) {
-        return OntologyLoader.loadMemoryModel( url );
     }
 
 }

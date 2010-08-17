@@ -28,7 +28,7 @@ import com.hp.hpl.jena.ontology.OntModel;
  * @author paul
  * @version $Id$
  */
-public class HumanDevelopmentOntologyService extends AbstractOntologyService {
+public class HumanDevelopmentOntologyService extends AbstractOntologyMemoryBackedService {
 
     private static final String ONTOLOGY_URL = "url.humanDevelOntology";
 
@@ -40,11 +40,6 @@ public class HumanDevelopmentOntologyService extends AbstractOntologyService {
     @Override
     protected String getOntologyUrl() {
         return Configuration.getString( ONTOLOGY_URL );
-    }
-
-    @Override
-    protected OntModel loadModel( String url ) {
-        return OntologyLoader.loadMemoryModel( url );
     }
 
 }

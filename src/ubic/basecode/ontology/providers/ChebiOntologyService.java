@@ -30,7 +30,7 @@ import com.hp.hpl.jena.ontology.OntModel;
  * @author klc
  * @version $Id$
  */
-public class ChebiOntologyService extends AbstractOntologyService {
+public class ChebiOntologyService extends AbstractOntologyMemoryBackedService {
 
     private static final String CHEBI_ONTOLOGY_URL = "url.chebiOntology";
 
@@ -54,17 +54,6 @@ public class ChebiOntologyService extends AbstractOntologyService {
     protected String getOntologyUrl() {
         return Configuration.getString( CHEBI_ONTOLOGY_URL );
 
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.gemma.ontology.AbstractOntologyService#loadModel(java.lang.String,
-     * com.hp.hpl.jena.ontology.OntModelSpec)
-     */
-    @Override
-    protected OntModel loadModel( String url ) {
-        return OntologyLoader.loadMemoryModel( url );
     }
 
 }

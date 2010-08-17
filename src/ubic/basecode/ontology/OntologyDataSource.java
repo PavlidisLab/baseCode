@@ -53,7 +53,6 @@ public class OntologyDataSource {
         }
 
         String pwd = Configuration.getString( "jena.db.password" );
-
         String user = Configuration.getString( "jena.db.user" );
 
         dataSource = new BasicDataSource();
@@ -67,9 +66,11 @@ public class OntologyDataSource {
          */
         dataSource.setConnectionProperties( "autoReconnect=true" );
         dataSource.setMaxActive( 20 );
+        dataSource.setMaxIdle( 4 );
         dataSource.setMaxWait( 20000L );
         dataSource.setInitialSize( 4 );
         
+        // Checks if connection has expired before returning it.
         dataSource.setTestOnBorrow(true);
         dataSource.setValidationQuery("SELECT 1");
     }
