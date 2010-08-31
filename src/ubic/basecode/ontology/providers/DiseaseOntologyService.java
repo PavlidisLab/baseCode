@@ -19,22 +19,20 @@
 package ubic.basecode.ontology.providers;
 
 import ubic.basecode.ontology.Configuration;
-import ubic.basecode.ontology.OntologyLoader;
-
-import com.hp.hpl.jena.ontology.OntModel;
 
 /**
  * Holds a copy of the OBO Disese Ontology on disk. This gets loaded on startup.
  * 
- * @author klc 
+ * @author klc
  * @version $Id$
  */
-public class DiseaseOntologyService extends AbstractOntologyDatabaseBackedService {
+public class DiseaseOntologyService extends AbstractOntologyMemoryBackedService {
 
     private static final String DISEASE_ONTOLOGY_URL = "url.diseaseOntology";
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.gemma.ontology.AbstractOntologyService#getOntologyName()
      */
     @Override
