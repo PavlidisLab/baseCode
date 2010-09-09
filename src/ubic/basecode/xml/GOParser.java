@@ -105,6 +105,18 @@ class GOHandler extends DefaultHandler {
     public GOHandler() {
         super();
         m = new DirectedGraph<String, GOEntry>();
+
+        /*
+         * This is a workaround for a change in GO: the terms obsolete_molecular_function etc. are never defined. See
+         * bug
+         */
+        initializeNewNode( "all" );
+        initializeNewNode( "obsolete_molecular_function" );
+        m.addParentTo( "obsolete_molecular_function", "all" );
+        initializeNewNode( "obsolete_biological_process" );
+        m.addParentTo( "obsolete_biological_process", "all" );
+        initializeNewNode( "obsolete_cellullar_component" );
+        m.addParentTo( "obsolete_cellullar_component", "all" );
     }
 
     private boolean inTerm = false;
@@ -164,7 +176,7 @@ class GOHandler extends DefaultHandler {
      * @param parent
      */
     private void initializeNewNode( String parent ) {
-        m.addNode( parent, new GOEntry( parent, "No name yet", "No definition found", null ) );
+        m.addNode( parent, new GOEntry( parent, "(No name provided)", "(No definition)", null ) );
     }
 
     @Override
