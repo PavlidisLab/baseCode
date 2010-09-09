@@ -18,8 +18,11 @@
  */
 package ubic.basecode.xml;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStream; 
+import java.util.zip.ZipInputStream;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import junit.framework.TestCase;
 import ubic.basecode.util.RegressionTesting;
@@ -29,9 +32,25 @@ import ubic.basecode.util.RegressionTesting;
  * @version $Id$
  */
 public class TestGOParser extends TestCase {
+
+    private static Log log = LogFactory.getLog( TestGOParser.class );
+
     private GOParser gOParser = null;
 
-    public void testGOParser() throws IOException {
+    /**
+     * This sample is of a rather old version of the ontology
+     * 
+     * @throws Exception
+     */
+    public void testGOParser() throws Exception {
+
+        InputStream i = GOParser.class.getResourceAsStream( "/data/go-termdb-sample.xml" );
+
+        if ( i == null ) {
+            throw new Exception( "Couldn't read the sample file" );
+        }
+        gOParser = new GOParser( i );
+
         String actualReturn = gOParser.getGraph().toString();
         String expectedReturn = RegressionTesting.readTestResult( "/data/goparsertestoutput.txt" );
         assertEquals( "return", expectedReturn, actualReturn );
@@ -41,22 +60,21 @@ public class TestGOParser extends TestCase {
          */
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        InputStream i = GOParser.class.getResourceAsStream( "/data/go-termdb-sample.xml" );
-        // GOParser.class.getResourceAsStream( "/data/go_200406-termdb.xml" );
+    /**
+     * @throws Exception
+     */
+    public void testGOParserNewFormat() throws Exception {
+
+        ZipInputStream i = new ZipInputStream( GOParser.class
+                .getResourceAsStream( "/data/go_daily-termdb.rdf-updated.zip" ) );
         if ( i == null ) {
             throw new Exception( "Couldn't read the sample file" );
         }
+        i.getNextEntry();
+
         gOParser = new GOParser( i );
 
-    }
+        assertTrue( gOParser.getGraph().getRoot().toString().startsWith( "all" ) );
 
-    @Override
-    protected void tearDown() throws Exception {
-        gOParser = null;
-        super.tearDown();
     }
-
 }
