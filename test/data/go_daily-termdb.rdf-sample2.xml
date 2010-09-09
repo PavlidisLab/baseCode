@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE go:go PUBLIC "-//Gene Ontology//Custom XML/RDF Version 2.0//EN" "http://www.geneontology.org/dtd/go.dtd">
+
+<go:go xmlns:go="http://www.geneontology.org/dtds/go.dtd#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <rdf:RDF>
+        <go:term rdf:about="http://www.geneontology.org/go#all">
+            <go:accession>all</go:accession>
+            <go:name>all</go:name>
+        </go:term>
+        <go:term rdf:about="http://www.geneontology.org/go#GO:0008150">
+            <go:accession>GO:0008150</go:accession>
+            <go:name>biological_process</go:name>
+            <go:synonym>GO:0000004</go:synonym>
+            <go:synonym>GO:0007582</go:synonym>
+            <go:synonym>biological process</go:synonym>
+            <go:synonym>biological process unknown</go:synonym>
+            <go:synonym>physiological process</go:synonym>
+            <go:definition>Any process specifically pertinent to the functioning of integrated living units: cells, tissues, organs, and organisms. A process is a collection of molecular events with a defined beginning and end.</go:definition>
+            <go:comment>Note that, in addition to forming the root of the biological process ontology, this term is recommended for use for the annotation of gene products whose biological process is unknown. Note that when this term is used for annotation, it indicates that no information was available about the biological process of the gene product annotated as of the date the annotation was made; the evidence code ND, no data, is used to indicate this.</go:comment>
+            <go:is_a rdf:resource="http://www.geneontology.org/go#all" />
+            <go:dbxref rdf:parseType="Resource">
+                <go:database_symbol>Wikipedia</go:database_symbol>
+                <go:reference>Biological_process</go:reference>
+            </go:dbxref>
+        </go:term>
+        <go:term rdf:about="http://www.geneontology.org/go#GO:0003674">
+            <go:accession>GO:0003674</go:accession>
+            <go:name>molecular_function</go:name>
+            <go:synonym>GO:0005554</go:synonym>
+            <go:synonym>molecular function</go:synonym>
+            <go:synonym>molecular function unknown</go:synonym>
+            <go:definition>Elemental activities, such as catalysis or binding, describing the actions of a gene product at the molecular level. A given gene product may exhibit one or more molecular functions.</go:definition>
+            <go:comment>Note that, in addition to forming the root of the molecular function ontology, this term is recommended for use for the annotation of gene products whose molecular function is unknown. Note that when this term is used for annotation, it indicates that no information was available about the molecular function of the gene product annotated as of the date the annotation was made; the evidence code ND, no data, is used to indicate this.</go:comment>
+            <go:is_a rdf:resource="http://www.geneontology.org/go#all" />
+            <go:dbxref rdf:parseType="Resource">
+                <go:database_symbol>JCVI_TIGRFAMS</go:database_symbol>
+                <go:reference>TIGR03602</go:reference>
+            </go:dbxref>
+        </go:term>
+
+
+        <go:term rdf:about="http://www.geneontology.org/go#GO:0005575">
+            <go:accession>GO:0005575</go:accession>
+            <go:name>cellular_component</go:name>
+            <go:synonym>GO:0008372</go:synonym>
+            <go:synonym>cellular component</go:synonym>
+            <go:synonym>cellular component unknown</go:synonym>
+            <go:definition>The part of a cell or its extracellular environment in which a gene product is located. A gene product may be located in one or more parts of a cell and its location may be as specific as a particular macromolecular complex, that is, a stable, persistent association of macromolecules that function together.</go:definition>
+            <go:comment>Note that, in addition to forming the root of the cellular component ontology, this term is recommended for use for the annotation of gene products whose cellular component is unknown. Note that when this term is used for annotation, it indicates that no information was available about the cellular component of the gene product annotated as of the date the annotation was made; the evidence code ND, no data, is used to indicate this.</go:comment>
+            <go:is_a rdf:resource="http://www.geneontology.org/go#all" />
+        </go:term>
+
+	<!-- note that 'obsolete' is 'obsolete', but 'obsolete' isn't defined anywhere; it used be a child of the root -->
+        <go:term rdf:about="http://www.geneontology.org/go#GO:0008369">
+            <go:accession>GO:0008369</go:accession>
+            <go:name>obsolete molecular function</go:name>
+            <go:definition>OBSOLETE. These are terms that have been removed from the active function ontology.</go:definition>
+            <go:comment>This term was made obsolete because it is unnecessary in the OBO flat file format.</go:comment>
+            <go:is_a rdf:resource="http://www.geneontology.org/go#obsolete_molecular_function" />
+        </go:term>
+        <go:term rdf:about="http://www.geneontology.org/go#GO:0008370">
+            <go:accession>GO:0008370</go:accession>
+            <go:name>obsolete cellular component</go:name>
+            <go:definition>OBSOLETE. These are terms that have been removed from the active component ontology.</go:definition>
+            <go:comment>This term was made obsolete because it is unnecessary in the OBO flat file format.</go:comment>
+            <go:is_a rdf:resource="http://www.geneontology.org/go#obsolete_cellular_component" />
+        </go:term>
+        <go:term rdf:about="http://www.geneontology.org/go#GO:0008371">
+            <go:accession>GO:0008371</go:accession>
+            <go:name>obsolete biological process</go:name>
+            <go:definition>OBSOLETE. These are terms that have been removed from the active process ontology.</go:definition>
+            <go:comment>This term was made obsolete because it is unnecessary in the OBO flat file format.</go:comment>
+            <go:is_a rdf:resource="http://www.geneontology.org/go#obsolete_biological_process" />
+        </go:term>
+
+<go:term rdf:about="http://www.geneontology.org/go#GO:0016265">
+            <go:accession>GO:0016265</go:accession>
+            <go:name>death</go:name>
+            <go:definition>A permanent cessation of all vital functions: the end of life; can be applied to a whole organism or to a part of an organism.</go:definition>
+            <go:comment>See also the biological process term 'apoptosis ; GO:0006915'.</go:comment>
+            <go:is_a rdf:resource="http://www.geneontology.org/go#GO:0008150" />
+            <go:dbxref rdf:parseType="Resource">
+                <go:database_symbol>Wikipedia</go:database_symbol>
+                <go:reference>Death</go:reference>
+            </go:dbxref>
+        </go:term>
+
+        <go:term rdf:about="http://www.geneontology.org/go#GO:0009987">
+            <go:accession>GO:0009987</go:accession>
+            <go:name>cellular process</go:name>
+            <go:synonym>GO:0008151</go:synonym>
+            <go:synonym>GO:0050875</go:synonym>
+            <go:synonym>cell growth and/or maintenance</go:synonym>
+            <go:synonym>cell physiology</go:synonym>
+            <go:synonym>cellular physiological process</go:synonym>
+            <go:definition>Any process that is carried out at the cellular level, but not necessarily restricted to a single cell. For example, cell communication occurs among more than one cell, but occurs at the cellular level.</go:definition>
+            <go:is_a rdf:resource="http://www.geneontology.org/go#GO:0008150" />
+        </go:term>
+
+
+        <go:term rdf:about="http://www.geneontology.org/go#GO:0008219">
+            <go:accession>GO:0008219</go:accession>
+            <go:name>cell death</go:name>
+            <go:synonym>necrosis</go:synonym>
+            <go:definition>A biological process that results in permanent cessation of all vital functions of a cell.</go:definition>
+            <go:is_a rdf:resource="http://www.geneontology.org/go#GO:0009987" />
+            <go:is_a rdf:resource="http://www.geneontology.org/go#GO:0016265" />
+        </go:term>
+       
+
+        <go:term rdf:about="http://www.geneontology.org/go#GO:0019835">
+            <go:accession>GO:0019835</go:accession>
+            <go:name>cytolysis</go:name>
+            <go:synonym>autolysin activity</go:synonym>
+            <go:synonym>bacteriocin activity</go:synonym>
+            <go:synonym>bacteriolytic toxin activity</go:synonym>
+            <go:synonym>holin</go:synonym>
+            <go:synonym>lysin activity</go:synonym>
+            <go:synonym>lysis</go:synonym>
+            <go:synonym>necrosis</go:synonym>
+            <go:definition>The rupture of cell membranes and the loss of cytoplasm.</go:definition>
+            <go:is_a rdf:resource="http://www.geneontology.org/go#GO:0008219" />
+        </go:term>
+
+        <go:term rdf:about="http://www.geneontology.org/go#GO:0001896">
+            <go:accession>GO:0001896</go:accession>
+            <go:name>autolysis</go:name>
+            <go:definition>The spontaneous death by lysis of bacteria in response to environmental conditions.</go:definition>
+            <go:is_a rdf:resource="http://www.geneontology.org/go#GO:0019835" />
+            <go:dbxref rdf:parseType="Resource">
+                <go:database_symbol>Wikipedia</go:database_symbol>
+                <go:reference>Autolysis</go:reference>
+            </go:dbxref>
+        </go:term>
+
+
+        <go:term rdf:about="http://www.geneontology.org/go#GO:0045918">
+            <go:accession>GO:0045918</go:accession>
+            <go:name>negative regulation of cytolysis</go:name>
+            <go:synonym>down regulation of cytolysis</go:synonym>
+            <go:synonym>down-regulation of cytolysis</go:synonym>
+            <go:synonym>downregulation of cytolysis</go:synonym>
+            <go:synonym>inhibition of cytolysis</go:synonym>
+            <go:definition>Any process that stops, prevents or reduces the frequency, rate or extent of cytolysis.</go:definition>
+            <go:negatively_regulates rdf:resource="http://www.geneontology.org/go#GO:0019835" />
+            <go:is_a rdf:resource="http://www.geneontology.org/go#GO:0042268" />
+            <go:is_a rdf:resource="http://www.geneontology.org/go#GO:0060548" />
+        </go:term>
+
+        <go:term rdf:about="http://www.geneontology.org/go#GO:0042268">
+            <go:accession>GO:0042268</go:accession>
+            <go:name>regulation of cytolysis</go:name>
+            <go:definition>Any process that modulates the frequency, rate or extent of the rupture of cell membranes and the loss of cytoplasm.</go:definition>
+            <go:is_a rdf:resource="http://www.geneontology.org/go#GO:0010941" />
+            <go:regulates rdf:resource="http://www.geneontology.org/go#GO:0019835" />
+        </go:term>
+
+        <go:term rdf:about="http://www.geneontology.org/go#GO:0010941">
+            <go:accession>GO:0010941</go:accession>
+            <go:name>regulation of cell death</go:name>
+            <go:definition>Any process that modulates the rate or frequency of cell death. Cell death is the specific activation or halting of processes within a cell so that its vital functions markedly cease, rather than simply deteriorating gradually over time, which culminates in cell death.</go:definition>
+            <go:regulates rdf:resource="http://www.geneontology.org/go#GO:0008219" />
+            <go:is_a rdf:resource="http://www.geneontology.org/go#GO:0050794" />
+        </go:term>
+
+
+        <go:term rdf:about="http://www.geneontology.org/go#GO:0050789">
+            <go:accession>GO:0050789</go:accession>
+            <go:name>regulation of biological process</go:name>
+            <go:synonym>GO:0050791</go:synonym>
+            <go:synonym>regulation of physiological process</go:synonym>
+            <go:definition>Any process that modulates the frequency, rate or extent of a biological process. Biological processes are regulated by many means; examples include the control of gene expression, protein modification or interaction with a protein or substrate molecule.</go:definition>
+            <go:regulates rdf:resource="http://www.geneontology.org/go#GO:0008150" />
+            <go:is_a rdf:resource="http://www.geneontology.org/go#GO:0065007" />
+            <go:dbxref rdf:parseType="Resource">
+                <go:database_symbol>MultiFun</go:database_symbol>
+                <go:reference>3</go:reference>
+            </go:dbxref>
+        </go:term>
+
+
+
+
+    </rdf:RDF>
+</go:go>

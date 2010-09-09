@@ -3,20 +3,27 @@
 
 <go:go xmlns:go="http://www.geneontology.org/dtds/go.dtd#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <rdf:RDF>
-        <go:term rdf:about="http://www.geneontology.org/go#GO:0003673" n_associations="0">
-            <go:accession>GO:0003673</go:accession>
-            <go:name>Gene_Ontology</go:name>
+        <go:term rdf:about="http://www.geneontology.org/go#all">
+            <go:accession>all</go:accession>
+            <go:name>all</go:name>
         </go:term>
-        <go:term rdf:about="http://www.geneontology.org/go#GO:0003674" n_associations="0">
+  		 <go:term rdf:about="http://www.geneontology.org/go#GO:0003674">
             <go:accession>GO:0003674</go:accession>
             <go:name>molecular_function</go:name>
+            <go:synonym>GO:0005554</go:synonym>
+            <go:synonym>molecular function</go:synonym>
+            <go:synonym>molecular function unknown</go:synonym>
             <go:definition>Elemental activities, such as catalysis or binding, describing the actions of a gene product at the molecular level. A given gene product may exhibit one or more molecular functions.</go:definition>
-            <go:part_of rdf:resource="http://www.geneontology.org/go#GO:0003673" />
+            <go:comment>Note that, in addition to forming the root of the molecular function ontology, this term is recommended for use for the annotation of gene products whose molecular function is unknown. Note that when this term is used for annotation, it indicates that no information was available about the molecular function of the gene product annotated as of the date the annotation was made; the evidence code ND, no data, is used to indicate this.</go:comment>
+            <go:is_a rdf:resource="http://www.geneontology.org/go#all" />
+            <go:dbxref rdf:parseType="Resource">
+                <go:database_symbol>JCVI_TIGRFAMS</go:database_symbol>
+                <go:reference>TIGR03602</go:reference>
+            </go:dbxref>
         </go:term>
-        <go:term rdf:about="http://www.geneontology.org/go#GO:part_of" n_associations="0">
-            <go:accession>GO:part_of</go:accession>
-            <go:name>part_of</go:name>
-        </go:term>
+        
+        
+        
         <go:term rdf:about="http://www.geneontology.org/go#GO:0016209" n_associations="0">
             <go:accession>GO:0016209</go:accession>
             <go:name>antioxidant activity</go:name>
@@ -34,11 +41,10 @@
                 <go:database_symbol>HAMAP</go:database_symbol>
                 <go:reference>MF_00401</go:reference>
             </go:dbxref>
-        </go:term>
-        <go:term rdf:about="http://www.geneontology.org/go#GO:is_a" n_associations="0">
-            <go:accession>GO:is_a</go:accession>
-            <go:name>is_a</go:name>
-        </go:term>
+        </go:term> 
+        
+        
+        
         <go:term rdf:about="http://www.geneontology.org/go#GO:0045174" n_associations="0">
             <go:accession>GO:0045174</go:accession>
             <go:name>glutathione dehydrogenase (ascorbate) activity</go:name>
@@ -113,114 +119,6 @@
                 <go:database_symbol>EC</go:database_symbol>
                 <go:reference>1.11.1.7</go:reference>
             </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>SP_KW</go:database_symbol>
-                <go:reference>Hydrogen peroxide</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR000028</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR000763</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR000823</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR001621</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR002007</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR002016</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR002207</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR003320</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR004674</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>ProDom</go:database_symbol>
-                <go:reference>PD040763 Chloroperoxidase</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>MetaCyc</go:database_symbol>
-                <go:reference>PEROXID-RXN</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>SP_KW</go:database_symbol>
-                <go:reference>Peroxidase</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>Pfam</go:database_symbol>
-                <go:reference>PF00141 peroxidase</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>Pfam</go:database_symbol>
-                <go:reference>PF01328 Peroxidase_2</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>Pfam</go:database_symbol>
-                <go:reference>PF02328 Cl_perox</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>Pfam</go:database_symbol>
-                <go:reference>PF03098 An_peroxidase</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PRINTS</go:database_symbol>
-                <go:reference>PR00457 ANPEROXIDASE</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PRINTS</go:database_symbol>
-                <go:reference>PR00458 PEROXIDASE</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PRINTS</go:database_symbol>
-                <go:reference>PR00459 ASPEROXIDASE</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PRINTS</go:database_symbol>
-                <go:reference>PR00460 BPEROXIDASE</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PRINTS</go:database_symbol>
-                <go:reference>PR00461 PLPEROXIDASE</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PRINTS</go:database_symbol>
-                <go:reference>PR00462 LIGNINASE</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PROSITE</go:database_symbol>
-                <go:reference>PS00435 PEROXIDASE_1</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PROSITE</go:database_symbol>
-                <go:reference>PS00436 PEROXIDASE_2</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PROSITE</go:database_symbol>
-                <go:reference>PS50292 PEROXIDASE_3</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PROSITE</go:database_symbol>
-                <go:reference>PS50873 PEROXIDASE_4</go:reference>
-            </go:dbxref>
         </go:term>
         <go:term rdf:about="http://www.geneontology.org/go#GO:0004791" n_associations="0">
             <go:accession>GO:0004791</go:accession>
@@ -264,154 +162,6 @@
                 <go:database_symbol>TIGR_role</go:database_symbol>
                 <go:reference>18070	147	Transport and binding proteins	Other &gt; GO:transporter ; GO:0005215</go:reference>
             </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>TIGR_role</go:database_symbol>
-                <go:reference>18080	141	Transport and binding proteins	Unknown substrate &gt; GO:transporter ; GO:0005215</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR000463</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR001519</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR001993</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR002024</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR002030</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR002067</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR002157</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR002167</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR003057</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR003087</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR004173</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR006127</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR007210</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>ProDom</go:database_symbol>
-                <go:reference>PD000971 Ferritin</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>ProDom</go:database_symbol>
-                <go:reference>PD002269 Bacterioferritin</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>Pfam</go:database_symbol>
-                <go:reference>PF00153 Mito_carr</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>Pfam</go:database_symbol>
-                <go:reference>PF01122 Cobalamin_bind</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>Pfam</go:database_symbol>
-                <go:reference>PF01297 SBP_bac_9</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>Pfam</go:database_symbol>
-                <go:reference>PF02829 3H</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>Pfam</go:database_symbol>
-                <go:reference>PF04069 OpuAC</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PRINTS</go:database_symbol>
-                <go:reference>PR00178 FATTYACIDBP</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PRINTS</go:database_symbol>
-                <go:reference>PR00601 BACFERRITIN</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PRINTS</go:database_symbol>
-                <go:reference>PR00784 MTUNCOUPLING</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PRINTS</go:database_symbol>
-                <go:reference>PR00926 MITOCARRIER</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PRINTS</go:database_symbol>
-                <go:reference>PR00928 GRAVESDC</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PRINTS</go:database_symbol>
-                <go:reference>PR01273 INVTBRTCOLOR</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PRINTS</go:database_symbol>
-                <go:reference>PR01275 NGELATINASE</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PROSITE</go:database_symbol>
-                <go:reference>PS00204 FERRITIN_2</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PROSITE</go:database_symbol>
-                <go:reference>PS00214 FABP</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PROSITE</go:database_symbol>
-                <go:reference>PS00468 COBALAMIN_BINDING</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PROSITE</go:database_symbol>
-                <go:reference>PS00540 FERRITIN_1</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PROSITE</go:database_symbol>
-                <go:reference>PS00549 BACTERIOFERRITIN</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PROSITE</go:database_symbol>
-                <go:reference>PS50920 SOLCAR</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>TIGR_TIGRFAMS</go:database_symbol>
-                <go:reference>TIGR01115 photosynthetic reaction center M subunit</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>TIGR_TIGRFAMS</go:database_symbol>
-                <go:reference>TIGR01150 photosynthetic reaction center H subunit</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>TIGR_TIGRFAMS</go:database_symbol>
-                <go:reference>TIGR01157 photosynthetic reaction center L subunit</go:reference>
-            </go:dbxref>
         </go:term>
         <go:term rdf:about="http://www.geneontology.org/go#GO:0000035" n_associations="0">
             <go:accession>GO:0000035</go:accession>
@@ -427,30 +177,6 @@
             <go:dbxref rdf:parseType="Resource">
                 <go:database_symbol>InterPro</go:database_symbol>
                 <go:reference>IPR002912</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR006130</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR006131</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>Pfam</go:database_symbol>
-                <go:reference>PF00185 OTCace</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>Pfam</go:database_symbol>
-                <go:reference>PF01842 ACT</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PRINTS</go:database_symbol>
-                <go:reference>PR00100 AOTCASE</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>PROSITE</go:database_symbol>
-                <go:reference>PS00097 CARBAMOYLTRANSFERASE</go:reference>
             </go:dbxref>
         </go:term>
         <go:term rdf:about="http://www.geneontology.org/go#GO:0016595" n_associations="0">
@@ -479,18 +205,6 @@
             <go:dbxref rdf:parseType="Resource">
                 <go:database_symbol>SP_KW</go:database_symbol>
                 <go:reference>Antiarsonate antibody</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>SP_KW</go:database_symbol>
-                <go:reference>Immunoglobulin C region</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>SP_KW</go:database_symbol>
-                <go:reference>Immunoglobulin V region</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>SP_KW</go:database_symbol>
-                <go:reference>Monoclonal antibody</go:reference>
             </go:dbxref>
         </go:term>
         <go:term rdf:about="http://www.geneontology.org/go#GO:0030882" n_associations="0">
@@ -570,74 +284,6 @@
             <go:name>carbohydrate binding</go:name>
             <go:definition>Interacting selectively with any carbohydrate.</go:definition>
             <go:is_a rdf:resource="http://www.geneontology.org/go#GO:0005488" />
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR003610</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR004866</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR005084</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR005310</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR005323</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR006584</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR007235</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>InterPro</go:database_symbol>
-                <go:reference>IPR007324</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>Pfam</go:database_symbol>
-                <go:reference>PF02839 CBM_5_12</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>Pfam</go:database_symbol>
-                <go:reference>PF03173 CHB_HEX</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>Pfam</go:database_symbol>
-                <go:reference>PF03422 CBM_6</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>Pfam</go:database_symbol>
-                <go:reference>PF03627 PapG_N</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>Pfam</go:database_symbol>
-                <go:reference>PF03714 PUD</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>Pfam</go:database_symbol>
-                <go:reference>PF04101 Glyco_tran_28_C</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>Pfam</go:database_symbol>
-                <go:reference>PF04198 Sugar-bind</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>SMART</go:database_symbol>
-                <go:reference>SM00495 ChtBD3</go:reference>
-            </go:dbxref>
-            <go:dbxref rdf:parseType="Resource">
-                <go:database_symbol>SMART</go:database_symbol>
-                <go:reference>SM00606 CBD_IV</go:reference>
-            </go:dbxref>
         </go:term>
         <go:term rdf:about="http://www.geneontology.org/go#GO:0030247" n_associations="0">
             <go:accession>GO:0030247</go:accession>
