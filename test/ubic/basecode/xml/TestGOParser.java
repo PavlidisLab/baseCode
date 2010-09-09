@@ -18,8 +18,7 @@
  */
 package ubic.basecode.xml;
 
-import java.io.InputStream; 
-import java.util.zip.ZipInputStream;
+import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,8 +51,11 @@ public class TestGOParser extends TestCase {
         gOParser = new GOParser( i );
 
         String actualReturn = gOParser.getGraph().toString();
+
         String expectedReturn = RegressionTesting.readTestResult( "/data/goparsertestoutput.txt" );
         assertEquals( "return", expectedReturn, actualReturn );
+
+        assertTrue( gOParser.getGraph().getRoot().toString().startsWith( "all" ) );
         /*
          * assertEquals( "Diffs: " + RegressionTesting.regress( expectedReturn, actualReturn ), expectedReturn,
          * actualReturn );
@@ -63,16 +65,19 @@ public class TestGOParser extends TestCase {
     /**
      * @throws Exception
      */
-    public void testGOParserNewFormat() throws Exception {
+    public void testGOParserB() throws Exception {
 
-        ZipInputStream i = new ZipInputStream( GOParser.class
-                .getResourceAsStream( "/data/go_daily-termdb.rdf-updated.zip" ) );
+        InputStream i = GOParser.class.getResourceAsStream( "/data/go_daily-termdb.rdf-sample2.xml" );
+
         if ( i == null ) {
             throw new Exception( "Couldn't read the sample file" );
         }
-        i.getNextEntry();
 
         gOParser = new GOParser( i );
+
+        String actualReturn = gOParser.getGraph().toString();
+        String expectedReturn = RegressionTesting.readTestResult( "/data/goparsertestoutput.2.txt" );
+        assertEquals( "return", expectedReturn, actualReturn );
 
         assertTrue( gOParser.getGraph().getRoot().toString().startsWith( "all" ) );
 
