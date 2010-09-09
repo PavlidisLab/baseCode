@@ -33,6 +33,10 @@ import ubic.basecode.math.Constants;
 import junit.framework.TestCase;
 
 /**
+ * Note that this test uses an antiquated version of the GO XML file (rooted by "Gene Ontology" instead of "All", among
+ * other differences). This is okay for this test, which is to make sure children are properly captured. Proper testing
+ * of GO files is tested elsewhere.
+ * 
  * @author pavlidis
  * @version $Id$
  */
