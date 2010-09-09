@@ -39,7 +39,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * A graph that contains DirectedGraphNodes. It can be cyclic. Small unconnected parts of the graph will be ignored for
- * many operation. Tree traversals start from the root node, which is defined as the node with the most children.
+ * many operation. Tree traversals start from the root node. There can be only one root.
  * 
  * @todo do something about cyclicity; make this a dag or a subclass...
  * @author Paul Pavlidis
@@ -54,12 +54,6 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
 
     public DirectedGraph() {
         items = new LinkedHashMap<K, DirectedGraphNode<K, V>>();
-    }
-
-    public void addMode( DirectedGraphNode<K, V> node ) {
-        node.setGraph( this );
-        items.put( node.getKey(), node );
-
     }
 
     /**
@@ -137,6 +131,7 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
         if ( items.containsKey( key ) ) {
             items.get( key ).addParent( newParentKey );
             items.get( newParentKey ).addChild( key );
+            // if ( log.isDebugEnabled() ) log.debug( "Adding " + newParentKey + " as parent to " + key );
         }
 
     }
@@ -179,7 +174,7 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
     }
 
     /**
-     * Remove vertices to nodes that aren't in the graph.
+     * Remove edges to nodes that aren't in the graph.
      */
     public void prune() {
         for ( K element : this.items.keySet() ) {
@@ -342,6 +337,7 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.dataStructure.graph.AbstractGraph#containsKey(java.lang.Object)
      */
     @Override
@@ -351,6 +347,7 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.dataStructure.graph.AbstractGraph#getItems()
      */
     @Override
