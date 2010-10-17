@@ -707,9 +707,16 @@ public abstract class AbstractRClient implements RClient {
      * @see ubic.basecode.util.RClient#loadLibrary(java.lang.String)
      */
     public boolean loadLibrary( String libraryName ) {
-        List<String> libraries = stringListEval( "installed.packages()[,1]" );
-        if ( !libraries.contains( libraryName ) ) {
-            return false;
+        try {
+            List<String> libraries = stringListEval( "installed.packages()[,1]" );
+            if ( !libraries.contains( libraryName ) ) {
+                return false;
+            }
+        } catch ( Exception e ) {
+            /*
+             * This can happen with a 'Error in gzfile()', no idea why and it seems harmless if uninformative.
+             */
+            log.warn("Was unable to check for installed library before attempting to load it.");
         }
 
         try {
