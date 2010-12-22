@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
 import javax.swing.table.TableModel;
@@ -156,6 +157,22 @@ public class TestGeneAnnotations extends TestCase {
         assertTrue( geneSets.size() > 0 );
     }
 
+    /**
+     * Updated format
+     * 
+     * @throws Exception
+     */
+    public final void testReadAffyCsv2() throws Exception {
+        // second affytest
+        GZIPInputStream isa = new GZIPInputStream( TestGeneAnnotations.class
+                .getResourceAsStream( "/data/MoGene-1_0-st-v1.na31.mm9.transcript.sample.txt.gz" ) );
+        GeneAnnotations ga = new GeneAnnotations();
+        ga.readAffyCsv( isa, null );
+        ga.setUp( null );
+        Collection<String> geneSets = ga.getGeneSets();
+        assertTrue( geneSets.size() > 0 );
+    }
+
     public void testReadAgilent() throws Exception {
         GeneAnnotations ga = new GeneAnnotations();
         ga.readAgilent( ia, null );
@@ -213,6 +230,7 @@ public class TestGeneAnnotations extends TestCase {
         goIds.get( 0 ).add( "2" );
         goIds.get( 1 ).add( "2" );
         is = TestGeneAnnotations.class.getResourceAsStream( "/data/HG-U133_Plus_2_annot_sample.csv" );
+
         im = TestGeneAnnotations.class.getResourceAsStream( "/data/geneAnnotation.sample.txt" );
         imb = TestGeneAnnotations.class.getResourceAsStream( "/data/geneAnnotation.sample-goidddelimittest.txt" );
         ia = TestGeneAnnotations.class.getResourceAsStream( "/data/agilentannots.test.txt" );

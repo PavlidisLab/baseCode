@@ -95,51 +95,53 @@ public class GeneAnnotations {
      */
     private static final int ABSOLUTE_MINIMUM_GENESET_SIZE = 2;
 
+    private static final String AFFY_FIELD_SEPARATION_REGEX = "[,\t]";
+
+    private static Log log = LogFactory.getLog( GeneAnnotations.class.getName() );
+
     /**
      * String used to indicate a gene has no description associated with it.
      */
     private static final String NO_DESCRIPTION = "[No description]";
-
     /**
      * The maximum size of gene sets ever considered.
      */
     private static final int PRACTICAL_MAXIMUM_GENESET_SIZE = 5000;
-
-    private static Log log = LogFactory.getLog( GeneAnnotations.class.getName() );
+    private Collection<String> activeGeneSetCache;
+    private Collection<String> activeProbes = null;
+    private Map<String, Collection<String>> classToActiveProbeCache = new HashMap<String, Collection<String>>();
+    private boolean filterNonSpecific = DEFAULT_FILTER_NONSPECIFIC;
+    private Map<String, Collection<String>> geneSetActiveGenesCache = new HashMap<String, Collection<String>>();
+    private Map<String, Collection<String>> geneSetActiveProbesCache = new HashMap<String, Collection<String>>();
     private Map<String, Collection<String>> geneSetToGeneMap; // stores Classes->genes map
     private Map<String, Collection<String>> geneSetToProbeMap; // stores Classes->probes map
+
     private Map<String, Collection<String>> geneSetToRedundantMap;
+
+    private Collection<String> genesForActiveProbesCache;
+    private Map<String, Collection<String>> geneToActiveProbesCache = new HashMap<String, Collection<String>>();
     private Map<String, Collection<String>> geneToGeneSetMap;
     private Map<String, Collection<String>> geneToProbeMap;
+
     private StatusViewer messenger;
+
+    private Map<String, Collection<String>> oldGeneSets;
+
+    private Pattern pipePattern = Pattern.compile( "\\s*[\\s\\|,]\\s*" );
+
     private Map<String, String> probeToDescription;
+
     private Map<String, String> probeToGeneName;
+
     private Map<String, Collection<String>> probeToGeneSetMap;
 
     private List<String> selectedProbes;
 
     private List<String> selectedSets;
+
     private List<String> sortedGeneSets;
-    private Map<String, Collection<String>> oldGeneSets;
+
     private int tick = 0;
-
-    private Pattern pipePattern = Pattern.compile( "\\s*[\\s\\|,]\\s*" );
-
-    private Collection<String> activeProbes = null;
-
-    private Map<String, Collection<String>> classToActiveProbeCache = new HashMap<String, Collection<String>>();
-
-    private Collection<String> genesForActiveProbesCache;
-
-    private Map<String, Collection<String>> geneToActiveProbesCache = new HashMap<String, Collection<String>>();
-
-    private Map<String, Collection<String>> geneSetActiveGenesCache = new HashMap<String, Collection<String>>();
-
-    private Map<String, Collection<String>> geneSetActiveProbesCache = new HashMap<String, Collection<String>>();
-
-    private Collection<String> activeGeneSetCache;
-
-    private boolean filterNonSpecific = DEFAULT_FILTER_NONSPECIFIC;
 
     public GeneAnnotations() {
         this.setUpdataStructures();
@@ -196,16 +198,10 @@ public class GeneAnnotations {
         setUp( null ); // creates the classToGene map.
     }
 
-    /**
-     * 
-     */
-    private void activeProbesDirty() {
-        genesForActiveProbesCache = null;
-        activeGeneSetCache = null;
-        if ( geneToActiveProbesCache != null ) geneToActiveProbesCache.clear();
-        if ( classToActiveProbeCache != null ) classToActiveProbeCache.clear();
-        if ( geneSetActiveGenesCache != null ) geneSetActiveGenesCache.clear();
-        if ( geneSetActiveProbesCache != null ) geneSetActiveProbesCache.clear();
+    public GeneAnnotations( InputStream stream, Set<String> activeGenes, StatusViewer messenger, GONames goNames )
+            throws IOException {
+        this( stream, activeGenes, messenger, goNames, DEFAULT_FILTER_NONSPECIFIC );
+
     }
 
     /**
@@ -223,12 +219,6 @@ public class GeneAnnotations {
         this.read( stream, activeGenes );
         this.activeProbes = null; // using all.
         setUp( goNames );
-    }
-
-    public GeneAnnotations( InputStream stream, Set<String> activeGenes, StatusViewer messenger, GONames goNames )
-            throws IOException {
-        this( stream, activeGenes, messenger, goNames, DEFAULT_FILTER_NONSPECIFIC );
-
     }
 
     /**
@@ -291,6 +281,11 @@ public class GeneAnnotations {
         this.setUp( null );
     }
 
+    public GeneAnnotations( String fileName, Set<String> activeGenes, StatusViewer messenger, GONames goNames )
+            throws IOException {
+        this( fileName, activeGenes, messenger, goNames, DEFAULT_FILTER_NONSPECIFIC );
+    }
+
     /**
      * @param goNames
      * @param fileName
@@ -305,11 +300,6 @@ public class GeneAnnotations {
         this.activeProbes = this.probeToGeneName.keySet();
         if ( activeProbes != null ) activeProbesDirty();
         setUp( goNames );
-    }
-
-    public GeneAnnotations( String fileName, Set<String> activeGenes, StatusViewer messenger, GONames goNames )
-            throws IOException {
-        this( fileName, activeGenes, messenger, goNames, DEFAULT_FILTER_NONSPECIFIC );
     }
 
     /**
@@ -327,6 +317,10 @@ public class GeneAnnotations {
     public GeneAnnotations( String filename, StatusViewer messenger, GONames goNames, boolean filterNonSpecific )
             throws IOException {
         this( filename, messenger, goNames, DEFAULT, filterNonSpecific );
+    }
+
+    public GeneAnnotations( String filename, StatusViewer messenger, GONames goNames, int format ) throws IOException {
+        this( filename, messenger, goNames, format, DEFAULT_FILTER_NONSPECIFIC );
     }
 
     /**
@@ -356,10 +350,6 @@ public class GeneAnnotations {
         }
         this.activeProbes = null; // using all.
         setUp( goNames );
-    }
-
-    public GeneAnnotations( String filename, StatusViewer messenger, GONames goNames, int format ) throws IOException {
-        this( filename, messenger, goNames, format, DEFAULT_FILTER_NONSPECIFIC );
     }
 
     /**
@@ -410,18 +400,6 @@ public class GeneAnnotations {
     }
 
     /**
-     * Restore the previous version of a gene set. If no previous version is found, then nothing is done.
-     * 
-     * @param id
-     */
-    public void restoreGeneSet( String id ) {
-        if ( !oldGeneSets.containsKey( id ) ) return;
-        log.info( "Restoring " + id );
-        removeClassFromMaps( id );
-        addGeneSet( id, oldGeneSets.get( id ) );
-    }
-
-    /**
      * @param parents
      */
     public void addGoTermsToGene( String gene, Collection<String> parents ) {
@@ -462,6 +440,38 @@ public class GeneAnnotations {
     }
 
     /**
+     * 
+     */
+    public Collection<String> getActiveGeneSetGenes( String geneSetId ) {
+        if ( activeProbes == null ) return this.geneSetToGeneMap.get( geneSetId );
+
+        if ( !geneSetActiveGenesCache.containsKey( geneSetId ) ) {
+            Collection<String> finalList = new HashSet<String>();
+            Collection<String> genes = geneSetToGeneMap.get( geneSetId );
+            for ( String gene : genes ) {
+                Collection<String> probes = geneToProbeMap.get( gene );
+                if ( probes == null ) continue;
+                for ( String probe : probes ) {
+                    if ( activeProbes.contains( probe ) ) {
+                        finalList.add( gene );
+                        break;
+                    }
+                }
+            }
+            geneSetActiveGenesCache.put( geneSetId, finalList );
+            return finalList;
+        }
+        return geneSetActiveGenesCache.get( geneSetId );
+    }
+
+    /**
+     * @return Returns the activeProbes.
+     */
+    public Collection<String> getActiveProbes() {
+        return this.activeProbes;
+    }
+
+    /**
      * @param id String class id
      * @return List list of probes in class
      */
@@ -492,28 +502,26 @@ public class GeneAnnotations {
 
     }
 
+    public boolean getFilterNonSpecific() {
+        return filterNonSpecific;
+    }
+
     /**
-     * Return a collection of all currently active genes.
+     * Get the gene sets a gene belongs to.
      * 
+     * @param gene
      * @return
      */
-    public Collection<String> getGenes() {
-        if ( activeProbes == null ) return geneToGeneSetMap.keySet();
-
-        if ( genesForActiveProbesCache == null ) {
-            Collection<String> finalList = new HashSet<String>();
-            for ( Object element : geneToGeneSetMap.keySet() ) {
-                String gene = ( String ) element;
-                Collection<String> probes = this.getGeneProbeList( gene );
-                if ( probes != null && probes.size() > 0 ) {
-                    finalList.add( gene );
-                }
-            }
-            genesForActiveProbesCache = finalList;
-            return finalList;
-        }
-        return genesForActiveProbesCache;
+    public Collection<String> getGeneGeneSets( String gene ) {
+        return this.geneToGeneSetMap.get( gene );
     }
+
+    // /**
+    // * @return Returns the classToGeneMap.
+    // */
+    // public Map getGeneSetToGeneMap() {
+    // return geneSetToGeneMap;
+    // }
 
     /**
      * Get a list of the probes that correspond to a particular gene.
@@ -546,6 +554,47 @@ public class GeneAnnotations {
     }
 
     /**
+     * @param geneSymbol
+     * @return
+     */
+    public Collection<String> getGeneProbes( String geneSymbol ) {
+        if ( activeProbes == null ) return this.geneToProbeMap.get( geneSymbol );
+
+        Collection<String> finalList = new HashSet<String>();
+        Collection<String> probes = geneToProbeMap.get( geneSymbol );
+        for ( String probe : probes ) {
+            if ( activeProbes.contains( probe ) ) {
+                finalList.add( probe );
+            }
+        }
+        return finalList;
+
+    }
+
+    /**
+     * Return a collection of all currently active genes.
+     * 
+     * @return
+     */
+    public Collection<String> getGenes() {
+        if ( activeProbes == null ) return geneToGeneSetMap.keySet();
+
+        if ( genesForActiveProbesCache == null ) {
+            Collection<String> finalList = new HashSet<String>();
+            for ( Object element : geneToGeneSetMap.keySet() ) {
+                String gene = ( String ) element;
+                Collection<String> probes = this.getGeneProbeList( gene );
+                if ( probes != null && probes.size() > 0 ) {
+                    finalList.add( gene );
+                }
+            }
+            genesForActiveProbesCache = finalList;
+            return finalList;
+        }
+        return genesForActiveProbesCache;
+    }
+
+    /**
      * Get a class by an integer index i from the sorted list.
      * 
      * @param i
@@ -553,38 +602,6 @@ public class GeneAnnotations {
      */
     public String getGeneSetByIndex( int i ) {
         return sortedGeneSets.get( i );
-    }
-
-    // /**
-    // * @return Returns the classToGeneMap.
-    // */
-    // public Map getGeneSetToGeneMap() {
-    // return geneSetToGeneMap;
-    // }
-
-    /**
-     * 
-     */
-    public Collection<String> getActiveGeneSetGenes( String geneSetId ) {
-        if ( activeProbes == null ) return this.geneSetToGeneMap.get( geneSetId );
-
-        if ( !geneSetActiveGenesCache.containsKey( geneSetId ) ) {
-            Collection<String> finalList = new HashSet<String>();
-            Collection<String> genes = geneSetToGeneMap.get( geneSetId );
-            for ( String gene : genes ) {
-                Collection<String> probes = geneToProbeMap.get( gene );
-                if ( probes == null ) continue;
-                for ( String probe : probes ) {
-                    if ( activeProbes.contains( probe ) ) {
-                        finalList.add( gene );
-                        break;
-                    }
-                }
-            }
-            geneSetActiveGenesCache.put( geneSetId, finalList );
-            return finalList;
-        }
-        return geneSetActiveGenesCache.get( geneSetId );
     }
 
     /**
@@ -610,13 +627,32 @@ public class GeneAnnotations {
     }
 
     /**
-     * Get the gene sets a gene belongs to.
+     * Get a collection of all (active) gene sets.
      * 
-     * @param gene
      * @return
      */
-    public Collection<String> getGeneGeneSets( String gene ) {
-        return this.geneToGeneSetMap.get( gene );
+    public Collection<String> getGeneSets() {
+        if ( activeProbes == null ) return geneSetToGeneMap.keySet();
+
+        if ( activeGeneSetCache == null ) {
+            Collection<String> finalSet = new HashSet<String>();
+            for ( Object element : geneSetToGeneMap.keySet() ) {
+                String geneSet = ( String ) element;
+                Collection<String> probes = getClassToProbes( geneSet );
+                if ( probes.size() > 0 ) {
+                    finalSet.add( geneSet );
+                }
+            }
+            activeGeneSetCache = finalSet;
+            return finalSet;
+        }
+        return activeGeneSetCache;
+    }
+
+    /** 
+     */
+    public Map<String, Collection<String>> getGeneToProbeMap() {
+        return geneToProbeMap;
     }
 
     /**
@@ -646,12 +682,6 @@ public class GeneAnnotations {
         return probeToGeneName;
     }
 
-    /** 
-     */
-    public Map<String, Collection<String>> getGeneToProbeMap() {
-        return geneToProbeMap;
-    }
-
     /**
      * @return Map
      */
@@ -675,6 +705,24 @@ public class GeneAnnotations {
     }
 
     /**
+     * @param id
+     * @return
+     */
+    public boolean hasGeneSet( String id ) {
+        if ( activeProbes == null ) return this.geneSetToGeneMap.containsKey( id );
+
+        return this.getGeneSets().contains( id );
+    }
+
+    /**
+     * @param probeId
+     * @return
+     */
+    public boolean hasProbe( String probeId ) {
+        return this.probeToGeneName.containsKey( probeId );
+    }
+
+    /**
      * Redefine a class.
      * 
      * @param classId String class to be modified
@@ -693,6 +741,43 @@ public class GeneAnnotations {
 
         removeClassFromMaps( classId );
         addGeneSet( classId, probesForNew );
+    }
+
+    /**
+     * Get the number of genes in a gene set, identified by id.
+     * 
+     * @param id String a class id
+     * @return int number of genes in the class
+     */
+    public int numActiveGenesInGeneSet( String id ) {
+        if ( !geneSetToGeneMap.containsKey( id ) ) {
+            return 0;
+        }
+        return getActiveGeneSetGenes( id ).size();
+    }
+
+    /**
+     * Get the number of probes in a gene set, identified by id.
+     * 
+     * @param id String a class id
+     * @return int number of probes in the class
+     */
+    public int numActiveProbesInGeneSet( String id ) {
+        if ( !geneSetToProbeMap.containsKey( id ) ) {
+            log.debug( "No such gene set " + id );
+            return 0;
+        }
+        if ( activeProbes == null ) return geneSetToProbeMap.get( id ).size();
+
+        int result = 0;
+        Collection<String> startingList = geneSetToProbeMap.get( id );
+        for ( Iterator<String> iter = startingList.iterator(); iter.hasNext(); ) {
+            String probe = iter.next();
+            if ( activeProbes.contains( probe ) ) {
+                result++;
+            }
+        }
+        return result;
     }
 
     /**
@@ -722,48 +807,12 @@ public class GeneAnnotations {
     }
 
     /**
-     * Get a collection of all (active) gene sets.
-     * 
-     * @return
-     */
-    public Collection<String> getGeneSets() {
-        if ( activeProbes == null ) return geneSetToGeneMap.keySet();
-
-        if ( activeGeneSetCache == null ) {
-            Collection<String> finalSet = new HashSet<String>();
-            for ( Object element : geneSetToGeneMap.keySet() ) {
-                String geneSet = ( String ) element;
-                Collection<String> probes = getClassToProbes( geneSet );
-                if ( probes.size() > 0 ) {
-                    finalSet.add( geneSet );
-                }
-            }
-            activeGeneSetCache = finalSet;
-            return finalSet;
-        }
-        return activeGeneSetCache;
-    }
-
-    /**
      * Get the number of gene sets currently available.
      * 
      * @return
      */
     public int numGeneSets() {
         return this.getGeneSets().size();
-    }
-
-    /**
-     * Get the number of genes in a gene set, identified by id.
-     * 
-     * @param id String a class id
-     * @return int number of genes in the class
-     */
-    public int numActiveGenesInGeneSet( String id ) {
-        if ( !geneSetToGeneMap.containsKey( id ) ) {
-            return 0;
-        }
-        return getActiveGeneSetGenes( id ).size();
     }
 
     /**
@@ -775,6 +824,14 @@ public class GeneAnnotations {
             return 0;
         }
         return geneSetToGeneMap.get( id ).size();
+    }
+
+    /**
+     * @return
+     */
+    public int numProbes() {
+        assert activeProbes != null;
+        return this.activeProbes.size();
     }
 
     /**
@@ -791,30 +848,6 @@ public class GeneAnnotations {
     }
 
     /**
-     * Get the number of probes in a gene set, identified by id.
-     * 
-     * @param id String a class id
-     * @return int number of probes in the class
-     */
-    public int numActiveProbesInGeneSet( String id ) {
-        if ( !geneSetToProbeMap.containsKey( id ) ) {
-            log.debug( "No such gene set " + id );
-            return 0;
-        }
-        if ( activeProbes == null ) return geneSetToProbeMap.get( id ).size();
-
-        int result = 0;
-        Collection<String> startingList = geneSetToProbeMap.get( id );
-        for ( Iterator<String> iter = startingList.iterator(); iter.hasNext(); ) {
-            String probe = iter.next();
-            if ( activeProbes.contains( probe ) ) {
-                result++;
-            }
-        }
-        return result;
-    }
-
-    /**
      * @param id
      * @return
      */
@@ -824,6 +857,13 @@ public class GeneAnnotations {
             return 0;
         }
         return this.geneSetToProbeMap.get( id ).size();
+    }
+
+    /**
+     * @return the number of probes currently on the 'selected' list.
+     */
+    public int numSelectedProbes() {
+        return selectedProbes.size();
     }
 
     /**
@@ -847,6 +887,14 @@ public class GeneAnnotations {
             }
             out.write( "\n" );
         }
+    }
+
+    /**
+     * @param probe
+     * @return
+     */
+    public String probeToGene( String probe ) {
+        return this.probeToGeneName.get( probe );
     }
 
     /**
@@ -888,10 +936,15 @@ public class GeneAnnotations {
     }
 
     /**
-     * @return the number of probes currently on the 'selected' list.
+     * Restore the previous version of a gene set. If no previous version is found, then nothing is done.
+     * 
+     * @param id
      */
-    public int numSelectedProbes() {
-        return selectedProbes.size();
+    public void restoreGeneSet( String id ) {
+        if ( !oldGeneSets.containsKey( id ) ) return;
+        log.info( "Restoring " + id );
+        removeClassFromMaps( id );
+        addGeneSet( id, oldGeneSets.get( id ) );
     }
 
     /**
@@ -928,15 +981,9 @@ public class GeneAnnotations {
         }
     }
 
-    /**
-     * Select a given set of gene sets.
-     * 
-     * @param selectedGeneSets
-     */
-    public void setSelectedSets( Collection<String> selectedGeneSets ) {
-        this.selectedSets.clear();
-        this.selectedSets.addAll( selectedGeneSets );
-    }
+    /*******************************************************************************************************************
+     * Private or protected methods
+     ******************************************************************************************************************/
 
     /**
      * @param searchOn
@@ -1012,6 +1059,28 @@ public class GeneAnnotations {
     }
 
     /**
+     * @param set
+     */
+    public void setActiveProbes( Collection<String> set ) {
+        this.activeProbes = set;
+        activeProbesDirty();
+    }
+
+    public void setFilterNonSpecific( boolean filterNonSpecific ) {
+        this.filterNonSpecific = filterNonSpecific;
+    }
+
+    /**
+     * Select a given set of gene sets.
+     * 
+     * @param selectedGeneSets
+     */
+    public void setSelectedSets( Collection<String> selectedGeneSets ) {
+        this.selectedSets.clear();
+        this.selectedSets.addAll( selectedGeneSets );
+    }
+
+    /**
      * Sort the gene sets, filling out the sortedGeneSets. This should be called after any changes have been made to the
      * classToProbeMap. The sort is just in order of id.
      */
@@ -1050,6 +1119,10 @@ public class GeneAnnotations {
         }
 
         return returnVal;
+    }
+
+    public int ticks() {
+        return tick;
     }
 
     /**
@@ -1092,6 +1165,18 @@ public class GeneAnnotations {
     }
 
     /**
+     * 
+     */
+    private void activeProbesDirty() {
+        genesForActiveProbesCache = null;
+        activeGeneSetCache = null;
+        if ( geneToActiveProbesCache != null ) geneToActiveProbesCache.clear();
+        if ( classToActiveProbeCache != null ) classToActiveProbeCache.clear();
+        if ( geneSetActiveGenesCache != null ) geneSetActiveGenesCache.clear();
+        if ( geneSetActiveProbesCache != null ) geneSetActiveProbesCache.clear();
+    }
+
+    /**
      * @param probes
      * @param geneSymbols
      * @param geneNames
@@ -1112,9 +1197,26 @@ public class GeneAnnotations {
 
     }
 
-    /*******************************************************************************************************************
-     * Private or protected methods
-     ******************************************************************************************************************/
+    /**
+     * @param classIds
+     * @param probe
+     */
+    private void extractPipeDelimitedGoIds( String classIds, String probe ) {
+        String[] classIdAry = pipePattern.split( classIds );
+        if ( classIdAry.length == 0 ) return;
+
+        Collection<String> probeCol = probeToGeneSetMap.get( probe );
+        probeCol.addAll( Arrays.asList( classIdAry ) );
+
+        for ( String element : classIdAry ) {
+            String go = element.intern();
+
+            if ( !geneSetToProbeMap.containsKey( go ) ) {
+                geneSetToProbeMap.put( go, new HashSet<String>() );
+            }
+            geneSetToProbeMap.get( go ).add( probe );
+        }
+    }
 
     /**
      * @param limit
@@ -1125,48 +1227,19 @@ public class GeneAnnotations {
         String[] fields = header.split( sep );
         if ( fields == null || fields.length == 0 ) throw new IllegalArgumentException( "No header!" );
         for ( int i = 0; i < fields.length; i++ ) {
-            if ( fields[i].replaceAll( "\"", "" ).compareToIgnoreCase( pattern ) == 0 ) {
+            if ( fields[i].replaceAll( "\"", "" ).matches( pattern ) ) {
                 return i;
             }
         }
         return -1;
     }
 
-    /**
-     * @throws IOException
-     * @param header
-     * @return
-     */
-    private int getAffyBpIndex( String header ) throws IOException {
-        String pattern = "Gene Ontology Biological Process";
-        return findField( header, ",", pattern );
-    }
-
-    /**
-     * @throws IOException
-     * @param header
-     * @return
-     */
-    private int getAffyCcIndex( String header ) throws IOException {
-        String pattern = "Gene Ontology Cellular Component";
-        return findField( header, ",", pattern );
-    }
-
-    /**
-     * @throws IOException
-     * @param header
-     * @return
-     */
-    private int getAffyGeneNameIndex( String header ) throws IOException {
-        String pattern = "Gene Title";
-        return findField( header, ",", pattern );
-    }
-
     private int getAffyAlternateGeneSymbolIndex( String header ) {
 
-        String[] alternates = new String[] { "Transcript ID", "Transcript ID(Array Design)", "UniGene ID" };
+        String[] alternates = new String[] { "Transcript ID", "Transcript ID(Array Design)", "UniGene ID", "swissprot",
+                "unigene" };
         for ( String pattern : alternates ) {
-            int i = findField( header, ",", pattern );
+            int i = findField( header, AFFY_FIELD_SEPARATION_REGEX, pattern );
             if ( i >= 0 ) return i;
         }
         return -1;
@@ -1177,9 +1250,39 @@ public class GeneAnnotations {
      * @param header
      * @return
      */
+    private int getAffyBpIndex( String header ) throws IOException {
+        String pattern = "(Gene Ontology Biological Process|GO_biological_process)";
+        return findField( header, AFFY_FIELD_SEPARATION_REGEX, pattern );
+    }
+
+    /**
+     * @throws IOException
+     * @param header
+     * @return
+     */
+    private int getAffyCcIndex( String header ) throws IOException {
+        String pattern = "(Gene Ontology Cellular Component|GO_cellular_component)";
+        return findField( header, AFFY_FIELD_SEPARATION_REGEX, pattern );
+    }
+
+    /**
+     * @throws IOException
+     * @param header
+     * @return
+     */
+    private int getAffyGeneNameIndex( String header ) throws IOException {
+        String pattern = "(Gene Title|gene_assignment)";
+        return findField( header, AFFY_FIELD_SEPARATION_REGEX, pattern );
+    }
+
+    /**
+     * @throws IOException
+     * @param header
+     * @return
+     */
     private int getAffyGeneSymbolIndex( String header ) throws IOException {
-        String pattern = "Gene Symbol";
-        return findField( header, ",", pattern );
+        String pattern = "(Gene Symbol|gene_assignment)";
+        return findField( header, AFFY_FIELD_SEPARATION_REGEX, pattern );
     }
 
     /**
@@ -1188,8 +1291,8 @@ public class GeneAnnotations {
      * @return
      */
     private int getAffyMfIndex( String header ) throws IOException {
-        String pattern = "Gene Ontology Molecular Function";
-        return findField( header, ",", pattern );
+        String pattern = "(Gene Ontology Molecular Function|GO_molecular_function)";
+        return findField( header, AFFY_FIELD_SEPARATION_REGEX, pattern );
     }
 
     /**
@@ -1197,7 +1300,8 @@ public class GeneAnnotations {
      * @return
      */
     private int getAffyNumFields( String header ) {
-        String[] fields = header.split( "," );
+
+        String[] fields = header.split( AFFY_FIELD_SEPARATION_REGEX );
         return fields.length;
     }
 
@@ -1207,8 +1311,53 @@ public class GeneAnnotations {
      * @return
      */
     private int getAffyProbeIndex( String header ) throws IOException {
-        String pattern = "Probe Set ID";
-        return findField( header, ",", pattern );
+        String pattern = "(Probe Set ID|probeset_id)";
+        return findField( header, AFFY_FIELD_SEPARATION_REGEX, pattern );
+    }
+
+    /**
+     * @param header
+     * @return
+     */
+    private int getAgilentGeneNameIndex( String header ) {
+        String pattern = "GeneName";
+        return findField( header, "\t", pattern );
+    }
+
+    /**
+     * @param header
+     * @return
+     */
+    private int getAgilentGeneSymbolIndex( String header ) {
+        String pattern = "GeneSymbol";
+        return findField( header, "\t", pattern );
+    }
+
+    /**
+     * @param header
+     * @return
+     */
+    private int getAgilentGoIndex( String header ) {
+        String pattern = "GO";
+        return findField( header, "\t", pattern );
+    }
+
+    /**
+     * @param header
+     * @return
+     */
+    private int getAgilentNumFields( String header ) {
+        String[] fields = header.split( "\t" );
+        return fields.length;
+    }
+
+    /**
+     * @param header
+     * @return
+     */
+    private int getAgilentProbeIndex( String header ) {
+        String pattern = "ProbeID";
+        return findField( header, "\t", pattern );
     }
 
     /**
@@ -1235,14 +1384,15 @@ public class GeneAnnotations {
      * @return
      */
     private String padGoTerm( String go ) {
-        if ( !go.startsWith( "GO:" ) ) {
-            int needZeros = 7 - go.length();
+        String goPadded = go;
+        if ( !goPadded.startsWith( "GO:" ) ) {
+            int needZeros = 7 - goPadded.length();
             for ( int j = 0; j < needZeros; j++ ) {
-                go = "0" + go;
+                goPadded = "0" + goPadded;
             }
-            go = "GO:" + go;
+            goPadded = "GO:" + goPadded;
         }
-        return go;
+        return goPadded;
     }
 
     /**
@@ -1259,7 +1409,7 @@ public class GeneAnnotations {
 
             go = padGoTerm( go );
 
-            assert go.startsWith( "GO:" );
+            assert go.matches( "GO:[0-9]{7}" ) : "Trying to fix up : " + goi;
 
             this.probeToGeneSetMap.get( probe ).add( go );
 
@@ -1320,18 +1470,6 @@ public class GeneAnnotations {
         read( i );
     }
 
-    private void readAgilent( InputStream bis ) throws IOException {
-        this.readAgilent( bis, null );
-    }
-
-    /**
-     * @param filename
-     */
-    private void readAgilent( String fileName ) throws IOException {
-        InputStream i = FileTools.getInputStreamFromPlainOrCompressedFile( fileName );
-        readAgilent( i );
-    }
-
     /**
      * @param bis
      */
@@ -1345,6 +1483,18 @@ public class GeneAnnotations {
     private void readAffyCsv( String fileName ) throws IOException {
         InputStream i = FileTools.getInputStreamFromPlainOrCompressedFile( fileName );
         readAffyCsv( i );
+    }
+
+    private void readAgilent( InputStream bis ) throws IOException {
+        this.readAgilent( bis, null );
+    }
+
+    /**
+     * @param filename
+     */
+    private void readAgilent( String fileName ) throws IOException {
+        InputStream i = FileTools.getInputStreamFromPlainOrCompressedFile( fileName );
+        readAgilent( i );
     }
 
     /**
@@ -1367,7 +1517,7 @@ public class GeneAnnotations {
                 }
             }
             if ( probeToGeneSetMap.remove( probe ) == null ) {
-                System.err.println( "Could not remove " + probe + " from probeToClassMap" );
+                log.warn( "Could not remove " + probe + " from probeToClassMap" );
             }
         }
         if ( probeToDescription.containsKey( probe ) ) probeToDescription.remove( probe );
@@ -1418,6 +1568,13 @@ public class GeneAnnotations {
             probeToGeneSetMap.put( probe.intern(), new HashSet<String>() );
         }
         geneToGeneSetMap.put( geneSymbol, probeToGeneSetMap.get( probe ) );
+    }
+
+    /**
+     * 
+     */
+    private void tick() {
+        tick++;
     }
 
     /**
@@ -1512,27 +1669,8 @@ public class GeneAnnotations {
     }
 
     /**
-     * @param classIds
-     * @param probe
-     */
-    private void extractPipeDelimitedGoIds( String classIds, String probe ) {
-        String[] classIdAry = pipePattern.split( classIds );
-        if ( classIdAry.length == 0 ) return;
-
-        Collection<String> probeCol = probeToGeneSetMap.get( probe );
-        probeCol.addAll( Arrays.asList( classIdAry ) );
-
-        for ( String element : classIdAry ) {
-            String go = element.intern();
-
-            if ( !geneSetToProbeMap.containsKey( go ) ) {
-                geneSetToProbeMap.put( go, new HashSet<String>() );
-            }
-            geneSetToProbeMap.get( go ).add( probe );
-        }
-    }
-
-    /**
+     * Parse affy formatted files (CSV or tabbed should be okay)
+     * 
      * @param bis
      * @param object
      */
@@ -1544,9 +1682,20 @@ public class GeneAnnotations {
         Collection<String> probeIds = new ArrayList<String>();
         String classIds = null;
 
-        String header = dis.readLine();
+        /*
+         * Skip comment lines (new format)
+         */
+        String line = "";
+        while ( ( line = dis.readLine() ) != null ) {
+            /* line is blank, or starts with "#" , keep reading */
+            if ( !StringUtils.isBlank( line ) && !line.matches( "^#.+" ) ) {
+                break;
+            }
+        }
 
-        if ( header == null ) {
+        String header = line;
+
+        if ( StringUtils.isBlank( header ) ) {
             throw new IOException( "File had no header" );
         }
 
@@ -1582,13 +1731,17 @@ public class GeneAnnotations {
 
         tick();
         assert ( numFields > probeIndex + 1 && numFields > geneSymbolIndex + 1 );
-        Pattern pat = Pattern.compile( "[0-9]+" );
+
+        /*
+         * This pattern is designed to work with old or new formats (old was not padded to 7 digits and lacks "GO:").
+         */
+        Pattern pat = Pattern.compile( "(GO:)?[0-9]{1,7}$" );
+
         // loop through rows. Makes hash map of probes to go, and map of go to
         // probes.
         int n = 0;
-        String line = "";
 
-        log.debug( "File opened okay, parsing Affy CSV" );
+        log.debug( "File opened okay, parsing Affy annotation file" );
 
         while ( ( line = dis.readLine() ) != null ) {
 
@@ -1597,7 +1750,17 @@ public class GeneAnnotations {
                 throw new CancellationException();
             }
 
-            String[] fields = StringUtil.csvSplit( line );
+            /*
+             * New files are tabbed...
+             */
+            String[] fields = null;
+
+            if ( line.matches( ".+\t.+" ) ) {
+                fields = StringUtils.splitPreserveAllTokens( line, '\t' );
+            } else {
+                fields = StringUtil.csvSplit( line );
+            }
+
             if ( fields.length < probeIndex + 1 || fields.length < geneSymbolIndex + 1 ) {
                 continue; // skip lines that don't meet criteria.
             }
@@ -1613,8 +1776,10 @@ public class GeneAnnotations {
             if ( StringUtils.isBlank( gene ) || gene.equals( "---" ) ) {
                 gene = fields[alternateGeneSymbolIndex];
                 if ( StringUtils.isBlank( gene ) || gene.equals( "---" ) ) {
-                    throw new IllegalStateException( "Gene name was missing or invalid at line " + n
-                            + "; it is possible the file format is not readable; contact the developers." );
+                    // throw new IllegalStateException( "Gene name was missing or invalid at line " + n + "; (probe="
+                    // + probe + " it is possible the file format is not readable; contact the developers." );
+                    // log.warn( "Skipping unannotated probe: " + probe );
+                    continue;
                 }
             }
 
@@ -1636,7 +1801,8 @@ public class GeneAnnotations {
             }
 
             /*
-             * Each field is like this: 0000166 // nucleotide binding // inferred from electronic annotation
+             * Each field is like this: 0000166 // nucleotide binding // inferred from electronic annotation OR in new
+             * format, it has the GO:XXXXXX directly.
              */
 
             classIds = " // " + fields[goBpIndex] + " // " + fields[goMfIndex] + " // " + fields[goCcIndex];
@@ -1668,8 +1834,9 @@ public class GeneAnnotations {
         resetSelectedProbes();
 
         if ( this.probeToGeneName.size() == 0 || this.geneSetToProbeMap.size() == 0 ) {
-            throw new IllegalArgumentException(
-                    "The gene annotations had invalid information. Please check the format." );
+            throw new IllegalArgumentException( "The gene annotations had invalid information. "
+                    + this.probeToGeneName.size() + " probe names, " + this.geneSetToProbeMap.size()
+                    + " gene groups. Please check the format." );
         }
 
     }
@@ -1771,62 +1938,6 @@ public class GeneAnnotations {
     }
 
     /**
-     * @param header
-     * @return
-     */
-    private int getAgilentGeneSymbolIndex( String header ) {
-        String pattern = "GeneSymbol";
-        return findField( header, "\t", pattern );
-    }
-
-    /**
-     * @param header
-     * @return
-     */
-    private int getAgilentGeneNameIndex( String header ) {
-        String pattern = "GeneName";
-        return findField( header, "\t", pattern );
-    }
-
-    /**
-     * @param header
-     * @return
-     */
-    private int getAgilentGoIndex( String header ) {
-        String pattern = "GO";
-        return findField( header, "\t", pattern );
-    }
-
-    /**
-     * @param header
-     * @return
-     */
-    private int getAgilentProbeIndex( String header ) {
-        String pattern = "ProbeID";
-        return findField( header, "\t", pattern );
-    }
-
-    /**
-     * @param header
-     * @return
-     */
-    private int getAgilentNumFields( String header ) {
-        String[] fields = header.split( "\t" );
-        return fields.length;
-    }
-
-    /**
-     * 
-     */
-    private void tick() {
-        tick++;
-    }
-
-    public int ticks() {
-        return tick;
-    }
-
-    /**
      * Initialize the gene sets and other data structures that needs special handling before use.
      * 
      * @param goNames
@@ -1840,81 +1951,6 @@ public class GeneAnnotations {
         resetSelectedProbes();
         resetSelectedSets();
         sortGeneSets();
-    }
-
-    /**
-     * @return
-     */
-    public int numProbes() {
-        assert activeProbes != null;
-        return this.activeProbes.size();
-    }
-
-    /**
-     * @return Returns the activeProbes.
-     */
-    public Collection<String> getActiveProbes() {
-        return this.activeProbes;
-    }
-
-    /**
-     * @param probeId
-     * @return
-     */
-    public boolean hasProbe( String probeId ) {
-        return this.probeToGeneName.containsKey( probeId );
-    }
-
-    /**
-     * @param geneSymbol
-     * @return
-     */
-    public Collection<String> getGeneProbes( String geneSymbol ) {
-        if ( activeProbes == null ) return this.geneToProbeMap.get( geneSymbol );
-
-        Collection<String> finalList = new HashSet<String>();
-        Collection<String> probes = geneToProbeMap.get( geneSymbol );
-        for ( String probe : probes ) {
-            if ( activeProbes.contains( probe ) ) {
-                finalList.add( probe );
-            }
-        }
-        return finalList;
-
-    }
-
-    /**
-     * @param probe
-     * @return
-     */
-    public String probeToGene( String probe ) {
-        return this.probeToGeneName.get( probe );
-    }
-
-    /**
-     * @param id
-     * @return
-     */
-    public boolean hasGeneSet( String id ) {
-        if ( activeProbes == null ) return this.geneSetToGeneMap.containsKey( id );
-
-        return this.getGeneSets().contains( id );
-    }
-
-    /**
-     * @param set
-     */
-    public void setActiveProbes( Collection<String> set ) {
-        this.activeProbes = set;
-        activeProbesDirty();
-    }
-
-    public boolean getFilterNonSpecific() {
-        return filterNonSpecific;
-    }
-
-    public void setFilterNonSpecific( boolean filterNonSpecific ) {
-        this.filterNonSpecific = filterNonSpecific;
     }
 
 }
