@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import cern.colt.list.DoubleArrayList;
 import cern.jet.math.Arithmetic;
 import cern.jet.stat.Probability;
 
@@ -53,6 +54,27 @@ public class Wilcoxon {
      */
     public static double exactWilcoxonP( int N, int n, int R ) {
         return pExact( N, n, R );
+    }
+
+    /**
+     * Convience method that computes a p-value using input of two double arrays.
+     * 
+     * @param a
+     * @param b
+     * @return
+     */
+    public static double exactWilcoxonP( double[] a, double[] b ) {
+        int fullLength = a.length + b.length;
+        // need sum of A's ranks with respect to all
+        DoubleArrayList ad = new DoubleArrayList( a );
+        DoubleArrayList bb = new DoubleArrayList( b );
+        ad.addAllOf( bb );
+        DoubleArrayList abR = Rank.rankTransform( ad );
+        int aSum = 0;
+        for ( int i = 0; i < a.length; i++ ) {
+            aSum += abR.get( i );
+        }
+        return pExact( fullLength, a.length, aSum );
     }
 
     /**
