@@ -66,7 +66,8 @@ public class ParameterGrabber {
             String name = f.getName();
             Class<?> type = f.getType();
 
-            if ( !type.equals( String.class ) ) {
+            // if its a class or interface then skip it, unless it is a string
+            if ( ( !type.isPrimitive() || type.isInterface() ) && !type.equals( String.class ) ) {
                 continue;
             }
 
@@ -84,5 +85,4 @@ public class ParameterGrabber {
         }
         return params;
     }
-
 }
