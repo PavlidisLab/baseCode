@@ -36,6 +36,11 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
  */
 public class StringToStringSetMap extends HashMap<String, Set<String>> {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     public StringToStringSetMap() {
         super();
     }

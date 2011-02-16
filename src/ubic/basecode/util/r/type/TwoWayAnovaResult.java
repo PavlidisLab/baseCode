@@ -57,7 +57,7 @@ public class TwoWayAnovaResult extends AnovaResult {
      * A null result.
      */
     public TwoWayAnovaResult() {
-    };
+    }
 
     /**
      * @param rAnovaTable from R

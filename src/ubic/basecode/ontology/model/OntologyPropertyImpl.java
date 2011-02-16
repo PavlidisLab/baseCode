@@ -26,6 +26,10 @@ import ubic.basecode.ontology.AbstractOntologyResource;
  */
 public abstract class OntologyPropertyImpl extends AbstractOntologyResource implements OntologyProperty {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     protected boolean isFunctional;
 
     public boolean isFunctional() {

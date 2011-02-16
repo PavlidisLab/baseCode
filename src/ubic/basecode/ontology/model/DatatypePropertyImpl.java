@@ -24,6 +24,11 @@ package ubic.basecode.ontology.model;
  */
 public class DatatypePropertyImpl extends OntologyPropertyImpl implements DatatypeProperty {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     private com.hp.hpl.jena.ontology.DatatypeProperty resource;
 
     Class<?> type;

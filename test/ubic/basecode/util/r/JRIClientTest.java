@@ -60,12 +60,13 @@ public class JRIClientTest extends TestCase {
     public void setUp() throws Exception {
 
         try {
+            log.debug( "java.library.path=" + System.getProperty( "java.library.path" ) );
             rc = new JRIClient();
             if ( rc == null || !rc.isConnected() ) {
                 connected = false;
                 return;
             }
-        } catch ( RuntimeException e ) {
+        } catch ( UnsatisfiedLinkError e ) {
             log.error( e, e );
             connected = false;
             return;

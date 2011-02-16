@@ -20,9 +20,6 @@
 package ubic.basecode.ontology.providers;
 
 import ubic.basecode.ontology.Configuration;
-import ubic.basecode.ontology.OntologyLoader;
-
-import com.hp.hpl.jena.ontology.OntModel;
 
 /**
  * Holds a copy of the FMA Ontology on disk. This gets loaded on startup.

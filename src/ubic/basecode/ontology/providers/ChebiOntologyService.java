@@ -20,9 +20,6 @@
 package ubic.basecode.ontology.providers;
 
 import ubic.basecode.ontology.Configuration;
-import ubic.basecode.ontology.OntologyLoader;
-
-import com.hp.hpl.jena.ontology.OntModel;
 
 /**
  * Loads the CHEBI Ontology at startup in its own thread. Controlled in build.properties by load.chebiOntology

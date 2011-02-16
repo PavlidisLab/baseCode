@@ -29,6 +29,10 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CancellationException extends RuntimeException {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private static Log log = LogFactory.getLog( CancellationException.class.getName() );
 
     /**

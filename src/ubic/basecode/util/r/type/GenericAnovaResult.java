@@ -38,6 +38,11 @@ import org.rosuda.REngine.REXPMismatchException;
  */
 public class GenericAnovaResult extends AnovaResult implements Serializable {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     Map<String, AnovaEffect> mainEffects = new HashMap<String, AnovaEffect>();
 
     Map<InteractionFactor, AnovaEffect> interactionEffects = new HashMap<InteractionFactor, AnovaEffect>();

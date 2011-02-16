@@ -63,9 +63,8 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
         if ( this.getUri() != null ) {
             return ObjectUtils.equals( this.getUri(), that.getUri() );
-        } else {
-            return ObjectUtils.equals( this.getTerm(), that.getTerm() );
         }
+        return ObjectUtils.equals( this.getTerm(), that.getTerm() );
 
     }
 
@@ -268,9 +267,8 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
         // assert this.getUri() != null : "No URI for " + this.getTerm();
         if ( this.getUri() != null ) {
             return this.getUri().hashCode();
-        } else {
-            return this.getTerm().hashCode();
         }
+        return this.getTerm().hashCode();
     }
 
     /*

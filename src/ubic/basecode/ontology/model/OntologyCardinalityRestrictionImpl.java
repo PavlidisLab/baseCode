@@ -27,6 +27,10 @@ import com.hp.hpl.jena.ontology.Restriction;
 public class OntologyCardinalityRestrictionImpl extends OntologyRestrictionImpl implements
         OntologyCardinalityRestriction {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     int cardinality = 0;
     CardinalityType cardType;
 

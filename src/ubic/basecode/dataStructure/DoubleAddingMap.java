@@ -25,11 +25,10 @@ public class DoubleAddingMap<K> extends HashMap<K, Double> {
         if ( current == null ) {
             put( key, d );
             return d;
-        } else {
-            double sum = current + d;
-            put( key, sum );
-            return sum;
         }
+        double sum = current + d;
+        put( key, sum );
+        return sum;
     }
 
     public static void main( String args[] ) {

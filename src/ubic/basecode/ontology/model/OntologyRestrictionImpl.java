@@ -28,6 +28,10 @@ import com.hp.hpl.jena.ontology.Restriction;
  */
 public abstract class OntologyRestrictionImpl extends OntologyTermImpl implements OntologyRestriction {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     protected OntologyProperty restrictionOn = null;
 
     public OntologyRestrictionImpl( Restriction resource  ) {

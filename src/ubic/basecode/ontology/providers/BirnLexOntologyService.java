@@ -22,10 +22,7 @@ package ubic.basecode.ontology.providers;
 import java.util.Collection;
 
 import ubic.basecode.ontology.Configuration;
-import ubic.basecode.ontology.OntologyLoader;
 import ubic.basecode.ontology.model.OntologyTerm;
-
-import com.hp.hpl.jena.ontology.OntModel;
 
 import ubic.basecode.ontology.providers.AbstractOntologyMemoryBackedService;
 /**

@@ -99,7 +99,7 @@ public class OneWayAnovaResult extends AnovaResult {
      */
     public Double getFVal() {
         return fVal;
-    };
+    }
 
     /**
      * @return the pval

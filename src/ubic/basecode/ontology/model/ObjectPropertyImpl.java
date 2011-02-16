@@ -33,6 +33,10 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
  */
 public class ObjectPropertyImpl extends OntologyPropertyImpl implements ubic.basecode.ontology.model.ObjectProperty {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private com.hp.hpl.jena.ontology.ObjectProperty resource;
 
     public ObjectPropertyImpl( ObjectProperty resource ) {

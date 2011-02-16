@@ -85,6 +85,7 @@ public abstract class AbstractOntologyService {
     }
     
     protected class OntologyIntializationThread extends Thread {        
+        @Override
         public void run() {
 
             terms = new HashMap<String, OntologyTerm>();

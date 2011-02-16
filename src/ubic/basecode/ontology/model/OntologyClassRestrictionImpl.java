@@ -31,6 +31,10 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
  * @version $Id$
  */
 public class OntologyClassRestrictionImpl extends OntologyRestrictionImpl implements OntologyClassRestriction {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private OntologyTerm restrictedTo = null;
     RDFNode value = null;
 

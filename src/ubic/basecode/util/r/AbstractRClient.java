@@ -684,11 +684,9 @@ public abstract class AbstractRClient implements RClient {
                 if ( rexp.isLanguage() ) {
                     throw new UnsupportedOperationException( "Don't know how to deal with vector type of "
                             + rexp.getClass().getName() );
-                } else {
-
-                    log.debug( rexp.getClass().getName() );
-                    result = new ArrayList<Object>( rexp.asList().values() );
                 }
+                log.debug( rexp.getClass().getName() );
+                result = new ArrayList<Object>( rexp.asList().values() );
             } else {
                 throw new UnsupportedOperationException( "Don't know how to deal with vector type of "
                         + rexp.getClass().getName() );
