@@ -34,7 +34,7 @@ public class KruskalWallis {
      * Perform a Kruskal-Wallis one-way ANOVA.
      * <p>
      * Implementation note: Does not make special corrections for ties, though ties are given the averaged ranks.
-     * Completely bare-bones.
+     * Completely bare-bones. Missing values are not tolerated well.
      * 
      * @param scores
      * @param groupings integer indicators of which values are in which groups. The actual values don't matter.
