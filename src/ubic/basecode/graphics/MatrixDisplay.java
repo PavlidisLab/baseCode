@@ -201,6 +201,9 @@ public class MatrixDisplay<R, C> extends JPanel {
 
     }
 
+    /**
+     * 
+     */
     public void resetRowKeys() {
         colorMatrix.resetRowKeys();
     }
@@ -208,8 +211,7 @@ public class MatrixDisplay<R, C> extends JPanel {
     /**
      * @param outPngFilename String
      * @param showLabels boolean
-     * @param standardize normalize to deviation 1, mean 0.
-     * @todo never read
+     * @param standardize normalize to deviation 1, mean 0. FIXME this is not used?
      * @throws IOException
      */
     public void saveImage( ColorMatrix<R, C> matrix, String outPngFilename, boolean showLabels, boolean standardize )
@@ -257,6 +259,11 @@ public class MatrixDisplay<R, C> extends JPanel {
         saveImage( this.colorMatrix, outPngFilename, m_isShowLabels, m_isShowingStandardizedMatrix );
     }
 
+    /**
+     * @param outPngFilename
+     * @param showLabels
+     * @throws java.io.IOException
+     */
     public void saveImage( String outPngFilename, boolean showLabels ) throws java.io.IOException {
         saveImage( this.colorMatrix, outPngFilename, showLabels, m_isShowingStandardizedMatrix );
     }
@@ -352,13 +359,18 @@ public class MatrixDisplay<R, C> extends JPanel {
 
     public void writeToPng( ColorMatrix<R, C> matrix, OutputStream stream, boolean showLabels ) {
         // Draw the image to a buffer
+        boolean oldLabelSate = this.m_isShowLabels;
+        if ( !oldLabelSate ) {
+            this.setLabelsVisible( true );
+        }
+
         Dimension d = getSize( showLabels ); // how big is the image with row and
         // column labels
         BufferedImage m_image = new BufferedImage( d.width, d.height, BufferedImage.TYPE_INT_RGB );
         Graphics2D g = m_image.createGraphics();
         drawMatrix( matrix, g, showLabels );
         if ( showLabels ) {
-            // drawRowNames( g );
+            drawRowNames( g );
             drawColumnNames( g );
         }
 
@@ -368,6 +380,8 @@ public class MatrixDisplay<R, C> extends JPanel {
         } catch ( IOException e ) {
             log.error( "Error writing image to output stream.  Stacktrace is: " + e.toString() );
         }
+
+        this.setLabelsVisible( oldLabelSate );
     }
 
     /**
@@ -379,43 +393,43 @@ public class MatrixDisplay<R, C> extends JPanel {
 
         if ( colorMatrix == null ) return;
 
+        g.setColor( Color.black );
+        g.setFont( m_labelFont );
+        int y = m_columnLabelHeight;
+
         int columnCount = colorMatrix.getColumnCount();
         for ( int j = 0; j < columnCount; j++ ) {
             // compute the coordinates
             int x = m_cellSize.width + j * m_cellSize.width - m_fontGutter;
-            int y = m_columnLabelHeight;
 
-            // get column name
             Object columnName = colorMatrix.getColumnName( j );
             if ( null == columnName ) {
                 columnName = "Undefined";
             }
 
             // fix the name length as 20 characters
-            // add ellipses if > 20
+            // add ellipses (...) if > 20
             // spacepad to 20 if < 20
             String columnNameString = columnName.toString();
             if ( m_maxColumnLength > 0 ) {
                 columnNameString = padColumnString( columnNameString );
             }
-            // set font and color
-            g.setColor( Color.black );
-            g.setFont( m_labelFont );
 
             // print the text vertically
             Util.drawVerticalString( g, columnNameString, m_labelFont, x, y );
 
-        } // end for column
+        }
     } // end drawColumnNames
 
     /**
-     * Gets called from #paintComponent and #saveImage
+     * Gets called from #paintComponent and #saveImage. Does not draw the labels.
      * 
      * @param g Graphics
      * @param leaveRoomForLabels boolean
      */
     protected void drawMatrix( ColorMatrix<R, C> matrix, Graphics g, boolean leaveRoomForLabels ) {
 
+        // fill in background with white.
         g.setColor( Color.white );
         g.fillRect( 0, 0, this.getWidth(), this.getHeight() );
 
@@ -439,8 +453,8 @@ public class MatrixDisplay<R, C> extends JPanel {
                 g.fillRect( x, y, width, m_cellSize.height );
             }
 
-        } // end looping through the matrix, one row at a time
-    } // end drawMatrix
+        }
+    }
 
     /**
      * Draws row names (horizontally)
@@ -452,20 +466,20 @@ public class MatrixDisplay<R, C> extends JPanel {
         if ( colorMatrix == null ) return;
 
         int rowCount = colorMatrix.getRowCount();
+        int xLabelStartPosition = colorMatrix.getColumnCount() * m_cellSize.width + m_labelGutter;
+        g.setColor( Color.black );
+        g.setFont( m_labelFont );
 
-        // draw row names
         for ( int i = 0; i < rowCount; i++ ) {
-            g.setColor( Color.black );
-            g.setFont( m_labelFont );
             int y = i * m_cellSize.height + m_columnLabelHeight + m_labelGutter;
-            int xRatio = colorMatrix.getColumnCount() * m_cellSize.width + m_labelGutter;
-            int yRatio = y + m_cellSize.height - m_fontGutter;
+            int yLabelPosition = y + m_cellSize.height - m_fontGutter;
+
             Object rowName = colorMatrix.getRowName( i );
             if ( null == rowName ) {
                 rowName = "Undefined";
             }
 
-            g.drawString( rowName.toString(), xRatio, yRatio );
+            g.drawString( rowName.toString(), xLabelStartPosition, yLabelPosition );
 
         } // end drawing row names
     } // end rawRowName
@@ -533,6 +547,7 @@ public class MatrixDisplay<R, C> extends JPanel {
 
     /*
      * (non-Javadoc)
+     * 
      * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
      */
     @Override

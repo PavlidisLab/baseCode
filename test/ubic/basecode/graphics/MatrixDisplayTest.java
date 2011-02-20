@@ -112,7 +112,9 @@ public class MatrixDisplayTest extends TestCase {
 
         boolean fail = false;
         try {
-            OutputStream stream = new FileOutputStream( File.createTempFile( "testOuputStream", ".out" ) );
+            File tempfile = File.createTempFile( "testOuputStream", ".png" );
+            System.err.println( "Saved to: " + tempfile );
+            OutputStream stream = new FileOutputStream( tempfile );
             display.saveImageToPng( colorMatrix, stream, true, true );
         } catch ( IOException e ) {
             fail = true;

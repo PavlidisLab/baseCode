@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.text.Format;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import ubic.basecode.dataStructure.matrix.Matrix2D;
@@ -49,8 +50,8 @@ public class MatrixWriter<R, C> {
     protected String topLeft;
 
     protected Map<?, String> sliceNameMap;
-    protected Map<C, String> colNameMap;
-    protected Map<R, String> rowNameMap;
+    protected Map<C, String> colNameMap = new HashMap<C, String>();
+    protected Map<R, String> rowNameMap = new HashMap<R, String>();
 
     public MatrixWriter( OutputStream out ) {
         this( out, null, DEFAULT_SEP );
@@ -91,10 +92,20 @@ public class MatrixWriter<R, C> {
         this( out, null, sep );
     }
 
+    /**
+     * Use to customize the labels instead of relying on the toString method of the column object
+     * 
+     * @param colNameMap
+     */
     public void setColNameMap( Map<C, String> colNameMap ) {
         this.colNameMap = colNameMap;
     }
 
+    /**
+     * Use to customize the labels instead of relying on the toString method of the row object
+     * 
+     * @param rowNameMap
+     */
     public void setRowNameMap( Map<R, String> rowNameMap ) {
         this.rowNameMap = rowNameMap;
     }
@@ -114,7 +125,7 @@ public class MatrixWriter<R, C> {
     /**
      * @param <V>
      * @param matrix
-     * @param printNames Should the row names be included
+     * @param printNames Should the row and column names be included
      * @throws IOException
      */
     public <V> void writeMatrix( Matrix2D<R, C, V> matrix, boolean printNames ) throws IOException {
@@ -124,7 +135,11 @@ public class MatrixWriter<R, C> {
             for ( Iterator<C> it = matrix.getColNames().iterator(); it.hasNext(); ) {
                 Object colName = it.next();
                 buf.append( sep );
-                buf.append( colName );
+                if ( this.colNameMap.containsKey( colName ) ) {
+                    buf.append( colNameMap.get( colName ) );
+                } else {
+                    buf.append( colName );
+                }
             }
             buf.append( "\n" );
             out.write( buf.toString() );
@@ -134,7 +149,13 @@ public class MatrixWriter<R, C> {
             R rowName = rowIt.next();
             int rowIndex = matrix.getRowIndexByName( rowName );
             buf = new StringBuffer();
-            if ( printNames ) buf.append( rowName + sep );
+            if ( printNames ) {
+                if ( this.rowNameMap.containsKey( rowName ) ) {
+                    buf.append( rowNameMap.get( rowName ) + sep );
+                } else {
+                    buf.append( rowName + sep );
+                }
+            }
             for ( Iterator<C> colIt = matrix.getColNames().iterator(); colIt.hasNext(); ) {
                 C colName = colIt.next();
                 int colIndex = matrix.getColIndexByName( colName );
@@ -169,8 +190,9 @@ public class MatrixWriter<R, C> {
             for ( Iterator<S> it = matrix.getSliceNameIterator(); it.hasNext(); ) {
                 Object sliceObj = it.next();
                 String sliceName = sliceObj.toString();
-                if ( sliceNameMap != null && sliceNameMap.get( sliceObj ) != null )
+                if ( sliceNameMap != null && sliceNameMap.get( sliceObj ) != null ) {
                     sliceName = sliceNameMap.get( sliceObj ).toString();
+                }
                 buf.append( sep );
                 buf.append( sliceName );
             }
@@ -183,10 +205,11 @@ public class MatrixWriter<R, C> {
                 Object colObj = matrix.getColName( j );
                 String rowName = rowObj.toString();
                 String colName = colObj.toString();
-                if ( rowNameMap != null && rowNameMap.get( rowObj ) != null )
+                if ( rowNameMap != null && rowNameMap.containsKey( rowObj ) )
                     rowName = rowNameMap.get( rowObj ).toString();
-                if ( colNameMap != null && colNameMap.get( colObj ) != null )
+                if ( colNameMap != null && colNameMap.containsKey( colObj ) ) {
                     colName = colNameMap.get( colObj ).toString();
+                }
                 String name = rowName + ":" + colName;
 
                 StringBuffer buf = new StringBuffer();
