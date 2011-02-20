@@ -155,6 +155,9 @@ public class CorrelationStats {
      * @return double
      */
     public static double correlationForPvalue( double pval, int count ) {
+        /*
+         * FIXME there has to be another way. Fisher transform -> pvalue -> normal scores (probit) -> un-Fisherize
+         */
         double stop = pval / 100.0;
         double err = 1.0;
         double corrguess = 1.0;

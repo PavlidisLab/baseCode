@@ -64,7 +64,7 @@ public class NetUtils {
             throw new IOException( "Couldn't connect to " + host );
         }
         f.setFileType( mode );
-        log.info( "Connected to " + host );
+        log.debug( "Connected to " + host );
         return f;
     }
 
@@ -86,13 +86,13 @@ public class NetUtils {
         long expectedSize = checkForFile( f, seekFile );
 
         if ( outputFile.exists() && outputFile.length() == expectedSize && !force ) {
-            log.warn( "Output file " + outputFile + " already exists with correct size. Will not re-download" );
+            log.info( "Output file " + outputFile + " already exists with correct size. Will not re-download" );
             return true;
         }
 
         OutputStream os = new FileOutputStream( outputFile );
 
-        log.info( "Seeking file " + seekFile + " with size " + expectedSize + " bytes" );
+        log.debug( "Seeking file " + seekFile + " with size " + expectedSize + " bytes" );
         success = f.retrieveFile( seekFile, os );
         os.close();
         if ( !success ) {
