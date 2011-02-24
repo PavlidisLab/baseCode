@@ -176,6 +176,7 @@ public class SingularValueDecomposition<R, C> {
                 throw new RuntimeException( "SVD cancelled" );
             }
             if ( timer.getTime() > 1000 * 60 * 5 ) { // five minutes
+                svdFuture.cancel( true );
                 throw new RuntimeException( "SVD failed to converge, bailing" );
             }
         }
