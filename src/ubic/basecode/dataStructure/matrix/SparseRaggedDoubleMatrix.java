@@ -18,7 +18,12 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
@@ -37,20 +42,22 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      */
     private static final long serialVersionUID = -8911689395488681312L;
 
-    int columns = 0;
-
-    private Vector<DoubleMatrix1D> matrix; // a vector of DoubleMatrix1D containing the values of the matrix
     private boolean isDirty = true;
 
+    private Vector<List<Double>> matrix;
+    int columns = 0;
+
     public SparseRaggedDoubleMatrix() {
-        matrix = new Vector<DoubleMatrix1D>();
+        matrix = new Vector<List<Double>>();
     }
 
     /**
      * @param matrix1D
      */
     public void addRow( R name, DoubleMatrix1D matrix1D ) {
-        matrix.add( matrix1D );
+        List<Double> row = new ArrayList<Double>();
+        CollectionUtils.addAll( row, ArrayUtils.toObject( matrix1D.toArray() ) );
+        matrix.add( row );
         this.addRowName( name, matrix.size() - 1 );
         isDirty = true;
     }
@@ -61,9 +68,9 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * @param values
      */
     public void addRow( R name, IntArrayList indexes, DoubleArrayList values ) {
-        DoubleMatrix1D rowToAdd = new RCDoubleMatrix1D( indexes, values );
-
-        matrix.add( rowToAdd );
+        List<Double> row = new ArrayList<Double>();
+        CollectionUtils.addAll( row, ArrayUtils.toObject( values.elements() ) );
+        matrix.add( row );
         this.addRowName( name, matrix.size() - 1 );
         isDirty = true;
     }
@@ -92,10 +99,8 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         }
 
         int max = 0;
-        for ( Object element2 : matrix ) {
-            DoubleMatrix1D element = ( DoubleMatrix1D ) element2;
-
-            int value = element.size();
+        for ( List<Double> element2 : matrix ) {
+            int value = element2.size();
             if ( value > max ) {
                 max = value;
             }
@@ -107,6 +112,28 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return columns;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.DoubleMatrixNamed#copy()
+     */
+    @Override
+    public DoubleMatrix<R, C> copy() {
+        DoubleMatrix<R, C> returnval = new SparseRaggedDoubleMatrix<R, C>();
+
+        for ( int i = 0; i < this.rows(); i++ ) {
+            returnval.addRowName( this.getRowName( i ), i );
+            for ( int j = 0; j < this.columns(); j++ ) {
+                if ( i == 0 ) {
+                    returnval.addColumnName( this.getColName( j ), j );
+                }
+                returnval.set( i, j, this.get( i, j ) );
+            }
+        }
+        return returnval;
+
+    }
+
     /**
      * @param row
      * @param column
@@ -114,7 +141,7 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      */
     @Override
     public double get( int i, int j ) {
-        return matrix.get( i ).getQuick( j );
+        return matrix.get( i ).get( j );
     }
 
     /*
@@ -128,6 +155,33 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
             result[i] = get( i, col );
         }
         return result;
+    }
+
+    @Override
+    public DoubleMatrix<R, C> getColRange( int startCol, int endCol ) {
+        super.checkColRange( startCol, endCol );
+
+        DoubleMatrix<R, C> returnval = new SparseRaggedDoubleMatrix<R, C>();
+
+        for ( int j = 0, m = this.rows(); j < m; j++ ) {
+            if ( j == 0 ) {
+                R rowName = this.getRowName( j );
+                returnval.addRowName( rowName, j );
+            }
+            int k = 0;
+            List<Double> row = this.matrix.get( j );
+
+            for ( int i = startCol; i <= endCol && i < row.size(); i++ ) {
+                C colName = this.getColName( i );
+                if ( colName != null ) {
+                    returnval.addColumnName( colName, k );
+                }
+                returnval.set( j, k, this.get( j, i ) );
+                k++;
+            }
+
+        }
+        return returnval;
     }
 
     /*
@@ -155,7 +209,7 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      */
     @Override
     public double[] getRow( int i ) {
-        return matrix.get( i ).toArray();
+        return ArrayUtils.toPrimitive( matrix.get( i ).toArray( new Double[] {} ) );
     }
 
     /**
@@ -168,7 +222,13 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     @Override
     public DoubleArrayList getRowArrayList( int row ) {
         DoubleArrayList returnVal = new DoubleArrayList();
-        matrix.get( row ).getNonZeros( new IntArrayList(), returnVal );
+
+        for ( Double d : matrix.get( row ) ) {
+            if ( d != 0.0 ) {
+                returnVal.add( d );
+            }
+        }
+
         return returnVal;
     }
 
@@ -186,6 +246,36 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
             result[i] = new Double( row[j] );
         }
         return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.Matrix2D#getRowRange(int, int)
+     */
+    @Override
+    public DoubleMatrix<R, C> getRowRange( int startRow, int endRow ) {
+        super.checkRowRange( startRow, endRow );
+
+        DoubleMatrix<R, C> returnval = new SparseRaggedDoubleMatrix<R, C>();
+        int k = 0;
+        for ( int i = startRow; i <= endRow; i++ ) {
+            R rowName = this.getRowName( i );
+            if ( rowName != null ) {
+                returnval.addRowName( rowName, i );
+            }
+            List<Double> row = this.matrix.get( i );
+            for ( int j = 0, m = row.size(); j < m; j++ ) {
+                if ( i == 0 ) {
+                    C colName = this.getColName( j );
+                    returnval.addColumnName( colName, j );
+                }
+                double value = this.get( i, j );
+                returnval.set( k, j, value );
+            }
+            k++;
+        }
+        return returnval;
     }
 
     /**
@@ -206,8 +296,28 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return matrix.size();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.Matrix2D#set(int, int, java.lang.Object)
+     */
     public void set( int i, int j, Double d ) {
-        matrix.get( i ).set( j, d );
+        if ( matrix.size() <= i ) {
+            for ( int m = matrix.size() - 1; m < i; m++ ) {
+                matrix.add( new ArrayList<Double>() );
+            }
+        }
+        /*
+         * Fill out rows with zeros.
+         */
+        List<Double> row = matrix.get( i );
+
+        if ( row.size() <= j ) {
+            for ( int m = row.size() - 1; m < j; m++ ) {
+                row.add( 0.0 );
+            }
+        }
+        row.set( j, d );
     }
 
     /*
@@ -217,55 +327,7 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      */
     @Override
     public DoubleMatrix1D viewRow( int i ) {
-        return matrix.get( i );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.DoubleMatrixNamed#copy()
-     */
-    @Override
-    public DoubleMatrix<R, C> copy() {
-        DoubleMatrix<R, C> returnval = new SparseRaggedDoubleMatrix<R, C>();
-
-        for ( int i = 0; i < this.rows(); i++ ) {
-            returnval.addRowName( this.getRowName( i ), i );
-            for ( int j = 0; j < this.columns(); j++ ) {
-                if ( i == 0 ) {
-                    returnval.addColumnName( this.getColName( j ), j );
-                }
-                returnval.set( i, j, this.get( i, j ) );
-            }
-        }
-        return returnval;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.Matrix2D#getRowRange(int, int)
-     */
-    @Override
-    public DoubleMatrix<R, C> getRowRange( int startRow, int endRow ) {
-        super.checkRowRange( startRow, endRow );
-
-        DoubleMatrix<R, C> returnval = new SparseRaggedDoubleMatrix<R, C>();
-        for ( int i = startRow; i <= endRow; i++ ) {
-            R rowName = this.getRowName( i );
-            if ( rowName != null ) {
-                returnval.addRowName( rowName, i );
-            }
-            for ( int j = 0, m = this.columns(); j < m; j++ ) {
-                if ( i == 0 ) {
-                    C colName = this.getColName( j );
-                    returnval.addColumnName( colName, j );
-                }
-                returnval.set( i, j, this.get( i, j ) );
-            }
-        }
-        return returnval;
+        return new RCDoubleMatrix1D( this.getRow( i ) );
     }
 
 }

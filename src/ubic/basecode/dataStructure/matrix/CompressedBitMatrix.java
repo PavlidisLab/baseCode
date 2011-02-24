@@ -33,15 +33,11 @@ import no.uib.cipr.matrix.sparse.SparseVector;
  */
 public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> implements ObjectMatrix<R, C, double[]> {
 
-    public static int BITS_PER_ELEMENT = Double.SIZE - 1;
-
     public static long BIT1 = 0x1L;
 
-    private static final long serialVersionUID = 1775002416710933373L;
+    public static int BITS_PER_ELEMENT = Double.SIZE - 1;
 
-    public double[] getEntry( int row, int column ) {
-        return get( row, column );
-    }
+    private static final long serialVersionUID = 1775002416710933373L;
 
     /**
      * Count the number of one-bits of the passed-in <code>double</code> val.
@@ -56,9 +52,9 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
     }
 
     private FlexCompRowMatrix[] matrix;
-    private int totalBitsPerItem;
 
     private int rows = 0, cols = 0;
+    private int totalBitsPerItem;
 
     /**
      * Constructs a matrix with specified rows, columns, and total bits per element
@@ -158,6 +154,10 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
         return this.totalBitsPerItem;
     }
 
+    public double[] getByKeys( R r, C c ) {
+        return this.get( getRowIndexByName( r ), getColIndexByName( c ) );
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -165,6 +165,10 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
      */ 
     public double[][] getColumn( int i ) {
         throw new UnsupportedOperationException();
+    }
+
+    public double[] getEntry( int row, int column ) {
+        return get( row, column );
     }
 
     /*
@@ -300,6 +304,15 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
         throw new UnsupportedOperationException();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(java.lang.Object, java.lang.Object, java.lang.Object)
+     */
+    public void setByKeys( R r, C c, double[] v ) {
+        this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
+    }
+
     /**
      * Save the matrix to the specified file
      * 
@@ -359,19 +372,6 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
             }
         }
         return result;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(java.lang.Object, java.lang.Object, java.lang.Object)
-     */
-    public void setByKeys( R r, C c, double[] v ) {
-        this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
-    }
-
-    public double[] getByKeys( R r, C c ) {
-        return this.get( getRowIndexByName( r ), getColIndexByName( c ) );
     }
 
 }

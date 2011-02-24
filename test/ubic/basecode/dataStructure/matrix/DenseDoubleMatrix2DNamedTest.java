@@ -18,6 +18,7 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
+import ubic.basecode.io.reader.DoubleMatrixReader;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import junit.framework.TestCase;
@@ -30,10 +31,14 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
 
     DenseDoubleMatrix<String, String> testM;
     double[][] testData = { { 1, 2, 3, 4 }, { 11, 12, 13, 14 }, { 21, Double.NaN, 23, 24 } };
+    DoubleMatrix<String, String> testMatrix;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        DoubleMatrixReader f = new DoubleMatrixReader();
+
+        testMatrix = f.read( this.getClass().getResourceAsStream( "/data/testdata.txt" ) );
 
         testM = DoubleMatrixFactory.dense( testData );
         testM.setRowNames( java.util.Arrays.asList( new String[] { "a", "b", "c" } ) );
@@ -76,8 +81,7 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for
-     * {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#getRowByName(java.lang.Object)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#getRowByName(java.lang.Object)}.
      */
     public void testGetRowByName() {
         double[] actual = testM.getRowByName( "b" );
@@ -86,6 +90,18 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
         assertEquals( 12.0, actual[1], 0.000001 );
         assertEquals( 13.0, actual[2], 0.000001 );
         assertEquals( 14.0, actual[3], 0.000001 );
+    }
+
+    public void testGetRowRange() {
+        DoubleMatrix<String, String> rowRange = testMatrix.getRowRange( 1, 4 );
+        assertEquals( 12, rowRange.columns() );
+        assertEquals( 4, rowRange.rows() );
+    }
+
+    public void testGetColRange() {
+        DoubleMatrix<String, String> range = testMatrix.getColRange( 1, 4 );
+        assertEquals( 4, range.columns() );
+        assertEquals( 30, range.rows() );
     }
 
     /**
@@ -122,7 +138,7 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
      * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#getByKeys(Object, Object)}.
      */
     public void testGetByKeys() {
-        assertEquals( 24.0, testM.getByKeys( "c", "z") );
+        assertEquals( 24.0, testM.getByKeys( "c", "z" ) );
         assertEquals( 1.0, testM.getByKeys( "a", "w" ) );
         assertEquals( 13.0, testM.getByKeys( "b", "y" ) );
         assertEquals( Double.NaN, testM.getByKeys( "c", "x" ) );
@@ -150,8 +166,7 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for
-     * {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#getColByName(java.lang.Object)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.DenseDoubleMatrix#getColByName(java.lang.Object)}.
      */
     public void testGetColByName() {
         double[] actual = testM.getColumnByName( "x" );

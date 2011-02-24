@@ -93,97 +93,6 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * @see basecode.dataStructure.matrix.DoubleMatrixNamed#get(int, int)
      */
 
-    @Override
-    public double get( int x, int y ) {
-        assert data[x] != null;
-        return data[x].get( y );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#getColObj(int)
-     */
-
-    public Double[] getColObj( int col ) {
-        Double[] result = new Double[rows()];
-        for ( int i = 0; i < rows(); i++ ) {
-            result[i] = new Double( get( i, col ) );
-        }
-        return result;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#getColumn(int)
-     */
-    @Override
-    public double[] getColumn( int col ) {
-        double[] result = new double[rows()];
-        for ( int i = 0; i < rows(); i++ ) {
-            result[i] = get( i, col );
-        }
-        return result;
-    }
-
-    public Double getObject( int row, int col ) {
-        return new Double( get( row, col ) );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#getRow(int)
-     */
-
-    @Override
-    public double[] getRow( int i ) {
-        return data[i].elements();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#getRowArrayList(int)
-     */
-    @Override
-    public DoubleArrayList getRowArrayList( int i ) {
-        return data[i];
-    }
-
-    public Double[] getRowObj( int row ) {
-        Double[] result = new Double[columns()];
-        for ( int i = 0; i < columns(); i++ ) {
-            result[i] = new Double( get( row, i ) );
-        }
-        return result;
-    }
-
-    public boolean isMissing( int i, int j ) {
-        return Double.isNaN( get( i, j ) );
-    }
-
-    public int rows() {
-        return data.length;
-    }
-
-    public void set( int x, int y, Double value ) {
-        assert data[x] != null;
-        assert y >= 0 && y < data[x].size();
-        data[x].set( y, value );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#viewRow(int)
-     */
-    @Override
-    public DoubleMatrix1D viewRow( int j ) {
-        return new DenseDoubleMatrix1D( data[j].elements() );
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -209,13 +118,104 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     /*
      * (non-Javadoc)
      * 
+     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#getColObj(int)
+     */
+
+    @Override
+    public double get( int x, int y ) {
+        assert data[x] != null;
+        return data[x].get( y );
+    }
+
+    public Double[] getColObj( int col ) {
+        Double[] result = new Double[rows()];
+        for ( int i = 0; i < rows(); i++ ) {
+            result[i] = new Double( get( i, col ) );
+        }
+        return result;
+    }
+
+    @Override
+    public DoubleMatrix<R, C> getColRange( int startCol, int endCol ) {
+        super.checkColRange( startCol, endCol );
+
+        DoubleMatrix<R, C> returnval = new FastRowAccessDoubleMatrix<R, C>( this.rows(), 1 + endCol - startCol );
+        int k = 0;
+        for ( int i = startCol; i <= endCol; i++ ) {
+            C colName = this.getColName( i );
+            if ( colName != null ) {
+                returnval.addColumnName( colName, i );
+            }
+            for ( int j = 0, m = this.rows(); j < m; j++ ) {
+                if ( i == startCol ) {
+                    R rowName = this.getRowName( j );
+                    returnval.addRowName( rowName, j );
+                }
+                returnval.set( j, k, this.get( j, i ) );
+            }
+            k++;
+        }
+        return returnval;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#getRow(int)
+     */
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#getColumn(int)
+     */
+    @Override
+    public double[] getColumn( int col ) {
+        double[] result = new double[rows()];
+        for ( int i = 0; i < rows(); i++ ) {
+            result[i] = get( i, col );
+        }
+        return result;
+    }
+
+    public Double getObject( int row, int col ) {
+        return new Double( get( row, col ) );
+    }
+
+    @Override
+    public double[] getRow( int i ) {
+        return data[i].elements();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#getRowArrayList(int)
+     */
+    @Override
+    public DoubleArrayList getRowArrayList( int i ) {
+        return data[i];
+    }
+
+    public Double[] getRowObj( int row ) {
+        Double[] result = new Double[columns()];
+        for ( int i = 0; i < columns(); i++ ) {
+            result[i] = new Double( get( row, i ) );
+        }
+        return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see ubic.basecode.dataStructure.matrix.Matrix2D#getRowRange(int, int)
      */
     @Override
     public DoubleMatrix<R, C> getRowRange( int startRow, int endRow ) {
         super.checkRowRange( startRow, endRow );
 
-        DoubleMatrix<R, C> returnval = new FastRowAccessDoubleMatrix<R, C>( endRow - startRow, this.columns() );
+        DoubleMatrix<R, C> returnval = new FastRowAccessDoubleMatrix<R, C>( endRow + 1 - startRow, this.columns() );
+        int k = 0;
         for ( int i = startRow; i <= endRow; i++ ) {
             R rowName = this.getRowName( i );
             if ( rowName != null ) {
@@ -226,9 +226,39 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
                     C colName = this.getColName( j );
                     returnval.addColumnName( colName, j );
                 }
-                returnval.set( i, j, this.get( i, j ) );
+                double value = this.get( i, j );
+                assert k < returnval.rows();
+                assert j < returnval.columns();
+                returnval.set( k, j, value );
+
             }
+            k++;
         }
         return returnval;
+    }
+
+    public boolean isMissing( int i, int j ) {
+        return Double.isNaN( get( i, j ) );
+    }
+
+    public int rows() {
+        return data.length;
+    }
+
+    public void set( int x, int y, Double value ) {
+        assert data != null;
+        assert data[x] != null;
+        assert y >= 0 && y < data[x].size();
+        data[x].set( y, value );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#viewRow(int)
+     */
+    @Override
+    public DoubleMatrix1D viewRow( int j ) {
+        return new DenseDoubleMatrix1D( data[j].elements() );
     }
 }

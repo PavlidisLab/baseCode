@@ -47,24 +47,6 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
         assign( values );
     }
 
-    @Override
-    public DoubleMatrix1D assign( double[] v ) {
-        this.indexes = new IntArrayList();
-        this.values = new DoubleArrayList();
-        int used = 0;
-        for ( int i = 0; i < v.length; i++ ) {
-            if ( v[i] == 0 || Double.isNaN( v[i] ) ) {
-                continue;
-            }
-            this.indexes.add( i );
-            this.values.add( v[i] );
-            used++;
-
-        }
-        this.size = v.length;
-        return this;
-    }
-
     /**
      * @param length
      */
@@ -90,6 +72,24 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
         this.values = values;
     }
 
+    @Override
+    public DoubleMatrix1D assign( double[] v ) {
+        this.indexes = new IntArrayList();
+        this.values = new DoubleArrayList();
+        int used = 0;
+        for ( int i = 0; i < v.length; i++ ) {
+            if ( v[i] == 0 || Double.isNaN( v[i] ) ) {
+                continue;
+            }
+            this.indexes.add( i );
+            this.values.add( v[i] );
+            used++;
+
+        }
+        this.size = v.length;
+        return this;
+    }
+
     /**
      * WARNING this only assigns to the non-empty values, for performance reasons. If you need to assign to any index,
      * you have to use another way.
@@ -102,6 +102,11 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
             values.set( i, function.apply( values.get( i ) ) );
         }
         return this;
+    }
+
+    @Override
+    public double get( int index ) {
+        return this.getQuick( index );
     }
 
     /*
@@ -118,11 +123,6 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
             return values.get( location );
         }
         return 0;
-    }
-
-    @Override
-    public double get( int index ) {
-        return this.getQuick( index );
     }
 
     /*

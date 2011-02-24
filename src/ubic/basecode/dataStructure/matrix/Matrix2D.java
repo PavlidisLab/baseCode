@@ -47,6 +47,17 @@ public abstract interface Matrix2D<R, C, V> {
     public void addRowName( R s, int index );
 
     /**
+     * Attempt to coerce the entries into doubles.
+     * <p>
+     * Numeric entries (Double, BigDecimal, Integer, BigInteger) and Strings that can be parsed as doubles are
+     * converted. Booleans are converted to 1 or 0. Dates are converted via Date.getDate(). Null entries are rendered as
+     * Double.NaN. For entries that are other types of objects, the HashCode is used.
+     * 
+     * @return
+     */
+    public double[][] asDoubles();
+
+    /**
      * Get the number of columns the matrix has.
      * 
      * @return int
@@ -64,6 +75,12 @@ public abstract interface Matrix2D<R, C, V> {
      * @return
      */
     public boolean containsRowName( R rowName );
+
+    /**
+     * @param r
+     * @param c
+     */
+    public V getByKeys( R r, C c );
 
     /**
      * Get the index of a column by name.
@@ -85,6 +102,13 @@ public abstract interface Matrix2D<R, C, V> {
      * @return
      */
     public List<C> getColNames();
+
+    /**
+     * @param i
+     * @param j
+     * @return
+     */
+    public V getEntry( int i, int j );
 
     /**
      * Get the index of a row by name..
@@ -118,13 +142,6 @@ public abstract interface Matrix2D<R, C, V> {
      * @return boolean
      */
     public boolean hasColNames();
-
-    /**
-     * @param i
-     * @param j
-     * @return
-     */
-    public V getEntry( int i, int j );
 
     /**
      * @param r Object
@@ -161,16 +178,6 @@ public abstract interface Matrix2D<R, C, V> {
     public int rows();
 
     /**
-     * @param v
-     */
-    public void setColumnNames( List<C> v );
-
-    /**
-     * @param v
-     */
-    public void setRowNames( List<R> v );
-
-    /**
      * @param row
      * @param column
      * @param value
@@ -185,20 +192,13 @@ public abstract interface Matrix2D<R, C, V> {
     public void setByKeys( R r, C c, V v );
 
     /**
-     * @param r
-     * @param c
+     * @param v
      */
-    public V getByKeys( R r, C c );
+    public void setColumnNames( List<C> v );
 
     /**
-     * Attempt to coerce the entries into doubles.
-     * <p>
-     * Numeric entries (Double, BigDecimal, Integer, BigInteger) and Strings that can be parsed as doubles are
-     * converted. Booleans are converted to 1 or 0. Dates are converted via Date.getDate(). Null entries are rendered as
-     * Double.NaN. For entries that are other types of objects, the HashCode is used.
-     * 
-     * @return
+     * @param v
      */
-    public double[][] asDoubles();
+    public void setRowNames( List<R> v );
 
 }

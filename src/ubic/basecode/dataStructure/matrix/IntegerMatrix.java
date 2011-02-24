@@ -37,10 +37,6 @@ public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implement
         matrix = new ObjectMatrixImpl<R, C, Integer>( x, y );
     }
 
-    public Integer getEntry( int row, int column ) {
-        return get( row, column );
-    }
-
     /**
      * @return
      */
@@ -55,19 +51,6 @@ public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implement
      */
     public Integer get( int row, int column ) {
         return matrix.get( row, column );
-    }
-
-    public void set( int row, int column, Integer value ) {
-        matrix.set( row, column, value );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(java.lang.Object, java.lang.Object, java.lang.Object)
-     */
-    public void setByKeys( R r, C c, Integer v ) {
-        this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }
 
     public Integer getByKeys( R r, C c ) {
@@ -88,6 +71,10 @@ public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implement
             result[i] = get( i, col );
         }
         return result;
+    }
+
+    public Integer getEntry( int row, int column ) {
+        return get( row, column );
     }
 
     public Integer getObject( int row, int col ) {
@@ -115,6 +102,19 @@ public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implement
      */
     public int rows() {
         return matrix.rows();
+    }
+
+    public void set( int row, int column, Integer value ) {
+        matrix.set( row, column, value );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(java.lang.Object, java.lang.Object, java.lang.Object)
+     */
+    public void setByKeys( R r, C c, Integer v ) {
+        this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }
 
     /**

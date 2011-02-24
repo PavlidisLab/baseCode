@@ -55,6 +55,14 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         matrix = new DenseDoubleMatrix2D( rows, cols );
     }
 
+    /**
+     * @return double[][]
+     */
+    @Override
+    public double[][] asArray() {
+        return matrix.toArray();
+    }
+
     public int columns() {
         return matrix.columns();
     }
@@ -112,6 +120,29 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
             result[i] = new Double( get( i, col ) );
         }
         return result;
+    }
+
+    @Override
+    public DoubleMatrix<R, C> getColRange( int startCol, int endCol ) {
+        super.checkColRange( startCol, endCol );
+
+        DoubleMatrix<R, C> returnval = new DenseDoubleMatrix<R, C>( this.rows(), 1 + endCol - startCol );
+        int k = 0;
+        for ( int i = startCol; i <= endCol; i++ ) {
+            C colName = this.getColName( i );
+            if ( colName != null ) {
+                returnval.addColumnName( colName, i );
+            }
+            for ( int j = 0, m = this.rows(); j < m; j++ ) {
+                if ( i == startCol ) {
+                    R rowName = this.getRowName( j );
+                    returnval.addRowName( rowName, j );
+                }
+                returnval.set( j, k, this.get( j, i ) );
+            }
+            k++;
+        }
+        return returnval;
     }
 
     /*
@@ -187,52 +218,6 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return result;
     }
 
-    public boolean isMissing( int i, int j ) {
-        return Double.isNaN( get( i, j ) );
-    }
-
-    public int rows() {
-        return matrix.rows();
-    }
-
-    public void set( int row, int column, Double value ) {
-        matrix.set( row, column, value );
-    }
-
-    /**
-     * @return int
-     * @see AbstractMatrix2D#size()
-     */
-    public int size() {
-        return matrix.size();
-    }
-
-    /**
-     * @return double[][]
-     */
-    @Override
-    public double[][] asArray() {
-        return matrix.toArray();
-    }
-
-    /**
-     * @param column int
-     * @return cern.colt.matrix.DoubleMatrix1D
-     */
-    public DoubleMatrix1D viewColumn( int column ) {
-        return matrix.viewColumn( column );
-    }
-
-    /**
-     * @param row int
-     * @return DoubleMatrix1D
-     * @see DenseDoubleMatrix#viewRow(int)
-     */
-    @Override
-    public DoubleMatrix1D viewRow( int row ) {
-        return matrix.viewRow( row );
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -259,6 +244,44 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
             k++;
         }
         return returnval;
+    }
+
+    public boolean isMissing( int i, int j ) {
+        return Double.isNaN( get( i, j ) );
+    }
+
+    public int rows() {
+        return matrix.rows();
+    }
+
+    public void set( int row, int column, Double value ) {
+        matrix.set( row, column, value );
+    }
+
+    /**
+     * @return int
+     * @see AbstractMatrix2D#size()
+     */
+    public int size() {
+        return matrix.size();
+    }
+
+    /**
+     * @param column int
+     * @return cern.colt.matrix.DoubleMatrix1D
+     */
+    public DoubleMatrix1D viewColumn( int column ) {
+        return matrix.viewColumn( column );
+    }
+
+    /**
+     * @param row int
+     * @return DoubleMatrix1D
+     * @see DenseDoubleMatrix#viewRow(int)
+     */
+    @Override
+    public DoubleMatrix1D viewRow( int row ) {
+        return matrix.viewRow( row );
     }
 
 }

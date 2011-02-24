@@ -33,9 +33,15 @@ import cern.colt.matrix.DoubleMatrix2D;
  * @param <S> Slice label type
  */
 public abstract class DoubleMatrix3D<R, C, S> extends AbstractMatrix3D<R, C, S, Double> {
+    protected static Log log = LogFactory.getLog( DoubleMatrix.class.getName() );
     protected static final int MAX_ROWS_TO_PRINT = 20;
     protected static final int MAX_SLICES_TO_PRINT = 10;
-    protected static Log log = LogFactory.getLog( DoubleMatrix.class.getName() );
+
+    public abstract double get( int slice, int row, int column );
+
+    public abstract Double[][] getColObj( int col );
+
+    public abstract double[][] getColumn( int column );
 
     /**
      * @param s String
@@ -45,11 +51,7 @@ public abstract class DoubleMatrix3D<R, C, S> extends AbstractMatrix3D<R, C, S, 
         return getColumn( getColIndexByName( col ) );
     }
 
-    public abstract double[][] getColumn( int column );
-
     public abstract double[][] getRow( int row );
-
-    public abstract double get( int slice, int row, int column );
 
     /**
      * @param s String
@@ -60,8 +62,6 @@ public abstract class DoubleMatrix3D<R, C, S> extends AbstractMatrix3D<R, C, S, 
     }
 
     public abstract Double[][] getRowObj( int row );
-
-    public abstract Double[][] getColObj( int col );
 
     public abstract double[][] getSlice( int slice );
 

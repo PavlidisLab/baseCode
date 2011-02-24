@@ -75,6 +75,18 @@ public class TestSparseRaggedDoubleMatrix2DNamed extends TestCase {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    public void testGetRowRange() {
+        DoubleMatrix<String, String> rowRange = matrix.getRowRange( 1, 2 );
+        assertEquals( 3, rowRange.columns() );
+        assertEquals( 2, rowRange.rows() );
+    }
+
+    public void testGetColRange() {
+        DoubleMatrix<String, String> range = matrix.getColRange( 1, 2 );
+        assertEquals( 2, range.columns() );
+        assertEquals( 3, range.rows() );
+    }
+
     /*
      * @see TestCase#setUp()
      */

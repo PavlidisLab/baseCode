@@ -57,11 +57,11 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
      * Note that the ordering of the items will be as they are encountered in the file.
      * 
      * @param stream InputStream
-     * @param wantedRowNames Set
      * @return NamedMatrix
      * @throws IOException
      */
-    public DoubleMatrix<String, String> read( InputStream stream, Set<String> wantedRowNames ) throws IOException {
+    @Override
+    public DoubleMatrix<String, String> read( InputStream stream ) throws IOException {
 
         Set<String> itemNames = new HashSet<String>();
         Map<String, Collection<IndexScoreDyad>> rows = new HashMap<String, Collection<IndexScoreDyad>>();
@@ -213,6 +213,7 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
 
     /*
      * (non-Javadoc)
+     * 
      * @see basecode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
      */
     @Override

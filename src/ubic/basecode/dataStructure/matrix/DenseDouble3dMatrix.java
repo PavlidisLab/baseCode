@@ -62,6 +62,11 @@ public class DenseDouble3dMatrix<R, C, S> extends DoubleMatrix3D<R, C, S> {
     }
 
     @Override
+    public double get( int i, int j, int k ) {
+        return matrix.get( i, j, k );
+    }
+
+    @Override
     public Double[][] getColObj( int col ) {
         Double[][] colObj = new Double[slices()][rows()];
         for ( int i = 0; i < slices(); i++ ) {
@@ -83,11 +88,6 @@ public class DenseDouble3dMatrix<R, C, S> extends DoubleMatrix3D<R, C, S> {
 
     public Double getObject( int slice, int row, int col ) {
         return new Double( get( slice, row, col ) );
-    }
-
-    @Override
-    public double get( int i, int j, int k ) {
-        return matrix.get( i, j, k );
     }
 
     @Override

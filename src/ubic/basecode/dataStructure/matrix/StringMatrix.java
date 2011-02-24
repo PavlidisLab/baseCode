@@ -42,10 +42,6 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements 
         matrix = new DenseObjectMatrix2D( x, y );
     }
 
-    public String getEntry( int row, int column ) {
-        return get( row, column );
-    }
-
     /**
      * @return
      */
@@ -62,6 +58,19 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements 
         return ( String ) matrix.get( row, column );
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.NamedObjectMatrix#get(java.lang.Object, java.lang.Object)
+     */
+    public String get( R row, C column ) {
+        return this.get( this.getRowIndexByName( row ), this.getColIndexByName( column ) );
+    }
+
+    public String getByKeys( R r, C c ) {
+        return this.get( getRowIndexByName( r ), getColIndexByName( c ) );
+    }
+
     public String[] getColObj( int col ) {
         String[] result = new String[rows()];
         for ( int i = 0; i < rows(); i++ ) {
@@ -76,6 +85,10 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements 
             result[i] = get( i, col );
         }
         return result;
+    }
+
+    public String getEntry( int row, int column ) {
+        return get( row, column );
     }
 
     public String getObject( int row, int col ) {
@@ -111,6 +124,15 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements 
      */
     public void set( int row, int column, String value ) {
         matrix.set( row, column, value );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(java.lang.Object, java.lang.Object, java.lang.Object)
+     */
+    public void setByKeys( R r, C c, String v ) {
+        this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }
 
     /**
@@ -156,28 +178,6 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements 
      */
     public ObjectMatrix1D viewRow( int row ) {
         return matrix.viewRow( row );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.NamedObjectMatrix#get(java.lang.Object, java.lang.Object)
-     */
-    public String get( R row, C column ) {
-        return this.get( this.getRowIndexByName( row ), this.getColIndexByName( column ) );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(java.lang.Object, java.lang.Object, java.lang.Object)
-     */
-    public void setByKeys( R r, C c, String v ) {
-        this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
-    }
-
-    public String getByKeys( R r, C c ) {
-        return this.get( getRowIndexByName( r ), getColIndexByName( c ) );
     }
 
 }

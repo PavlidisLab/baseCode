@@ -35,10 +35,6 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
         matrix = new DenseObjectMatrix2D( x, y );
     }
 
-    public V getEntry( int row, int column ) {
-        return get( row, column );
-    }
-
     /**
      * @return
      */
@@ -56,6 +52,19 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
         return ( V ) matrix.getQuick( row, column );
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.NamedObjectMatrix#get(java.lang.Object, java.lang.Object)
+     */
+    public Object get( R row, C column ) {
+        return get( getRowIndexByName( row ), getColIndexByName( column ) );
+    }
+
+    public V getByKeys( R r, C c ) {
+        return this.get( getRowIndexByName( r ), getColIndexByName( c ) );
+    }
+
     @SuppressWarnings("unchecked")
     public V[] getColumn( int col ) {
         V[] result = ( V[] ) new Object[rows()]; // this is how they do it in ArrayList
@@ -64,6 +73,10 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
         }
 
         return result;
+    }
+
+    public V getEntry( int row, int column ) {
+        return get( row, column );
     }
 
     @SuppressWarnings("unchecked")
@@ -86,6 +99,24 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
 
     public int rows() {
         return matrix.rows();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(int, int, java.lang.Object)
+     */
+    public void set( int row, int column, V value ) {
+        matrix.setQuick( row, column, value );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(java.lang.Object, java.lang.Object, java.lang.Object)
+     */
+    public void setByKeys( R r, C c, V v ) {
+        this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }
 
     /**
@@ -135,36 +166,5 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
      */
     public ObjectMatrix1D viewRow( int row ) {
         return matrix.viewRow( row );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.NamedObjectMatrix#get(java.lang.Object, java.lang.Object)
-     */
-    public Object get( R row, C column ) {
-        return get( getRowIndexByName( row ), getColIndexByName( column ) );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(int, int, java.lang.Object)
-     */
-    public void set( int row, int column, V value ) {
-        matrix.setQuick( row, column, value );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(java.lang.Object, java.lang.Object, java.lang.Object)
-     */
-    public void setByKeys( R r, C c, V v ) {
-        this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
-    }
-
-    public V getByKeys( R r, C c ) {
-        return this.get( getRowIndexByName( r ), getColIndexByName( c ) );
     }
 }

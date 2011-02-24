@@ -104,6 +104,8 @@ public interface Matrix3D<R, C, S, V> {
      */
     public List<C> getColNames();
 
+    public V getObject( int slice, int row, int column );
+
     /**
      * Get the index of a row by name.
      * 
@@ -207,7 +209,5 @@ public interface Matrix3D<R, C, S, V> {
     public void setSliceNames( List<S> v );
 
     public int slices();
-
-    public V getObject( int slice, int row, int column );
 
 }

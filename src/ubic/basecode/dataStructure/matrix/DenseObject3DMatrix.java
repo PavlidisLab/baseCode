@@ -60,10 +60,6 @@ public class DenseObject3DMatrix<R, C, S> extends AbstractMatrix3D<R, C, S, Obje
         return matrix.columns();
     }
 
-    public Object getObject( int slice, int row, int col ) {
-        return this.get( slice, row, col );
-    }
-
     public Object get( int slice, int row, int col ) {
         return matrix.get( slice, row, col );
     }
@@ -73,6 +69,10 @@ public class DenseObject3DMatrix<R, C, S> extends AbstractMatrix3D<R, C, S, Obje
         for ( int i = 0; i < rows(); i++ )
             colObjs[i] = matrix.get( slice, i, col );
         return colObjs;
+    }
+
+    public Object getObject( int slice, int row, int col ) {
+        return this.get( slice, row, col );
     }
 
     public Object[] getRow( int slice, int row ) {

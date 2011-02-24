@@ -38,19 +38,10 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      */
     private static final long serialVersionUID = 5771918031750038719L;
 
-/*
-* FlexCompRowMatrix isn't serializable, so either is this in any useful way, despite claim.
-*/
-    private transient FlexCompRowMatrix matrix;
-
-    /**
-     * @param rows int
-     * @param cols int
+    /*
+     * FlexCompRowMatrix isn't serializable, so either is this in any useful way, despite claim.
      */
-    public CompressedSparseDoubleMatrix( int rows, int cols ) {
-        super();
-        matrix = new FlexCompRowMatrix( rows, cols );
-    }
+    private transient FlexCompRowMatrix matrix;
 
     /**
      * @param mat
@@ -61,15 +52,12 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     }
 
     /**
-     * @return
+     * @param rows int
+     * @param cols int
      */
-    public int cardinality() {
-        int total = 0;
-        for ( int i = 0; i < matrix.numRows(); i++ ) {
-            total = total + matrix.getRow( i ).getUsed();
-        }
-
-        return total;
+    public CompressedSparseDoubleMatrix( int rows, int cols ) {
+        super();
+        matrix = new FlexCompRowMatrix( rows, cols );
     }
 
     /**
@@ -87,8 +75,42 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     /**
      * @return
      */
+    public int cardinality() {
+        int total = 0;
+        for ( int i = 0; i < matrix.numRows(); i++ ) {
+            total = total + matrix.getRow( i ).getUsed();
+        }
+
+        return total;
+    }
+
+    /**
+     * @return
+     */
     public int columns() {
         return matrix.numColumns();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.DoubleMatrixNamed#copy()
+     */
+    @Override
+    public DoubleMatrix<R, C> copy() {
+        DoubleMatrix<R, C> returnval = new CompressedSparseDoubleMatrix<R, C>( this.rows(), this.columns() );
+
+        for ( int i = 0; i < this.rows(); i++ ) {
+            returnval.addRowName( this.getRowName( i ), i );
+            for ( int j = 0; j < this.columns(); j++ ) {
+                if ( i == 0 ) {
+                    returnval.addColumnName( this.getColName( j ), j );
+                }
+                returnval.set( i, j, this.get( i, j ) );
+            }
+        }
+        return returnval;
+
     }
 
     /**
@@ -119,6 +141,29 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
             result[i] = new Double( get( i, col ) );
         }
         return result;
+    }
+
+    @Override
+    public DoubleMatrix<R, C> getColRange( int startCol, int endCol ) {
+        super.checkColRange( startCol, endCol );
+
+        DoubleMatrix<R, C> returnval = new CompressedSparseDoubleMatrix<R, C>( this.rows(), 1 + endCol - startCol );
+        int k = 0;
+        for ( int i = startCol; i <= endCol; i++ ) {
+            C colName = this.getColName( i );
+            if ( colName != null ) {
+                returnval.addColumnName( colName, i );
+            }
+            for ( int j = 0, m = this.rows(); j < m; j++ ) {
+                if ( i == startCol ) {
+                    R rowName = this.getRowName( j );
+                    returnval.addRowName( rowName, j );
+                }
+                returnval.set( j, k, this.get( j, i ) );
+            }
+            k++;
+        }
+        return returnval;
     }
 
     /*
@@ -186,6 +231,34 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.Matrix2D#getRowRange(int, int)
+     */
+    @Override
+    public DoubleMatrix<R, C> getRowRange( int startRow, int endRow ) {
+        super.checkRowRange( startRow, endRow );
+
+        DoubleMatrix<R, C> returnval = new CompressedSparseDoubleMatrix<R, C>( endRow + 1 - startRow, this.columns() );
+        int k = 0;
+        for ( int i = startRow; i <= endRow; i++ ) {
+            R rowName = this.getRowName( i );
+            if ( rowName != null ) {
+                returnval.addRowName( rowName, i );
+            }
+            for ( int j = 0, m = this.columns(); j < m; j++ ) {
+                if ( i == 0 ) {
+                    C colName = this.getColName( j );
+                    returnval.addColumnName( colName, j );
+                }
+                returnval.set( k, j, this.get( i, j ) );
+            }
+            k++;
+        }
+        return returnval;
+    }
+
     public boolean isMissing( int i, int j ) {
         return Double.isNaN( get( i, j ) );
     }
@@ -235,54 +308,6 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     @Override
     public DoubleMatrix1D viewRow( int row ) {
         return new DenseDoubleMatrix1D( getRow( row ) );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.DoubleMatrixNamed#copy()
-     */
-    @Override
-    public DoubleMatrix<R, C> copy() {
-        DoubleMatrix<R, C> returnval = new CompressedSparseDoubleMatrix<R, C>( this.rows(), this.columns() );
-
-        for ( int i = 0; i < this.rows(); i++ ) {
-            returnval.addRowName( this.getRowName( i ), i );
-            for ( int j = 0; j < this.columns(); j++ ) {
-                if ( i == 0 ) {
-                    returnval.addColumnName( this.getColName( j ), j );
-                }
-                returnval.set( i, j, this.get( i, j ) );
-            }
-        }
-        return returnval;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.Matrix2D#getRowRange(int, int)
-     */
-    @Override
-    public DoubleMatrix<R, C> getRowRange( int startRow, int endRow ) {
-        super.checkRowRange( startRow, endRow );
-
-        DoubleMatrix<R, C> returnval = new CompressedSparseDoubleMatrix<R, C>( endRow - startRow, this.columns() );
-        for ( int i = startRow; i <= endRow; i++ ) {
-            R rowName = this.getRowName( i );
-            if ( rowName != null ) {
-                returnval.addRowName( rowName, i );
-            }
-            for ( int j = 0, m = this.columns(); j < m; j++ ) {
-                if ( i == 0 ) {
-                    C colName = this.getColName( j );
-                    returnval.addColumnName( colName, j );
-                }
-                returnval.set( i, j, this.get( i, j ) );
-            }
-        }
-        return returnval;
     }
 
 }

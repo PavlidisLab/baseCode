@@ -32,12 +32,12 @@ import cern.colt.matrix.DoubleMatrix1D;
  */
 public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> implements PrimitiveMatrix<R, C, Double> {
 
-    protected static Log log = LogFactory.getLog( DoubleMatrix.class.getName() );
-
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
+
+    protected static Log log = LogFactory.getLog( DoubleMatrix.class.getName() );
 
     public abstract double[][] asArray();
 
@@ -53,6 +53,13 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
     public Double getByKeys( R r, C c ) {
         return this.get( getRowIndexByName( r ), getColIndexByName( c ) );
     }
+
+    /**
+     * @param startCol inclusive, numbered from zero
+     * @param endCol inclusive
+     * @return
+     */
+    public abstract DoubleMatrix<R, C> getColRange( int startCol, int endCol );
 
     public abstract double[] getColumn( int j );
 
@@ -88,16 +95,16 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
         return getRow( getRowIndexByName( s ) );
     }
 
-    public void setByKeys( R r, C c, Double v ) {
-        this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
-    }
-
     /**
-     * @param startRow inclusive
+     * @param startRow inclusive, numbered from zero
      * @param endRow inclusive
      * @return
      */
     public abstract DoubleMatrix<R, C> getRowRange( int startRow, int endRow );
+
+    public void setByKeys( R r, C c, Double v ) {
+        this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
+    }
 
     /*
      * For more advanced matrix writing see the MatrixWriter class (non-Javadoc)

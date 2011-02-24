@@ -31,10 +31,10 @@ import java.util.List;
  */
 public abstract class AbstractMatrix3D<R, C, S, V> implements Matrix3D<R, C, S, V> {
     public LinkedHashMap<C, Integer> colMap;
-    public LinkedHashMap<R, Integer> rowMap;
-    public LinkedHashMap<S, Integer> sliceMap;
     public List<C> colNames;
+    public LinkedHashMap<R, Integer> rowMap;
     public List<R> rowNames;
+    public LinkedHashMap<S, Integer> sliceMap;
     public List<S> sliceNames;
 
     public AbstractMatrix3D() {

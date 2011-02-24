@@ -27,17 +27,17 @@ package ubic.basecode.dataStructure.matrix;
 public interface PrimitiveMatrix<R, C, V> extends Matrix2D<R, C, V> {
 
     /**
+     * @param col
+     * @return
+     */
+    public V[] getColObj( int col );
+
+    /**
      * @param r
      * @param c
      * @return
      */
     public V getObject( int r, int c );
-
-    /**
-     * @param col
-     * @return
-     */
-    public V[] getColObj( int col );
 
     /**
      * @param row

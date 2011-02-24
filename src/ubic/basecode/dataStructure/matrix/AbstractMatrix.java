@@ -33,9 +33,9 @@ import java.util.Map;
  */
 public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java.io.Serializable {
 
-    protected static final int MAX_ROWS_TO_PRINT = 100;
-
     private static final long serialVersionUID = 1L;
+
+    protected static final int MAX_ROWS_TO_PRINT = 100;
     private Map<C, Integer> colMap;
     private List<C> colNames;
     private int lastColumnIndex = 0;
@@ -130,6 +130,53 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
         this.rowMap.put( s, i );
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.Matrix2D#asDoubles()
+     */
+    public double[][] asDoubles() {
+        double[][] result = new double[rows()][columns()];
+
+        int n = this.rows();
+        int m = this.columns();
+        for ( int i = 0; i < n; i++ ) {
+
+            for ( int j = 0; j < m; j++ ) {
+
+                V value = getEntry( i, j );
+
+                if ( isMissing( i, j ) ) {
+                    result[i][j] = Double.NaN;
+                } else if ( value instanceof Integer ) {
+                    result[i][j] = ( ( Integer ) value ).doubleValue();
+                } else if ( value instanceof Long ) {
+                    result[i][j] = ( ( Long ) value ).doubleValue();
+                } else if ( value instanceof Double ) {
+                    result[i][j] = ( Double ) value;
+                } else if ( value instanceof Boolean ) {
+                    result[i][j] = ( ( Boolean ) value ) ? 1.0 : 0.0;
+                } else if ( value instanceof String ) {
+                    try {
+                        result[i][j] = Double.parseDouble( ( String ) value );
+                    } catch ( NumberFormatException e ) {
+                        result[i][j] = value.hashCode();
+                    }
+                } else if ( value instanceof BigDecimal ) {
+                    result[i][j] = ( ( BigDecimal ) value ).doubleValue();
+                } else if ( value instanceof BigInteger ) {
+                    result[i][j] = ( ( BigInteger ) value ).doubleValue();
+                } else if ( value instanceof Date ) {
+                    result[i][j] = ( ( Date ) value ).getTime();
+                } else {
+                    result[i][j] = value.hashCode();
+                }
+            }
+        }
+
+        return result;
+    }
+
     public final boolean containsColumnName( C columnName ) {
         return colMap.containsKey( columnName );
     }
@@ -159,16 +206,6 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
 
     public final List<C> getColNames() {
         return colNames;
-    }
-
-    protected void checkRowRange( int startRow, int endRow ) {
-        if ( startRow < 0 || startRow > rows() - 1 || startRow >= endRow ) {
-            throw new IllegalArgumentException( "Invalid start row" );
-        }
-        if ( endRow <= startRow || endRow > rows() - 1 ) {
-            throw new IllegalArgumentException( "Invalid end row" );
-        }
-
     }
 
     /**
@@ -238,53 +275,6 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.Matrix2D#asDoubles()
-     */
-    public double[][] asDoubles() {
-        double[][] result = new double[rows()][columns()];
-
-        int n = this.rows();
-        int m = this.columns();
-        for ( int i = 0; i < n; i++ ) {
-
-            for ( int j = 0; j < m; j++ ) {
-
-                V value = getEntry( i, j );
-
-                if ( isMissing( i, j ) ) {
-                    result[i][j] = Double.NaN;
-                } else if ( value instanceof Integer ) {
-                    result[i][j] = ( ( Integer ) value ).doubleValue();
-                } else if ( value instanceof Long ) {
-                    result[i][j] = ( ( Long ) value ).doubleValue();
-                } else if ( value instanceof Double ) {
-                    result[i][j] = ( Double ) value;
-                } else if ( value instanceof Boolean ) {
-                    result[i][j] = ( ( Boolean ) value ) ? 1.0 : 0.0;
-                } else if ( value instanceof String ) {
-                    try {
-                        result[i][j] = Double.parseDouble( ( String ) value );
-                    } catch ( NumberFormatException e ) {
-                        result[i][j] = value.hashCode();
-                    }
-                } else if ( value instanceof BigDecimal ) {
-                    result[i][j] = ( ( BigDecimal ) value ).doubleValue();
-                } else if ( value instanceof BigInteger ) {
-                    result[i][j] = ( ( BigInteger ) value ).doubleValue();
-                } else if ( value instanceof Date ) {
-                    result[i][j] = ( ( Date ) value ).getTime();
-                } else {
-                    result[i][j] = value.hashCode();
-                }
-            }
-        }
-
-        return result;
-    }
-
     public final void setRowNames( List<R> v ) {
         this.rowNames.clear();
         this.rowMap.clear();
@@ -298,5 +288,25 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
             R rowName = v.get( i );
             this.addRowName( rowName, i );
         }
+    }
+
+    protected void checkColRange( int startCol, int endCol ) {
+        if ( startCol < 0 || startCol > rows() - 1 || startCol >= endCol ) {
+            throw new IllegalArgumentException( "Invalid start col" );
+        }
+        if ( endCol <= startCol || endCol > rows() - 1 ) {
+            throw new IllegalArgumentException( "Invalid end col" );
+        }
+
+    }
+
+    protected void checkRowRange( int startRow, int endRow ) {
+        if ( startRow < 0 || startRow > rows() - 1 || startRow >= endRow ) {
+            throw new IllegalArgumentException( "Invalid start row" );
+        }
+        if ( endRow <= startRow || endRow > rows() - 1 ) {
+            throw new IllegalArgumentException( "Invalid end row" );
+        }
+
     }
 }
