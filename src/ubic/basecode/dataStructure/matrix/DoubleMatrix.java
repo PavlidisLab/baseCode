@@ -18,6 +18,11 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -160,4 +165,31 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
      * @return
      */
     public abstract DoubleMatrix1D viewRow( int j );
+
+    /**
+     * @param i
+     * @param descending
+     */
+    public List<R> sortByColumnAbsoluteValues( final int i, final boolean descending ) {
+        List<R> sorted = new ArrayList<R>( this.getRowNames() );
+
+        Collections.sort( sorted, new Comparator<R>() {
+
+            @Override
+            public int compare( R o1, R o2 ) {
+                double v1 = Math.abs( get( getRowIndexByName( o1 ), i ) );
+                double v2 = Math.abs( get( getRowIndexByName( o2 ), i ) );
+                if ( v1 == v2 ) return 0;
+                if ( descending ) {
+                    if ( v1 < v2 ) return 1;
+                    return -1;
+                }
+                if ( v1 < v2 ) return -1;
+                return 1;
+
+            }
+        } );
+        return sorted;
+
+    }
 }

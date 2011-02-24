@@ -18,6 +18,9 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
+import java.util.Iterator;
+import java.util.List;
+
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
@@ -254,6 +257,32 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
         assertEquals( 1.0, actual.get( 0 ), 0.000001 );
         assertEquals( 11.0, actual.get( 1 ), 0.000001 );
         assertEquals( 21.0, actual.get( 2 ), 0.000001 );
+    }
+
+    public void testSortByColumnAbsoluteValue() {
+        for ( int i = 0; i < testMatrix.columns(); i++ ) {
+            List<String> sortByColumnAbsoluteValues = testMatrix.sortByColumnAbsoluteValues( i, false );
+            double last = 0.0;
+            for ( String string : sortByColumnAbsoluteValues ) {
+                double d = testMatrix.getRowByName( string )[i];
+
+                assertTrue( Math.abs( d ) >= Math.abs( last ) );
+
+                last = d;
+            }
+        }
+
+        for ( int i = 0; i < testMatrix.columns(); i++ ) {
+            double last = Double.MAX_VALUE;
+            List<String> sortByColumnAbsoluteValues = testMatrix.sortByColumnAbsoluteValues( i, true );
+            for ( String string : sortByColumnAbsoluteValues ) {
+                double d = testMatrix.getRowByName( string )[i];
+
+                assertTrue( "at column " + i + " got " + d + " and prev " + last, Math.abs( d ) <= Math.abs( last ) );
+
+                last = d;
+            }
+        }
     }
 
 }
