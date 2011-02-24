@@ -20,11 +20,17 @@ package ubic.basecode.math;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 
-import cern.colt.matrix.DoubleMatrix2D;
-import cern.colt.matrix.impl.DenseDoubleMatrix2D;
+import org.apache.commons.lang.time.StopWatch;
+
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import cern.colt.matrix.DoubleMatrix2D;
+import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 
 /**
  * SVD for DoubleMatrix.
@@ -49,10 +55,11 @@ public class SingularValueDecomposition<R, C> {
      */
     public SingularValueDecomposition( DoubleMatrix<R, C> matrix ) {
         double[][] mat = matrix.getRawMatrix();
-        DoubleMatrix2D dm = new DenseDoubleMatrix2D( mat );
+        final DoubleMatrix2D dm = new DenseDoubleMatrix2D( mat );
         this.rowNames = matrix.getRowNames();
         this.columnNames = matrix.getColNames();
-        this.svd = new cern.colt.matrix.linalg.SingularValueDecomposition( dm );
+
+        computeSVD( dm );
 
         List<Integer> componentIds = new ArrayList<Integer>();
 
@@ -141,6 +148,47 @@ public class SingularValueDecomposition<R, C> {
     @Override
     public String toString() {
         return svd.toString();
+    }
+
+    /**
+     * @param dm
+     */
+    private void computeSVD( final DoubleMatrix2D dm ) {
+        /*
+         * This fails to converge some times, we have to bail.
+         */
+        FutureTask<cern.colt.matrix.linalg.SingularValueDecomposition> svdFuture = new FutureTask<cern.colt.matrix.linalg.SingularValueDecomposition>(
+                new Callable<cern.colt.matrix.linalg.SingularValueDecomposition>() {
+                    @Override
+                    public cern.colt.matrix.linalg.SingularValueDecomposition call() throws Exception {
+                        return new cern.colt.matrix.linalg.SingularValueDecomposition( dm );
+                    }
+                } );
+
+        StopWatch timer = new StopWatch();
+        timer.start();
+        Executors.newSingleThreadExecutor().execute( svdFuture );
+
+        while ( !svdFuture.isDone() && !svdFuture.isCancelled() ) {
+            try {
+                Thread.sleep( 100 );
+            } catch ( InterruptedException ie ) {
+                throw new RuntimeException( "SVD cancelled" );
+            }
+            if ( timer.getTime() > 1000 * 60 * 5 ) { // five minutes
+                throw new RuntimeException( "SVD failed to converge, bailing" );
+            }
+        }
+        timer.stop();
+        try {
+            this.svd = svdFuture.get();
+        } catch ( InterruptedException e ) {
+            throw new RuntimeException( e );
+        } catch ( ExecutionException e ) {
+            throw new RuntimeException( e );
+        }
+
+        assert this.svd != null;
     }
 
 }
