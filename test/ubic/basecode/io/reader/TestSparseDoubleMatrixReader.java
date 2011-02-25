@@ -22,6 +22,7 @@ import java.io.InputStream;
 
 import junit.framework.TestCase;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.dataStructure.matrix.SparseDoubleMatrix;
 import ubic.basecode.math.Constants;
 
 /**
@@ -47,7 +48,8 @@ public class TestSparseDoubleMatrixReader extends TestCase {
      * Class under test for NamedMatrix read(String)
      */
     public void testReadStream() throws Exception {
-        matrix = reader.read( isa, null );
+        matrix = reader.read( isa );
+        assertTrue( "Got a " + matrix.getClass().getName(), matrix instanceof SparseDoubleMatrix<?, ?> );
         assertEquals( 3, matrix.rows() );
         assertEquals( 3, matrix.columns() );
         assertEquals( 0.1, matrix.get( 1, 1 ), Constants.SMALL );

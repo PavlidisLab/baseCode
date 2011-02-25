@@ -140,6 +140,17 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
         return matrix;
     }
 
+    @Override
+    public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames,
+            boolean createEmptyRows ) throws IOException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames ) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Read a sparse matrix in "JW" (Jason Weston) format. The format is like this:
      * 
