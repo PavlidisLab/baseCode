@@ -26,7 +26,7 @@ import java.awt.Color;
  */
 public class ColorMap {
 
-    public static final int m_defaultSuggestedNumberOfColors = 64;
+    public static final int m_defaultSuggestedNumberOfColors = 32;
     public static final Color DARK_RED = new Color( 128, 0, 0 );
     public static final Color[] GREENRED_COLORMAP = { Color.green, Color.black, Color.red };
 

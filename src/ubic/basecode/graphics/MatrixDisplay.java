@@ -46,6 +46,8 @@ import ubic.basecode.graphics.text.Util;
  */
 public class MatrixDisplay<R, C> extends JPanel {
 
+    private static final int DEFAULT_SCALE_BAR_WIDTH = 100;
+
     private static final long serialVersionUID = -8078532270193813539L;
 
     private final static Log log = LogFactory.getLog( MatrixDisplay.class );
@@ -55,6 +57,8 @@ public class MatrixDisplay<R, C> extends JPanel {
     protected int m_ratioWidth = 0;
     protected int m_rowLabelWidth; // max
     protected int m_columnLabelHeight; // max
+
+    protected boolean m_isShowScale = false;
 
     protected int m_labelGutter = 5;
 
@@ -214,8 +218,8 @@ public class MatrixDisplay<R, C> extends JPanel {
      * @param standardize normalize to deviation 1, mean 0. FIXME this is not used?
      * @throws IOException
      */
-    public void saveImage( ColorMatrix<R, C> matrix, String outPngFilename, boolean showLabels, boolean standardize )
-            throws java.io.IOException {
+    public void saveImage( ColorMatrix<R, C> matrix, String outPngFilename, boolean showLabels, boolean showScalebar,
+            boolean standardize ) throws java.io.IOException {
 
         Graphics2D g = null;
 
@@ -228,14 +232,20 @@ public class MatrixDisplay<R, C> extends JPanel {
         }
 
         // Draw the image to a buffer
-        Dimension d = getSize( showLabels ); // how big is the image with row and
+        Dimension d = computeSize( showLabels, showScalebar ); // how big is the image with row and
         // column labels
         BufferedImage m_image = new BufferedImage( d.width, d.height, BufferedImage.TYPE_INT_RGB );
         g = m_image.createGraphics();
-        drawMatrix( matrix, g, showLabels );
+        g.setBackground( Color.white );
+        g.clearRect( 0, 0, d.width, d.height );
+
+        drawMatrix( matrix, g, showLabels, showScalebar );
         if ( showLabels ) {
-            drawRowNames( g );
-            drawColumnNames( g );
+            drawRowNames( g, showScalebar );
+            drawColumnNames( g, showScalebar );
+        }
+        if ( showScalebar ) {
+            drawScaleBar( g, d, matrix.getDisplayMin(), matrix.getDisplayMax() );
         }
 
         // Write the image to a png file
@@ -256,7 +266,7 @@ public class MatrixDisplay<R, C> extends JPanel {
      * @throws IOException
      */
     public void saveImage( String outPngFilename ) throws java.io.IOException {
-        saveImage( this.colorMatrix, outPngFilename, m_isShowLabels, m_isShowingStandardizedMatrix );
+        saveImage( this.colorMatrix, outPngFilename, m_isShowLabels, m_isShowScale, m_isShowingStandardizedMatrix );
     }
 
     /**
@@ -264,8 +274,8 @@ public class MatrixDisplay<R, C> extends JPanel {
      * @param showLabels
      * @throws java.io.IOException
      */
-    public void saveImage( String outPngFilename, boolean showLabels ) throws java.io.IOException {
-        saveImage( this.colorMatrix, outPngFilename, showLabels, m_isShowingStandardizedMatrix );
+    public void saveImage( String outPngFilename, boolean showLabels, boolean showScale ) throws java.io.IOException {
+        saveImage( this.colorMatrix, outPngFilename, showLabels, showScale, m_isShowingStandardizedMatrix );
     }
 
     /**
@@ -273,7 +283,14 @@ public class MatrixDisplay<R, C> extends JPanel {
      * @param showLabels
      * @param standardize
      */
-    public void saveImageToPng( ColorMatrix<R, C> matrix, OutputStream stream, boolean showLabels, boolean standardize ) {
+    public void saveImageToPng( ColorMatrix<R, C> matrix, OutputStream stream, boolean showLabels,
+            boolean showScalebar, boolean standardize ) {
+
+        boolean wasScalebarShown = m_isShowScale;
+        if ( !wasScalebarShown ) {
+            setScaleBarVisible( true );
+            initSize();
+        }
 
         // Include row and column labels?
         boolean wereLabelsShown = m_isShowLabels;
@@ -283,12 +300,17 @@ public class MatrixDisplay<R, C> extends JPanel {
             initSize();
         }
 
-        writeToPng( matrix, stream, showLabels );
+        writeToPng( matrix, stream, showLabels, showScalebar );
 
         // Restore state: make the image as it was before
         if ( !wereLabelsShown ) {
             // Labels weren't visible to begin with, so hide them
             setLabelsVisible( false );
+            initSize();
+        }
+
+        if ( !wasScalebarShown ) {
+            setScaleBarVisible( false );
             initSize();
         }
     } // end saveImage
@@ -320,6 +342,11 @@ public class MatrixDisplay<R, C> extends JPanel {
      */
     public void setLabelsVisible( boolean isShowLabels ) {
         m_isShowLabels = isShowLabels;
+        initSize();
+    }
+
+    public void setScaleBarVisible( boolean isShowScale ) {
+        m_isShowScale = isShowScale;
         initSize();
     }
 
@@ -357,21 +384,31 @@ public class MatrixDisplay<R, C> extends JPanel {
         }
     } // end setStandardizedEnabled
 
-    public void writeToPng( ColorMatrix<R, C> matrix, OutputStream stream, boolean showLabels ) {
+    /**
+     * @param matrix
+     * @param stream
+     * @param showLabels
+     * @param showScalebar
+     */
+    public void writeToPng( ColorMatrix<R, C> matrix, OutputStream stream, boolean showLabels, boolean showScalebar ) {
         // Draw the image to a buffer
         boolean oldLabelSate = this.m_isShowLabels;
         if ( !oldLabelSate ) {
             this.setLabelsVisible( true );
         }
 
-        Dimension d = getSize( showLabels ); // how big is the image with row and
-        // column labels
+        Dimension d = computeSize( showLabels, showScalebar );
         BufferedImage m_image = new BufferedImage( d.width, d.height, BufferedImage.TYPE_INT_RGB );
         Graphics2D g = m_image.createGraphics();
-        drawMatrix( matrix, g, showLabels );
+        g.setBackground( Color.white );
+        g.clearRect( 0, 0, d.width, d.height );
+        drawMatrix( matrix, g, showLabels, showScalebar );
         if ( showLabels ) {
-            drawRowNames( g );
-            drawColumnNames( g );
+            drawRowNames( g, showScalebar );
+            drawColumnNames( g, showScalebar );
+        }
+        if ( showScalebar ) {
+            drawScaleBar( g, d, matrix.getDisplayMin(), matrix.getDisplayMax() );
         }
 
         // Write the buffered image to the output steam.
@@ -384,18 +421,59 @@ public class MatrixDisplay<R, C> extends JPanel {
         this.setLabelsVisible( oldLabelSate );
     }
 
+    final int SCALE_BAR_ROOM = 40;
+
+    /**
+     * @param g
+     * @param d
+     */
+    protected void drawScaleBar( Graphics g, Dimension d, double displayMin, double displayMax ) {
+        /*
+         * FIXME this is all a bit of a hack
+         */
+        g.setColor( Color.white );
+        int upperLeftScalebarGutter = 10;
+        int scaleBarHeight = 10; // these and text height have to total < SCALE_BAR_ROOM
+        int desiredScaleBarLength = ( int ) Math.min( DEFAULT_SCALE_BAR_WIDTH, d.getWidth() );
+
+        if ( desiredScaleBarLength < 10 ) {
+            log.warn( "Can't draw a scale bar that small: " + desiredScaleBarLength );
+            return;
+        }
+
+        g.drawRect( upperLeftScalebarGutter, upperLeftScalebarGutter, desiredScaleBarLength, upperLeftScalebarGutter );
+        JGradientLabel scalebar = new JGradientLabel( new ColorMap( this.getColorMap() ).getPalette() );
+        scalebar.setBackground( Color.white );
+        scalebar.setSize( new Dimension( desiredScaleBarLength, scaleBarHeight ) );
+        int actualWidth = scalebar.drawAtLocation( g, upperLeftScalebarGutter, upperLeftScalebarGutter );
+        g.setColor( Color.black );
+        g.drawString( String.format( "%.2g", displayMin ), 0, upperLeftScalebarGutter + scaleBarHeight + m_fontGutter
+                + g.getFontMetrics().getHeight() );
+        g.drawString( String.format( "%.2g", displayMax ), actualWidth, upperLeftScalebarGutter + scaleBarHeight
+                + m_fontGutter + g.getFontMetrics().getHeight() );
+        g.drawRect( upperLeftScalebarGutter, upperLeftScalebarGutter, actualWidth, scaleBarHeight );
+    }
+
     /**
      * Draws column names vertically (turned 90 degrees counter-clockwise)
      * 
      * @param g Graphics
      */
-    protected void drawColumnNames( Graphics g ) {
+    protected void drawColumnNames( Graphics g, boolean leaveRoomForScalebar ) {
 
         if ( colorMatrix == null ) return;
+        Color oldColor = g.getColor();
+
+        int y = m_columnLabelHeight;
+        if ( leaveRoomForScalebar ) {
+            y += SCALE_BAR_ROOM;
+        }
+
+        g.setColor( Color.white );
+        g.fillRect( 0, 0, this.getWidth(), y );
 
         g.setColor( Color.black );
         g.setFont( m_labelFont );
-        int y = m_columnLabelHeight;
 
         int columnCount = colorMatrix.getColumnCount();
         for ( int j = 0; j < columnCount; j++ ) {
@@ -419,6 +497,7 @@ public class MatrixDisplay<R, C> extends JPanel {
             Util.drawVerticalString( g, columnNameString, m_labelFont, x, y );
 
         }
+        g.setColor( oldColor );
     } // end drawColumnNames
 
     /**
@@ -427,9 +506,11 @@ public class MatrixDisplay<R, C> extends JPanel {
      * @param g Graphics
      * @param leaveRoomForLabels boolean
      */
-    protected void drawMatrix( ColorMatrix<R, C> matrix, Graphics g, boolean leaveRoomForLabels ) {
+    protected void drawMatrix( ColorMatrix<R, C> matrix, Graphics g, boolean leaveRoomForLabels,
+            boolean leaveRoomForScalebar ) {
 
         // fill in background with white.
+        Color oldColor = g.getColor();
         g.setColor( Color.white );
         g.fillRect( 0, 0, this.getWidth(), this.getHeight() );
 
@@ -441,6 +522,9 @@ public class MatrixDisplay<R, C> extends JPanel {
             int y = i * m_cellSize.height;
             if ( leaveRoomForLabels ) {
                 y += m_columnLabelHeight + m_labelGutter;
+            }
+            if ( leaveRoomForScalebar ) {
+                y += SCALE_BAR_ROOM;
             }
 
             // draw an entire row, one cell at a time
@@ -454,16 +538,24 @@ public class MatrixDisplay<R, C> extends JPanel {
             }
 
         }
+        g.setColor( oldColor );
     }
 
     /**
      * Draws row names (horizontally)
      * 
      * @param g Graphics
+     * @param showScalebar
      */
-    protected void drawRowNames( Graphics g ) {
+    protected void drawRowNames( Graphics g, boolean showScalebar ) {
 
         if ( colorMatrix == null ) return;
+
+        Color oldColor = g.getColor();
+
+        g.setColor( Color.white );
+        g.fillRect( colorMatrix.getColumnCount() * m_cellSize.width, 0,
+                colorMatrix.getColumnCount() * m_cellSize.width, this.getHeight() );
 
         int rowCount = colorMatrix.getRowCount();
         int xLabelStartPosition = colorMatrix.getColumnCount() * m_cellSize.width + m_labelGutter;
@@ -473,6 +565,9 @@ public class MatrixDisplay<R, C> extends JPanel {
         for ( int i = 0; i < rowCount; i++ ) {
             int y = i * m_cellSize.height + m_columnLabelHeight + m_labelGutter;
             int yLabelPosition = y + m_cellSize.height - m_fontGutter;
+            if ( showScalebar ) {
+                yLabelPosition += SCALE_BAR_ROOM;
+            }
 
             Object rowName = colorMatrix.getRowName( i );
             if ( null == rowName ) {
@@ -482,6 +577,7 @@ public class MatrixDisplay<R, C> extends JPanel {
             g.drawString( rowName.toString(), xLabelStartPosition, yLabelPosition );
 
         } // end drawing row names
+        g.setColor( oldColor );
     } // end rawRowName
 
     /**
@@ -490,7 +586,7 @@ public class MatrixDisplay<R, C> extends JPanel {
      * @param withLabels
      * @return
      */
-    protected Dimension getSize( boolean withLabels ) {
+    protected Dimension computeSize( boolean showLabels, boolean showScalebar ) {
 
         if ( colorMatrix == null ) {
             return null;
@@ -523,9 +619,16 @@ public class MatrixDisplay<R, C> extends JPanel {
         int width = m_cellSize.width * colorMatrix.getColumnCount();
 
         // adjust for row and column labels
-        if ( withLabels ) {
+        if ( showLabels ) {
             width += m_rowLabelWidth;
             height += m_columnLabelHeight + m_labelGutter;
+        }
+
+        if ( showScalebar ) {
+            height += SCALE_BAR_ROOM; /* scale bar height */
+            // if ( width < DEFAULT_SCALE_BAR_WIDTH ) { /* scale bar width */
+            // width = DEFAULT_SCALE_BAR_WIDTH;
+            // }
         }
 
         // set the sizes
@@ -538,7 +641,7 @@ public class MatrixDisplay<R, C> extends JPanel {
      */
     protected void initSize() {
 
-        Dimension d = getSize( m_isShowLabels );
+        Dimension d = getSize();
         setMinimumSize( d );
         setPreferredSize( d );
         setSize( d );
@@ -554,11 +657,14 @@ public class MatrixDisplay<R, C> extends JPanel {
     protected void paintComponent( Graphics g ) {
 
         super.paintComponent( g );
-        drawMatrix( colorMatrix, g, m_isShowLabels );
+        drawMatrix( colorMatrix, g, m_isShowLabels, m_isShowScale );
 
         if ( m_isShowLabels ) {
-            drawRowNames( g );
-            drawColumnNames( g );
+            drawRowNames( g, m_isShowScale );
+            drawColumnNames( g, m_isShowScale );
+        }
+        if ( m_isShowScale ) {
+            drawScaleBar( g, this.getSize(), colorMatrix.getDisplayMin(), colorMatrix.getDisplayMax() );
         }
     } // end paintComponent
 
@@ -576,9 +682,9 @@ public class MatrixDisplay<R, C> extends JPanel {
      * @return
      */
     private String padColumnString( String str ) {
-        str = StringUtils.abbreviate( str, m_maxColumnLength );
-        str = StringUtils.rightPad( str, m_maxColumnLength, " " );
-        return str;
+        String paddedstr = StringUtils.abbreviate( str, m_maxColumnLength );
+        paddedstr = StringUtils.rightPad( str, m_maxColumnLength, " " );
+        return paddedstr;
     }
 
     /**

@@ -18,7 +18,6 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
-import java.util.Iterator;
 import java.util.List;
 
 import ubic.basecode.io.reader.DoubleMatrixReader;
