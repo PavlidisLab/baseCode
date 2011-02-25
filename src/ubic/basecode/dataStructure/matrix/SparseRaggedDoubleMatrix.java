@@ -141,6 +141,10 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      */
     @Override
     public double get( int i, int j ) {
+        // return matrix.get( i ).get( j );
+        if ( matrix.get( i ).size() < j + 1 ) {
+            return 0.0;
+        }
         return matrix.get( i ).get( j );
     }
 
