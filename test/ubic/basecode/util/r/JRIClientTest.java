@@ -366,9 +366,10 @@ public class JRIClientTest extends TestCase {
             return;
         }
 
-        /*
-         * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074); a<-factor(c( "A", "A", "A", "A", "B",
-         * "B", "B", "B" )); summary(lm(foo ~ a)); anova(lm(foo ~ a));
+        /**
+         * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074);
+         * <p>
+         * a<-factor(c( "A", "A", "A", "A", "B", "B", "B", "B" )); summary(lm(foo ~ a)); anova(lm(foo ~ a));
          */
 
         double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
@@ -384,11 +385,15 @@ public class JRIClientTest extends TestCase {
         Double t = lms.getContrastTStats( facN ).get( "f1B" );
         Double ip = lms.getInterceptP();
         Double it = lms.getInterceptT();
+        Integer dof = lms.getNumeratorDof();
+        Integer rdof = lms.getResidualDof();
 
         assertEquals( 0.11096, p, 0.0001 );
         assertEquals( 1.933653, t, 0.0001 );
         assertEquals( 1.10e-08, ip, 1e-10 );
         assertEquals( 70.319382, it, 0.0001 );
+        assertEquals( 1, ( int ) dof );
+        assertEquals( 5, ( int ) rdof );
 
     }
 
@@ -403,9 +408,12 @@ public class JRIClientTest extends TestCase {
             return;
         }
 
-        /*
-         * dat<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074); a<-factor(c( "A", "A", "A", "A", "B",
-         * "B", "B", "B" )); b<-c(1, 2, 3, 4, 5, 6, 7, 8) bar<-lm(dat ~ a + b); summary(bar) anova(bar)
+        /**
+         * dat<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074);
+         * <p>
+         * a<-factor(c( "A", "A", "A", "A", "B", "B", "B", "B" )); b<-c(1, 2, 3, 4, 5, 6, 7, 8); bar<-lm(dat ~ a + b);
+         * <p>
+         * summary(bar) ;anova(bar); summary(bar)$df
          */
 
         double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
@@ -429,6 +437,8 @@ public class JRIClientTest extends TestCase {
 
         Double ip = lms.getInterceptP();
         Double it = lms.getInterceptT();
+        Integer dof = lms.getNumeratorDof();
+        Integer rdof = lms.getResidualDof();
 
         assertEquals( 0.1586, p, 0.0001 );
         assertEquals( 0.64117305, t, 0.0001 );
@@ -436,6 +446,8 @@ public class JRIClientTest extends TestCase {
         assertEquals( 0.07432241, tt, 0.0001 );
         assertEquals( 2.821526e-06, ip, 0.0001 );
         assertEquals( 38.14344686, it, 0.0001 );
+        assertEquals( 2, ( int ) dof );
+        assertEquals( 4, ( int ) rdof );
 
     }
 
@@ -503,10 +515,12 @@ public class JRIClientTest extends TestCase {
             return;
         }
 
-        /*
-         * foo<-c( 3.2969, 3.1856, 4.1638, 4.59, 3.2342, 3.3533, 3.4347, 3.3074); d<-factor(c( "y", "y", "z", "z", "x",
-         * "x", "w", "w" )); a<-factor(c( "A", "A", "A", "A", "B", "B", "B", "B" )); b<-factor(c( "C", "C", "D", "D",
-         * "C", "C", "D", "D" )); c<-c(1, 2, 3, 4, 5, 6, 7, 8) summary(lm(foo ~ d)); anova(lm(foo ~ d));
+        /**
+         * foo<-c( 3.2969, 3.1856, 4.1638, 4.59, 3.2342, 3.3533, 3.4347, 3.3074);
+         * <p>
+         * d<-factor(c( "y", "y", "z", "z", "x", "x", "w", "w" ));
+         * <p>
+         * summary(lm(foo ~ d));summary(lm(foo ~ d))$df; anova(lm(foo ~ d));
          */
 
         double[] data = new double[] { 3.2969, 3.1856, 4.1638, 4.59, 3.2342, 3.3533, 3.4347, 3.3074 };
@@ -529,7 +543,10 @@ public class JRIClientTest extends TestCase {
         assertEquals( -0.462, t, 0.001 );
         assertEquals( 2.821526e-06, ip, 0.0001 );
         assertEquals( 28.464, it, 0.001 );
-
+        assertEquals( 3, ( int ) lms.getNumeratorDof() );
+        assertEquals( 4, ( int ) lms.getResidualDof() );
+        assertEquals( 20.8, lms.getF(), 0.01 );
+        assertEquals( 0.00667, lms.getP(), 0.0001 );
     }
 
     public void testListEvalA() throws Exception {
@@ -577,7 +594,9 @@ public class JRIClientTest extends TestCase {
      * Also exercises dataFrameEval
      * 
      * <pre>
-     * dat&lt;-read.table(&quot;testdata.txt&quot;, header=T, row.names=1)
+     * library(limma)
+     * 
+     * dat&lt;-read.table(&quot;data/testdata.txt&quot;, header=T, row.names=1)
      * 
      * f1&lt;-factor(c(&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, &quot;B&quot;, &quot;B&quot;, &quot;B&quot;, &quot;B&quot;, &quot;B&quot;));
      * 
