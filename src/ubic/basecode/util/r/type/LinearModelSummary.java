@@ -68,11 +68,11 @@ public class LinearModelSummary implements Serializable {
 
     private Map<String, Collection<String>> term2CoefficientNames = new HashMap<String, Collection<String>>();
 
-    private Double fStat;
+    private Double fStat = Double.NaN;
 
-    private Integer numeratorDof;
+    private Integer numeratorDof = null;
 
-    private Integer denominatorDof;
+    private Integer denominatorDof = null;
 
     // private DoubleMatrix<String, String> covariance;
 
@@ -330,6 +330,8 @@ public class LinearModelSummary implements Serializable {
      * @return value or NaN if it can't be computed for some reason
      */
     public Double getP() {
+        if ( numeratorDof == null || denominatorDof == null ) return Double.NaN;
+
         FDistribution f = new FDistributionImpl( numeratorDof, denominatorDof );
         try {
             return 1.0 - f.cumulativeProbability( this.getF() );
@@ -398,10 +400,13 @@ public class LinearModelSummary implements Serializable {
 
         this.adjRSquared = ( ( REXP ) li.get( "adj.r.squared" ) ).asDouble();
 
-        Double[] ff = ArrayUtils.toObject( ( ( REXP ) li.get( "fstatistic" ) ).asDoubles() );
-        this.fStat = ff[0];
-        this.numeratorDof = ff[1].intValue();
-        this.denominatorDof = ff[2].intValue();
+        REXP fstats = ( REXP ) li.get( "fstatistic" );
+        if ( fstats != null ) {
+            Double[] ff = ArrayUtils.toObject( fstats.asDoubles() );
+            this.fStat = ff[0];
+            this.numeratorDof = ff[1].intValue();
+            this.denominatorDof = ff[2].intValue();
+        }
         // this.residualDof = ArrayUtils.toObject( ( ( REXP ) li.get( "df" ) ).asIntegers() )[1];
 
         // li.get( "cov.unscaled" );
