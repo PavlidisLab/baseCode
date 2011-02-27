@@ -330,7 +330,8 @@ public class LinearModelSummary implements Serializable {
      * @return value or NaN if it can't be computed for some reason
      */
     public Double getP() {
-        if ( numeratorDof == null || denominatorDof == null ) return Double.NaN;
+        if ( numeratorDof == null || denominatorDof == null || numeratorDof == 0 || denominatorDof == 0 )
+            return Double.NaN;
 
         FDistribution f = new FDistributionImpl( numeratorDof, denominatorDof );
         try {
