@@ -54,7 +54,7 @@ public class NetUtils {
             IOException {
         FTPClient f = new FTPClient();
         f.enterLocalPassiveMode();
-
+        f.setBufferSize( 32 * 2 ^ 20 );
         boolean success = false;
         f.connect( host );
         int reply = f.getReplyCode();
