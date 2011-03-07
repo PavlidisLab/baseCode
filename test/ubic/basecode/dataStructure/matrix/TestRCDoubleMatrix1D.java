@@ -45,19 +45,6 @@ public class TestRCDoubleMatrix1D extends TestCase {
         assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
     }
 
-    // FIXME fails in maven 2 http://jira.codehaus.org/browse/MSUREFIRE-59
-
-    // public void testForEachNonZero() {
-    // DoubleMatrix1D actualReturn = a.forEachNonZero( new cern.colt.function.DoubleFunction() {
-    // public double apply( double value ) {
-    // return value / 2.0;
-    // }
-    // } );
-    // DoubleMatrix1D expectedReturn = new RCDoubleMatrix1D( new double[] { 0, 0.5, 1, 0, 2.5 } );
-    // assertEquals( "return value", new DoubleArrayList( expectedReturn.toArray() ), new DoubleArrayList(
-    // actualReturn.toArray() ) );
-    // }
-
     /*
      * Class under test for double zDotProduct(DoubleMatrix1D)
      */
@@ -118,16 +105,14 @@ public class TestRCDoubleMatrix1D extends TestCase {
     /*
      * Class under test for DoubleMatrix1D assign(DoubleFunction)
      */
-
-    // FIXME test fails in maven 2.http://jira.codehaus.org/browse/MSUREFIRE-59
-    // public void testAssignDoubleFunction() throws Exception {
-    // DoubleMatrix1D actualReturn = a.assign( new cern.colt.function.DoubleFunction() {
-    // public double apply( double value ) {
-    // return 2;
-    // }
-    // } );
-    // DoubleMatrix1D expectedReturn = new RCDoubleMatrix1D( new double[] { 0, 2, 2, 0, 2 } );
-    // assertEquals( "return value", new DoubleArrayList( expectedReturn.toArray() ), new DoubleArrayList(
-    // actualReturn.toArray() ) );
-    // }
+    public void testAssignDoubleFunction() throws Exception {
+        DoubleMatrix1D actualReturn = a.assign( new cern.colt.function.DoubleFunction() {
+            public double apply( double value ) {
+                return 2;
+            }
+        } );
+        DoubleMatrix1D expectedReturn = new RCDoubleMatrix1D( new double[] { 0, 2, 2, 0, 2 } );
+        assertEquals( "return value", new DoubleArrayList( expectedReturn.toArray() ), new DoubleArrayList(
+                actualReturn.toArray() ) );
+    }
 }

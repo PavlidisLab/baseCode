@@ -40,8 +40,7 @@ public class CorrelationStats {
     private static final double BINSIZE = 0.005; // resolution of correlation.
     // Differences smaller than this
     // are considered meaningless.
-    private static final double STEPSIZE = BINSIZE * 2; // this MUST be more than
-    // the binsize.
+
     private static final int MAXCOUNT = 1000; // maximum number of things.
 
     private static final double PVALCHOP = 8.0; // value by which log(pvalues)
@@ -147,46 +146,29 @@ public class CorrelationStats {
     }
 
     /**
-     * Find the approximate Pearson correlation required to meet a particular pvalue. This works by simple gradient
-     * descent.
+     * Find the approximate Pearson correlation required to meet a particular pvalue.
      * 
      * @param pval double
      * @param count int
      * @return double
      */
     public static double correlationForPvalue( double pval, int count ) {
-        /*
-         * FIXME there has to be another way. Fisher transform -> pvalue -> normal scores (probit) -> un-Fisherize
-         */
-        double stop = pval / 100.0;
-        double err = 1.0;
-        double corrguess = 1.0;
-        double step = STEPSIZE;
-        double preverr = 0.0;
-        int maxiter = 1000;
-        int iter = 0;
-        while ( Math.abs( err ) > stop && step >= BINSIZE ) {
-            double guess = pvalue( corrguess, count );
-            if ( guess > pval ) {
-                corrguess += step;
-            } else {
-                corrguess -= step;
-            }
 
-            if ( preverr * err < 0 ) { // opposite signs. Means we missed. Make
-                // step smaller and keep going.
-                step /= 2;
-            }
-
-            preverr = err;
-            err = pval - guess;
-            iter++;
-
-            if ( iter > maxiter ) {
-                throw new IllegalStateException( "Too many iterations" );
-            }
+        if ( count < 3 ) {
+            return 0.0; // warn?
         }
-        return corrguess;
+
+        double z = Math.abs( Probability.normalInverse( pval ) );
+
+        double v = z / Math.sqrt( count - 3.0 );
+
+        double corrguess = unFisherTransform( v );
+        assert Math.abs( corrguess ) <= 1.1 : "Invalid correlation: " + corrguess; // sanity.
+        // double goback = pvalue( corrguess, count );
+
+        // System.err.println( "est corr=" + corrguess + " with pvalue " + goback + " ==? original p=" + pval );
+
+        return Math.min( corrguess, 1.0 );
     }
 
     /**
@@ -227,11 +209,20 @@ public class CorrelationStats {
      * @return Fisher transform of the Correlation.
      */
     public static double fisherTransform( double r ) {
-        if ( !isValidPearsonCorrelation( r ) ) {
-            throw new IllegalArgumentException( "Invalid correlation " + r );
+
+        double ra = Math.abs( r );
+
+        if ( ra == 1.0 ) {
+            return Double.POSITIVE_INFINITY;
         }
 
-        return 0.5 * Math.log( ( 1.0 + r ) / ( 1.0 - r ) );
+        if ( ra == 0.0 ) return 0.0;
+
+        if ( !isValidPearsonCorrelation( ra ) ) {
+            throw new IllegalArgumentException( "Invalid correlation " + ra );
+        }
+
+        return 0.5 * Math.log( ( 1.0 + ra ) / ( 1.0 - ra ) );
     }
 
     /**
@@ -290,9 +281,20 @@ public class CorrelationStats {
         }
         double t = correlationTstat( acorrel, dof );
         double p = Probability.studentT( dof, -t );
+
+        /*
+         * Alternate method: Fisher's transform.
+         */
+        // double rr = 0.5 * Math.log( ( 1 + correl ) / ( 1 - correl ) );
+        // double z = rr * Math.sqrt( count - 3.0 );
+        // double altp = 1.0 - Probability.normal( z );
+        // System.err.println( "P for " + correl + ", n=" + count + " =" + String.format( "%.2g", p ) + " alt: "
+        // + String.format( "%.2g", altp ) );
+
         if ( count < MAXCOUNT ) {
             correlationPvalLookup.setQuick( bin, dof, p );
         }
+
         return p;
 
     }
@@ -354,13 +356,21 @@ public class CorrelationStats {
     }
 
     /**
-     * Reverse the Fisher z-transform of Pearson correlations.
+     * Reverse the Fisher z-transform of Pearson correlations
      * 
-     * @param r
-     * @return
+     * @param z
+     * @return r (always positive)
      */
-    public static double unFisherTransform( double r ) {
-        return Math.exp( 2.0 * r - 1.0 ) / Math.exp( 2.0 * r + 1.0 );
+    public static double unFisherTransform( double z ) {
+        if ( z < Constants.SMALLISH ) {
+            return 0.0;
+        }
+
+        if ( z > 20.0 ) { // ridiculously large
+            return 1.0;
+        }
+
+        return ( Math.exp( 2.0 * z ) - 1.0 ) / ( Math.exp( 2.0 * z ) + 1.0 );
     }
 
     /**

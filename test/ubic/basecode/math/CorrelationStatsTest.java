@@ -57,6 +57,19 @@ public class CorrelationStatsTest extends TestCase {
         assertEquals( 0.03487332, CorrelationStats.correlationForPvalue( 0.4619, 10 ), 0.01 );
         assertEquals( 0.31008, CorrelationStats.correlationForPvalue( 0.1916, 10 ), 0.01 );
         assertEquals( 0.180, CorrelationStats.correlationForPvalue( 1.0 - 0.691, 10 ), 0.01 );
+        assertEquals( 0.127, CorrelationStats.correlationForPvalue( CorrelationStats.pvalue( 0.127, 20 ), 20 ), 0.01 );
+        assertEquals( 0.227, CorrelationStats.correlationForPvalue( CorrelationStats.pvalue( 0.227, 20 ), 20 ), 0.01 );
+        assertEquals( 0.0127, CorrelationStats.correlationForPvalue( CorrelationStats.pvalue( 0.0127, 20 ), 20 ), 0.01 );
+        assertEquals( 0.00127, CorrelationStats.correlationForPvalue( CorrelationStats.pvalue( 0.00127, 20 ), 20 ),
+                0.01 );
+    }
+
+    public void testInverseFisherTransform() throws Exception {
+        assertEquals( 0.5, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( 0.5 ) ), 0.001 );
+        assertEquals( 0.5, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( -0.5 ) ), 0.001 );
+        assertEquals( 0.05, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( 0.05 ) ), 0.001 );
+        assertEquals( 1.0, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( 1.0 ) ), 0.001 );
+        assertEquals( 0.0, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( 0.0 ) ), 0.001 );
     }
 
     public void testCorrelTooSmall() throws Exception {
