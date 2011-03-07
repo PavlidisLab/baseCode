@@ -210,19 +210,17 @@ public class CorrelationStats {
      */
     public static double fisherTransform( double r ) {
 
-        double ra = Math.abs( r );
-
-        if ( ra == 1.0 ) {
+        if ( Math.abs( r ) == 1.0 ) {
             return Double.POSITIVE_INFINITY;
         }
 
-        if ( ra == 0.0 ) return 0.0;
+        if ( r == 0.0 ) return 0.0;
 
-        if ( !isValidPearsonCorrelation( ra ) ) {
-            throw new IllegalArgumentException( "Invalid correlation " + ra );
+        if ( !isValidPearsonCorrelation( r ) ) {
+            throw new IllegalArgumentException( "Invalid correlation " + r );
         }
 
-        return 0.5 * Math.log( ( 1.0 + ra ) / ( 1.0 - ra ) );
+        return 0.5 * Math.log( ( 1.0 + r ) / ( 1.0 - r ) );
     }
 
     /**
