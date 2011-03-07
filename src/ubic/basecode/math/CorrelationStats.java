@@ -357,14 +357,14 @@ public class CorrelationStats {
      * Reverse the Fisher z-transform of Pearson correlations
      * 
      * @param z
-     * @return r (always positive)
+     * @return r
      */
     public static double unFisherTransform( double z ) {
-        if ( z < Constants.SMALLISH ) {
+        if ( Math.abs( z ) < Constants.SMALLISH ) {
             return 0.0;
         }
 
-        if ( z > 20.0 ) { // ridiculously large
+        if ( Math.abs( z ) > 20.0 ) { // ridiculously large
             return 1.0;
         }
 

@@ -66,7 +66,7 @@ public class CorrelationStatsTest extends TestCase {
 
     public void testInverseFisherTransform() throws Exception {
         assertEquals( 0.5, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( 0.5 ) ), 0.001 );
-        assertEquals( 0.5, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( -0.5 ) ), 0.001 );
+        assertEquals( -0.5, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( -0.5 ) ), 0.001 );
         assertEquals( 0.05, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( 0.05 ) ), 0.001 );
         assertEquals( 1.0, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( 1.0 ) ), 0.001 );
         assertEquals( 0.0, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( 0.0 ) ), 0.001 );
