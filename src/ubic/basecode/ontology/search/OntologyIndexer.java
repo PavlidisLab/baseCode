@@ -102,9 +102,9 @@ public class OntologyIndexer {
     }
 
     /**
-     * Create an on-disk index from an existing OntModel. Any existing index will be overwritten. See {@link http
-     * ://jena.sourceforge.net/ARQ/lucene-arq.html}
+     * Create an on-disk index from an existing OntModel. Any existing index will be overwritten.
      * 
+     * @see {@link http://jena.sourceforge.net/ARQ/lucene-arq.html}
      * @param datafile or uri
      * @param name used to refer to this index later
      * @param model

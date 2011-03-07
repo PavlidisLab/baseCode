@@ -20,9 +20,6 @@ package ubic.basecode.xml;
 
 import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import junit.framework.TestCase;
 import ubic.basecode.util.RegressionTesting;
 
@@ -31,8 +28,6 @@ import ubic.basecode.util.RegressionTesting;
  * @version $Id$
  */
 public class TestGOParser extends TestCase {
-
-    private static Log log = LogFactory.getLog( TestGOParser.class );
 
     private GOParser gOParser = null;
 
