@@ -301,4 +301,8 @@ public class SparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return matrix.viewRow( row );
     }
 
+    @Override
+    public DoubleMatrix<C, R> transpose() {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -261,4 +261,21 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     public DoubleMatrix1D viewRow( int j ) {
         return new DenseDoubleMatrix1D( data[j].elements() );
     }
+
+    @Override
+    public DoubleMatrix<C, R> transpose() {
+
+        DoubleMatrix<C, R> result = new DenseDoubleMatrix<C, R>( this.columns(), this.rows() );
+        result.setRowNames( this.getColNames() );
+        result.setColumnNames( this.getRowNames() );
+
+        for ( int i = 0; i < this.rows(); i++ ) {
+            for ( int j = 0; j < this.columns(); j++ ) {
+                result.set( j, i, this.get( i, j ) );
+            }
+        }
+
+        return result;
+
+    }
 }

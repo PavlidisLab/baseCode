@@ -310,4 +310,9 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return new DenseDoubleMatrix1D( getRow( row ) );
     }
 
+    @Override
+    public DoubleMatrix<C, R> transpose() {
+        throw new UnsupportedOperationException();
+    }
+
 }

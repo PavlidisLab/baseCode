@@ -61,6 +61,46 @@ public class MatrixStats {
     }
 
     /**
+     * Iteratively standardize the columns and rows of the matrix.
+     * 
+     * @param data
+     */
+    public static <R, C> DoubleMatrix<R, C> doubleStandardize( DoubleMatrix<R, C> matrix ) {
+        DoubleMatrix<R, C> newMatrix = standardize( matrix );
+
+        int ITERS = 6;
+        for ( int i = 0; i < ITERS; i++ ) {
+            DoubleMatrix<C, R> intermediate = standardize( newMatrix.transpose() );
+            newMatrix = standardize( intermediate.transpose() );
+        }
+
+        return newMatrix;
+    }
+
+    /**
+     * Scale the rows of the matrix
+     * 
+     * @param <R>
+     * @param <C>
+     * @param data
+     * @return
+     */
+    public static <R, C> DoubleMatrix<R, C> standardize( DoubleMatrix<R, C> matrix ) {
+        DoubleMatrix<R, C> newMatrix = new DenseDoubleMatrix<R, C>( matrix.rows(), matrix.columns() );
+        newMatrix.setRowNames( matrix.getRowNames() );
+        newMatrix.setColumnNames( matrix.getColNames() );
+        for ( int i = 0; i < matrix.rows(); i++ ) {
+            double[] row = matrix.getRow( i );
+            DoubleArrayList li = new DoubleArrayList( row );
+            DescriptiveWithMissing.standardize( li );
+            for ( int j = 0; j < matrix.columns(); j++ ) {
+                newMatrix.set( i, j, li.getQuick( j ) );
+            }
+        }
+        return newMatrix;
+    }
+
+    /**
      * @param data DenseDoubleMatrix2DNamed
      * @param threshold only correlations with absolute values above this level are stored.
      * @return a sparse symmetric matrix that has the rows and columns set to be the names of the rows of the input.

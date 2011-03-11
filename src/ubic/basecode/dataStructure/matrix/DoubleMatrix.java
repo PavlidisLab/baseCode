@@ -192,4 +192,6 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
         return sorted;
 
     }
+
+    public abstract DoubleMatrix<C, R> transpose();
 }

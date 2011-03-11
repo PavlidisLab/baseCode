@@ -334,4 +334,9 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return new RCDoubleMatrix1D( this.getRow( i ) );
     }
 
+    @Override
+    public DoubleMatrix<C, R> transpose() {
+        throw new UnsupportedOperationException();
+    }
+
 }

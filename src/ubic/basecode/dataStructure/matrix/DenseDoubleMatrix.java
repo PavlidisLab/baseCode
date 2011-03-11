@@ -284,4 +284,21 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return matrix.viewRow( row );
     }
 
+    @Override
+    public DoubleMatrix<C, R> transpose() {
+
+        DoubleMatrix<C, R> result = new DenseDoubleMatrix<C, R>( this.columns(), this.rows() );
+        result.setRowNames( this.getColNames() );
+        result.setColumnNames( this.getRowNames() );
+
+        for ( int i = 0; i < this.rows(); i++ ) {
+            for ( int j = 0; j < this.columns(); j++ ) {
+                result.set( j, i, this.get( i, j ) );
+            }
+        }
+
+        return result;
+
+    }
+
 }

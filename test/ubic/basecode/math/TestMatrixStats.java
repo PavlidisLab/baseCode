@@ -16,7 +16,9 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.math; 
+package ubic.basecode.math;
+
+import cern.colt.function.DoubleProcedure;
 
 import junit.framework.TestCase;
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
@@ -57,6 +59,66 @@ public class TestMatrixStats extends TestCase {
         double expectedReturn = -965.3;
         double actualReturn = MatrixStats.min( testdata );
         assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
+    }
+
+    public final void testStandardize() throws Exception {
+        DoubleMatrix<String, String> standardize = MatrixStats.standardize( testdata );
+        assertEquals( 30, standardize.rows() );
+        assertEquals( -0.3972, standardize.get( 3, 4 ), 0.0001 );
+
+        MatrixRowStats.means( standardize ).forEach( new DoubleProcedure() {
+            @Override
+            public boolean apply( double element ) {
+                assertEquals( 0.0, element, 0.001 );
+                return true;
+            }
+        } );
+
+        MatrixRowStats.sampleStandardDeviations( standardize ).forEach( new DoubleProcedure() {
+            @Override
+            public boolean apply( double element ) {
+                assertEquals( 1.0, element, 0.001 );
+                return true;
+            }
+        } );
+    }
+
+    public final void testDoubleStandardize() throws Exception {
+        DoubleMatrix<String, String> standardize = MatrixStats.doubleStandardize( testdata );
+        assertEquals( 30, standardize.rows() );
+        assertEquals( -0.51098, standardize.get( 3, 4 ), 0.01 );
+
+        MatrixRowStats.means( standardize ).forEach( new DoubleProcedure() {
+            @Override
+            public boolean apply( double element ) {
+                assertEquals( 0.0, element, 0.001 );
+                return true;
+            }
+        } );
+
+        MatrixRowStats.means( standardize.transpose() ).forEach( new DoubleProcedure() {
+            @Override
+            public boolean apply( double element ) {
+                assertEquals( 0.0, element, 0.001 );
+                return true;
+            }
+        } );
+
+        MatrixRowStats.sampleStandardDeviations( standardize ).forEach( new DoubleProcedure() {
+            @Override
+            public boolean apply( double element ) {
+                assertEquals( 1.0, element, 0.001 );
+                return true;
+            }
+        } );
+
+        MatrixRowStats.sampleStandardDeviations( standardize.transpose() ).forEach( new DoubleProcedure() {
+            @Override
+            public boolean apply( double element ) {
+                assertEquals( 1.0, element, 0.05 );
+                return true;
+            }
+        } );
     }
 
     public final void testNan() throws Exception {

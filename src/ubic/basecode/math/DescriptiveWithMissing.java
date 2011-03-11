@@ -280,8 +280,8 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * Returns the geometric mean of a data sequence. Missing values are ignored. Note that for a geometric mean to be
      * meaningful, the minimum of the data sequence must not be less or equal to zero. <br>
      * The geometric mean is given by <tt>pow( Product( data[i] ),
-     * 1/data.size())</tt>. This method tries to avoid
-     * overflows at the expense of an equivalent but somewhat slow definition: <tt>geo = Math.exp( Sum(
+     * 1/data.size())</tt>. This method tries to avoid overflows at the expense of an equivalent but somewhat slow
+     * definition: <tt>geo = Math.exp( Sum(
      * Log(data[i]) ) / data.size())</tt>.
      * 
      * @param data DoubleArrayList
@@ -528,8 +528,8 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
     }
 
     /**
-     * Returns the product of a data sequence, which is <tt>Prod( data[i] )</tt>. Missing values are ignored. In
-     * other words: <tt>data[0]*data[1]*...*data[data.size()-1]</tt>. Note that you may easily get numeric overflows.
+     * Returns the product of a data sequence, which is <tt>Prod( data[i] )</tt>. Missing values are ignored. In other
+     * words: <tt>data[0]*data[1]*...*data[data.size()-1]</tt>. Note that you may easily get numeric overflows.
      * 
      * @param data DoubleArrayList
      * @return double
@@ -550,9 +550,9 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
     }
 
     /**
-     * Returns the <tt>phi-</tt> quantile; that is, an element <tt>elem</tt> for which holds that <tt>phi</tt>
-     * percent of data elements are less than <tt>elem</tt>. Missing values are ignored. The quantile need not
-     * necessarily be contained in the data sequence, it can be a linear interpolation.
+     * Returns the <tt>phi-</tt> quantile; that is, an element <tt>elem</tt> for which holds that <tt>phi</tt> percent
+     * of data elements are less than <tt>elem</tt>. Missing values are ignored. The quantile need not necessarily be
+     * contained in the data sequence, it can be a linear interpolation.
      * 
      * @param sortedData the data sequence; <b>must be sorted ascending </b>.
      * @param phi the percentage; must satisfy <tt>0 &lt;= phi &lt;= 1</tt>.
@@ -716,8 +716,8 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
     }
 
     /**
-     * Modifies a data sequence to be standardized. Mising values are ignored. Changes each element <tt>data[i]</tt>
-     * as follows: <tt>data[i] = (data[i]-mean)/standardDeviation</tt>.
+     * Modifies a data sequence to be standardized. Mising values are ignored. Changes each element <tt>data[i]</tt> as
+     * follows: <tt>data[i] = (data[i]-mean)/standardDeviation</tt>.
      * 
      * @param data DoubleArrayList
      * @param mean mean of data
@@ -758,8 +758,7 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
 
     /**
      * Returns the sum of logarithms of a data sequence, which is <tt>Sum(
-     * Log(data[i])</tt>. Missing values are
-     * ignored.
+     * Log(data[i])</tt>. Missing values are ignored.
      * 
      * @param data the data sequence.
      * @param from the index of the first data element (inclusive).
@@ -779,8 +778,8 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
     }
 
     /**
-     * Returns <tt>Sum( (data[i]-c)<sup>k</sup> )</tt>; optimized for common parameters like <tt>c == 0.0</tt>
-     * and/or <tt>k == -2 .. 4</tt>.
+     * Returns <tt>Sum( (data[i]-c)<sup>k</sup> )</tt>; optimized for common parameters like <tt>c == 0.0</tt> and/or
+     * <tt>k == -2 .. 4</tt>.
      * 
      * @param data DoubleArrayList
      * @param k int
@@ -793,8 +792,8 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
 
     /**
      * Returns <tt>Sum( (data[i]-c)<sup>k</sup> )</tt> for all <tt>i = from ..
-     * to</tt>; optimized for common
-     * parameters like <tt>c == 0.0</tt> and/or <tt>k == -2 .. 5</tt>. Missing values are ignored.
+     * to</tt>; optimized for common parameters like <tt>c == 0.0</tt> and/or <tt>k == -2 .. 5</tt>. Missing values are
+     * ignored.
      * 
      * @param data DoubleArrayList
      * @param k int
