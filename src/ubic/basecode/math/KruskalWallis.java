@@ -30,6 +30,27 @@ import cern.jet.stat.Probability;
  * @version $Id$
  */
 public class KruskalWallis {
+
+    /**
+     * @param scores
+     * @param groupings
+     * @return number of degrees of freedom (number of groups - 1)
+     */
+    public static int dof( DoubleArrayList scores, IntArrayList groupings ) {
+        return groupedRanks( groupings, scores ).size() - 1;
+    }
+
+    /**
+     * @param scores
+     * @param groupings
+     * @return statistic; chi-squared with numgroups - 1 dof under the null.
+     */
+    public static double kwStatistic( DoubleArrayList scores, IntArrayList groupings ) {
+        Map<Integer, Collection<Integer>> groupedRanks = groupedRanks( groupings, scores );
+        int n = scores.size();
+        return kwStatistic( n, groupedRanks );
+    }
+
     /**
      * Perform a Kruskal-Wallis one-way ANOVA.
      * <p>
@@ -46,18 +67,35 @@ public class KruskalWallis {
 
         assert scores.size() > 2;
 
-        DoubleArrayList ranks = Rank.rankTransform( scores );
-
         int n = scores.size();
 
+        Map<Integer, Collection<Integer>> groupedRanks = groupedRanks( groupings, scores );
+
+        int numGroups = groupedRanks.size();
+
+        if ( numGroups < 2 ) {
+            throw new IllegalArgumentException( "Must have at least two group" );
+        }
+
+        double k = kwStatistic( n, groupedRanks );
+
+        return Probability.chiSquareComplemented( numGroups - 1, k );
+    }
+
+    /**
+     * @param groupings
+     * @param ranks
+     * @param n
+     * @return
+     */
+    private static Map<Integer, Collection<Integer>> groupedRanks( IntArrayList groupings, DoubleArrayList scores ) {
         /*
          * See for example http://en.wikipedia.org/wiki/Kruskal%E2%80%93Wallis_one-way_analysis_of_variance
          */
-
+        int n = scores.size();
+        DoubleArrayList ranks = Rank.rankTransform( scores );
         double meanRank = ( n + 1.0 ) * 0.5;
         double meanTotalDev = 0.0; // denominator
-
-        double scale = 12.0 / ( n * ( n + 1.0 ) );
 
         Map<Integer, Collection<Integer>> groupedRanks = new HashMap<Integer, Collection<Integer>>();
         for ( int i = 0; i < groupings.size(); i++ ) {
@@ -71,13 +109,16 @@ public class KruskalWallis {
             meanTotalDev += Math.pow( ranks.get( i ) - meanRank, 2 );
 
         }
+        return groupedRanks;
+    }
 
-        int numGroups = groupedRanks.size();
-
-        if ( numGroups < 2 ) {
-            throw new IllegalArgumentException( "Must have at least two group" );
-        }
-
+    /**
+     * @param n
+     * @param groupedRanks
+     * @return statistic; chi-squared with numgroups - 1 dof under the null.
+     */
+    private static double kwStatistic( int n, Map<Integer, Collection<Integer>> groupedRanks ) {
+        double scale = 12.0 / ( n * ( n + 1.0 ) );
         double sum = 0.0;
         for ( Integer g : groupedRanks.keySet() ) {
 
@@ -97,7 +138,6 @@ public class KruskalWallis {
         }
 
         double k = scale * sum;
-
-        return Probability.chiSquareComplemented( numGroups - 1, k );
+        return k;
     }
 }
