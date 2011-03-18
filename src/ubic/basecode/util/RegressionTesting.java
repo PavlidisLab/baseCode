@@ -92,15 +92,18 @@ public class RegressionTesting {
     }
 
     /**
-     * @param a
-     * @param b
+     * @param a expected
+     * @param b measured
      * @param tolerance
      */
     public static boolean closeEnough( double[] a, double[] b, double tolerance ) {
         if ( a.length != b.length ) return false;
 
         for ( int i = 0; i < a.length; i++ ) {
-            if ( Math.abs( a[i] - b[i] ) > tolerance ) return false;
+            if ( Math.abs( a[i] - b[i] ) > tolerance ) {
+                log.error( "Expected " + a[i] + " got " + b[i] + " at " + i );
+                return false;
+            }
         }
         return true;
 

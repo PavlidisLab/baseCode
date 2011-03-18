@@ -72,7 +72,7 @@ public class MatrixStats {
         int ITERS = 5;
         for ( int i = 0; i < ITERS; i++ ) {
             // scale columns, then rows.
-            newMatrix = standardize( standardize( newMatrix.transpose() ) /* columns */.transpose() );
+            newMatrix = standardize( standardize( newMatrix.transpose() /* columns */).transpose() /* rows */);
         }
 
         /*
@@ -81,7 +81,7 @@ public class MatrixStats {
         MatrixRowStats.means( newMatrix ).forEach( new DoubleProcedure() {
             @Override
             public boolean apply( double element ) {
-                if ( Math.abs( element ) > 0.01 ) {
+                if ( Math.abs( element ) > 0.02 ) {
                     throw new IllegalStateException( "Row mean was: " + Math.abs( element ) );
                 }
                 return true;
@@ -91,8 +91,8 @@ public class MatrixStats {
         MatrixRowStats.means( newMatrix.transpose() ).forEach( new DoubleProcedure() {
             @Override
             public boolean apply( double element ) {
-                if ( Math.abs( element ) > 0.01 ) {
-                    throw new IllegalStateException( "Column mean was: " + Math.abs( element ) );
+                if ( Math.abs( element ) > 0.1 ) {
+                    throw new IllegalStateException( "Row mean  mean was: " + Math.abs( element ) );
                 }
                 return true;
             }
@@ -101,7 +101,7 @@ public class MatrixStats {
         MatrixRowStats.sampleStandardDeviations( newMatrix ).forEach( new DoubleProcedure() {
             @Override
             public boolean apply( double element ) {
-                if ( Math.abs( element - 1.0 ) > 0.05 ) {
+                if ( Math.abs( element - 1.0 ) > 0.1) {
                     throw new IllegalStateException();
                 }
                 return true;
