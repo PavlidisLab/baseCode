@@ -22,6 +22,7 @@ import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.SparseDoubleMatrix;
 import cern.colt.function.DoubleFunction;
+import cern.colt.function.DoubleProcedure;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.jet.math.Functions;
@@ -66,19 +67,62 @@ public class MatrixStats {
      * @param data
      */
     public static <R, C> DoubleMatrix<R, C> doubleStandardize( DoubleMatrix<R, C> matrix ) {
-        DoubleMatrix<R, C> newMatrix = standardize( matrix );
+        DoubleMatrix<R, C> newMatrix = matrix.copy();
 
-        int ITERS = 6;
+        int ITERS = 5;
         for ( int i = 0; i < ITERS; i++ ) {
-            DoubleMatrix<C, R> intermediate = standardize( newMatrix.transpose() );
-            newMatrix = standardize( intermediate.transpose() );
+            // scale columns, then rows.
+            newMatrix = standardize( standardize( newMatrix.transpose() ) /* columns */.transpose() );
         }
+
+        /*
+         * Check convergence.DEBUG CODE
+         */
+        MatrixRowStats.means( newMatrix ).forEach( new DoubleProcedure() {
+            @Override
+            public boolean apply( double element ) {
+                if ( Math.abs( element ) > 0.01 ) {
+                    throw new IllegalStateException( "Row mean was: " + Math.abs( element ) );
+                }
+                return true;
+            }
+        } );
+
+        MatrixRowStats.means( newMatrix.transpose() ).forEach( new DoubleProcedure() {
+            @Override
+            public boolean apply( double element ) {
+                if ( Math.abs( element ) > 0.01 ) {
+                    throw new IllegalStateException( "Column mean was: " + Math.abs( element ) );
+                }
+                return true;
+            }
+        } );
+
+        MatrixRowStats.sampleStandardDeviations( newMatrix ).forEach( new DoubleProcedure() {
+            @Override
+            public boolean apply( double element ) {
+                if ( Math.abs( element - 1.0 ) > 0.05 ) {
+                    throw new IllegalStateException();
+                }
+                return true;
+            }
+        } );
+
+        MatrixRowStats.sampleStandardDeviations( newMatrix.transpose() ).forEach( new DoubleProcedure() {
+            @Override
+            public boolean apply( double element ) {
+                if ( Math.abs( element - 1.0 ) > 0.05 ) {
+                    throw new IllegalStateException();
+                }
+                return true;
+            }
+        } );
 
         return newMatrix;
     }
 
     /**
-     * Scale the rows of the matrix
+     * Scale the rows of the matrix; returns a new matrix.
      * 
      * @param <R>
      * @param <C>
@@ -93,6 +137,17 @@ public class MatrixStats {
             double[] row = matrix.getRow( i );
             DoubleArrayList li = new DoubleArrayList( row );
             DescriptiveWithMissing.standardize( li );
+
+            /*
+             * DEBUG CODE
+             */
+            if ( Math.abs( DescriptiveWithMissing.mean( li ) ) > 0.001 ) {
+                throw new IllegalStateException( "NOT CENTERED" );
+            }
+            if ( Math.abs( DescriptiveWithMissing.sampleVariance( li, DescriptiveWithMissing.mean( li ) ) - 1.0 ) > 0.001 ) {
+                throw new IllegalStateException( "NOT SCALED" );
+            }
+
             for ( int j = 0; j < matrix.columns(); j++ ) {
                 newMatrix.set( i, j, li.getQuick( j ) );
             }

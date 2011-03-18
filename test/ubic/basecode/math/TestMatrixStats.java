@@ -64,7 +64,8 @@ public class TestMatrixStats extends TestCase {
     public final void testStandardize() throws Exception {
         DoubleMatrix<String, String> standardize = MatrixStats.standardize( testdata );
         assertEquals( 30, standardize.rows() );
-        assertEquals( -0.3972, standardize.get( 3, 4 ), 0.0001 );
+        assertEquals( -0.3972279, standardize.get( 3, 4 ), 0.0001 );
+        assertEquals( -0.7385692, standardize.get( 13, 5 ), 0.0001 );
 
         MatrixRowStats.means( standardize ).forEach( new DoubleProcedure() {
             @Override
@@ -86,7 +87,8 @@ public class TestMatrixStats extends TestCase {
     public final void testDoubleStandardize() throws Exception {
         DoubleMatrix<String, String> standardize = MatrixStats.doubleStandardize( testdata );
         assertEquals( 30, standardize.rows() );
-        assertEquals( -0.51098, standardize.get( 3, 4 ), 0.01 );
+        assertEquals( -0.472486, standardize.get( 3, 4 ), 0.01 );
+        assertEquals( -0.4903036, standardize.get( 26, 2 ), 0.01 );
 
         MatrixRowStats.means( standardize ).forEach( new DoubleProcedure() {
             @Override
@@ -99,7 +101,7 @@ public class TestMatrixStats extends TestCase {
         MatrixRowStats.means( standardize.transpose() ).forEach( new DoubleProcedure() {
             @Override
             public boolean apply( double element ) {
-                assertEquals( 0.0, element, 0.001 );
+                assertEquals( 0.0, element, 0.002 );
                 return true;
             }
         } );
