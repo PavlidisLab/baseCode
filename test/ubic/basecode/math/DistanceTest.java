@@ -78,6 +78,19 @@ public class DistanceTest extends TestCase {
         assertEquals( expectedValue, actualValue, 0.001 );
     }
 
+    public void testSpearmanRankCorrelation3() {
+        // Example - R returns -0.8193465
+        double[] a = new double[] { 0.3444789380683436, 0.25730556300327256, -0.3537694496071584, 0.30107097096672647,
+                0.2616453086877814, -0.3443256334665076, 0.07761487750036018, 0.30774542507040675, -0.3531845397619931,
+                -0.19525720140467262, 0.07495906681671448, -0.37828332587330704 };
+        double[] b = new double[] { 64006.0, 64006.0, 64007.0, 64006.0, 64006.0, 64007.0, 64006.0, 64006.0, 64007.0,
+                64006.0, 64006.0, 64007.0 };
+
+        double actualValue = Distance.spearmanRankCorrelation( new DoubleArrayList( a ), new DoubleArrayList( b ) );
+        double expectedValue = -0.8193465;
+        assertEquals( expectedValue, actualValue, 0.001 );
+    }
+
     public void testSpearmanRankCorrelationNaN() {
         // Example - R returns 0.8597647 using use = "complete.obs" parameter // not for me PP
 

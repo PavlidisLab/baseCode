@@ -19,6 +19,7 @@
 package ubic.basecode.math;
 
 import cern.colt.list.DoubleArrayList;
+import cern.jet.stat.Descriptive;
 
 /**
  * Alternative distance and similarity metrics for vectors.
@@ -171,11 +172,13 @@ public class Distance {
         DoubleArrayList rx = Rank.rankTransform( mx );
         DoubleArrayList ry = Rank.rankTransform( my );
 
-        double sum = 0.0;
-        for ( int i = 0; i < mx.size(); i++ ) {
-            sum += Math.pow( rx.elements()[i] - ry.elements()[i], 2 );
-        }
-
-        return 1.0 - 6.0 * sum / ( Math.pow( mx.size(), 3 ) - mx.size() );
+      return DescriptiveWithMissing.correlation( rx, ry );
+        //        
+        // double sum = 0.0;
+        // for ( int i = 0; i < mx.size(); i++ ) {
+        // sum += Math.pow( rx.elements()[i] - ry.elements()[i], 2 );
+        // }
+        //
+        // return 1.0 - 6.0 * sum / ( Math.pow( mx.size(), 3 ) - mx.size() );
     }
 }
