@@ -82,11 +82,11 @@ public class ColorMatrix<A, B> implements Cloneable {
         // copy the row and column names
         for ( int i = 0; i < m_totalRows; i++ ) {
             A rowName = maxtrix.getRowName( i );
-            matrix.addRowName( rowName, i );
+            matrix.setRowName( rowName, i );
         }
         for ( int i = 0; i < m_totalColumns; i++ ) {
             B colName = maxtrix.getColName( i );
-            matrix.addColumnName( colName, i );
+            matrix.setColumnName( colName, i );
             // copy the data
         }
         for ( int r = 0; r < m_totalRows; r++ ) {

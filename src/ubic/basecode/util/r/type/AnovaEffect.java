@@ -19,6 +19,8 @@
 
 package ubic.basecode.util.r.type;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Represents one row of an ANOVA table
  * 
@@ -37,19 +39,43 @@ public class AnovaEffect {
 
     private Double meanSq = Double.NaN;
 
+    @Override
+    public String toString() {
+        StringBuilder buf = new StringBuilder();
+        buf.append( StringUtils.rightPad( StringUtils.abbreviate( getEffectName(), 10 ), 10 ) + "\t" );
+        buf.append( getDegreesOfFreedom() + "\t" );
+        buf.append( String.format( "%.2f", getSsQ() ) + "\t" );
+        buf.append( String.format( "%.2f", getMeanSq() ) + "\t" );
+
+        if ( fStatistic != null ) {
+            buf.append( StringUtils.rightPad( String.format( "%.1f", getFStatistic() ), 6 ) + "\t" );
+            buf.append( String.format( "%.2g", getPValue() ) );
+        }
+        return buf.toString();
+    }
+
     private Double pValue = Double.NaN;
 
     private Double ssQ = Double.NaN;
 
-    public AnovaEffect( String effectName, Double pValue, Double fStatistic, Integer degresOfFreedom, Double meanSq,
-            Double ssQ, boolean isInteraction ) {
+    /**
+     * @param effectName
+     * @param pValue
+     * @param fStatistic
+     * @param degreesOfFreedom
+     * @param meanSq
+     * @param ssQ
+     * @param isInteraction
+     */
+    public AnovaEffect( String effectName, Double pValue, Double fStatistic, Integer degreesOfFreedom, Double ssQ,
+            boolean isInteraction ) {
         super();
         this.effectName = effectName;
         this.pValue = pValue;
         this.fStatistic = fStatistic;
-        this.degreesOfFreedom = degresOfFreedom;
+        this.degreesOfFreedom = degreesOfFreedom;
         this.ssQ = ssQ;
-        this.meanSq = meanSq;
+        this.meanSq = ssQ / degreesOfFreedom;
         this.isInteraction = isInteraction;
     }
 

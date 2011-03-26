@@ -79,7 +79,7 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
 
     }
 
-    public final void addColumnName( C s, int i ) {
+    public final void setColumnName( C s, int i ) {
 
         if ( s == null ) {
             throw new IllegalArgumentException( "Column name cannot be null" );
@@ -118,7 +118,7 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
      * 
      * @see basecode.dataStructure.NamedMatrix#addRowName(java.lang.String, int)
      */
-    public final void addRowName( R s, int i ) {
+    public final void setRowName( R s, int i ) {
         if ( s == null ) {
             throw new IllegalArgumentException( "Row name cannot be null" );
         }
@@ -177,6 +177,19 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.Matrix2D#assign(java.lang.Object)
+     */
+    public void assign( V value ) {
+        for ( int i = 0; i < this.rows(); i++ ) {
+            for ( int j = 0; j < this.columns(); j++ ) {
+                this.set( i, j, value );
+            }
+        }
+    }
+
     public final boolean containsColumnName( C columnName ) {
         return colMap.containsKey( columnName );
     }
@@ -204,6 +217,11 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
         return colNames.get( i );
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.Matrix2D#getColNames()
+     */
     public final List<C> getColNames() {
         return colNames;
     }
@@ -271,7 +289,7 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
         this.colMap.clear();
 
         for ( int i = 0; i < v.size(); i++ ) {
-            addColumnName( v.get( i ), i );
+            setColumnName( v.get( i ), i );
         }
     }
 
@@ -286,7 +304,7 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
 
         for ( int i = 0; i < v.size(); i++ ) {
             R rowName = v.get( i );
-            this.addRowName( rowName, i );
+            this.setRowName( rowName, i );
         }
     }
 

@@ -22,6 +22,8 @@ import cern.colt.matrix.ObjectMatrix1D;
 import cern.colt.matrix.impl.DenseObjectMatrix2D;
 
 /**
+ * Matrix that can hold any type of object
+ * 
  * @author pavlidis
  * @version $Id$
  */
@@ -166,5 +168,27 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
      */
     public ObjectMatrix1D viewRow( int row ) {
         return matrix.viewRow( row );
+    }
+
+    @Override
+    public ObjectMatrix<R, C, V> subset( int startRow, int startCol, int numRow, int numCol ) {
+        int endRow = startRow + numRow - 1;
+        super.checkRowRange( startRow, endRow );
+        int endCol = startCol + numCol - 1;
+        super.checkColRange( startCol, endCol );
+        ObjectMatrix<R, C, V> result = new ObjectMatrixImpl<R, C, V>( numRow, numCol );
+        int r = 0;
+        for ( int i = startRow; i < endRow; i++ ) {
+            int c = 0;
+            for ( int j = startCol; j < endCol; j++ ) {
+                result.set( r, c++, this.get( i, j ) );
+            }
+            r++;
+        }
+        /*
+         * FIXME set up the row/column names.
+         */
+        return result;
+
     }
 }

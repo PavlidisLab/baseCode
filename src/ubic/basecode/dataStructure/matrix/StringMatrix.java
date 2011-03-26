@@ -42,6 +42,28 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements 
         matrix = new DenseObjectMatrix2D( x, y );
     }
 
+    @Override
+    public ObjectMatrix<R, C, String> subset( int startRow, int startCol, int numRow, int numCol ) {
+        int endRow = startRow + numRow - 1;
+        super.checkRowRange( startRow, endRow );
+        int endCol = startCol + numCol - 1;
+        super.checkColRange( startCol, endCol );
+        ObjectMatrix<R, C, String> result = new StringMatrix<R, C>( numRow, numCol );
+        int r = 0;
+        for ( int i = startRow; i < endRow; i++ ) {
+            int c = 0;
+            for ( int j = startCol; j < endCol; j++ ) {
+                result.set( r, c++, this.get( i, j ) );
+            }
+            r++;
+        }
+        /*
+         * FIXME set up the row/column names.
+         */
+        return result;
+
+    }
+
     /**
      * @return
      */

@@ -189,8 +189,8 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
 
         for ( int k = 1; k <= dim; k++ ) {
 
-            returnVal.addColumnName( new Integer( k ).toString(), k - 1 );
-            returnVal.addRowName( new Integer( k ).toString(), k - 1 );
+            returnVal.setColumnName( new Integer( k ).toString(), k - 1 );
+            returnVal.setRowName( new Integer( k ).toString(), k - 1 );
 
             index = ff.nextInt(); // "item 1 has 2 edges"
             log.info( index );

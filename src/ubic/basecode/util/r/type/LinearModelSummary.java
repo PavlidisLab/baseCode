@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.distribution.FDistribution;
 import org.apache.commons.math.distribution.FDistributionImpl;
@@ -74,6 +75,8 @@ public class LinearModelSummary implements Serializable {
 
     private Integer denominatorDof = null;
 
+    private String key = null;
+
     // private DoubleMatrix<String, String> covariance;
 
     /**
@@ -113,6 +116,40 @@ public class LinearModelSummary implements Serializable {
      */
     public LinearModelSummary( REXP summaryLm, String[] factorNames ) {
         this( summaryLm, null, factorNames );
+    }
+
+    /**
+     * @param key optional identifier
+     * @param residuals
+     * @param coefficients
+     * @param rsquared
+     * @param adjRsquared
+     * @param fstat
+     * @param ndof
+     * @param ddof
+     * @param anovaResult
+     */
+    public LinearModelSummary( String k, Double[] residuals, DoubleMatrix<String, String> coefficients,
+            double rsquared, double adjRsquared, double fstat, Integer ndof, Integer ddof,
+            GenericAnovaResult anovaResult ) {
+        this.residuals = residuals;
+        this.coefficients = coefficients;
+        this.rSquared = rsquared;
+        this.adjRSquared = adjRsquared;
+        this.fStat = fstat;
+        this.numeratorDof = ndof;
+        this.denominatorDof = ddof;
+        this.key = k;
+        this.anovaResult = anovaResult;
+        if ( anovaResult != null ) {
+            if ( anovaResult.getKey() == null ) {
+                anovaResult.setKey( key );
+            } else {
+                if ( !anovaResult.getKey().equals( key ) ) {
+                    throw new IllegalArgumentException( "Keys of ANOVA and holding LM must match" );
+                }
+            }
+        }
     }
 
     /**
@@ -298,6 +335,10 @@ public class LinearModelSummary implements Serializable {
         return Double.NaN;
     }
 
+    public String getKey() {
+        return key;
+    }
+
     /**
      * @return
      * @see ubic.basecode.util.r.type.GenericAnovaResult#getMainEffectFactorNames()
@@ -375,6 +416,17 @@ public class LinearModelSummary implements Serializable {
         return !coefficients.hasRow( factorValueName );
     }
 
+    /**
+     * @param genericAnovaResult
+     */
+    public void setAnova( GenericAnovaResult genericAnovaResult ) {
+        this.anovaResult = genericAnovaResult;
+    }
+
+    public void setKey( String key ) {
+        this.key = key;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -382,7 +434,25 @@ public class LinearModelSummary implements Serializable {
      */
     @Override
     public String toString() {
-        return coefficients.toString();
+        StringBuilder buf = new StringBuilder();
+        if ( StringUtils.isNotBlank( this.key ) ) {
+            buf.append( this.key + "\n" );
+        }
+        buf.append( "F=" + String.format( "%.2f", this.fStat ) + " Rsquare=" + String.format( "%.2f", this.rSquared )
+                + "\n" );
+
+        buf.append( "Residuals:\n" );
+        for ( Double d : residuals ) {
+            buf.append( String.format( "%.2f ", d ) );
+        }
+
+        buf.append( "\n\nCoefficients:\n" + coefficients + "\n" );
+
+        if ( this.anovaResult != null ) {
+            buf.append( this.anovaResult.toString() + "\n" );
+        }
+
+        return buf.toString();
     }
 
     /**
@@ -401,7 +471,7 @@ public class LinearModelSummary implements Serializable {
 
         this.adjRSquared = ( ( REXP ) li.get( "adj.r.squared" ) ).asDouble();
 
-        REXP fstats = ( REXP ) li.get( "fstatistic" );
+        REXP fstats = ( REXP ) li.get( "fstatistic" ); // for overall model fit.
         if ( fstats != null ) {
             Double[] ff = ArrayUtils.toObject( fstats.asDoubles() );
             this.fStat = ff[0];

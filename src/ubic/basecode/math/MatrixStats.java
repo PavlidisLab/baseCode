@@ -19,12 +19,15 @@
 package ubic.basecode.math;
 
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix1D;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.SparseDoubleMatrix;
 import cern.colt.function.DoubleFunction;
 import cern.colt.function.DoubleProcedure;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
+import cern.colt.matrix.DoubleMatrix2D;
+import cern.colt.matrix.linalg.Algebra;
 import cern.jet.math.Functions;
 
 /**
@@ -59,6 +62,54 @@ public class MatrixStats {
         result.setColumnNames( data.getRowNames() );
 
         return result;
+    }
+
+    /**
+     * @param data DenseDoubleMatrix2DNamed
+     * @param threshold only correlations with absolute values above this level are stored.
+     * @return a sparse symmetric matrix that has the rows and columns set to be the names of the rows of the input.
+     */
+    public static <R, C> SparseDoubleMatrix<R, R> correlationMatrix( DoubleMatrix<R, C> data, double threshold ) {
+        SparseDoubleMatrix<R, R> result = new SparseDoubleMatrix<R, R>( data.rows(), data.rows() );
+
+        for ( int i = 0; i < data.rows(); i++ ) {
+            DoubleArrayList irow = new DoubleArrayList( data.getRow( i ) );
+            for ( int j = i + 1; j < data.rows(); j++ ) {
+                DoubleArrayList jrow = new DoubleArrayList( data.getRow( j ) );
+                double c = DescriptiveWithMissing.correlation( irow, jrow );
+                if ( Math.abs( c ) > threshold ) {
+                    result.set( i, j, c );
+                    result.set( j, i, c );
+                }
+            }
+        }
+        result.setRowNames( data.getRowNames() );
+        result.setColumnNames( data.getRowNames() );
+
+        return result;
+    }
+
+    /**
+     * Normalize a count matrix in place to be a transition matrix. Assumes that the values are defined as "bigger is
+     * better"
+     * 
+     * @param matrixToNormalize
+     */
+    public static <R, C> void countsNormalize( DoubleMatrix<R, C> matrixToNormalize ) {
+
+        final double min = MatrixStats.min( matrixToNormalize );
+        DoubleFunction f = new DoubleFunction() {
+            public double apply( double value ) {
+                return value - min + 1;
+            }
+        };
+
+        for ( int j = 0; j < matrixToNormalize.rows(); j++ ) { // do each row in turn ...
+            DoubleMatrix1D row = matrixToNormalize.viewRow( j );
+            row.assign( f );
+            double sum = row.zSum();
+            row.assign( Functions.div( sum ) );
+        }
     }
 
     /**
@@ -119,88 +170,6 @@ public class MatrixStats {
         } );
 
         return newMatrix;
-    }
-
-    /**
-     * Scale the rows of the matrix; returns a new matrix.
-     * 
-     * @param <R>
-     * @param <C>
-     * @param data
-     * @return
-     */
-    public static <R, C> DoubleMatrix<R, C> standardize( DoubleMatrix<R, C> matrix ) {
-        DoubleMatrix<R, C> newMatrix = new DenseDoubleMatrix<R, C>( matrix.rows(), matrix.columns() );
-        newMatrix.setRowNames( matrix.getRowNames() );
-        newMatrix.setColumnNames( matrix.getColNames() );
-        for ( int i = 0; i < matrix.rows(); i++ ) {
-            double[] row = matrix.getRow( i );
-            DoubleArrayList li = new DoubleArrayList( row );
-            DescriptiveWithMissing.standardize( li );
-
-            /*
-             * DEBUG CODE
-             */
-            if ( Math.abs( DescriptiveWithMissing.mean( li ) ) > 0.001 ) {
-                throw new IllegalStateException( "NOT CENTERED" );
-            }
-            if ( Math.abs( DescriptiveWithMissing.sampleVariance( li, DescriptiveWithMissing.mean( li ) ) - 1.0 ) > 0.001 ) {
-                throw new IllegalStateException( "NOT SCALED" );
-            }
-
-            for ( int j = 0; j < matrix.columns(); j++ ) {
-                newMatrix.set( i, j, li.getQuick( j ) );
-            }
-        }
-        return newMatrix;
-    }
-
-    /**
-     * @param data DenseDoubleMatrix2DNamed
-     * @param threshold only correlations with absolute values above this level are stored.
-     * @return a sparse symmetric matrix that has the rows and columns set to be the names of the rows of the input.
-     */
-    public static <R, C> SparseDoubleMatrix<R, R> correlationMatrix( DoubleMatrix<R, C> data, double threshold ) {
-        SparseDoubleMatrix<R, R> result = new SparseDoubleMatrix<R, R>( data.rows(), data.rows() );
-
-        for ( int i = 0; i < data.rows(); i++ ) {
-            DoubleArrayList irow = new DoubleArrayList( data.getRow( i ) );
-            for ( int j = i + 1; j < data.rows(); j++ ) {
-                DoubleArrayList jrow = new DoubleArrayList( data.getRow( j ) );
-                double c = DescriptiveWithMissing.correlation( irow, jrow );
-                if ( Math.abs( c ) > threshold ) {
-                    result.set( i, j, c );
-                    result.set( j, i, c );
-                }
-            }
-        }
-        result.setRowNames( data.getRowNames() );
-        result.setColumnNames( data.getRowNames() );
-
-        return result;
-    }
-
-    /**
-     * Normalize a count matrix in place to be a transition matrix. Assumes that the values are defined as "bigger is
-     * better"
-     * 
-     * @param matrixToNormalize
-     */
-    public static <R, C> void countsNormalize( DoubleMatrix<R, C> matrixToNormalize ) {
-
-        final double min = MatrixStats.min( matrixToNormalize );
-        DoubleFunction f = new DoubleFunction() {
-            public double apply( double value ) {
-                return value - min + 1;
-            }
-        };
-
-        for ( int j = 0; j < matrixToNormalize.rows(); j++ ) { // do each row in turn ...
-            DoubleMatrix1D row = matrixToNormalize.viewRow( j );
-            row.assign( f );
-            double sum = row.zSum();
-            row.assign( Functions.div( sum ) );
-        }
     }
 
     /**
@@ -301,6 +270,18 @@ public class MatrixStats {
     }
 
     /**
+     * @param matrix
+     * @return
+     */
+    public static DoubleMatrix2D pseudoinverse( DoubleMatrix2D matrix ) {
+        Algebra solver = new Algebra();
+        DoubleMatrix2D tDes = solver.transpose( matrix );
+        DoubleMatrix2D mult = solver.mult( tDes, matrix );
+        DoubleMatrix2D invXXT = solver.inverse( mult );
+        return solver.mult( invXXT, tDes );
+    }
+
+    /**
      * Normalize a matrix in place to be a transition matrix. Assumes that values operate such that small values like p
      * values represent closer distances, and the values are probabilities.
      * <p>
@@ -344,6 +325,40 @@ public class MatrixStats {
 
         }
         return returnValue;
+    }
+
+    /**
+     * Scale the rows of the matrix; returns a new matrix.
+     * 
+     * @param <R>
+     * @param <C>
+     * @param data
+     * @return
+     */
+    public static <R, C> DoubleMatrix<R, C> standardize( DoubleMatrix<R, C> matrix ) {
+        DoubleMatrix<R, C> newMatrix = new DenseDoubleMatrix<R, C>( matrix.rows(), matrix.columns() );
+        newMatrix.setRowNames( matrix.getRowNames() );
+        newMatrix.setColumnNames( matrix.getColNames() );
+        for ( int i = 0; i < matrix.rows(); i++ ) {
+            double[] row = matrix.getRow( i );
+            DoubleArrayList li = new DoubleArrayList( row );
+            DescriptiveWithMissing.standardize( li );
+
+            /*
+             * DEBUG CODE
+             */
+            if ( Math.abs( DescriptiveWithMissing.mean( li ) ) > 0.001 ) {
+                throw new IllegalStateException( "NOT CENTERED" );
+            }
+            if ( Math.abs( DescriptiveWithMissing.sampleVariance( li, DescriptiveWithMissing.mean( li ) ) - 1.0 ) > 0.001 ) {
+                throw new IllegalStateException( "NOT SCALED" );
+            }
+
+            for ( int j = 0; j < matrix.columns(); j++ ) {
+                newMatrix.set( i, j, li.getQuick( j ) );
+            }
+        }
+        return newMatrix;
     }
 
 }

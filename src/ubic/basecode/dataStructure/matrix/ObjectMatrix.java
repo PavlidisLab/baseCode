@@ -26,8 +26,16 @@ public interface ObjectMatrix<R, C, V> extends Matrix2D<R, C, V> {
 
     public V get( int row, int col );
 
-    public V[] getColumn(int column);
-    
+    public V[] getColumn( int column );
+
     public V[] getRow( int row );
 
+    /**
+     * @param startRow
+     * @param startCol
+     * @param numRow
+     * @param numCol
+     * @return
+     */
+    public ObjectMatrix<R, C, V> subset( int startRow, int startCol, int numRow, int numCol );
 }

@@ -103,10 +103,10 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         DoubleMatrix<R, C> returnval = new FastRowAccessDoubleMatrix<R, C>( this.rows(), this.columns() );
 
         for ( int i = 0; i < this.rows(); i++ ) {
-            returnval.addRowName( this.getRowName( i ), i );
+            returnval.setRowName( this.getRowName( i ), i );
             for ( int j = 0; j < this.columns(); j++ ) {
                 if ( i == 0 ) {
-                    returnval.addColumnName( this.getColName( j ), j );
+                    returnval.setColumnName( this.getColName( j ), j );
                 }
                 returnval.set( i, j, this.get( i, j ) );
             }
@@ -144,12 +144,12 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         for ( int i = startCol; i <= endCol; i++ ) {
             C colName = this.getColName( i );
             if ( colName != null ) {
-                returnval.addColumnName( colName, i );
+                returnval.setColumnName( colName, i );
             }
             for ( int j = 0, m = this.rows(); j < m; j++ ) {
                 if ( i == startCol ) {
                     R rowName = this.getRowName( j );
-                    returnval.addRowName( rowName, j );
+                    returnval.setRowName( rowName, j );
                 }
                 returnval.set( j, k, this.get( j, i ) );
             }
@@ -219,12 +219,12 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         for ( int i = startRow; i <= endRow; i++ ) {
             R rowName = this.getRowName( i );
             if ( rowName != null ) {
-                returnval.addRowName( rowName, i );
+                returnval.setRowName( rowName, i );
             }
             for ( int j = 0, m = this.columns(); j < m; j++ ) {
                 if ( i == 0 ) {
                     C colName = this.getColName( j );
-                    returnval.addColumnName( colName, j );
+                    returnval.setColumnName( colName, j );
                 }
                 double value = this.get( i, j );
                 assert k < returnval.rows();

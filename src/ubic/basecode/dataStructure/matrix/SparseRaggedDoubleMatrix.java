@@ -58,7 +58,7 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         List<Double> row = new ArrayList<Double>();
         CollectionUtils.addAll( row, ArrayUtils.toObject( matrix1D.toArray() ) );
         matrix.add( row );
-        this.addRowName( name, matrix.size() - 1 );
+        this.setRowName( name, matrix.size() - 1 );
         isDirty = true;
     }
 
@@ -71,7 +71,7 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         List<Double> row = new ArrayList<Double>();
         CollectionUtils.addAll( row, ArrayUtils.toObject( values.elements() ) );
         matrix.add( row );
-        this.addRowName( name, matrix.size() - 1 );
+        this.setRowName( name, matrix.size() - 1 );
         isDirty = true;
     }
 
@@ -122,10 +122,10 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         DoubleMatrix<R, C> returnval = new SparseRaggedDoubleMatrix<R, C>();
 
         for ( int i = 0; i < this.rows(); i++ ) {
-            returnval.addRowName( this.getRowName( i ), i );
+            returnval.setRowName( this.getRowName( i ), i );
             for ( int j = 0; j < this.columns(); j++ ) {
                 if ( i == 0 ) {
-                    returnval.addColumnName( this.getColName( j ), j );
+                    returnval.setColumnName( this.getColName( j ), j );
                 }
                 returnval.set( i, j, this.get( i, j ) );
             }
@@ -170,7 +170,7 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         for ( int j = 0, m = this.rows(); j < m; j++ ) {
             if ( j == 0 ) {
                 R rowName = this.getRowName( j );
-                returnval.addRowName( rowName, j );
+                returnval.setRowName( rowName, j );
             }
             int k = 0;
             List<Double> row = this.matrix.get( j );
@@ -178,7 +178,7 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
             for ( int i = startCol; i <= endCol && i < row.size(); i++ ) {
                 C colName = this.getColName( i );
                 if ( colName != null ) {
-                    returnval.addColumnName( colName, k );
+                    returnval.setColumnName( colName, k );
                 }
                 returnval.set( j, k, this.get( j, i ) );
                 k++;
@@ -266,13 +266,13 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         for ( int i = startRow; i <= endRow; i++ ) {
             R rowName = this.getRowName( i );
             if ( rowName != null ) {
-                returnval.addRowName( rowName, i );
+                returnval.setRowName( rowName, i );
             }
             List<Double> row = this.matrix.get( i );
             for ( int j = 0, m = row.size(); j < m; j++ ) {
                 if ( i == 0 ) {
                     C colName = this.getColName( j );
-                    returnval.addColumnName( colName, j );
+                    returnval.setColumnName( colName, j );
                 }
                 double value = this.get( i, j );
                 returnval.set( k, j, value );

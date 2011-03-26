@@ -31,12 +31,19 @@ import java.util.List;
 public abstract interface Matrix2D<R, C, V> {
 
     /**
+     * Add a column name, to the end of the current column names. Useful when building up a matrix in stages.
+     * 
+     * @param s Object a column name
+     */
+    public void addColumnName( C s );
+
+    /**
      * Add a column name associated with an index.
      * 
      * @param s Object a column name
      * @param index int the column index associated with this name
      */
-    public void addColumnName( C s, int index );
+    public void setColumnName( C s, int index );
 
     /**
      * Add a row name associated with a row index.
@@ -44,7 +51,7 @@ public abstract interface Matrix2D<R, C, V> {
      * @param s Object
      * @param index int
      */
-    public void addRowName( R s, int index );
+    public void setRowName( R s, int index );
 
     /**
      * Attempt to coerce the entries into doubles.
@@ -99,7 +106,7 @@ public abstract interface Matrix2D<R, C, V> {
     public C getColName( int i );
 
     /**
-     * @return
+     * @return list of column names. Do not modify this list. Use the addColumnName methods.
      */
     public List<C> getColNames();
 
@@ -183,6 +190,13 @@ public abstract interface Matrix2D<R, C, V> {
      * @param value
      */
     public void set( int row, int column, V value );
+
+    /**
+     * Set all values in the matrix to the given value.
+     * 
+     * @param value
+     */
+    public void assign( V value );
 
     /**
      * @param r

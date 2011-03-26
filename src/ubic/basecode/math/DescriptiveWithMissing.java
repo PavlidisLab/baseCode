@@ -1065,7 +1065,7 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
     }
 
     /**
-     * Convenience function for internal use. Makes a copy of the list that doesn't have the missing values.
+     * Makes a copy of the list that doesn't have the missing values.
      * 
      * @param data DoubleArrayList
      * @return DoubleArrayList

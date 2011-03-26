@@ -22,6 +22,7 @@ package ubic.basecode.util.r.type;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -43,7 +44,7 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
      */
     private static final long serialVersionUID = 1L;
 
-    Map<String, AnovaEffect> mainEffects = new HashMap<String, AnovaEffect>();
+    Map<String, AnovaEffect> mainEffects = new LinkedHashMap<String, AnovaEffect>();
 
     Map<InteractionFactor, AnovaEffect> interactionEffects = new HashMap<InteractionFactor, AnovaEffect>();
 
@@ -130,13 +131,12 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
             double[] fs = rAnovaTable.asList().at( "F value" ).asDoubles();
 
             double[] ssq = rAnovaTable.asList().at( "Sum Sq" ).asDoubles();
-            double[] meansq = rAnovaTable.asList().at( "Mean Sq" ).asDoubles();
 
             for ( int i = 0; i < pvs.length; i++ ) {
                 String termLabel = names[i];
                 boolean isInteraction = termLabel.contains( ":" );
 
-                AnovaEffect ae = new AnovaEffect( termLabel, pvs[i], fs[i], dfs[i], ssq[i], meansq[i], isInteraction );
+                AnovaEffect ae = new AnovaEffect( termLabel, pvs[i], fs[i], dfs[i], ssq[i], isInteraction );
 
                 if ( isInteraction ) { // kind of lame way to detect interaction rows.
                     interactionEffects.put( new InteractionFactor( StringUtils.split( termLabel, ":" ) ), ae );
@@ -151,10 +151,45 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
 
     }
 
-    @Override
-    public String toString() {
-        // TODO
-        return super.toString();
+    /**
+     * @param effects
+     */
+    public GenericAnovaResult( Collection<AnovaEffect> effects ) {
+        for ( AnovaEffect ae : effects ) {
+            String termLabel = ae.getEffectName();
+            boolean isInteraction = ae.isInteraction();
+
+            if ( isInteraction ) { // kind of lame way to detect interaction rows.
+                interactionEffects.put( new InteractionFactor( StringUtils.split( termLabel, ":" ) ), ae );
+            } else {
+                mainEffects.put( termLabel, ae );
+            }
+        }
     }
 
+    @Override
+    public String toString() {
+        StringBuilder buf = new StringBuilder();
+
+        buf.append( "ANOVA table\n" );
+
+        buf.append( StringUtils.leftPad( "\t", 10 ) + "Df\tSSq\tMSq\tF\tP\n" );
+
+        for ( String me : this.getMainEffectFactorNames() ) {
+            if ( me.equals( "Intercept" ) ) {
+                continue;
+            }
+            AnovaEffect a = mainEffects.get( me );
+            buf.append( a + "\n" );
+        }
+
+        if ( hasInteractions() ) {
+            for ( InteractionFactor ifa : interactionEffects.keySet() ) {
+                AnovaEffect a = this.interactionEffects.get( ifa );
+                buf.append( a + "\n" );
+            }
+        }
+
+        return buf.toString();
+    }
 }

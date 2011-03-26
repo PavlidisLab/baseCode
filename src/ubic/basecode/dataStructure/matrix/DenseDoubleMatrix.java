@@ -76,11 +76,11 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         for ( int i = 0, n = this.rows(); i < n; i++ ) {
             R rowName = this.getRowName( i );
             assert rowName != null : "Row " + i + " has null name";
-            returnval.addRowName( rowName, i );
+            returnval.setRowName( rowName, i );
             for ( int j = 0, m = this.columns(); j < m; j++ ) {
                 if ( i == 0 ) {
                     C colName = this.getColName( j );
-                    returnval.addColumnName( colName, j );
+                    returnval.setColumnName( colName, j );
                 }
                 returnval.set( i, j, this.get( i, j ) );
             }
@@ -131,12 +131,12 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         for ( int i = startCol; i <= endCol; i++ ) {
             C colName = this.getColName( i );
             if ( colName != null ) {
-                returnval.addColumnName( colName, i );
+                returnval.setColumnName( colName, i );
             }
             for ( int j = 0, m = this.rows(); j < m; j++ ) {
                 if ( i == startCol ) {
                     R rowName = this.getRowName( j );
-                    returnval.addRowName( rowName, j );
+                    returnval.setRowName( rowName, j );
                 }
                 returnval.set( j, k, this.get( j, i ) );
             }
@@ -232,12 +232,12 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         for ( int i = startRow; i <= endRow; i++ ) {
             R rowName = this.getRowName( i );
             if ( rowName != null ) {
-                returnval.addRowName( rowName, i );
+                returnval.setRowName( rowName, i );
             }
             for ( int j = 0, m = this.columns(); j < m; j++ ) {
                 if ( i == startRow ) {
                     C colName = this.getColName( j );
-                    returnval.addColumnName( colName, j );
+                    returnval.setColumnName( colName, j );
                 }
                 returnval.set( k, j, this.get( i, j ) );
             }
