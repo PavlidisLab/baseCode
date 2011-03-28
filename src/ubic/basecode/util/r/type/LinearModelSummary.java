@@ -49,7 +49,7 @@ public class LinearModelSummary implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final String INTERCEPT_COEFFICIENT_NAME_IN_R = "(Intercept)";
+    public static final String INTERCEPT_COEFFICIENT_NAME = "(Intercept)";
 
     private Double adjRSquared = Double.NaN;
 
@@ -80,9 +80,19 @@ public class LinearModelSummary implements Serializable {
     // private DoubleMatrix<String, String> covariance;
 
     /**
-     * Construct an empty summary. Use for failed tests.
+     * Construct an empty summary. Use for model fits that fail due to 0 degrees of freedom, etc.
      */
     public LinearModelSummary() {
+    }
+
+    /**
+     * Construct an empty summary. Use for model fits that fail due to 0 degrees of freedom, etc.
+     * 
+     * @param key identifier
+     */
+    public LinearModelSummary( String key ) {
+        this();
+        this.key = key;
     }
 
     /**
@@ -102,7 +112,7 @@ public class LinearModelSummary implements Serializable {
                 this.anovaResult = new GenericAnovaResult( anova );
             }
 
-            setupCoefficientNames( factorNames );
+            setupCoefficientNames();
 
         } catch ( REXPMismatchException e ) {
             throw new RuntimeException( e );
@@ -120,6 +130,7 @@ public class LinearModelSummary implements Serializable {
 
     /**
      * @param key optional identifier
+     * @param terms
      * @param residuals
      * @param coefficients
      * @param rsquared
@@ -129,9 +140,9 @@ public class LinearModelSummary implements Serializable {
      * @param ddof
      * @param anovaResult
      */
-    public LinearModelSummary( String k, Double[] residuals, DoubleMatrix<String, String> coefficients,
-            double rsquared, double adjRsquared, double fstat, Integer ndof, Integer ddof,
-            GenericAnovaResult anovaResult ) {
+    public LinearModelSummary( String k, List<String> terms, Double[] residuals,
+            DoubleMatrix<String, String> coefficients, double rsquared, double adjRsquared, double fstat, Integer ndof,
+            Integer ddof, GenericAnovaResult anovaResult ) {
         this.residuals = residuals;
         this.coefficients = coefficients;
         this.rSquared = rsquared;
@@ -141,6 +152,7 @@ public class LinearModelSummary implements Serializable {
         this.denominatorDof = ddof;
         this.key = k;
         this.anovaResult = anovaResult;
+        this.factorNames = terms;
         if ( anovaResult != null ) {
             if ( anovaResult.getKey() == null ) {
                 anovaResult.setKey( key );
@@ -150,6 +162,7 @@ public class LinearModelSummary implements Serializable {
                 }
             }
         }
+        this.setupCoefficientNames();
     }
 
     /**
@@ -278,8 +291,8 @@ public class LinearModelSummary implements Serializable {
      */
     public Double getInterceptCoeff() {
         if ( coefficients != null ) {
-            if ( coefficients.hasRow( INTERCEPT_COEFFICIENT_NAME_IN_R ) ) {
-                return coefficients.getByKeys( INTERCEPT_COEFFICIENT_NAME_IN_R, "Estimate" );
+            if ( coefficients.hasRow( INTERCEPT_COEFFICIENT_NAME ) ) {
+                return coefficients.getByKeys( INTERCEPT_COEFFICIENT_NAME, "Estimate" );
             } else if ( coefficients.rows() == 1 ) {
                 /*
                  * This is a bit of a kludge. When we use lm.fit instead of lm, we end up with a somewhat screwy
@@ -299,8 +312,8 @@ public class LinearModelSummary implements Serializable {
      */
     public Double getInterceptP() {
         if ( coefficients != null ) {
-            if ( coefficients.hasRow( INTERCEPT_COEFFICIENT_NAME_IN_R ) ) {
-                return coefficients.getByKeys( INTERCEPT_COEFFICIENT_NAME_IN_R, "Pr(>|t|)" );
+            if ( coefficients.hasRow( INTERCEPT_COEFFICIENT_NAME ) ) {
+                return coefficients.getByKeys( INTERCEPT_COEFFICIENT_NAME, "Pr(>|t|)" );
             } else if ( coefficients.rows() == 1 ) {
                 /*
                  * This is a bit of a kludge. When we use lm.fit instead of lm, we end up with a somewhat screwy
@@ -319,8 +332,8 @@ public class LinearModelSummary implements Serializable {
      */
     public Double getInterceptT() {
         if ( coefficients != null ) {
-            if ( coefficients.hasRow( INTERCEPT_COEFFICIENT_NAME_IN_R ) ) {
-                return coefficients.getByKeys( INTERCEPT_COEFFICIENT_NAME_IN_R, "t value" );
+            if ( coefficients.hasRow( INTERCEPT_COEFFICIENT_NAME ) ) {
+                return coefficients.getByKeys( INTERCEPT_COEFFICIENT_NAME, "t value" );
             } else if ( coefficients.rows() == 1 ) {
                 /*
                  * This is a bit of a kludge. When we use lm.fit instead of lm, we end up with a somewhat screwy
@@ -442,12 +455,15 @@ public class LinearModelSummary implements Serializable {
                 + "\n" );
 
         buf.append( "Residuals:\n" );
-        for ( Double d : residuals ) {
-            buf.append( String.format( "%.2f ", d ) );
+        if ( residuals != null ) {
+            for ( Double d : residuals ) {
+                buf.append( String.format( "%.2f ", d ) );
+            }
+        } else {
+            buf.append( "Residuals are null" );
         }
 
         buf.append( "\n\nCoefficients:\n" + coefficients + "\n" );
-
         if ( this.anovaResult != null ) {
             buf.append( this.anovaResult.toString() + "\n" );
         }
@@ -504,9 +520,8 @@ public class LinearModelSummary implements Serializable {
     }
 
     /**
-     * @param factorNames
      */
-    private void setupCoefficientNames( String[] factorNames ) {
+    private void setupCoefficientNames() {
 
         for ( String string : factorNames ) {
             term2CoefficientNames.put( string, new HashSet<String>() );
@@ -518,7 +533,7 @@ public class LinearModelSummary implements Serializable {
 
         for ( String coefNameFromR : coefRowNames ) {
 
-            if ( coefNameFromR.equals( INTERCEPT_COEFFICIENT_NAME_IN_R ) ) {
+            if ( coefNameFromR.equals( INTERCEPT_COEFFICIENT_NAME ) ) {
                 continue; // ?
             } else if ( coefNameFromR.contains( ":" ) ) {
                 /*
@@ -551,6 +566,13 @@ public class LinearModelSummary implements Serializable {
                 }
             }
         }
+    }
+
+    /**
+     * @return may be null if ANOVA was not run.
+     */
+    public GenericAnovaResult getAnova() {
+        return this.anovaResult;
     }
 
 }

@@ -574,7 +574,7 @@ public abstract class AbstractRClient implements RClient {
 
                 if ( !lmSummary.isList() || !lmSummary.getAttribute( "class" ).asString().equals( "summary.lm" ) ) {
                     log.debug( "No lm for " + elementIdentifier );
-                    result.put( elementIdentifier, new LinearModelSummary() );
+                    result.put( elementIdentifier, new LinearModelSummary( elementIdentifier ) );
                 } else {
                     LinearModelSummary linearModelSummary = new LinearModelSummary( lmSummary, anova, factorNames );
                     result.put( elementIdentifier, linearModelSummary );
@@ -714,7 +714,7 @@ public abstract class AbstractRClient implements RClient {
             /*
              * This can happen with a 'Error in gzfile()', no idea why and it seems harmless if uninformative.
              */
-            log.warn("Was unable to check for installed library before attempting to load it.");
+            log.warn( "Was unable to check for installed library before attempting to load it." );
         }
 
         try {

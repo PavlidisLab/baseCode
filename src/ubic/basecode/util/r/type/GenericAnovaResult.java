@@ -106,12 +106,39 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
         return mainEffects.get( factorName ).getPValue();
     }
 
+    public Double getMainEffectF( String factorName ) {
+        if ( mainEffects.get( factorName ) == null ) {
+            return Double.NaN;
+        }
+        return mainEffects.get( factorName ).getFStatistic();
+    }
+
+    public Integer getMainEffectDof( String factorName ) {
+        if ( mainEffects.get( factorName ) == null ) {
+            return null;
+        }
+        return mainEffects.get( factorName ).getDegreesOfFreedom();
+    }
+
+    public Double getInteractionEffectP() {
+        if ( interactionEffects.size() > 1 ) {
+            throw new IllegalArgumentException( "Must specify which interaction" );
+        }
+        if ( interactionEffects.isEmpty() ) {
+            return null;
+        }
+        return interactionEffects.values().iterator().next().getPValue();
+    }
+
     /**
      * @param factorsName e.g. f,g
      * @return
      */
     public Double getInteractionEffectP( String... factorNames ) {
         InteractionFactor interactionFactor = new InteractionFactor( factorNames );
+        if ( interactionEffects.isEmpty() ) {
+            return null;
+        }
         if ( !interactionEffects.containsKey( interactionFactor ) ) {
             return Double.NaN;
         }
@@ -161,7 +188,10 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
 
             if ( isInteraction ) { // kind of lame way to detect interaction rows.
                 interactionEffects.put( new InteractionFactor( StringUtils.split( termLabel, ":" ) ), ae );
+            } else if ( termLabel.equals( "Residual" ) ) {
+                this.residualDf = ae.getDegreesOfFreedom();
             } else {
+
                 mainEffects.put( termLabel, ae );
             }
         }
@@ -176,7 +206,10 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
         buf.append( StringUtils.leftPad( "\t", 10 ) + "Df\tSSq\tMSq\tF\tP\n" );
 
         for ( String me : this.getMainEffectFactorNames() ) {
-            if ( me.equals( "Intercept" ) ) {
+            if ( me.equals( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME ) ) {
+                continue;
+            }
+            if ( me.equals( "Residual" ) ) {
                 continue;
             }
             AnovaEffect a = mainEffects.get( me );
@@ -189,7 +222,13 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
                 buf.append( a + "\n" );
             }
         }
-
+        for ( String me : this.getMainEffectFactorNames() ) {
+            if ( !me.equals( "Residual" ) ) {
+                continue;
+            }
+            AnovaEffect a = mainEffects.get( me );
+            buf.append( a + "\n" );
+        }
         return buf.toString();
     }
 }

@@ -19,6 +19,11 @@
 
 package ubic.basecode.dataStructure.matrix;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import ubic.basecode.math.Constants;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
@@ -99,6 +104,42 @@ public class MatrixUtil {
 
     }
 
+    public static DoubleMatrix1D multWithMissing( DoubleMatrix1D a, DoubleMatrix2D b ) {
+        return multWithMissing( a.like2D( 1, a.size() ).assign( new double[][] { a.toArray() } ), b ).viewRow( 0 );
+    }
+
+    /**
+     * @param a
+     * @param b
+     * @return
+     */
+    public static DoubleMatrix1D multWithMissing( DoubleMatrix2D a, DoubleMatrix1D b ) {
+        int m = a.rows();
+        int n = a.columns();
+
+        if ( b.size() != a.columns() ) {
+            throw new IllegalArgumentException();
+        }
+
+        DoubleMatrix1D C = new DenseDoubleMatrix1D( m );
+        C.assign( 0.0 );
+
+        for ( int j = 0; j < m; j++ ) {
+            double s = 0.0;
+            for ( int k = 0; k < n; k++ ) {
+                double aval = a.getQuick( j, k );
+                double bval = b.getQuick( k );
+                if ( Double.isNaN( aval ) || Double.isNaN( bval ) ) {
+                    continue;
+                }
+                s += aval * bval;
+            }
+            C.setQuick( j, s + C.getQuick( j ) );
+        }
+
+        return C;
+    }
+
     /**
      * Multiple two matrices, tolerate missing values.
      * 
@@ -112,7 +153,7 @@ public class MatrixUtil {
         int p = b.columns();
 
         if ( b.rows() != a.columns() ) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException( "Nonconformant matrices: " + b.rows() + " != " + a.columns() );
         }
 
         DoubleMatrix2D C = new DenseDoubleMatrix2D( m, p );
@@ -164,4 +205,129 @@ public class MatrixUtil {
         }
         return size;
     }
+
+    /**
+     * @param d
+     * @return true if any of the values are very close to zero.
+     */
+    public static boolean containsNearlyZeros( DoubleMatrix1D d ) {
+        for ( int i = 0; i < d.size(); i++ ) {
+            if ( Math.abs( d.get( i ) ) < Constants.SMALL ) return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param n
+     * @param droppedColumns
+     */
+    public static DoubleMatrix2D dropColumns( DoubleMatrix2D n, Collection<Integer> droppedColumns ) {
+        int columns = n.columns() - droppedColumns.size();
+        if ( columns < 0 ) throw new IllegalArgumentException( "Must leave some columns" );
+        DoubleMatrix2D res = new DenseDoubleMatrix2D( n.rows(), columns );
+        int k = 0;
+        for ( int j = 0; j < n.columns(); j++ ) {
+            if ( droppedColumns.contains( j ) ) {
+                continue;
+            }
+            for ( int i = 0; i < n.rows(); i++ ) {
+                res.set( i, k, n.get( i, j ) );
+            }
+            k++;
+        }
+        return res;
+    }
+
+    public static DoubleMatrix2D selectRows( DoubleMatrix2D n, Collection<Integer> selected ) {
+        int nrows = selected.size();
+        DoubleMatrix2D res = new DenseDoubleMatrix2D( nrows, n.columns() );
+        for ( int j = 0; j < n.columns(); j++ ) {
+            int m = 0;
+            for ( int i = 0; i < n.rows(); i++ ) {
+                if ( !selected.contains( i ) ) {
+                    continue;
+                }
+                res.set( m, j, n.get( i, j ) );
+                m++;
+            }
+        }
+        return res;
+    }
+
+    public static DoubleMatrix2D selectColumns( DoubleMatrix2D n, Collection<Integer> selected ) {
+        int ncols = selected.size();
+        DoubleMatrix2D res = new DenseDoubleMatrix2D( n.rows(), ncols );
+        int k = 0;
+        for ( int j = 0; j < n.columns(); j++ ) {
+            if ( !selected.contains( j ) ) {
+                continue;
+            }
+            for ( int i = 0; i < n.rows(); i++ ) {
+                res.set( i, k, n.get( i, j ) );
+                i++;
+            }
+        }
+        return res;
+    }
+
+    /**
+     * @param n square matrix
+     * @param selected
+     * @return
+     */
+    public static DoubleMatrix2D selectColumnsAndRows( DoubleMatrix2D n, Collection<Integer> selected ) {
+        if ( n.rows() != n.columns() ) {
+            throw new IllegalArgumentException( "must be a square matrix" );
+        }
+
+        if ( selected.isEmpty() ) {
+            throw new IllegalArgumentException( "must select more than one" );
+        }
+
+        int columns = selected.size();
+
+        if ( columns == n.columns() ) {
+            return n;
+        }
+
+        if ( columns < 0 ) throw new IllegalArgumentException( "Must leave some columns" );
+        DoubleMatrix2D res = new DenseDoubleMatrix2D( columns, columns );
+        int k = 0;
+        for ( int j = 0; j < n.columns(); j++ ) {
+            if ( !selected.contains( j ) ) {
+                continue;
+            }
+            int m = 0;
+            for ( int i = 0; i < n.rows(); i++ ) {
+                if ( !selected.contains( i ) ) {
+                    continue;
+                }
+                res.set( m, k, n.get( i, j ) );
+                m++;
+            }
+            k++;
+        }
+        return res;
+    }
+
+    public static List<Integer> notNearlyZeroIndices( DoubleMatrix1D d ) {
+        List<Integer> result = new ArrayList<Integer>();
+        for ( int i = 0; i < d.size(); i++ ) {
+            if ( Math.abs( d.get( i ) ) > Constants.SMALL ) result.add( i );
+        }
+        return result;
+    }
+
+    public static DoubleMatrix1D select( DoubleMatrix1D v, Collection<Integer> selected ) {
+        DoubleMatrix1D result = new DenseDoubleMatrix1D( selected.size() );
+        int k = 0;
+        for ( int i = 0; i < v.size(); i++ ) {
+            if ( selected.contains( i ) ) {
+                result.set( k, v.get( i ) );
+                k++;
+            }
+        }
+        return result;
+    }
+
 }

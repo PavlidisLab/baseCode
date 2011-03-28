@@ -44,12 +44,12 @@ public class AnovaEffect {
         StringBuilder buf = new StringBuilder();
         buf.append( StringUtils.rightPad( StringUtils.abbreviate( getEffectName(), 10 ), 10 ) + "\t" );
         buf.append( getDegreesOfFreedom() + "\t" );
-        buf.append( String.format( "%.2f", getSsQ() ) + "\t" );
-        buf.append( String.format( "%.2f", getMeanSq() ) + "\t" );
+        buf.append( String.format( "%.4f", getSsQ() ) + "\t" );
+        buf.append( String.format( "%.4f", getMeanSq() ) + "\t" );
 
         if ( fStatistic != null ) {
-            buf.append( StringUtils.rightPad( String.format( "%.1f", getFStatistic() ), 6 ) + "\t" );
-            buf.append( String.format( "%.2g", getPValue() ) );
+            buf.append( StringUtils.rightPad( String.format( "%.3f", getFStatistic() ), 6 ) + "\t" );
+            buf.append( String.format( "%.3g", getPValue() ) );
         }
         return buf.toString();
     }

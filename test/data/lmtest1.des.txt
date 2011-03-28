@@ -1,0 +1,9 @@
+label	fact.5001	fact.5002
+biomat_100006	fv_1002_base	fv_1004_base
+biomat_100007	fv_1002_base	fv_1004_base
+biomat_100004	fv_1002_base	fv_1003
+biomat_100005	fv_1002_base	fv_1003
+biomat_100002	fv_1001	fv_1004_base
+biomat_100003	fv_1001	fv_1004_base
+biomat_100000	fv_1001	fv_1003
+biomat_100001	fv_1001	fv_1003

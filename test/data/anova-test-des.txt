@@ -1,0 +1,9 @@
+sample	factor1	factor2
+X0a.bioassay.0a.	a	c
+X0b.bioassay.0b.	a	c
+X1a.bioassay.1a.	a	d_base
+X1b.bioassay.1b.	a	d_base
+X2a.bioassay.2a.	b_base	c
+X2b.bioassay.2b.	b_base	c
+X3a.bioassay.3a.	b_base	d_base
+X3b.bioassay.3b.	b_base	d_base
