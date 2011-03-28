@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<name>baseCode</name>
 	<groupId>baseCode</groupId>
@@ -18,7 +19,7 @@
 		<connection>scm:cvs:ext:@katz.pavlab.chibi.ubc.ca:/space/cvs:baseCode</connection>
 		<developerConnection>scm:cvs:ext:@katz.pavlab.chibi.ubc.ca:/space/cvs:baseCode</developerConnection>
 		<url>http://www.chibi.ubc.ca/faculty/pavlidis/fisheye/browse/pavlab/baseCode</url>
-  </scm>
+	</scm>
 	<issueManagement>
 		<system>Bugzilla</system>
 		<url>
@@ -57,7 +58,7 @@
 		</developer>
 	</developers>
 	<dependencies>
-	  	<dependency>
+		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
 			<version>3.5-beta6</version>
@@ -151,7 +152,8 @@
 			<artifactId>JRI</artifactId>
 			<version>0.5-0</version>
 			<type>jar</type>
-		</dependency><dependency>
+		</dependency>
+		<dependency>
 			<groupId>RoSuDA</groupId>
 			<artifactId>JRIEngine</artifactId>
 			<version>0.5-0</version>
@@ -255,6 +257,7 @@
 						<exclude>**/AllTests.java</exclude>
 						<exclude>**/gui/Test*.java</exclude>
 						<exclude>**/AbstractTest*.java</exclude>
+						<exclude>**/*$*</exclude> <!-- should not need this -->
 					</excludes>
 				</configuration>
 			</plugin>
@@ -263,7 +266,7 @@
 				<artifactId>surefire-report-maven-plugin</artifactId>
 				<version>2.0-beta-1</version>
 			</plugin>
-			<plugin> 
+			<plugin>
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.0-beta-5</version>
 			</plugin>
@@ -309,7 +312,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>changelog-maven-plugin</artifactId>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jxr-maven-plugin</artifactId>
@@ -347,7 +350,7 @@
 			<id>broca</id>
 			<name>broca</name>
 			<url>scp://katz.pavlab.chibi.ubc.ca:/space/gemmaData/baseCode-site</url>
-		</site> 
+		</site>
 		<repository>
 			<id>repo</id>
 			<name>Pavlab</name>
@@ -358,7 +361,7 @@
 			<name>Pavlab</name>
 			<url>scp://katz.pavlab.chibi.ubc.ca:/space/maven2</url>
 		</snapshotRepository>
-	</distributionManagement> 
+	</distributionManagement>
 	<repositories>
 		<repository>
 			<id>pavlab</id>
@@ -451,7 +454,7 @@
 			</build>
 		</profile>
 		<profile>
-		<!-- For deployment where host is local (and ssh isn't available for builder, e.g. CI) -->
+			<!-- For deployment where host is local (and ssh isn't available for builder, e.g. CI) -->
 			<id>local-deploy</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>
@@ -464,7 +467,7 @@
 					<id>localDeploy</id>
 					<name>localDeploy</name>
 					<url>file:///space/gemmaData/baseCode-site</url>
-				</site> 
+				</site>
 				<repository>
 					<id>repo</id>
 					<name>Pavlab</name>
@@ -478,4 +481,7 @@
 			</distributionManagement>
 		</profile>
 	</profiles>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 </project>

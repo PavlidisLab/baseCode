@@ -18,14 +18,17 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 /**
  * @author paul
  * @version $Id$
  */
-public class CompressedNamedBitMatrixTest extends TestCase {
+public class CompressedNamedBitMatrixTest {
 
+    @Test
     public void testGetRowBitCount() throws Exception {
         CompressedBitMatrix<String, String> mat = new CompressedBitMatrix<String, String>( 2, 2, 2 );
         mat.set( 0, 0, 0 );
@@ -41,6 +44,7 @@ public class CompressedNamedBitMatrixTest extends TestCase {
         assertEquals( 1, mat.getRowBitCount( 0 )[1] );
     }
 
+    @Test
     public final void testTotalBitCount() throws Exception {
         CompressedBitMatrix<String, String> mat = new CompressedBitMatrix<String, String>( 2, 2, 2 );
         mat.set( 0, 0, 0 );

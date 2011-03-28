@@ -18,8 +18,7 @@
  */
 package ubic.basecode.math;
 
-import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
-import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix1D;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix; 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.SparseDoubleMatrix;
 import cern.colt.function.DoubleFunction;
