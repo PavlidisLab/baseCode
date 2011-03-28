@@ -26,7 +26,7 @@
 			<attribute name="javadoc_location" value="http://www.rforge.net/org/docs/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar" sourcepath="M2_REPO/junit/junit/3.8.1/junit-3.8.1-sources.jar"/>
+	<classpathentry kind="var" path="M2_REPO/junit/junit/4.8.2/junit-4.8.2.jar" sourcepath="M2_REPO/junit/junit/3.8.1/junit-3.8.1-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.13/log4j-1.2.13.jar" sourcepath="M2_REPO/log4j/log4j/1.2.13/log4j-1.2.13-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/lucene/lucene-core/2.4.1/lucene-core-2.4.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/mtj/mtj/0.9.8/mtj-0.9.8.jar"/>
