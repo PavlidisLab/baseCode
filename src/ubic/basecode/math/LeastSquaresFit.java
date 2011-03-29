@@ -653,7 +653,7 @@ public class LeastSquaresFit {
      * Drop, and track non-pivotal columns, starting (generally) from the right side. We first remove constant columns;
      * then identify deficient rank.
      * <p>
-     * FIXME slow?
+     * FIXME Probably slow if we have to run this often; should cache re-used values.
      * 
      * @param design
      * @param ypsize
@@ -686,7 +686,7 @@ public class LeastSquaresFit {
         while ( rank > 0 && rank < returnValue.columns() ) {
             droppedColumns.add( returnValue.columns() - 1 );
             returnValue = returnValue.viewPart( 0, 0, returnValue.rows(), returnValue.columns() - 1 );
-            log.info( "Dropping column " + ( returnValue.columns() - 1 ) );
+            if ( log.isDebugEnabled() ) log.debug( "Dropping column " + ( returnValue.columns() - 1 ) );
             if ( returnValue.columns() == 0 ) {
                 rank = 0;
                 break;
