@@ -179,17 +179,19 @@ public class DesignMatrix {
 
                         this.matrix = this.copyWithSpace( this.matrix, this.matrix.columns() + 1 );
                         String termName = null;
+                        String columnName = null;
                         for ( int k = 0; k < col1i.length; k++ ) {
                             prod[k] = col1i[k] * col2i[k];
                             if ( prod[k] != 0 && StringUtils.isBlank( termName ) ) {
                                 String if1 = this.valuesForFactors.get( t1 ).get( k ).toString();
                                 String if2 = this.valuesForFactors.get( t2 ).get( k ).toString();
-                                termName = t1 + if1 + ":" + t2 + if2;
+                                columnName = t1 + if1 + ":" + t2 + if2;
+                                termName = t1 + ":" + t2;
                             }
                             matrix.set( k, this.matrix.columns() - 1, prod[k] );
                         }
 
-                        matrix.addColumnName( termName );
+                        matrix.addColumnName( columnName );
                         if ( !this.terms.containsKey( termName ) ) {
                             this.terms.put( termName, new ArrayList<Integer>() );
                         }
@@ -329,6 +331,7 @@ public class DesignMatrix {
      * @param factorName String to associate with the factor
      * @return
      */
+    @SuppressWarnings("unchecked")
     private DoubleMatrix<String, String> buildDesign( int columnNum, List<?> factorValues,
             DoubleMatrix<String, String> inputDesign, int start, String factorName ) {
         if ( !terms.containsKey( factorName ) ) {
@@ -372,7 +375,7 @@ public class DesignMatrix {
             }
             for ( int i = startcol; i < tmp.columns(); i++ ) {
 
-                String contrastingValue = null;
+                String contrastingValue = "";
                 for ( int j = 0; j < tmp.rows(); j++ ) {
                     boolean isBaseline = !factorValues.get( j ).equals( levelList.get( i - startcol + ( start - 1 ) ) );
 
@@ -383,11 +386,12 @@ public class DesignMatrix {
                     tmp.set( j, i, isBaseline ? 0.0 : 1.0 );
                 }
 
-                assert contrastingValue != null;
-
                 this.assign.add( columnNum ); // all of these columns use this factor.
 
                 terms.get( factorName ).add( i );
+                if ( StringUtils.isBlank( contrastingValue ) ) {
+                    contrastingValue = "_" + i;
+                }
                 tmp.addColumnName( factorName + contrastingValue );
             }
         }
