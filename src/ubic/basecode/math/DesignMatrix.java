@@ -241,7 +241,8 @@ public class DesignMatrix {
      */
     public void setBaseline( String factorName, String baselineFactorValue ) {
         if ( !this.levelsForFactors.containsKey( factorName ) ) {
-            throw new IllegalArgumentException( "No factor known by name " + factorName );
+            throw new IllegalArgumentException( "No factor known by name " + factorName + ", choices are: "
+                    + StringUtils.join( this.levelsForFactors.keySet(), "," ) );
         }
         List<String> oldValues = this.levelsForFactors.get( factorName );
         int index = oldValues.indexOf( baselineFactorValue );
