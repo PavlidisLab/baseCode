@@ -19,6 +19,9 @@
 package ubic.basecode.math;
 
 import cern.colt.list.DoubleArrayList;
+import cern.colt.list.IntArrayList;
+import cern.colt.matrix.DoubleMatrix1D;
+import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
 /**
  * Methods for p-value correction of sets of hypothesis tests.
@@ -34,7 +37,7 @@ public class MultipleTestCorrection {
      * 
      * @param pvalues list of pvalues. Need not be sorted.
      * @param fdr false discovery rate (value q in B-H).
-     * @return The maximum pvalue that maintains the false discovery rate *
+     * @return The maximum pvalue that maintains the false discovery rate
      * @throws IllegalArgumentException if invalid pvalues are encountered.
      */
     public static double BenjaminiHochbergCut( DoubleArrayList pvalues, double fdr ) {
@@ -53,6 +56,51 @@ public class MultipleTestCorrection {
             }
         }
         return 0.0;
+    }
+
+    /**
+     * @param pvalues
+     * @return false discovery rates computed using the method of Benjamini and Hochberg
+     */
+    public static DoubleMatrix1D benjaminiHochberg( DoubleMatrix1D pvalues ) {
+        DoubleArrayList r = benjaminiHochberg( new DoubleArrayList( pvalues.toArray() ) );
+        r.trimToSize();
+        return new DenseDoubleMatrix1D( r.elements() );
+    }
+
+    /**
+     * @param pvalues
+     * @return false discovery rates computed using the method of Benjamini and Hochberg
+     */
+    public static DoubleArrayList benjaminiHochberg( DoubleArrayList pvalues ) {
+        int nump = pvalues.size();
+        int n = nump;
+
+        IntArrayList order = Rank.order( pvalues );
+
+        DoubleMatrix1D tmp = new DenseDoubleMatrix1D( nump );
+
+        DoubleArrayList sorted = pvalues.copy();
+        sorted.sort();
+
+        double previous = 1.0;
+        for ( int i = sorted.size() - 1; i >= 0; i-- ) {
+            double pval = sorted.get( i );
+            // never let the qvalue increase.
+            double qval = Math.min( pval * nump / n, previous );
+            tmp.set( i, qval );
+            previous = qval;
+            n--;
+        }
+        DoubleArrayList results = new DoubleArrayList( nump );
+        for ( int i = 0; i < nump; i++ ) {
+            results.add( 0.0 );
+        }
+        for ( int i = 0; i < nump; i++ ) {
+            results.set( order.get( i ), tmp.get( i ) );
+        }
+
+        return results;
     }
 
     /**
@@ -81,7 +129,8 @@ public class MultipleTestCorrection {
         for ( int i = numpvals - 1; i >= 0; i-- ) {
 
             double p = pvalcop.get( i );
-            if ( p < 0.0 || p > 1.0 ) throw new IllegalArgumentException( "p-value must be in range [0,1]" );
+            if ( p < 0.0 || p > 1.0 )
+                throw new IllegalArgumentException( "p-value must be in range [0,1], got: " + p );
 
             double thresh = qmod * i / numpvals;
             if ( p < thresh ) {

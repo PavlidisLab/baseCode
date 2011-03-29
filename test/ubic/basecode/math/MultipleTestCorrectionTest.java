@@ -24,6 +24,8 @@ import junit.framework.TestCase;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import cern.colt.list.DoubleArrayList;
+import cern.colt.matrix.DoubleMatrix1D;
+import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
 /**
  * @author pavlidis
@@ -32,6 +34,28 @@ import cern.colt.list.DoubleArrayList;
 public class MultipleTestCorrectionTest extends TestCase {
 
     private DoubleArrayList values;
+
+    DoubleMatrix<String, String> mat;
+
+    /**
+     * @throws Exception
+     */
+    public void testBenjaminiHochberg() throws Exception {
+        DoubleArrayList actualResult = MultipleTestCorrection.benjaminiHochberg( values );
+        DoubleArrayList expected = new DoubleArrayList( mat.getColumnByName( "BH" ) );
+        for ( int i = 0; i < actualResult.size(); i++ ) {
+            assertEquals( "At " + i, expected.get( i ), actualResult.get( i ), expected.get( i ) / 10.0 );
+        }
+    }
+
+    public void testBenjaminiHochbergM() throws Exception {
+        DoubleMatrix1D actualResult = MultipleTestCorrection.benjaminiHochberg( new DenseDoubleMatrix1D( values
+                .elements() ) );
+        DoubleArrayList expected = new DoubleArrayList( mat.getColumnByName( "BH" ) );
+        for ( int i = 0; i < actualResult.size(); i++ ) {
+            assertEquals( "At " + i, expected.get( i ), actualResult.get( i ), expected.get( i ) / 10.0 );
+        }
+    }
 
     /*
      * Test method for 'basecode.math.MultipleTestCorrection.BenjaminiHochbergCut(DoubleArrayList, double)'
@@ -51,8 +75,8 @@ public class MultipleTestCorrectionTest extends TestCase {
         assertEquals( expectedResult, actualResult, 0.00001 );
     }
 
-    /*
-     * Test method for 'basecode.math.MultipleTestCorrection.BonferroniCut(DoubleArrayList, double)'
+    /**
+     * @throws Exception
      */
     public void testBonferroniCut() throws Exception {
         double actualResult = MultipleTestCorrection.BonferroniCut( values, 0.01 );
@@ -69,10 +93,9 @@ public class MultipleTestCorrectionTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         DoubleMatrixReader dmr = new DoubleMatrixReader();
-        DoubleMatrix<String, String> mat = dmr.read( this.getClass().getResourceAsStream(
-                "/data/multtest.test.txt" ) );
-
+        mat = dmr.read( this.getClass().getResourceAsStream( "/data/multtest.test.randord.txt" ) );
         values = new DoubleArrayList( mat.getColumnByName( "rawp" ) );
+        values.trimToSize();
     }
 
 }

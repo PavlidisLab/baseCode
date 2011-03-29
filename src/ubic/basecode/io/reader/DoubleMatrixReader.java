@@ -24,13 +24,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -49,7 +49,12 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
 
     private int numHeadings;
     private List<String> colNames;
-    private NumberFormat nf = NumberFormat.getInstance( Locale.getDefault() );
+    private static NumberFormat nf = NumberFormat.getInstance();
+    static {
+        if ( nf instanceof DecimalFormat ) {
+            // ( ( DecimalFormat ) nf ).setDecimalSeparatorAlwaysShown( true );
+        }
+    }
 
     /**
      * @param stream InputStream stream to read from
@@ -181,6 +186,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
 
     /*
      * (non-Javadoc)
+     * 
      * @see basecode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
      */
     @Override
@@ -281,14 +287,14 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
                     try {
                         /*
                          * NumberFormat.parse thinks things like 9101001_at are okay. Try to catch such cases. Note that
-                         * we can't use Double.parseDouble because that doesn't seem to handle locale-specific number formats
-                         * like european decimals (0,001 etc.)
+                         * we can't use Double.parseDouble because that doesn't seem to handle locale-specific number
+                         * formats like european decimals (0,001 etc.)
                          */
-                        if ( tok.matches( "[a-zA-Z_=]" ) ) {
-                            throw new NumberFormatException( "Unexpected non-numeric value found in column "
-                                    + columnNumber );
-                        }
-                        rowTemp.add( nf.parse( tok ).doubleValue() );
+                        // if ( tok.matches( ".*[a-zA-Z_=].*" ) ) {
+                        // throw new NumberFormatException( "Unexpected non-numeric value found in column "
+                        // + columnNumber + ": " + tok );
+                        // }
+                        rowTemp.add( nf.parse( tok.toUpperCase() ).doubleValue() );
                     } catch ( ParseException e ) {
                         throw new RuntimeException( e );
                     }

@@ -105,6 +105,16 @@ public class TestDoubleMatrixReader extends TestCase {
 
     }
 
+    public void testSmallNumbers() throws Exception {
+        reader = new DoubleMatrixReader();
+        is = TestStringMatrixReader.class.getResourceAsStream( "/data/multtest.test.randord.txt" );
+        matrix = reader.read( is );
+        double d = matrix.get( 101, 0 );
+        assertEquals( 7.6e-07, d, 1e-6 );
+        assertEquals( 0.5, matrix.get( 296, 0 ), 1e-6 );
+        assertEquals( 2.6e-10, matrix.get( 206, 0 ), 1e-11 );
+    }
+
     /*
      * @see TestCase#setUp()
      */
