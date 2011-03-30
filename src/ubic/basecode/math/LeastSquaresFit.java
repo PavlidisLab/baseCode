@@ -769,7 +769,7 @@ public class LeastSquaresFit {
         }
 
         if ( qrd == null ) {
-            log.warn( "QR was null for item " + i );
+            log.debug( "QR was null for item " + i );
             return new LinearModelSummary( key );
         }
 
