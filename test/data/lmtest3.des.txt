@@ -1,0 +1,15 @@
+sample	(Intercept)	des2$fact.2125fv_17617	des2$fact.2125fv_17618	des2$fact.2125fv_17619	des2$fact.8095fv_60794	des2$fact.8095fv_60795_base	des2$fact.8095fv_60796	des2$fact.8095fv_60797	des2$fact.8095fv_60798
+biomat_35853	1	0	0	0	0	1	0	0	0
+biomat_35854	1	0	0	0	0	1	0	0	0
+biomat_35855	1	0	0	0	0	0	0	1	0
+biomat_35856	1	0	0	0	0	0	0	1	0
+biomat_35847	1	1	0	0	0	0	1	0	0
+biomat_35848	1	1	0	0	0	0	1	0	0
+biomat_35849	1	1	0	0	0	0	1	0	0
+biomat_35858	1	0	1	0	0	0	0	0	0
+biomat_35857	1	0	1	0	1	0	0	0	0
+biomat_35859	1	0	1	0	0	0	0	1	0
+biomat_35860	1	0	1	0	0	0	0	1	0
+biomat_35851	1	0	0	1	0	0	0	1	0
+biomat_35852	1	0	0	1	0	0	0	1	0
+biomat_35850	1	0	0	1	0	0	0	0	1

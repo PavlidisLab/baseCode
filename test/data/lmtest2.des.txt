@@ -1,0 +1,15 @@
+label	fact.2125	fact.8095
+biomat_35853	fv_17616_base	fv_60795_base
+biomat_35854	fv_17616_base	fv_60795_base
+biomat_35855	fv_17616_base	fv_60797
+biomat_35856	fv_17616_base	fv_60797
+biomat_35847	fv_17617	fv_60796
+biomat_35848	fv_17617	fv_60796
+biomat_35849	fv_17617	fv_60796
+biomat_35858	fv_17618	fv_60793
+biomat_35857	fv_17618	fv_60794
+biomat_35859	fv_17618	fv_60797
+biomat_35860	fv_17618	fv_60797
+biomat_35851	fv_17619	fv_60797
+biomat_35852	fv_17619	fv_60797
+biomat_35850	fv_17619	fv_60798

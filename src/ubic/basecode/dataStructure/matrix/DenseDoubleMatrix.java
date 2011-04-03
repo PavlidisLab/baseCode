@@ -131,12 +131,12 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         for ( int i = startCol; i <= endCol; i++ ) {
             C colName = this.getColName( i );
             if ( colName != null ) {
-                returnval.setColumnName( colName, i );
+                returnval.addColumnName( colName );
             }
             for ( int j = 0, m = this.rows(); j < m; j++ ) {
                 if ( i == startCol ) {
                     R rowName = this.getRowName( j );
-                    returnval.setRowName( rowName, j );
+                    if ( rowName != null ) returnval.addRowName( rowName );
                 }
                 returnval.set( j, k, this.get( j, i ) );
             }

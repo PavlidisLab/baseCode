@@ -31,6 +31,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Cell;
 
 /**
  * TODO Document Me
@@ -68,12 +69,12 @@ public class ExcelUtil {
             return null;
         }
 
-        if ( cell.getCellType() == HSSFCell.CELL_TYPE_STRING ) return cell.getRichStringCellValue().getString();
-        if ( cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC ) {
+        if ( cell.getCellType() == Cell.CELL_TYPE_STRING ) return cell.getRichStringCellValue().getString();
+        if ( cell.getCellType() == Cell.CELL_TYPE_NUMERIC ) {
             // WARNING bad for doubles
             return "" + cell.getNumericCellValue();
         }
-        if ( cell.getCellType() == HSSFCell.CELL_TYPE_FORMULA ) return cell.getCellFormula();
+        if ( cell.getCellType() == Cell.CELL_TYPE_FORMULA ) return cell.getCellFormula();
 
         return "";
     }
@@ -97,7 +98,7 @@ public class ExcelUtil {
             r = sheet.createRow( row );
         }
         HSSFCell c = r.createCell( col );
-        c.setCellType( HSSFCell.CELL_TYPE_FORMULA );
+        c.setCellType( Cell.CELL_TYPE_FORMULA );
         c.setCellFormula( value );
     }
 
@@ -123,7 +124,7 @@ public class ExcelUtil {
             r = sheet.createRow( row );
         }
         HSSFCell c = r.createCell( col );
-        c.setCellType( HSSFCell.CELL_TYPE_NUMERIC );
+        c.setCellType( Cell.CELL_TYPE_NUMERIC );
         c.setCellValue( value );
 
     }
@@ -140,7 +141,7 @@ public class ExcelUtil {
             r = sheet.createRow( row );
         }
         HSSFCell c = r.createCell( col );
-        c.setCellType( HSSFCell.CELL_TYPE_STRING );
+        c.setCellType( Cell.CELL_TYPE_STRING );
         c.setCellValue( new HSSFRichTextString( value ) );
     }
 

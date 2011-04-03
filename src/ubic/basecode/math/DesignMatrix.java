@@ -44,6 +44,7 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
  * <p>
  * Baseline levels are initially determined by the order in which factor levels appear. You can re-level using the
  * setBaseline method.
+ * <p>
  * 
  * @author paul
  * @version $Id$
@@ -69,14 +70,19 @@ public class DesignMatrix {
     /**
      * Saved version of the original factors provided.
      */
-    private Map<String, List<Object>> valuesForFactors = new LinkedHashMap<String, List<Object>>();
+    private final Map<String, List<Object>> valuesForFactors = new LinkedHashMap<String, List<Object>>();
 
     /**
      * Only applied for categorical factors.
      */
-    private Map<String, List<String>> levelsForFactors = new LinkedHashMap<String, List<String>>();
+    private final Map<String, List<String>> levelsForFactors = new LinkedHashMap<String, List<String>>();
 
-    private Set<String[]> interactions = new LinkedHashSet<String[]>();
+    private final Set<String[]> interactions = new LinkedHashSet<String[]>();
+
+    /**
+     * Names of factors for which at least some coefficients were dropped.
+     */
+    private final Set<String> droppedFactors = new HashSet<String>();
 
     /**
      * @param factor in form of Doubles or Strings. Any other types will yield errors.
@@ -191,6 +197,16 @@ public class DesignMatrix {
                             matrix.set( k, this.matrix.columns() - 1, prod[k] );
                         }
 
+                        boolean redundant = checkForRedundancy( this.matrix, this.matrix.columns() - 1 );
+                        if ( redundant ) {
+                            /*
+                             * remove the column.
+                             */
+                            log.info( "Interaction term is redundant with another column, dropping" );
+                            matrix = matrix.getColRange( 0, this.matrix.columns() - 1 );
+                            continue;
+                        }
+
                         matrix.addColumnName( columnName );
                         if ( !this.terms.containsKey( termName ) ) {
                             this.terms.put( termName, new ArrayList<Integer>() );
@@ -221,6 +237,14 @@ public class DesignMatrix {
         return new DenseDoubleMatrix2D( matrix.asDoubles() );
     }
 
+    public Set<String> getDroppedFactors() {
+        return droppedFactors;
+    }
+
+    public Map<String, List<String>> getLevelsForFactors() {
+        return levelsForFactors;
+    }
+
     public DoubleMatrix<String, String> getMatrix() {
         return matrix;
     }
@@ -231,8 +255,16 @@ public class DesignMatrix {
         return result;
     }
 
+    public Map<String, List<Object>> getValuesForFactors() {
+        return valuesForFactors;
+    }
+
     public boolean hasIntercept() {
         return this.hasIntercept;
+    }
+
+    public boolean isHasIntercept() {
+        return hasIntercept;
     }
 
     /**
@@ -324,17 +356,23 @@ public class DesignMatrix {
     }
 
     /**
+     * The primary method for actually setting up the design matrix. Redundant or constant columns are dropped (except
+     * the intercept, if included)
+     * 
      * @param which column of the input matrix are we working on.
      * @param factorValues of doubles or strings.
      * @param inputDesign
      * @param start 1 or 2. Set to 1 to get a column for each level (must not have an intercept in the model); Set to 2
-     *        to get a column for all but the last (Redundant) level.
+     *        to get a column for all but the last (Redundant) level (or another redundant column)
      * @param factorName String to associate with the factor
      * @return
      */
     @SuppressWarnings("unchecked")
     private DoubleMatrix<String, String> buildDesign( int columnNum, List<?> factorValues,
-            DoubleMatrix<String, String> inputDesign, int start, String factorName ) {
+            DoubleMatrix<String, String> inputDesign, final int start, String factorName ) {
+
+        int startUsed = start;
+
         if ( !terms.containsKey( factorName ) ) {
             terms.put( factorName, new ArrayList<Integer>() );
         }
@@ -355,48 +393,112 @@ public class DesignMatrix {
                 levels = levels( factorName, ( List<String> ) factorValues );
             }
 
-            if ( inputDesign != null ) {
-                /*
-                 * copy it into a new one.
-                 */
-                assert factorValues.size() == inputDesign.rows();
-                int numberofColumns = inputDesign.columns() + levels.size() - start + 1;
-                tmp = copyWithSpace( inputDesign, numberofColumns );
-
-            } else {
-                tmp = new DenseDoubleMatrix<String, String>( factorValues.size(), levels.size() - start + 1 );
-                tmp.assign( 0.0 );
+            if ( levels.size() == 1 ) {
+                log.warn( "Factor " + factorName + " was constant; not adding to the design" );
+                this.droppedFactors.add( factorName );
+                return inputDesign;
             }
+
+            tmp = inputDesign;
 
             List<String> levelList = new ArrayList<String>();
             levelList.addAll( levels );
+            // Collections.sort( levelList );
+
             int startcol = 0;
-            if ( inputDesign != null ) {
+            if ( tmp != null ) {
                 startcol = inputDesign.columns();
             }
-            for ( int i = startcol; i < tmp.columns(); i++ ) {
+
+            int currentColumn = startcol;
+            int maxColumn = levels.size() + startcol - ( startUsed - 1 );
+            Collection<String> usedLevels = new HashSet<String>();
+            for ( int i = startcol; i < maxColumn; i++ ) {
+
+                // log.info( tmp );
+
+                int currentLevelIndex = i - startcol + ( startUsed - 1 );
+
+                if ( currentLevelIndex >= levelList.size() ) {
+                    if ( startUsed > 1 ) {
+                        // go back and use it; we must have removed a redundant level.
+                        currentLevelIndex = 0;
+                    }
+                }
+
+                String level = levelList.get( currentLevelIndex );
+                log.debug( "Adding column for Level=" + level + " at index " + currentLevelIndex );
+
+                // make space for the new values
+                if ( tmp != null ) {
+                    tmp = copyWithSpace( tmp, tmp.columns() + 1 );
+                } else {
+                    tmp = new DenseDoubleMatrix<String, String>( factorValues.size(), 1 );
+                    tmp.assign( 0.0 );
+                }
 
                 String contrastingValue = "";
                 for ( int j = 0; j < tmp.rows(); j++ ) {
-                    boolean isBaseline = !factorValues.get( j ).equals( levelList.get( i - startcol + ( start - 1 ) ) );
-
+                    boolean isBaseline = !factorValues.get( j ).equals( level );
                     if ( !isBaseline ) {
                         contrastingValue = ( String ) factorValues.get( j );
                     }
-
-                    tmp.set( j, i, isBaseline ? 0.0 : 1.0 );
+                    tmp.set( j, currentColumn, isBaseline ? 0.0 : 1.0 );
                 }
 
-                this.assign.add( columnNum ); // all of these columns use this factor.
+                // boolean redundant = checkForRedundancy( tmp, currentColumn );
+                // if ( redundant ) {
+                // log.warn( "Column for factor " + factorName + " level=" + level + " is redundant, dropping" );
+                // droppedFactors.add( factorName );
+                //
+                // tmp = tmp.getColRange( 0, currentColumn - 1 );
+                // maxColumn++; // add one more column
+                // continue;
+                // }
 
-                terms.get( factorName ).add( i );
+                currentColumn++;
+
                 if ( StringUtils.isBlank( contrastingValue ) ) {
                     contrastingValue = "_" + i;
                 }
-                tmp.addColumnName( factorName + contrastingValue );
+                tmp.setColumnName( factorName + contrastingValue, currentColumn );
+                this.assign.add( columnNum ); // all of these columns use this factor.
+                terms.get( factorName ).add( i );
+                usedLevels.add( level );
+            }
+            /*
+             * if ( usedLevels.size() < levels.size() ) { log.info( "Used levels: " + StringUtils.join( usedLevels, " "
+             * ) ); log.info( "All levels: " + StringUtils.join( levelList, " " ) ); }
+             */
+
+        }
+
+        return tmp;
+    }
+
+    /**
+     * Check if the column is redundant with a previous column
+     * 
+     * @param tmp
+     * @param column index of column to check.
+     * @return true if a column with index < column is the same as the column at the given index.
+     */
+    private boolean checkForRedundancy( DoubleMatrix<String, String> tmp, int column ) {
+        for ( int p = 0; p < column; p++ ) {
+
+            boolean foundRedundant = true;
+            for ( int v = 0; v < tmp.rows(); v++ ) {
+                if ( tmp.get( v, column ) != tmp.get( v, p ) ) {
+                    foundRedundant = false;
+                    break;
+                }
+            }
+
+            if ( foundRedundant ) {
+                return true;
             }
         }
-        return tmp;
+        return false;
     }
 
     /**
@@ -413,7 +515,10 @@ public class DesignMatrix {
 
         for ( int i = 0; i < inputDesign.rows(); i++ ) {
             for ( int j = 0; j < inputDesign.columns(); j++ ) {
-                if ( i == 0 ) tmp.getColNames().add( inputDesign.getColName( j ) );
+                String colName = inputDesign.getColName( j );
+                if ( i == 0 && colName != null ) {
+                    tmp.setColumnName( colName, j );
+                }
                 tmp.set( i, j, inputDesign.get( i, j ) );
             }
         }
@@ -462,6 +567,11 @@ public class DesignMatrix {
         return this.levels( factorName, vec.toArray( new String[] {} ) );
     }
 
+    /**
+     * @param factorName
+     * @param vec
+     * @return
+     */
     private List<String> levels( String factorName, String[] vec ) {
         Set<String> flevs = new LinkedHashSet<String>();
         for ( String v : vec ) {

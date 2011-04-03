@@ -346,6 +346,42 @@ public class LeastSquaresFitTest {
 
     }
 
+    @Test
+    public void testSingular() throws Exception {
+        DoubleMatrixReader f = new DoubleMatrixReader();
+        DoubleMatrix<String, String> testMatrix = f
+                .read( this.getClass().getResourceAsStream( "/data/lmtest2.dat.txt" ) );
+
+        StringMatrixReader of = new StringMatrixReader();
+        StringMatrix<String, String> sampleInfo = of.read( this.getClass()
+                .getResourceAsStream( "/data/lmtest2.des.txt" ) );
+        DesignMatrix d = new DesignMatrix( sampleInfo, true );
+
+        assertEquals( 9, d.getMatrix().columns() );
+
+        LeastSquaresFit fit = new LeastSquaresFit( d, testMatrix );
+
+        Map<String, LinearModelSummary> sums = fit.summarizeByKeys( true );
+        assertEquals( 81, sums.size() );
+
+        for ( LinearModelSummary lms : sums.values() ) {
+            GenericAnovaResult a = lms.getAnova();
+            assertNotNull( a );
+        }
+
+        LinearModelSummary s = sums.get( "A01157cds_s_at" );
+
+        assertNotNull( s.getCoefficients() );
+
+        assertEquals( 7.3740000, s.getCoefficients().get( 0, 0 ), 0.001 );
+        // assertEquals( 0.1147667, s.getCoefficients().get( 1, 3 ), 0.001 );
+        assertEquals( 6, s.getResidualDof().intValue() );
+        assertEquals( 7, s.getNumeratorDof().intValue() );
+        assertEquals( 0.8634, s.getF(), 0.01 );
+        assertEquals( 0.5795, s.getP(), 0.001 );
+
+    }
+
     /**
      * @throws Exception
      */

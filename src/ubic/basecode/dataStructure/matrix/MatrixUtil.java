@@ -187,7 +187,7 @@ public class MatrixUtil {
         int size = data.size();
         int j = 0;
         for ( int i = 0; i < size; i++ ) {
-            if ( Double.isNaN( elements[i] ) ) {
+            if ( Double.isNaN( elements[i] ) || Double.isInfinite( elements[i] ) ) {
                 continue;
             }
             r.set( j++, elements[i] );
@@ -199,7 +199,8 @@ public class MatrixUtil {
 
         int size = 0;
         for ( int i = 0; i < list.size(); i++ ) {
-            if ( !Double.isNaN( list.get( i ) ) ) {
+            double v = list.get( i );
+            if ( !Double.isNaN( v ) && !Double.isInfinite( v ) ) {
                 size++;
             }
         }
@@ -228,6 +229,28 @@ public class MatrixUtil {
         int k = 0;
         for ( int j = 0; j < n.columns(); j++ ) {
             if ( droppedColumns.contains( j ) ) {
+                continue;
+            }
+            for ( int i = 0; i < n.rows(); i++ ) {
+                res.set( i, k, n.get( i, j ) );
+            }
+            k++;
+        }
+        return res;
+    }
+
+    /**
+     * @param n
+     * @param indexToDrop
+     * @return
+     */
+    public static DoubleMatrix2D dropColumn( DoubleMatrix2D n, int indexToDrop ) {
+        int columns = n.columns() - 1;
+        if ( columns < 0 ) throw new IllegalArgumentException( "Must leave some columns" );
+        DoubleMatrix2D res = new DenseDoubleMatrix2D( n.rows(), columns );
+        int k = 0;
+        for ( int j = 0; j < n.columns(); j++ ) {
+            if ( indexToDrop == j ) {
                 continue;
             }
             for ( int i = 0; i < n.rows(); i++ ) {

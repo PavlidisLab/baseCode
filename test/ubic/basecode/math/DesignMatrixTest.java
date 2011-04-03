@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrixImpl;
+import ubic.basecode.dataStructure.matrix.StringMatrix;
 import ubic.basecode.io.reader.StringMatrixReader;
 import junit.framework.TestCase;
 
@@ -29,7 +30,6 @@ import junit.framework.TestCase;
  */
 public class DesignMatrixTest extends TestCase {
 
-    @SuppressWarnings("unused")
     private static Log log = LogFactory.getLog( DesignMatrixTest.class );
 
     /**
@@ -41,7 +41,7 @@ public class DesignMatrixTest extends TestCase {
         ObjectMatrix sampleInfo = of.read( this.getClass().getResourceAsStream( "/data/example.metadata.small.txt" ) );
 
         DoubleMatrix X = new DesignMatrix( sampleInfo, true ).getMatrix();
-
+        assertEquals( 3, X.columns() );
         assertEquals( 1, X.get( 0, 0 ), 0.001 );
         assertEquals( 1, X.get( 1, 0 ), 0.001 );
         assertEquals( 1, X.get( 2, 0 ), 0.001 );
@@ -78,7 +78,7 @@ public class DesignMatrixTest extends TestCase {
         design.addColumnName( "Value" );
         DesignMatrix designMatrix = new DesignMatrix( design, true );
         DoubleMatrix<String, String> X = designMatrix.getMatrix();
-
+        assertEquals( 3, X.columns() );
         assertEquals( 1, X.get( 0, 0 ), 0.001 );
         assertEquals( 1, X.get( 4, 0 ), 0.001 );
         assertEquals( 0, X.get( 0, 1 ), 0.001 );
@@ -135,7 +135,7 @@ public class DesignMatrixTest extends TestCase {
         designMatrix.addInteraction( "Treat", "Geno" );
 
         DoubleMatrix<String, String> matrix = designMatrix.getMatrix();
-
+        assertEquals( 5, matrix.columns() );
         assertEquals( 1, matrix.get( 0, 0 ), 0.001 );
         assertEquals( 1, matrix.get( 4, 0 ), 0.001 );
         assertEquals( 0, matrix.get( 0, 1 ), 0.001 );
@@ -240,5 +240,25 @@ public class DesignMatrixTest extends TestCase {
         assertEquals( "TreatA:GenoD", matrix.getColName( 4 ) );
         assertEquals( "TreatA:GenoE", matrix.getColName( 5 ) );
 
+    }
+
+    /**
+     * This matrix is singular.
+     * 
+     * @throws Exception
+     */
+    public void test2() throws Exception {
+        StringMatrixReader of = new StringMatrixReader();
+        StringMatrix<String, String> sampleInfo = of.read( this.getClass()
+                .getResourceAsStream( "/data/lmtest2.des.txt" ) );
+        DesignMatrix d = new DesignMatrix( sampleInfo, true );
+        // log.info( d );
+
+        DoubleMatrix<String, String> m = d.getMatrix();
+
+        assertEquals( 9, d.getMatrix().columns() );
+
+        assertEquals( 1.0, m.get( 11, 0 ), 0.0001 );
+        assertEquals( 0.0, m.get( 12, 8 ), 0.0001 );
     }
 }

@@ -89,8 +89,13 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
             throw new IllegalArgumentException( "Duplicate column name " + s );
         }
 
-        this.colNames.add( s );
-        this.colMap.put( s, new Integer( i ) );
+        if ( this.colNames.size() > i ) {
+            this.colNames.set( i, s );
+        } else {
+            this.colNames.add( s );
+        }
+
+        this.colMap.put( s, i );
     }
 
     /**
@@ -213,7 +218,7 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
      * @return java.lang.String
      */
     public final C getColName( int i ) {
-        if ( !this.hasColNames() ) return null;
+        if ( !this.hasColNames() || this.colNames.size() < i + 1 ) return null;
         return colNames.get( i );
     }
 
@@ -254,7 +259,7 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
     }
 
     public final boolean hasColNames() {
-        return colNames.size() == columns();
+        return colNames.size() > 0;
     }
 
     public final boolean hasRow( R r ) {
@@ -262,7 +267,7 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
     }
 
     public final boolean hasRowNames() {
-        return rowNames.size() == rows();
+        return rowNames.size() > 0;
     }
 
     /*
@@ -312,17 +317,17 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
         if ( startCol < 0 || startCol > rows() - 1 || startCol >= endCol ) {
             throw new IllegalArgumentException( "Invalid start col" );
         }
-        if ( endCol <= startCol || endCol > rows() - 1 ) {
+        if ( endCol < startCol || endCol > rows() - 1 ) {
             throw new IllegalArgumentException( "Invalid end col" );
         }
 
     }
 
     protected void checkRowRange( int startRow, int endRow ) {
-        if ( startRow < 0 || startRow > rows() - 1 || startRow >= endRow ) {
+        if ( startRow < 0 || startRow > rows() - 1 || startRow > endRow ) {
             throw new IllegalArgumentException( "Invalid start row" );
         }
-        if ( endRow <= startRow || endRow > rows() - 1 ) {
+        if ( endRow < startRow || endRow > rows() - 1 ) {
             throw new IllegalArgumentException( "Invalid end row" );
         }
 
