@@ -494,4 +494,43 @@ public class QRDecompositionPivoting {
     protected DoubleMatrix2D getQR() {
         return QR;
     }
+
+    /**
+     * Returns a String with (propertyName, propertyValue) pairs. Useful for debugging or to quickly get the rough
+     * picture.
+     */
+    @Override
+    public String toString() {
+        StringBuilder buf = new StringBuilder();
+        String unknown = "Illegal operation or error: ";
+
+        buf.append( "-----------------------------------------------------------------\n" );
+        buf.append( "QRDecomposition(A) \n" );
+        buf.append( "-----------------------------------------------------------------\n" );
+
+        buf.append( "rank = " + k );
+
+        buf.append( "\n\nQ = " );
+        try {
+            buf.append( String.valueOf( this.getQ() ) );
+        } catch ( IllegalArgumentException exc ) {
+            buf.append( unknown + exc.getMessage() );
+        }
+
+        buf.append( "\n\nR = " );
+        try {
+            buf.append( String.valueOf( this.getR() ) );
+        } catch ( IllegalArgumentException exc ) {
+            buf.append( unknown + exc.getMessage() );
+        }
+
+        buf.append( "\n\npseudo inverse(A) = " );
+        try {
+            buf.append( String.valueOf( this.solve( cern.colt.matrix.DoubleFactory2D.dense.identity( QR.rows() ) ) ) );
+        } catch ( IllegalArgumentException exc ) {
+            buf.append( unknown + exc.getMessage() );
+        }
+
+        return buf.toString();
+    }
 }

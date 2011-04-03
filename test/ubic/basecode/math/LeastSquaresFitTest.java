@@ -458,6 +458,7 @@ public class LeastSquaresFitTest {
      * 
      * @throws Exception
      */
+    @Test
     public void testOneWayAnova() throws Exception {
         DoubleMatrixReader f = new DoubleMatrixReader();
         DoubleMatrix<String, String> testMatrix = f.read( this.getClass().getResourceAsStream(
@@ -519,6 +520,8 @@ public class LeastSquaresFitTest {
 
         LinearModelSummary sum60 = sums.get( "probe_60" );
         assertNotNull( sum60.getCoefficients() );
+        assertEquals( 9.001, sum60.getCoefficients().get( 0, 0 ), 0.01 ); // R gives 8.9913
+        assertEquals( -0.0102, sum60.getCoefficients().get( 1, 0 ), 0.0001 ); // R gives +0.0102
         assertEquals( 2, sum60.getAnova().getResidualDf().intValue() );
         assertEquals( 1, sum60.getAnova().getMainEffectDof( "Factor1" ).intValue() );
         assertEquals( 0.0004715, sum60.getF(), 1e-7 );

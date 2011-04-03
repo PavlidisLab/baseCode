@@ -1,7 +1,7 @@
 # R code for tests 
 # $Id$
 
- rm(list=ls())
+rm(list=ls())
 
 des<-matrix(c(rep(1,9), rep(0,4), rep(1,5), 0.12,0.24,0.48,0.96,0.12,0.24,0.48,0.96,0.96), 9,3)
 dat <- read.table("example.madata.small.txt",header=T,comment.char='',fill=T,sep='\t', as.is=T, row.names=1)
@@ -159,6 +159,7 @@ owanova$probe_98
 summary(lm(t(dat["probe_4",]) ~ factor3))
 summary(lm(t(dat["probe_10",]) ~ factor3))
 object<-lm(t(dat["probe_98",]) ~ factor3)
+model.matrix(t(dat["probe_4",]) ~ factor3)
 attributes(object)
 object$assign
 object$effects

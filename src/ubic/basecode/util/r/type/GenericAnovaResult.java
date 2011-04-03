@@ -48,6 +48,8 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
 
     Map<InteractionFactor, AnovaEffect> interactionEffects = new HashMap<InteractionFactor, AnovaEffect>();
 
+    private AnovaEffect residual;
+
     /**
      * Represents a set of factors in an interaction term.
      */
@@ -190,6 +192,7 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
                 interactionEffects.put( new InteractionFactor( StringUtils.split( termLabel, ":" ) ), ae );
             } else if ( termLabel.equals( "Residual" ) ) {
                 this.residualDf = ae.getDegreesOfFreedom();
+                this.residual = ae;
             } else {
 
                 mainEffects.put( termLabel, ae );
@@ -201,15 +204,12 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
     public String toString() {
         StringBuilder buf = new StringBuilder();
 
-        buf.append( "ANOVA table\n" );
+        buf.append( "ANOVA table " + this.getKey() + " \n" );
 
         buf.append( StringUtils.leftPad( "\t", 10 ) + "Df\tSSq\tMSq\tF\tP\n" );
 
         for ( String me : this.getMainEffectFactorNames() ) {
             if ( me.equals( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME ) ) {
-                continue;
-            }
-            if ( me.equals( "Residual" ) ) {
                 continue;
             }
             AnovaEffect a = mainEffects.get( me );
@@ -222,13 +222,9 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
                 buf.append( a + "\n" );
             }
         }
-        for ( String me : this.getMainEffectFactorNames() ) {
-            if ( !me.equals( "Residual" ) ) {
-                continue;
-            }
-            AnovaEffect a = mainEffects.get( me );
-            buf.append( a + "\n" );
-        }
+
+        buf.append( residual + "\n" );
+
         return buf.toString();
     }
 }

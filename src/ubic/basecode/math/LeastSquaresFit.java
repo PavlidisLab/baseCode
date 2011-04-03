@@ -104,7 +104,7 @@ public class LeastSquaresFit {
     private boolean hasIntercept = true;
     private List<List<Integer>> assigns = new ArrayList<List<Integer>>();
 
-    private List<Integer[]> pivotIndicesList = new ArrayList<Integer[]>();
+    // private List<Integer[]> pivotIndicesList = new ArrayList<Integer[]>();
 
     private static Log log = LogFactory.getLog( LeastSquaresFit.class );
 
@@ -132,7 +132,7 @@ public class LeastSquaresFit {
      * Stripped-down interface for simple use. ANOVA not possible (use the other constructors)
      * 
      * @param A Design matrix, which will be used directly in least squares regression
-     * @param b Data matrix
+     * @param b Data matrix, containing data in rows.
      */
     public LeastSquaresFit( DoubleMatrix2D A, DoubleMatrix2D b ) {
         this.A = A;
@@ -235,6 +235,9 @@ public class LeastSquaresFit {
             effects = new DenseDoubleMatrix2D( this.b.rows(), this.A.columns() );
             effects.assign( Double.NaN );
             for ( int i = 0; i < this.b.rows(); i++ ) {
+                // if ( this.rowNames.get( i ).equals( "probe_60" ) ) {
+                // log.info( "MARV" );
+                // }
                 QRDecompositionPivoting qrd = this.qrs.get( i );
                 if ( qrd == null ) {
                     // means we did not get a fit
@@ -243,17 +246,17 @@ public class LeastSquaresFit {
                     }
                     continue;
                 }
-
-                DoubleMatrix2D qrow = qrd.getQ();
                 DoubleMatrix1D brow = b.viewRow( i );
-
                 DoubleMatrix1D browWithoutMissing = MatrixUtil.removeMissing( brow );
-                if ( qrow.rows() != browWithoutMissing.size() ) {
-                    for ( int j = 0; j < effects.columns(); j++ ) {
-                        effects.set( i, j, Double.NaN );
-                    }
-                    continue;
-                }
+                DoubleMatrix2D qrow = qrd.getQ().viewPart( 0, 0, browWithoutMissing.size(), qrd.getRank() );
+
+                // will never happen.
+                // if ( qrow.rows() != browWithoutMissing.size() ) {
+                // for ( int j = 0; j < effects.columns(); j++ ) {
+                // effects.set( i, j, Double.NaN );
+                // }
+                // continue;
+                // }
                 DoubleMatrix1D crow = MatrixUtil.multWithMissing( browWithoutMissing, qrow );
 
                 for ( int j = 0; j < crow.size(); j++ ) {
@@ -282,6 +285,11 @@ public class LeastSquaresFit {
         List<Integer> assignToUse = assign;
 
         for ( int i = 0; i < ssq.rows(); i++ ) {
+
+            // if ( this.rowNames.get( i ).equals( "probe_60" ) ) {
+            // log.info( "MARV" );
+            // }
+
             ssq.set( i, facs.size(), residualSumsOfSquares.get( i ) );
             int rdof;
             if ( this.residualDofs.isEmpty() ) {
@@ -627,8 +635,7 @@ public class LeastSquaresFit {
             }
 
         }
-
-        assert this.assign.size() == this.coefficients.rows();
+        assert this.assign == null || this.assign.size() == this.coefficients.rows();
         assert this.coefficients.rows() == A.columns();
 
         this.fitted = solver.transpose( MatrixUtil.multWithMissing( A, coefficients ) );
@@ -669,7 +676,7 @@ public class LeastSquaresFit {
             this.qrs.add( null );
             this.residualDofs.add( countNonMissing - des.columns() );
             this.assigns.add( new ArrayList<Integer>() );
-            this.pivotIndicesList.add( new Integer[] {} );
+            // this.pivotIndicesList.add( new Integer[] {} );
             return re;
         }
 
@@ -704,7 +711,7 @@ public class LeastSquaresFit {
             this.qrs.add( null );
             this.residualDofs.add( countNonMissing - des.columns() );
             this.assigns.add( new ArrayList<Integer>() );
-            this.pivotIndicesList.add( new Integer[] {} );
+            // this.pivotIndicesList.add( new Integer[] {} );
             return re;
         }
 
@@ -720,10 +727,9 @@ public class LeastSquaresFit {
 
         this.qrs.add( rqr );
 
-        Integer[] pi = MatrixUtil.notNearlyZeroIndices( MatrixUtil.diagonal( rqr.getR() ) ).toArray( new Integer[] {} );
-        int pivots = pi.length;
+        int pivots = rqr.getRank();
         // this.residualDof = b.columns() - A.columns();
-        this.pivotIndicesList.add( pi );
+        // this.pivotIndicesList.add( pi );
         // / int rdof = yWithoutMissingAsMatrix.size() - designWithoutMissing.columns();
         int rdof = yWithoutMissingAsMatrix.size() - pivots;
         this.residualDofs.add( rdof );
@@ -838,10 +844,10 @@ public class LeastSquaresFit {
         if ( rdf == 0 ) {
             return new LinearModelSummary( key );
         }
-
+        DoubleMatrix1D coef = coefficients.viewColumn( i );
         DoubleMatrix1D r = MatrixUtil.removeMissing( this.residuals.viewRow( i ) );
         DoubleMatrix1D f = MatrixUtil.removeMissing( fitted.viewRow( i ) );
-        DoubleMatrix1D est = MatrixUtil.removeMissing( coefficients.viewColumn( i ) );
+        DoubleMatrix1D est = MatrixUtil.removeMissing( coef );
 
         if ( est.size() == 0 ) {
             log.warn( "No coefficients estimated for row " + i + this.diagnosis( qrd ) );
@@ -873,9 +879,8 @@ public class LeastSquaresFit {
         DoubleMatrix2D R = dpotri( qrdR.viewPart( 0, 0, qrd.getRank(), qrd.getRank() ) );
 
         // matrix to hold the coefficients.
-        DoubleMatrix<String, String> coeffMat = DoubleMatrixFactory.dense( qrdR.columns(), 4 );
+        DoubleMatrix<String, String> coeffMat = DoubleMatrixFactory.dense( coef.size(), 4 );
         coeffMat.assign( Double.NaN );
-
         coeffMat.setColumnNames( Arrays.asList( new String[] { "Estimate", "Std. Error", "t value", "Pr(>|t|)" } ) );
 
         DoubleMatrix1D se = MatrixUtil.diagonal( R ).assign( Functions.mult( resvar ) ).assign( Functions.sqrt );
@@ -893,7 +898,7 @@ public class LeastSquaresFit {
 
         DoubleMatrix1D tval = est.copy().assign( se, Functions.div );
         TDistribution tdist = new TDistributionImpl( rdf );
-        DoubleMatrix1D coef = coefficients.viewColumn( i );
+
         int j = 0;
         for ( int ti = 0; ti < coef.size(); ti++ ) {
             double c = coef.get( ti );
@@ -903,6 +908,7 @@ public class LeastSquaresFit {
             if ( Double.isNaN( c ) ) {
                 continue;
             }
+
             coeffMat.set( ti, 0, est.get( j ) );
             coeffMat.set( ti, 1, se.get( j ) );
             coeffMat.set( ti, 2, tval.get( j ) );
