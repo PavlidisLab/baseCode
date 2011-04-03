@@ -146,43 +146,6 @@ public class QRDecompositionTest {
      * @throws Exception
      */
     @Test
-    public void test4() throws Exception {
-
-        /*
-         * This matrix represents what happens when R reads in the sampleinfo lmtest2.des.txt. Using the ensuing
-         * model.matrix, we end up with slightly different QR but the LSQ results at the end are the same.
-         */
-        DoubleMatrixReader of = new DoubleMatrixReader();
-        DoubleMatrix<String, String> d = of.read( this.getClass().getResourceAsStream( "/data/lmtest4.des.txt" ) );
-
-        assertEquals( 3, d.columns() );
-        QRDecompositionPivoting qrlrs = new QRDecompositionPivoting( new DenseDoubleMatrix2D( d.asArray() ) );
-        qrlrs.getQ();
-        DoubleMatrix2D r = qrlrs.getR();
-
-        assertEquals( -3.741657, r.get( 0, 0 ), 0.001 );
-        assertEquals( 0.0, r.get( 8, 8 ), 0.001 );
-        assertEquals( -8.660254e-01, r.get( 4, 4 ), 0.001 ); // R gets +8.66
-        assertEquals( -1, r.get( 5, 5 ), 0.001 );
-        assertEquals( 1.1547005, r.get( 6, 6 ), 0.001 );
-        assertEquals( 5.773503e-01, r.get( 7, 7 ), 0.001 );
-
-        DoubleMatrix2D qr = qrlrs.getQR();
-        assertEquals( -3.741657, qr.get( 0, 0 ), 0.001 );
-        assertEquals( 0.0, qr.get( 8, 8 ), 0.001 );
-        assertEquals( -8.660254e-01, qr.get( 4, 4 ), 0.001 );
-        assertEquals( -1, qr.get( 5, 5 ), 0.001 );
-        assertEquals( 1.1547005, qr.get( 6, 6 ), 0.001 );
-        assertEquals( 5.773503e-01, qr.get( 7, 7 ), 0.001 );
-        assertEquals( 0.2672612, qr.get( 12, 0 ), 0.001 );
-        assertEquals( -0.001596204, qr.get( 10, 3 ), 0.001 );
-        assertEquals( -0.563532716, qr.get( 11, 3 ), 0.001 );
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
     public void testSingular2() throws Exception {
 
         /*
