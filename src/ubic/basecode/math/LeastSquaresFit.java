@@ -708,7 +708,7 @@ public class LeastSquaresFit {
         List<Integer> droppedColumns = new ArrayList<Integer>();
         designWithoutMissing = this.cleanDesign( designWithoutMissing, yWithoutMissingAsMatrix.size(), droppedColumns );
 
-        if ( designWithoutMissing.columns() == 0 ) {
+        if ( designWithoutMissing.columns() == 0 || designWithoutMissing.columns() > designWithoutMissing.rows() ) {
             mustReturn = true;
         }
 
