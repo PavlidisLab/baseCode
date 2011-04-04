@@ -28,7 +28,8 @@ import cern.colt.matrix.linalg.Algebra;
 import cern.jet.math.Functions;
 
 /**
- * QR with pivoting
+ * QR with pivoting. See http://www.netlib.org/lapack/lug/node42.html and http://www.netlib.org/lapack/lug/node27.html,
+ * and Golub and VanLoan, section 5.5.6+
  * 
  * @author paul
  * @version $Id$
@@ -345,7 +346,7 @@ public class QRDecompositionPivoting {
         DoubleMatrix2D r = r1.like( p, B.columns() );
         r.assign( Double.NaN );
         for ( int i = 0; i < r1.rows(); i++ ) {
-            int piv = jpvt[i]; 
+            int piv = jpvt[i];
             for ( int j = 0; j < r1.columns(); j++ ) {
                 r.setQuick( piv, j, r1.getQuick( i, j ) );
             }

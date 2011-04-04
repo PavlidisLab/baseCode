@@ -642,7 +642,7 @@ public class LeastSquaresFit {
             }
 
         }
-        assert this.assign == null || this.assign.size() == this.coefficients.rows();
+        assert this.assign.isEmpty() || this.assign.size() == this.coefficients.rows();
         assert this.coefficients.rows() == A.columns();
 
         this.fitted = solver.transpose( MatrixUtil.multWithMissing( A, coefficients ) );
@@ -943,7 +943,7 @@ public class LeastSquaresFit {
         if ( terms.size() > 1 || !hasIntercept ) {
             int dfint = hasIntercept ? 1 : 0;
             rsquared = mss / ( mss + rss );
-            adjRsquared = 1 - ( 1 - rsquared * ( ( n - dfint ) / rdf ) );
+            adjRsquared = 1 - ( 1 - rsquared * ( ( n - dfint ) / ( double ) rdf ) );
             fstatistic = mss / ( p - dfint ) / resvar;
 
             numdf = p - dfint;
