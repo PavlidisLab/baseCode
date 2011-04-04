@@ -597,7 +597,12 @@ public class LeastSquaresFit {
         buf.append( "hasMissing=" + this.hasMissing + "\n" );
         buf.append( "hasIntercept=" + this.hasIntercept + "\n" );
         buf.append( "Design: " + this.designMatrix + "\n" );
-        buf.append( "Data (first few rows): " + this.b.viewSelection( new int[] { 1, 2, 3, 4, 5 }, null ) + "\n" );
+        if ( this.b.rows() < 5 ) {
+            buf.append( "Data matrix: " + this.b + "\n" );
+        } else {
+            buf.append( "Data (first few rows): " + this.b.viewSelection( new int[] { 0, 1, 2, 3, 4 }, null ) + "\n" );
+
+        }
         buf.append( "Current QR:" + qrd + "\n" );
         return buf.toString();
     }

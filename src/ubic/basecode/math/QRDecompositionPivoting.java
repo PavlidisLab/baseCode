@@ -345,8 +345,7 @@ public class QRDecompositionPivoting {
         DoubleMatrix2D r = r1.like( p, B.columns() );
         r.assign( Double.NaN );
         for ( int i = 0; i < r1.rows(); i++ ) {
-            int piv = jpvt[i];
-            if ( piv > r1.rows() ) continue;
+            int piv = jpvt[i]; 
             for ( int j = 0; j < r1.columns(); j++ ) {
                 r.setQuick( piv, j, r1.getQuick( i, j ) );
             }
@@ -524,12 +523,7 @@ public class QRDecompositionPivoting {
             buf.append( unknown + exc.getMessage() );
         }
 
-        buf.append( "\n\npseudo inverse(A) = " );
-        try {
-            buf.append( String.valueOf( this.solve( cern.colt.matrix.DoubleFactory2D.dense.identity( QR.rows() ) ) ) );
-        } catch ( IllegalArgumentException exc ) {
-            buf.append( unknown + exc.getMessage() );
-        }
+        buf.append( "\n\nQRaux = " + this.qraux );
 
         return buf.toString();
     }
