@@ -73,10 +73,12 @@ public class LeastSquaresFit {
     private DoubleMatrix2D b;
     private int residualDof;
 
+    private boolean hasWarned = false;
+
     /*
      * Lists which factors (terms) are associated with which columns of the design matrix; 0 indicates the intercept.
      */
-    private List<Integer> assign;
+    private List<Integer> assign = new ArrayList<Integer>();
 
     /*
      * Names of the factors (terms)
@@ -755,7 +757,7 @@ public class LeastSquaresFit {
                     // leave it as NaN.
                     continue;
                 }
-                assignForRow.add( assign.get( i ) );
+                assignForRow.add( this.assign.get( i ) );
                 assert k < col.size();
                 result.set( i, col.get( k ) );
                 k++;
@@ -763,7 +765,7 @@ public class LeastSquaresFit {
             assigns.add( assignForRow );
             return result;
         }
-        assigns.add( assign );
+        assigns.add( this.assign );
         return coefs.viewColumn( 0 );
 
     }
@@ -894,9 +896,13 @@ public class LeastSquaresFit {
             /*
              * This should actually not happen, due to pivoting.
              */
-            log.warn( "T statistics could not be computed because of missing values (singularity?) " + i
-                    + this.diagnosis( qrd ) );
-            log.warn( "Data for this row:\n" + this.b.viewRow( i ) );
+            if ( !hasWarned ) {
+                log.warn( "T statistics could not be computed because of missing values (singularity?) " + i
+                        + this.diagnosis( qrd ) );
+                log.warn( "Data for this row:\n" + this.b.viewRow( i ) );
+                log.warn( "Additional warnings suppressed" );
+                hasWarned = true;
+            }
             return new LinearModelSummary( key, terms, ArrayUtils.toObject( this.residuals.viewRow( i ).toArray() ),
                     coeffMat, 0.0, 0.0, 0.0, 0, 0, null );
         }
