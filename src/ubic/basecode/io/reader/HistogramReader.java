@@ -58,6 +58,7 @@ public class HistogramReader {
         Double max = new Double( Double.NEGATIVE_INFINITY );
         while ( in.ready() ) {
             String line = in.readLine();
+            if ( line == null ) break;
             if ( line.startsWith( "#" ) || numHeaderLines-- > 0 ) continue;
             String fields[] = line.split( "\t" );
             Double bin = Double.valueOf( fields[0] );

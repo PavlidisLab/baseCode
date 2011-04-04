@@ -93,16 +93,16 @@ public class TestStringUtil extends TestCase {
         log.debug( "Bitwise hash took " + timer.getTime() + " milliseconds" );
         timer.reset();
         timer.start();
-//        for ( int i = 0; i < iters; i++ ) {
-//            String r;
-//            if ( a.hashCode() < b.hashCode() ) {
-//                r = b + "___" + a;
-//            } else {
-//                r = a + "___" + b;
-//            }
-//            // if ( log.isTraceEnabled() ) log.trace( r ); // avoid compiler warning about r not being used - no big
-//            // time.
-//        }
+        // for ( int i = 0; i < iters; i++ ) {
+        // String r;
+        // if ( a.hashCode() < b.hashCode() ) {
+        // r = b + "___" + a;
+        // } else {
+        // r = a + "___" + b;
+        // }
+        // // if ( log.isTraceEnabled() ) log.trace( r ); // avoid compiler warning about r not being used - no big
+        // // time.
+        // }
         timer.stop();
         log.debug( "String concat " + timer.getTime() + " milliseconds" );
     }
@@ -111,8 +111,8 @@ public class TestStringUtil extends TestCase {
         String i = "foo";
         String j = "bar";
 
-        Long icode = new Long( i.hashCode() );
-        Long jcode = new Long( j.hashCode() );
+        Long icode = ( long ) i.hashCode();
+        Long jcode = ( long ) j.hashCode();
 
         log.debug( Long.toBinaryString( jcode.longValue() ) + " " + Long.toBinaryString( icode.longValue() << 32 ) );
 

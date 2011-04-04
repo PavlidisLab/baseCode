@@ -69,12 +69,12 @@ public class TestRank extends TestCase {
 
         Map<String, Integer> actualReturn = Rank.rankTransform( testmap );
         Map<String, Integer> expectedReturn = new HashMap<String, Integer>();
-        expectedReturn.put( "Ten", new Integer( 1 ) );
-        expectedReturn.put( "Eleven", new Integer( 2 ) );
-        expectedReturn.put( "Twelve", new Integer( 3 ) );
-        expectedReturn.put( "Thirteen", new Integer( 4 ) );
-        expectedReturn.put( "HundredFourteen", new Integer( 5 ) );
-        expectedReturn.put( "Five", new Integer( 0 ) );
+        expectedReturn.put( "Ten", 1 );
+        expectedReturn.put( "Eleven", 2 );
+        expectedReturn.put( "Twelve", 3 );
+        expectedReturn.put( "Thirteen", 4 );
+        expectedReturn.put( "HundredFourteen", 5 );
+        expectedReturn.put( "Five", 0 );
         assertEquals( "return value", expectedReturn, actualReturn );
 
     }

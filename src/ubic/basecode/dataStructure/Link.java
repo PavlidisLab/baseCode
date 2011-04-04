@@ -43,9 +43,12 @@ public class Link extends Point implements Comparable<Link> {
 
     /*
      * (non-Javadoc)
+     * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     public int compareTo( Link arg ) {
+        if ( this == arg ) return 0;
+        if ( this.equals( arg ) ) return 0;
         if ( arg.getx() < this.getx() ) {
             return -1;
         } else if ( arg.getx() > this.getx() ) {
@@ -58,6 +61,26 @@ public class Link extends Point implements Comparable<Link> {
             }
             return 0;
         }
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        long temp;
+        temp = Double.doubleToLongBits( weight );
+        result = prime * result + ( int ) ( temp ^ ( temp >>> 32 ) );
+        return result;
+    }
+
+    @Override
+    public boolean equals( Object obj ) {
+        if ( this == obj ) return true;
+        if ( !super.equals( obj ) ) return false;
+        if ( getClass() != obj.getClass() ) return false;
+        Link other = ( Link ) obj;
+        if ( Double.doubleToLongBits( weight ) != Double.doubleToLongBits( other.weight ) ) return false;
+        return true;
     }
 
     /**

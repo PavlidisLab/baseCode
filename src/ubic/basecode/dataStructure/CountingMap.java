@@ -60,7 +60,7 @@ public class CountingMap<K> implements Map<K, Integer> {
      */
     public int increment( K key ) {
         Integer i = map.get( key );
-        if ( i == null ) i = new Integer( 0 );
+        if ( i == null ) i = 0;
         map.put( key, ++i );
         return i;
     }

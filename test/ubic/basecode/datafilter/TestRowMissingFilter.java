@@ -30,8 +30,7 @@ import ubic.basecode.dataStructure.matrix.StringMatrix;
 public class TestRowMissingFilter extends AbstractTestFilter {
 
     RowMissingFilter<DoubleMatrix<String, String>, String, String, Double> f = null;
-    RowMissingFilter<StringMatrix<String, String>, String, String, String> fss = null;
-    RowAbsentFilter<StringMatrix<String, String>, String, String, String> fs = null;
+    RowMissingFilter<StringMatrix<String, String>, String, String, String> fss = null; 
 
     public void testFilter() {
         f.setMinPresentCount( 12 );
@@ -138,8 +137,7 @@ public class TestRowMissingFilter extends AbstractTestFilter {
     protected void setUp() throws Exception {
         super.setUp();
         f = new RowMissingFilter<DoubleMatrix<String, String>, String, String, Double>();
-        fss = new RowMissingFilter<StringMatrix<String, String>, String, String, String>();
-        fs = new RowAbsentFilter<StringMatrix<String, String>, String, String, String>();
+        fss = new RowMissingFilter<StringMatrix<String, String>, String, String, String>(); 
     }
 
     /*

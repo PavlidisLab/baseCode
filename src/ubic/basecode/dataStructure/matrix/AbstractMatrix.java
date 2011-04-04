@@ -74,7 +74,7 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
         }
 
         this.colNames.add( s );
-        this.colMap.put( s, new Integer( lastColumnIndex ) );
+        this.colMap.put( s, lastColumnIndex );
         lastColumnIndex++;
 
     }

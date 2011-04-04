@@ -82,7 +82,7 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
                 if ( !itemNames.contains( itemA ) ) {
                     rows.put( itemA, new HashSet<IndexScoreDyad>() );
                     itemNames.add( itemA );
-                    nameIndexMap.put( itemA, new Integer( index ) );
+                    nameIndexMap.put( itemA,  index   );
                     index++;
                 }
             } else {
@@ -95,7 +95,7 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
                 if ( !itemNames.contains( itemB ) ) {
                     rows.put( itemB, new HashSet<IndexScoreDyad>() );
                     itemNames.add( itemB );
-                    nameIndexMap.put( itemB, new Integer( index ) );
+                    nameIndexMap.put( itemB, index );
                     index++;
                 }
             } else {

@@ -168,7 +168,7 @@ public class ColorMap {
     protected int getStepSize( int minColor, int maxColor, int totalColors ) {
 
         int colorRange = maxColor - minColor;
-        double stepSize = colorRange / ( 1 == totalColors ? 1 : totalColors - 1 );
+        double stepSize = colorRange / ( double ) ( 1 == totalColors ? 1 : totalColors - 1 );
         return ( int ) Math.round( stepSize );
     }
 }

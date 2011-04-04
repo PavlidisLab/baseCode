@@ -14,8 +14,8 @@ import ubic.basecode.ontology.search.OntologyIndexer;
  *  Unlike database backed ontologies we don't use a pool keeping only one instance of model in memory. 
  */
 public abstract class AbstractOntologyMemoryBackedService extends AbstractOntologyService {
-    private OntModel model = null;    
-    
+    private OntModel model = null;
+
     /**
      * For testing! Overrides normal way of loading the ontology.
      * 
@@ -41,21 +41,22 @@ public abstract class AbstractOntologyMemoryBackedService extends AbstractOntolo
         modelReady.set( true );
         isInitialized.set( true );
     }
+
     @Override
-    protected OntModel getModel() {
-        if ( model == null) {
-            model = loadModel(this.getOntologyUrl());
+    protected synchronized OntModel getModel() {
+        if ( model == null ) {
+            model = loadModel( this.getOntologyUrl() );
         }
         return model;
     }
 
     @Override
-    protected void releaseModel( OntModel m ) {
+    protected synchronized void releaseModel( OntModel m ) {
         // do nothing
-    }   
-    
+    }
+
     @Override
-    protected OntModel loadModel( String url ) {
+    protected synchronized OntModel loadModel( String url ) {
         return OntologyLoader.loadMemoryModel( url );
     }
 

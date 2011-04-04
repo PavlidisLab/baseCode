@@ -48,20 +48,20 @@ public abstract class AbstractMatrix3D<R, C, S, V> implements Matrix3D<R, C, S, 
 
     public final void addColumnName( C s, int index ) {
         if ( colNames.contains( s ) ) return;
-        colMap.put( s, new Integer( index ) );
+        colMap.put( s, index );
         colNames.add( s );
     }
 
     public final void addRowName( R s, int index ) {
         if ( rowNames.contains( s ) ) return;
-        rowMap.put( s, new Integer( index ) );
+        rowMap.put( s, index );
         rowNames.add( s );
 
     }
 
     public final void addSliceName( S s, int index ) {
         if ( sliceNames.contains( s ) ) return;
-        sliceMap.put( s, new Integer( index ) );
+        sliceMap.put( s, index );
         sliceNames.add( s );
     }
 
@@ -158,19 +158,19 @@ public abstract class AbstractMatrix3D<R, C, S, V> implements Matrix3D<R, C, S, 
     public void setColumnNames( List<C> v ) {
         colNames = v;
         for ( int i = 0; i < v.size(); i++ )
-            colMap.put( v.get( i ), new Integer( i ) );
+            colMap.put( v.get( i ), i );
     }
 
     public void setRowNames( List<R> v ) {
         rowNames = v;
         for ( int i = 0; i < v.size(); i++ )
-            rowMap.put( v.get( i ), new Integer( i ) );
+            rowMap.put( v.get( i ), i );
     }
 
     public void setSliceNames( List<S> v ) {
         sliceNames = v;
         for ( int i = 0; i < v.size(); i++ )
-            sliceMap.put( v.get( i ), new Integer( i ) );
+            sliceMap.put( v.get( i ), i );
     }
 
     public abstract int slices();

@@ -66,7 +66,7 @@ public class ROC {
 
         double result = 0.0;
         for ( int i = 0; i < totalSize; i++ ) {
-            if ( ranks.contains( new Integer( i ) ) ) { // if the ith item in the ranked list is a positive.
+            if ( ranks.contains( i ) ) { // if the ith item in the ranked list is a positive.
                 numPosSeen++;
             } else {
                 result += numPosSeen;

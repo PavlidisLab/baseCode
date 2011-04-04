@@ -96,7 +96,7 @@ public class GeneSetMapTools {
                 String probeid = classit.next();
                 if ( !seenit.containsKey( probeid ) ) {
                     signature = signature + "__" + probeid;
-                    seenit.put( probeid, new Boolean( true ) );
+                    seenit.put( probeid,   true   );
                 }
             }
             sigs.put( classId, signature );

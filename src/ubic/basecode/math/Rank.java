@@ -172,7 +172,7 @@ public class Rank {
         Map<K, Integer> result = new HashMap<K, Integer>();
         /* put the sorted items back into a hashmap with the rank */
         for ( int i = 0; i < m.size(); i++ ) {
-            result.put( values.get( i ).getKey(), new Integer( i ) );
+            result.put( values.get( i ).getKey(), i );
         }
         return result;
     }

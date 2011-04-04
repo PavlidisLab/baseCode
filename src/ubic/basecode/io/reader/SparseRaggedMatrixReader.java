@@ -135,7 +135,7 @@ public class SparseRaggedMatrixReader extends DoubleMatrixReader {
                     rows.put( itemA, new OpenIntDoubleHashMap() );
                     itemNames.add( itemA );
                     indexNameMap.put( index, itemA );
-                    nameIndexMap.put( itemA, new Integer( index ) );
+                    nameIndexMap.put( itemA,   index   );
                     rows.get( itemA ).put( index, 0 ); // to itself. - in case it isn't
                     // there.
                     index++;

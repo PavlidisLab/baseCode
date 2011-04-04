@@ -133,24 +133,20 @@ public class Wilcoxon {
     }
 
     private static void addToCache( int N, int n, int R, BigInteger value ) {
-        // assert value. >= 0 : "N=" + N + " n=" + n + " R=" + R + " val=" + value;
-        Integer N_i = new Integer( N );
-        Integer n_i = new Integer( n );
-        Integer R_i = new Integer( R );
 
-        if ( !cache.containsKey( N_i ) ) {
-            cache.put( N_i, new HashMap<Integer, Map<Integer, BigInteger>>() );
+        if ( !cache.containsKey( N ) ) {
+            cache.put( N, new HashMap<Integer, Map<Integer, BigInteger>>() );
         }
 
-        Map<Integer, Map<Integer, BigInteger>> nVals = cache.get( N_i );
+        Map<Integer, Map<Integer, BigInteger>> nVals = cache.get( N );
 
-        if ( !nVals.containsKey( n_i ) ) {
-            nVals.put( n_i, new HashMap<Integer, BigInteger>() );
+        if ( !nVals.containsKey( n ) ) {
+            nVals.put( n, new HashMap<Integer, BigInteger>() );
         }
 
-        Map<Integer, BigInteger> rVals = nVals.get( n_i );
+        Map<Integer, BigInteger> rVals = nVals.get( n );
 
-        rVals.put( R_i, value );
+        rVals.put( R, value );
     }
 
     /**
@@ -160,18 +156,15 @@ public class Wilcoxon {
      * @return
      */
     private static boolean cacheContains( int N, int n, int R ) {
-        Integer N_i = new Integer( N );
-        Integer n_i = new Integer( n );
-        Integer R_i = new Integer( R );
-        if ( !cache.containsKey( N_i ) ) return false;
+        if ( !cache.containsKey( N ) ) return false;
 
-        Map<Integer, Map<Integer, BigInteger>> nVals = cache.get( N_i );
+        Map<Integer, Map<Integer, BigInteger>> nVals = cache.get( N );
 
-        if ( !nVals.containsKey( n_i ) ) return false;
+        if ( !nVals.containsKey( n ) ) return false;
 
-        Map<Integer, BigInteger> rVals = nVals.get( n_i );
+        Map<Integer, BigInteger> rVals = nVals.get( n );
 
-        if ( !rVals.containsKey( R_i ) ) return false;
+        if ( !rVals.containsKey( R ) ) return false;
 
         return true;
     }
@@ -252,25 +245,11 @@ public class Wilcoxon {
             throw new IllegalStateException( "No value stored for N=" + N + ", n=" + n + ", R=" + R );
         }
 
-        Integer N_i = new Integer( N );
-        Integer n_i = new Integer( n );
-        Integer R_i = new Integer( R );
+        Map<Integer, Map<Integer, BigInteger>> nVals = cache.get( N );
 
-        // if ( !cache.containsKey( N_i ) ) return -1;
+        Map<Integer, BigInteger> rVals = nVals.get( n );
 
-        Map<Integer, Map<Integer, BigInteger>> nVals = cache.get( N_i );
-
-        // if ( !nVals.containsKey( n_i ) ) return -1;
-
-        Map<Integer, BigInteger> rVals = nVals.get( n_i );
-
-        // if ( !rVals.containsKey( R_i ) ) return -1;
-
-        return rVals.get( R_i );
-
-        // assert result.longValue() >= 0 : "N=" + N + " n=" + n + " R=" + R + " val=" + result.longValue();
-
-        // return result.longValue();
+        return rVals.get( R );
     }
 
     /**
@@ -291,7 +270,7 @@ public class Wilcoxon {
      */
     private static double pGaussian( long N, long n, long R ) {
         if ( n > N ) throw new IllegalArgumentException( "n must be smaller than N" );
-        double mean = n * ( N + 1 ) / 2;
+        double mean = n * ( N + 1 ) / 2.0;
         double var = n * ( N - n ) * ( N + 1 ) / 12.0;
         log.debug( "Mean=" + mean + " Var=" + var + " R=" + R );
         return Probability.normal( 0.0, var, R - mean );
@@ -348,7 +327,7 @@ public class Wilcoxon {
      * @param i
      */
     private static void removeFromCache( int N ) {
-        cache.remove( new Integer( N ) );
+        cache.remove( N );
     }
 
 }

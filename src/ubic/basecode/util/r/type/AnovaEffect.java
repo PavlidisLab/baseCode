@@ -19,6 +19,8 @@
 
 package ubic.basecode.util.r.type;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -27,7 +29,9 @@ import org.apache.commons.lang.StringUtils;
  * @author paul
  * @version $Id$
  */
-public class AnovaEffect {
+public class AnovaEffect implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private Integer degreesOfFreedom = null;
 

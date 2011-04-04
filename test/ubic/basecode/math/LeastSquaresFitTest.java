@@ -346,42 +346,6 @@ public class LeastSquaresFitTest {
 
     }
 
-    @Test
-    public void testSingular() throws Exception {
-        DoubleMatrixReader f = new DoubleMatrixReader();
-        DoubleMatrix<String, String> testMatrix = f
-                .read( this.getClass().getResourceAsStream( "/data/lmtest2.dat.txt" ) );
-
-        StringMatrixReader of = new StringMatrixReader();
-        StringMatrix<String, String> sampleInfo = of.read( this.getClass()
-                .getResourceAsStream( "/data/lmtest2.des.txt" ) );
-        DesignMatrix d = new DesignMatrix( sampleInfo, true );
-
-        assertEquals( 9, d.getMatrix().columns() );
-
-        LeastSquaresFit fit = new LeastSquaresFit( d, testMatrix );
-
-        Map<String, LinearModelSummary> sums = fit.summarizeByKeys( true );
-        assertEquals( 81, sums.size() );
-
-        for ( LinearModelSummary lms : sums.values() ) {
-            GenericAnovaResult a = lms.getAnova();
-            assertNotNull( a );
-        }
-
-        LinearModelSummary s = sums.get( "A01157cds_s_at" );
-
-        assertNotNull( s.getCoefficients() );
-
-        assertEquals( 7.3740000, s.getCoefficients().get( 0, 0 ), 0.001 );
-        // assertEquals( 0.1147667, s.getCoefficients().get( 1, 3 ), 0.001 );
-        assertEquals( 6, s.getResidualDof().intValue() );
-        assertEquals( 7, s.getNumeratorDof().intValue() );
-        assertEquals( 0.8634, s.getF(), 0.01 );
-        assertEquals( 0.5795, s.getP(), 0.001 );
-
-    }
-
     /**
      * @throws Exception
      */
@@ -527,6 +491,92 @@ public class LeastSquaresFitTest {
         assertEquals( 0.0004715, sum60.getF(), 1e-7 );
         assertEquals( 0.98465, sum60.getP(), 1e-5 );
         assertEquals( 0.98465, sum60.getMainEffectP( "Factor1" ), 1e-5 );
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void testSingular() throws Exception {
+        DoubleMatrixReader f = new DoubleMatrixReader();
+        DoubleMatrix<String, String> testMatrix = f
+                .read( this.getClass().getResourceAsStream( "/data/lmtest2.dat.txt" ) );
+
+        StringMatrixReader of = new StringMatrixReader();
+        StringMatrix<String, String> sampleInfo = of.read( this.getClass()
+                .getResourceAsStream( "/data/lmtest2.des.txt" ) );
+        DesignMatrix d = new DesignMatrix( sampleInfo, true );
+
+        assertEquals( 9, d.getMatrix().columns() );
+
+        LeastSquaresFit fit = new LeastSquaresFit( d, testMatrix );
+
+        Map<String, LinearModelSummary> sums = fit.summarizeByKeys( true );
+        assertEquals( 81, sums.size() );
+
+        for ( LinearModelSummary lms : sums.values() ) {
+            GenericAnovaResult a = lms.getAnova();
+            assertNotNull( a );
+        }
+
+        LinearModelSummary s = sums.get( "A01157cds_s_at" );
+
+        assertNotNull( s.getCoefficients() );
+
+        assertEquals( 7.3740000, s.getCoefficients().get( 0, 0 ), 0.001 );
+        // assertEquals( 0.1147667, s.getCoefficients().get( 1, 3 ), 0.001 );
+        assertEquals( 6, s.getResidualDof().intValue() );
+        assertEquals( 7, s.getNumeratorDof().intValue() );
+        assertEquals( 0.8634, s.getF(), 0.01 );
+        assertEquals( 0.5795, s.getP(), 0.001 );
+
+    }
+
+    /**
+     * Originally causes failures during summarization step. There are two pivoted columns.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testSingular2() throws Exception {
+        DoubleMatrixReader f = new DoubleMatrixReader();
+        DoubleMatrix<String, String> testMatrix = f.read( this.getClass().getResourceAsStream(
+                "/data/1027_GSE6189.data.test.txt" ) );
+
+        StringMatrixReader of = new StringMatrixReader();
+        StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
+                "/data/1027_GSE6189_expdesign.data.txt" ) );
+        DesignMatrix d = new DesignMatrix( sampleInfo, true );
+
+        log.info( d );
+
+        LeastSquaresFit fit = new LeastSquaresFit( d, testMatrix.getRowRange( 0, 0 ) );
+
+        Map<String, LinearModelSummary> sums = fit.summarizeByKeys( true );
+        assertEquals( 1, sums.size() );
+        for ( LinearModelSummary lms : sums.values() ) {
+            GenericAnovaResult a = lms.getAnova();
+            assertNotNull( a );
+        }
+        LinearModelSummary s = sums.get( "1367452_at" );
+        assertNotNull( s );
+        assertNotNull( s.getCoefficients() );
+
+        // log.info( s.getCoefficients() );
+
+        // log.info( s.getAnova() );
+
+        // our model matrix ends up with different coefficients than R which are:
+        double[] rcoef = new double[] { 14.96355, 0.14421, -0.11525, 0.24257, Double.NaN, 0.04093, 0.06660, Double.NaN };
+
+        // here are the coefs we get in R if we use the exact model matrix we get drom our DesignMatrix
+        double[] coef = new double[] { 15.10776244, -0.01689300, 0.09835841, -0.20163964, Double.NaN, -0.04092962,
+                Double.NaN, 0.06660370 };
+
+        for ( int i = 0; i < s.getCoefficients().rows(); i++ ) {
+            assertEquals( coef[i], s.getCoefficients().get( i, 0 ), 0.0001 );
+        }
 
     }
 

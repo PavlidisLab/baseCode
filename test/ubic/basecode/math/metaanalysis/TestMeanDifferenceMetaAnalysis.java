@@ -30,13 +30,8 @@ public class TestMeanDifferenceMetaAnalysis extends TestCase {
     MeanDifferenceMetaAnalysis uf;
     MeanDifferenceMetaAnalysis ur;
 
-    DoubleArrayList ds2nc;
     DoubleArrayList ds2cv;
     DoubleArrayList ds2d;
-
-    // DenseDoubleMatrix2DNamed catheter;
-    // DoubleArrayList catheterNumT;
-    // DoubleArrayList catheterNumC;
 
     public void testRunFixedE() {
         uf.run( ds2d, ds2cv );

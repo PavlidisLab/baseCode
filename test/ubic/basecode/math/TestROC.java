@@ -52,9 +52,9 @@ public class TestROC extends TestCase {
 
         // set up the ranks of the opsitives
         ranksOfPositives = new HashSet<Integer>();
-        ranksOfPositives.add( new Integer( 0 ) );
-        ranksOfPositives.add( new Integer( 3 ) );
-        ranksOfPositives.add( new Integer( 5 ) );
+        ranksOfPositives.add( 0 );
+        ranksOfPositives.add( 3 );
+        ranksOfPositives.add( 5 );
     }
 
 }

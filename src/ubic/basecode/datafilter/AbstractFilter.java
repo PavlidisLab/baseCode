@@ -40,9 +40,8 @@ public abstract class AbstractFilter<M extends Matrix2D<R, C, V>, R, C, V> imple
         Matrix2D<R, C, V> returnval = null;
 
         try {
-            Constructor<? extends Matrix2D> cr = data.getClass().getConstructor(
-                    new Class[] { int.class, int.class } );
-            returnval = cr.newInstance( new Object[] { new Integer( numRows ), new Integer( numCols ) } );
+            Constructor<? extends Matrix2D> cr = data.getClass().getConstructor( new Class[] { int.class, int.class } );
+            returnval = cr.newInstance( new Object[] { numRows, numCols } );
         } catch ( Exception e ) {
             e.printStackTrace();
         }
