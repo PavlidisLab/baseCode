@@ -533,6 +533,69 @@ public class LeastSquaresFitTest {
 
     }
 
+    @Test
+    public void testThreeWaySingular() throws Exception {
+        DoubleMatrixReader f = new DoubleMatrixReader();
+        DoubleMatrix<String, String> testMatrix = f.read( this.getClass().getResourceAsStream(
+                "/data/1064_GSE7863.data.test.txt" ) );
+
+        StringMatrixReader of = new StringMatrixReader();
+        StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
+                "/data/1064_GSE7863_expdesign.data.test.txt" ) );
+        DesignMatrix d = new DesignMatrix( sampleInfo, true );
+
+        assertEquals( 5, d.getMatrix().columns() );
+
+        LeastSquaresFit fit = new LeastSquaresFit( d, testMatrix );
+
+        Map<String, LinearModelSummary> sums = fit.summarizeByKeys( true );
+        assertEquals( 416, sums.size() );
+
+        for ( LinearModelSummary lms : sums.values() ) {
+            GenericAnovaResult a = lms.getAnova();
+            assertNotNull( a );
+        }
+
+        LinearModelSummary s = sums.get( "1415696_at" );
+
+        assertNotNull( s.getCoefficients() );
+        assertEquals( 0.000794, s.getCoefficients().get( 2, 3 ), 0.001 );
+        assertEquals( 11, s.getResidualDof().intValue() );
+        assertEquals( 4, s.getNumeratorDof().intValue() );
+        assertEquals( 24.38, s.getF(), 0.01 );
+        assertEquals( 2.025e-05, s.getP(), 0.001 );
+        GenericAnovaResult anova = s.getAnova();
+        assertEquals( 29.0386, anova.getMainEffectF( "Treatment" ), 0.0001 );
+
+        s = sums.get( "1415837_at" );
+        assertNotNull( s.getCoefficients() );
+        assertEquals( 11, s.getResidualDof().intValue() );
+        assertEquals( 4, s.getNumeratorDof().intValue() );
+        assertEquals( 22.72, s.getF(), 0.01 );
+        assertEquals( 2.847e-05, s.getP(), 0.001 );
+        anova = s.getAnova();
+        assertEquals( 6.5977, anova.getMainEffectF( "Treatment" ), 0.0001 );
+
+        s = sums.get( "1416179_a_at" );
+        assertNotNull( s.getCoefficients() );
+        assertEquals( 11, s.getResidualDof().intValue() );
+        assertEquals( 4, s.getNumeratorDof().intValue() );
+        assertEquals( 25.14, s.getF(), 0.01 );
+        assertEquals( 1.743e-05, s.getP(), 0.001 );
+        anova = s.getAnova();
+        assertEquals( 38.411, anova.getMainEffectF( "Treatment" ), 0.001 );
+
+        s = sums.get( "1456759_at" );
+        assertNotNull( s.getCoefficients() );
+        assertEquals( 11, s.getResidualDof().intValue() );
+        assertEquals( 4, s.getNumeratorDof().intValue() );
+        assertEquals( 7.903, s.getF(), 0.01 );
+        assertEquals( 0.002960, s.getP(), 0.001 );
+        anova = s.getAnova();
+        assertEquals( 10.3792, anova.getMainEffectF( "Treatment" ), 0.001 );
+        assertEquals( 2.6253, anova.getMainEffectF( "Genotype" ), 0.001 );
+    }
+
     /**
      * Originally causes failures during summarization step. There are two pivoted columns.
      * 
@@ -548,8 +611,6 @@ public class LeastSquaresFitTest {
         StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
                 "/data/1027_GSE6189_expdesign.data.txt" ) );
         DesignMatrix d = new DesignMatrix( sampleInfo, true );
-
-        log.info( d );
 
         LeastSquaresFit fit = new LeastSquaresFit( d, testMatrix.getRowRange( 0, 0 ) );
 
@@ -567,7 +628,7 @@ public class LeastSquaresFitTest {
 
         // log.info( s.getAnova() );
 
-        // our model matrix ends up with different coefficients than R which are:
+        // our model matrix ends up with different coefficients than R which are
         double[] rcoef = new double[] { 14.96355, 0.14421, -0.11525, 0.24257, Double.NaN, 0.04093, 0.06660, Double.NaN };
 
         // here are the coefs we get in R if we use the exact model matrix we get drom our DesignMatrix
