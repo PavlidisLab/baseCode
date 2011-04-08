@@ -177,7 +177,7 @@ public class MatrixUtil {
 
     /**
      * @param data
-     * @return
+     * @return a copy of the data with missing values removed (might be empty!)
      */
     public static DoubleMatrix1D removeMissing( DoubleMatrix1D data ) {
         int sizeWithoutMissingValues = sizeWithoutMissingValues( data );

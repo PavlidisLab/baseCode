@@ -21,6 +21,11 @@ package ubic.basecode.math.distribution;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import org.jfree.data.xy.XYSeries;
+
+import cern.colt.list.DoubleArrayList;
+import cern.colt.matrix.DoubleMatrix1D;
+import cern.jet.stat.Descriptive;
 
 /**
  * A simple histogram.
@@ -52,6 +57,25 @@ public class Histogram {
         this.hist = new double[this.nbins];
         this.underflow = 0;
         this.overflow = 0;
+    }
+
+    /**
+     * @param name
+     * @param nbins
+     * @param data
+     */
+    public Histogram( String name, int nbins, DoubleMatrix1D data ) {
+        this.name = name;
+        this.nbins = nbins;
+        this.hist = new double[this.nbins];
+        this.underflow = 0;
+        this.overflow = 0;
+
+        this.min = Descriptive.min( new DoubleArrayList( data.toArray() ) );
+        this.max = Descriptive.max( new DoubleArrayList( data.toArray() ) );
+
+        this.fill( data );
+
     }
 
     /**
@@ -151,8 +175,29 @@ public class Histogram {
 
     }
 
+    /**
+     * @return size of each bin
+     */
     public double stepSize() {
         return ( max - min ) / nbins;
+    }
+
+    /**
+     * Provide graph for JFreePlot; counts expressed as a fraction.
+     */
+    public XYSeries plot() {
+        XYSeries series = new XYSeries( this.name, true, true );
+
+        double step = this.min();
+
+        double binWidth = stepSize();
+
+        double[] binHeights = this.getArray();
+        for ( int i = 0; i < binHeights.length; i++ ) {
+            series.add( step, binHeights[i] / entries );
+            step += binWidth;
+        }
+        return series;
     }
 
     /**
@@ -256,5 +301,15 @@ public class Histogram {
      */
     public double[] getArray() {
         return hist;
+    }
+
+    /**
+     * @param ghr
+     */
+    public void fill( DoubleMatrix1D ghr ) {
+        for ( int i = 0; i < ghr.size(); i++ ) {
+            this.fill( ghr.getQuick( i ) );
+        }
+
     }
 }
