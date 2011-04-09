@@ -18,7 +18,7 @@
  */
 package ubic.basecode.math;
 
-import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix; 
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.SparseDoubleMatrix;
 import cern.colt.function.DoubleFunction;
@@ -358,6 +358,24 @@ public class MatrixStats {
             }
         }
         return newMatrix;
+    }
+
+    /**
+     * Undo log2 transform.
+     * 
+     * @param <R>
+     * @param <C>
+     * @param matrix
+     */
+    public static <R, C> void unLogTransform( DoubleMatrix<R, C> matrix ) {
+
+        for ( int j = 0; j < matrix.rows(); j++ ) {
+            DoubleMatrix1D row = matrix.viewRow( j );
+            for ( int i = 0; i < row.size(); i++ ) {
+                row.setQuick( i, Math.pow( 2.0, row.getQuick( i ) ) );
+            }
+        }
+
     }
 
 }

@@ -96,7 +96,7 @@ public class MatrixUtil {
 
         for ( int i = 0; i < source.rows(); i++ ) {
             for ( int j = 0; j < source.columns(); j++ ) {
-                if ( Double.isNaN( source.get( i, j ) ) ) {
+                if ( Double.isNaN( source.getQuick( i, j ) ) ) {
                     target.set( i, j, Double.NaN );
                 }
             }
@@ -199,7 +199,7 @@ public class MatrixUtil {
 
         int size = 0;
         for ( int i = 0; i < list.size(); i++ ) {
-            double v = list.get( i );
+            double v = list.getQuick( i );
             if ( !Double.isNaN( v ) && !Double.isInfinite( v ) ) {
                 size++;
             }
@@ -213,7 +213,7 @@ public class MatrixUtil {
      */
     public static boolean containsNearlyZeros( DoubleMatrix1D d ) {
         for ( int i = 0; i < d.size(); i++ ) {
-            if ( Math.abs( d.get( i ) ) < Constants.SMALL ) return true;
+            if ( Math.abs( d.getQuick( i ) ) < Constants.SMALL ) return true;
         }
         return false;
     }
@@ -232,7 +232,7 @@ public class MatrixUtil {
                 continue;
             }
             for ( int i = 0; i < n.rows(); i++ ) {
-                res.set( i, k, n.get( i, j ) );
+                res.set( i, k, n.getQuick( i, j ) );
             }
             k++;
         }
@@ -254,7 +254,7 @@ public class MatrixUtil {
                 continue;
             }
             for ( int i = 0; i < n.rows(); i++ ) {
-                res.set( i, k, n.get( i, j ) );
+                res.set( i, k, n.getQuick( i, j ) );
             }
             k++;
         }
@@ -270,7 +270,7 @@ public class MatrixUtil {
                 if ( !selected.contains( i ) ) {
                     continue;
                 }
-                res.set( m, j, n.get( i, j ) );
+                res.set( m, j, n.getQuick( i, j ) );
                 m++;
             }
         }
@@ -286,7 +286,7 @@ public class MatrixUtil {
                 continue;
             }
             for ( int i = 0; i < n.rows(); i++ ) {
-                res.set( i, k, n.get( i, j ) );
+                res.set( i, k, n.getQuick( i, j ) );
                 i++;
             }
         }
@@ -325,7 +325,7 @@ public class MatrixUtil {
                 if ( !selected.contains( i ) ) {
                     continue;
                 }
-                res.set( m, k, n.get( i, j ) );
+                res.set( m, k, n.getQuick( i, j ) );
                 m++;
             }
             k++;
@@ -336,7 +336,7 @@ public class MatrixUtil {
     public static List<Integer> notNearlyZeroIndices( DoubleMatrix1D d ) {
         List<Integer> result = new ArrayList<Integer>();
         for ( int i = 0; i < d.size(); i++ ) {
-            if ( Math.abs( d.get( i ) ) > Constants.SMALL ) result.add( i );
+            if ( Math.abs( d.getQuick( i ) ) > Constants.SMALL ) result.add( i );
         }
         return result;
     }
@@ -346,7 +346,7 @@ public class MatrixUtil {
         int k = 0;
         for ( int i = 0; i < v.size(); i++ ) {
             if ( selected.contains( i ) ) {
-                result.set( k, v.get( i ) );
+                result.set( k, v.getQuick( i ) );
                 k++;
             }
         }
