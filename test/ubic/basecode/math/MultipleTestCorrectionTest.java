@@ -61,7 +61,7 @@ public class MultipleTestCorrectionTest extends TestCase {
      * Test method for 'basecode.math.MultipleTestCorrection.BenjaminiHochbergCut(DoubleArrayList, double)'
      */
     public void testBenjaminiHochbergCut() throws Exception {
-        double actualResult = MultipleTestCorrection.BenjaminiHochbergCut( values, 0.01 );
+        double actualResult = MultipleTestCorrection.benjaminiHochbergCut( values, 0.01 );
         double expectedResult = 0.0018;
         assertEquals( expectedResult, actualResult, 0.00001 );
     }

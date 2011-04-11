@@ -18,6 +18,8 @@
  */
 package ubic.basecode.math;
 
+import java.util.ArrayList;
+
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
@@ -40,7 +42,7 @@ public class MultipleTestCorrection {
      * @return The maximum pvalue that maintains the false discovery rate
      * @throws IllegalArgumentException if invalid pvalues are encountered.
      */
-    public static double BenjaminiHochbergCut( DoubleArrayList pvalues, double fdr ) {
+    public static double benjaminiHochbergCut( DoubleArrayList pvalues, double fdr ) {
         int numpvals = pvalues.size();
         DoubleArrayList pvalcop = pvalues.copy();
         pvalcop.sort();
@@ -59,13 +61,49 @@ public class MultipleTestCorrection {
     }
 
     /**
-     * @param pvalues
+     * @param pvalues; can contain missing values, which are ingored.
      * @return false discovery rates computed using the method of Benjamini and Hochberg
      */
     public static DoubleMatrix1D benjaminiHochberg( DoubleMatrix1D pvalues ) {
-        DoubleArrayList r = benjaminiHochberg( new DoubleArrayList( pvalues.toArray() ) );
-        r.trimToSize();
-        return new DenseDoubleMatrix1D( r.elements() );
+        double[] qvalues = new double[pvalues.size()];
+
+        /* Create a list with only the p-values that are not Double.NaN */
+        ArrayList<Double> pvaluesList = new ArrayList<Double>();
+        for ( int i = 0; i < pvalues.size(); i++ ) {
+            qvalues[i] = Double.NaN; // initialize.
+
+            Double pvalue = pvalues.getQuick( i );
+            if ( pvalue == null || pvalue < 0.0 || pvalue > 1.0 || Double.isNaN( pvalue ) ) continue;
+            pvaluesList.add( pvalue );
+        }
+
+        if ( pvaluesList.isEmpty() ) {
+            throw new IllegalArgumentException( "No pvalues were valid numbers, returning null qvalues" );
+        }
+
+        /* convert to primitive array */
+        double[] pvaluesToUse = new double[pvaluesList.size()];
+        int j = 0;
+        for ( Double d : pvaluesList ) {
+            pvaluesToUse[j] = d;
+            j++;
+        }
+
+        DoubleArrayList r = benjaminiHochberg( new DoubleArrayList( pvaluesToUse ) );
+
+        /* Add the Double.NaN back in */
+        int k = 0;
+        for ( int i = 0; i < qvalues.length; i++ ) {
+            Double pvalue = pvalues.get( i );
+            if ( pvalue == null || pvalue < 0.0 || pvalue > 1.0 || Double.isNaN( pvalue ) ) {
+                qvalues[i] = Double.NaN;
+            } else {
+                qvalues[i] = r.get( k );
+                k++;
+            }
+        }
+
+        return new DenseDoubleMatrix1D( qvalues );
     }
 
     /**
