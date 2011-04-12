@@ -27,6 +27,8 @@ import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
 /**
  * Methods for p-value correction of sets of hypothesis tests.
+ * <p>
+ * FIXME make this API more consistent.
  * 
  * @author Paul Pavlidis
  * @version $Id$
@@ -61,7 +63,7 @@ public class MultipleTestCorrection {
     }
 
     /**
-     * @param pvalues; can contain missing values, which are ingored.
+     * @param pvalues; can contain missing values or invalid pvalues (outside range [0-1]), which are ingored.
      * @return false discovery rates computed using the method of Benjamini and Hochberg
      */
     public static DoubleMatrix1D benjaminiHochberg( DoubleMatrix1D pvalues ) {
@@ -73,7 +75,7 @@ public class MultipleTestCorrection {
             qvalues[i] = Double.NaN; // initialize.
 
             Double pvalue = pvalues.getQuick( i );
-            if ( pvalue == null || pvalue < 0.0 || pvalue > 1.0 || Double.isNaN( pvalue ) ) continue;
+            if ( pvalue < 0.0 || pvalue > 1.0 || Double.isNaN( pvalue ) ) continue;
             pvaluesList.add( pvalue );
         }
 

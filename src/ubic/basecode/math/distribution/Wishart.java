@@ -68,7 +68,7 @@ public class Wishart {
         rgamma = new Gamma( 1, 1, r );
         rnorm = new Normal( s * ( s - 1.0 ) / 2.0, 1.0, r );
 
-        CholeskyDecomposition c = new CholeskyDecomposition( covariance );
+        CholeskyDecomposition c = new CholeskyDecomposition( cov );
         chol = a.transpose( c.getL() ); // returns lower triangle so we transpose to make upper triangular.
         mat = new DenseDoubleMatrix2D( this.s, this.s );
     }

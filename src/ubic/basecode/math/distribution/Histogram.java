@@ -137,7 +137,7 @@ public class Histogram {
     /**
      *
      */
-    private class BinInfo {
+    private static class BinInfo {
         public int index;
         public boolean isUnderflow;
         public boolean isOverflow;
