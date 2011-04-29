@@ -574,7 +574,7 @@ public class GeneAnnotations {
     /**
      * Return a collection of all currently active genes.
      * 
-     * @return
+     * @return currently active genes
      */
     public Collection<String> getGenes() {
         if ( activeProbes == null ) return geneToGeneSetMap.keySet();
@@ -606,7 +606,7 @@ public class GeneAnnotations {
 
     /**
      * @param geneSetId
-     * @return
+     * @return active probes for the given gene set
      */
     public Collection<String> getGeneSetProbes( String geneSetId ) {
         if ( activeProbes == null ) return this.geneSetToProbeMap.get( geneSetId );
@@ -1951,6 +1951,32 @@ public class GeneAnnotations {
         resetSelectedProbes();
         resetSelectedSets();
         sortGeneSets();
+    }
+
+    /**
+     * @param goset
+     * @return set of genes in the given gene set (if any), based on the currently active probes
+     */
+    public Collection<String> getGeneSetGenes( String goset ) {
+        Collection<String> genes = new HashSet<String>();
+        Collection<String> probes = this.getGeneSetProbes( goset );
+
+        for ( String p : probes ) {
+
+            String gene = this.getProbeToGeneMap().get( p );
+
+            /*
+             * FIXME for the multigene case
+             */
+
+            // assert geneProbeList != null : goset + ": " + p;
+
+            // genes.addAll( geneProbeList );
+            genes.add( gene );
+        }
+
+        return genes;
+
     }
 
 }

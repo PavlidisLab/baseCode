@@ -155,9 +155,6 @@ public class Rank {
 
         List<KeyAndValueData<K>> values = new ArrayList<KeyAndValueData<K>>();
 
-        /*
-         * put the pvalues into an array of objects which contain the pvalue and the gene id
-         */
         for ( Iterator<K> itr = m.keySet().iterator(); itr.hasNext(); ) {
 
             K key = itr.next();
