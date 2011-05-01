@@ -33,7 +33,10 @@ public class Multifunctionality {
 
     Map<String, Integer> numGoTerms = new HashMap<String, Integer>();
 
-    // note this is from high to low
+    Map<String, Double> goTermMultifunctionality = new HashMap<String, Double>();
+
+    Map<String, Double> goTermMultifunctionalityRank = new HashMap<String, Double>();
+
     Map<String, Double> multifunctionalityRank = new HashMap<String, Double>();
 
     /**
@@ -46,10 +49,12 @@ public class Multifunctionality {
 
         Collection<String> allGenes = go.getGenes();
         int numGenes = allGenes.size();
+        int numGoGroups = go.getGeneSets().size();
 
         for ( String goset : go.getGeneSets() ) {
             Collection<String> geneSetGenes = go.getGeneSetGenes( goset );
             goGroupSizes.put( goset, geneSetGenes.size() );
+            goTermMultifunctionality.put( goset, 0.0 );
         }
 
         for ( String gene : go.getGenes() ) {
@@ -64,15 +69,33 @@ public class Multifunctionality {
                 mf += 1.0 / ( inGroup * outGroup );
             }
             this.multifunctionality.put( gene, mf );
+
+            for ( String goset : sets ) {
+                goTermMultifunctionality.put( goset, goTermMultifunctionality.get( goset ) + mf );
+            }
         }
 
         Map<String, Integer> ranked = Rank.rankTransform( this.multifunctionality );
-        for ( String string : ranked.keySet() ) {
-            this.multifunctionalityRank.put( string, ( numGenes - ranked.get( string ) ) / ( double ) numGenes );
+        for ( String gene : ranked.keySet() ) {
+            this.multifunctionalityRank.put( gene, ( numGenes - ranked.get( gene ) ) / ( double ) numGenes );
         }
 
+        // compute average GO group multifunctionality
+        for ( String goset : goTermMultifunctionality.keySet() ) {
+            goTermMultifunctionality.put( goset, goTermMultifunctionality.get( goset ) / goGroupSizes.get( goset ) );
+        }
+
+        Map<String, Integer> rankedGOMf = Rank.rankTransform( this.goTermMultifunctionality );
+        for ( String goTerm : rankedGOMf.keySet() ) {
+            this.goTermMultifunctionalityRank.put( goTerm, ( numGoGroups - rankedGOMf.get( goTerm ) )
+                    / ( double ) numGoGroups );
+        }
     }
 
+    /**
+     * @param gene
+     * @return number of GO terms for the given gene.
+     */
     public int getNumGoTerms( String gene ) {
         if ( !this.numGoTerms.containsKey( gene ) ) {
             throw new IllegalArgumentException( "Gene: " + gene + " not found" );
@@ -81,8 +104,19 @@ public class Multifunctionality {
     }
 
     /**
+     * @param goId
+     * @return the relative rank of the GO group in multifunctionality, where 1 is the highest multifunctionali
+     */
+    public double getGOTermMultifunctionalityRank( String goId ) {
+        if ( !this.goTermMultifunctionalityRank.containsKey( goId ) ) {
+            throw new IllegalArgumentException( "GO term: " + goId + " not found" );
+        }
+        return this.goTermMultifunctionalityRank.get( goId );
+    }
+
+    /**
      * @param gene
-     * @return relative rank of the gene in multifunctionality where 0 is the highest multifunctionality.
+     * @return relative rank of the gene in multifunctionality where 1 is the highest multifunctionality.
      */
     public double getMultifunctionalityRank( String gene ) {
         if ( !this.multifunctionalityRank.containsKey( gene ) ) {

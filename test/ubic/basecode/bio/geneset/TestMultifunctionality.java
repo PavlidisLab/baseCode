@@ -42,5 +42,8 @@ public class TestMultifunctionality {
 
         double actualR = mf.getMultifunctionalityRank( "PAX8" );
         assertEquals( 0.17, actualR, 0.01 );
+
+        double actualGoMF = mf.getGOTermMultifunctionalityRank( "GO:0005634" );
+        assertEquals( 0.6388, actualGoMF, 0.001 );
     }
 }
