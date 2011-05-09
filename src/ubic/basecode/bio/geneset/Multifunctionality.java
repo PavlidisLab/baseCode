@@ -16,17 +16,28 @@ package ubic.basecode.bio.geneset;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.time.StopWatch;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import cern.colt.list.DoubleArrayList;
 
 import ubic.basecode.math.Rank;
 
 /**
- * Implementation of multifunctionality as described in Gillis and Pavlidis (2011) PLoS ONE 6:2:e17258
+ * Implementation of multifunctionality computations as described in Gillis and Pavlidis (2011) PLoS ONE 6:2:e17258.
+ * This is designed with ErmineJ in mind.
  * 
  * @author paul
  * @version $Id$
  */
 public class Multifunctionality {
+
+    private static Log log = LogFactory.getLog( Multifunctionality.class );
 
     private Map<String, Double> multifunctionality = new HashMap<String, Double>();
     Map<String, Integer> goGroupSizes = new HashMap<String, Integer>();
@@ -38,29 +49,36 @@ public class Multifunctionality {
     Map<String, Double> goTermMultifunctionalityRank = new HashMap<String, Double>();
 
     Map<String, Double> multifunctionalityRank = new HashMap<String, Double>();
+    private GeneAnnotations go;
+
+    private Collection<String> genesWithGoTerms;
 
     /**
-     * Construct Multifuncationity information based on the state of the GO annotations -- this accounts only for the
-     * 'active' (used) probes in the annotations.
+     * Construct Multifunctionality information based on the state of the GO annotations -- this accounts only for the
+     * 'active' (used) probes in the annotations. Genes with no GO terms are completely ignored.
      * 
      * @param go
      */
     public Multifunctionality( GeneAnnotations go ) {
+        StopWatch timer = new StopWatch();
 
-        Collection<String> allGenes = go.getGenes();
-        int numGenes = allGenes.size();
-        int numGoGroups = go.getGeneSets().size();
+        timer.start();
+        this.go = go;
 
+        genesWithGoTerms = new HashSet<String>();
         for ( String goset : go.getGeneSets() ) {
             Collection<String> geneSetGenes = go.getGeneSetGenes( goset );
+            if ( geneSetGenes.isEmpty() ) continue;
+            genesWithGoTerms.addAll( geneSetGenes );
             goGroupSizes.put( goset, geneSetGenes.size() );
-            goTermMultifunctionality.put( goset, 0.0 );
         }
+
+        int numGenes = genesWithGoTerms.size();
 
         for ( String gene : go.getGenes() ) {
             double mf = 0.0;
             Collection<String> sets = go.getGeneGeneSets( gene );
-            this.numGoTerms.put( gene, sets.size() );
+            this.numGoTerms.put( gene, sets.size() ); // genes with no go terms are ignored.
             for ( String goset : sets ) {
                 int inGroup = goGroupSizes.get( goset );
                 int outGroup = numGenes - inGroup;
@@ -69,27 +87,121 @@ public class Multifunctionality {
                 mf += 1.0 / ( inGroup * outGroup );
             }
             this.multifunctionality.put( gene, mf );
-
-            for ( String goset : sets ) {
-                goTermMultifunctionality.put( goset, goTermMultifunctionality.get( goset ) + mf );
-            }
         }
 
-        Map<String, Integer> ranked = Rank.rankTransform( this.multifunctionality );
-        for ( String gene : ranked.keySet() ) {
-            this.multifunctionalityRank.put( gene, ( numGenes - ranked.get( gene ) ) / ( double ) numGenes );
+        Map<String, Integer> rawGeneMultifunctionalityRanks = Rank.rankTransform( this.multifunctionality, true );
+        for ( String gene : rawGeneMultifunctionalityRanks.keySet() ) {
+            double geneMultifunctionalityRank = rawGeneMultifunctionalityRanks.get( gene ) / ( double ) numGenes;
+            this.multifunctionalityRank.put( gene, Math.max( 0.0, 1.0 - geneMultifunctionalityRank ) );
         }
 
-        // compute average GO group multifunctionality
-        for ( String goset : goTermMultifunctionality.keySet() ) {
-            goTermMultifunctionality.put( goset, goTermMultifunctionality.get( goset ) / goGroupSizes.get( goset ) );
+        computeGoTermMultifunctionalityRanks( rawGeneMultifunctionalityRanks );
+
+        if ( timer.getTime() > 1000 ) {
+            log.info( "Multifunctionality computation: " + timer.getTime() + "ms" );
+        }
+    }
+
+    /**
+     * @param rankedGoTerms, with the "best" GO term first.
+     * @return the rank correlation of the given list with the ranks of the GO term multifunctionality of the terms. A
+     *         positive correlation means the given list is "multifunctionality-biased".
+     */
+    public double correlationWithGoTermMultifunctionality( List<String> rankedGoTerms ) {
+        DoubleArrayList rawVals = new DoubleArrayList();
+        for ( String goTerm : rankedGoTerms ) {
+            double mf = this.getGOTermMultifunctionality( goTerm );
+            rawVals.add( mf );
+        }
+        return spearman( rawVals );
+    }
+
+    /**
+     * Assess whether the given values are in order. That is, we compute the Spearman correlation of the values with the
+     * sequence 1,2,...n. It is assumed that the rawVals have no ties (or else, ties are treated as equivalent to
+     * non-tied values of the same rank).
+     * 
+     * @param rawVals
+     * @return
+     */
+    private double spearman( DoubleArrayList rawVals ) {
+        DoubleArrayList ranks = Rank.rankTransform( rawVals );
+
+        double s = 0.0;
+        int n = ranks.size();
+        for ( int i = 0; i < n; i++ ) {
+            double r = ranks.get( i );
+            double d = Math.pow( r - ( i + 1 ), 2 );
+            s += d;
         }
 
-        Map<String, Integer> rankedGOMf = Rank.rankTransform( this.goTermMultifunctionality );
-        for ( String goTerm : rankedGOMf.keySet() ) {
-            this.goTermMultifunctionalityRank.put( goTerm, ( numGoGroups - rankedGOMf.get( goTerm ) )
-                    / ( double ) numGoGroups );
+        double rho = 1.0 - ( 6.0 * s ) / ( n * ( Math.pow( n, 2 ) - 1 ) );
+
+        return rho;
+    }
+
+    /**
+     * @param rankedGenes, with the "best" gene first.
+     * @return the rank correlation of the given list with the ranks of the multifunctionality of the genes. A positive
+     *         correlation means the given list is "multifunctionality-biased".
+     */
+    public double correlationWithGeneMultifunctionality( List<String> rankedGenes ) {
+
+        DoubleArrayList rawVals = new DoubleArrayList();
+        for ( String gene : rankedGenes ) {
+            double mf = this.getMultifunctionalityScore( gene );
+            rawVals.add( mf );
         }
+
+        return spearman( rawVals );
+    }
+
+    /**
+     * @param goId
+     * @return the computed multifunctionality score for the GO term. This is the area under the ROC curve for the genes
+     *         in the group, in the ranking of all genes for multifunctionality. Higher values indicate higher
+     *         multifunctionality
+     */
+    public double getGOTermMultifunctionality( String goId ) {
+        if ( !this.goTermMultifunctionality.containsKey( goId ) ) {
+            throw new IllegalArgumentException( "GO term: " + goId + " not found" );
+        }
+        return this.goTermMultifunctionality.get( goId );
+    }
+
+    /**
+     * @param goId
+     * @return the relative rank of the GO group in multifunctionality, where 1 is the highest multifunctionality, 0 is
+     *         lowest
+     */
+    public double getGOTermMultifunctionalityRank( String goId ) {
+        if ( !this.goTermMultifunctionalityRank.containsKey( goId ) ) {
+            throw new IllegalArgumentException( "GO term: " + goId + " not found" );
+        }
+        return this.goTermMultifunctionalityRank.get( goId );
+    }
+
+    /**
+     * @param gene
+     * @return relative rank of the gene in multifunctionality where 1 is the highest multifunctionality, 0 is lowest
+     */
+    public double getMultifunctionalityRank( String gene ) {
+        if ( !this.multifunctionalityRank.containsKey( gene ) ) {
+            throw new IllegalArgumentException( "Gene: " + gene + " not found" );
+        }
+        return this.multifunctionalityRank.get( gene );
+    }
+
+    /**
+     * @param gene
+     * @return multifunctionality score. Note that this score by itself is not all that useful; use the rank instead.
+     *         Higher values indicate higher multifunctionality
+     */
+    public double getMultifunctionalityScore( String gene ) {
+        if ( !this.multifunctionality.containsKey( gene ) ) {
+            throw new IllegalArgumentException( "Gene: " + gene + " not found" );
+        }
+        return this.multifunctionality.get( gene );
     }
 
     /**
@@ -104,35 +216,48 @@ public class Multifunctionality {
     }
 
     /**
-     * @param goId
-     * @return the relative rank of the GO group in multifunctionality, where 1 is the highest multifunctionali
+     * Implementation of algorithm for computing AUC, described in Section 1 of the supplement to Gillis and Pavlidis;
+     * see {@link http://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U}.
+     * 
+     * @param rawGeneMultifunctionalityRanks in descending order
      */
-    public double getGOTermMultifunctionalityRank( String goId ) {
-        if ( !this.goTermMultifunctionalityRank.containsKey( goId ) ) {
-            throw new IllegalArgumentException( "GO term: " + goId + " not found" );
-        }
-        return this.goTermMultifunctionalityRank.get( goId );
-    }
+    private void computeGoTermMultifunctionalityRanks( Map<String, Integer> rawGeneMultifunctionalityRanks ) {
+        int numGenes = genesWithGoTerms.size();
+        int numGoGroups = go.getGeneSets().size();
+        /*
+         * For each go term, compute it's AUC w.r.t. the multifunctionality ranking.. We work with the
+         * multifunctionality ranks, rawGeneMultifunctionalityRanks
+         */
+        for ( String goset : go.getGeneSets() ) {
 
-    /**
-     * @param gene
-     * @return relative rank of the gene in multifunctionality where 1 is the highest multifunctionality.
-     */
-    public double getMultifunctionalityRank( String gene ) {
-        if ( !this.multifunctionalityRank.containsKey( gene ) ) {
-            throw new IllegalArgumentException( "Gene: " + gene + " not found" );
-        }
-        return this.multifunctionalityRank.get( gene );
-    }
+            int inGroup = goGroupSizes.get( goset );
+            int outGroup = numGenes - inGroup;
 
-    /**
-     * @param gene
-     * @return multifunctionality score
-     */
-    public double getMultifunctionalityScore( String gene ) {
-        if ( !this.multifunctionality.containsKey( gene ) ) {
-            throw new IllegalArgumentException( "Gene: " + gene + " not found" );
+            double t1 = inGroup * ( inGroup + 1.0 ) / 2.0;
+            double t2 = inGroup * outGroup;
+
+            /*
+             * Extract the ranks of the genes in the goset, where highest ranking is the best.
+             */
+            double sumOfRanks = 0.0;
+            for ( String gene : go.getGeneSetGenes( goset ) ) {
+                int rank = rawGeneMultifunctionalityRanks.get( gene ) + 1; // +1 cuz ranks are zero-based.
+                sumOfRanks += rank;
+            }
+
+            double t3 = sumOfRanks - t1;
+
+            double auc = Math.max( 0.0, 1.0 - t3 / t2 );
+
+            assert auc >= 0.0 && auc <= 1.0;
+            goTermMultifunctionality.put( goset, auc );
         }
-        return this.multifunctionality.get( gene );
+
+        // convert to relative ranks, where 1.0 is the most multifunctional
+        Map<String, Integer> rankedGOMf = Rank.rankTransform( this.goTermMultifunctionality, true );
+        for ( String goTerm : rankedGOMf.keySet() ) {
+            this.goTermMultifunctionalityRank.put( goTerm, Math.max( 0.0, 1.0 - rankedGOMf.get( goTerm )
+                    / ( double ) numGoGroups ) );
+        }
     }
 }

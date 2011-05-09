@@ -15,6 +15,8 @@
 package ubic.basecode.bio.geneset;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -41,9 +43,24 @@ public class TestMultifunctionality {
         assertEquals( 5, actualNumG );
 
         double actualR = mf.getMultifunctionalityRank( "PAX8" );
-        assertEquals( 0.17, actualR, 0.01 );
+        assertEquals( 0.82, actualR, 0.01 );
 
         double actualGoMF = mf.getGOTermMultifunctionalityRank( "GO:0005634" );
-        assertEquals( 0.6388, actualGoMF, 0.001 );
+        assertEquals( 0.2777, actualGoMF, 0.001 );
+
+        List<String> li = new ArrayList<String>();
+        li.add( "PAX8" );
+        li.add( "THRA" );
+        li.add( "PXK" );
+        li.add( "CCL5" );
+        li.add( "DDR1" );
+        li.add( "RFC2" );
+        li.add( "HSPA6" );
+        li.add( "GUCA1A" );
+        li.add( "UBE1L" );
+        li.add( "PTPN21" );
+
+        double cgm = mf.correlationWithGeneMultifunctionality( li );
+        assertEquals( 1.0, cgm, 0.0001 );
     }
 }

@@ -144,13 +144,12 @@ public class Rank {
     }
 
     /**
-     * Rank transform a map, where the values are numerical (java.lang.Double) values we wish to rank. Ties are not
-     * handled specially. Ranks are zero-based.
-     * 
-     * @param m java.util.Map with keys Objects, values Doubles.
-     * @return A java.util.Map keys=old keys, values=java.lang.Integer rank of the key.
+     * @param <K>
+     * @param m
+     * @param desc if true, the lowest (first) rank will be for the highest value.
+     * @return
      */
-    public static <K> Map<K, Integer> rankTransform( Map<K, Double> m ) throws IllegalArgumentException {
+    public static <K> Map<K, Integer> rankTransform( Map<K, Double> m, boolean desc ) {
         int counter = 0;
 
         List<KeyAndValueData<K>> values = new ArrayList<KeyAndValueData<K>>();
@@ -169,9 +168,24 @@ public class Rank {
         Map<K, Integer> result = new HashMap<K, Integer>();
         /* put the sorted items back into a hashmap with the rank */
         for ( int i = 0; i < m.size(); i++ ) {
-            result.put( values.get( i ).getKey(), i );
+            int rank = i;
+            if ( desc ) {
+                rank = values.size() - i;
+            }
+            result.put( values.get( i ).getKey(), rank );
         }
         return result;
+    }
+
+    /**
+     * Rank transform a map, where the values are numerical (java.lang.Double) values we wish to rank. Ties are not
+     * handled specially. Ranks are zero-based.
+     * 
+     * @param m java.util.Map with keys Objects, values Doubles.
+     * @return A java.util.Map keys=old keys, values=java.lang.Integer rank of the key.
+     */
+    public static <K> Map<K, Integer> rankTransform( Map<K, Double> m ) {
+        return rankTransform( m, false );
     }
 
     /**
