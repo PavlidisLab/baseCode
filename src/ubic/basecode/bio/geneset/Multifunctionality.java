@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 
 import cern.colt.list.DoubleArrayList;
 
+import ubic.basecode.math.Distance;
 import ubic.basecode.math.Rank;
 
 /**
@@ -76,6 +77,8 @@ public class Multifunctionality {
         int numGenes = genesWithGoTerms.size();
 
         for ( String gene : go.getGenes() ) {
+            if ( !genesWithGoTerms.contains( gene ) ) continue;
+
             double mf = 0.0;
             Collection<String> sets = go.getGeneGeneSets( gene );
             this.numGoTerms.put( gene, sets.size() ); // genes with no go terms are ignored.
@@ -113,47 +116,24 @@ public class Multifunctionality {
             double mf = this.getGOTermMultifunctionality( goTerm );
             rawVals.add( mf );
         }
-        return spearman( rawVals );
-    }
-
-    /**
-     * Assess whether the given values are in order. That is, we compute the Spearman correlation of the values with the
-     * sequence 1,2,...n. It is assumed that the rawVals have no ties (or else, ties are treated as equivalent to
-     * non-tied values of the same rank).
-     * 
-     * @param rawVals
-     * @return
-     */
-    private double spearman( DoubleArrayList rawVals ) {
-        DoubleArrayList ranks = Rank.rankTransform( rawVals );
-
-        double s = 0.0;
-        int n = ranks.size();
-        for ( int i = 0; i < n; i++ ) {
-            double r = ranks.get( i );
-            double d = Math.pow( r - ( i + 1 ), 2 );
-            s += d;
-        }
-
-        double rho = 1.0 - ( 6.0 * s ) / ( n * ( Math.pow( n, 2 ) - 1 ) );
-
-        return rho;
+        return -Distance.spearmanRankCorrelation( rawVals );
     }
 
     /**
      * @param rankedGenes, with the "best" gene first.
      * @return the rank correlation of the given list with the ranks of the multifunctionality of the genes. A positive
-     *         correlation means the given list is "multifunctionality-biased".
+     *         correlation means the given list is "multifunctionality-biased". Genes lacking GO terms are ignored.
      */
     public double correlationWithGeneMultifunctionality( List<String> rankedGenes ) {
 
         DoubleArrayList rawVals = new DoubleArrayList();
         for ( String gene : rankedGenes ) {
+            if ( !this.multifunctionality.containsKey( gene ) ) continue;
             double mf = this.getMultifunctionalityScore( gene );
             rawVals.add( mf );
         }
 
-        return spearman( rawVals );
+        return -Distance.spearmanRankCorrelation( rawVals );
     }
 
     /**
@@ -187,7 +167,8 @@ public class Multifunctionality {
      */
     public double getMultifunctionalityRank( String gene ) {
         if ( !this.multifunctionalityRank.containsKey( gene ) ) {
-            throw new IllegalArgumentException( "Gene: " + gene + " not found" );
+            // throw new IllegalArgumentException( "Gene: " + gene + " not found" );
+            return 0.0;
         }
         return this.multifunctionalityRank.get( gene );
     }
@@ -199,7 +180,8 @@ public class Multifunctionality {
      */
     public double getMultifunctionalityScore( String gene ) {
         if ( !this.multifunctionality.containsKey( gene ) ) {
-            throw new IllegalArgumentException( "Gene: " + gene + " not found" );
+            // throw new IllegalArgumentException( "Gene: " + gene + " not found" );
+            return 0.0;
         }
         return this.multifunctionality.get( gene );
     }

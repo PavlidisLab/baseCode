@@ -14,11 +14,12 @@
  */
 package ubic.basecode.bio.geneset;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
@@ -37,30 +38,40 @@ public class TestMultifunctionality {
         Multifunctionality mf = new Multifunctionality( ga );
 
         double actual = mf.getMultifunctionalityScore( "PAX8" );
-        assertEquals( 0.0121, actual, 0.001 );
+        assertEquals( 0.022, actual, 0.001 );
 
         int actualNumG = mf.getNumGoTerms( "PAX8" );
         assertEquals( 5, actualNumG );
 
         double actualR = mf.getMultifunctionalityRank( "PAX8" );
-        assertEquals( 0.82, actualR, 0.01 );
+        assertEquals( 0.72, actualR, 0.01 );
 
         double actualGoMF = mf.getGOTermMultifunctionalityRank( "GO:0005634" );
-        assertEquals( 0.2777, actualGoMF, 0.001 );
+        assertEquals( 0.222, actualGoMF, 0.001 );
 
         List<String> li = new ArrayList<String>();
+        li.add( "EYA3" );
+        li.add( "EPHB3" );
+        li.add( "MAPK1" );
+        li.add( "PTPN21" );
+        li.add( "CYP2A6" );
+        li.add( "CCL5" );
+        li.add( "GSC" );
         li.add( "PAX8" );
         li.add( "THRA" );
         li.add( "PXK" );
-        li.add( "CCL5" );
+        li.add( "GUCA1A" );
         li.add( "DDR1" );
         li.add( "RFC2" );
         li.add( "HSPA6" );
-        li.add( "GUCA1A" );
+        li.add( "LOC201158" );
+        li.add( "SLC39A5" );
+        li.add( "ALG10" );
         li.add( "UBE1L" );
-        li.add( "PTPN21" );
-
+        li.add( "C6orf199" );
+        li.add( "foonotagene" );
         double cgm = mf.correlationWithGeneMultifunctionality( li );
-        assertEquals( 1.0, cgm, 0.0001 );
+        assertEquals( 0.80175, cgm, 0.001 );
     }
+
 }

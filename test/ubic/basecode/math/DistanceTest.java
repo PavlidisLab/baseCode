@@ -18,8 +18,11 @@
  */
 package ubic.basecode.math;
 
-import cern.colt.list.DoubleArrayList;
 import junit.framework.TestCase;
+
+import org.junit.Test;
+
+import cern.colt.list.DoubleArrayList;
 
 /**
  * @author paul
@@ -106,6 +109,37 @@ public class DistanceTest extends TestCase {
         double expectedValue = 1.0;
 
         assertEquals( expectedValue, actualValue, 0.001 );
+    }
+
+    @Test
+    public void testSpearmanOneList1() throws Exception {
+
+        DoubleArrayList f = new DoubleArrayList( new double[] { 0, 1, 2, 3, 4, 5, 6 } );
+        double actual = Distance.spearmanRankCorrelation( f );
+        assertEquals( 1.0, actual, 0.0001 );
+    }
+
+    @Test
+    public void testSpearmanOneList2() throws Exception {
+
+        DoubleArrayList f = new DoubleArrayList( new double[] { 6, 5, 4, 3, 2, 1, 0 } );
+        double actual = Distance.spearmanRankCorrelation( f );
+        assertEquals( -1.0, actual, 0.0001 );
+    }
+
+    @Test
+    public void testSpearmanOneList3() throws Exception {
+
+        DoubleArrayList f = new DoubleArrayList( new double[] { 10, 6, 5, 4, 3, 2, 1, 0, -100 } );
+        double actual = Distance.spearmanRankCorrelation( f );
+        assertEquals( -1.0, actual, 0.0001 );
+    }
+
+    @Test
+    public void testSpearmanOneList4() throws Exception {
+        DoubleArrayList f = new DoubleArrayList( new double[] { 100, 6, 5, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 100 } );
+        double actual = Distance.spearmanRankCorrelation( f );
+        assertEquals( 0.0, actual, 0.01 );
     }
 
 }

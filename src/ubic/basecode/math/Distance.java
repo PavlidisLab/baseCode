@@ -142,6 +142,28 @@ public class Distance {
     }
 
     /**
+     * Convenience function to compute the rank correlation when we just want to know if the values are "in order".
+     * Values in perfect ascending order are a correlation of 1, descending is -1.
+     * 
+     * @param x
+     * @return
+     */
+    public static double spearmanRankCorrelation( DoubleArrayList x ) {
+        DoubleArrayList ranks = Rank.rankTransform( x );
+
+        double s = 0.0;
+        int n = ranks.size();
+        for ( int i = 0; i < n; i++ ) {
+            double r = ranks.get( i );
+            double d = Math.pow( r - ( i + 1 ), 2 );
+            s += d;
+        }
+
+        double rho = 1.0 - ( 6.0 * s ) / ( n * ( Math.pow( n, 2 ) - 1 ) );
+        return rho;
+    }
+
+    /**
      * Spearman Rank Correlation. This does the rank transformation of the data. Only mutually non-NaN values are used.
      * 
      * @param x DoubleArrayList
@@ -172,12 +194,5 @@ public class Distance {
         DoubleArrayList ry = Rank.rankTransform( my );
 
         return DescriptiveWithMissing.correlation( rx, ry );
-        //        
-        // double sum = 0.0;
-        // for ( int i = 0; i < mx.size(); i++ ) {
-        // sum += Math.pow( rx.elements()[i] - ry.elements()[i], 2 );
-        // }
-        //
-        // return 1.0 - 6.0 * sum / ( Math.pow( mx.size(), 3 ) - mx.size() );
     }
 }
