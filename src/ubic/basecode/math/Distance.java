@@ -154,13 +154,12 @@ public class Distance {
         double s = 0.0;
         int n = ranks.size();
         for ( int i = 0; i < n; i++ ) {
-            double r = ranks.get( i );
+            double r = ranks.get( i ); // 1 is the minimum.
             double d = Math.pow( r - ( i + 1 ), 2 );
             s += d;
         }
 
-        double rho = 1.0 - ( 6.0 * s ) / ( n * ( Math.pow( n, 2 ) - 1 ) );
-        return rho;
+        return 1.0 - ( 6.0 * s ) / ( n * ( Math.pow( n, 2 ) - 1 ) );
     }
 
     /**
