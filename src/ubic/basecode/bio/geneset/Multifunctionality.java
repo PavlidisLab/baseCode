@@ -108,7 +108,7 @@ public class Multifunctionality {
     /**
      * @param rankedGoTerms, with the "best" GO term first.
      * @return the rank correlation of the given list with the ranks of the GO term multifunctionality of the terms. A
-     *         positive correlation means the given list is "multifunctionality-biased".
+     *         positive correlation means the given list of terms is "multifunctionality-biased".
      */
     public double correlationWithGoTermMultifunctionality( List<String> rankedGoTerms ) {
         DoubleArrayList rawVals = new DoubleArrayList();
@@ -118,6 +118,25 @@ public class Multifunctionality {
         }
         return -Distance.spearmanRankCorrelation( rawVals );
     }
+    
+    /**
+     * 
+     * @param geneScores
+     * @return studentized residuals of the gene scores
+     */
+    public Map<String, Double> regressGeneMultifunctionality(Map<String, Double> geneScores){
+        
+        /*
+         * regress
+         */
+        
+        /*
+         * Get residuals
+         */
+        
+       return null; 
+    }
+    
 
     /**
      * @param rankedGenes, with the "best" gene first.

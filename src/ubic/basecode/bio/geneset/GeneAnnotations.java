@@ -1440,10 +1440,14 @@ public class GeneAnnotations {
             int numActiveGenesInGeneSet = numActiveGenesInGeneSet( id );
             if ( numActiveProbesInGeneSet < lowThreshold || numActiveGenesInGeneSet < lowThreshold
                     || numActiveProbesInGeneSet > highThreshold || numActiveGenesInGeneSet > highThreshold ) {
-                log.debug( "Pruning gene set : " + id + ", size =" + numActiveProbesInGeneSet + " probes, "
-                        + numActiveGenesInGeneSet + " genes." );
+                // log.debug( "Pruning gene set : " + id + ", size =" + numActiveProbesInGeneSet + " probes, "
+                // + numActiveGenesInGeneSet + " genes." );
                 removeUs.add( id );
             }
+        }
+
+        if ( !removeUs.isEmpty() ) {
+            log.info( removeUs.size() + " terms pruned" );
         }
 
         for ( Object element : removeUs ) {

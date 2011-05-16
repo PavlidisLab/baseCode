@@ -107,6 +107,10 @@ public class BitUtil {
         return count;
     }
 
+    /**
+     * @param bytes
+     * @return
+     */
     public static String prettyPrint( byte[] bytes ) {
         StringBuilder buf = new StringBuilder();
         int numbits = bytes.length * Byte.SIZE;
