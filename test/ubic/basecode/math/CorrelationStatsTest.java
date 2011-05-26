@@ -62,6 +62,8 @@ public class CorrelationStatsTest extends TestCase {
         assertEquals( 0.0127, CorrelationStats.correlationForPvalue( CorrelationStats.pvalue( 0.0127, 20 ), 20 ), 0.01 );
         assertEquals( 0.00127, CorrelationStats.correlationForPvalue( CorrelationStats.pvalue( 0.00127, 20 ), 20 ),
                 0.01 );
+        assertEquals( 0.0, CorrelationStats.correlationForPvalue( 1.0, 20 ), 0.01 );
+        assertEquals( 1.0, CorrelationStats.correlationForPvalue( 0.0, 20 ), 0.01 );
     }
 
     public void testInverseFisherTransform() throws Exception {

@@ -146,13 +146,22 @@ public class CorrelationStats {
     }
 
     /**
-     * Find the approximate Pearson correlation required to meet a particular pvalue.
+     * Find the approximate Pearson correlation required to meet a particular pvalue. If the pvalue is <=0 or >= 1,
+     * returns 1 and 0 respectively.
      * 
      * @param pval double
      * @param count int
      * @return double
      */
     public static double correlationForPvalue( double pval, int count ) {
+
+        if ( pval >= 1.0 ) {
+            return 0.0;
+        }
+
+        if ( pval <= 0.0 ) {
+            return 1.0;
+        }
 
         if ( count < 3 ) {
             return 0.0; // warn?
