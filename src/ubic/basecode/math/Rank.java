@@ -170,7 +170,7 @@ public class Rank {
         for ( int i = 0; i < m.size(); i++ ) {
             int rank = i;
             if ( desc ) {
-                rank = values.size() - i;
+                rank = values.size() - i - 1;
             }
             result.put( values.get( i ).getKey(), rank );
         }
