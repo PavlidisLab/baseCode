@@ -94,8 +94,9 @@ public class Multifunctionality {
 
         Map<String, Integer> rawGeneMultifunctionalityRanks = Rank.rankTransform( this.multifunctionality, true );
         for ( String gene : rawGeneMultifunctionalityRanks.keySet() ) {
-            double geneMultifunctionalityRank = rawGeneMultifunctionalityRanks.get( gene ) / ( double ) numGenes;
-            this.multifunctionalityRank.put( gene, Math.max( 0.0, 1.0 - geneMultifunctionalityRank ) );
+        	// 1-base the rank before calculating ratio
+            double geneMultifunctionalityRankRatio = ( rawGeneMultifunctionalityRanks.get( gene ) + 1 ) / ( double ) numGenes;
+            this.multifunctionalityRank.put( gene, Math.max( 0.0, 1.0 - geneMultifunctionalityRankRatio ) );
         }
 
         computeGoTermMultifunctionalityRanks( rawGeneMultifunctionalityRanks );
@@ -257,8 +258,8 @@ public class Multifunctionality {
         // convert to relative ranks, where 1.0 is the most multifunctional
         Map<String, Integer> rankedGOMf = Rank.rankTransform( this.goTermMultifunctionality, true );
         for ( String goTerm : rankedGOMf.keySet() ) {
-            this.goTermMultifunctionalityRank.put( goTerm, Math.max( 0.0, 1.0 - rankedGOMf.get( goTerm )
-                    / ( double ) numGoGroups ) );
+        	double rankRatio = ( rankedGOMf.get( goTerm ) + 1 ) / ( double ) numGoGroups; 
+            this.goTermMultifunctionalityRank.put( goTerm, Math.max( 0.0, rankRatio ) );
         }
     }
 }
