@@ -76,7 +76,18 @@ public class TestRank extends TestCase {
         expectedReturn.put( "HundredFourteen", 5 );
         expectedReturn.put( "Five", 0 );
         assertEquals( "return value", expectedReturn, actualReturn );
-
+    }
+    
+    public void testRankTransformMapDesc() {
+        Map<String, Integer> actualReturn = Rank.rankTransform( testmap, true );
+        Map<String, Integer> expectedReturn = new HashMap<String, Integer>();
+        expectedReturn.put( "Ten", 4 );
+        expectedReturn.put( "Eleven", 3 );
+        expectedReturn.put( "Twelve", 2 );
+        expectedReturn.put( "Thirteen", 1 );
+        expectedReturn.put( "HundredFourteen", 0 );
+        expectedReturn.put( "Five", 5 );
+        assertEquals( "return value", expectedReturn, actualReturn );
     }
 
     public void testRankWithTies() {
