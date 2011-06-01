@@ -168,9 +168,9 @@ public class Rank {
         Map<K, Integer> result = new HashMap<K, Integer>();
         /* put the sorted items back into a hashmap with the rank */
         for ( int i = 0; i < m.size(); i++ ) {
-            int rank = i;
+            int rank = i + 1;
             if ( desc ) {
-                rank = values.size() - i - 1;
+                rank = values.size() - i;
             }
             result.put( values.get( i ).getKey(), rank );
         }
