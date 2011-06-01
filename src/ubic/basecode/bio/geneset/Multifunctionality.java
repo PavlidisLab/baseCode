@@ -259,7 +259,7 @@ public class Multifunctionality {
         Map<String, Integer> rankedGOMf = Rank.rankTransform( this.goTermMultifunctionality, true );
         for ( String goTerm : rankedGOMf.keySet() ) {
         	double rankRatio = ( rankedGOMf.get( goTerm ) + 1 ) / ( double ) numGoGroups; 
-            this.goTermMultifunctionalityRank.put( goTerm, Math.max( 0.0, rankRatio ) );
+            this.goTermMultifunctionalityRank.put( goTerm, Math.max( 0.0, 1 - rankRatio ) );
         }
     }
 }
