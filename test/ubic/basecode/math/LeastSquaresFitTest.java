@@ -717,5 +717,7 @@ public class LeastSquaresFitTest {
 
         }
 
+        DoubleMatrix2D studres = fit.getStudentizedResiduals();
+        log.info( studres );
     }
 }

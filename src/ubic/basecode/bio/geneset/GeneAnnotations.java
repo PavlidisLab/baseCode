@@ -400,7 +400,7 @@ public class GeneAnnotations {
 
         resetSelectedSets();
 
-        this.multifunctionality = new Multifunctionality( this ); // possibly could avoid.
+        this.multifunctionality.setStale( true );
     }
 
     /**
@@ -615,6 +615,8 @@ public class GeneAnnotations {
     public Collection<String> getGeneSetGenes( String goset ) {
         Collection<String> genes = new HashSet<String>();
         Collection<String> probes = this.getGeneSetProbes( goset );
+
+        if ( probes == null ) return genes;
 
         for ( String p : probes ) {
 
@@ -1840,7 +1842,8 @@ public class GeneAnnotations {
 
             /*
              * Each field is like this: 0000166 // nucleotide binding // inferred from electronic annotation OR in new
-             * format, it has the GO:XXXXXX directly.
+             * format, it has the GO:XXXXXX directly. (actually, in format as of 7/2011, the GO:xxxxx format is not
+             * used.
              */
 
             classIds = " // " + fields[goBpIndex] + " // " + fields[goMfIndex] + " // " + fields[goCcIndex];

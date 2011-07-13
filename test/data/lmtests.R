@@ -222,3 +222,80 @@ anova(ttestd$probe_0)
 anova(ttestd$probe_4)
 anova(ttestd$probe_10)
 anova(ttestd$probe_98)
+
+dm1027<-as.matrix(read.table("1027_GSE6189.designmatrix.txt", header=T, row.names=1))
+qr(dm1027)
+qr.R(qr(dm1027))
+qr.Q(qr(dm1027))
+da1027<-as.matrix(read.table("1027_GSE6189.data.test.txt", header=T, row.names=1)[1,])
+
+dim(da1027)
+des1027<- read.table("1027_GSE6189_expdesign.data.txt", header=T, row.names=1) 
+dim(des1027)
+object<-lm( da1027[1,]   ~  des1027$Treatment  +  des1027$SamplingTimePoint  +  des1027$batch) 
+mm<-model.matrix( da1027[1,]   ~ des1027$Treatment  +  des1027$SamplingTimePoint  +  des1027$batch)
+effects(object)
+object$effects
+summary(object)
+anova(object)
+
+model.matrix.default( da1027[1,]   ~ des1027$Treatment  +  des1027$SamplingTimePoint  +  des1027$batch)
+
+form<-da1027[1,]   ~ des1027$Treatment  +  des1027$SamplingTimePoint  +  des1027$batch
+d <- model.frame( form, data=environment(form), xlev=NULL)
+namD <- names(d)
+for(i in namD)
+	if(is.character(d[[i]])) {
+		d[[i]] <- factor(d[[i]])
+		warning(gettextf("variable '%s' converted to a factor", i),
+				domain = NA)
+	}
+contr.funs <- as.character(getOption("contrasts"))
+isF <- sapply(d, function(x) is.factor(x) || is.logical(x) )
+isOF <- sapply(d, is.ordered)
+for(nn in namD[isF])            # drop response
+	if(is.null(attr(d[[nn]], "contrasts")))
+		contrasts(d[[nn]]) <- contr.funs[1 + isOF[nn]]
+
+t <-terms(object, data=d)
+.Internal(model.matrix(t, d))
+# model.matrix is defined in model.c::attribute_hidden do_modelmatrix
+
+
+y<-da1027[1,]
+x<-mm
+#x<-dm1027
+storage.mode(x) <- "double"
+storage.mode(y) <- "double"
+p <- ncol(x)
+n <- nrow(x)
+ny <- NCOL(y)
+tol<-1e-7
+z <- .Fortran("dqrls",
+		qr = x, n = n, p = p,
+		y = y, ny = ny,
+		tol = as.double(tol),
+		coefficients = mat.or.vec(p, ny),
+		residuals = y, effects = y, rank = integer(1L),
+		pivot = 1L:p, qraux = double(p), work = double(2*p),
+		PACKAGE="base")
+z$effects
+z$coefficients
+z$pivot
+
+### Yet another another example
+dat<-read.table("1064_GSE7863.data.test.txt", header=T, row.names=1)
+des<-read.table("1064_GSE7863_expdesign.data.test.txt", header=T, row.names=1)
+model.matrix(t(dat[1,]) ~  des$Genotype  + des$OrganismPart  + des$Treatment  )
+levels(des$Treatment)
+object<-lm(t(dat["1415696_at",]) ~ des$Genotype  + des$OrganismPart  + des$Treatment  )
+object<-lm(t(dat["1415696_at",]) ~ des$Genotype + des$Treatment  + des$OrganismPart   )
+
+object<-lm(t(dat["1415837_at",]) ~ des$Genotype  + des$OrganismPart  + des$Treatment  )
+object<-lm(t(dat["1416179_a_at",]) ~ des$Genotype  + des$OrganismPart  + des$Treatment  )
+object<-lm(t(dat["1456759_at",]) ~ des$Genotype  + des$OrganismPart  + des$Treatment  )
+
+summary(object)
+anova(object)
+
+

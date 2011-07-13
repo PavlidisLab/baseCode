@@ -173,6 +173,19 @@ public class TestGeneAnnotations extends TestCase {
         assertTrue( geneSets.size() > 0 );
     }
 
+    public final void testReadAffyCsv3() throws Exception {
+        // second affytest
+        InputStream isa = TestGeneAnnotations.class.getResourceAsStream( "/data/HG-U95A.affy.2011format.sample.csv" );
+        GeneAnnotations ga = new GeneAnnotations();
+        ga.readAffyCsv( isa, null );
+        ga.setUp( null );
+        Collection<String> geneSets = ga.getGeneSets();
+        assertTrue( geneSets.size() > 0 );
+        assertTrue( geneSets.contains( "GO:0007165" ) );
+        Collection<String> geneSetGenes = ga.getGeneSetGenes( "GO:0007165" );
+        assertTrue( geneSetGenes.size() > 0 );
+    }
+
     public void testReadAgilent() throws Exception {
         GeneAnnotations ga = new GeneAnnotations();
         ga.readAgilent( ia, null );

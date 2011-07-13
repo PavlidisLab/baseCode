@@ -114,12 +114,12 @@ class GOHandler extends DefaultHandler {
          * bug
          */
         initializeNewNode( "all" );
-        initializeNewNode( "obsolete_molecular_function" );
-        m.addParentTo( "obsolete_molecular_function", "all" );
-        initializeNewNode( "obsolete_biological_process" );
-        m.addParentTo( "obsolete_biological_process", "all" );
-        initializeNewNode( "obsolete_cellullar_component" );
-        m.addParentTo( "obsolete_cellullar_component", "all" );
+        // initializeNewNode( "obsolete_molecular_function" );
+        // m.addParentTo( "obsolete_molecular_function", "all" );
+        // initializeNewNode( "obsolete_biological_process" );
+        // m.addParentTo( "obsolete_biological_process", "all" );
+        // initializeNewNode( "obsolete_cellullar_component" );
+        // m.addParentTo( "obsolete_cellullar_component", "all" );
 
         forbiddenParents.add( "obsolete_molecular_function" );
         forbiddenParents.add( "obsolete_biological_process" );

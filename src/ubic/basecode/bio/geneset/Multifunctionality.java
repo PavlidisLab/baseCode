@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.commons.logging.Log;
@@ -54,6 +55,8 @@ public class Multifunctionality {
 
     private Collection<String> genesWithGoTerms;
 
+    private AtomicBoolean stale = new AtomicBoolean( true );
+
     /**
      * Construct Multifunctionality information based on the state of the GO annotations -- this accounts only for the
      * 'active' (used) probes in the annotations. Genes with no GO terms are completely ignored.
@@ -61,85 +64,8 @@ public class Multifunctionality {
      * @param go
      */
     public Multifunctionality( GeneAnnotations go ) {
-        StopWatch timer = new StopWatch();
-
-        timer.start();
         this.go = go;
-
-        genesWithGoTerms = new HashSet<String>();
-        for ( String goset : go.getGeneSets() ) {
-            Collection<String> geneSetGenes = go.getGeneSetGenes( goset );
-            if ( geneSetGenes.isEmpty() ) continue;
-            genesWithGoTerms.addAll( geneSetGenes );
-            goGroupSizes.put( goset, geneSetGenes.size() );
-        }
-
-        int numGenes = genesWithGoTerms.size();
-
-        for ( String gene : go.getGenes() ) {
-            if ( !genesWithGoTerms.contains( gene ) ) continue;
-
-            double mf = 0.0;
-            Collection<String> sets = go.getGeneGeneSets( gene );
-            this.numGoTerms.put( gene, sets.size() ); // genes with no go terms are ignored.
-            for ( String goset : sets ) {
-                if ( !goGroupSizes.containsKey( goset ) ) {
-                    log.debug( "No size recorded for " + goset );
-                    continue;
-                }
-                int inGroup = goGroupSizes.get( goset );
-                int outGroup = numGenes - inGroup;
-                assert outGroup > 0;
-                assert inGroup > 0;
-                mf += 1.0 / ( inGroup * outGroup );
-            }
-            this.multifunctionality.put( gene, mf );
-        }
-
-        Map<String, Integer> rawGeneMultifunctionalityRanks = Rank.rankTransform( this.multifunctionality, true );
-        for ( String gene : rawGeneMultifunctionalityRanks.keySet() ) {
-            // 1-base the rank before calculating ratio
-            double geneMultifunctionalityRankRatio = ( rawGeneMultifunctionalityRanks.get( gene ) + 1 )
-                    / ( double ) numGenes;
-            this.multifunctionalityRank.put( gene, Math.max( 0.0, 1.0 - geneMultifunctionalityRankRatio ) );
-        }
-
-        computeGoTermMultifunctionalityRanks( rawGeneMultifunctionalityRanks );
-
-        if ( timer.getTime() > 1000 ) {
-            log.info( "Multifunctionality computation: " + timer.getTime() + "ms" );
-        }
-    }
-
-    /**
-     * @param rankedGoTerms, with the "best" GO term first.
-     * @return the rank correlation of the given list with the ranks of the GO term multifunctionality of the terms. A
-     *         positive correlation means the given list of terms is "multifunctionality-biased".
-     */
-    public double correlationWithGoTermMultifunctionality( List<String> rankedGoTerms ) {
-        DoubleArrayList rawVals = new DoubleArrayList();
-        for ( String goTerm : rankedGoTerms ) {
-            double mf = this.getGOTermMultifunctionality( goTerm );
-            rawVals.add( mf );
-        }
-        return -Distance.spearmanRankCorrelation( rawVals );
-    }
-
-    /**
-     * @param geneScores
-     * @return studentized residuals of the gene scores
-     */
-    public Map<String, Double> regressGeneMultifunctionality( Map<String, Double> geneScores ) {
-
-        /*
-         * regress
-         */
-
-        /*
-         * Get residuals
-         */
-
-        return null;
+        init();
     }
 
     /**
@@ -160,15 +86,31 @@ public class Multifunctionality {
     }
 
     /**
+     * @param rankedGoTerms, with the "best" GO term first.
+     * @return the rank correlation of the given list with the ranks of the GO term multifunctionality of the terms. A
+     *         positive correlation means the given list of terms is "multifunctionality-biased".
+     */
+    public double correlationWithGoTermMultifunctionality( List<String> rankedGoTerms ) {
+        DoubleArrayList rawVals = new DoubleArrayList();
+        for ( String goTerm : rankedGoTerms ) {
+            double mf = this.getGOTermMultifunctionality( goTerm );
+            rawVals.add( mf );
+        }
+        return -Distance.spearmanRankCorrelation( rawVals );
+    }
+
+    /**
      * @param goId
      * @return the computed multifunctionality score for the GO term. This is the area under the ROC curve for the genes
      *         in the group, in the ranking of all genes for multifunctionality. Higher values indicate higher
      *         multifunctionality
      */
     public double getGOTermMultifunctionality( String goId ) {
+        if ( stale.get() ) init();
         if ( !this.goTermMultifunctionality.containsKey( goId ) ) {
             throw new IllegalArgumentException( "GO term: " + goId + " not found" );
         }
+
         return this.goTermMultifunctionality.get( goId );
     }
 
@@ -178,9 +120,11 @@ public class Multifunctionality {
      *         lowest
      */
     public double getGOTermMultifunctionalityRank( String goId ) {
+        if ( stale.get() ) init();
         if ( !this.goTermMultifunctionalityRank.containsKey( goId ) ) {
             throw new IllegalArgumentException( "GO term: " + goId + " not found" );
         }
+
         return this.goTermMultifunctionalityRank.get( goId );
     }
 
@@ -189,10 +133,12 @@ public class Multifunctionality {
      * @return relative rank of the gene in multifunctionality where 1 is the highest multifunctionality, 0 is lowest
      */
     public double getMultifunctionalityRank( String gene ) {
+        if ( stale.get() ) init();
         if ( !this.multifunctionalityRank.containsKey( gene ) ) {
             // throw new IllegalArgumentException( "Gene: " + gene + " not found" );
             return 0.0;
         }
+
         return this.multifunctionalityRank.get( gene );
     }
 
@@ -202,10 +148,12 @@ public class Multifunctionality {
      *         Higher values indicate higher multifunctionality
      */
     public double getMultifunctionalityScore( String gene ) {
+        if ( stale.get() ) init();
         if ( !this.multifunctionality.containsKey( gene ) ) {
             // throw new IllegalArgumentException( "Gene: " + gene + " not found" );
             return 0.0;
         }
+
         return this.multifunctionality.get( gene );
     }
 
@@ -214,10 +162,19 @@ public class Multifunctionality {
      * @return number of GO terms for the given gene.
      */
     public int getNumGoTerms( String gene ) {
+        if ( stale.get() ) init();
         if ( !this.numGoTerms.containsKey( gene ) ) {
             throw new IllegalArgumentException( "Gene: " + gene + " not found" );
         }
         return this.numGoTerms.get( gene );
+    }
+
+    public boolean isStale() {
+        return stale.get();
+    }
+
+    public void setStale( boolean stale ) {
+        this.stale.set( stale );
     }
 
     /**
@@ -236,14 +193,19 @@ public class Multifunctionality {
         for ( String goset : go.getGeneSets() ) {
 
             if ( !goGroupSizes.containsKey( goset ) ) {
-                log.info( "No size recorded for: " + goset );
+                log.debug( "No size recorded for: " + goset );
                 continue;
             }
 
             int inGroup = goGroupSizes.get( goset );
             int outGroup = numGenes - inGroup;
 
+            if ( outGroup == 0 ) {
+                continue;
+            }
+
             double t1 = inGroup * ( inGroup + 1.0 ) / 2.0;
+
             double t2 = inGroup * outGroup;
 
             /*
@@ -259,7 +221,7 @@ public class Multifunctionality {
 
             double auc = Math.max( 0.0, 1.0 - t3 / t2 );
 
-            assert auc >= 0.0 && auc <= 1.0;
+            assert auc >= 0.0 && auc <= 1.0 : "AUC was " + auc;
             goTermMultifunctionality.put( goset, auc );
         }
 
@@ -268,6 +230,73 @@ public class Multifunctionality {
         for ( String goTerm : rankedGOMf.keySet() ) {
             double rankRatio = ( rankedGOMf.get( goTerm ) + 1 ) / ( double ) numGoGroups;
             this.goTermMultifunctionalityRank.put( goTerm, Math.max( 0.0, 1 - rankRatio ) );
+        }
+    }
+
+    /**
+     * @param go
+     */
+    private synchronized void init() {
+
+        if ( !this.isStale() ) return;
+
+        try {
+            StopWatch timer = new StopWatch();
+
+            timer.start();
+
+            genesWithGoTerms = new HashSet<String>();
+            for ( String goset : go.getGeneSets() ) {
+                Collection<String> geneSetGenes = go.getGeneSetGenes( goset );
+                if ( geneSetGenes.isEmpty() ) continue;
+                genesWithGoTerms.addAll( geneSetGenes );
+                goGroupSizes.put( goset, geneSetGenes.size() );
+            }
+
+            int numGenes = genesWithGoTerms.size();
+
+            for ( String gene : go.getGenes() ) {
+                if ( !genesWithGoTerms.contains( gene ) ) continue;
+
+                double mf = 0.0;
+                Collection<String> sets = go.getGeneGeneSets( gene );
+                this.numGoTerms.put( gene, sets.size() ); // genes with no go terms are ignored.
+                for ( String goset : sets ) {
+                    if ( !goGroupSizes.containsKey( goset ) ) {
+                        log.debug( "No size recorded for " + goset );
+                        continue;
+                    }
+                    int inGroup = goGroupSizes.get( goset );
+                    int outGroup = numGenes - inGroup;
+
+                    if ( outGroup == 0 ) {
+                        log.warn( "GO group '" + goset
+                                + "' that all genes belong to detected, skipping in multifunctionality computation" );
+                        continue;
+                    }
+
+                    assert inGroup > 0;
+
+                    mf += 1.0 / ( inGroup * outGroup );
+                }
+                this.multifunctionality.put( gene, mf );
+            }
+
+            Map<String, Integer> rawGeneMultifunctionalityRanks = Rank.rankTransform( this.multifunctionality, true );
+            for ( String gene : rawGeneMultifunctionalityRanks.keySet() ) {
+                // 1-base the rank before calculating ratio
+                double geneMultifunctionalityRankRatio = ( rawGeneMultifunctionalityRanks.get( gene ) + 1 )
+                        / ( double ) numGenes;
+                this.multifunctionalityRank.put( gene, Math.max( 0.0, 1.0 - geneMultifunctionalityRankRatio ) );
+            }
+
+            computeGoTermMultifunctionalityRanks( rawGeneMultifunctionalityRanks );
+
+            if ( timer.getTime() > 1000 ) {
+                log.info( "Multifunctionality computation: " + timer.getTime() + "ms" );
+            }
+        } finally {
+            stale.set( false );
         }
     }
 }

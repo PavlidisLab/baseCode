@@ -63,14 +63,42 @@ import cern.jet.stat.Descriptive;
 public class LeastSquaresFit {
 
     static Algebra solver = new Algebra();
+
+    /**
+     * Model fix coefficients (the x in Ax=b)
+     */
     private DoubleMatrix2D coefficients = null;
+
+    /**
+     * 
+     */
     private boolean hasMissing = false;
+
+    /**
+     * Fitted values
+     */
     private DoubleMatrix2D fitted;
+
+    /**
+     * Residuals of the fit
+     */
     private DoubleMatrix2D residuals;
 
+    /**
+     * QR decomposition of the design matrix
+     */
     private QRDecompositionPivoting qr;
+
+    /**
+     * The (raw) design matrix
+     */
     private DoubleMatrix2D A;
+
+    /**
+     * Independent variables
+     */
     private DoubleMatrix2D b;
+
     private int residualDof;
 
     private boolean hasWarned = false;
@@ -375,6 +403,48 @@ public class LeastSquaresFit {
         return residuals;
     }
 
+    /**
+     * @return studentized residuals.
+     */
+    public DoubleMatrix2D getStudentizedResiduals() {
+        int numParams = this.residualDof; // / or this.residualDofs;
+
+        if ( this.hasMissing ) {
+            throw new UnsupportedOperationException( "Studentizing not supported with missing values" );
+        }
+
+        DoubleMatrix2D result = this.residuals.like();
+
+        assert this.A != null;
+
+        DoubleMatrix2D hatMatrix = solver.mult( solver.mult( A, solver
+                .inverse( solver.mult( solver.transpose( A ), A ) ) ), solver.transpose( A ) );
+
+        // // log.info( hatMatrix );
+
+        // DoubleMatrix2D dpotri = this.dpotri( this.qr.getR().viewPart( 0, 0, this.qr.getRank(), this.qr.getRank() ) );
+        // DoubleMatrix2D hatMatrix = solver.mult( solver.mult( this.A, dpotri ), solver.transpose( this.A ) );
+
+        DoubleMatrix1D diagonal = MatrixUtil.diagonal( hatMatrix );
+
+        /*
+         * Measure sum of squares of residuals / residualDof
+         */
+        for ( int i = 0; i < residuals.rows(); i++ ) {
+
+            double sdhat = Math.sqrt( residuals.viewRow( i ).aggregate( Functions.plus, Functions.square ) / numParams );
+
+            // studentisze
+            for ( int j = 0; j < residuals.viewRow( i ).size(); j++ ) {
+                double esc = Math.sqrt( 1.0 - diagonal.get( j ) );
+                double e = residuals.getQuick( i, j );
+                double studres = e / ( sdhat * esc );
+                result.set( i, j, studres );
+            }
+        }
+        return result;
+    }
+
     public boolean isHasMissing() {
         return hasMissing;
     }
@@ -463,12 +533,12 @@ public class LeastSquaresFit {
     /**
      * Mimics functionality of chol2inv from R (which just calls LAPACK::dpotri)
      * 
-     * @param x upper triangular matrix
+     * @param x upper triangular matrix (from qr)
      * @return symmetric matrix X'X^-1
      */
     private DoubleMatrix2D dpotri( DoubleMatrix2D x ) {
 
-        // this is not numerically stable.
+        // this is not numerically stable
         // DoubleMatrix2D mult = solver.mult( solver.transpose( qrdR ), qrdR );
         // DoubleMatrix2D R = solver.inverse( mult );
 

@@ -65,7 +65,7 @@ public abstract class AbstractOntologyService {
 
     protected AtomicBoolean isInitialized = new AtomicBoolean( false );
     
-    protected OntologyIntializationThread initializationThread;
+    protected OntologyInitializationThread initializationThread;
 
     // private boolean enabled = false;
 
@@ -77,14 +77,14 @@ public abstract class AbstractOntologyService {
         ontology_URL = getOntologyUrl();
         ontologyName = getOntologyName();
         
-        initializationThread = new OntologyIntializationThread();
+        initializationThread = new OntologyInitializationThread();
         initializationThread.setName(ontologyName + "_load_thread");
         // To prevent VM from waiting on this thread to shutdown (if shutting down).
         initializationThread.setDaemon( true );
         
     }
     
-    protected class OntologyIntializationThread extends Thread {        
+    protected class OntologyInitializationThread extends Thread {        
         @Override
         public void run() {
 
