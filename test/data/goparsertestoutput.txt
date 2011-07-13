@@ -1,7 +1,4 @@
 all: 	all
-	obsolete_molecular_function: 	(No name provided)
-	obsolete_biological_process: 	(No name provided)
-	obsolete_cellullar_component: 	(No name provided)
 	GO:0003674: 	molecular_function
 		GO:0016209: 	antioxidant activity
 			GO:0045174: 	glutathione dehydrogenase (ascorbate) activity
