@@ -35,7 +35,7 @@ public class TestMultifunctionality {
         ga.readAffyCsv( is, null );
         ga.setUp( null );
 
-        Multifunctionality mf = new Multifunctionality( ga );
+        Multifunctionality mf = ga.getMultifunctionality();
 
         double actual = mf.getMultifunctionalityScore( "PAX8" );
         assertEquals( 0.022, actual, 0.001 );
