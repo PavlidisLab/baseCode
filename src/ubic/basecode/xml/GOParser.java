@@ -20,7 +20,9 @@ package ubic.basecode.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -91,6 +93,7 @@ public class GOParser {
         xr.parse( new InputSource( i ) );
 
         m = handler.getResults();
+
     }
 
 }
@@ -117,8 +120,14 @@ class GOHandler extends DefaultHandler {
         m.addParentTo( "obsolete_biological_process", "all" );
         initializeNewNode( "obsolete_cellullar_component" );
         m.addParentTo( "obsolete_cellullar_component", "all" );
+
+        forbiddenParents.add( "obsolete_molecular_function" );
+        forbiddenParents.add( "obsolete_biological_process" );
+        forbiddenParents.add( "obsolete_cellular_component" );
+
     }
 
+    private Collection<String> forbiddenParents = new HashSet<String>();
     private boolean inTerm = false;
     private boolean inDef = false;
     private boolean inAcc = false;
@@ -152,7 +161,10 @@ class GOHandler extends DefaultHandler {
                 initializeNewNode( parent );
             }
             String currentTerm = accBuf.toString();
-            m.addParentTo( currentTerm, parent );
+
+            if ( !forbiddenParents.contains( parent ) ) {
+                m.addParentTo( currentTerm, parent );
+            }
 
         } else if ( name.equals( "part_of" ) ) {
             // inPartOf = true;
@@ -163,7 +175,11 @@ class GOHandler extends DefaultHandler {
                 initializeNewNode( parent );
             }
             String currentTerm = accBuf.toString();
-            m.addParentTo( currentTerm, parent );
+
+            if ( !forbiddenParents.contains( parent ) ) {
+                m.addParentTo( currentTerm, parent );
+            }
+
         } else if ( name.equals( "synonym" ) ) {
             // inSyn = true;
         } else if ( name.equals( "name" ) ) {

@@ -83,6 +83,10 @@ public class Multifunctionality {
             Collection<String> sets = go.getGeneGeneSets( gene );
             this.numGoTerms.put( gene, sets.size() ); // genes with no go terms are ignored.
             for ( String goset : sets ) {
+                if ( !goGroupSizes.containsKey( goset ) ) {
+                    log.debug( "No size recorded for " + goset );
+                    continue;
+                }
                 int inGroup = goGroupSizes.get( goset );
                 int outGroup = numGenes - inGroup;
                 assert outGroup > 0;
@@ -94,8 +98,9 @@ public class Multifunctionality {
 
         Map<String, Integer> rawGeneMultifunctionalityRanks = Rank.rankTransform( this.multifunctionality, true );
         for ( String gene : rawGeneMultifunctionalityRanks.keySet() ) {
-        	// 1-base the rank before calculating ratio
-            double geneMultifunctionalityRankRatio = ( rawGeneMultifunctionalityRanks.get( gene ) + 1 ) / ( double ) numGenes;
+            // 1-base the rank before calculating ratio
+            double geneMultifunctionalityRankRatio = ( rawGeneMultifunctionalityRanks.get( gene ) + 1 )
+                    / ( double ) numGenes;
             this.multifunctionalityRank.put( gene, Math.max( 0.0, 1.0 - geneMultifunctionalityRankRatio ) );
         }
 
@@ -119,25 +124,23 @@ public class Multifunctionality {
         }
         return -Distance.spearmanRankCorrelation( rawVals );
     }
-    
+
     /**
-     * 
      * @param geneScores
      * @return studentized residuals of the gene scores
      */
-    public Map<String, Double> regressGeneMultifunctionality(Map<String, Double> geneScores){
-        
+    public Map<String, Double> regressGeneMultifunctionality( Map<String, Double> geneScores ) {
+
         /*
          * regress
          */
-        
+
         /*
          * Get residuals
          */
-        
-       return null; 
+
+        return null;
     }
-    
 
     /**
      * @param rankedGenes, with the "best" gene first.
@@ -232,6 +235,11 @@ public class Multifunctionality {
          */
         for ( String goset : go.getGeneSets() ) {
 
+            if ( !goGroupSizes.containsKey( goset ) ) {
+                log.info( "No size recorded for: " + goset );
+                continue;
+            }
+
             int inGroup = goGroupSizes.get( goset );
             int outGroup = numGenes - inGroup;
 
@@ -258,7 +266,7 @@ public class Multifunctionality {
         // convert to relative ranks, where 1.0 is the most multifunctional
         Map<String, Integer> rankedGOMf = Rank.rankTransform( this.goTermMultifunctionality, true );
         for ( String goTerm : rankedGOMf.keySet() ) {
-        	double rankRatio = ( rankedGOMf.get( goTerm ) + 1 ) / ( double ) numGoGroups; 
+            double rankRatio = ( rankedGOMf.get( goTerm ) + 1 ) / ( double ) numGoGroups;
             this.goTermMultifunctionalityRank.put( goTerm, Math.max( 0.0, 1 - rankRatio ) );
         }
     }

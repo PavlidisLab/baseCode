@@ -341,6 +341,7 @@ public class GONames {
         DirectedGraphNode<String, GOEntry> root = this.getGraph().getRoot();
         this.getGraph().addChildTo( root.getKey(), USER_DEFINED,
                 new GOEntry( USER_DEFINED, "", "Gene sets modified or created by the user", USER_DEFINED ) );
+
     }
 
 }

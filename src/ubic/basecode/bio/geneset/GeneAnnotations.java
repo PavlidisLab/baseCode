@@ -123,6 +123,8 @@ public class GeneAnnotations {
     private Map<String, Collection<String>> geneToGeneSetMap;
     private Map<String, Collection<String>> geneToProbeMap;
 
+    private Multifunctionality multifunctionality;
+
     private StatusViewer messenger;
 
     private Map<String, Collection<String>> oldGeneSets;
@@ -397,6 +399,8 @@ public class GeneAnnotations {
                 + probesForNew.size() + " probes" );
 
         resetSelectedSets();
+
+        this.multifunctionality = new Multifunctionality( this ); // possibly could avoid.
     }
 
     /**
@@ -516,13 +520,6 @@ public class GeneAnnotations {
         return this.geneToGeneSetMap.get( gene );
     }
 
-    // /**
-    // * @return Returns the classToGeneMap.
-    // */
-    // public Map getGeneSetToGeneMap() {
-    // return geneSetToGeneMap;
-    // }
-
     /**
      * Get a list of the probes that correspond to a particular gene.
      * 
@@ -552,6 +549,13 @@ public class GeneAnnotations {
         }
         return geneToActiveProbesCache.get( gene );
     }
+
+    // /**
+    // * @return Returns the classToGeneMap.
+    // */
+    // public Map getGeneSetToGeneMap() {
+    // return geneSetToGeneMap;
+    // }
 
     /**
      * @param geneSymbol
@@ -605,6 +609,32 @@ public class GeneAnnotations {
     }
 
     /**
+     * @param goset
+     * @return set of genes in the given gene set (if any), based on the currently active probes
+     */
+    public Collection<String> getGeneSetGenes( String goset ) {
+        Collection<String> genes = new HashSet<String>();
+        Collection<String> probes = this.getGeneSetProbes( goset );
+
+        for ( String p : probes ) {
+
+            String gene = this.getProbeToGeneMap().get( p );
+
+            /*
+             * FIXME for the multigene case
+             */
+
+            // assert geneProbeList != null : goset + ": " + p;
+
+            // genes.addAll( geneProbeList );
+            genes.add( gene );
+        }
+
+        return genes;
+
+    }
+
+    /**
      * @param geneSetId
      * @return active probes for the given gene set
      */
@@ -653,6 +683,10 @@ public class GeneAnnotations {
      */
     public Map<String, Collection<String>> getGeneToProbeMap() {
         return geneToProbeMap;
+    }
+
+    public Multifunctionality getMultifunctionality() {
+        return multifunctionality;
     }
 
     /**
@@ -954,6 +988,10 @@ public class GeneAnnotations {
         return selectedSets.size();
     }
 
+    /*******************************************************************************************************************
+     * Private or protected methods
+     ******************************************************************************************************************/
+
     /**
      * Create a selected probes list based on a search string.
      * 
@@ -980,10 +1018,6 @@ public class GeneAnnotations {
             selectedProbes.remove( element );
         }
     }
-
-    /*******************************************************************************************************************
-     * Private or protected methods
-     ******************************************************************************************************************/
 
     /**
      * @param searchOn
@@ -1955,32 +1989,7 @@ public class GeneAnnotations {
         resetSelectedProbes();
         resetSelectedSets();
         sortGeneSets();
-    }
-
-    /**
-     * @param goset
-     * @return set of genes in the given gene set (if any), based on the currently active probes
-     */
-    public Collection<String> getGeneSetGenes( String goset ) {
-        Collection<String> genes = new HashSet<String>();
-        Collection<String> probes = this.getGeneSetProbes( goset );
-
-        for ( String p : probes ) {
-
-            String gene = this.getProbeToGeneMap().get( p );
-
-            /*
-             * FIXME for the multigene case
-             */
-
-            // assert geneProbeList != null : goset + ": " + p;
-
-            // genes.addAll( geneProbeList );
-            genes.add( gene );
-        }
-
-        return genes;
-
+        this.multifunctionality = new Multifunctionality( this );
     }
 
 }
