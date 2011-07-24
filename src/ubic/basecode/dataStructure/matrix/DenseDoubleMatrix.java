@@ -18,6 +18,8 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
+import java.util.Collection;
+
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
@@ -32,9 +34,6 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
  */
 public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -239226762166912931L;
     private DoubleMatrix2D matrix;
 
@@ -65,6 +64,39 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
 
     public int columns() {
         return matrix.columns();
+    }
+
+    @Override
+    public DoubleMatrix<R, C> subsetRows( Collection<R> rowNames ) {
+
+        DoubleMatrix<R, C> returnval = new DenseDoubleMatrix<R, C>( rowNames.size(), this.columns() );
+
+        int currentRow = 0;
+        for ( int i = 0, n = this.rows(); i < n; i++ ) {
+            R rowName = this.getRowName( i );
+            assert rowName != null : "Row " + i + " has null name";
+
+            if ( !rowNames.contains( rowName ) ) {
+                continue;
+            }
+
+            returnval.setRowName( rowName, currentRow );
+            for ( int j = 0, m = this.columns(); j < m; j++ ) {
+                if ( currentRow == 0 ) {
+                    C colName = this.getColName( j );
+                    returnval.setColumnName( colName, j );
+                }
+                returnval.set( currentRow, j, this.get( i, j ) );
+            }
+            currentRow++;
+        }
+
+        if ( !returnval.getRowNames().containsAll( rowNames ) ) {
+            throw new IllegalArgumentException( "Invalid rows to select, some are not in the original matrix" );
+        }
+
+        return returnval;
+
     }
 
     /**

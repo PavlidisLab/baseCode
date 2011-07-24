@@ -18,6 +18,8 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
+import java.util.Collection;
+
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 
@@ -32,9 +34,6 @@ import cern.colt.matrix.DoubleMatrix1D;
  */
 public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -5458302072944941517L;
     private DoubleArrayList[] data;
 
@@ -90,12 +89,6 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     /*
      * (non-Javadoc)
      * 
-     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#get(int, int)
-     */
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see ubic.basecode.dataStructure.matrix.DoubleMatrixNamed#copy()
      */
     @Override
@@ -114,12 +107,6 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return returnval;
 
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#getColObj(int)
-     */
 
     @Override
     public double get( int x, int y ) {
@@ -161,12 +148,6 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     /*
      * (non-Javadoc)
      * 
-     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#getRow(int)
-     */
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see basecode.dataStructure.matrix.DoubleMatrixNamed#getColumn(int)
      */
     @Override
@@ -177,6 +158,12 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         }
         return result;
     }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#getRow(int)
+     */
 
     public Double getObject( int row, int col ) {
         return new Double( get( row, col ) );
@@ -255,11 +242,41 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     /*
      * (non-Javadoc)
      * 
-     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#viewRow(int)
+     * @see ubic.basecode.dataStructure.matrix.DoubleMatrix#subsetRows(java.util.Collection)
      */
     @Override
-    public DoubleMatrix1D viewRow( int j ) {
-        return new DenseDoubleMatrix1D( data[j].elements() );
+    public DoubleMatrix<R, C> subsetRows( Collection<R> rowNames ) {
+        DoubleMatrix<R, C> returnval = new FastRowAccessDoubleMatrix<R, C>( rowNames.size(), this.columns() );
+
+        for ( R r : rowNames ) {
+            if ( !this.getRowNames().contains( r ) ) {
+                log.warn( r + " not found in matrix" );
+            }
+        }
+
+        int currentRow = 0;
+        for ( int i = 0; i < this.rows(); i++ ) {
+
+            R rowName = this.getRowName( i );
+            if ( !rowNames.contains( rowName ) ) {
+                continue;
+            }
+
+            returnval.setRowName( rowName, currentRow );
+            for ( int j = 0; j < this.columns(); j++ ) {
+                if ( currentRow == 0 ) {
+                    returnval.setColumnName( this.getColName( j ), j );
+                }
+                returnval.set( currentRow, j, this.get( i, j ) );
+            }
+            currentRow++;
+        }
+
+        if ( !returnval.getRowNames().containsAll( rowNames ) ) {
+            throw new IllegalArgumentException( "Invalid rows to select, some are not in the original matrix" );
+        }
+
+        return returnval;
     }
 
     @Override
@@ -278,4 +295,15 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return result;
 
     }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.dataStructure.matrix.DoubleMatrixNamed#viewRow(int)
+     */
+    @Override
+    public DoubleMatrix1D viewRow( int j ) {
+        return new DenseDoubleMatrix1D( data[j].elements() );
+    }
+
 }

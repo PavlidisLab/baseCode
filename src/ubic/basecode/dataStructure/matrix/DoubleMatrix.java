@@ -19,6 +19,7 @@
 package ubic.basecode.dataStructure.matrix;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -37,9 +38,6 @@ import cern.colt.matrix.DoubleMatrix1D;
  */
 public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> implements PrimitiveMatrix<R, C, Double> {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
 
     protected static Log log = LogFactory.getLog( DoubleMatrix.class.getName() );
@@ -194,4 +192,9 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
     }
 
     public abstract DoubleMatrix<C, R> transpose();
+
+    /**
+     * Create a copy of this matrix with only the selected rows.
+     */
+    public abstract DoubleMatrix<R, C> subsetRows( Collection<R> rowNames );
 }

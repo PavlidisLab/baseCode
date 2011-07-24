@@ -19,6 +19,7 @@
 package ubic.basecode.dataStructure.matrix;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
@@ -37,9 +38,6 @@ import cern.colt.matrix.DoubleMatrix1D;
  */
 public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -8911689395488681312L;
 
     private boolean isDirty = true;
@@ -132,6 +130,37 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         }
         return returnval;
 
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.DoubleMatrix#subsetRows(java.util.Collection)
+     */
+    @Override
+    public DoubleMatrix<R, C> subsetRows( Collection<R> rowNames ) {
+        DoubleMatrix<R, C> returnval = new SparseRaggedDoubleMatrix<R, C>();
+
+        int currentRow = 0;
+        for ( int i = 0; i < this.rows(); i++ ) {
+            R rowName = this.getRowName( i );
+            if ( !rowNames.contains( rowName ) ) {
+                continue;
+            }
+            returnval.setRowName( rowName, currentRow );
+
+            for ( int j = 0; j < this.columns(); j++ ) {
+                if ( i == currentRow ) {
+                    returnval.setColumnName( this.getColName( j ), j );
+                }
+                returnval.set( currentRow, j, this.get( i, j ) );
+            }
+            currentRow++;
+        }
+        if ( !returnval.getRowNames().containsAll( rowNames ) ) {
+            throw new IllegalArgumentException( "Invalid rows to select, some are not in the original matrix" );
+        }
+        return returnval;
     }
 
     /**

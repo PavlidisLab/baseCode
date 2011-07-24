@@ -1,7 +1,7 @@
 /*
  * The baseCode project
  * 
- * Copyright (c) 2006 University of British Columbia
+ * Copyright (c) 2006-2011 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,6 +77,12 @@ public class ColorMatrix<A, B> implements Cloneable {
 
     @Override
     public ColorMatrix<A, B> clone() {
+
+        try {
+            super.clone();
+        } catch ( CloneNotSupportedException e ) {
+        }
+
         // create another double matrix
         DenseDoubleMatrix<A, B> matrix = new DenseDoubleMatrix<A, B>( m_totalRows, m_totalColumns );
         // copy the row and column names

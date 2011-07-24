@@ -18,6 +18,8 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
+import java.util.Collection;
+
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
@@ -107,6 +109,35 @@ public class SparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         }
         return returnval;
 
+    }
+
+    @Override
+    public DoubleMatrix<R, C> subsetRows( Collection<R> rowNames ) {
+        DoubleMatrix<R, C> returnval = new SparseDoubleMatrix<R, C>( rowNames.size(), this.columns() );
+
+        int currentRow = 0;
+        for ( int i = 0; i < this.rows(); i++ ) {
+            R rowName = this.getRowName( i );
+
+            if ( !rowNames.contains( rowName ) ) {
+                continue;
+            }
+
+            returnval.setRowName( rowName, currentRow );
+            for ( int j = 0; j < this.columns(); j++ ) {
+                if ( currentRow == 0 ) {
+                    returnval.setColumnName( this.getColName( j ), j );
+                }
+                returnval.set( currentRow, j, this.get( i, j ) );
+            }
+            currentRow++;
+        }
+
+        if ( !returnval.getRowNames().containsAll( rowNames ) ) {
+            throw new IllegalArgumentException( "Invalid rows to select, some are not in the original matrix" );
+        }
+
+        return returnval;
     }
 
     /**
