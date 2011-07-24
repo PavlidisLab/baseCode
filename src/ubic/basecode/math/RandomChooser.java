@@ -44,7 +44,7 @@ public class RandomChooser {
      * @param numNeeded how many values we need.
      * @param n int
      */
-    public static void chooserandom( double[] randomvals, double[] sourcedata, int[] deck, int numNeeded, int n ) {
+    public static void chooserandom( double[] randomvals, Double[] sourcedata, int[] deck, int numNeeded, int n ) {
         if ( numNeeded <= 0 ) throw new IllegalArgumentException( "numNeeded must be greater than zero" );
         int rand;
         int i;

@@ -62,4 +62,9 @@ public class StatusStderr implements StatusViewer {
         e.printStackTrace();
     }
 
+    @Override
+    public void showStatus( String s, int sleepSeconds ) {
+        showStatus( s );
+    }
+
 }

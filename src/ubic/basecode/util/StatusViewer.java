@@ -35,6 +35,12 @@ public interface StatusViewer {
     public abstract void showStatus( String s );
 
     /**
+     * @param s
+     * @param sleepSeconds how long more than usual to display the message (if gui-based)
+     */
+    public abstract void showStatus( String s, int sleepSeconds );
+
+    /**
      * Print an error status messge.
      * 
      * @param s

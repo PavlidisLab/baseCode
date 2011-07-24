@@ -66,4 +66,12 @@ public class StatusDebugLogger implements StatusViewer {
         log.error( message, e );
     }
 
+    /* (non-Javadoc)
+     * @see ubic.basecode.util.StatusViewer#showStatus(java.lang.String, int)
+     */
+    @Override
+    public void showStatus( String s, int sleepSeconds ) {
+        showStatus( s );
+    }
+
 }

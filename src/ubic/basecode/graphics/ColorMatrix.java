@@ -234,15 +234,13 @@ public class ColorMatrix<A, B> implements Cloneable {
         ColorMap colorMapO = new ColorMap( colorMap );
         double range = displayMax - displayMin;
 
-        if ( 0.0 == range ) {
-            // This is not an exception, just a warning, so no exception to throw
-            System.err.println( "Warning: range of values in data is zero." );
+        if ( range <= 1.0 ) {
             range = 1.0; // This avoids getting a step size of zero
             // in case all values in the matrix are equal.
         }
 
         // zoom factor for stretching or shrinking the range
-        double zoomFactor = ( colorMapO.getPaletteSize() - 1 ) / range;
+        double zoomFactor = ( colorMapO.getPaletteSize() - 1.0 ) / range;
 
         // map values to colors
         for ( int row = 0; row < m_totalRows; row++ ) {
@@ -253,16 +251,10 @@ public class ColorMatrix<A, B> implements Cloneable {
                     // the value is missing
                     colors[row][column] = missingColor;
                 } else {
-                    // clip extreme values (this makes sense for normalized
-                    // values because then for a standard deviation of one and
-                    // mean zero, we set m_minValue = -2 and m_maxValue = 2,
-                    // even though there could be a few extreme values
-                    // outside this range (right?)
+                    // clip extreme values
                     if ( value > displayMax ) {
-                        // clip extremely large values
                         value = displayMax;
                     } else if ( value < displayMin ) {
-                        // clip extremely small values
                         value = displayMin;
                     }
 
@@ -272,7 +264,7 @@ public class ColorMatrix<A, B> implements Cloneable {
 
                     // stretch or shrink the range to [0, totalColors]
                     double valueNew = value * zoomFactor;
-                    int i = ( int ) Math.round( valueNew );
+                    int i = ( int ) Math.floor( valueNew );
                     colors[row][column] = colorMapO.getColor( i );
                 }
             }

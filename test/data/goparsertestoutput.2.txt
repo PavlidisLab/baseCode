@@ -1,9 +1,0 @@
-all: 	all
-	GO:0008150: 	biological_process
-		GO:0016265: 	death
-			GO:0008219: 	cell death
-				GO:0019835: 	cytolysis
-					GO:0001896: 	autolysis
-		GO:0009987: 	cellular process
-	GO:0003674: 	molecular_function
-	GO:0005575: 	cellular_component

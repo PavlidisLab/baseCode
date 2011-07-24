@@ -168,7 +168,7 @@ public class StringUtil {
      * @param stringj
      * @return
      */
-    public static Object twoStringHashKey( String stringi, String stringj ) {
+    public static Long twoStringHashKey( String stringi, String stringj ) {
         // use arbitrary but consistent method for ordering.
         if ( stringi.hashCode() < stringj.hashCode() ) {
             return new Long( stringi.hashCode() | ( long ) stringj.hashCode() << 32 );

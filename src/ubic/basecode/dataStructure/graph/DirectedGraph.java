@@ -20,8 +20,10 @@ package ubic.basecode.dataStructure.graph;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -93,6 +95,11 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      * @param newChild Object
      */
     public void addChildTo( K key, K newChildKey, V newChild ) {
+
+        if ( !items.containsKey( key ) ) {
+            throw new IllegalArgumentException( "Attempt to add a child to a non-existent node: " + key );
+        }
+
         if ( !items.containsKey( newChild ) ) {
             this.addNode( newChildKey, newChild );
         }
@@ -125,7 +132,8 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      */
     public void addParentTo( K key, K newParentKey ) throws IllegalStateException {
         if ( !items.containsKey( newParentKey ) ) {
-            throw new IllegalStateException( "Attempt to add link to node that is not in the graph" );
+            throw new IllegalStateException( "Attempt to add as parent a node that is not in the graph: "
+                    + newParentKey );
         }
 
         if ( items.containsKey( key ) ) {
@@ -184,6 +192,20 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
     }
 
     /**
+     * Get all the values in thee graph.
+     * 
+     * @return
+     */
+    public Collection<V> getValues() {
+        Collection<V> result = new HashSet<V>();
+        for ( K element : this.items.keySet() ) {
+            DirectedGraphNode<K, V> v = items.get( element );
+            result.add( v.getItem() );
+        }
+        return result;
+    }
+
+    /**
      * Fills in the topoSortOrder for each node.
      */
     public void topoSort() {
@@ -208,7 +230,7 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
                 /* decrement the degree of this node */
                 int inDegree = degrees.get( w ).intValue();
                 inDegree--;
-                degrees.put( w, new Integer( inDegree ) );
+                degrees.put( w, inDegree );
 
                 /* see if this now is one of the zero-indegree nodes */
                 if ( inDegree == 0 ) {
