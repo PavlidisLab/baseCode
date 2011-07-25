@@ -257,6 +257,7 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
      * Remove connections that are to nodes not contained in this graph
      */
     public void prune() {
+
         for ( Iterator<K> it = this.getChildIterator(); it.hasNext(); ) {
             K j = it.next();
             DirectedGraphNode<K, V> k = getGraph().get( j );
@@ -264,9 +265,8 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
                 if ( log.isDebugEnabled() ) {
                     log.debug( "Pruned child " + j + " from " + this );
                 }
-                children.remove( j );
+                it.remove();
             }
-
         }
 
         for ( Iterator<K> it = this.getParentIterator(); it.hasNext(); ) {
@@ -276,11 +276,9 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
                 if ( log.isDebugEnabled() ) {
                     log.debug( "Pruned parent " + j + " from " + this );
                 }
-                parents.remove( j );
+                it.remove();
             }
-
         }
-
     }
 
     public void setGraph( DirectedGraph<K, V> graph ) {

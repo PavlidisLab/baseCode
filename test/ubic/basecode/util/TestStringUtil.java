@@ -118,7 +118,7 @@ public class TestStringUtil extends TestCase {
 
         long expectedResult = jcode.longValue() | icode.longValue() << 32;
 
-        Long result = ( Long ) StringUtil.twoStringHashKey( j, i );
+        Long result = StringUtil.twoStringHashKey( j, i );
 
         log.debug( Long.toBinaryString( expectedResult ) );
 

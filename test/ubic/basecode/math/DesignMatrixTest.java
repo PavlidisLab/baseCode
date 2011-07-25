@@ -30,6 +30,7 @@ import junit.framework.TestCase;
  */
 public class DesignMatrixTest extends TestCase {
 
+    @SuppressWarnings("unused")
     private static Log log = LogFactory.getLog( DesignMatrixTest.class );
 
     /**

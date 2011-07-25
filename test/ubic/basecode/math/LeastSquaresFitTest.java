@@ -44,7 +44,6 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
  */
 public class LeastSquaresFitTest {
 
-    @SuppressWarnings("unused")
     private static Log log = LogFactory.getLog( LeastSquaresFitTest.class );
 
     /**
@@ -629,7 +628,7 @@ public class LeastSquaresFitTest {
         // log.info( s.getAnova() );
 
         // our model matrix ends up with different coefficients than R which are
-        double[] rcoef = new double[] { 14.96355, 0.14421, -0.11525, 0.24257, Double.NaN, 0.04093, 0.06660, Double.NaN };
+      //  double[] rcoef = new double[] { 14.96355, 0.14421, -0.11525, 0.24257, Double.NaN, 0.04093, 0.06660, Double.NaN };
 
         // here are the coefs we get in R if we use the exact model matrix we get drom our DesignMatrix
         double[] coef = new double[] { 15.10776244, -0.01689300, 0.09835841, -0.20163964, Double.NaN, -0.04092962,
