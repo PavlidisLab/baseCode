@@ -76,6 +76,10 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      * @throws IllegalStateException if the graph doesn't contain the child node.
      */
     public void addChildTo( K key, K newChildKey ) throws IllegalStateException {
+
+        assert key != null;
+        assert newChildKey != null;
+
         if ( !items.containsKey( newChildKey ) ) {
             throw new IllegalStateException( "Attempt to add link to node that is not in the graph" );
         }
@@ -96,6 +100,10 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      */
     public void addChildTo( K key, K newChildKey, V newChild ) {
 
+        assert key != null;
+        assert newChildKey != null;
+        assert newChild != null;
+
         if ( !items.containsKey( key ) ) {
             throw new IllegalArgumentException( "Attempt to add a child to a non-existent node: " + key );
         }
@@ -114,6 +122,9 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      */
     @Override
     public void addNode( K key, V item ) {
+        assert key != null;
+        assert item != null;
+
         if ( !items.containsKey( key ) ) {
             items.put( key, new DirectedGraphNode<K, V>( key, item, this ) );
         }
@@ -121,6 +132,7 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
 
     @Override
     public void addNode( DirectedGraphNode<K, V> node ) {
+        assert node != null;
         node.setGraph( this );
         items.put( node.getKey(), node );
     }
@@ -131,6 +143,9 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      * @throws IllegalStateException
      */
     public void addParentTo( K key, K newParentKey ) throws IllegalStateException {
+        assert key != null;
+        assert newParentKey != null;
+
         if ( !items.containsKey( newParentKey ) ) {
             throw new IllegalStateException( "Attempt to add as parent a node that is not in the graph: "
                     + newParentKey );
@@ -139,7 +154,6 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
         if ( items.containsKey( key ) ) {
             items.get( key ).addParent( newParentKey );
             items.get( newParentKey ).addChild( key );
-            // if ( log.isDebugEnabled() ) log.debug( "Adding " + newParentKey + " as parent to " + key );
         }
 
     }
@@ -150,9 +164,15 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      * @param newParent Object
      */
     public void addParentTo( K key, K newParentKey, V newParent ) {
+
+        assert newParentKey != null;
+        assert newParent != null;
+
         if ( !items.containsKey( newParent ) ) {
             this.addNode( newParentKey, newParent );
         }
+
+        assert key != null;
 
         this.addChildTo( key, newParentKey );
         this.addParentTo( newParentKey, key );
@@ -162,8 +182,21 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      * @param user_defined
      * @param classID
      */
-    public void deleteChildFrom( @SuppressWarnings("unused") K parent, K childKey ) {
-        items.remove( childKey ); // minor memory leak danger.
+    public void deleteLeaf( K leaf ) {
+        assert leaf != null;
+
+        if ( !this.get( leaf ).isLeaf() ) {
+            return;
+        }
+
+        Set<DirectedGraphNode<K, V>> parents = this.get( leaf ).getAllParentNodes();
+
+        items.remove( leaf );
+
+        for ( DirectedGraphNode<K, V> node : parents ) {
+            node.prune();
+        }
+
     }
 
     /**
@@ -186,6 +219,7 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      */
     public void prune() {
         for ( K element : this.items.keySet() ) {
+            assert element != null;
             DirectedGraphNode<K, V> v = items.get( element );
             v.prune();
         }
@@ -228,7 +262,10 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
             v.setTopoSortOrder( ++counter );
             for ( DirectedGraphNode<K, V> w : v.getChildNodes() ) {
                 /* decrement the degree of this node */
-                int inDegree = degrees.get( w ).intValue();
+                assert w != null;
+                assert degrees.containsKey( w );
+
+                Integer inDegree = degrees.get( w );
                 inDegree--;
                 degrees.put( w, inDegree );
 
@@ -364,6 +401,7 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      */
     @Override
     public boolean containsKey( K key ) {
+        if ( key == null ) return false;
         return getItems().containsKey( key );
     }
 

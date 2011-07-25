@@ -46,6 +46,8 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
      */
     public DirectedGraphNode( K key, V value, DirectedGraph<K, V> graph ) {
         super( key, value );
+        assert key != null;
+        assert value != null;
         parents = new LinkedHashSet<K>();
         children = new LinkedHashSet<K>();
         this.graph = graph;
@@ -55,6 +57,7 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
      * @param newChildKey Object
      */
     public void addChild( K newChildKey ) {
+        assert newChildKey != null;
         children.add( newChildKey );
     }
 
@@ -62,6 +65,7 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
      * @param newParentKey Object
      */
     public void addParent( K newParentKey ) {
+        assert newParentKey != null;
         parents.add( newParentKey );
     }
 
@@ -159,7 +163,12 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
         Set<DirectedGraphNode<K, V>> f = new LinkedHashSet<DirectedGraphNode<K, V>>();
         for ( Iterator<K> i = this.getChildIterator(); i.hasNext(); ) {
             K k = i.next();
-            f.add( getGraph().get( k ) );
+            assert k != null;
+            DirectedGraphNode<K, V> e = getGraph().get( k );
+
+            assert e != null : "Null for node corresponding to key " + k;
+
+            f.add( e );
         }
         return f;
     }
@@ -312,8 +321,10 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
 
         for ( Iterator<K> it = this.getParentIterator(); it.hasNext(); ) {
             K j = it.next();
-            list.add( getGraph().get( j ) );
-            getGraph().get( j ).getAllParentNodes( list );
+            DirectedGraphNode<K, V> node = getGraph().get( j );
+            if ( node == null ) continue;
+            list.add( node );
+            node.getAllParentNodes( list );
         }
         return list;
     }
