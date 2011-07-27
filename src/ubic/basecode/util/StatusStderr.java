@@ -67,4 +67,9 @@ public class StatusStderr implements StatusViewer {
         showStatus( s );
     }
 
+    @Override
+    public void showStatus( String s, boolean callSuper ) {
+        showStatus( s );
+    }
+
 }

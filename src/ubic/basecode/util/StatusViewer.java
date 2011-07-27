@@ -36,6 +36,12 @@ public interface StatusViewer {
 
     /**
      * @param s
+     * @param callSuper set to false to suppress calling super.showStatus() (default is true)
+     */
+    public abstract void showStatus( String s, boolean callSuper );
+
+    /**
+     * @param s
      * @param sleepSeconds how long more than usual to display the message (if gui-based)
      */
     public abstract void showStatus( String s, int sleepSeconds );
