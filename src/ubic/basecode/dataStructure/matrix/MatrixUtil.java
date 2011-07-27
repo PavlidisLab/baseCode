@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 
 import ubic.basecode.math.Constants;
+import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
@@ -48,6 +49,30 @@ public class MatrixUtil {
             result.set( i, matrix.getQuick( i, i ) );
         }
         return result;
+    }
+
+    /**
+     * Makes a copy
+     * 
+     * @param list
+     * @return
+     */
+    public static DoubleMatrix1D fromList( DoubleArrayList list ) {
+        DoubleMatrix1D r = new DenseDoubleMatrix1D( list.size() );
+        for ( int i = 0; i < list.size(); i++ ) {
+            r.setQuick( i, list.getQuick( i ) );
+        }
+        return r;
+    }
+
+    /**
+     * Makes a copy
+     * 
+     * @param vector
+     * @return
+     */
+    public static DoubleArrayList toList( DoubleMatrix1D vector ) {
+        return new DoubleArrayList( vector.toArray() );
     }
 
     /**

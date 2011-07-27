@@ -88,8 +88,28 @@ public class Rank {
      * 
      * @param array DoubleArrayList
      * @return cern.colt.list.DoubleArrayList
+     * @param array
+     * @return
      */
     public static DoubleArrayList rankTransform( DoubleArrayList array ) {
+        return rankTransform( array, false );
+    }
+
+    /**
+     * Rank transform an array. The ranks are constructed based on the sort order of the elements. That is, low values
+     * get low numbered ranks starting from 1, unless you set descending = true
+     * <p>
+     * Ties are resolved by assigning the average rank for tied values. For example, instead of arbitrarily assigning
+     * ties ranks 3,4,5, all three values would get a rank of 4 and no value would get a rank of 3 or 5.
+     * <p>
+     * Missing values are not handled particularly gracefully: missing values (Double.NaN) are treated as per their
+     * natural sort order.
+     * 
+     * @param array DoubleArrayList
+     * @param descending - reverse the usual ordering so larger values are the the front.
+     * @return cern.colt.list.DoubleArrayList
+     */
+    public static DoubleArrayList rankTransform( DoubleArrayList array, boolean descending ) {
         if ( array == null ) {
             throw new IllegalArgumentException( "Null array" );
         }
@@ -139,6 +159,10 @@ public class Rank {
         // At this point we may have repeated ranks.
 
         fixTies( result, ranks );
+
+        if ( descending ) {
+            result.reverse();
+        }
 
         return result;
     }
