@@ -215,6 +215,9 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
     protected DoubleMatrix<String, String> createMatrix( List<DoubleArrayList> MTemp, List<String> rowNames,
             List<String> colNames1 ) {
 
+        if ( MTemp.isEmpty() ) {
+            throw new IllegalArgumentException( "Must provide vectors" );
+        }
         DoubleMatrix<String, String> matrix = DoubleMatrixFactory.fastrow( MTemp.size(), MTemp.get( 0 ).size() );
 
         for ( int i = 0; i < matrix.rows(); i++ ) {
