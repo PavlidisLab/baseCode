@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix1D;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrixImpl;
@@ -35,6 +36,7 @@ import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.io.reader.StringMatrixReader;
 import ubic.basecode.util.r.type.GenericAnovaResult;
 import ubic.basecode.util.r.type.LinearModelSummary;
+import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 
@@ -628,7 +630,8 @@ public class LeastSquaresFitTest {
         // log.info( s.getAnova() );
 
         // our model matrix ends up with different coefficients than R which are
-      //  double[] rcoef = new double[] { 14.96355, 0.14421, -0.11525, 0.24257, Double.NaN, 0.04093, 0.06660, Double.NaN };
+        // double[] rcoef = new double[] { 14.96355, 0.14421, -0.11525, 0.24257, Double.NaN, 0.04093, 0.06660,
+        // Double.NaN };
 
         // here are the coefs we get in R if we use the exact model matrix we get drom our DesignMatrix
         double[] coef = new double[] { 15.10776244, -0.01689300, 0.09835841, -0.20163964, Double.NaN, -0.04092962,
@@ -718,5 +721,28 @@ public class LeastSquaresFitTest {
 
         DoubleMatrix2D studres = fit.getStudentizedResiduals();
         log.info( studres );
+    }
+
+    @Test
+    public void testVectorRegress() throws Exception {
+
+        DoubleMatrix1D vectorA = new DenseDoubleMatrix1D( new double[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 } );
+        DoubleMatrix1D vectorB = new DenseDoubleMatrix1D( new double[] { 1, 2, 2, 3, 3, 4, 4, 5, 5, 6 } );
+
+        LeastSquaresFit fit = new LeastSquaresFit( vectorA, vectorB );
+
+        DoubleMatrix2D coefficients = fit.getCoefficients();
+        DoubleMatrix2D residuals = fit.getResiduals();
+
+        assertEquals( 0.666666, coefficients.get( 0, 0 ), 0.0001 );
+        assertEquals( 0.5152, coefficients.get( 1, 0 ), 0.0001 );
+
+        double[] expectedResiduals = new double[] { -0.1818182, 0.3030303, -0.2121212, 0.2727273, -0.2424242,
+                0.2424242, -0.2727273, 0.2121212, -0.3030303, 0.1818182 };
+
+        for ( int i = 0; i < expectedResiduals.length; i++ ) {
+            assertEquals( expectedResiduals[i], residuals.get( 0, i ), 0.00001 );
+        }
+
     }
 }

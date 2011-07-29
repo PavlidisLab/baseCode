@@ -171,6 +171,27 @@ public class LeastSquaresFit {
     }
 
     /**
+     * Least squares fit between two vectors. Always adds an intercept!
+     * 
+     * @param vectorA
+     * @param vectorB
+     */
+    public LeastSquaresFit( DoubleMatrix1D vectorA, DoubleMatrix1D vectorB ) {
+        assert vectorA.size() == vectorB.size();
+
+        this.A = new DenseDoubleMatrix2D( vectorA.size(), 2 );
+        this.b = new DenseDoubleMatrix2D( 1, vectorB.size() );
+
+        for ( int i = 0; i < vectorA.size(); i++ ) {
+            A.set( i, 0, 1 );
+            A.set( i, 1, vectorA.get( i ) );
+            b.set( 0, i, vectorB.get( i ) );
+        }
+
+        lsf();
+    }
+
+    /**
      * @param sample information that will be converted to a design matrix; intercept term is added.
      * @param data Data matrix
      */
@@ -983,7 +1004,16 @@ public class LeastSquaresFit {
         int j = 0;
         for ( int ti = 0; ti < coef.size(); ti++ ) {
             double c = coef.get( ti );
-            String dmcolname = this.designMatrix.getMatrix().getColNames().get( ti );
+            assert this.designMatrix != null;
+            List<String> colNames = this.designMatrix.getMatrix().getColNames();
+
+            String dmcolname;
+            if ( colNames == null ) {
+                dmcolname = "Column_" + ti;
+            } else {
+                dmcolname = colNames.get( ti );
+            }
+
             /* FIXME the contrast should be stored in there. */
             coeffMat.addRowName( dmcolname );
             if ( Double.isNaN( c ) ) {
