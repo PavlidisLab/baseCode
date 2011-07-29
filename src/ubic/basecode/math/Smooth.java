@@ -27,6 +27,13 @@ import cern.colt.matrix.DoubleMatrix1D;
  */
 public class Smooth {
 
+    /**
+     * Simple moving average that sums the points "backwards".
+     * 
+     * @param m
+     * @param windowSize
+     * @return
+     */
     public static DoubleMatrix1D movingAverage( DoubleMatrix1D m, int windowSize ) {
 
         Queue<Double> window = new LinkedList<Double>();
@@ -42,17 +49,19 @@ public class Smooth {
             sum += num;
             window.add( num );
             if ( window.size() > windowSize ) {
-                // this is bad because at the beginning, we're averaging too few points, and at the end we're
+
                 sum -= window.remove();
             }
 
             if ( !window.isEmpty() ) {
+                // if ( window.size() == windowSize ) {
                 result.set( i, sum / window.size() );
+            } else {
+                result.set( i, Double.NaN );
             }
         }
 
         return result;
 
     }
-
 }
