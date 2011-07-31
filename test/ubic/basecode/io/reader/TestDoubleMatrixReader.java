@@ -55,6 +55,12 @@ public class TestDoubleMatrixReader extends TestCase {
 
     }
 
+    public void testReadInputStreamGotColNameSkipColumn() throws Exception {
+        matrix = reader.read( is, null, 7 );
+        assertEquals( 5, matrix.columns() );
+        assertTrue( !matrix.containsColumnName( "sample2" ) && matrix.containsColumnName( "sample12" ) );
+    }
+
     public void testReadInputStreamGotRowName() throws Exception {
 
         matrix = reader.read( is );

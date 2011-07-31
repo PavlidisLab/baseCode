@@ -81,18 +81,20 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
         assert newChildKey != null;
 
         if ( !items.containsKey( newChildKey ) ) {
-            throw new IllegalStateException( "Attempt to add link to node that is not in the graph" );
+            throw new IllegalArgumentException( "Attempt to add link to node that is not in the graph" );
         }
 
         if ( items.containsKey( key ) ) {
             items.get( key ).addChild( newChildKey );
             items.get( newChildKey ).addParent( key );
+        } else {
+            throw new IllegalArgumentException( "Attempt to add child to a node that is not in the graph" );
         }
 
     }
 
     /**
-     * Add a child to a particualar node identified by key.
+     * Add a child to a particualar node identified by key. If it is a new node, it will be added to the graph first.
      * 
      * @param key Object
      * @param newChildKey Object
@@ -108,7 +110,7 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
             throw new IllegalArgumentException( "Attempt to add a child to a non-existent node: " + key );
         }
 
-        if ( !items.containsKey( newChild ) ) {
+        if ( !items.containsKey( newChildKey ) ) {
             this.addNode( newChildKey, newChild );
         }
 
@@ -117,6 +119,8 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
     }
 
     /**
+     * Will not be attached to any other node.
+     * 
      * @param key Object
      * @param item Object
      */
@@ -184,12 +188,17 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      */
     public void deleteLeaf( K leaf ) {
         assert leaf != null;
-
-        if ( !this.get( leaf ).isLeaf() ) {
+        DirectedGraphNode<K, V> leafNode = this.get( leaf );
+        if ( leafNode == null ) {
+            log.debug( "Graph does not contain node for key=" + leaf );
             return;
         }
 
-        Set<DirectedGraphNode<K, V>> parents = this.get( leaf ).getAllParentNodes();
+        if ( !leafNode.isLeaf() ) {
+            return;
+        }
+
+        Set<DirectedGraphNode<K, V>> parents = leafNode.getAllParentNodes();
 
         items.remove( leaf );
 

@@ -27,7 +27,6 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import ubic.basecode.dataStructure.matrix.Matrix2D;
 
 /**
@@ -43,9 +42,9 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
 
     public abstract M read( InputStream stream ) throws IOException;
 
-    public abstract M read( String filename ) throws IOException;
+    public abstract M read( String filename, int maxRows ) throws IOException;
 
-    public abstract M readOneRow( BufferedReader dis ) throws IOException;
+    public abstract M read( String filename ) throws IOException;
 
     /**
      * Flag to indicate the top left entry exists or not.
@@ -56,7 +55,7 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
         this.topLeft = topLeft;
     }
 
-    protected List<String> readHeader( BufferedReader dis ) throws IOException {
+    protected List<String> readHeader( BufferedReader dis, int skipColumns ) throws IOException {
         List<String> headerVec = new Vector<String>();
         String header = null;
 
@@ -104,7 +103,12 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
                 throw new IOException( "Warning: Missing values not allowed in the header (column " + columnNumber
                         + ")" );
             } else if ( columnNumber > 0 ) {
-                headerVec.add( s );
+
+                if ( skipColumns > 0 && columnNumber <= skipColumns ) {
+                    // ignore.
+                } else {
+                    headerVec.add( s );
+                }
             }
             // otherwise, just the corner string.
             columnNumber++;
@@ -119,4 +123,5 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
         return headerVec;
 
     }
+
 }

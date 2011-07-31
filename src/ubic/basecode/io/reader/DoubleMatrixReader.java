@@ -20,7 +20,6 @@ package ubic.basecode.io.reader;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -37,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrixFactory;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.util.FileTools;
 import cern.colt.list.DoubleArrayList;
 
 /**
@@ -63,7 +63,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
      */
     @Override
     public DoubleMatrix<String, String> read( InputStream stream ) throws IOException {
-        return read( stream, null );
+        return read( stream, null, 0 );
     }
 
     /**
@@ -75,7 +75,38 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
      */
     public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames )
             throws IOException {
-        return read( stream, wantedRowNames, true );
+        return read( stream, wantedRowNames, true, 0, -1 );
+    }
+
+    /**
+     * @param stream
+     * @param wantedRowNames
+     * @param skipColumns
+     * @return <code>read( stream, wantedRowNames, createEmptyRows )</code> with <code>createEmptyRows</code> set to
+     *         true.
+     * @throws IOException
+     */
+    public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames, int skipColumns )
+            throws IOException {
+        return read( stream, wantedRowNames, true, skipColumns, -1 );
+    }
+
+    /**
+     * @param fileName
+     * @param wantedRowNames
+     * @param skipColumns how many columns to skip -- not counting the first column. So if you set this to 4, the first
+     *        four data columns will be skipped.
+     * @return
+     * @throws IOException
+     */
+    public DoubleMatrix<String, String> read( String fileName, Collection<String> wantedRowNames, int skipColumns )
+            throws IOException {
+        File infile = new File( fileName );
+        if ( !infile.exists() || !infile.canRead() ) {
+            throw new IOException( "Could not read from file " + fileName );
+        }
+        InputStream stream = FileTools.getInputStreamFromPlainOrCompressedFile( fileName );
+        return read( stream, wantedRowNames, true, skipColumns, -1 );
     }
 
     /**
@@ -83,11 +114,12 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
      * @param wantedRowNames Set
      * @param createEmptyRows if a row contained in <code>wantedRowNames</code> is not found in the file, create an
      *        empty row filled with Double.NaN iff this param is true.
+     * @param maxRows
      * @return matrix
      * @throws IOException
      */
     public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames,
-            boolean createEmptyRows ) throws IOException {
+            boolean createEmptyRows, int skipColumns, int maxRows ) throws IOException {
 
         BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
 
@@ -103,9 +135,11 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
         //
         Collection<String> wantedRowsFound = new HashSet<String>();
 
-        colNames = readHeader( dis );
+        colNames = readHeader( dis, skipColumns );
 
         numHeadings = colNames.size();
+
+        int rowNumber = 0;
 
         while ( ( row = dis.readLine() ) != null ) {
 
@@ -113,7 +147,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
                 continue;
             }
 
-            String rowName = parseRow( row, rowNames, MTemp, wantedRowNames );
+            String rowName = parseRow( row, rowNames, MTemp, wantedRowNames, skipColumns );
 
             if ( rowName == null ) {
                 // signals a blank or skipped row.
@@ -133,6 +167,8 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
                     wantedRowsFound.add( rowName );
                 }
             }
+
+            if ( maxRows > 0 && ++rowNumber == maxRows ) break;
 
         }
         stream.close();
@@ -158,19 +194,24 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
     }
 
     /**
-     * @param filename data file to read from
+     * @param filename data file to read from (can be compressed)
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
      */
     @Override
     public DoubleMatrix<String, String> read( String filename ) throws IOException {
-        return read( filename, null );
+        return read( filename, null, -1 );
+    }
+
+    @Override
+    public DoubleMatrix<String, String> read( String filename, int maxRows ) throws IOException {
+        return read( filename, null, maxRows );
     }
 
     /**
      * Read a matrix from a file, subject to filtering criteria.
      * 
-     * @param filename data file to read from
+     * @param filename data file to read from (can be compressed)
      * @param wantedRowNames contains names of rows we want to get
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
@@ -180,24 +221,9 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
         if ( !infile.exists() || !infile.canRead() ) {
             throw new IOException( "Could not read from file " + filename );
         }
-        FileInputStream stream = new FileInputStream( infile );
-        return read( stream, wantedRowNames );
+        InputStream stream = FileTools.getInputStreamFromPlainOrCompressedFile( filename );
+        return read( stream, wantedRowNames, -1 );
     } // end read
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
-     */
-    @Override
-    public DoubleMatrix<String, String> readOneRow( BufferedReader dis ) throws IOException {
-        String row = dis.readLine();
-        List<DoubleArrayList> MTemp = new Vector<DoubleArrayList>();
-
-        List<String> rowNames = new Vector<String>();
-        parseRow( row, rowNames, MTemp, null );
-        return createMatrix( MTemp, rowNames, colNames );
-    }
 
     protected DoubleArrayList createEmptyRow( int numColumns ) {
 
@@ -234,7 +260,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
 
         assert matrix.rows() == MTemp.size();
         assert matrix.rows() == rowNames.size();
-        assert matrix.columns() == colNames.size();
+        assert matrix.columns() == colNames.size() : "Got " + matrix.columns() + " != " + colNames.size();
 
         matrix.setRowNames( rowNames );
         matrix.setColumnNames( colNames1 );
@@ -247,11 +273,13 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
      * @param rowNames
      * @param MTemp
      * @param wantedRowNames
+     * @param skipColumns the number of columns after the first to ignore (for example, Gemma output that includes gene
+     *        information as well as numeric data)
      * @return
      * @throws IOException
      */
     private String parseRow( String row, Collection<String> rowNames, List<DoubleArrayList> MTemp,
-            Collection<String> wantedRowNames ) throws IOException {
+            Collection<String> wantedRowNames, int skipColumns ) throws IOException {
 
         if ( row.startsWith( "#" ) || row.startsWith( "!" ) ) {
             return null;
@@ -284,7 +312,10 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
             }
 
             if ( columnNumber > 0 ) {
-                if ( missing ) {
+
+                if ( skipColumns > 0 && columnNumber <= skipColumns ) {
+                    // skip.
+                } else if ( missing ) {
                     rowTemp.add( Double.NaN );
                 } else {
                     try {

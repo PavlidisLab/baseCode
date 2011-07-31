@@ -20,13 +20,14 @@ package ubic.basecode.io.reader;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
+
+import ubic.basecode.util.FileTools;
 
 /**
  * Reads a tab-delimited file with keys in first column, values in second.
@@ -94,7 +95,7 @@ public class MapReader {
         if ( !infile.exists() || !infile.canRead() ) {
             throw new IllegalArgumentException( "Could not read from " + filename );
         }
-        FileInputStream stream = new FileInputStream( infile );
+        InputStream stream = FileTools.getInputStreamFromPlainOrCompressedFile( filename );
         return read( stream, hasHeader );
 
     }

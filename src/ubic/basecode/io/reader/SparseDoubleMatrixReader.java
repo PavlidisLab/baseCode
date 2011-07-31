@@ -82,7 +82,7 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
                 if ( !itemNames.contains( itemA ) ) {
                     rows.put( itemA, new HashSet<IndexScoreDyad>() );
                     itemNames.add( itemA );
-                    nameIndexMap.put( itemA,  index   );
+                    nameIndexMap.put( itemA, index );
                     index++;
                 }
             } else {
@@ -142,7 +142,7 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
 
     @Override
     public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames,
-            boolean createEmptyRows ) throws IOException {
+            boolean createEmptyRows, int skipColumns, int maxRows ) throws IOException {
         throw new UnsupportedOperationException();
     }
 
@@ -220,17 +220,6 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
         }
         ff.close();
         return returnVal;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.io.reader.AbstractNamedMatrixReader#readOneRow(java.io.BufferedReader)
-     */
-    @Override
-    public DoubleMatrix<String, String> readOneRow( BufferedReader dis ) {
-        // this is impossible for the pair method.
-        throw new UnsupportedOperationException();
     }
 
 }

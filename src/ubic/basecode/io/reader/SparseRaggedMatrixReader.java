@@ -18,8 +18,7 @@
  */
 package ubic.basecode.io.reader;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
+import java.io.BufferedReader; 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -135,7 +134,7 @@ public class SparseRaggedMatrixReader extends DoubleMatrixReader {
                     rows.put( itemA, new OpenIntDoubleHashMap() );
                     itemNames.add( itemA );
                     indexNameMap.put( index, itemA );
-                    nameIndexMap.put( itemA,   index   );
+                    nameIndexMap.put( itemA, index );
                     rows.get( itemA ).put( index, 0 ); // to itself. - in case it isn't
                     // there.
                     index++;
@@ -230,7 +229,7 @@ public class SparseRaggedMatrixReader extends DoubleMatrixReader {
         if ( !FileTools.testFile( fileName ) ) {
             throw new IOException( "Could not read from file " + fileName );
         }
-        FileInputStream stream = new FileInputStream( fileName );
+        InputStream stream = FileTools.getInputStreamFromPlainOrCompressedFile( fileName );
         return readFromAdjList( stream );
     }
 

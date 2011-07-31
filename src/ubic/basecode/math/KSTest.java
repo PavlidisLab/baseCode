@@ -1,7 +1,7 @@
 /*
  * The baseCode project
  * 
- * Copyright (c) 2006 University of British Columbia
+ * Copyright (c) 2006-2011 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,9 +38,33 @@ public class KSTest {
      */
     public static double oneSample( DoubleArrayList x, ProbabilityComputer pg ) {
 
+        int n = x.size();
+
+        double statistic = oneSampleStatistic( x, pg );
+
+        return oneSampleProbability( statistic, n );
+
+    }
+
+    /**
+     * @param statistic
+     * @param n
+     * @return
+     */
+    public static double oneSampleProbability( double statistic, int n ) {
+        // 1 - pkstwo(sqrt(n) * STATISTIC)
+        return 1.0 - pkstwo( Math.sqrt( n ) * statistic );
+    }
+
+    /**
+     * @param x
+     * @param pg
+     * @return
+     */
+    public static double oneSampleStatistic( DoubleArrayList x, ProbabilityComputer pg ) {
+
         DoubleArrayList xs = x.copy();
         int n = xs.size();
-
         DoubleArrayList z = new DoubleArrayList( 2 * n );
 
         // x <- y(sort(x), ...) - (0 : (n-1)) / n
@@ -54,11 +78,7 @@ public class KSTest {
             z.add( 1.0 / n - z.getQuick( i ) );
         }
 
-        double statistic = Descriptive.max( z );
-
-        // 1 - pkstwo(sqrt(n) * STATISTIC)
-        return 1.0 - pkstwo( Math.sqrt( n ) * statistic );
-
+        return Descriptive.max( z );
     }
 
     /**
@@ -72,6 +92,32 @@ public class KSTest {
         if ( ny < 1 || nx < 1 ) {
             throw new IllegalStateException( "Can't do test" );
         }
+
+        double statistic = twoSampleStatistic( x, y );
+
+        return twoSampleProbability( statistic, nx, ny );
+
+    }
+
+    /**
+     * @param statistic
+     * @param nx
+     * @param ny
+     * @return
+     */
+    public static double twoSampleProbability( double statistic, int nx, int ny ) {
+        return 1.0 - psmirnov2x( statistic, nx, ny );
+    }
+
+    /**
+     * @param x
+     * @param y
+     * @return
+     */
+    public static double twoSampleStatistic( DoubleArrayList x, DoubleArrayList y ) {
+
+        int nx = x.size();
+        int ny = y.size();
 
         DoubleArrayList w = new DoubleArrayList( x.elements() );
         w.addAllOf( y );
@@ -91,7 +137,7 @@ public class KSTest {
             }
         }
 
-        // FIXME do something about ties here //
+        // do something about ties here? //
 
         // take absolute value of w.
         for ( int i = 1; i < z.size(); i++ ) {
@@ -99,11 +145,13 @@ public class KSTest {
         }
 
         double statistic = Descriptive.max( z );
-
-        return 1.0 - psmirnov2x( statistic, nx, ny );
-
+        return statistic;
     }
 
+    /**
+     * @param x
+     * @return
+     */
     private static double pkstwo( double x ) {
         double tol = 1e-6;
         double[] p = new double[] { x };
@@ -117,29 +165,8 @@ public class KSTest {
      */
 
     /**
-     * From R code.
-     * 
-     * <pre>
-     * 
-     * 
-     *        Compute
-     *                       \sum_{k=-\infty}&circ;\infty (-1)&circ;k e&circ;{-2 k&circ;2 x&circ;2}
-     *                       = 1 + 2 \sum_{k=1}&circ;\infty (-1)&circ;k e&circ;{-2 k&circ;2 x&circ;2}
-     *                       = \sqrt{2\pi/x} \sum_{k=1}&circ;\infty \exp(-(2k-1)&circ;2\pi&circ;2/(8x&circ;2))
-     * 
-     * 
-     * 
-     * </pre>
+     * From R: See e.g. J. Durbin (1973), Distribution Theory for Tests Based on the Sample Distribution Function. SIAM.
      * <p>
-     * See e.g. J. Durbin (1973), Distribution Theory for Tests Based on the Sample Distribution Function. SIAM.
-     * <p>
-     * The 'standard' series expansion obviously cannot be used close to 0; we use the alternative series for x < 1, and
-     * a rather crude estimate of the series remainder term in this case, in particular using that ue^(-lu^2) \le
-     * e^(-lu^2 + u) \le e^(-(l-1)u^2 - u^2+u) \le e^(-(l-1)) provided that u and l are >= 1.
-     * <p>
-     * (But note that for reasonable tolerances, one could simply take 0 as the value for x < 0.2, and use the standard
-     * expansion otherwise.)
-     * <hr>
      * 
      * @param x[1:n] is input and output
      * @param n Number of items in the data
@@ -178,6 +205,12 @@ public class KSTest {
         }
     }
 
+    /**
+     * @param x
+     * @param m
+     * @param n
+     * @return
+     */
     private static double psmirnov2x( double x, int m, int n ) {
         int i, j;
 
