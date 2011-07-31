@@ -18,8 +18,7 @@
  */
 package ubic.basecode.math;
 
-import cern.colt.list.DoubleArrayList;
-import cern.colt.matrix.DoubleMatrix1D;
+import cern.colt.list.DoubleArrayList; 
 
 /**
  * Alternative distance and similarity metrics for vectors.
