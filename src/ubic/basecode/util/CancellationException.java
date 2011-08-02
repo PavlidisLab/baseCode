@@ -26,7 +26,9 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author pavlidis
  * @version $Id$
+ * @deprecated Use a java CancellationException
  */
+@Deprecated
 public class CancellationException extends RuntimeException {
 
     /**
