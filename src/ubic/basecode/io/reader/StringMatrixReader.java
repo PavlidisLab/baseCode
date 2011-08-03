@@ -44,13 +44,15 @@ public class StringMatrixReader extends AbstractMatrixReader<StringMatrix<String
     }
 
     /**
-     * Missing values are entered as an empty string.
-     * 
-     * @param stream InputStream
-     * @return NamedMatrix
+     * @param stream
+     * @param maxRows
+     * @param numColumnsToSkip How many data columns to skip. 0 or -1 means none; 1 means one column will be skipped,
+     *        etc.
+     * @return
      * @throws IOException
      */
-    public StringMatrix<String, String> read( InputStream stream, int maxRows, int skipColumns ) throws IOException {
+    public StringMatrix<String, String> read( InputStream stream, int maxRows, int numColumnsToSkip )
+            throws IOException {
         StringMatrix<String, String> matrix = null;
         List<List<String>> MTemp = new Vector<List<String>>();
         List<String> rowNames = new Vector<String>();
@@ -89,7 +91,7 @@ public class StringMatrixReader extends AbstractMatrixReader<StringMatrix<String
 
                 if ( columnNumber > 0 ) {
 
-                    if ( columnNumber <= skipColumns ) {
+                    if ( columnNumber <= numColumnsToSkip ) {
                         // noop
                     }
                     if ( missing ) {
@@ -149,17 +151,17 @@ public class StringMatrixReader extends AbstractMatrixReader<StringMatrix<String
     /**
      * @param filename
      * @param maxRows
-     * @param startColumns
+     * @param numColumnsToSkip
      * @return
      * @throws IOException
      */
-    public StringMatrix<String, String> read( String filename, int maxRows, int startColumns ) throws IOException {
+    public StringMatrix<String, String> read( String filename, int maxRows, int numColumnsToSkip ) throws IOException {
         File infile = new File( filename );
         if ( !infile.exists() || !infile.canRead() ) {
             throw new IllegalArgumentException( "Could not read from " + filename );
         }
         InputStream stream = FileTools.getInputStreamFromPlainOrCompressedFile( filename );
-        return read( stream, maxRows, startColumns );
+        return read( stream, maxRows, numColumnsToSkip );
     }
 
     @Override

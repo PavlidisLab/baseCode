@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ubic.basecode.dataStructure.matrix.Matrix2D;
@@ -55,6 +56,12 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
         this.topLeft = topLeft;
     }
 
+    /**
+     * @param dis
+     * @param skipColumns how many data columns shoul be ignored
+     * @return
+     * @throws IOException
+     */
     protected List<String> readHeader( BufferedReader dis, int skipColumns ) throws IOException {
         List<String> headerVec = new Vector<String>();
         String header = null;
@@ -79,7 +86,7 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
         if ( !topLeft ) columnNumber = 1;
 
         while ( st.hasMoreTokens() ) {
-            String s = st.nextToken();
+            String s = StringUtils.strip( st.nextToken(), " " );
             boolean missing = false;
 
             if ( s.compareTo( "\t" ) == 0 ) {
@@ -101,7 +108,7 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
 
             if ( missing ) {
                 throw new IOException( "Warning: Missing values not allowed in the header (column " + columnNumber
-                        + ")" );
+                        + " at '" + header + "')" );
             } else if ( columnNumber > 0 ) {
 
                 if ( skipColumns > 0 && columnNumber <= skipColumns ) {

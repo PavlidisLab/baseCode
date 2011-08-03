@@ -337,7 +337,8 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
                 // First field is the row label.
 
                 if ( missing ) {
-                    throw new IOException( "Missing values not allowed for row labels" );
+                    throw new IOException( "Missing values not allowed for row labels ("
+                            + StringUtils.abbreviate( row, 20 ) + ")" );
                 }
 
                 currentRowName = tok;
