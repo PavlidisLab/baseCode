@@ -78,7 +78,7 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
 
         if ( header == null ) return headerVec;
 
-        StringTokenizer st = new StringTokenizer( header, "\t", true ); // return
+        StringTokenizer st = new StringTokenizer( StringUtils.strip( header ), "\t", true ); // return
         // delims.
 
         String previousToken = "";
