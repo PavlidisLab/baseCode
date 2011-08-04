@@ -20,9 +20,11 @@ package ubic.basecode.util;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Collection; 
+import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
+
 import au.com.bytecode.opencsv.CSVReader;
 
 /**
@@ -62,44 +64,17 @@ public class StringUtil {
     }
 
     /**
-     * Method to wrap lines. It attempts to wrap on whitespace - it will not break within a word.
+     * Method to wrap lines. It attempts to wrap on whitespace.
      * 
      * @param string
      * @param charPerLine
      * @param delim The string to put at the end of each new line. For example, "\n" or "&lt;br /&gt;";
      * @return
+     * @deprecated use Commons WordUtils instead.
      */
+    @Deprecated
     public static String wrap( String string, int charPerLine, String delim ) {
-        if ( string == null || string.length() <= charPerLine ) return string;
-        StringBuffer buf = new StringBuffer();
-        char[] chars = string.toCharArray();
-        int lastLineCount = 0;
-        boolean needDelim = false;
-        for ( int i = 0; i < chars.length; i++ ) {
-            char c = chars[i];
-            buf.append( c );
-            lastLineCount++;
-
-            if ( needDelim ) {
-                if ( ( c == ' ' || c == '\t' || c == '\n' ) ) {
-                    buf.append( delim );
-                    lastLineCount = 0;
-                    needDelim = false;
-                    continue;
-                }
-            }
-
-            if ( i > 0 && lastLineCount >= charPerLine ) {
-                if ( ( c == ' ' || c == '\t' || c == '\n' ) ) {
-                    buf.append( delim );
-                    lastLineCount = 0;
-                    needDelim = false;
-                } else {
-                    needDelim = true;
-                }
-            }
-        }
-        return buf.toString();
+        return WordUtils.wrap( string, charPerLine, delim, true );
     }
 
     /**
