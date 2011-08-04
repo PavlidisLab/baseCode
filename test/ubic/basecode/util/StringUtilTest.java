@@ -69,12 +69,4 @@ public class StringUtilTest extends TestCase {
         assertEquals( null, suf );
     }
 
-    public void testWrap() throws Exception {
-        String testString = "I am testing this class";
-        String actualValue = StringUtil.wrap( testString, 5, "\n" );
-        String expectedValue = "I am \ntesting \nthis \nclass";
-        assertEquals( expectedValue, actualValue );
-
-    }
-
 }
