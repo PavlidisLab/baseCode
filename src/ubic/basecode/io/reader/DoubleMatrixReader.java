@@ -81,32 +81,31 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
     /**
      * @param stream
      * @param wantedRowNames
-     * @param skipColumns
-     * @return <code>read( stream, wantedRowNames, createEmptyRows )</code> with <code>createEmptyRows</code> set to
-     *         true.
+     * @param numberOfColumnsToSkip
+     * @return
      * @throws IOException
      */
-    public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames, int skipColumns )
-            throws IOException {
-        return read( stream, wantedRowNames, true, skipColumns, -1 );
+    public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames,
+            int numberOfColumnsToSkip ) throws IOException {
+        return read( stream, wantedRowNames, true, numberOfColumnsToSkip, -1 );
     }
 
     /**
      * @param fileName
      * @param wantedRowNames
-     * @param skipColumns how many columns to skip -- not counting the first column. So if you set this to 4, the first
-     *        four data columns will be skipped.
+     * @param numberOfColumnsToSkip how many columns to skip -- not counting the first column. So if you set this to 4,
+     *        the first four data columns will be skipped.
      * @return
      * @throws IOException
      */
-    public DoubleMatrix<String, String> read( String fileName, Collection<String> wantedRowNames, int skipColumns )
-            throws IOException {
+    public DoubleMatrix<String, String> read( String fileName, Collection<String> wantedRowNames,
+            int numberOfColumnsToSkip ) throws IOException {
         File infile = new File( fileName );
         if ( !infile.exists() || !infile.canRead() ) {
             throw new IOException( "Could not read from file " + fileName );
         }
         InputStream stream = FileTools.getInputStreamFromPlainOrCompressedFile( fileName );
-        return read( stream, wantedRowNames, true, skipColumns, -1 );
+        return read( stream, wantedRowNames, true, numberOfColumnsToSkip, -1 );
     }
 
     /**
@@ -305,9 +304,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
                     previousToken = tok;
                     continue;
                 }
-            } else if ( tok.compareTo( " " ) == 0 || tok.compareTo( "" ) == 0 ) {
-                missing = true;
-            } else if ( tok.compareTo( "NaN" ) == 0 || tok.compareTo( "NA" ) == 0 ) {
+            } else if ( StringUtils.isBlank( tok ) || tok.compareTo( "NaN" ) == 0 || tok.compareTo( "NA" ) == 0 ) {
                 missing = true;
             }
 

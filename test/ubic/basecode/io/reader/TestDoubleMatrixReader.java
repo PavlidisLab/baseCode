@@ -55,6 +55,16 @@ public class TestDoubleMatrixReader extends TestCase {
 
     }
 
+    public void testReadBlankCorner() throws Exception {
+        InputStream nis = TestDoubleMatrixReader.class.getResourceAsStream( "/data/testdata-blankcorner.txt" );
+        matrix = reader.read( nis );
+        assertTrue( matrix.containsColumnName( "sample1" ) && matrix.containsColumnName( "sample12" ) );
+
+        assertEquals( 12, matrix.getColNames().size() );
+        assertEquals( 12, matrix.columns() );
+
+    }
+
     public void testReadInputStreamGotColNameSkipColumn() throws Exception {
         matrix = reader.read( is, null, 7 );
         assertEquals( 5, matrix.columns() );
@@ -128,11 +138,11 @@ public class TestDoubleMatrixReader extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         reader = new DoubleMatrixReader();
-        is = TestStringMatrixReader.class.getResourceAsStream( "/data/testdata.txt" );
+        is = TestDoubleMatrixReader.class.getResourceAsStream( "/data/testdata.txt" );
 
-        ism = TestStringMatrixReader.class.getResourceAsStream( "/data/testdatamissing.txt" );
+        ism = TestDoubleMatrixReader.class.getResourceAsStream( "/data/testdatamissing.txt" );
 
-        ismb = TestStringMatrixReader.class.getResourceAsStream( "/data/testdatamissing-badrows.txt" );
+        ismb = TestDoubleMatrixReader.class.getResourceAsStream( "/data/testdatamissing-badrows.txt" );
 
         isbig = new ZipInputStream( TestStringMatrixReader.class
                 .getResourceAsStream( "/data/melanoma_and_sarcomaMAS5.zip" ) );

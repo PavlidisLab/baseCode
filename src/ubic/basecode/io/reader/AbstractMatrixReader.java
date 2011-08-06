@@ -22,7 +22,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -37,7 +36,6 @@ import ubic.basecode.dataStructure.matrix.Matrix2D;
  * @version $Id$
  */
 public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>, V> {
-    boolean topLeft = true;
 
     protected static final Log log = LogFactory.getLog( AbstractMatrixReader.class );
 
@@ -46,15 +44,6 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
     public abstract M read( String filename, int maxRows ) throws IOException;
 
     public abstract M read( String filename ) throws IOException;
-
-    /**
-     * Flag to indicate the top left entry exists or not.
-     * 
-     * @param topLeft true if a top left string exists
-     */
-    public void setTopLeft( boolean topLeft ) {
-        this.topLeft = topLeft;
-    }
 
     /**
      * @param dis
@@ -78,47 +67,49 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
 
         if ( header == null ) return headerVec;
 
-        StringTokenizer st = new StringTokenizer( StringUtils.strip( header ), "\t", true ); // return
+        if ( header.startsWith( "\t" ) ) header = "c" + header;
+
+        String[] tokens = StringUtils.splitPreserveAllTokens( header, "\t" );
         // delims.
 
         String previousToken = "";
         int columnNumber = 0;
-        if ( !topLeft ) columnNumber = 1;
 
-        while ( st.hasMoreTokens() ) {
-            String s = StringUtils.strip( st.nextToken(), " " );
+        for ( int i = 0; i < tokens.length; i++ ) {
+            String s = StringUtils.strip( tokens[i], " " );
             boolean missing = false;
 
             if ( s.compareTo( "\t" ) == 0 ) {
 
                 if ( previousToken.compareTo( "\t" ) == 0 ) { /* two tabs in a row */
                     missing = true;
-                } else if ( !st.hasMoreTokens() ) {
-                    // tab at end of line.
+                } else if ( i == tokens.length - 1 ) { // at end of line.
                     missing = true;
                 } else {
                     previousToken = s;
                     continue;
                 }
-            } else if ( s.compareTo( " " ) == 0 ) {
-                if ( previousToken.compareTo( "\t" ) == 0 ) {
-                    missing = true;
-                }
+            } else if ( StringUtils.isBlank( s ) ) {
+                missing = true;
             }
 
             if ( missing ) {
-                throw new IOException( "Warning: Missing values not allowed in the header (column " + columnNumber
-                        + " at '" + header + "')" );
+                throw new IOException( "Missing values are not allowed in the header (column " + columnNumber + " at '"
+                        + header + "')" );
             }
+            if ( columnNumber > 0 ) {
 
-            if ( skipColumns > 0 && columnNumber <= skipColumns ) {
-                // ignore, but count it.
+                if ( skipColumns > 0 && columnNumber <= skipColumns ) {
+
+                    // ignore, but count it.
+                } else {
+                    headerVec.add( s );
+                }
             } else {
-                headerVec.add( s );
+                // corner string.
             }
             columnNumber++;
 
-            // otherwise, just the corner string.
             previousToken = s;
         }
 
@@ -130,5 +121,4 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
         return headerVec;
 
     }
-
 }
