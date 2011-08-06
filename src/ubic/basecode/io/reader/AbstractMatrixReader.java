@@ -109,16 +109,16 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
             if ( missing ) {
                 throw new IOException( "Warning: Missing values not allowed in the header (column " + columnNumber
                         + " at '" + header + "')" );
-            } else if ( columnNumber > 0 ) {
-
-                if ( skipColumns > 0 && columnNumber <= skipColumns ) {
-                    // ignore.
-                } else {
-                    headerVec.add( s );
-                }
             }
-            // otherwise, just the corner string.
+
+            if ( skipColumns > 0 && columnNumber <= skipColumns ) {
+                // ignore, but count it.
+            } else {
+                headerVec.add( s );
+            }
             columnNumber++;
+
+            // otherwise, just the corner string.
             previousToken = s;
         }
 

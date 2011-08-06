@@ -174,6 +174,9 @@ public class Rank {
      * @return
      */
     public static <K> Map<K, Integer> rankTransform( Map<K, Double> m, boolean desc ) {
+        /*
+         * FIXME this does not handle ties well.
+         */
         int counter = 0;
 
         List<KeyAndValueData<K>> values = new ArrayList<KeyAndValueData<K>>();

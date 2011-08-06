@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
+
 import ubic.basecode.dataStructure.matrix.StringMatrix;
 import ubic.basecode.util.FileTools;
 
@@ -72,6 +74,12 @@ public class StringMatrixReader extends AbstractMatrixReader<StringMatrix<String
             columnNumber = 0;
             String previousToken = "";
 
+            String rowName = st.nextToken();
+            if ( StringUtils.isBlank( rowName ) ) {
+                throw new IOException( "Missing values not allowed for row labels" );
+            }
+            rowNames.add( rowName );
+
             while ( st.hasMoreTokens() ) {
                 String s = st.nextToken();
 
@@ -89,25 +97,15 @@ public class StringMatrixReader extends AbstractMatrixReader<StringMatrix<String
                     }
                 }
 
-                if ( columnNumber > 0 ) {
-
-                    if ( columnNumber <= numColumnsToSkip ) {
-                        // noop
-                    }
-                    if ( missing ) {
-                        // rowTemp.add(Double.toString(Double.NaN));
-                        rowTemp.add( "" );
-                    } else {
-                        rowTemp.add( s );
-                    }
+                if ( numColumnsToSkip >= 0 && columnNumber <= numColumnsToSkip ) {
+                    // do nothing.
+                } else if ( missing ) {
+                    rowTemp.add( "" );
                 } else {
-                    if ( missing ) {
-                        throw new IOException( "Missing values not allowed for row labels" );
-                    }
-                    rowNames.add( s );
+                    rowTemp.add( s );
                 }
-
                 columnNumber++;
+
                 previousToken = s;
             }
             MTemp.add( rowTemp );

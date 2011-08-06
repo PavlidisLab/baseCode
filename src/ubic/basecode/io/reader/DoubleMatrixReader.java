@@ -181,7 +181,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
             while ( iterator.hasNext() ) {
                 String s = iterator.next();
                 if ( !wantedRowsFound.contains( s ) ) {
-                    log.info( s + " was not found, adding empty row" );
+                    if ( log.isDebugEnabled() ) log.debug( s + " was not found, adding empty row" );
                     DoubleArrayList emptyRow = createEmptyRow( numHeadings );
                     rowNames.add( s );
                     MTemp.add( emptyRow );

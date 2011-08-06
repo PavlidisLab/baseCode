@@ -40,7 +40,7 @@ public class BrowserLauncher {
         if ( Desktop.isDesktopSupported() ) {
             Desktop desktop = Desktop.getDesktop();
             if ( desktop.isSupported( Action.BROWSE ) ) {
-                desktop.browse( new URI( url ) );
+                desktop.browse( new URI( url.trim() ) );
             } else {
                 throw new RuntimeException( "Sorry, you can't open browser windows for some reason" );
             }
