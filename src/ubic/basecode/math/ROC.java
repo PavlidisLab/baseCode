@@ -29,60 +29,35 @@ import java.util.Collection;
 public class ROC {
 
     /**
-     * Calculate area under ROC. The input is the total number of items in the data, and the ranks of the positives in
-     * the current ranking. LOW ranks are considered better. (e.g., rank 0 is the 'best')
-     * 
-     * @param totalSize int
-     * @param ranks Map
-     * @return AROC
-     */
-    public static double aroc( int totalSize, Collection<Double> ranks ) {
-        return ROC.aroc( totalSize, ranks, -1 );
-    }
-
-    /**
      * Calculate area under ROC, up to a given number of False positives. The input is the total number of items in the
      * data, and the ranks of the positives in the current ranking. LOW ranks are considered better. (e.g., rank 0 is
      * the 'best')
      * 
-     * @param totalSize int
+     * @param totalSize
      * @param ranks Map
-     * @param maxFP - the maximum number of false positives to see before stopping. Set to 50 to get the Gribskov roc50.
-     *        If maxFP <= 0, it is ignored.
      * @return AROC
      */
-    public static double aroc( int totalSize, Collection<Double> ranks, int maxFP ) {
-        int numPosSeen = 0;
-        int numNegSeen = 0;
-        int targetSize = ranks.size();
+    public static double aroc( int totalSize, Collection<Double> ranks ) {
 
-        if ( targetSize == 0 ) {
-            return 0.0;
+        double sumOfRanks = 0.0;
+        for ( Double r : ranks ) {
+            sumOfRanks += r + 1.0; // ranks are zero-based.
         }
 
-        if ( totalSize <= 0 ) {
-            throw new IllegalArgumentException( "Total size must be positive. ( received " + totalSize + ")" );
-        }
+        int inGroup = ranks.size();
+        int outGroup = totalSize - inGroup;
 
-        double result = 0.0;
-        for ( int i = 0; i < totalSize; i++ ) {
-            if ( ranks.contains( i ) ) { // if the ith item in the ranked list is a positive.
-                numPosSeen++;
-            } else {
-                result += numPosSeen;
-                numNegSeen++;
-                if ( maxFP > 0 && numNegSeen >= maxFP ) {
-                    break;
-                }
-            }
-        }
+        double t1 = inGroup * ( inGroup + 1.0 ) / 2.0;
 
-        if ( numPosSeen == 0 ) return 0.0;
+        double t2 = inGroup * outGroup;
 
-        if ( maxFP > 0 ) {
-            return result / ( targetSize * numNegSeen );
-        }
-        return result / ( numPosSeen * ( totalSize - targetSize ) );
+        double t3 = sumOfRanks - t1; // U
+
+        double auc = Math.max( 0.0, 1.0 - t3 / t2 );
+
+        assert auc >= 0.0 && auc <= 1.0 : "AUC was " + auc;
+
+        return auc;
 
     }
 

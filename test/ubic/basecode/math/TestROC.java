@@ -37,12 +37,6 @@ public class TestROC extends TestCase {
         assertEquals( "return value", expectedReturn, actualReturn, 0.00001 );
     }
 
-    public void testArocN() {
-        double actualReturn = ROC.aroc( 10, ranksOfPositives, 2 );
-        double expectedReturn = 2.0 / 6.0;
-        assertEquals( "return value", expectedReturn, actualReturn, 0.00001 );
-    }
-
     /*
      * @see TestCase#setUp()
      */
@@ -50,7 +44,7 @@ public class TestROC extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        // set up the ranks of the opsitives
+        // set up the ranks of the positives
         ranksOfPositives = new HashSet<Double>();
         ranksOfPositives.add( 0.0 );
         ranksOfPositives.add( 3.0 );
