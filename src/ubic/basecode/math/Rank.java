@@ -68,9 +68,9 @@ public class Rank {
      * @param ranks
      * @return
      */
-    public static int rankSum( Collection<Integer> ranks ) {
+    public static int rankSum( Collection<Double> ranks ) {
         int sum = 0;
-        for ( Integer rank : ranks ) {
+        for ( Double rank : ranks ) {
             sum += rank.intValue();
         }
         return sum;
@@ -119,23 +119,23 @@ public class Rank {
             return null;
         }
 
-        ObjectArrayList ranks = new ObjectArrayList( size );
+        List<RankData> ranks = new ArrayList<RankData>( size );
         DoubleArrayList result = new DoubleArrayList( new double[size] );
 
-        // store the values with their indices.
+        // store the values with their indices - not sorted yet.
         for ( int i = 0; i < size; i++ ) {
             RankData rd = new RankData( i, array.get( i ) );
             ranks.add( rd );
         }
 
-        ranks.sort();
+        Collections.sort( ranks );
 
         // fill in the results. We iterate over the ranks by order.
         Double prevVal = null;
         int rank = 1;
         int nominalRank = 1; // rank we'd have if no ties.
         for ( int i = 0; i < size; i++ ) {
-            RankData rankData = ( RankData ) ranks.get( i );
+            RankData rankData = ranks.get( i );
             int index = rankData.getIndex();
             double val = rankData.getValue();
 
@@ -148,9 +148,6 @@ public class Rank {
                 // tied. Do not advance the rank.
                 result.set( index, rank );
             }
-
-            // System.err.println( rankData + " assigned rank=" + result.get( index ) + " rank for ties=" + rank
-            // + " nominal rank =" + nominalRank );
 
             prevVal = val;
             nominalRank++;
@@ -168,15 +165,26 @@ public class Rank {
     }
 
     /**
+     * Rank transform a map, where the values are numerical (java.lang.Double) values we wish to rank. Ties are not
+     * handled specially. Ranks are zero-based.
+     * 
+     * @param m java.util.Map with keys Objects, values Doubles.
+     * @return A java.util.Map keys=old keys, values=java.lang.Integer rank of the key.
+     */
+    public static <K> Map<K, Double> rankTransform( Map<K, Double> m ) {
+        return rankTransform( m, false );
+    }
+
+    /**
+     * Ties are broken as for the other methods. CAUTION - ranks start at 0.
+     * 
      * @param <K>
      * @param m
      * @param desc if true, the lowest (first) rank will be for the highest value.
      * @return
      */
-    public static <K> Map<K, Integer> rankTransform( Map<K, Double> m, boolean desc ) {
-        /*
-         * FIXME this does not handle ties well.
-         */
+    public static <K> Map<K, Double> rankTransform( Map<K, Double> m, boolean desc ) {
+
         int counter = 0;
 
         List<KeyAndValueData<K>> values = new ArrayList<KeyAndValueData<K>>();
@@ -186,46 +194,63 @@ public class Rank {
             K key = itr.next();
 
             double val = m.get( key ).doubleValue();
-            values.add( new KeyAndValueData<K>( key, val ) );
+            values.add( new KeyAndValueData<K>( 0, key, val ) );
             counter++;
         }
 
         /* sort it */
         Collections.sort( values );
-        Map<K, Integer> result = new HashMap<K, Integer>();
-        /* put the sorted items back into a hashmap with the rank */
-        for ( int i = 0; i < m.size(); i++ ) {
-            int rank = i;
-            if ( desc ) {
-                rank = values.size() - i - 1;
-            }
-            result.put( values.get( i ).getKey(), rank );
-        }
-        return result;
-    }
+        Map<K, Double> result = new HashMap<K, Double>();
 
-    /**
-     * Rank transform a map, where the values are numerical (java.lang.Double) values we wish to rank. Ties are not
-     * handled specially. Ranks are zero-based.
-     * 
-     * @param m java.util.Map with keys Objects, values Doubles.
-     * @return A java.util.Map keys=old keys, values=java.lang.Integer rank of the key.
-     */
-    public static <K> Map<K, Integer> rankTransform( Map<K, Double> m ) {
-        return rankTransform( m, false );
+        Double rank = 0.0;
+        Double prevVal = null;
+        Double nominalRank = 0.0; // rank we'd have if no ties.
+        for ( int i = 0; i < m.size(); i++ ) {
+            result.put( values.get( i ).getKey(), ( double ) nominalRank ); // might not keep.
+
+            double val = values.get( i ).getValue();
+            // only bump up ranks if we're not tied with the last one.
+            if ( prevVal != null && val != prevVal.doubleValue() ) {
+                rank = nominalRank;
+            } else {
+                // tied. Do not advance the rank.
+                result.put( values.get( i ).getKey(), rank );
+            }
+
+            prevVal = val;
+            nominalRank++;
+
+        }
+
+        fixTies( result, values );
+
+        if ( desc ) {
+            /*
+             * Reverse all the values.
+             */
+            Map<K, Double> finalResult = new HashMap<K, Double>();
+            double mr = result.size();
+            for ( K k : result.keySet() ) {
+                double d = result.get( k );
+                finalResult.put( k, mr - d - 1.0 );
+            }
+            return finalResult;
+        }
+
+        return result;
     }
 
     /**
      * @param ranksWithTies
      */
-    private static void fixTies( DoubleArrayList ranksWithTies, ObjectArrayList ranks ) {
+    private static void fixTies( DoubleArrayList ranksWithTies, List<? extends RankData> ranks ) {
 
         int numties = 1;
         Double prev = null;
         int i = 0;
         // iterate over in order of the values.
         for ( int j = ranksWithTies.size(); i < j; i++ ) {
-            RankData rankData = ( RankData ) ranks.get( i );
+            RankData rankData = ranks.get( i );
             int index = rankData.getIndex();
             double rank = ranksWithTies.getQuick( index );
             if ( prev != null ) {
@@ -236,7 +261,7 @@ public class Rank {
                 } else if ( numties > 1 ) {
                     // we're past the batch of ties and need to adjust them
                     for ( int k = 1; k <= numties; k++ ) {
-                        int indexOfTied = ( ( RankData ) ranks.get( i - k ) ).getIndex();
+                        int indexOfTied = ranks.get( i - k ).getIndex(); // original rank?
                         double rawRankInTie = ranksWithTies.getQuick( indexOfTied );
                         double meanRank = meanRank( rawRankInTie, numties );
                         ranksWithTies.setQuick( indexOfTied, meanRank );
@@ -261,6 +286,50 @@ public class Rank {
     }
 
     /**
+     * @param <K>
+     * @param ranksWithTies
+     * @param ranks
+     */
+    private static <K> void fixTies( Map<K, Double> ranksWithTies, List<KeyAndValueData<K>> ranks ) {
+        int numties = 1;
+        Double prev = null;
+        int i = 0;
+        // iterate over in order of the values.
+        for ( int j = ranksWithTies.size(); i < j; i++ ) {
+            KeyAndValueData<K> rankData = ranks.get( i );
+            double rank = ranksWithTies.get( rankData.getKey() );
+            if ( prev != null ) {
+                if ( rank == prev.doubleValue() ) {
+                    // record how many ties we have seen
+                    numties++;
+                    // System.err.println( "Tied rank: " + rank );
+                } else if ( numties > 1 ) {
+                    // we're past the batch of ties and need to adjust them
+                    for ( int k = 1; k <= numties; k++ ) {
+                        K indexOfTied = ranks.get( i - k ).getKey(); // original key
+                        double rawRankInTie = ranksWithTies.get( indexOfTied );
+                        double meanRank = meanRank( rawRankInTie, numties );
+                        ranksWithTies.put( indexOfTied, meanRank );
+                    }
+                    numties = 1; // reset
+                }
+                // no tie, nothing needs to be changed.
+            }
+            prev = rank;
+        }
+
+        // cleanup the end of the array if there were ties there.
+        if ( numties > 1 ) {
+            for ( int k = 1; k <= numties; k++ ) {
+                K indexOfTied = ranks.get( i - k ).getKey();
+                double rawRankInTie = ranksWithTies.get( indexOfTied );
+                double meanRank = meanRank( rawRankInTie, numties );
+                ranksWithTies.put( indexOfTied, meanRank );
+            }
+        }
+    }
+
+    /**
      * @param rawRank
      * @param numties
      * @return
@@ -277,14 +346,12 @@ public class Rank {
 /*
  * Helper class for rankTransform map.
  */
-class KeyAndValueData<K> implements Comparable<KeyAndValueData<K>> {
+class KeyAndValueData<K> extends RankData {
     private K key;
 
-    private double value;
-
-    public KeyAndValueData( K id, double v ) {
+    public KeyAndValueData( int index, K id, double v ) {
+        super( index, v );
         this.key = id;
-        this.value = v;
     }
 
     public int compareTo( KeyAndValueData<K> other ) {
@@ -301,10 +368,6 @@ class KeyAndValueData<K> implements Comparable<KeyAndValueData<K>> {
     public K getKey() {
         return key;
     }
-
-    public double getValue() {
-        return value;
-    }
 }
 
 /*
@@ -312,8 +375,8 @@ class KeyAndValueData<K> implements Comparable<KeyAndValueData<K>> {
  */
 class RankData implements Comparable<RankData> {
 
-    private int index;
-    private double value;
+    int index;
+    double value;
 
     public RankData( int tindex, double tvalue ) {
         index = tindex;

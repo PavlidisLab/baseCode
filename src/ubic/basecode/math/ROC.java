@@ -36,7 +36,7 @@ public class ROC {
      * @param ranks Map
      * @return AROC
      */
-    public static double aroc( int totalSize, Collection<Integer> ranks ) {
+    public static double aroc( int totalSize, Collection<Double> ranks ) {
         return ROC.aroc( totalSize, ranks, -1 );
     }
 
@@ -51,7 +51,7 @@ public class ROC {
      *        If maxFP <= 0, it is ignored.
      * @return AROC
      */
-    public static double aroc( int totalSize, Collection<Integer> ranks, int maxFP ) {
+    public static double aroc( int totalSize, Collection<Double> ranks, int maxFP ) {
         int numPosSeen = 0;
         int numNegSeen = 0;
         int targetSize = ranks.size();
@@ -93,7 +93,7 @@ public class ROC {
      * @param Ranks of objects in the class.
      * @return The p value.
      */
-    public static double rocpval( int totalSize, Collection<Integer> ranks ) {
+    public static double rocpval( int totalSize, Collection<Double> ranks ) {
         if ( totalSize == 0 && ( ranks == null || ranks.size() == 0 ) ) return 1.0;
         return Wilcoxon.wilcoxonP( totalSize, ranks );
     }

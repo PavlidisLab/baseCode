@@ -82,7 +82,7 @@ public class Wilcoxon {
      * @param ranks of items in the class
      * @return
      */
-    public static double wilcoxonP( int N, Collection<Integer> ranks ) {
+    public static double wilcoxonP( int N, Collection<Double> ranks ) {
         return wilcoxonP( N, ranks.size(), Rank.rankSum( ranks ) );
     }
 

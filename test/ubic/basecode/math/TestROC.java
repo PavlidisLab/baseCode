@@ -29,7 +29,7 @@ import junit.framework.TestCase;
  */
 public class TestROC extends TestCase {
 
-    Set<Integer> ranksOfPositives;
+    Set<Double> ranksOfPositives;
 
     public void testAroc() {
         double actualReturn = ROC.aroc( 10, ranksOfPositives );
@@ -51,10 +51,10 @@ public class TestROC extends TestCase {
         super.setUp();
 
         // set up the ranks of the opsitives
-        ranksOfPositives = new HashSet<Integer>();
-        ranksOfPositives.add( 0 );
-        ranksOfPositives.add( 3 );
-        ranksOfPositives.add( 5 );
+        ranksOfPositives = new HashSet<Double>();
+        ranksOfPositives.add( 0.0 );
+        ranksOfPositives.add( 3.0 );
+        ranksOfPositives.add( 5.0 );
     }
 
 }

@@ -67,26 +67,26 @@ public class TestRank extends TestCase {
 
     public void testRankTransformMap() {
 
-        Map<String, Integer> actualReturn = Rank.rankTransform( testmap );
-        Map<String, Integer> expectedReturn = new HashMap<String, Integer>();
-        expectedReturn.put( "Ten", 1 );
-        expectedReturn.put( "Eleven", 2 );
-        expectedReturn.put( "Twelve", 3 );
-        expectedReturn.put( "Thirteen", 4 );
-        expectedReturn.put( "HundredFourteen", 5 );
-        expectedReturn.put( "Five", 0 );
+        Map<String, Double> actualReturn = Rank.rankTransform( testmap );
+        Map<String, Double> expectedReturn = new HashMap<String, Double>();
+        expectedReturn.put( "Ten", 1.0 );
+        expectedReturn.put( "Eleven", 2.0 );
+        expectedReturn.put( "Twelve", 3.0 );
+        expectedReturn.put( "Thirteen", 4.0 );
+        expectedReturn.put( "HundredFourteen", 5.0 );
+        expectedReturn.put( "Five", 0.0 );
         assertEquals( "return value", expectedReturn, actualReturn );
     }
-    
+
     public void testRankTransformMapDesc() {
-        Map<String, Integer> actualReturn = Rank.rankTransform( testmap, true );
-        Map<String, Integer> expectedReturn = new HashMap<String, Integer>();
-        expectedReturn.put( "Ten", 4 );
-        expectedReturn.put( "Eleven", 3 );
-        expectedReturn.put( "Twelve", 2 );
-        expectedReturn.put( "Thirteen", 1 );
-        expectedReturn.put( "HundredFourteen", 0 );
-        expectedReturn.put( "Five", 5 );
+        Map<String, Double> actualReturn = Rank.rankTransform( testmap, true );
+        Map<String, Double> expectedReturn = new HashMap<String, Double>();
+        expectedReturn.put( "Ten", 4.0 );
+        expectedReturn.put( "Eleven", 3.0 );
+        expectedReturn.put( "Twelve", 2.0 );
+        expectedReturn.put( "Thirteen", 1.0 );
+        expectedReturn.put( "HundredFourteen", 0.0 );
+        expectedReturn.put( "Five", 5.0 );
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
