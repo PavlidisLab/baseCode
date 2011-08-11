@@ -44,18 +44,19 @@ public class RandomChooser {
      * @param numNeeded how many values we need.
      * @param n int
      */
-    public static void chooserandom( double[] randomvals, Double[] sourcedata, int[] deck, int numNeeded, int n ) {
+    public static double[] chooserandom( Double[] sourcedata, int[] deck, int numNeeded ) {
         if ( numNeeded <= 0 ) throw new IllegalArgumentException( "numNeeded must be greater than zero" );
-        int rand;
-        int i;
-        int temp;
-        for ( i = 0; i < n; i++ ) {
-            rand = generator.nextInt( numNeeded - i ) + i; // a value between i and max.
+        int rand, i, temp;
+        int sourceSize = sourcedata.length;
+        double[] result = new double[numNeeded];
+        for ( i = 0; i < numNeeded; i++ ) {
+            rand = generator.nextInt( sourceSize - i ) + i; // a value between i and max.
             temp = deck[rand];
             deck[rand] = deck[i];
             deck[i] = temp;
-            randomvals[i] = sourcedata[temp];
+            result[i] = sourcedata[temp];
         }
+        return result;
     }
 
     /**
