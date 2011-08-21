@@ -258,6 +258,21 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
         assertEquals( 21.0, actual.get( 2 ), 0.000001 );
     }
 
+    public void testSubsetRows() {
+        List<String> rowNames = testMatrix.getRowNames();
+        List<String> subList = rowNames.subList( 1, 3 );
+        DoubleMatrix<String, String> subsetRows = testMatrix.subsetRows( subList );
+        assertEquals( 2, subsetRows.rows() );
+    }
+
+    public void testSubsetColumns() {
+        List<String> c = testMatrix.getColNames();
+        List<String> subList = c.subList( 1, 3 );
+        DoubleMatrix<String, String> s = testMatrix.subsetColumns( subList );
+        assertEquals( 2, s.columns() );
+        assertEquals( c.get( 1 ), s.getColNames().get( 0 ) );
+    }
+
     public void testSortByColumnAbsoluteValue() {
         for ( int i = 0; i < testMatrix.columns(); i++ ) {
             List<String> sortByColumnAbsoluteValues = testMatrix.sortByColumnAbsoluteValues( i, false );

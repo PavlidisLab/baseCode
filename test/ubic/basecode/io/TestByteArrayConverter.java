@@ -95,6 +95,16 @@ public class TestByteArrayConverter extends TestCase {
         }
     }
 
+    public void testByteArrayToDoubleMatrix() throws Exception {
+        double[][] testm = new double[][] { { 1, 2 }, { 3, 4 }, { 5, 6 } };
+        double[][] actualReturn = bac.byteArrayToDoubleMatrix( bac.doubleMatrixToBytes( testm ), 2 );
+        for ( int i = 0; i < testm.length; i++ ) {
+            for ( int j = 0; j < testm[i].length; j++ ) {
+                assertEquals( testm[i][j], actualReturn[i][j], 0.001 );
+            }
+        }
+    }
+
     // test double[] -> blob.
     public void testDoubleArrayToByteArrayConversionSpeed() throws Exception {
         bac.doubleArrayToBytes( wholeBunchOfDoubles );

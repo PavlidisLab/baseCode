@@ -18,7 +18,7 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
-import java.util.Collection;
+import java.util.List;
 
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
@@ -67,18 +67,16 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     }
 
     @Override
-    public DoubleMatrix<R, C> subsetRows( Collection<R> rowNames ) {
+    public DoubleMatrix<R, C> subsetRows( List<R> rowNames ) {
 
         DoubleMatrix<R, C> returnval = new DenseDoubleMatrix<R, C>( rowNames.size(), this.columns() );
 
         int currentRow = 0;
-        for ( int i = 0, n = this.rows(); i < n; i++ ) {
-            R rowName = this.getRowName( i );
-            assert rowName != null : "Row " + i + " has null name";
+        for ( R rowName : rowNames ) {
 
-            if ( !rowNames.contains( rowName ) ) {
-                continue;
-            }
+            if ( !this.containsRowName( rowName ) ) continue;
+
+            int i = this.getRowIndexByName( rowName );
 
             returnval.setRowName( rowName, currentRow );
             for ( int j = 0, m = this.columns(); j < m; j++ ) {
@@ -97,6 +95,35 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
 
         return returnval;
 
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.DoubleMatrix#subsetColumns(java.util.List)
+     */
+    @Override
+    public DoubleMatrix<R, C> subsetColumns( List<C> columns ) {
+
+        DoubleMatrix<R, C> returnval = new DenseDoubleMatrix<R, C>( this.rows(), columns.size() );
+        returnval.setRowNames( this.getRowNames() );
+        for ( int i = 0; i < this.rows(); i++ ) {
+            int currentColumn = 0;
+            for ( C c : columns ) {
+                int j = this.getColIndexByName( c );
+
+                returnval.set( i, currentColumn, this.get( i, j ) );
+
+                if ( i == 0 ) {
+                    returnval.setColumnName( c, currentColumn );
+                }
+
+                currentColumn++;
+
+            }
+
+        }
+        return returnval;
     }
 
     /**

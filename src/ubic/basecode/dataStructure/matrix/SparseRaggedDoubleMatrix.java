@@ -19,7 +19,6 @@
 package ubic.basecode.dataStructure.matrix;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
@@ -138,7 +137,7 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * @see ubic.basecode.dataStructure.matrix.DoubleMatrix#subsetRows(java.util.Collection)
      */
     @Override
-    public DoubleMatrix<R, C> subsetRows( Collection<R> rowNames ) {
+    public DoubleMatrix<R, C> subsetRows( List<R> rowNames ) {
         DoubleMatrix<R, C> returnval = new SparseRaggedDoubleMatrix<R, C>();
 
         int currentRow = 0;
@@ -365,6 +364,11 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
 
     @Override
     public DoubleMatrix<C, R> transpose() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DoubleMatrix<R, C> subsetColumns( List<C> c ) {
         throw new UnsupportedOperationException();
     }
 

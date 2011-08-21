@@ -18,7 +18,7 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
-import java.util.Collection;
+import java.util.List;
 
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
@@ -245,23 +245,15 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * @see ubic.basecode.dataStructure.matrix.DoubleMatrix#subsetRows(java.util.Collection)
      */
     @Override
-    public DoubleMatrix<R, C> subsetRows( Collection<R> rowNames ) {
+    public DoubleMatrix<R, C> subsetRows( List<R> rowNames ) {
         DoubleMatrix<R, C> returnval = new FastRowAccessDoubleMatrix<R, C>( rowNames.size(), this.columns() );
 
-        for ( R r : rowNames ) {
-            if ( !this.getRowNames().contains( r ) ) {
-                log.warn( r + " not found in matrix" );
-            }
-        }
-
         int currentRow = 0;
-        for ( int i = 0; i < this.rows(); i++ ) {
+        for ( R rowName : rowNames ) {
 
-            R rowName = this.getRowName( i );
-            if ( !rowNames.contains( rowName ) ) {
-                continue;
-            }
+            if ( !this.containsRowName( rowName ) ) continue;
 
+            int i = this.getRowIndexByName( rowName );
             returnval.setRowName( rowName, currentRow );
             for ( int j = 0; j < this.columns(); j++ ) {
                 if ( currentRow == 0 ) {
@@ -276,6 +268,35 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
             throw new IllegalArgumentException( "Invalid rows to select, some are not in the original matrix" );
         }
 
+        return returnval;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.DoubleMatrix#subsetColumns(java.util.List)
+     */
+    @Override
+    public DoubleMatrix<R, C> subsetColumns( List<C> columns ) {
+
+        DoubleMatrix<R, C> returnval = new DenseDoubleMatrix<R, C>( this.rows(), columns.size() );
+        returnval.setRowNames( this.getRowNames() );
+        for ( int i = 0; i < this.rows(); i++ ) {
+            int currentColumn = 0;
+            for ( C c : columns ) {
+                int j = this.getColIndexByName( c );
+
+                returnval.set( i, currentColumn, this.get( i, j ) );
+
+                if ( i == 0 ) {
+                    returnval.setColumnName( c, currentColumn );
+                }
+
+                currentColumn++;
+
+            }
+
+        }
         return returnval;
     }
 

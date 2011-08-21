@@ -19,7 +19,6 @@
 package ubic.basecode.dataStructure.matrix;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -194,7 +193,18 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
     public abstract DoubleMatrix<C, R> transpose();
 
     /**
-     * Create a copy of this matrix with only the selected rows.
+     * Create a copy of this matrix with only the selected rows, in the selected order.
+     * 
+     * @param rowNames
+     * @return
      */
-    public abstract DoubleMatrix<R, C> subsetRows( Collection<R> rowNames );
+    public abstract DoubleMatrix<R, C> subsetRows( List<R> rowNames );
+
+    /**
+     * Create a copy of this matrix with only the selected columns, in the selected order.
+     * 
+     * @param columns
+     * @return
+     */
+    public abstract DoubleMatrix<R, C> subsetColumns( List<C> columns );
 }

@@ -165,6 +165,36 @@ public class ByteArrayConverter {
 
     /**
      * @param barray
+     * @param width how many items per row.
+     * @return double[][]
+     */
+    public double[][] byteArrayToDoubleMatrix( byte[] barray, int width ) {
+
+        int numDoubles = barray.length / DOUBLE_SIZE;
+        if ( numDoubles % width != 0 ) {
+            throw new IllegalArgumentException();
+        }
+
+        int numRows = numDoubles / width;
+
+        double[][] answer = new double[numRows][];
+
+        byte[] row = new byte[width * DOUBLE_SIZE];
+        int bytesPerRow = width * DOUBLE_SIZE;
+        for ( int rownum = 0; rownum < numRows; rownum++ ) {
+
+            int offset = rownum * bytesPerRow;
+            for ( int i = 0; i < bytesPerRow; i++ ) {
+                row[i] = barray[i + offset];
+            }
+
+            answer[rownum] = byteArrayToDoubles( row );
+        }
+        return answer;
+    }
+
+    /**
+     * @param barray
      * @return double[]
      */
     public double[] byteArrayToDoubles( byte[] barray ) {
@@ -504,4 +534,25 @@ public class ByteArrayConverter {
 
     }
 
+    /**
+     * @param testm
+     * @return
+     */
+    public byte[] doubleMatrixToBytes( double[][] testm ) {
+
+        if ( testm == null || testm.length == 0 ) throw new IllegalArgumentException( "Null or empty matrix" );
+
+        int rowSize = testm[0].length;
+
+        double[] a = new double[testm.length * rowSize];
+
+        for ( int i = 0; i < testm.length; i++ ) {
+            if ( testm[i].length != rowSize ) throw new IllegalArgumentException( "Cannot serialize ragged matrix" );
+            for ( int j = 0; j < rowSize; j++ ) {
+                a[j + rowSize * i] = testm[i][j];
+            }
+        }
+        return doubleArrayToBytes( a );
+
+    }
 }
