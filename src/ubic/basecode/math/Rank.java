@@ -165,8 +165,8 @@ public class Rank {
     }
 
     /**
-     * Rank transform a map, where the values are numerical (java.lang.Double) values we wish to rank. Ties are not
-     * handled specially. Ranks are zero-based.
+     * Rank transform a map, where the values are numerical (java.lang.Double) values we wish to rank. Ties are broken
+     * as for the other methods. Ranks are zero-based.
      * 
      * @param m java.util.Map with keys Objects, values Doubles.
      * @return A java.util.Map keys=old keys, values=java.lang.Integer rank of the key.
