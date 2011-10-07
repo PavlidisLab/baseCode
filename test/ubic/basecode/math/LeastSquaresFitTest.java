@@ -535,6 +535,46 @@ public class LeastSquaresFitTest {
     }
 
     @Test
+    public void testTwoWayAnovaWithInteractions() throws Exception {
+        DoubleMatrixReader f = new DoubleMatrixReader();
+        DoubleMatrix<String, String> testMatrix = f.read( this.getClass().getResourceAsStream(
+                "/data/GSE8441_expmat_8probes.txt" ) );
+
+        StringMatrixReader of = new StringMatrixReader();
+        StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
+                "/data/606_GSE8441_expdesign.data.txt" ) );
+        DesignMatrix d = new DesignMatrix( sampleInfo, true );
+        d.addInteraction();
+
+        assertEquals( 4, d.getMatrix().columns() );
+
+        assertEquals( 22, testMatrix.columns() );
+
+        LeastSquaresFit fit = new LeastSquaresFit( d, testMatrix );
+
+        Map<String, LinearModelSummary> sums = fit.summarizeByKeys( true );
+        assertEquals( 8, sums.size() );
+
+        for ( LinearModelSummary lms : sums.values() ) {
+            GenericAnovaResult a = lms.getAnova();
+            assertNotNull( a );
+        }
+
+        LinearModelSummary s = sums.get( "217757_at" );
+        GenericAnovaResult anova = s.getAnova();
+
+        assertNotNull( s.getCoefficients() );
+        assertEquals( 0.763, s.getCoefficients().get( 2, 3 ), 0.001 );
+        assertEquals( 18, s.getResidualDof().intValue() );
+        assertEquals( 3, s.getNumeratorDof().intValue() );
+        assertEquals( 0.299, s.getF(), 0.01 );
+        assertEquals( 0.8257, s.getP(), 0.001 );
+
+        assertEquals( 0.5876, anova.getMainEffectF( "Treatment" ), 0.0001 );
+        assertEquals( 0.5925, anova.getInteractionEffectP(), 0.001 );
+    }
+
+    @Test
     public void testThreeWaySingular() throws Exception {
         DoubleMatrixReader f = new DoubleMatrixReader();
         DoubleMatrix<String, String> testMatrix = f.read( this.getClass().getResourceAsStream(
