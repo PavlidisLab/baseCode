@@ -375,22 +375,34 @@ class KeyAndValueData<K> extends RankData {
  */
 class RankData implements Comparable<RankData> {
 
-    int index;
-    double value;
+    int index = 0;
+
+    double value = 0;
 
     public RankData( int tindex, double tvalue ) {
         index = tindex;
         value = tvalue;
     }
 
+    @Override
     public int compareTo( RankData other ) {
-        if ( this.value < other.getValue() ) {
+        if ( this.getValue() < other.getValue() ) {
             return -1;
-        } else if ( this.value > other.getValue() ) {
+        } else if ( this.getValue() > other.getValue() ) {
             return 1;
         } else {
             return 0;
         }
+    }
+
+    @Override
+    public boolean equals( Object obj ) {
+        if ( this == obj ) return true;
+        if ( obj == null ) return false;
+        if ( getClass() != obj.getClass() ) return false;
+        RankData other = ( RankData ) obj;
+        if ( Double.doubleToLongBits( value ) != Double.doubleToLongBits( other.value ) ) return false;
+        return true;
     }
 
     public int getIndex() {
@@ -399,6 +411,16 @@ class RankData implements Comparable<RankData> {
 
     public double getValue() {
         return value;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        long temp;
+        temp = Double.doubleToLongBits( value );
+        result = prime * result + ( int ) ( temp ^ ( temp >>> 32 ) );
+        return result;
     }
 
     @Override
