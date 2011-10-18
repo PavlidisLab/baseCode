@@ -102,6 +102,28 @@ public class Histogram {
     }
 
     /**
+     * @param x
+     * @return the index of the bin where x would fall. If x is out of range you get 0 or (nbins - 1).
+     */
+    public int getBinOf( double x ) {
+        if ( x < min ) {
+            return 0;
+        } else if ( x > max ) {
+            return nbins - 1;
+        } else {
+            // search for histogram bin into which x falls FIXME make this faster with a binary search
+            double binWidth = stepSize();
+            for ( int i = 0; i < nbins; i++ ) {
+                double highEdge = min + ( i + 1 ) * binWidth;
+                if ( x <= highEdge ) {
+                    return i;
+                }
+            }
+            throw new IllegalStateException( "Failed to find the bin for " + x );
+        }
+    }
+
+    /**
      * @return
      */
     public Double[] getBinEdges() {
@@ -160,7 +182,7 @@ public class Histogram {
         } else if ( x > max ) {
             bin.isOverflow = true;
         } else {
-            // search for histogram bin into which x falls
+            // search for histogram bin into which x falls FIXME make this faster with a binary search
             double binWidth = stepSize();
             for ( int i = 0; i < nbins; i++ ) {
                 double highEdge = min + ( i + 1 ) * binWidth;
