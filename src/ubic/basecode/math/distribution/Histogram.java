@@ -334,4 +334,15 @@ public class Histogram {
         }
 
     }
+
+    /**
+     * @return the number of items in the bin that has the most members.
+     */
+    public int getBiggestBinSize() {
+        int max = Integer.MIN_VALUE;
+        for ( double d : hist ) {
+            if ( d > max ) max = ( int ) d;
+        }
+        return max;
+    }
 }
