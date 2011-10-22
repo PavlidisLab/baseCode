@@ -40,12 +40,13 @@ public class TestDescriptiveWithMissing extends TestCase {
     private DoubleArrayList datacortest2Nomissing;
     private DoubleArrayList datacortest1missing;
     private DoubleArrayList datacortest2missing;
+    private DoubleArrayList data1missingNotInOrder;
 
     public void testCorrelationA() {
-        double s1 = Math.sqrt( Descriptive.sampleVariance( datacortest1Nomissing.size(), Descriptive
-                .sum( datacortest1Nomissing ), Descriptive.sumOfSquares( datacortest1Nomissing ) ) );
-        double s2 = Math.sqrt( Descriptive.sampleVariance( datacortest2Nomissing.size(), Descriptive
-                .sum( datacortest2Nomissing ), Descriptive.sumOfSquares( datacortest2Nomissing ) ) );
+        double s1 = Math.sqrt( Descriptive.sampleVariance( datacortest1Nomissing.size(),
+                Descriptive.sum( datacortest1Nomissing ), Descriptive.sumOfSquares( datacortest1Nomissing ) ) );
+        double s2 = Math.sqrt( Descriptive.sampleVariance( datacortest2Nomissing.size(),
+                Descriptive.sum( datacortest2Nomissing ), Descriptive.sumOfSquares( datacortest2Nomissing ) ) );
 
         double expectedReturn = Descriptive.correlation( datacortest1Nomissing, s1, datacortest2Nomissing, s2 );
         double actualReturn = DescriptiveWithMissing.correlation( data1missing, data2missing );
@@ -53,10 +54,10 @@ public class TestDescriptiveWithMissing extends TestCase {
     }
 
     public void testCorrelationB() {
-        double s1 = Math.sqrt( Descriptive.sampleVariance( datacortest1Nomissing.size(), Descriptive
-                .sum( datacortest1Nomissing ), Descriptive.sumOfSquares( datacortest1Nomissing ) ) );
-        double s2 = Math.sqrt( Descriptive.sampleVariance( datacortest2Nomissing.size(), Descriptive
-                .sum( datacortest2Nomissing ), Descriptive.sumOfSquares( datacortest2Nomissing ) ) );
+        double s1 = Math.sqrt( Descriptive.sampleVariance( datacortest1Nomissing.size(),
+                Descriptive.sum( datacortest1Nomissing ), Descriptive.sumOfSquares( datacortest1Nomissing ) ) );
+        double s2 = Math.sqrt( Descriptive.sampleVariance( datacortest2Nomissing.size(),
+                Descriptive.sum( datacortest2Nomissing ), Descriptive.sumOfSquares( datacortest2Nomissing ) ) );
 
         double s1m = 0;
         double s2m = 0;
@@ -154,10 +155,10 @@ public class TestDescriptiveWithMissing extends TestCase {
     }
 
     public void testMedian() {
-        data1missing.sort();
-        data1Nomissing.sort();
-        double expectedReturn = Descriptive.median( data1Nomissing );
-        double actualReturn = DescriptiveWithMissing.median( data1missing );
+        DoubleArrayList copy = data1Nomissing.copy();
+        copy.sort();
+        double expectedReturn = Descriptive.median( copy );
+        double actualReturn = DescriptiveWithMissing.median( data1missingNotInOrder );
         assertEquals( expectedReturn, actualReturn, Double.MIN_VALUE );
     }
 
@@ -185,17 +186,17 @@ public class TestDescriptiveWithMissing extends TestCase {
     public void testSampleKurtosis() {
         double expectedReturn = Descriptive.sampleKurtosis( data1Nomissing, Descriptive.mean( data1Nomissing ),
                 Descriptive.sampleVariance( data1Nomissing, Descriptive.mean( data1Nomissing ) ) );
-        double actualReturn = DescriptiveWithMissing.sampleKurtosis( data1missing, DescriptiveWithMissing
-                .mean( data1missing ), DescriptiveWithMissing.sampleVariance( data1missing, DescriptiveWithMissing
-                .mean( data1missing ) ) );
+        double actualReturn = DescriptiveWithMissing.sampleKurtosis( data1missing,
+                DescriptiveWithMissing.mean( data1missing ),
+                DescriptiveWithMissing.sampleVariance( data1missing, DescriptiveWithMissing.mean( data1missing ) ) );
         assertEquals( "Exercises sampleVariance, mean as well; return value", expectedReturn, actualReturn,
                 Double.MIN_VALUE );
     }
 
     public void testSampleVariance() {
         double expectedReturn = Descriptive.sampleVariance( data1Nomissing, Descriptive.mean( data1Nomissing ) );
-        double actualReturn = DescriptiveWithMissing.sampleVariance( data1missing, DescriptiveWithMissing
-                .mean( data1missing ) );
+        double actualReturn = DescriptiveWithMissing.sampleVariance( data1missing,
+                DescriptiveWithMissing.mean( data1missing ) );
         assertEquals( expectedReturn, actualReturn, Double.MIN_VALUE );
 
     }
@@ -227,8 +228,8 @@ public class TestDescriptiveWithMissing extends TestCase {
         data1Nomissing.sort();
         data1missing.sort();
         double expectedReturn = Descriptive.trimmedMean( data1Nomissing, Descriptive.mean( data1Nomissing ), 1, 1 );
-        double actualReturn = DescriptiveWithMissing.trimmedMean( data1missing, DescriptiveWithMissing
-                .mean( data1missing ), 1, 1 );
+        double actualReturn = DescriptiveWithMissing.trimmedMean( data1missing,
+                DescriptiveWithMissing.mean( data1missing ), 1, 1 );
         assertEquals( expectedReturn, actualReturn, Double.MIN_VALUE );
 
     }
@@ -236,9 +237,9 @@ public class TestDescriptiveWithMissing extends TestCase {
     public void testVariance() {
         double expectedReturn = Descriptive.variance( data1Nomissing.size(), Descriptive.sum( data1Nomissing ),
                 Descriptive.sumOfSquares( data1Nomissing ) );
-        double actualReturn = DescriptiveWithMissing.variance( DescriptiveWithMissing
-                .sizeWithoutMissingValues( data1missing ), DescriptiveWithMissing.sum( data1missing ),
-                DescriptiveWithMissing.sumOfSquares( data1missing ) );
+        double actualReturn = DescriptiveWithMissing.variance(
+                DescriptiveWithMissing.sizeWithoutMissingValues( data1missing ),
+                DescriptiveWithMissing.sum( data1missing ), DescriptiveWithMissing.sumOfSquares( data1missing ) );
         assertEquals( expectedReturn, actualReturn, 0.000001 );
     }
 
@@ -266,6 +267,9 @@ public class TestDescriptiveWithMissing extends TestCase {
         data1missing = new DoubleArrayList( new double[] { 1.0, Double.NaN, 3.0, 4.0, 5.0, 6.0, Double.NaN } );
         data2missing = new DoubleArrayList( new double[] { Double.NaN, Double.NaN, 3.0, Double.NaN, 3.5, 4.0,
                 Double.NaN } );
+
+        data1missingNotInOrder = new DoubleArrayList( new double[] { 1.0, Double.NaN, 3.0, 4.0, 6.0, 5.0, Double.NaN } );
+
         data3shortmissing = new DoubleArrayList( new double[] { Double.NaN, Double.NaN, 3.0, Double.NaN } );
 
         /* versions of the above, but without the NaNs */

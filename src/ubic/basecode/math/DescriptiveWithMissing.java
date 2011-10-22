@@ -490,9 +490,26 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
     }
 
     /**
-     * Returns the median of a sorted data sequence. Missing values are not considered.
+     * @param dat
+     * @return the median absolute deviation from the median.
+     */
+    public static double mad( DoubleArrayList dat ) {
+        double median = median( dat );
+
+        DoubleArrayList devsum = new DoubleArrayList( dat.size() );
+        for ( int i = 0; i < dat.size(); i++ ) {
+            double v = dat.getQuick( i );
+            if ( Double.isNaN( v ) ) continue;
+            devsum.add( Math.abs( v - median ) );
+        }
+
+        return median( devsum );
+    }
+
+    /**
+     * Returns the median. Missing values are ignored entirely.
      * 
-     * @param sortedData the data sequence; <b>must be sorted ascending </b>.
+     * @param data the data sequence
      * @return double
      */
     public static double median( DoubleArrayList sortedData ) {
@@ -554,13 +571,15 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * of data elements are less than <tt>elem</tt>. Missing values are ignored. The quantile need not necessarily be
      * contained in the data sequence, it can be a linear interpolation.
      * 
-     * @param sortedData the data sequence; <b>must be sorted ascending </b>.
+     * @param data the data sequence
      * @param phi the percentage; must satisfy <tt>0 &lt;= phi &lt;= 1</tt>.
      * @todo possibly implement so a copy is not made.
      * @return double
      */
-    public static double quantile( DoubleArrayList sortedData, double phi ) {
-        return Descriptive.quantile( removeMissing( sortedData ), phi );
+    public static double quantile( DoubleArrayList data, double phi ) {
+        DoubleArrayList sortedData = removeMissing( data.copy() );
+        sortedData.sort();
+        return Descriptive.quantile( sortedData, phi );
     }
 
     /**
@@ -568,12 +587,14 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * interpolation if the element is not contained but lies in between two contained elements. Missing values are
      * ignored.
      * 
-     * @param sortedList the list to be searched (must be sorted ascending).
+     * @param data the list to be searched
      * @param element the element to search for.
      * @return the percentage <tt>phi</tt> of elements <tt>&lt;= element</tt>(<tt>0.0 &lt;= phi &lt;= 1.0)</tt>.
      */
-    public static double quantileInverse( DoubleArrayList sortedList, double element ) {
-        return rankInterpolated( sortedList, element ) / sortedList.size();
+    public static double quantileInverse( DoubleArrayList data, double element ) {
+        DoubleArrayList sortedData = removeMissing( data.copy() );
+        sortedData.sort();
+        return rankInterpolated( sortedData, element ) / sortedData.size();
     }
 
     /**
@@ -977,8 +998,8 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @return double
      */
     public static double sumOfSquaredDeviations( DoubleArrayList data ) {
-        return sumOfSquaredDeviations( sizeWithoutMissingValues( data ), variance( sizeWithoutMissingValues( data ),
-                sum( data ), sumOfSquares( data ) ) );
+        return sumOfSquaredDeviations( sizeWithoutMissingValues( data ),
+                variance( sizeWithoutMissingValues( data ), sum( data ), sumOfSquares( data ) ) );
     }
 
     /**
