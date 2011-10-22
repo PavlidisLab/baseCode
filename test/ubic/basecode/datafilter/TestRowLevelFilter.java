@@ -205,16 +205,29 @@ public class TestRowLevelFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    /**
+     * <pre>
+     * mm<-read.table("testdata.txt", header=T, row.names=1) 
+     * length(which(apply(mm, 1, median) > 100))
+     * </pre>
+     */
     public final void testFilterMedian() {
         f.setLowCut( 100.0, false );
         f.setRemoveAllNegative( true ); // irrelevant
         f.setMethod( RowLevelFilter.MEDIAN );
         DoubleMatrix<String, String> filtered = f.filter( testdata );
         int actualReturn = filtered.rows();
-        int expectedReturn = 20;
+        int expectedReturn = 21;
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    /**
+     * <pre>
+     * mm<-read.table("testdata.txt", header=T, row.names=1)
+     *   length(which(apply(mm, 1, median) < 1000))
+     * 
+     * </pre>
+     */
     public final void testFilterMedianHigh() {
         f.setHighCut( 1000.0, false );
         f.setRemoveAllNegative( true ); // irrelevant
