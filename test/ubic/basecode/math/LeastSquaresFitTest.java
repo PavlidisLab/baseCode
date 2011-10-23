@@ -534,6 +534,11 @@ public class LeastSquaresFitTest {
 
     }
 
+    /**
+     * Check for problem reported by TF -- Gemma gives slightly different result. Problem is not at this level.
+     * 
+     * @throws Exception
+     */
     @Test
     public void testTwoWayAnovaWithInteractions() throws Exception {
         DoubleMatrixReader f = new DoubleMatrixReader();
@@ -572,6 +577,18 @@ public class LeastSquaresFitTest {
 
         assertEquals( 0.5876, anova.getMainEffectF( "Treatment" ), 0.0001 );
         assertEquals( 0.5925, anova.getInteractionEffectP(), 0.001 );
+
+        s = sums.get( "202851_at" );
+        anova = s.getAnova();
+        assertNotNull( s.getCoefficients() );
+        assertEquals( 0.787, s.getCoefficients().get( 2, 3 ), 0.001 );
+        assertEquals( 18, s.getResidualDof().intValue() );
+        assertEquals( 3, s.getNumeratorDof().intValue() );
+        assertEquals( 0.1773, s.getF(), 0.01 );
+        assertEquals( 0.9104, s.getP(), 0.001 );
+
+        assertEquals( 0.3777, anova.getMainEffectF( "Treatment" ), 0.0001 );
+        assertEquals( 0.9956, anova.getInteractionEffectP(), 0.001 );
     }
 
     @Test
