@@ -75,16 +75,13 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
     @Override
     public DoubleMatrix1D assign( double[] v ) {
         this.indexes = new IntArrayList();
-        this.values = new DoubleArrayList();
-        int used = 0;
+        this.values = new DoubleArrayList(); 
         for ( int i = 0; i < v.length; i++ ) {
             if ( v[i] == 0 || Double.isNaN( v[i] ) ) {
                 continue;
             }
             this.indexes.add( i );
-            this.values.add( v[i] );
-            used++;
-
+            this.values.add( v[i] );  
         }
         this.size = v.length;
         return this;

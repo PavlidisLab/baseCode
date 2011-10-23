@@ -327,8 +327,7 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      * 
      * @param nodeClass The class to be used for TreeNodes. Defaults to DefaultMutableTreeNode.
      * @return javax.swing.JTree
-     */
-    @SuppressWarnings("unchecked")
+     */ 
     public JTree treeView( Class<? extends DefaultMutableTreeNode> nodeClass ) {
         log.debug( "Constructing tree view of graph" );
         DirectedGraphNode<K, V> root = getRoot();

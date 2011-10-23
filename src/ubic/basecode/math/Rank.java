@@ -184,9 +184,7 @@ public class Rank {
      * @return
      */
     public static <K> Map<K, Double> rankTransform( Map<K, Double> m, boolean desc ) {
-
-        int counter = 0;
-
+ 
         List<KeyAndValueData<K>> values = new ArrayList<KeyAndValueData<K>>();
 
         for ( Iterator<K> itr = m.keySet().iterator(); itr.hasNext(); ) {
@@ -194,8 +192,7 @@ public class Rank {
             K key = itr.next();
 
             double val = m.get( key ).doubleValue();
-            values.add( new KeyAndValueData<K>( 0, key, val ) );
-            counter++;
+            values.add( new KeyAndValueData<K>( 0, key, val ) ); 
         }
 
         /* sort it */

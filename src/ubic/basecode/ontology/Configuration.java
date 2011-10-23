@@ -33,7 +33,6 @@ import org.apache.commons.logging.LogFactory;
  * @author paul
  * @version $Id$
  */
-@SuppressWarnings("unchecked")
 public class Configuration {
 
     private static Log log = LogFactory.getLog( Configuration.class );

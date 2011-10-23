@@ -37,11 +37,6 @@ import cern.jet.math.Functions;
 public class QRDecompositionPivoting {
 
     /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
      * Used to decide when to pivot
      */
     private double tolerance = 1e-7;

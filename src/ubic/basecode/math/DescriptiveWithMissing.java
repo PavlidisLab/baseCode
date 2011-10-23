@@ -367,6 +367,23 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
         throw new UnsupportedOperationException( "lag1 not supported with missing values" );
     }
 
+    /**
+     * @param dat
+     * @return the median absolute deviation from the median.
+     */
+    public static double mad( DoubleArrayList dat ) {
+        double median = median( dat );
+
+        DoubleArrayList devsum = new DoubleArrayList( dat.size() );
+        for ( int i = 0; i < dat.size(); i++ ) {
+            double v = dat.getQuick( i );
+            if ( Double.isNaN( v ) ) continue;
+            devsum.add( Math.abs( v - median ) );
+        }
+
+        return median( devsum );
+    }
+
     public static double max( DoubleArrayList input ) {
         int size = input.size();
         if ( size == 0 ) throw new IllegalArgumentException();
@@ -487,23 +504,6 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
         }
 
         return returnvalue / k;
-    }
-
-    /**
-     * @param dat
-     * @return the median absolute deviation from the median.
-     */
-    public static double mad( DoubleArrayList dat ) {
-        double median = median( dat );
-
-        DoubleArrayList devsum = new DoubleArrayList( dat.size() );
-        for ( int i = 0; i < dat.size(); i++ ) {
-            double v = dat.getQuick( i );
-            if ( Double.isNaN( v ) ) continue;
-            devsum.add( Math.abs( v - median ) );
-        }
-
-        return median( devsum );
     }
 
     /**
@@ -630,6 +630,25 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      */
     public static double rankInterpolated( DoubleArrayList sortedList, double element ) {
         return Descriptive.rankInterpolated( removeMissing( sortedList ), element );
+    }
+
+    /**
+     * Makes a copy of the list that doesn't have the missing values.
+     * 
+     * @param data DoubleArrayList
+     * @return DoubleArrayList
+     */
+    public static DoubleArrayList removeMissing( DoubleArrayList data ) {
+        DoubleArrayList r = new DoubleArrayList( sizeWithoutMissingValues( data ) );
+        double[] elements = data.elements();
+        int size = data.size();
+        for ( int i = 0; i < size; i++ ) {
+            if ( Double.isNaN( elements[i] ) ) {
+                continue;
+            }
+            r.add( elements[i] );
+        }
+        return r;
     }
 
     /**
@@ -1083,25 +1102,6 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      */
     public static double winsorizedMean( DoubleArrayList sortedData, double mean, int left, int right ) {
         throw new UnsupportedOperationException( "winsorizedMean not supported with missing values" );
-    }
-
-    /**
-     * Makes a copy of the list that doesn't have the missing values.
-     * 
-     * @param data DoubleArrayList
-     * @return DoubleArrayList
-     */
-    private static DoubleArrayList removeMissing( DoubleArrayList data ) {
-        DoubleArrayList r = new DoubleArrayList( sizeWithoutMissingValues( data ) );
-        double[] elements = data.elements();
-        int size = data.size();
-        for ( int i = 0; i < size; i++ ) {
-            if ( Double.isNaN( elements[i] ) ) {
-                continue;
-            }
-            r.add( elements[i] );
-        }
-        return r;
     }
 
     /* private methods */

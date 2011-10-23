@@ -235,6 +235,7 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     public void set( int x, int y, Double value ) {
         assert data != null;
         assert data[x] != null;
+        assert value != null;
         assert y >= 0 && y < data[x].size();
         data[x].set( y, value );
     }

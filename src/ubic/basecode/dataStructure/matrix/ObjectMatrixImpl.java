@@ -48,8 +48,7 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
      * @param row
      * @param column
      * @return
-     */
-    @SuppressWarnings("unchecked")
+     */ 
     public V get( int row, int column ) {
         return ( V ) matrix.getQuick( row, column );
     }

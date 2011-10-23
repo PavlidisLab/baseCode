@@ -124,8 +124,7 @@ public class Distance {
      */
     public static double manhattanDistance( DoubleArrayList x, DoubleArrayList y ) {
         int j;
-        double sum = 0.0;
-        int numused = 0;
+        double sum = 0.0; 
 
         if ( x.size() != y.size() ) {
             throw new ArithmeticException();
@@ -134,8 +133,7 @@ public class Distance {
         int length = x.size();
         for ( j = 0; j < length; j++ ) {
             if ( !Double.isNaN( x.elements()[j] ) && !Double.isNaN( y.elements()[j] ) ) {
-                sum += Math.abs( x.elements()[j] - y.elements()[j] );
-                numused++;
+                sum += Math.abs( x.elements()[j] - y.elements()[j] ); 
             }
         }
         return sum;

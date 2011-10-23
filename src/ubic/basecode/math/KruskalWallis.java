@@ -91,11 +91,8 @@ public class KruskalWallis {
     private static Map<Integer, Collection<Integer>> groupedRanks( IntArrayList groupings, DoubleArrayList scores ) {
         /*
          * See for example http://en.wikipedia.org/wiki/Kruskal%E2%80%93Wallis_one-way_analysis_of_variance
-         */
-        int n = scores.size();
-        DoubleArrayList ranks = Rank.rankTransform( scores );
-        double meanRank = ( n + 1.0 ) * 0.5;
-        double meanTotalDev = 0.0; // denominator
+         */ 
+        DoubleArrayList ranks = Rank.rankTransform( scores ); 
 
         Map<Integer, Collection<Integer>> groupedRanks = new HashMap<Integer, Collection<Integer>>();
         for ( int i = 0; i < groupings.size(); i++ ) {
@@ -104,9 +101,7 @@ public class KruskalWallis {
             if ( !groupedRanks.containsKey( group ) ) {
                 groupedRanks.put( group, new ArrayList<Integer>() );
             }
-            groupedRanks.get( group ).add( ( int ) ranks.get( i ) );
-
-            meanTotalDev += Math.pow( ranks.get( i ) - meanRank, 2 );
+            groupedRanks.get( group ).add( ( int ) ranks.get( i ) ); 
 
         }
         return groupedRanks;
