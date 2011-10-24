@@ -23,6 +23,7 @@ import java.awt.Color;
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
+import ubic.basecode.math.Constants;
 import ubic.basecode.math.DescriptiveWithMissing;
 import ubic.basecode.math.MatrixStats;
 import ubic.basecode.graphics.ColorMap;
@@ -240,9 +241,8 @@ public class ColorMatrix<A, B> implements Cloneable {
         ColorMap colorMapO = new ColorMap( colorMap );
         double range = displayMax - displayMin;
 
-        if ( range <= 1.0 ) {
-            range = 1.0; // This avoids getting a step size of zero
-            // in case all values in the matrix are equal.
+        if ( range < Constants.SMALL ) {
+            range = Constants.SMALL;
         }
 
         // zoom factor for stretching or shrinking the range
