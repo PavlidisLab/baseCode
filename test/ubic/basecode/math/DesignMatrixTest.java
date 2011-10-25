@@ -36,12 +36,12 @@ public class DesignMatrixTest extends TestCase {
     /**
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
     public void testA() throws Exception {
         StringMatrixReader of = new StringMatrixReader();
-        ObjectMatrix sampleInfo = of.read( this.getClass().getResourceAsStream( "/data/example.metadata.small.txt" ) );
+        StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
+                "/data/example.metadata.small.txt" ) );
 
-        DoubleMatrix X = new DesignMatrix( sampleInfo, true ).getMatrix();
+        DoubleMatrix<String, String> X = new DesignMatrix( sampleInfo, true ).getMatrix();
         assertEquals( 3, X.columns() );
         assertEquals( 1, X.get( 0, 0 ), 0.001 );
         assertEquals( 1, X.get( 1, 0 ), 0.001 );

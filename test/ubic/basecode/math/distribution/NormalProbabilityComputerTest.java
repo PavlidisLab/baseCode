@@ -47,6 +47,7 @@ public class NormalProbabilityComputerTest extends TestCase {
         assertEquals( 1.0 - 0.02275013, c.probability( 2.0, false ), 0.00001 );
     }
 
+    @SuppressWarnings("unused")
     public void testInvalidVariance() {
         try {
             new NormalProbabilityComputer( 0.0, -1.0 );

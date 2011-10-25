@@ -475,14 +475,14 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#linearModel(double[], java.util.List)
      */
-    @SuppressWarnings( { "unchecked", "cast" })
+    @SuppressWarnings( { "unchecked" })
     public LinearModelSummary linearModel( double[] data, Map<String, List<?>> factors ) {
 
         String datName = RandomStringUtils.randomAlphabetic( 10 );
         assign( datName, data );
 
         for ( String factorName : factors.keySet() ) {
-            List list = factors.get( factorName );
+            List<?> list = factors.get( factorName );
             if ( list.iterator().next() instanceof String ) {
                 assignFactor( factorName, ( List<String> ) list );
             } else {
@@ -618,7 +618,6 @@ public abstract class AbstractRClient implements RClient {
     /**
      * FIXME only partly implemented, possibly not going to stay.
      */
-    @SuppressWarnings("unchecked")
     public List<?> listEval( Class<?> listEntryType, String command ) {
 
         REXP rexp = this.eval( command );

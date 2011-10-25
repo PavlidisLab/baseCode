@@ -93,10 +93,7 @@ public class Distance {
     public static double euclDistance( DoubleArrayList x, DoubleArrayList y ) {
         int j;
         double sum;
-        int numused;
         sum = 0.0;
-        numused = 0;
-
         if ( x.size() != y.size() ) {
             throw new ArithmeticException();
         }
@@ -106,7 +103,6 @@ public class Distance {
         for ( j = 0; j < length; j++ ) {
             if ( !Double.isNaN( x.elements()[j] ) && !Double.isNaN( y.elements()[j] ) ) {
                 sum += Math.pow( ( x.elements()[j] - y.elements()[j] ), 2 );
-                numused++;
             }
         }
         if ( sum == 0.0 ) {
