@@ -120,10 +120,10 @@ public class NetUtils {
     }
 
     /**
-     * @param accession
-     * @param outputFileName
-     * @param outputFile
+     * @param f
      * @param seekFile
+     * @param outputFileName
+     * @param force
      * @return boolean indicating success or failure.
      * @throws IOException
      * @throws FileNotFoundException
