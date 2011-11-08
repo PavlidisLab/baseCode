@@ -43,6 +43,34 @@ public class BitUtilTest extends TestCase {
 
     }
 
+    public void testToBool() {
+        byte[] v = new byte[4];
+        for ( int i = 0, j = v.length; i < j; i++ ) {
+            v[i] = 0x0;
+        }
+        BitUtil.set( v, 4 );
+        BitUtil.set( v, 14 );
+        BitUtil.set( v, 10 );
+        BitUtil.set( v, 3 );
+        BitUtil.set( v, 11 );
+        BitUtil.set( v, 30 );
+
+        boolean[] asBools = BitUtil.asBools( v );
+
+        assertEquals( 32, asBools.length );
+
+        assertTrue( asBools[4] );
+        assertTrue( !asBools[0] );
+
+        assertTrue( asBools[3] );
+        assertTrue( !asBools[5] );
+
+        assertTrue( asBools[14] );
+        assertTrue( !asBools[15] );
+        assertTrue( asBools[30] );
+        assertTrue( !asBools[31] );
+    }
+
     public void testSet() throws Exception {
         byte[] v = new byte[4];
         for ( int i = 0, j = v.length; i < j; i++ ) {

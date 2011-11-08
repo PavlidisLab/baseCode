@@ -27,6 +27,30 @@ package ubic.basecode.dataStructure;
  * @version $Id$
  */
 public class BitUtil {
+
+    static int[] masks;
+
+    static {
+        masks = new int[Byte.SIZE];
+        for ( int j = 0; j < Byte.SIZE; j++ ) {
+            int j2 = 1 << ( Byte.SIZE - j - 1 ); // 10000000;01000000;00100000; etc.
+            masks[j] = j2;
+        }
+    }
+
+    public static boolean[] asBools( byte[] bytes ) {
+        boolean[] res = new boolean[bytes.length * Byte.SIZE];
+        for ( int i = 0; i < bytes.length; i++ ) {
+            byte b = bytes[i];
+            int bb = i * Byte.SIZE;
+            for ( int j = 0; j < Byte.SIZE; j++ ) {
+                int k = b & masks[j];
+                res[bb + j] = k != 0;
+            }
+        }
+        return res;
+    }
+
     /**
      * Clear the bit at the specified position
      * 
@@ -39,13 +63,32 @@ public class BitUtil {
         if ( position >= 0 ) {
             int bytepos = position >> 3;
             if ( bytepos < bytes.length ) {
-                int bitpos = 7 - position % 8;
+                int bitpos = 7 - position % Byte.SIZE;
                 bytes[bytepos] &= ~( 1 << bitpos );
                 return bytes;
             }
         }
 
         throw new IndexOutOfBoundsException( Integer.toString( position ) );
+    }
+
+    /**
+     * @param bytes
+     * @return The number of '1' bits.
+     */
+    public static int count( byte[] bytes ) {
+        int count = 0;
+        int numbits = bytes.length * Byte.SIZE;
+        for ( int position = 0; position < numbits; position++ ) {
+            int bytepos = position >> 3;
+            if ( bytepos < numbits ) {
+                int bitpos = 7 - position % Byte.SIZE;
+                if ( ( bytes[bytepos] & 1 << bitpos ) != 0 ) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     /**
@@ -60,11 +103,32 @@ public class BitUtil {
         if ( position >= 0 ) {
             int bytepos = position >> 3;
             if ( bytepos < bytes.length ) {
-                int bitpos = 7 - position % 8;
+                int bitpos = 7 - position % Byte.SIZE;
                 return ( bytes[bytepos] & 1 << bitpos ) != 0;
             }
         }
         throw new IndexOutOfBoundsException( Integer.toString( position ) );
+    }
+
+    /**
+     * @param bytes
+     * @return
+     */
+    public static String prettyPrint( byte[] bytes ) {
+        StringBuilder buf = new StringBuilder();
+        int numbits = bytes.length * Byte.SIZE;
+        for ( int position = 0; position < numbits; position++ ) {
+            int bytepos = position >> 3;
+            if ( bytepos < numbits ) {
+                int bitpos = 7 - position % Byte.SIZE;
+                if ( ( bytes[bytepos] & 1 << bitpos ) != 0 ) {
+                    buf.append( "1" );
+                }
+                buf.append( "0" );
+            }
+        }
+        return buf.toString();
+
     }
 
     /**
@@ -79,53 +143,13 @@ public class BitUtil {
         if ( position >= 0 ) {
             int bytepos = position >> 3;
             if ( bytepos < bytes.length ) {
-                int bitpos = 7 - position % 8;
+                int bitpos = 7 - position % Byte.SIZE;
 
                 bytes[bytepos] |= 1 << bitpos;
                 return bytes;
             }
         }
         throw new IndexOutOfBoundsException( Integer.toString( position ) );
-    }
-
-    /**
-     * @param bytes
-     * @return The number of '1' bits.
-     */
-    public static int count( byte[] bytes ) {
-        int count = 0;
-        int numbits = bytes.length * Byte.SIZE;
-        for ( int position = 0; position < numbits; position++ ) {
-            int bytepos = position >> 3;
-            if ( bytepos < numbits ) {
-                int bitpos = 7 - position % 8;
-                if ( ( bytes[bytepos] & 1 << bitpos ) != 0 ) {
-                    count++;
-                }
-            }
-        }
-        return count;
-    }
-
-    /**
-     * @param bytes
-     * @return
-     */
-    public static String prettyPrint( byte[] bytes ) {
-        StringBuilder buf = new StringBuilder();
-        int numbits = bytes.length * Byte.SIZE;
-        for ( int position = 0; position < numbits; position++ ) {
-            int bytepos = position >> 3;
-            if ( bytepos < numbits ) {
-                int bitpos = 7 - position % 8;
-                if ( ( bytes[bytepos] & 1 << bitpos ) != 0 ) {
-                    buf.append( "1" );
-                }
-                buf.append( "0" );
-            }
-        }
-        return buf.toString();
-
     }
 
 }
