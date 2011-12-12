@@ -206,7 +206,7 @@ public class ExcelUtil {
             row++;
             String term = ExcelUtil.getValue( sheet, row, column );
             if ( term == null ) break;
-            // System.out.println( term );
+
             if ( f.accept( sheet, row ) ) {
                 term = term.trim();
                 if ( clean ) term = term.toLowerCase();
