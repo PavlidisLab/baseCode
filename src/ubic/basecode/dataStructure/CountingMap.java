@@ -66,6 +66,18 @@ public class CountingMap<K> implements Map<K, Integer> {
     }
 
     /**
+     * Increments the count associated with the specified keys. If a key doesn't already exist in the map, it will be
+     * added.
+     * 
+     * @param keys the keys whose associated count is to be incremented
+     */
+    public void incrementAll( Collection<K> keys ) {
+        for ( K key : keys ) {
+            increment( key );
+        }
+    }
+
+    /**
      * Returns the count associated with the specified key, or zero if the key has never been incremented.
      * 
      * @param key the key whose associated count is to be returned
