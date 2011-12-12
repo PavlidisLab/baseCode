@@ -53,6 +53,7 @@ public class ParamSpreadSheet extends CreateSpreadSheet {
                         ExcelUtil.setFormula( spreadsheet, row, pos, value );
                         // having trouble finding the exception to catch
                     } catch ( Exception xe ) {
+                        log.warn( xe.getMessage() );
                         ExcelUtil.setValue( spreadsheet, row, pos, value );
                     }
                 }
