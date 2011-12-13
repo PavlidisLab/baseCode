@@ -34,7 +34,7 @@ public class ROC {
      * the 'best')
      * 
      * @param totalSize
-     * @param ranks Map
+     * @param ranks LOW ranks are considered better. (e.g., rank 0 is the 'best')
      * @return AROC
      */
     public static double aroc( int totalSize, Collection<Double> ranks ) {
@@ -65,7 +65,7 @@ public class ROC {
      * For an AROC value, calculates a p value. Uses fact that ROC is equivalent to the Wilcoxon rank sum test.
      * 
      * @param numpos How many positives are in the data.
-     * @param Ranks of objects in the class.
+     * @param Ranks of objects in the class, where low ranks are considered better. (one-based)
      * @return The p value.
      */
     public static double rocpval( int totalSize, Collection<Double> ranks ) {

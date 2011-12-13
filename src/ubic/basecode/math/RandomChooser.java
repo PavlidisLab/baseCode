@@ -19,6 +19,7 @@
 package ubic.basecode.math;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -36,13 +37,32 @@ public class RandomChooser {
     private static Random generator = new Random();
 
     /**
-     * Fill randomvals with random things from sourcedata, without replacement.
+     * @param sourcedata
+     * @param deck
+     * @param numNeeded
+     * @return
+     */
+    public static List<? extends Object> chooserandom( List<? extends Object> sourcedata, int[] deck, int numNeeded ) {
+        if ( numNeeded <= 0 ) throw new IllegalArgumentException( "numNeeded must be greater than zero" );
+        int rand, i, temp;
+        int sourceSize = sourcedata.size();
+        Object[] result = new Object[numNeeded];
+        for ( i = 0; i < numNeeded; i++ ) {
+            rand = generator.nextInt( sourceSize - i ) + i; // a value between i and max.
+            temp = deck[rand];
+            deck[rand] = deck[i];
+            deck[i] = temp;
+            result[i] = sourcedata.get( temp );
+        }
+        return Arrays.asList( result );
+    }
+
+    /**
+     * Fill randomvals with random numbers from sourcedata, without replacement.
      * 
-     * @param randomvals answers go here.
      * @param sourcedata Data to be randomly selected
      * @param deck an array pre-filled with integers from 0 to max, but they don't have to be in order.
      * @param numNeeded how many values we need.
-     * @param n int
      */
     public static double[] chooserandom( Double[] sourcedata, int[] deck, int numNeeded ) {
         if ( numNeeded <= 0 ) throw new IllegalArgumentException( "numNeeded must be greater than zero" );

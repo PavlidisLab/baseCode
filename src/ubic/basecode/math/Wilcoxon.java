@@ -22,6 +22,7 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,7 +44,7 @@ import cern.jet.stat.Probability;
  */
 public class Wilcoxon {
 
-    private static final Map<Integer, Map<Integer, Map<Integer, BigInteger>>> cache = new HashMap<Integer, Map<Integer, Map<Integer, BigInteger>>>();
+    private static final Map<Integer, Map<Integer, Map<Integer, BigInteger>>> cache = new ConcurrentHashMap<Integer, Map<Integer, Map<Integer, BigInteger>>>();
     private static Log log = LogFactory.getLog( Wilcoxon.class.getName() );
 
     /**
@@ -79,7 +80,7 @@ public class Wilcoxon {
 
     /**
      * @param N total number of items (in and not in the class)
-     * @param ranks of items in the class
+     * @param ranks of items in the class (one-based)
      * @return
      */
     public static double wilcoxonP( int N, Collection<Double> ranks ) {
@@ -239,6 +240,12 @@ public class Wilcoxon {
         return getFromCache( N0, n0, R0 );
     }
 
+    /**
+     * @param N
+     * @param n
+     * @param R
+     * @return
+     */
     private static BigInteger getFromCache( int N, int n, int R ) {
 
         if ( !cacheContains( N, n, R ) ) {
