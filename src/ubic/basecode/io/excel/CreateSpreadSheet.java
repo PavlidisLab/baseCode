@@ -44,19 +44,27 @@ public class CreateSpreadSheet {
 
     protected SpreadSheetSchema schema;
 
-    public CreateSpreadSheet( String filename, SpreadSheetSchema schema ) {
+    public CreateSpreadSheet( String filename, SpreadSheetSchema schema ) throws Exception {
         if ( new File( filename ).exists() ) {
             // throw new Exception( "please delete previous file to prevent overwrite" );
         }
         this.filename = filename;
-
-        workbook = new HSSFWorkbook();
-        spreadsheet = workbook.createSheet();
-
-        // make the header
         this.schema = schema;
+
+        init();
+    }
+
+    public void init() {
+        try {
+            workbook = new HSSFWorkbook();
+            spreadsheet = workbook.createSheet();
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            System.exit( 1 );
+        }
+        // make the header
         createHeader();
-    } 
+    }
 
     public void save() throws Exception {
         FileOutputStream fileOut = new FileOutputStream( filename );
