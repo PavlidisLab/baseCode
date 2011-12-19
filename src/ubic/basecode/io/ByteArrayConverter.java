@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 import cern.colt.list.ByteArrayList;
 
@@ -39,6 +42,8 @@ import cern.colt.list.ByteArrayList;
  * @version $Id$
  */
 public class ByteArrayConverter {
+    
+    private static Log log = LogFactory.getLog( ByteArrayConverter.class );
 
     // sizes are in bytes.
 
@@ -172,7 +177,8 @@ public class ByteArrayConverter {
 
         int numDoubles = barray.length / DOUBLE_SIZE;
         if ( numDoubles % width != 0 ) {
-            throw new IllegalArgumentException();
+            log.warn( "ByteArrayConverter.byteArrayToDoubleMatrix: numDoubles%width !=0, returning null" );
+            return null;
         }
 
         int numRows = numDoubles / width;
