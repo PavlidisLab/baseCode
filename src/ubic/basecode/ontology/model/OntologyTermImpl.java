@@ -302,4 +302,26 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
         return new OntologyTermImpl( ontClass );
     }
 
+    @Override
+    public boolean isTermObsolete() {
+
+        Collection<OntologyTerm> parentsOntologyTerm = getParents( false );
+
+        if ( parentsOntologyTerm.size() == 1 ) {
+
+            for ( OntologyTerm parentOntologyTerm : parentsOntologyTerm ) {
+
+                if ( parentOntologyTerm.getLocalName().equalsIgnoreCase( "ObsoleteClass" ) ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public String getLocalName() {
+        return this.localName;
+    }
+
 }

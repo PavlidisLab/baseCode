@@ -49,10 +49,16 @@ public interface OntologyTerm extends OntologyResource {
     public Collection<OntologyTerm> getParents( boolean direct );
 
     public Collection<OntologyRestriction> getRestrictions();
- 
+
     public String getTerm();
 
     public String getUri();
 
     public boolean isRoot();
+
+    /** check to see if the term is obsolete, if it is it should not be used */
+    public boolean isTermObsolete();
+
+    public String getLocalName();
+
 }
