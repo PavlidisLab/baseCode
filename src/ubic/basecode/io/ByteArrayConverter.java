@@ -28,9 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 
 import cern.colt.list.ByteArrayList;
 
@@ -42,8 +39,6 @@ import cern.colt.list.ByteArrayList;
  * @version $Id$
  */
 public class ByteArrayConverter {
-    
-    private static Log log = LogFactory.getLog( ByteArrayConverter.class );
 
     // sizes are in bytes.
 
@@ -173,12 +168,12 @@ public class ByteArrayConverter {
      * @param width how many items per row.
      * @return double[][]
      */
-    public double[][] byteArrayToDoubleMatrix( byte[] barray, int width ) {
+    public double[][] byteArrayToDoubleMatrix( byte[] barray, int width ) throws IllegalArgumentException {
 
         int numDoubles = barray.length / DOUBLE_SIZE;
         if ( numDoubles % width != 0 ) {
-            log.warn( "ByteArrayConverter.byteArrayToDoubleMatrix: numDoubles%width !=0, returning null" );
-            return null;
+           throw new IllegalArgumentException( "The number of doubles in the byte array (" + numDoubles
+                    + ") does not divide evenly into the number of items expected per row (" + width + ")." );
         }
 
         int numRows = numDoubles / width;
