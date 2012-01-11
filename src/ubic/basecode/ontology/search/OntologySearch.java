@@ -56,7 +56,7 @@ public class OntologySearch {
     private final static char[] INVALID_CHARS = { ':', '(', ')', '?', '^', '[', ']', '{', '}', '!', '~', '"', '\'' };
 
     /**
-     * Find classes that match the query string
+     * Find classes that match the query string. Obsolete terms are not returned.
      * 
      * @param model that goes with the index
      * @param index to search
@@ -84,6 +84,7 @@ public class OntologySearch {
 
                     OntClass cl = r.as( OntClass.class );
                     OntologyTermImpl impl2 = new OntologyTermImpl( cl );
+                    if ( impl2.isTermObsolete() ) continue;
                     results.add( impl2 );
                     if ( log.isDebugEnabled() ) log.debug( impl2 );
                 } catch ( ARQLuceneException e ) {
@@ -112,20 +113,22 @@ public class OntologySearch {
         Set<OntologyIndividual> results = new HashSet<OntologyIndividual>();
         NodeIterator iterator = null;
 
-        queryString = queryString.trim();        
+        queryString = queryString.trim();
 
         // Add wildcard only if the last word is longer than one character. This is to prevent lucene from
         // blowing up. See bug#1145
-        String[] words = queryString.split("\\s+");
+        String[] words = queryString.split( "\\s+" );
         int lastWordLength = words[words.length - 1].length();
-        if ( lastWordLength > 1) { 
+        if ( lastWordLength > 1 ) {
             try { // Use wildcard search.
-            	iterator = runSearch( model, index, queryString+"*" );
-            } catch (ARQLuceneException e) { // retry without wildcard           	
-                log.info("Caught "+ e +" caused by "+e.getCause()+" reason "+e.getMessage()+". Retrying search without wildcard.");
-                iterator = runSearch( model, index, queryString );            }            
+                iterator = runSearch( model, index, queryString + "*" );
+            } catch ( ARQLuceneException e ) { // retry without wildcard
+                log.info( "Caught " + e + " caused by " + e.getCause() + " reason " + e.getMessage()
+                        + ". Retrying search without wildcard." );
+                iterator = runSearch( model, index, queryString );
+            }
         } else {
-        	iterator = runSearch( model, index, queryString );
+            iterator = runSearch( model, index, queryString );
         }
 
         while ( iterator != null && iterator.hasNext() ) {
@@ -179,8 +182,8 @@ public class OntologySearch {
     }
 
     /**
-     * Find OntologyIndividuals and OntologyTerms that match the query string. 
-     * Search with a wildcard is attempted whenever possible.
+     * Find OntologyIndividuals and OntologyTerms that match the query string. Search with a wildcard is attempted
+     * whenever possible.
      * 
      * @param model that goes with the index
      * @param index to search
@@ -191,21 +194,23 @@ public class OntologySearch {
 
         Set<OntologyResource> results = new HashSet<OntologyResource>();
         NodeIterator iterator = null;
-        
-        queryString = queryString.trim();        
+
+        queryString = queryString.trim();
 
         // Add wildcard only if the last word is longer than one character. This is to prevent lucene from
         // blowing up. See bug#1145
-        String[] words = queryString.split("\\s+");
+        String[] words = queryString.split( "\\s+" );
         int lastWordLength = words[words.length - 1].length();
-        if ( lastWordLength > 1) { 
+        if ( lastWordLength > 1 ) {
             try { // Use wildcard search.
-            	iterator = runSearch( model, index, queryString+"*" );
-            } catch (ARQLuceneException e) { // retry without wildcard           	
-                log.info("Caught "+ e +" caused by "+e.getCause()+" reason "+e.getMessage()+". Retrying search without wildcard.");
-                iterator = runSearch( model, index, queryString );            }            
+                iterator = runSearch( model, index, queryString + "*" );
+            } catch ( ARQLuceneException e ) { // retry without wildcard
+                log.info( "Caught " + e + " caused by " + e.getCause() + " reason " + e.getMessage()
+                        + ". Retrying search without wildcard." );
+                iterator = runSearch( model, index, queryString );
+            }
         } else {
-        	iterator = runSearch( model, index, queryString );
+            iterator = runSearch( model, index, queryString );
         }
 
         while ( iterator != null && iterator.hasNext() ) {
@@ -289,27 +294,22 @@ public class OntologySearch {
         if ( StringUtils.isBlank( strippedQuery ) ) {
             throw new IllegalArgumentException( "Query cannot be blank" );
         }
-//        try {
-            StopWatch timer = new StopWatch();
-            timer.start();
-            NodeIterator iterator = index.searchModelByIndex( model, strippedQuery );
+        // try {
+        StopWatch timer = new StopWatch();
+        timer.start();
+        NodeIterator iterator = index.searchModelByIndex( model, strippedQuery );
 
-            if ( timer.getTime() > 100 ) {
-                log.info( "Ontology resource search for: " + queryString + ": " + timer.getTime() + "ms" );
-            }
-
-            return iterator;
-/*
-        } catch (ARQLuceneException e) {
-        	// We assume this is lucene's TooManyClauses exception. (see bug#145)
-        	// TODO: maybe we should check. .getCause()? 
-        	throw e;   
-        } catch ( Exception e ) {
-            log.error( "Failed Search for query: " + queryString + " Error was: " + e + " Caused by: "
-                    + e.getCause().getMessage() );
+        if ( timer.getTime() > 100 ) {
+            log.info( "Ontology resource search for: " + queryString + ": " + timer.getTime() + "ms" );
         }
-        return null;
-        */
+
+        return iterator;
+        /*
+         * } catch (ARQLuceneException e) { // We assume this is lucene's TooManyClauses exception. (see bug#145) //
+         * TODO: maybe we should check. .getCause()? throw e; } catch ( Exception e ) { log.error(
+         * "Failed Search for query: " + queryString + " Error was: " + e + " Caused by: " + e.getCause().getMessage()
+         * ); } return null;
+         */
     }
-    
+
 }

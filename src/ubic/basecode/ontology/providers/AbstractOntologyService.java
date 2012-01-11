@@ -64,7 +64,7 @@ public abstract class AbstractOntologyService {
     protected AtomicBoolean modelReady = new AtomicBoolean( false );
 
     protected AtomicBoolean isInitialized = new AtomicBoolean( false );
-    
+
     protected OntologyInitializationThread initializationThread;
 
     // private boolean enabled = false;
@@ -76,15 +76,15 @@ public abstract class AbstractOntologyService {
         super();
         ontology_URL = getOntologyUrl();
         ontologyName = getOntologyName();
-        
+
         initializationThread = new OntologyInitializationThread();
-        initializationThread.setName(ontologyName + "_load_thread");
+        initializationThread.setName( ontologyName + "_load_thread" );
         // To prevent VM from waiting on this thread to shutdown (if shutting down).
         initializationThread.setDaemon( true );
-        
+
     }
-    
-    protected class OntologyInitializationThread extends Thread {        
+
+    protected class OntologyInitializationThread extends Thread {
         @Override
         public void run() {
 
@@ -107,8 +107,8 @@ public abstract class AbstractOntologyService {
                 index = OntologyIndexer.indexOntology( ontologyName, model );
 
                 if ( loadTime.getTime() > 5000 ) {
-                    log.info( "Done Loading Index for " + ontologyName + " Ontology in " + loadTime.getTime()
-                            / 1000 + "s" );
+                    log.info( "Done Loading Index for " + ontologyName + " Ontology in " + loadTime.getTime() / 1000
+                            + "s" );
                 }
 
                 indexReady.set( true );
@@ -121,31 +121,30 @@ public abstract class AbstractOntologyService {
                 loadTermsInNameSpace( ontology_URL, model );
 
                 if ( loadTime.getTime() > 5000 ) {
-                    log.info( ontology_URL + "  loaded, total of " + terms.size() + " items in "
-                            + loadTime.getTime() / 1000 + "s" );
+                    log.info( ontology_URL + "  loaded, total of " + terms.size() + " items in " + loadTime.getTime()
+                            / 1000 + "s" );
                 }
 
                 cacheReady.set( true );
 
                 isInitialized.set( true );
-                //isInitializationThreadRunning.set( false );
+                // isInitializationThreadRunning.set( false );
                 loadTime.stop();
 
                 if ( loadTime.getTime() > 5000 ) {
-                    log.info( "Finished loading ontology " + ontologyName + " in " + loadTime.getTime() / 1000
-                            + "s" );
+                    log.info( "Finished loading ontology " + ontologyName + " in " + loadTime.getTime() / 1000 + "s" );
                 }
 
             } catch ( Exception e ) {
                 log.error( e, e );
                 isInitialized.set( false );
-                //isInitializationThreadRunning.set( false );
+                // isInitializationThreadRunning.set( false );
             } finally {
                 releaseModel( model );
             }
-        }    
+        }
     }
-    
+
     /**
      * Looks for any OntologyIndividuals that match the given search string.
      * 
@@ -189,7 +188,7 @@ public abstract class AbstractOntologyService {
     }
 
     /**
-     * Looks for any ontologyTerms that match the given search string
+     * Looks for any ontologyTerms that match the given search string. Obsolete terms are filtered out.
      * 
      * @param search
      * @return
@@ -209,6 +208,20 @@ public abstract class AbstractOntologyService {
         releaseModel( model );
 
         return matches;
+    }
+
+    /**
+     * @param matches
+     * @return
+     */
+    private Collection<OntologyTerm> removeObsoleteTerms( Collection<OntologyTerm> matches ) {
+        Collection<OntologyTerm> filteredResults = new HashSet<OntologyTerm>();
+        for ( OntologyTerm ot : matches ) {
+            if ( !ot.isTermObsolete() ) {
+                filteredResults.add( ot );
+            }
+        }
+        return filteredResults;
     }
 
     public Set<String> getAllURIs() {
@@ -274,17 +287,17 @@ public abstract class AbstractOntologyService {
 
     }
 
-    //TODO: finish this convenience method
-//    public void startInitializationThreadAndWait ( boolean force ) {
-//        startInitializationThread ( force );
-//        while ( !isOntologyLoaded() ) {
-//            Thread.sleep( 5000 );
-//            log.info( "Waiting for mgedontology to load" );
-//        }
-//    }
-        
-    public synchronized void startInitializationThread ( boolean force ) {
-                
+    // TODO: finish this convenience method
+    // public void startInitializationThreadAndWait ( boolean force ) {
+    // startInitializationThread ( force );
+    // while ( !isOntologyLoaded() ) {
+    // Thread.sleep( 5000 );
+    // log.info( "Waiting for mgedontology to load" );
+    // }
+    // }
+
+    public synchronized void startInitializationThread( boolean force ) {
+
         if ( initializationThread.isAlive() ) {
             log.warn( ontology_URL + " initialization is already running." );
             return;
@@ -310,7 +323,7 @@ public abstract class AbstractOntologyService {
             return;
         }
 
-        // This thread indexes ontology and creates local cache for uri->ontology terms mappings.         
+        // This thread indexes ontology and creates local cache for uri->ontology terms mappings.
         initializationThread.start();
     }
 
