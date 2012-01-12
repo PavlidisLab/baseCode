@@ -20,6 +20,9 @@ package ubic.basecode.math;
 
 import java.util.ArrayList;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
@@ -34,6 +37,8 @@ import cern.colt.matrix.impl.DenseDoubleMatrix1D;
  * @version $Id$
  */
 public class MultipleTestCorrection {
+
+    private static Log log = LogFactory.getLog( MultipleTestCorrection.class );
 
     /**
      * Benjamini-Hochberg method. Determines the maximum p value to maintain the false discovery rate. (Assuming pvalues
@@ -64,7 +69,8 @@ public class MultipleTestCorrection {
 
     /**
      * @param pvalues; can contain missing values or invalid pvalues (outside range [0-1]), which are ingored.
-     * @return false discovery rates computed using the method of Benjamini and Hochberg
+     * @return false discovery rates computed using the method of Benjamini and Hochberg; or null if they could not be
+     *         computed.
      */
     public static DoubleMatrix1D benjaminiHochberg( DoubleMatrix1D pvalues ) {
         double[] qvalues = new double[pvalues.size()];
@@ -80,7 +86,8 @@ public class MultipleTestCorrection {
         }
 
         if ( pvaluesList.isEmpty() ) {
-            throw new IllegalArgumentException( "No pvalues were valid numbers, returning null qvalues" );
+            log.error( "No pvalues were valid numbers, returning null qvalues" );
+            return null;
         }
 
         /* convert to primitive array */
@@ -169,8 +176,9 @@ public class MultipleTestCorrection {
         for ( int i = numpvals - 1; i >= 0; i-- ) {
 
             double p = pvalcop.get( i );
-            if ( p < 0.0 || p > 1.0 )
+            if ( p < 0.0 || p > 1.0 ) {
                 throw new IllegalArgumentException( "p-value must be in range [0,1], got: " + p );
+            }
 
             double thresh = qmod * i / numpvals;
             if ( p < thresh ) {

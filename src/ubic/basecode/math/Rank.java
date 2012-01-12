@@ -26,6 +26,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
 import cern.colt.list.ObjectArrayList;
@@ -37,6 +40,8 @@ import cern.colt.list.ObjectArrayList;
  * @version $Id$
  */
 public class Rank {
+
+    private static Log log = LogFactory.getLog( Rank.class );
 
     /**
      * Return a permutation which puts the array in sorted order. In other words, the values returned indicate the
@@ -88,7 +93,7 @@ public class Rank {
      * 
      * @param array DoubleArrayList
      * @return cern.colt.list.DoubleArrayList
-     * @param array
+     * @param array, or null if the ranks could not be computed.
      * @return
      */
     public static DoubleArrayList rankTransform( DoubleArrayList array ) {
@@ -107,11 +112,12 @@ public class Rank {
      * 
      * @param array DoubleArrayList
      * @param descending - reverse the usual ordering so larger values are the the front.
-     * @return cern.colt.list.DoubleArrayList
+     * @return cern.colt.list.DoubleArrayList, or null if the input is empty or null.
      */
     public static DoubleArrayList rankTransform( DoubleArrayList array, boolean descending ) {
         if ( array == null ) {
-            throw new IllegalArgumentException( "Null array" );
+            log.error( "Array was null" );
+            return null;
         }
 
         int size = array.size();
@@ -184,7 +190,7 @@ public class Rank {
      * @return
      */
     public static <K> Map<K, Double> rankTransform( Map<K, Double> m, boolean desc ) {
- 
+
         List<KeyAndValueData<K>> values = new ArrayList<KeyAndValueData<K>>();
 
         for ( Iterator<K> itr = m.keySet().iterator(); itr.hasNext(); ) {
@@ -192,7 +198,7 @@ public class Rank {
             K key = itr.next();
 
             double val = m.get( key ).doubleValue();
-            values.add( new KeyAndValueData<K>( 0, key, val ) ); 
+            values.add( new KeyAndValueData<K>( 0, key, val ) );
         }
 
         /* sort it */

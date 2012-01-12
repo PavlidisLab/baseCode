@@ -100,18 +100,18 @@ public class Wilcoxon {
         if ( n == 0 && N == 0 ) return 1.0;
 
         if ( ( long ) N * n * R <= 1e6 || R < N && n * Math.pow( R, 2 ) <= 1e6 ) {
-            log.debug( "Using exact method (" + N * n * R + ")" );
+            if ( log.isDebugEnabled() ) log.debug( "Using exact method (" + N * n * R + ")" );
             return pExact( N, n, R );
         }
 
         double p = pGaussian( N, n, R );
 
         if ( p < 0.1 && Math.pow( n, 2 ) * R / N <= 1e5 ) {
-            log.debug( "Using volume method" );
+            if ( log.isDebugEnabled() ) log.debug( "Using volume method (" + N * n * R + ")" );
             return pVolume( N, n, R );
         }
 
-        log.debug( "Using gaussian method" );
+        if ( log.isDebugEnabled() ) log.debug( "Using gaussian method (" + N * n * R + ")" );
         return p;
     }
 
@@ -234,9 +234,6 @@ public class Wilcoxon {
                 }
             }
         }
-        // if ( log.isErrorEnabled() ) {
-        // printCache();
-        // }
         return getFromCache( N0, n0, R0 );
     }
 
@@ -279,7 +276,7 @@ public class Wilcoxon {
         if ( n > N ) throw new IllegalArgumentException( "n must be smaller than N" );
         double mean = n * ( N + 1 ) / 2.0;
         double var = n * ( N - n ) * ( N + 1 ) / 12.0;
-        log.debug( "Mean=" + mean + " Var=" + var + " R=" + R );
+        if ( log.isDebugEnabled() ) log.debug( "Mean=" + mean + " Var=" + var + " R=" + R );
         return Probability.normal( 0.0, var, R - mean );
     }
 

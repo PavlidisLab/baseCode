@@ -63,6 +63,7 @@ public class MatrixNormalizer<R, C> {
             }
 
             DoubleArrayList r = Rank.rankTransform( dataColumn );
+            assert r != null;
             ranks.put( i, r );
         }
 
