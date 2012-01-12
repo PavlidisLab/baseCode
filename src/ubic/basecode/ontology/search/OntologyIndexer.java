@@ -73,20 +73,29 @@ public class OntologyIndexer {
     }
 
     /**
-     * Loads or creates an index from an existing OntModel. Any existing index will loaded.
+     * Loads or creates an index from an existing OntModel. Any existing index will loaded unless force=true.
      * 
-     * @param url
      * @param name
      * @param model
+     * @param force if true, the index will be redone
      * @return
      */
-    public static IndexLARQ indexOntology( String name, OntModel model ) {
+    public static IndexLARQ indexOntology( String name, OntModel model, boolean force ) {
+
+        if ( force ) {
+            return index( name, model );
+        }
+
         try {
             return getSubjectIndex( name );
         } catch ( Exception e ) {
             log.info( "Error loading index from disk, re-indexing" );
             return index( name, model );
         }
+    }
+
+    public static IndexLARQ indexOntology( String name, OntModel model ) {
+        return indexOntology( name, model, false );
     }
 
     /**

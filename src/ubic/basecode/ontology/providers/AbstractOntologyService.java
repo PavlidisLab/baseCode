@@ -77,7 +77,7 @@ public abstract class AbstractOntologyService {
         ontology_URL = getOntologyUrl();
         ontologyName = getOntologyName();
 
-        initializationThread = new OntologyInitializationThread();
+        initializationThread = new OntologyInitializationThread( false );
         initializationThread.setName( ontologyName + "_load_thread" );
         // To prevent VM from waiting on this thread to shutdown (if shutting down).
         initializationThread.setDaemon( true );
@@ -85,6 +85,22 @@ public abstract class AbstractOntologyService {
     }
 
     protected class OntologyInitializationThread extends Thread {
+
+        public boolean isForceReindexing() {
+            return forceReindexing;
+        }
+
+        public void setForceReindexing( boolean forceReindexing ) {
+            this.forceReindexing = forceReindexing;
+        }
+
+        private boolean forceReindexing = false;
+
+        public OntologyInitializationThread( boolean forceRefresh ) {
+            super();
+            this.forceReindexing = forceRefresh;
+        }
+
         @Override
         public void run() {
 
@@ -104,7 +120,7 @@ public abstract class AbstractOntologyService {
                  * Indexing will be slow the first time (can take hours for large ontologies).
                  */
                 log.info( "Loading Index for " + ontologyName );
-                index = OntologyIndexer.indexOntology( ontologyName, model );
+                index = OntologyIndexer.indexOntology( ontologyName, model, forceReindexing );
 
                 if ( loadTime.getTime() > 5000 ) {
                     log.info( "Done Loading Index for " + ontologyName + " Ontology in " + loadTime.getTime() / 1000
@@ -210,19 +226,19 @@ public abstract class AbstractOntologyService {
         return matches;
     }
 
-    /**
-     * @param matches
-     * @return
-     */
-    private Collection<OntologyTerm> removeObsoleteTerms( Collection<OntologyTerm> matches ) {
-        Collection<OntologyTerm> filteredResults = new HashSet<OntologyTerm>();
-        for ( OntologyTerm ot : matches ) {
-            if ( !ot.isTermObsolete() ) {
-                filteredResults.add( ot );
-            }
-        }
-        return filteredResults;
-    }
+    // /**
+    // * @param matches
+    // * @return
+    // */
+    // private Collection<OntologyTerm> removeObsoleteTerms( Collection<OntologyTerm> matches ) {
+    // Collection<OntologyTerm> filteredResults = new HashSet<OntologyTerm>();
+    // for ( OntologyTerm ot : matches ) {
+    // if ( !ot.isTermObsolete() ) {
+    // filteredResults.add( ot );
+    // }
+    // }
+    // return filteredResults;
+    // }
 
     public Set<String> getAllURIs() {
         if ( terms == null ) return null;
@@ -303,7 +319,8 @@ public abstract class AbstractOntologyService {
             return;
         }
 
-        if ( this.isOntologyLoaded() ) {
+        if ( !force && this.isOntologyLoaded() ) {
+            log.warn( ontology_URL + " is already loaded, and force=false" );
             return;
         }
 
@@ -324,6 +341,7 @@ public abstract class AbstractOntologyService {
         }
 
         // This thread indexes ontology and creates local cache for uri->ontology terms mappings.
+        initializationThread.setForceReindexing( force );
         initializationThread.start();
     }
 
