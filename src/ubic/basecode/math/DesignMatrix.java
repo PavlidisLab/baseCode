@@ -168,6 +168,15 @@ public class DesignMatrix {
         int interactionIndex = terms.size();
 
         for ( String t1 : interactionTerms ) {
+
+            /*
+             * If any of these terms were already dropped, bail.
+             */
+            if ( this.getDroppedFactors().contains( t1 ) ) {
+                log.warn( "Can't add interaction involving a dropped factor: " + t1 );
+                return;
+            }
+
             if ( doneTerms.contains( t1 ) ) continue;
             List<Integer> cols1 = terms.get( t1 );
 
@@ -276,6 +285,12 @@ public class DesignMatrix {
             throw new IllegalArgumentException( "No factor known by name " + factorName + ", choices are: "
                     + StringUtils.join( this.levelsForFactors.keySet(), "," ) );
         }
+
+        if ( this.droppedFactors.contains( factorName ) ) {
+            log.warn( "Can't set baseline for a dropped factor, skipping" );
+            return;
+        }
+
         List<String> oldValues = this.levelsForFactors.get( factorName );
         int index = oldValues.indexOf( baselineFactorValue );
         if ( index < 0 ) {
