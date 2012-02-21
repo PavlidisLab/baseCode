@@ -213,6 +213,7 @@ public class DesignMatrix {
                              */
                             log.info( "Interaction term is redundant with another column, dropping" );
                             matrix = matrix.getColRange( 0, this.matrix.columns() - 1 );
+                            // FIXME. I think this is broken. The terms also need to be fixed?
                             continue;
                         }
 
@@ -408,17 +409,20 @@ public class DesignMatrix {
                 levels = levels( factorName, ( List<String> ) factorValues );
             }
 
-            if ( levels.size() == 1 ) {
-                log.warn( "Factor " + factorName + " was constant; not adding to the design" );
-                this.droppedFactors.add( factorName );
-                return inputDesign;
-            }
+            // if ( levels.size() == 1 ) {
+            // /*
+            // * This is okay if it is the intercept (as in a one-sample t-test). So this isn't the place to
+            // * do this. We assume the user knows what they are doing.
+            // */
+            // log.warn( "Factor " + factorName + " was constant; not adding to the design" );
+            // this.droppedFactors.add( factorName );
+            // return inputDesign;
+            // }
 
             tmp = inputDesign;
 
             List<String> levelList = new ArrayList<String>();
             levelList.addAll( levels );
-            // Collections.sort( levelList );
 
             int startcol = 0;
             if ( tmp != null ) {

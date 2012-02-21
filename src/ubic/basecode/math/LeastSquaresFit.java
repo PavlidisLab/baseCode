@@ -438,8 +438,8 @@ public class LeastSquaresFit {
 
         assert this.A != null;
 
-        DoubleMatrix2D hatMatrix = solver.mult( solver.mult( A, solver
-                .inverse( solver.mult( solver.transpose( A ), A ) ) ), solver.transpose( A ) );
+        DoubleMatrix2D hatMatrix = solver.mult(
+                solver.mult( A, solver.inverse( solver.mult( solver.transpose( A ), A ) ) ), solver.transpose( A ) );
 
         // // log.info( hatMatrix );
 
@@ -733,7 +733,8 @@ public class LeastSquaresFit {
             }
 
         }
-        assert this.assign.isEmpty() || this.assign.size() == this.coefficients.rows();
+        assert this.assign.isEmpty() || this.assign.size() == this.coefficients.rows() : assign.size()
+                + " != # coefficients " + this.coefficients.rows();
         assert this.coefficients.rows() == A.columns();
 
         this.fitted = solver.transpose( MatrixUtil.multWithMissing( A, coefficients ) );
@@ -960,8 +961,8 @@ public class LeastSquaresFit {
 
         double mss;
         if ( hasIntercept ) {
-            mss = f.copy().assign( Functions.minus( Descriptive.mean( new DoubleArrayList( f.toArray() ) ) ) ).assign(
-                    Functions.square ).aggregate( Functions.plus, Functions.identity );
+            mss = f.copy().assign( Functions.minus( Descriptive.mean( new DoubleArrayList( f.toArray() ) ) ) )
+                    .assign( Functions.square ).aggregate( Functions.plus, Functions.identity );
         } else {
             mss = f.copy().assign( Functions.square ).aggregate( Functions.plus, Functions.identity );
         }
