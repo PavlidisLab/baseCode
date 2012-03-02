@@ -36,36 +36,36 @@ public class PrecisionRecall {
      * @param ranks of the positives; LOW ranks are considered better. (e.g., rank 0 is the 'best')
      * @return
      */
-    public static double meanAveragePrecision( int totalSize, Collection<Double> ranksOfPositives ) {
-
-        int numPos = 0;
-        double answer = 0.0;
-
-        double sumPrecision = 0.0;
-        double sumAP = 0.0;
-        double averagePrecision = 0;
-        for ( int i = 0; i < totalSize; i++ ) {
-
-            if ( ranksOfPositives.contains( ( double ) i ) ) { // FIXME hash on double.
-                /*
-                 * Accumulate the precision at this # positives to compute the average.
-                 */
-                numPos++;
-                double precision = numPos / ( i + 1.0 );
-                sumPrecision += precision;
-
-                // update the average precision.
-                averagePrecision = sumPrecision / numPos;
-            }
-
-            sumAP += averagePrecision;
-        }
-
-        answer = sumAP / totalSize;
-
-        return answer;
-
-    }
+    // public static double averagePrecision( int totalSize, Collection<Double> ranksOfPositives ) {
+    //
+    // int numPos = 0;
+    // double answer = 0.0;
+    //
+    // double sumPrecision = 0.0;
+    // double sumAP = 0.0;
+    // double averagePrecision = 0;
+    // for ( int i = 0; i < totalSize; i++ ) {
+    //
+    // if ( ranksOfPositives.contains( ( double ) i ) ) { // FIXME hash on double.
+    // /*
+    // * Accumulate the precision at this # positives to compute the average.
+    // */
+    // numPos++;
+    // double precision = numPos / ( i + 1.0 );
+    // sumPrecision += precision;
+    //
+    // // update the average precision.
+    // averagePrecision = sumPrecision / numPos;
+    // }
+    //
+    // sumAP += averagePrecision;
+    // }
+    //
+    // answer = sumAP / totalSize;
+    //
+    // return answer;
+    //
+    // }
 
     /**
      * Compute the average precision for the entire list.

@@ -48,14 +48,10 @@ public class Wilcoxon {
     private static Log log = LogFactory.getLog( Wilcoxon.class.getName() );
 
     /**
-     * @param N
-     * @param n
-     * @param R
-     * @return
+     * For smaller sample sizes, we compute exactly. Below 1e5 we start to notice some loss of precision (like one part
+     * in 1e5). Setting this too high really slows things down for high-throughput applications.
      */
-    public static double exactWilcoxonP( int N, int n, int R ) {
-        return pExact( N, n, R );
-    }
+    private static double LIMIT_FOR_APPROXIMATION = 1e5;
 
     /**
      * Convience method that computes a p-value using input of two double arrays.
@@ -79,6 +75,16 @@ public class Wilcoxon {
     }
 
     /**
+     * @param N
+     * @param n
+     * @param R
+     * @return
+     */
+    public static double exactWilcoxonP( int N, int n, int R ) {
+        return pExact( N, n, R );
+    }
+
+    /**
      * @param N total number of items (in and not in the class)
      * @param ranks of items in the class (one-based)
      * @return
@@ -99,7 +105,7 @@ public class Wilcoxon {
 
         if ( n == 0 && N == 0 ) return 1.0;
 
-        if ( ( long ) N * n * R <= 1e6 || R < N && n * Math.pow( R, 2 ) <= 1e6 ) {
+        if ( ( long ) N * n * R <= LIMIT_FOR_APPROXIMATION || R < N && n * Math.pow( R, 2 ) <= LIMIT_FOR_APPROXIMATION ) {
             if ( log.isDebugEnabled() ) log.debug( "Using exact method (" + N * n * R + ")" );
             return pExact( N, n, R );
         }

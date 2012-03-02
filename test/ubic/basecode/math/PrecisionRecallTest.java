@@ -36,7 +36,7 @@ public class PrecisionRecallTest {
 
         Double[] ranks = new Double[] { 0.0, 2.0, 5.0, 9.0, 14.0 };
 
-        double aprc = PrecisionRecall.meanAveragePrecision( 11, Arrays.asList( ranks ) );
+        double aprc = PrecisionRecall.averagePrecision( 11, Arrays.asList( ranks ) );
 
         assertEquals( 0.7883, aprc, 0.001 );
     }

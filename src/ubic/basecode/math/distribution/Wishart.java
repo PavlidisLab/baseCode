@@ -75,53 +75,25 @@ public class Wishart {
 
     /**
      * Based on R code from Francesca Dominici, <a
-     * href="http://www.biostat.jhsph.edu/~fdominic/teaching/BM/bm.html">http://www.biostat.jhsph.edu/~fdominic/teaching/BM/bm.html
-     * </a>
+     * href="http://www.biostat.jhsph.edu/~fdominic/teaching/BM/bm.html">http
+     * ://www.biostat.jhsph.edu/~fdominic/teaching/BM/bm.html </a>
      * <p>
      * Returns
      * 
      * <pre>
-     *   
-     *    
-     *     
-     *      
-     *       
-     *              
-     *                   w=(RU)'RU
-     *         
-     *        
-     *       
-     *      
-     *     
-     *    
+     * w=(RU)'RU
      * </pre>
      * 
      * where
      * 
      * <pre>
-     *   
-     *    
-     *     
-     *      
-     *       
-     *        
-     *         
-     *          
-     *           Cov=U'U (U is upper triang) 
-     *      
-     *     
-     *    
+     * Cov=U'U (U is upper triang)
      * </pre>
      * 
      * and where upper-tri R is
      * 
      * <pre>
-     *   
-     *    
-     *                                           R_ij&tilde;N(0,1), i&lt;j ; (R_ii)&circ;2&tilde;Chisq(nu-s+i)
-     *      
-     *     
-     *    
+     * R_ij&tilde;N(0,1), i&lt;j ; (R_ii)&circ;2&tilde;Chisq(nu-s+i)
      * </pre>
      * 
      * @param s
