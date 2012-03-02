@@ -32,16 +32,6 @@ import org.junit.Test;
 public class PrecisionRecallTest {
 
     @Test
-    public void testApr() {
-
-        Double[] ranks = new Double[] { 0.0, 2.0, 5.0, 9.0, 14.0 };
-
-        double aprc = PrecisionRecall.averagePrecision( 11, Arrays.asList( ranks ) );
-
-        assertEquals( 0.7883, aprc, 0.001 );
-    }
-
-    @Test
     public void testAveragePrecision() {
         Double[] ranks = new Double[] { 0.0, 2.0, 5.0, 9.0, 14.0 };
 
