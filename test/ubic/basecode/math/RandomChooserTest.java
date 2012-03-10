@@ -54,27 +54,22 @@ public class RandomChooserTest extends TestCase {
 
     /**
      * Check correctness of the sampling algorithm for choosing subsets of size 2. The average value should come out
-     * very close to k/2.
+     * close to k/2.
      * 
      * @throws Exception
      */
     public void testRepeat() throws Exception {
-        int max = 1000;
+        int k = 1000;
 
         double total = 0.0;
-        int reps = 500;
+        int reps = 10000;
         for ( int j = 0; j < reps; j++ ) {
-
-            for ( int i = 0; i < reps; i++ ) {
-                int[] r = RandomChooser.chooserandom( max, 200 );
-                int m = r[0] + r[1];
-
-                total += m / 2.0;
-
-            }
+            int[] r = RandomChooser.chooserandom( k, 2 );
+            int m = r[0] + r[1];
+            total += m / 2.0;
         }
 
-        assertEquals( 500, total / ( reps * reps ), 0.5 );
+        assertEquals( 500, total / reps, 5 );
     }
 
     /**
