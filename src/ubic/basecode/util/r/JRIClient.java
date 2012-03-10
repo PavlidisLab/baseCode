@@ -17,7 +17,7 @@
  *
  */
 package ubic.basecode.util.r;
- 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,13 +49,21 @@ public class JRIClient extends AbstractRClient {
 
     static {
         try {
+            System.loadLibrary( "jri" );
+
             /*
              * The jri engine is static in JRIEngine, so this is okay.
              */
             connection = new JRIEngine();
         } catch ( REngineException e ) {
             throw new RuntimeException( "JRI could not be initilized" );
+        } catch ( UnsatisfiedLinkError e ) {
+            // oh well...
         }
+    }
+
+    public static boolean ready() {
+        return connection != null;
     }
 
     /*

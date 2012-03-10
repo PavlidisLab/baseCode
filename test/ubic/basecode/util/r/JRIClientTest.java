@@ -59,6 +59,11 @@ public class JRIClientTest extends TestCase {
     @Override
     public void setUp() throws Exception {
 
+        connected = JRIClient.ready();
+
+        if ( !connected ) {
+            return;
+        }
         try {
             log.debug( "java.library.path=" + System.getProperty( "java.library.path" ) );
             rc = new JRIClient();
