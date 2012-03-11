@@ -322,7 +322,7 @@
 							<artifactId>maven-javadoc-plugin</artifactId>
 							<version>2.8</version>
 							<configuration>
-								<quiet>false</quiet>
+								<quiet>true</quiet>
 								<aggregate>false</aggregate>
 								<links>
 									<link>http://java.sun.com/j2ee/1.4/docs/api</link>
