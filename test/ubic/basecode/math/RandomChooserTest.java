@@ -85,16 +85,13 @@ public class RandomChooserTest extends TestCase {
             k.add( i );
         }
         double total = 0.0;
-        int reps = 500;
+        int reps = 10000;
         for ( int j = 0; j < reps; j++ ) {
-            for ( int i = 0; i < reps; i++ ) {
-                List<Integer> r = new ArrayList<Integer>( RandomChooser.chooseRandomSubset( 2, k ) );
-                int m = r.get( 0 ) + r.get( 1 );
-                total += m / 2.0;
-
-            }
+            List<Integer> r = new ArrayList<Integer>( RandomChooser.chooseRandomSubset( 2, k ) );
+            int m = r.get( 0 ) + r.get( 1 );
+            total += m / 2.0;
         }
-        assertEquals( 500, total / ( reps * reps ), 0.5 );
+        assertEquals( 500, total / reps, 5 );
     }
 
     public void testRandomSubset() throws Exception {
