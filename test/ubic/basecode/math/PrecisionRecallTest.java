@@ -35,8 +35,30 @@ public class PrecisionRecallTest {
     public void testAveragePrecision() {
         Double[] ranks = new Double[] { 0.0, 2.0, 5.0, 9.0, 14.0 };
 
-        double ap = PrecisionRecall.averagePrecision( 15, Arrays.asList( ranks ) );
+        double ap = PrecisionRecall.averagePrecision( Arrays.asList( ranks ) );
 
         assertEquals( 0.580, ap, 0.001 );
     }
+
+    @Test
+    public void testAveragePrecisionB() {
+        Double[] ranks = new Double[] { 0.0, 1.0, 3.0 };
+
+        double ap = PrecisionRecall.averagePrecision( Arrays.asList( ranks ) );
+
+        assertEquals( ( 1.0 + 1.0 + 0.75 ) / 3.0, ap, 0.001 );
+    }
+
+    /**
+     * Should give the same result as test B, because precision is the same at each step despite the tie.
+     */
+    @Test
+    public void testAveragePrecisionWithTie() {
+        Double[] ranks = new Double[] { 0.5, 0.5, 3.0 };
+
+        double ap = PrecisionRecall.averagePrecision( Arrays.asList( ranks ) );
+
+        assertEquals( ( 1.0 + 1.0 + 0.75 ) / 3.0, ap, 0.001 );
+    }
+
 }
