@@ -29,34 +29,35 @@ public class StatusStderr implements StatusViewer {
     public StatusStderr() {
     }
 
+    @Override
     public void showStatus( String s ) {
         if ( s.equals( "" ) ) return;
         System.err.println( s );
     }
 
+    @Override
     public void showError( String s ) {
         if ( s.equals( "" ) ) return;
         System.err.println( "Error:" + s );
     }
 
+    @Override
     public void clear() {
         // don't need to do anything.
     }
 
     /*
      * (non-Javadoc)
-     * 
-     * @see basecode.util.StatusViewer#setError(java.lang.Throwable)
      */
+    @Override
     public void showError( Throwable e ) {
         e.printStackTrace();
     }
 
     /*
      * (non-Javadoc)
-     * 
-     * @see basecode.util.StatusViewer#setError(java.lang.String, java.lang.Throwable)
      */
+    @Override
     public void showError( String message, Throwable e ) {
         this.showError( message );
         e.printStackTrace();
@@ -69,6 +70,11 @@ public class StatusStderr implements StatusViewer {
 
     @Override
     public void showStatus( String s, boolean callSuper ) {
+        showStatus( s );
+    }
+
+    @Override
+    public void showWarning( String s ) {
         showStatus( s );
     }
 

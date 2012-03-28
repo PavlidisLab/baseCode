@@ -54,6 +54,11 @@ public interface StatusViewer {
     public abstract void showError( String s );
 
     /**
+     * @param s
+     */
+    public abstract void showWarning( String s );
+
+    /**
      * @param e
      */
     public abstract void showError( Throwable e );

@@ -34,6 +34,7 @@ public class StatusDebugLogger implements StatusViewer {
      * 
      * @see basecode.util.StatusViewer#setStatus(java.lang.String)
      */
+    @Override
     public void showStatus( String s ) {
         if ( s.length() == 0 ) return;
         log.info( s );
@@ -44,32 +45,32 @@ public class StatusDebugLogger implements StatusViewer {
      * 
      * @see basecode.util.StatusViewer#setError(java.lang.String)
      */
+    @Override
     public void showError( String s ) {
         if ( s.length() == 0 ) return;
         log.error( s );
     }
 
+    @Override
     public void showError( Throwable e ) {
         log.error( e, e );
     }
 
+    @Override
     public void clear() {
         // don't need to do anything.
     }
 
     /*
      * (non-Javadoc)
-     * 
-     * @see basecode.util.StatusViewer#setError(java.lang.String, java.lang.Throwable)
      */
+    @Override
     public void showError( String message, Throwable e ) {
         log.error( message, e );
     }
 
     /*
      * (non-Javadoc)
-     * 
-     * @see ubic.basecode.util.StatusViewer#showStatus(java.lang.String, int)
      */
     @Override
     public void showStatus( String s, int sleepSeconds ) {
@@ -78,6 +79,11 @@ public class StatusDebugLogger implements StatusViewer {
 
     @Override
     public void showStatus( String s, boolean callSuper ) {
+        showStatus( s );
+    }
+
+    @Override
+    public void showWarning( String s ) {
         showStatus( s );
     }
 
