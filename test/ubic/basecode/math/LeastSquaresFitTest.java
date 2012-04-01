@@ -416,6 +416,24 @@ public class LeastSquaresFitTest {
         a = s.getAnova();
         assertEquals( 0.2893, a.getMainEffectP( "Value" ), 0.0001 );
 
+        // 232018_at // based on rstudent() in R.
+        DoubleMatrix2D studentizedResiduals = fit.getStudentizedResiduals();
+      //  log.info( studentizedResiduals.viewRow( 10 ) );
+        double[] expectedStudentizedResiduals = new double[] { -0.34655041, 1.46251738, -0.61403124, -0.34663812,
+                -1.51245468, 0.06875469, 1.45818880, 1.02811044, -1.31696150 };
+
+        for ( int i = 0; i < 9; i++ ) {
+            assertEquals( expectedStudentizedResiduals[i], studentizedResiduals.viewRow( 10 ).get( i ), 0.001 );
+        }
+
+        // 1553129_at // based on rstudent() in R.
+        studentizedResiduals = fit.getStudentizedResiduals();
+        expectedStudentizedResiduals = new double[] { 0.46128657, -5.49429390, 0.84157385, 1.10053286, 1.10538546,
+                -0.01706794, -0.05318259, -0.56926585, -0.35107932 };
+        for ( int i = 0; i < 9; i++ ) {
+            assertEquals( expectedStudentizedResiduals[i], studentizedResiduals.viewRow( 0 ).get( i ), 0.001 );
+        }
+
     }
 
     /**
@@ -776,8 +794,6 @@ public class LeastSquaresFitTest {
 
         }
 
-        DoubleMatrix2D studres = fit.getStudentizedResiduals();
-        log.info( studres );
     }
 
     @Test

@@ -62,7 +62,10 @@ import cern.jet.stat.Descriptive;
  */
 public class LeastSquaresFit {
 
-    static Algebra solver = new Algebra();
+    /*
+     * Making this static causes problems with memory leaks/garbage that is not efficiently collected.
+     */
+    // private static Algebra solver = new Algebra();
 
     /**
      * Model fix coefficients (the x in Ax=b)
@@ -275,7 +278,7 @@ public class LeastSquaresFit {
      * @return
      */
     public List<GenericAnovaResult> anova() {
-
+        Algebra solver = new Algebra();
         DoubleMatrix1D ones = new DenseDoubleMatrix1D( residuals.columns() );
         ones.assign( 1.0 );
         DoubleMatrix1D residualSumsOfSquares = MatrixUtil.multWithMissing( residuals.copy().assign( Functions.square ),
@@ -428,7 +431,9 @@ public class LeastSquaresFit {
      * @return studentized residuals.
      */
     public DoubleMatrix2D getStudentizedResiduals() {
-        int numParams = this.residualDof; // / or this.residualDofs;
+        int dof = this.residualDof - 1; // MINUS for external studentizing!!
+
+        assert dof > 0;
 
         if ( this.hasMissing ) {
             throw new UnsupportedOperationException( "Studentizing not supported with missing values" );
@@ -436,30 +441,49 @@ public class LeastSquaresFit {
 
         DoubleMatrix2D result = this.residuals.like();
 
-        assert this.A != null;
-
-        DoubleMatrix2D hatMatrix = solver.mult(
-                solver.mult( A, solver.inverse( solver.mult( solver.transpose( A ), A ) ) ), solver.transpose( A ) );
-
-        // // log.info( hatMatrix );
-
-        // DoubleMatrix2D dpotri = this.dpotri( this.qr.getR().viewPart( 0, 0, this.qr.getRank(), this.qr.getRank() ) );
-        // DoubleMatrix2D hatMatrix = solver.mult( solver.mult( this.A, dpotri ), solver.transpose( this.A ) );
-
-        DoubleMatrix1D diagonal = MatrixUtil.diagonal( hatMatrix );
+        /*
+         * Diagnonal of the hat matrix at i (hi) is the squared norm of the ith row of Q
+         */
+        DoubleMatrix2D q = qr.getQ();
+        DoubleMatrix1D hatdiag = new DenseDoubleMatrix1D( residuals.columns() );
+        for ( int j = 0; j < residuals.columns(); j++ ) {
+            double hj = q.viewRow( j ).aggregate( Functions.plus, Functions.square );
+            if ( 1.0 - hj < Constants.TINY ) {
+                hj = 1.0;
+            }
+            hatdiag.set( j, hj );
+        }
 
         /*
          * Measure sum of squares of residuals / residualDof
          */
         for ( int i = 0; i < residuals.rows(); i++ ) {
 
-            double sdhat = Math.sqrt( residuals.viewRow( i ).aggregate( Functions.plus, Functions.square ) / numParams );
+            // these are 'internally studentized'
+            // double sdhat = Math.sqrt( residuals.viewRow( i ).aggregate( Functions.plus, Functions.square ) / dof );
 
-            // studentisze
-            for ( int j = 0; j < residuals.viewRow( i ).size(); j++ ) {
-                double esc = Math.sqrt( 1.0 - diagonal.get( j ) );
-                double e = residuals.getQuick( i, j );
-                double studres = e / ( sdhat * esc );
+            DoubleMatrix1D residualRow = residuals.viewRow( i );
+
+            double sum = residualRow.aggregate( Functions.plus, Functions.square );
+
+            for ( int j = 0; j < residualRow.size(); j++ ) {
+
+                double hj = hatdiag.get( j );
+
+                // this is how we externalize...
+                double sigma;
+
+                if ( hj < 1.0 ) {
+                    sigma = Math.sqrt( ( sum - Math.pow( residuals.get( i, j ), 2 ) / ( 1.0 - hj ) ) / dof );
+                } else {
+                    sigma = Math.sqrt( sum / dof );
+                }
+
+                double res = residuals.getQuick( i, j );
+                double studres = res / ( sigma * Math.sqrt( 1.0 - hj ) );
+
+                if ( log.isDebugEnabled() ) log.debug( "sigma=" + sigma + " hj=" + hj + " stres=" + studres );
+
                 result.set( i, j, studres );
             }
         }
@@ -706,7 +730,7 @@ public class LeastSquaresFit {
     private void lsf() {
 
         checkForMissingValues();
-
+        Algebra solver = new Algebra();
         /*
          * Missing values result in the addition of a fair amount of extra code.
          */
@@ -754,6 +778,7 @@ public class LeastSquaresFit {
      * @return the coefficients (a.k.a. x)
      */
     private DoubleMatrix1D ordinaryLeastSquaresWithMissing( DoubleMatrix1D y, DoubleMatrix2D des ) {
+        Algebra solver = new Algebra();
         List<Double> ywithoutMissingList = new ArrayList<Double>( y.size() );
         int size = y.size();
 

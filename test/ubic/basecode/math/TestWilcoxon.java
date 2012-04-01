@@ -119,16 +119,16 @@ public class TestWilcoxon extends TestCase {
         /*
          * y<-c(1:10, 69:90); x<-c(11:68); wilcox.exact(x,y, alternative="less")
          */
-        double expectedValue = 0.0015292342536034;
+        double expectedValue = 0.00153; // I now get 0.001676763 with wilcox.test.
         double actualValue = Wilcoxon.exactWilcoxonP( 90, 58, 2291 );
-        assertEquals( expectedValue, actualValue, 0.001 );
+        assertEquals( expectedValue, actualValue, 0.00001 );
     }
 
     public final void testWilxcoxonPGauss() throws Exception {
 
         /*
-         * x<-c(1:100, 201:300, 401:500, 601:700, 801:900); y<-c(101:200, 301:400, 501:600, 701:800);
-         * wilcox.exact(x,y, alternative="less")
+         * x<-c(1:100, 201:300, 401:500, 601:700, 801:900); y<-c(101:200, 301:400, 501:600, 701:800); wilcox.exact(x,y,
+         * alternative="less")
          */
 
         double actualValue = Wilcoxon.wilcoxonP( 900, 500, 225250 );

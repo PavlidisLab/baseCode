@@ -14,7 +14,8 @@
  */
 package ubic.basecode.math;
 
-import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Compute area under precision recall
@@ -28,17 +29,19 @@ public class PrecisionRecall {
      * "Average Precision is the average of the precision value obtained for the set of top $k$ documents existing after
      * each relevant document is retrieved, and this value is then averaged over information needs".
      * http://nlp.stanford.edu/IR-book/html/htmledition/evaluation-of-ranked-retrieval-results-1.html and
-     * http://en.wikipedia.org/wiki/Information_retrieval#Mean_average_precision
+     * http://en.wikipedia.org/wiki/Information_retrieval#Average_precision
      * 
      * @param totalSize
      * @param ranks of the positives; LOW ranks are considered better. (e.g., rank 0 is the 'best')
      * @return
      */
-    public static double averagePrecision( Collection<Double> ranksOfPositives ) {
+    public static double averagePrecision( List<Double> ranksOfPositives ) {
 
         if ( ranksOfPositives.isEmpty() ) {
             return 0.0;
         }
+
+        Collections.sort( ranksOfPositives );
 
         int numPos = 0;
         double answer = 0.0;

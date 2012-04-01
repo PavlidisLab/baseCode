@@ -20,7 +20,6 @@ package ubic.basecode.math;
 
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -44,7 +43,8 @@ import cern.jet.stat.Probability;
  */
 public class Wilcoxon {
 
-    private static final Map<Integer, Map<Integer, Map<Integer, BigInteger>>> cache = new ConcurrentHashMap<Integer, Map<Integer, Map<Integer, BigInteger>>>();
+    private static final Map<CacheKey, BigInteger> cache = new ConcurrentHashMap<CacheKey, BigInteger>();
+
     private static Log log = LogFactory.getLog( Wilcoxon.class.getName() );
 
     /**
@@ -121,39 +121,8 @@ public class Wilcoxon {
         return p;
     }
 
-    /**
-     * Purely for debugging.
-     */
-    protected static void printCache() {
-        for ( Integer N : cache.keySet() ) {
-            Map<Integer, Map<Integer, BigInteger>> nToRs = cache.get( N );
-            for ( Object element : nToRs.keySet() ) {
-                Integer n = ( Integer ) element;
-                Map<Integer, BigInteger> rs = nToRs.get( n );
-                for ( Integer r : rs.keySet() ) {
-                    BigInteger a = rs.get( r );
-                    log.debug( N + ", " + n + ", " + r + "=" + a );
-                }
-            }
-        }
-
-    }
-
     private static void addToCache( int N, int n, int R, BigInteger value ) {
-
-        if ( !cache.containsKey( N ) ) {
-            cache.put( N, new HashMap<Integer, Map<Integer, BigInteger>>() );
-        }
-
-        Map<Integer, Map<Integer, BigInteger>> nVals = cache.get( N );
-
-        if ( !nVals.containsKey( n ) ) {
-            nVals.put( n, new HashMap<Integer, BigInteger>() );
-        }
-
-        Map<Integer, BigInteger> rVals = nVals.get( n );
-
-        rVals.put( R, value );
+        cache.put( new CacheKey( N, n, R ), value );
     }
 
     /**
@@ -163,17 +132,7 @@ public class Wilcoxon {
      * @return
      */
     private static boolean cacheContains( int N, int n, int R ) {
-        if ( !cache.containsKey( N ) ) return false;
-
-        Map<Integer, Map<Integer, BigInteger>> nVals = cache.get( N );
-
-        if ( !nVals.containsKey( n ) ) return false;
-
-        Map<Integer, BigInteger> rVals = nVals.get( n );
-
-        if ( !rVals.containsKey( R ) ) return false;
-
-        return true;
+        return cache.containsKey( new CacheKey( N, n, R ) );
     }
 
     /**
@@ -186,11 +145,12 @@ public class Wilcoxon {
      * @return
      */
     private static BigInteger computeA__( int N0, int n0, int R0 ) {
+        cache.clear();
         if ( R0 < N0 ) N0 = R0;
 
-        if ( cacheContains( N0, n0, R0 ) ) {
-            return getFromCache( N0, n0, R0 );
-        }
+        // if ( cacheContains( N0, n0, R0 ) ) {
+        // return getFromCache( N0, n0, R0 );
+        // }
 
         if ( N0 == 0 && n0 == 0 ) return BigInteger.ONE;
 
@@ -254,12 +214,7 @@ public class Wilcoxon {
         if ( !cacheContains( N, n, R ) ) {
             throw new IllegalStateException( "No value stored for N=" + N + ", n=" + n + ", R=" + R );
         }
-
-        Map<Integer, Map<Integer, BigInteger>> nVals = cache.get( N );
-
-        Map<Integer, BigInteger> rVals = nVals.get( n );
-
-        return rVals.get( R );
+        return cache.get( new CacheKey( N, n, R ) );
     }
 
     /**
@@ -338,6 +293,41 @@ public class Wilcoxon {
      */
     private static void removeFromCache( int N ) {
         cache.remove( N );
+    }
+
+}
+
+class CacheKey {
+    private int N;
+    private int n;
+    private int R;
+
+    public CacheKey( int N, int n, int R ) {
+        super();
+        this.N = N;
+        this.n = n;
+        this.R = R;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + N;
+        result = prime * result + n;
+        result = prime * result + R;
+        return result;
+    }
+
+    @Override
+    public boolean equals( Object obj ) {
+        CacheKey other = ( CacheKey ) obj;
+
+        if ( N != other.N ) return false;
+        if ( n != other.n ) return false;
+        if ( R != other.R ) return false;
+
+        return true;
     }
 
 }
