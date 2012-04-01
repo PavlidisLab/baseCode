@@ -428,7 +428,7 @@ public class LeastSquaresFit {
     }
 
     /**
-     * @return studentized residuals.
+     * @return externally studentized residuals.
      */
     public DoubleMatrix2D getStudentizedResiduals() {
         int dof = this.residualDof - 1; // MINUS for external studentizing!!
