@@ -1,5 +1,5 @@
 /*
- * The Gemma project
+ * The baseCode project
  * 
  * Copyright (c) 2007 University of British Columbia
  * 
@@ -29,7 +29,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 /**
  * TODO Document Me
  * 
- * @author ??
+ * @author lfrench
  * @version $Id$
  */
 public class CreateSpreadSheet {
