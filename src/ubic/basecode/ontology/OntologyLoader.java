@@ -18,10 +18,15 @@
  */
 package ubic.basecode.ontology;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -189,11 +194,31 @@ public class OntologyLoader {
         StopWatch timer = new StopWatch();
         timer.start();
         OntModel model = getMemoryModel( url, spec );
-        model.read( url );
-        if ( timer.getTime() > 100 ) {
-            log.debug( "Load model: " + timer.getTime() + "ms" );
+        InputStream s;
+        try {
+
+            URLConnection urlc = new URL( url ).openConnection();
+
+            // help ensure mis-configured web servers aren't causing trouble.
+            urlc.setRequestProperty( "Accept", "application/rdf+xml" );
+            urlc.connect();
+
+            s = urlc.getInputStream();
+
+            BufferedReader buf = new BufferedReader( new InputStreamReader( s ) );
+
+            model.read( buf, url );
+            if ( timer.getTime() > 100 ) {
+                log.debug( "Load model: " + timer.getTime() + "ms" );
+            }
+            s.close();
+            return model;
+        } catch ( MalformedURLException e ) {
+            throw new RuntimeException( e );
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
         }
-        return model;
+
     }
 
     /**
