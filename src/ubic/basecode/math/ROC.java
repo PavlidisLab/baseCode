@@ -19,6 +19,7 @@
 package ubic.basecode.math;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Functions for calculating Receiver operator characteristics.
@@ -30,18 +31,19 @@ public class ROC {
 
     /**
      * Calculate area under ROC, up to a given number of False positives. The input is the total number of items in the
-     * data, and the ranks of the positives in the current ranking. LOW ranks are considered better. (e.g., rank 0 is
+     * data, and the ranks of the positives in the current ranking. LOW ranks are considered better. (e.g., rank 1 is
      * the 'best')
      * 
      * @param totalSize
-     * @param ranks LOW ranks are considered better. (e.g., rank 0 is the 'best')
+     * @param ranks LOW ranks are considered better. (e.g., rank 1 is the 'best')
      * @return AROC
      */
-    public static double aroc( int totalSize, Collection<Double> ranks ) {
+    public static double aroc( int totalSize, List<Double> ranks ) {
 
         double sumOfRanks = 0.0;
         for ( Double r : ranks ) {
-            sumOfRanks += r + 1.0; // ranks are zero-based.
+            if ( r == 0.0 ) throw new IllegalArgumentException( "Ranks must be one-based" );
+            sumOfRanks += r; // ranks are 1-based.
         }
 
         int inGroup = ranks.size();
@@ -51,7 +53,7 @@ public class ROC {
 
         double t2 = inGroup * outGroup;
 
-        double t3 = sumOfRanks - t1; // U
+        double t3 = sumOfRanks - t1;
 
         double auc = Math.max( 0.0, 1.0 - t3 / t2 );
 
@@ -68,7 +70,7 @@ public class ROC {
      * @param Ranks of objects in the class, where low ranks are considered better. (one-based)
      * @return The p value.
      */
-    public static double rocpval( int totalSize, Collection<Double> ranks ) {
+    public static double rocpval( int totalSize, List<Double> ranks ) {
         if ( totalSize == 0 && ( ranks == null || ranks.size() == 0 ) ) return 1.0;
         return Wilcoxon.wilcoxonP( totalSize, ranks );
     }

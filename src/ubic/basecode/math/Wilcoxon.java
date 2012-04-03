@@ -19,7 +19,8 @@
 package ubic.basecode.math;
 
 import java.math.BigInteger;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -89,23 +90,42 @@ public class Wilcoxon {
      * @param ranks of items in the class (one-based)
      * @return
      */
-    public static double wilcoxonP( int N, Collection<Double> ranks ) {
-        return wilcoxonP( N, ranks.size(), Rank.rankSum( ranks ) );
+    public static double wilcoxonP( int N, List<Double> ranks ) {
+
+        /*
+         * Check for ties; cannot compute exact when there are ties.
+         */
+        Collections.sort( ranks );
+        Double p = null;
+        boolean ties = false;
+        for ( Double r : ranks ) {
+            if ( p != null ) {
+                if ( r.equals( p ) ) {
+                    ties = true;
+                    break;
+                }
+            }
+            p = r;
+        }
+
+        return wilcoxonP( N, ranks.size(), Rank.rankSum( ranks ), ties );
     }
 
     /**
      * @param N number of all Items
      * @param n number of class Items
      * @param R rankSum for items in the class. (one-based)
+     * @param ties set to true if you know there are ties
      * @return
      */
-    public static double wilcoxonP( int N, int n, int R ) {
+    public static double wilcoxonP( int N, int n, int R, boolean ties ) {
 
         if ( n > N ) throw new IllegalArgumentException( "n must be less than N (n=" + n + ", N=" + N + ")" );
 
         if ( n == 0 && N == 0 ) return 1.0;
 
-        if ( ( long ) N * n * R <= LIMIT_FOR_APPROXIMATION || R < N && n * Math.pow( R, 2 ) <= LIMIT_FOR_APPROXIMATION ) {
+        if ( ( !ties ) && ( long ) N * n * R <= LIMIT_FOR_APPROXIMATION || R < N
+                && n * Math.pow( R, 2 ) <= LIMIT_FOR_APPROXIMATION ) {
             if ( log.isDebugEnabled() ) log.debug( "Using exact method (" + N * n * R + ")" );
             return pExact( N, n, R );
         }
@@ -171,11 +191,17 @@ public class Wilcoxon {
                 int worstPossibleRankSum = n * ( 2 * N - n + 1 ) / 2;
 
                 /* Ensure value looked at is valid for the original set of parameters. */
-                int min_r = Math.max( R0 - ( N0 + N + 1 ) * ( N0 - N ) / 2, bestPossibleRankSum );
+                int min_r = Math.max( bestPossibleRankSum, R0 - ( N0 + N + 1 ) * ( N0 - N ) / 2 );
                 int max_r = Math.min( worstPossibleRankSum, R0 );
 
                 assert min_r >= 0;
-                assert max_r >= min_r;
+
+                if ( min_r > max_r ) {
+                    throw new IllegalStateException();
+                }
+
+                assert max_r >= min_r : String.format( "max_r %d < min_r %d for N=%d, n=%d, r=%d", max_r, min_r, N0,
+                        n0, R0 );
 
                 /* R greater than this, have already computed it in parts */
                 int foo = n * ( 2 * N - n - 1 ) / 2;
@@ -293,6 +319,18 @@ public class Wilcoxon {
      */
     private static void removeFromCache( int N ) {
         cache.remove( N );
+    }
+
+    /**
+     * Only use when you know there are no ties.
+     * 
+     * @param N
+     * @param n
+     * @param R
+     * @return
+     */
+    public static double wilcoxonP( int N, int n, int R ) {
+        return wilcoxonP( N, n, R, false );
     }
 
 }

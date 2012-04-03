@@ -73,12 +73,12 @@ public class Rank {
      * @param ranks
      * @return
      */
-    public static int rankSum( Collection<Double> ranks ) {
-        int sum = 0;
+    public static int rankSum( List<Double> ranks ) {
+        double sum = 0.0;
         for ( Double rank : ranks ) {
-            sum += rank.intValue();
+            sum += rank;
         }
-        return sum;
+        return ( int ) sum;
     }
 
     /**

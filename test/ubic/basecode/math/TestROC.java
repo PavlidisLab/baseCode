@@ -19,7 +19,9 @@
 package ubic.basecode.math;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import junit.framework.TestCase;
 
@@ -29,11 +31,18 @@ import junit.framework.TestCase;
  */
 public class TestROC extends TestCase {
 
-    Set<Double> ranksOfPositives;
+    List<Double> ranksOfPositives;
 
     public void testAroc() {
         double actualReturn = ROC.aroc( 10, ranksOfPositives );
         double expectedReturn = ( 21.0 - 5.0 ) / 21.0;
+        assertEquals( "return value", expectedReturn, actualReturn, 0.00001 );
+    }
+
+    // wilcox.test(c(1,4,6), c(2,3,5,7,8,9,10), paired=F, alternative="l")
+    public void testArocPvalue() {
+        double actualReturn = ROC.rocpval( 10, ranksOfPositives );
+        double expectedReturn = 0.13333333;
         assertEquals( "return value", expectedReturn, actualReturn, 0.00001 );
     }
 
@@ -45,10 +54,10 @@ public class TestROC extends TestCase {
         super.setUp();
 
         // set up the ranks of the positives
-        ranksOfPositives = new HashSet<Double>();
-        ranksOfPositives.add( 0.0 );
-        ranksOfPositives.add( 3.0 );
-        ranksOfPositives.add( 5.0 );
+        ranksOfPositives = new Vector<Double>();
+        ranksOfPositives.add( 1.0 );
+        ranksOfPositives.add( 4.0 );
+        ranksOfPositives.add( 6.0 );
     }
 
 }
