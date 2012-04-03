@@ -18,7 +18,6 @@
  */
 package ubic.basecode.math;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
