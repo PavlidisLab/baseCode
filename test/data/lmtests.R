@@ -43,9 +43,11 @@ anova(object)
 object<-lm(t(dat[1,]) ~V + saminfo$Value)
 summary(object)
 anova(object)
+rstudent(object)
 object<-lm(t(dat[11,]) ~V + saminfo$Value)
 summary(object)
 anova(object)
+rstudent(object)
 
 # 3 factors including covariate
 object<-lm(t(dat[1,]) ~V + G + saminfo$Value)
@@ -238,6 +240,7 @@ effects(object)
 object$effects
 summary(object)
 anova(object)
+rstudent(object)
 
 model.matrix.default( da1027[1,]   ~ des1027$Treatment  +  des1027$SamplingTimePoint  +  des1027$batch)
 
@@ -299,3 +302,15 @@ summary(object)
 anova(object)
 
 
+x<-c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10 );
+y<-c(1, 2, 2, 3, 3, 4, 4, 5, 5, 6);
+summary(lm(y ~ x))
+residuals(lm(y ~ x ))
+w<-1/x;
+summary(lm(y ~ x , weights = w))
+residuals(lm(y ~ x , weights = w))
+weights(lm(y ~ x , weights = w))
+fitted(lm(y ~ x, weights = w ))
+mm<-model.matrix(y ~ x)
+ lm.wfit(mm, y, w =w) 
+lm.fit(mm*sqrt(w), y*sqrt(w))

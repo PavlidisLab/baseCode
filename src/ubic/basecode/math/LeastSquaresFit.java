@@ -45,6 +45,7 @@ import ubic.basecode.dataStructure.matrix.ObjectMatrix;
 import ubic.basecode.util.r.type.AnovaEffect;
 import ubic.basecode.util.r.type.GenericAnovaResult;
 import ubic.basecode.util.r.type.LinearModelSummary;
+import cern.colt.function.IntIntDoubleFunction;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
@@ -176,8 +177,43 @@ public class LeastSquaresFit {
     /**
      * Least squares fit between two vectors. Always adds an intercept!
      * 
-     * @param vectorA
-     * @param vectorB
+     * @param vectorA Design
+     * @param vectorB Data
+     * @param weights to be used in modifying the influence of the observations in vectorB.
+     */
+    public LeastSquaresFit( DoubleMatrix1D vectorA, DoubleMatrix1D vectorB, final DoubleMatrix1D weights ) {
+
+        assert vectorA.size() == vectorB.size();
+        assert vectorA.size() == weights.size();
+
+        this.A = new DenseDoubleMatrix2D( vectorA.size(), 2 );
+        this.b = new DenseDoubleMatrix2D( 1, vectorB.size() );
+
+        for ( int i = 0; i < vectorA.size(); i++ ) {
+            double ws = Math.sqrt( weights.get( i ) );
+            A.set( i, 0, ws );
+            A.set( i, 1, vectorA.get( i ) * ws );
+            b.set( 0, i, vectorB.get( i ) * ws );
+        }
+
+        lsf();
+
+        residuals = residuals.forEachNonZero( new IntIntDoubleFunction() {
+            @Override
+            public double apply( int row, int col, double nonZeroValue ) {
+                return nonZeroValue / Math.sqrt( weights.get( col ) );
+            }
+        } );
+
+        DoubleMatrix1D f2 = vectorB.copy().assign( residuals.viewRow( 0 ), Functions.minus );
+        this.fitted.viewRow( 0 ).assign( f2 );
+    }
+
+    /**
+     * Least squares fit between two vectors. Always adds an intercept!
+     * 
+     * @param vectorA Design
+     * @param vectorB Data
      */
     public LeastSquaresFit( DoubleMatrix1D vectorA, DoubleMatrix1D vectorB ) {
         assert vectorA.size() == vectorB.size();

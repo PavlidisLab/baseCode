@@ -39,6 +39,7 @@ import ubic.basecode.util.r.type.LinearModelSummary;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
+import cern.jet.math.Functions;
 
 /**
  * @author paul
@@ -418,7 +419,7 @@ public class LeastSquaresFitTest {
 
         // 232018_at // based on rstudent() in R.
         DoubleMatrix2D studentizedResiduals = fit.getStudentizedResiduals();
-      //  log.info( studentizedResiduals.viewRow( 10 ) );
+        // log.info( studentizedResiduals.viewRow( 10 ) );
         double[] expectedStudentizedResiduals = new double[] { -0.34655041, 1.46251738, -0.61403124, -0.34663812,
                 -1.51245468, 0.06875469, 1.45818880, 1.02811044, -1.31696150 };
 
@@ -817,5 +818,37 @@ public class LeastSquaresFitTest {
             assertEquals( expectedResiduals[i], residuals.get( 0, i ), 0.00001 );
         }
 
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void testVectorWeightedRegress() throws Exception {
+
+        DoubleMatrix1D vectorA = new DenseDoubleMatrix1D( new double[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 } );
+        DoubleMatrix1D vectorB = new DenseDoubleMatrix1D( new double[] { 1, 2, 2, 3, 3, 4, 4, 5, 5, 6 } );
+        DoubleMatrix1D w = vectorA.copy().assign( Functions.inv );
+
+        LeastSquaresFit fit = new LeastSquaresFit( vectorA, vectorB, w );
+
+        DoubleMatrix2D coefficients = fit.getCoefficients();
+        DoubleMatrix2D residuals = fit.getResiduals();
+
+        assertEquals( 0.60469, coefficients.get( 0, 0 ), 0.0001 );
+        assertEquals( 0.52642, coefficients.get( 1, 0 ), 0.0001 );
+
+        double[] expectedResiduals = new double[] { -0.1311097, 0.3424702, -0.1839499, 0.2896301, -0.2367900,
+                0.2367900, -0.2896301, 0.1839499, -0.3424702, 0.1311097 };
+
+        for ( int i = 0; i < expectedResiduals.length; i++ ) {
+            assertEquals( expectedResiduals[i], residuals.get( 0, i ), 0.00001 );
+        }
+        double[] expectedFitted = new double[] { 1.13111, 1.65753, 2.18395, 2.71037, 3.23679, 3.76321, 4.28963,
+                4.81605, 5.34247, 5.86889 };
+
+        for ( int i = 0; i < expectedFitted.length; i++ ) {
+            assertEquals( expectedFitted[i], fit.getFitted().get( 0, i ), 0.00001 );
+        }
     }
 }
