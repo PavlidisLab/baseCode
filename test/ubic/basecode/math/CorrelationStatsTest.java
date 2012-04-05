@@ -37,6 +37,8 @@ import junit.framework.TestCase;
 public class CorrelationStatsTest extends TestCase {
 
     public void testCorrel() throws Exception {
+        // cor(c(1, 3, 4, 6), c(-5, 2, 4, 6))
+
         double[] x = new double[] { 1, 3, 4, 6 };
         double[] y = new double[] { -5, 2, 4, 6 };
         double actual = CorrelationStats.correl( x, y );

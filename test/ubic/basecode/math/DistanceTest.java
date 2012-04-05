@@ -47,6 +47,9 @@ public class DistanceTest extends TestCase {
     }
 
     public void testCorrelationOfStandardizedDoubleArrayListDoubleArrayList() {
+        /*
+         * a<-c(-1.20096, + -0.24019, 0.24019, 1.20096) ; b<-c(-1.41, 0.0522233, 0.47, 0.8877); cor(a,b)
+         */
         double actualValue = Distance.correlationOfStandardized( new DoubleArrayList( new double[] { -1.20096,
                 -0.24019, 0.24019, 1.20096 } ), new DoubleArrayList( new double[] { -1.41, 0.0522233, 0.47, 0.8877 } ) );
         double expectedValue = 0.9533;
