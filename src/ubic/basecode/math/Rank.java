@@ -129,7 +129,11 @@ public class Rank {
 
         // store the values with their indices - not sorted yet.
         for ( int i = 0; i < size; i++ ) {
-            RankData rd = new RankData( i, array.get( i ) );
+            double v = array.get( i );
+            if ( descending ) {
+                v = -v;
+            }
+            RankData rd = new RankData( i, v );
             ranks.add( rd );
         }
 
@@ -161,10 +165,6 @@ public class Rank {
         // At this point we may have repeated ranks.
 
         fixTies( result, ranks );
-
-        if ( descending ) {
-            result.reverse();
-        }
 
         return result;
     }

@@ -65,6 +65,12 @@ public class TestRank extends TestCase {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    public void testRankTransformDoubleArrayListDesc() {
+        DoubleArrayList actualReturn = Rank.rankTransform( testdata, true );
+        DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 5, 4, 3, 2, 1, 6 } );
+        assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
     public void testRankTransformMap() {
 
         Map<String, Double> actualReturn = Rank.rankTransform( testmap );
