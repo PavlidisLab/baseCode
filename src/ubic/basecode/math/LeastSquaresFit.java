@@ -138,6 +138,11 @@ public class LeastSquaresFit {
     private boolean hasIntercept = true;
     private List<List<Integer>> assigns = new ArrayList<List<Integer>>();
 
+    /*
+     * For weighted regression
+     */
+    private DoubleMatrix2D weights = null;
+
     // private List<Integer[]> pivotIndicesList = new ArrayList<Integer[]>();
 
     private static Log log = LogFactory.getLog( LeastSquaresFit.class );
@@ -188,12 +193,14 @@ public class LeastSquaresFit {
 
         this.A = new DenseDoubleMatrix2D( vectorA.size(), 2 );
         this.b = new DenseDoubleMatrix2D( 1, vectorB.size() );
+        this.weights = new DenseDoubleMatrix2D( 1, weights.size() );
 
         for ( int i = 0; i < vectorA.size(); i++ ) {
             double ws = Math.sqrt( weights.get( i ) );
             A.set( i, 0, ws );
             A.set( i, 1, vectorA.get( i ) * ws );
             b.set( 0, i, vectorB.get( i ) * ws );
+            this.weights.set( 0, i, weights.get( i ) );
         }
 
         lsf();
@@ -500,6 +507,12 @@ public class LeastSquaresFit {
 
             DoubleMatrix1D residualRow = residuals.viewRow( i );
 
+            if ( this.weights != null ) {
+                // use weighted residuals.
+                DoubleMatrix1D w = weights.viewRow( i ).copy().assign( Functions.sqrt );
+                residualRow = residualRow.copy().assign( w, Functions.mult );
+            }
+
             double sum = residualRow.aggregate( Functions.plus, Functions.square );
 
             for ( int j = 0; j < residualRow.size(); j++ ) {
@@ -510,12 +523,12 @@ public class LeastSquaresFit {
                 double sigma;
 
                 if ( hj < 1.0 ) {
-                    sigma = Math.sqrt( ( sum - Math.pow( residuals.get( i, j ), 2 ) / ( 1.0 - hj ) ) / dof );
+                    sigma = Math.sqrt( ( sum - Math.pow( residualRow.get( j ), 2 ) / ( 1.0 - hj ) ) / dof );
                 } else {
                     sigma = Math.sqrt( sum / dof );
                 }
 
-                double res = residuals.getQuick( i, j );
+                double res = residualRow.getQuick( j );
                 double studres = res / ( sigma * Math.sqrt( 1.0 - hj ) );
 
                 if ( log.isDebugEnabled() ) log.debug( "sigma=" + sigma + " hj=" + hj + " stres=" + studres );

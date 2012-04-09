@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math.distribution.FDistribution;
 import org.apache.commons.math.distribution.FDistributionImpl;
+import org.apache.commons.math.linear.MatrixUtils;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -36,6 +37,7 @@ import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.io.reader.StringMatrixReader;
 import ubic.basecode.util.r.type.GenericAnovaResult;
 import ubic.basecode.util.r.type.LinearModelSummary;
+import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
@@ -59,7 +61,6 @@ public class LeastSquaresFitTest {
                 "/data/example.madata.withmissing.small.txt" ) );
 
         ObjectMatrix<String, String, Object> design = new ObjectMatrixImpl<String, String, Object>( 9, 1 );
-
         design.set( 0, 0, 0.12 );
         design.set( 1, 0, 0.24 );
         design.set( 2, 0, 0.48 );
@@ -426,6 +427,13 @@ public class LeastSquaresFitTest {
         for ( int i = 0; i < 9; i++ ) {
             assertEquals( expectedStudentizedResiduals[i], studentizedResiduals.viewRow( 10 ).get( i ), 0.001 );
         }
+
+        // assertEquals( 1.1, DescriptiveWithMissing.variance( new DoubleArrayList( expectedStudentizedResiduals ) ),
+        // 0.1 );
+
+        assertEquals( 1.1,
+                DescriptiveWithMissing.variance( new DoubleArrayList( studentizedResiduals.viewRow( 10 ).toArray() ) ),
+                0.1 );
 
         // 1553129_at // based on rstudent() in R.
         studentizedResiduals = fit.getStudentizedResiduals();
