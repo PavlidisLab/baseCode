@@ -64,11 +64,6 @@ public class StatusStderr implements StatusViewer {
     }
 
     @Override
-    public void showStatus( String s, int sleepSeconds ) {
-        showStatus( s );
-    }
-
-    @Override
     public void showStatus( String s, boolean callSuper ) {
         showStatus( s );
     }
@@ -76,6 +71,11 @@ public class StatusStderr implements StatusViewer {
     @Override
     public void showWarning( String s ) {
         showStatus( s );
+    }
+
+    @Override
+    public void showProgress( String message ) {
+        showStatus( message + " ... " );
     }
 
 }

@@ -41,12 +41,6 @@ public interface StatusViewer {
     public abstract void showStatus( String s, boolean callSuper );
 
     /**
-     * @param s
-     * @param sleepSeconds how long more than usual to display the message (if gui-based)
-     */
-    public abstract void showStatus( String s, int sleepSeconds );
-
-    /**
      * Print an error status messge.
      * 
      * @param s
@@ -69,7 +63,9 @@ public interface StatusViewer {
     public abstract void showError( String message, Throwable e );
 
     /**
-     * Clear the status dislay. Implementers that do not write to GUI elements probably don't need to do anything.
+     * Clear the status display. Implementers that do not write to GUI elements probably don't need to do anything.
      */
     public abstract void clear();
+
+    public void showProgress( String message );
 }

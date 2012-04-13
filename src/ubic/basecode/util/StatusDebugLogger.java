@@ -69,22 +69,19 @@ public class StatusDebugLogger implements StatusViewer {
         log.error( message, e );
     }
 
-    /*
-     * (non-Javadoc)
-     */
-    @Override
-    public void showStatus( String s, int sleepSeconds ) {
-        showStatus( s );
-    }
-
     @Override
     public void showStatus( String s, boolean callSuper ) {
-        showStatus( s );
+        log.info( s );
     }
 
     @Override
     public void showWarning( String s ) {
-        showStatus( s );
+        log.warn( s );
+    }
+
+    @Override
+    public void showProgress( String message ) {
+        log.info( message + ( message.endsWith( "..." ) ? "" : " ..." ) );
     }
 
 }
