@@ -53,7 +53,7 @@ public class MatrixDisplay<R, C> extends JPanel {
     private final static Log log = LogFactory.getLog( MatrixDisplay.class );
 
     protected boolean m_isShowLabels = false;
-    //   
+    //
     protected int m_ratioWidth = 0;
     protected int m_rowLabelWidth; // max
     protected int m_columnLabelHeight; // max
@@ -188,6 +188,10 @@ public class MatrixDisplay<R, C> extends JPanel {
     public boolean getStandardizedEnabled() {
 
         return m_isShowingStandardizedMatrix;
+    }
+
+    public double getRawValue( int row, int column ) {
+        return m_unstandardizedMatrix.getValue( row, column );
     }
 
     public double getValue( int row, int column ) {
@@ -607,8 +611,8 @@ public class MatrixDisplay<R, C> extends JPanel {
             // for different letters.
             m_columnLabelHeight = 5 * m_maxColumnLength;
         } else {
-            m_columnLabelHeight = Util.maxStringPixelWidth( colorMatrix.getColumnNames(), this
-                    .getFontMetrics( m_labelFont ) );
+            m_columnLabelHeight = Util.maxStringPixelWidth( colorMatrix.getColumnNames(),
+                    this.getFontMetrics( m_labelFont ) );
         }
 
         // m_columnLabelHeight += m_labelGutter; // this is optional (leaves some
