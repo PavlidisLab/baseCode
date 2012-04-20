@@ -59,16 +59,6 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
     }
 
     /**
-     * @param nodes Set of DirectedGraphNodes
-     */
-    public DirectedGraph( Set<DirectedGraphNode<K, V>> nodes ) {
-        this();
-        for ( DirectedGraphNode<K, V> a : nodes ) {
-            this.addNode( a );
-        }
-    }
-
-    /**
      * Add a child to a particular node identified by key; if the node is not in the graph, an exception is thrown.
      * 
      * @param key Object
@@ -134,6 +124,11 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.graph.AbstractGraph#addNode(ubic.basecode.dataStructure.graph.GraphNode)
+     */
     @Override
     public void addNode( DirectedGraphNode<K, V> node ) {
         assert node != null;
@@ -286,7 +281,7 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
         }
 
         if ( counter != items.size() ) {
-            throw new IllegalStateException( "Graph contains a cycle; " + counter + " items found, " + items.size()
+            throw new IllegalStateException( "Graph contains a cycle? " + counter + " items found, " + items.size()
                     + " expected" );
         }
 
@@ -327,7 +322,7 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      * 
      * @param nodeClass The class to be used for TreeNodes. Defaults to DefaultMutableTreeNode.
      * @return javax.swing.JTree
-     */ 
+     */
     public JTree treeView( Class<? extends DefaultMutableTreeNode> nodeClass ) {
         log.debug( "Constructing tree view of graph" );
         DirectedGraphNode<K, V> root = getRoot();

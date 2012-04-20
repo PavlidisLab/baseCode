@@ -166,7 +166,9 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
             assert k != null;
             DirectedGraphNode<K, V> e = getGraph().get( k );
 
-            assert e != null : "Null for node corresponding to key " + k;
+            if ( e == null ) {
+                throw new IllegalStateException( "Null for node corresponding to key " + k );
+            }
 
             f.add( e );
         }
