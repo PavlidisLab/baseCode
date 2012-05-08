@@ -194,7 +194,7 @@ public class OntologyLoader {
         StopWatch timer = new StopWatch();
         timer.start();
         OntModel model = getMemoryModel( url, spec );
-        InputStream s;
+        InputStream s = null;
         try {
 
             URLConnection urlc = new URL( url ).openConnection();
@@ -217,8 +217,15 @@ public class OntologyLoader {
             throw new RuntimeException( e );
         } catch ( IOException e ) {
             throw new RuntimeException( e );
+        } finally {
+            if ( s != null ) {
+                try {
+                    s.close();
+                } catch ( IOException e ) {
+                    throw new RuntimeException( e );
+                }
+            }
         }
-
     }
 
     /**
