@@ -21,11 +21,15 @@ package ubic.basecode.ontology.search;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Selector;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.impl.PropertyImpl;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
@@ -36,14 +40,19 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  */
 public class IndexerSelector implements Selector {
 
-    Collection<Property> badPredicates;
+    private static Log log = LogFactory.getLog( IndexerSelector.class );
+
+    Collection<String> badPredicates;
 
     public IndexerSelector() {
         // these are predicates that in general should not be useful for indexing
-        badPredicates = new ArrayList<Property>();
-        badPredicates.add( RDFS.comment );
-        badPredicates.add( RDFS.seeAlso );
-        badPredicates.add( RDFS.isDefinedBy );
+        badPredicates = new ArrayList<String>();
+        badPredicates.add( RDFS.comment.getURI() );
+        badPredicates.add( RDFS.seeAlso.getURI() );
+        badPredicates.add( RDFS.isDefinedBy.getURI() );
+        badPredicates.add( new PropertyImpl( "http://www.w3.org/2004/02/skos/core#example" ).getURI() );
+        badPredicates.add( new PropertyImpl( "http://neurolex.org/wiki/Special:URIResolver/Property-3AExample" )
+                .getURI() );
     }
 
     /*
@@ -88,7 +97,10 @@ public class IndexerSelector implements Selector {
      * @see com.hp.hpl.jena.rdf.model.Selector#test(com.hp.hpl.jena.rdf.model.Statement)
      */
     public boolean test( Statement s ) {
-        return !( badPredicates.contains( s.getPredicate() ) );
-    }
+        boolean retain = !( badPredicates.contains( s.getPredicate().getURI() ) );
+        if ( !retain && log.isDebugEnabled() )
+            log.debug( "Removed: " + s.getPredicate().getURI() + " " + s.getObject() );
 
+        return retain;
+    }
 }

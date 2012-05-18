@@ -66,7 +66,7 @@ public class OntologySearch {
     public static Collection<OntologyTerm> matchClasses( OntModel model, IndexLARQ index, String queryString ) {
 
         Set<OntologyTerm> results = new HashSet<OntologyTerm>();
-        NodeIterator iterator = runSearch( model, index, queryString );
+        NodeIterator iterator = runSearch( index, queryString );
 
         while ( iterator != null && iterator.hasNext() ) {
             RDFNode r = iterator.next();
@@ -121,14 +121,14 @@ public class OntologySearch {
         int lastWordLength = words[words.length - 1].length();
         if ( lastWordLength > 1 ) {
             try { // Use wildcard search.
-                iterator = runSearch( model, index, queryString + "*" );
+                iterator = runSearch( index, queryString + "*" );
             } catch ( ARQLuceneException e ) { // retry without wildcard
                 log.info( "Caught " + e + " caused by " + e.getCause() + " reason " + e.getMessage()
                         + ". Retrying search without wildcard." );
-                iterator = runSearch( model, index, queryString );
+                iterator = runSearch( index, queryString );
             }
         } else {
-            iterator = runSearch( model, index, queryString );
+            iterator = runSearch( index, queryString );
         }
 
         while ( iterator != null && iterator.hasNext() ) {
@@ -203,14 +203,14 @@ public class OntologySearch {
         int lastWordLength = words[words.length - 1].length();
         if ( lastWordLength > 1 ) {
             try { // Use wildcard search.
-                iterator = runSearch( model, index, queryString + "*" );
+                iterator = runSearch( index, queryString + "*" );
             } catch ( ARQLuceneException e ) { // retry without wildcard
                 log.info( "Caught " + e + " caused by " + e.getCause() + " reason " + e.getMessage()
                         + ". Retrying search without wildcard." );
-                iterator = runSearch( model, index, queryString );
+                iterator = runSearch( index, queryString );
             }
         } else {
-            iterator = runSearch( model, index, queryString );
+            iterator = runSearch( index, queryString );
         }
 
         while ( iterator != null && iterator.hasNext() ) {
@@ -289,7 +289,7 @@ public class OntologySearch {
      * @param queryString
      * @return
      */
-    private static NodeIterator runSearch( OntModel model, IndexLARQ index, String queryString ) {
+    private static NodeIterator runSearch( IndexLARQ index, String queryString ) {
         String strippedQuery = StringUtils.strip( queryString );
         if ( StringUtils.isBlank( strippedQuery ) ) {
             throw new IllegalArgumentException( "Query cannot be blank" );
@@ -297,7 +297,7 @@ public class OntologySearch {
         // try {
         StopWatch timer = new StopWatch();
         timer.start();
-        NodeIterator iterator = index.searchModelByIndex( model, strippedQuery );
+        NodeIterator iterator = index.searchModelByIndex( strippedQuery );
 
         if ( timer.getTime() > 100 ) {
             log.info( "Ontology resource search for: " + queryString + ": " + timer.getTime() + "ms" );

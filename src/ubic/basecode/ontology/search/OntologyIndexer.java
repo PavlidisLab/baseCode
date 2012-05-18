@@ -31,6 +31,7 @@ import ubic.basecode.ontology.Configuration;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.larq.IndexBuilderSubject;
 import com.hp.hpl.jena.query.larq.IndexLARQ;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 /**
  * @author pavlidis
@@ -103,8 +104,15 @@ public class OntologyIndexer {
      * @return
      */
     private static File getIndexPath( String name ) {
-        String path = Configuration.getString( "ontology.index.dir" ) + File.separator + INDEX_DIR + File.separator
-                + "gemma" + File.separator + "ontology" + File.separator + name;
+        String ontologyDir = Configuration.getString( "ontology.index.dir" );
+        if ( ontologyDir == null ) {
+            ontologyDir = System.getProperty( "java.io.tmpdir" );
+        }
+
+        String path = ontologyDir + File.separator + INDEX_DIR + File.separator + "gemma" + File.separator + "ontology"
+                + File.separator + name;
+
+        log.info( "Ontology index will be made in " + path );
 
         File indexdir = new File( path );
         return indexdir;
@@ -125,16 +133,14 @@ public class OntologyIndexer {
 
         IndexBuilderSubject larqSubjectBuilder = new IndexBuilderSubject( indexdir );
 
-        // -- Create an index based on existing statements
-        // TODO: this needs to be refactored.
-        larqSubjectBuilder.indexStatements( model.listStatements( new IndexerSelector() ) );
+        StmtIterator listStatements = model.listStatements( new IndexerSelector() );
 
-        // -- Finish indexing
+        larqSubjectBuilder.indexStatements( listStatements );
+
         larqSubjectBuilder.closeWriter();
-        // -- Create the access index
+
         IndexLARQ index = larqSubjectBuilder.getIndex();
 
         return index;
     }
-
 }
