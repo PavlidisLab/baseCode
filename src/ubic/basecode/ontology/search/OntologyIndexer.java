@@ -112,8 +112,6 @@ public class OntologyIndexer {
         String path = ontologyDir + File.separator + INDEX_DIR + File.separator + "gemma" + File.separator + "ontology"
                 + File.separator + name;
 
-        log.info( "Ontology index will be made in " + path );
-
         File indexdir = new File( path );
         return indexdir;
     }

@@ -42,17 +42,16 @@ public class IndexerSelector implements Selector {
 
     private static Log log = LogFactory.getLog( IndexerSelector.class );
 
-    Collection<String> badPredicates;
+    Collection<Property> badPredicates;
 
     public IndexerSelector() {
         // these are predicates that in general should not be useful for indexing
-        badPredicates = new ArrayList<String>();
-        badPredicates.add( RDFS.comment.getURI() );
-        badPredicates.add( RDFS.seeAlso.getURI() );
-        badPredicates.add( RDFS.isDefinedBy.getURI() );
-        badPredicates.add( new PropertyImpl( "http://www.w3.org/2004/02/skos/core#example" ).getURI() );
-        badPredicates.add( new PropertyImpl( "http://neurolex.org/wiki/Special:URIResolver/Property-3AExample" )
-                .getURI() );
+        badPredicates = new ArrayList<Property>();
+        badPredicates.add( RDFS.comment );
+        badPredicates.add( RDFS.seeAlso );
+        badPredicates.add( RDFS.isDefinedBy );
+        badPredicates.add( new PropertyImpl( "http://www.w3.org/2004/02/skos/core#example" ) );
+        badPredicates.add( new PropertyImpl( "http://neurolex.org/wiki/Special:URIResolver/Property-3AExample" ) );
     }
 
     /*
@@ -97,9 +96,8 @@ public class IndexerSelector implements Selector {
      * @see com.hp.hpl.jena.rdf.model.Selector#test(com.hp.hpl.jena.rdf.model.Statement)
      */
     public boolean test( Statement s ) {
-        boolean retain = !( badPredicates.contains( s.getPredicate().getURI() ) );
-        if ( !retain && log.isDebugEnabled() )
-            log.debug( "Removed: " + s.getPredicate().getURI() + " " + s.getObject() );
+        boolean retain = !( badPredicates.contains( s.getPredicate() ) );
+        if ( !retain && log.isDebugEnabled() ) log.debug( "Removed: " + s.getPredicate() + " " + s.getObject() );
 
         return retain;
     }
