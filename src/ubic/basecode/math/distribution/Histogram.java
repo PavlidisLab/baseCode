@@ -35,13 +35,23 @@ import cern.jet.stat.Descriptive;
  */
 public class Histogram {
     private double[] hist;
+
     private String name;
+
     private double min;
+
     private double max;
+
     private int nbins;
+
+    // total number of entries
     private int entries;
-    private double overflow;
-    private double underflow;
+
+    // number of values above the maximum bin.
+    private double overflow = 0;
+
+    // number of values below the minimum bin
+    private double underflow = 0;
 
     /**
      * @param name
@@ -344,5 +354,31 @@ public class Histogram {
             if ( d > m ) m = ( int ) d;
         }
         return m;
+    }
+
+    /**
+     * Find the bin below which i% of the values are contained. This is only approximate (especially if the number of
+     * bins is <~100)
+     * 
+     * @param q
+     * @return approximate quantile. Passing values of 0 and 100 is equivalent to min() and max() respectively.
+     */
+    public Double getApproximateQuantile( int q ) {
+        double t = underflow;
+        if ( q >= 100 ) {
+            return max;
+        }
+        if ( q <= 0 ) {
+            return min;
+        }
+
+        for ( int i = 0; i < hist.length; i++ ) {
+            t += hist[i];
+            if ( t / entries > q / 100.0 ) {
+                return getBinEdges()[i];
+            }
+        }
+
+        return max;
     }
 }
