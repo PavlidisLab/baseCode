@@ -67,6 +67,7 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements 
     /**
      * @return
      */
+    @Override
     public int columns() {
         return matrix.columns();
     }
@@ -76,6 +77,7 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements 
      * @param column
      * @return
      */
+    @Override
     public String get( int row, int column ) {
         return ( String ) matrix.get( row, column );
     }
@@ -89,6 +91,7 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements 
         return this.get( this.getRowIndexByName( row ), this.getColIndexByName( column ) );
     }
 
+    @Override
     public String getByKeys( R r, C c ) {
         return this.get( getRowIndexByName( r ), getColIndexByName( c ) );
     }
@@ -101,6 +104,7 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements 
         return result;
     }
 
+    @Override
     public String[] getColumn( int col ) {
         String[] result = new String[rows()];
         for ( int i = 0; i < rows(); i++ ) {
@@ -109,6 +113,7 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements 
         return result;
     }
 
+    @Override
     public String getEntry( int row, int column ) {
         return get( row, column );
     }
@@ -117,6 +122,7 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements 
         return get( row, col );
     }
 
+    @Override
     public String[] getRow( int row ) {
         String[] result = new String[columns()];
         for ( int i = 0; i < columns(); i++ ) {
@@ -128,6 +134,7 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements 
     /**
      * Strings are considered missing if they are whitespace, null or empty.
      */
+    @Override
     public boolean isMissing( int i, int j ) {
         return StringUtils.isBlank( get( i, j ) );
     }
@@ -135,6 +142,7 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements 
     /**
      * @return
      */
+    @Override
     public int rows() {
         return matrix.rows();
     }
@@ -144,6 +152,7 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements 
      * @param column
      * @param value
      */
+    @Override
     public void set( int row, int column, String value ) {
         matrix.set( row, column, value );
     }
@@ -153,6 +162,7 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements 
      * 
      * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(java.lang.Object, java.lang.Object, java.lang.Object)
      */
+    @Override
     public void setByKeys( R r, C c, String v ) {
         this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }

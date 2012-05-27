@@ -55,6 +55,7 @@ public class UniformProbabilityComputer implements ProbabilityComputer {
      * 
      * @see basecode.math.ProbabilityComputer#probability(double)
      */
+    @Override
     public double probability( double x ) {
         if ( x < min ) return 0;
         if ( x > max ) return 1;
@@ -66,6 +67,7 @@ public class UniformProbabilityComputer implements ProbabilityComputer {
      * 
      * @see basecode.math.ProbabilityComputer#probability(double, boolean)
      */
+    @Override
     public double probability( double x, boolean upperTail ) {
 
         if ( !upperTail ) {

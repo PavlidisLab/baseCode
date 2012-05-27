@@ -98,6 +98,7 @@ public class MatrixStats {
 
         final double min = MatrixStats.min( matrixToNormalize );
         DoubleFunction f = new DoubleFunction() {
+            @Override
             public double apply( double value ) {
                 return value - min + 1;
             }
@@ -294,6 +295,7 @@ public class MatrixStats {
 
         // define the function we will use.
         DoubleFunction f = new DoubleFunction() {
+            @Override
             public double apply( double value ) {
                 return Math.exp( -value / sigma );
             }

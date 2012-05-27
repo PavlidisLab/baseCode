@@ -53,6 +53,7 @@ public class UniformDensityComputer implements DensityGenerator {
      * 
      * @see basecode.math.DensityGenerator#density(double)
      */
+    @Override
     public double density( double x ) {
 
         if ( x > max || x < min ) return 0;

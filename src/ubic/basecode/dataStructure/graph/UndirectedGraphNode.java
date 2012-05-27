@@ -45,6 +45,7 @@ public class UndirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implement
      * (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    @Override
     public int compareTo( UndirectedGraphNode<K, V> o ) {
         if ( o.numNeighbors() > this.numNeighbors() ) {
             return -1;
@@ -62,6 +63,7 @@ public class UndirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implement
      * (non-Javadoc)
      * @see ubic.basecode.dataStructure.graph.GraphNode#getGraph()
      */
+    @Override
     public Graph<UndirectedGraphNode<K, V>, K, V> getGraph() {
         return graph;
     }

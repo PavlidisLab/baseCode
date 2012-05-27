@@ -52,10 +52,12 @@ public class OntologyCardinalityRestrictionImpl extends OntologyRestrictionImpl 
 
     }
 
+    @Override
     public int getCardinality() {
         return cardinality;
     }
 
+    @Override
     public CardinalityType getCardinalityType() {
         return cardType;
     }

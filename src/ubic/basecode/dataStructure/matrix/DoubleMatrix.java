@@ -52,6 +52,7 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
      */
     public abstract double get( int j, int i );
 
+    @Override
     public Double getByKeys( R r, C c ) {
         return this.get( getRowIndexByName( r ), getColIndexByName( c ) );
     }
@@ -73,6 +74,7 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
         return getColumn( getColIndexByName( s ) );
     }
 
+    @Override
     public Double getEntry( int row, int column ) {
         return get( row, column );
     }
@@ -104,6 +106,7 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
      */
     public abstract DoubleMatrix<R, C> getRowRange( int startRow, int endRow );
 
+    @Override
     public void setByKeys( R r, C c, Double v ) {
         this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }

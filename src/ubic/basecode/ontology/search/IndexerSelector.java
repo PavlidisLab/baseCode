@@ -59,6 +59,7 @@ public class IndexerSelector implements Selector {
      * 
      * @see com.hp.hpl.jena.rdf.model.Selector#getObject()
      */
+    @Override
     public RDFNode getObject() {
         return null;
     }
@@ -68,6 +69,7 @@ public class IndexerSelector implements Selector {
      * 
      * @see com.hp.hpl.jena.rdf.model.Selector#getPredicate()
      */
+    @Override
     public Property getPredicate() {
         return null;
     }
@@ -77,6 +79,7 @@ public class IndexerSelector implements Selector {
      * 
      * @see com.hp.hpl.jena.rdf.model.Selector#getSubject()
      */
+    @Override
     public Resource getSubject() {
         return null;
     }
@@ -86,6 +89,7 @@ public class IndexerSelector implements Selector {
      * 
      * @see com.hp.hpl.jena.rdf.model.Selector#isSimple()
      */
+    @Override
     public boolean isSimple() {
         return false;
     }
@@ -95,6 +99,7 @@ public class IndexerSelector implements Selector {
      * 
      * @see com.hp.hpl.jena.rdf.model.Selector#test(com.hp.hpl.jena.rdf.model.Statement)
      */
+    @Override
     public boolean test( Statement s ) {
         boolean retain = !( badPredicates.contains( s.getPredicate() ) );
         if ( !retain && log.isDebugEnabled() ) log.debug( "Removed: " + s.getPredicate() + " " + s.getObject() );

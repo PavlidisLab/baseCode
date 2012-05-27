@@ -96,6 +96,7 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
      * @param o Object
      * @return int
      */
+    @Override
     public int compareTo( DirectedGraphNode<K, V> o ) {
         int ord = o.getTopoSortOrder();
         if ( ord < this.topoSortOrder ) {
@@ -175,6 +176,7 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
         return f;
     }
 
+    @Override
     public DirectedGraph<K, V> getGraph() {
         return graph;
     }

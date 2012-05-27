@@ -25,6 +25,7 @@ package ubic.basecode.ontology.model;
  */
 public interface InstanceStatement extends CharacteristicStatement {
 
+    @Override
     public OntologyIndividual getObject();
 
 }

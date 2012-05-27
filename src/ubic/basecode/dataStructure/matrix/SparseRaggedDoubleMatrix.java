@@ -89,6 +89,7 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * 
      * @see basecode.dataStructure.matrix.Matrix2D#columns()
      */
+    @Override
     public int columns() {
 
         if ( !isDirty ) {
@@ -181,6 +182,7 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * 
      * @see basecode.dataStructure.matrix.NamedMatrix#getColObj(int)
      */
+    @Override
     public Double[] getColObj( int col ) {
         Double[] result = new Double[rows()];
         for ( int i = 0; i < rows(); i++ ) {
@@ -230,6 +232,7 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return result;
     }
 
+    @Override
     public Double getObject( int row, int col ) {
         return new Double( get( row, col ) );
     }
@@ -269,6 +272,7 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * 
      * @see basecode.dataStructure.matrix.NamedMatrix#getRowObj(int)
      */
+    @Override
     public Double[] getRowObj( int i ) {
         Double[] result = new Double[columns()];
 
@@ -315,6 +319,7 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * 
      * @see basecode.dataStructure.matrix.Matrix2D#isMissing(int, int)
      */
+    @Override
     public boolean isMissing( int i, int j ) {
         return get( i, j ) == 0.0;
     }
@@ -324,6 +329,7 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * 
      * @see basecode.dataStructure.matrix.NamedMatrix#rows()
      */
+    @Override
     public int rows() {
         return matrix.size();
     }
@@ -333,6 +339,7 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * 
      * @see ubic.basecode.dataStructure.matrix.Matrix2D#set(int, int, java.lang.Object)
      */
+    @Override
     public void set( int i, int j, Double d ) {
         if ( matrix.size() <= i ) {
             for ( int m = matrix.size() - 1; m < i; m++ ) {

@@ -38,12 +38,14 @@ public class DatatypePropertyImpl extends OntologyPropertyImpl implements Dataty
         this.type = PropertyFactory.convertType( resource );
     }
 
+    @Override
     public String getLabel() {
         String label = resource.getLabel( null );
         if ( label == null ) label = resource.getLocalName();
         return label;
     }
 
+    @Override
     public Class<?> getType() {
         return type;
     }

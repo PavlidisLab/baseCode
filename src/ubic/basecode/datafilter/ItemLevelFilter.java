@@ -29,6 +29,7 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
  */
 public class ItemLevelFilter<R, C> extends AbstractLevelFilter<R, C> {
 
+    @Override
     public DoubleMatrix<R, C> filter( DoubleMatrix<R, C> data ) {
 
         if ( lowCut == -Double.MAX_VALUE && highCut == Double.MAX_VALUE ) {

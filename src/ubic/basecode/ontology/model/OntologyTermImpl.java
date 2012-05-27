@@ -68,6 +68,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
     }
 
+    @Override
     public Collection<String> getAlternativeIds() {
         Collection<String> results = new HashSet<String>();
 
@@ -81,6 +82,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
     }
 
+    @Override
     public Collection<AnnotationProperty> getAnnotations() {
         Collection<AnnotationProperty> annots = new HashSet<AnnotationProperty>();
         StmtIterator iterator = ontResource.listProperties();
@@ -102,6 +104,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
      * 
      * @see ubic.gemma.analysis.ontology.OntologyTerm#getChildren(boolean)
      */
+    @Override
     public Collection<OntologyTerm> getChildren( boolean direct ) {
         Collection<OntologyTerm> result = new HashSet<OntologyTerm>();
         ExtendedIterator<OntClass> iterator = ontResource.listSubClasses( direct );
@@ -120,6 +123,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
      * 
      * @see ubic.gemma.ontology.OntologyTerm#getComment()
      */
+    @Override
     public String getComment() {
         String comment = this.ontResource.getComment( null );
         return comment == null ? "" : comment;
@@ -130,6 +134,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
      * 
      * @see ubic.gemma.ontology.OntologyTerm#getIndividuals()
      */
+    @Override
     public Collection<OntologyIndividual> getIndividuals() {
         return getIndividuals( true );
     }
@@ -138,6 +143,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
      * @param direct
      * @return
      */
+    @Override
     public Collection<OntologyIndividual> getIndividuals( boolean direct ) {
         Collection<OntologyIndividual> inds = new HashSet<OntologyIndividual>();
         ExtendedIterator<? extends OntResource> iterator = this.ontResource.listInstances( direct );
@@ -148,10 +154,12 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
         return inds;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }
 
+    @Override
     public Object getModel() {
         return ontResource.getModel();
     }
@@ -161,6 +169,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
      * 
      * @see ubic.gemma.analysis.ontology.OntologyTerm#getParents(boolean)
      */
+    @Override
     public Collection<OntologyTerm> getParents( boolean direct ) {
         Collection<OntologyTerm> result = new HashSet<OntologyTerm>();
         ExtendedIterator<OntClass> iterator = ontResource.listSuperClasses( direct );
@@ -181,6 +190,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
     /**
      * 
      */
+    @Override
     public Collection<OntologyRestriction> getRestrictions() {
         /*
          * Remember that restrictions are superclasses.
@@ -239,6 +249,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
      * 
      * @see ubic.gemma.analysis.ontology.OntologyTerm#getTerm()
      */
+    @Override
     public String getTerm() {
         String res = null;
         if ( this.label != null ) {
@@ -276,6 +287,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
      * 
      * @see ubic.gemma.analysis.ontology.OntologyTerm#isRoot()
      */
+    @Override
     public boolean isRoot() {
         return !this.ontResource.listSuperClasses( true ).hasNext();
     }

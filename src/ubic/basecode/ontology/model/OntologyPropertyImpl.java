@@ -32,6 +32,7 @@ public abstract class OntologyPropertyImpl extends AbstractOntologyResource impl
     private static final long serialVersionUID = 1L;
     protected boolean isFunctional;
 
+    @Override
     public boolean isFunctional() {
         return isFunctional;
     }

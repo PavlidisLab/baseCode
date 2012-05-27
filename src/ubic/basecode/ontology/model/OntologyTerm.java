@@ -52,6 +52,7 @@ public interface OntologyTerm extends OntologyResource {
 
     public String getTerm();
 
+    @Override
     public String getUri();
 
     public boolean isRoot();

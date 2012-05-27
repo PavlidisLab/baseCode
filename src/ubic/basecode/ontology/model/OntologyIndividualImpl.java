@@ -43,6 +43,7 @@ public class OntologyIndividualImpl extends AbstractOntologyResource implements 
         this.uri = ind.getURI();
     }
 
+    @Override
     public OntologyTerm getInstanceOf() {
         Resource type = ind.getRDFType();
 
@@ -57,6 +58,7 @@ public class OntologyIndividualImpl extends AbstractOntologyResource implements 
         return new OntologyTermImpl( cl  );
     }
 
+    @Override
     public String getLabel() {
         return this.toString();
     }

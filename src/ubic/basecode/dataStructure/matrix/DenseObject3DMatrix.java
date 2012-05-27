@@ -71,6 +71,7 @@ public class DenseObject3DMatrix<R, C, S> extends AbstractMatrix3D<R, C, S, Obje
         return colObjs;
     }
 
+    @Override
     public Object getObject( int slice, int row, int col ) {
         return this.get( slice, row, col );
     }

@@ -39,14 +39,17 @@ public class OntologyUtil {
     public static String asString( RDFNode object ) {
         return ( String ) object.visitWith( new RDFVisitor() {
 
+            @Override
             public Object visitBlank( Resource r, AnonId id ) {
                 return r.getLocalName();
             }
 
+            @Override
             public Object visitLiteral( Literal l ) {
                 return l.toString().replaceAll( "\\^\\^.+", "" );
             }
 
+            @Override
             public Object visitURI( Resource r, String uri ) {
                 return r.getLocalName();
             }

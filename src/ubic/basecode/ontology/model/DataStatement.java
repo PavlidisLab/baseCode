@@ -24,6 +24,7 @@ package ubic.basecode.ontology.model;
  */
 public interface DataStatement extends CharacteristicStatement {
 
+    @Override
     public String getObject();
 
 }

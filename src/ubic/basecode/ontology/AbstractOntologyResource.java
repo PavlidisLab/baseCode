@@ -34,6 +34,7 @@ public abstract class AbstractOntologyResource implements OntologyResource {
 
     protected static Log log = LogFactory.getLog( OntologyPropertyImpl.class.getName() );
 
+    @Override
     public int compareTo( OntologyResource other ) {
         return this.getUri().compareTo( other.getUri() );
     }
@@ -53,6 +54,7 @@ public abstract class AbstractOntologyResource implements OntologyResource {
         return true;
     }
 
+    @Override
     public abstract String getUri();
 
     @Override

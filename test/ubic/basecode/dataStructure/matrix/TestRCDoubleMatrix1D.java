@@ -102,6 +102,7 @@ public class TestRCDoubleMatrix1D extends TestCase {
      */
     public void testAssignDoubleFunction() throws Exception {
         DoubleMatrix1D actualReturn = a.assign( new cern.colt.function.DoubleFunction() {
+            @Override
             public double apply( double value ) {
                 return 2;
             }

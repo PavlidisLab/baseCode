@@ -49,6 +49,7 @@ public class RCDoubleMatrix1DTest extends TestCase {
 
     public void testAssign() {
         tester.assign( new DoubleFunction() {
+            @Override
             public double apply( double argument ) {
                 return argument * 2;
             }

@@ -66,6 +66,7 @@ public class OntologyClassRestrictionImpl extends OntologyRestrictionImpl implem
 
     }
 
+    @Override
     public OntologyTerm getRestrictedTo() {
         return restrictedTo;
     }

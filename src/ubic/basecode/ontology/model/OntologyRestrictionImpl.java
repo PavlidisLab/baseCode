@@ -39,6 +39,7 @@ public abstract class OntologyRestrictionImpl extends OntologyTermImpl implement
         this.restrictionOn = PropertyFactory.asProperty( resource.getOnProperty()  );
     }
 
+    @Override
     public OntologyProperty getRestrictionOn() {
         return restrictionOn;
     }

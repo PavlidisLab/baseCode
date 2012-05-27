@@ -115,10 +115,12 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
         return bits;
     }
 
+    @Override
     public int columns() {
         return this.cols;
     }
 
+    @Override
     public double[] get( int row, int col ) {
         throw new UnsupportedOperationException();
     }
@@ -176,6 +178,7 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
         return this.totalBitsPerItem;
     }
 
+    @Override
     public double[] getByKeys( R r, C c ) {
         return this.get( getRowIndexByName( r ), getColIndexByName( c ) );
     }
@@ -185,10 +188,12 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
      * 
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#getColObj(int)
      */
+    @Override
     public double[][] getColumn( int i ) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public double[] getEntry( int row, int column ) {
         return get( row, column );
     }
@@ -198,6 +203,7 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
      * 
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#getRowObj(int)
      */
+    @Override
     public double[][] getRow( int i ) {
         throw new UnsupportedOperationException();
     }
@@ -229,6 +235,7 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
      * 
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#isMissing(int, int)
      */
+    @Override
     public boolean isMissing( int i, int j ) {
         throw new UnsupportedOperationException();
     }
@@ -267,6 +274,7 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
      * 
      * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#rows()
      */
+    @Override
     public int rows() {
         return this.rows;
     }
@@ -279,6 +287,7 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
      * @param val
      * @return true if set successfully
      */
+    @Override
     public void set( int row, int col, double[] val ) {
         if ( val.length != this.matrix.length || row >= this.rows || col >= this.cols )
             throw new IllegalArgumentException( "Value out of range" );
@@ -331,6 +340,7 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
      * 
      * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(java.lang.Object, java.lang.Object, java.lang.Object)
      */
+    @Override
     public void setByKeys( R r, C c, double[] v ) {
         this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }

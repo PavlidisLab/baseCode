@@ -40,6 +40,7 @@ final class IndexScoreDyad implements Comparable<IndexScoreDyad> {
      * (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    @Override
     public int compareTo( IndexScoreDyad o ) {
         return o.getKey() - key;
     }

@@ -46,12 +46,14 @@ public abstract class AbstractMatrix3D<R, C, S, V> implements Matrix3D<R, C, S, 
         sliceNames = new ArrayList<S>();
     }
 
+    @Override
     public final void addColumnName( C s, int index ) {
         if ( colNames.contains( s ) ) return;
         colMap.put( s, index );
         colNames.add( s );
     }
 
+    @Override
     public final void addRowName( R s, int index ) {
         if ( rowNames.contains( s ) ) return;
         rowMap.put( s, index );
@@ -59,120 +61,148 @@ public abstract class AbstractMatrix3D<R, C, S, V> implements Matrix3D<R, C, S, 
 
     }
 
+    @Override
     public final void addSliceName( S s, int index ) {
         if ( sliceNames.contains( s ) ) return;
         sliceMap.put( s, index );
         sliceNames.add( s );
     }
 
+    @Override
     public abstract int columns();
 
+    @Override
     public final boolean containsColumnName( Object columnName ) {
         return colMap.containsKey( columnName );
     }
 
+    @Override
     public final boolean containsRowName( Object rowName ) {
         return rowMap.containsKey( rowName );
     }
 
+    @Override
     public final boolean containsSliceName( Object sliceName ) {
         return sliceMap.containsKey( sliceName );
     }
 
+    @Override
     public final int getColIndexByName( Object s ) {
         Integer index = colMap.get( s );
         if ( index == null ) throw new IllegalArgumentException( s + " not found" );
         return index.intValue();
     }
 
+    @Override
     public C getColName( int i ) {
         return colNames.get( i );
     }
 
+    @Override
     public Iterator<C> getColNameIterator() {
         return colNames.iterator();
     }
 
+    @Override
     public List<C> getColNames() {
         return colNames;
     }
 
+    @Override
     public int getRowIndexByName( R s ) {
         Integer index = rowMap.get( s );
         if ( index == null ) throw new IllegalArgumentException( s + " not found" );
         return index.intValue();
     }
 
+    @Override
     public R getRowName( int i ) {
         return rowNames.get( i );
     }
 
+    @Override
     public Iterator<R> getRowNameIterator() {
         return rowMap.keySet().iterator();
     }
 
+    @Override
     public List<R> getRowNames() {
         return rowNames;
     }
 
+    @Override
     public int getSliceIndexByName( S s ) {
         Integer index = sliceMap.get( s );
         if ( index == null ) throw new IllegalArgumentException( s + " not found" );
         return index.intValue();
     }
 
+    @Override
     public S getSliceName( int i ) {
         return sliceNames.get( i );
     }
 
+    @Override
     public Iterator<S> getSliceNameIterator() {
         return sliceNames.iterator();
     }
 
+    @Override
     public List<S> getSliceNames() {
         return sliceNames;
     }
 
+    @Override
     public boolean hasColNames() {
         return columns() == colNames.size();
     }
 
+    @Override
     public boolean hasRow( Object r ) {
         return rowMap.containsKey( r );
     }
 
+    @Override
     public boolean hasRowNames() {
         return rows() == rowNames.size();
     }
 
+    @Override
     public boolean hasSliceNames() {
         return slices() == sliceNames.size();
     }
 
+    @Override
     public abstract boolean isMissing( int slice, int row, int col );
 
+    @Override
     public abstract int numMissing();
 
+    @Override
     public abstract int rows();
 
+    @Override
     public void setColumnNames( List<C> v ) {
         colNames = v;
         for ( int i = 0; i < v.size(); i++ )
             colMap.put( v.get( i ), i );
     }
 
+    @Override
     public void setRowNames( List<R> v ) {
         rowNames = v;
         for ( int i = 0; i < v.size(); i++ )
             rowMap.put( v.get( i ), i );
     }
 
+    @Override
     public void setSliceNames( List<S> v ) {
         sliceNames = v;
         for ( int i = 0; i < v.size(); i++ )
             sliceMap.put( v.get( i ), i );
     }
 
+    @Override
     public abstract int slices();
 
 }

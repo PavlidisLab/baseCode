@@ -101,6 +101,7 @@ public class RowLevelFilter<R, C> extends AbstractLevelFilter<R, C> {
      * @param data
      * @return
      */
+    @Override
     public DoubleMatrix<R, C> filter( DoubleMatrix<R, C> data ) {
 
         if ( lowCut == -Double.MAX_VALUE && highCut == Double.MAX_VALUE ) {

@@ -40,6 +40,7 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
     /**
      * @return
      */
+    @Override
     public int columns() {
         return matrix.columns();
     }
@@ -49,6 +50,7 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
      * @param column
      * @return
      */ 
+    @Override
     public V get( int row, int column ) {
         return ( V ) matrix.getQuick( row, column );
     }
@@ -62,10 +64,12 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
         return get( getRowIndexByName( row ), getColIndexByName( column ) );
     }
 
+    @Override
     public V getByKeys( R r, C c ) {
         return this.get( getRowIndexByName( r ), getColIndexByName( c ) );
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public V[] getColumn( int col ) {
         V[] result = ( V[] ) new Object[rows()]; // this is how they do it in ArrayList
@@ -76,10 +80,12 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
         return result;
     }
 
+    @Override
     public V getEntry( int row, int column ) {
         return get( row, column );
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public V[] getRow( int row ) {
         Object[] ro = viewRow( row ).toArray();
@@ -90,6 +96,7 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
         return result;
     }
 
+    @Override
     public boolean isMissing( int i, int j ) {
         return get( i, j ) == "";
     }
@@ -98,6 +105,7 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
      * @return
      */
 
+    @Override
     public int rows() {
         return matrix.rows();
     }
@@ -107,6 +115,7 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
      * 
      * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(int, int, java.lang.Object)
      */
+    @Override
     public void set( int row, int column, V value ) {
         matrix.setQuick( row, column, value );
     }
@@ -116,6 +125,7 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
      * 
      * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(java.lang.Object, java.lang.Object, java.lang.Object)
      */
+    @Override
     public void setByKeys( R r, C c, V v ) {
         this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }

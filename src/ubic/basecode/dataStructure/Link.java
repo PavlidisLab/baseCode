@@ -46,6 +46,7 @@ public class Link extends Point implements Comparable<Link> {
      * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    @Override
     public int compareTo( Link arg ) {
         if ( this == arg ) return 0;
         if ( this.equals( arg ) ) return 0;

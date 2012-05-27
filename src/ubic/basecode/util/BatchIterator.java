@@ -82,6 +82,7 @@ public class BatchIterator<E> implements Iterable<Collection<E>>, Iterator<Colle
      * 
      * @see java.util.Iterator#hasNext()
      */
+    @Override
     public boolean hasNext() {
         return individualIterator.hasNext();
     }
@@ -91,6 +92,7 @@ public class BatchIterator<E> implements Iterable<Collection<E>>, Iterator<Colle
      * 
      * @see java.lang.Iterable#iterator()
      */
+    @Override
     public Iterator<Collection<E>> iterator() {
         return this;
     }
@@ -100,6 +102,7 @@ public class BatchIterator<E> implements Iterable<Collection<E>>, Iterator<Colle
      * 
      * @see java.util.Iterator#next()
      */
+    @Override
     public Collection<E> next() {
         if ( !individualIterator.hasNext() ) throw new NoSuchElementException();
 
@@ -114,6 +117,7 @@ public class BatchIterator<E> implements Iterable<Collection<E>>, Iterator<Colle
      * 
      * @see java.util.Iterator#remove()
      */
+    @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }

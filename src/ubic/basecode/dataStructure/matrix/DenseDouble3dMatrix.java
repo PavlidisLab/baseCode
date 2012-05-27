@@ -86,6 +86,7 @@ public class DenseDouble3dMatrix<R, C, S> extends DoubleMatrix3D<R, C, S> {
         return columnArray;
     }
 
+    @Override
     public Double getObject( int slice, int row, int col ) {
         return new Double( get( slice, row, col ) );
     }

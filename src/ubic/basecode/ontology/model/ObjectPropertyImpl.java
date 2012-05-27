@@ -44,10 +44,12 @@ public class ObjectPropertyImpl extends OntologyPropertyImpl implements ubic.bas
         this.resource = resource; 
     }
 
+    @Override
     public String getLabel() {
         return this.toString();
     }
 
+    @Override
     public Collection<OntologyTerm> getRange() {
         ExtendedIterator<? extends OntResource> iterator = resource.listRange();
         Collection<OntologyTerm> result = new HashSet<OntologyTerm>();

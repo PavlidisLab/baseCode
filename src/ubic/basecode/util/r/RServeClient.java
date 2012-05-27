@@ -115,6 +115,7 @@ public class RServeClient extends AbstractRClient {
      * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, double[])
      */
+    @Override
     public void assign( String argName, double[] arg ) {
         checkConnection();
 
@@ -131,6 +132,7 @@ public class RServeClient extends AbstractRClient {
      * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, int[])
      */
+    @Override
     public void assign( String arg0, int[] arg1 ) {
         if ( StringUtils.isBlank( arg0 ) ) {
             throw new IllegalArgumentException( "Must supply valid variable name" );
@@ -153,6 +155,7 @@ public class RServeClient extends AbstractRClient {
      * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String)
      */
+    @Override
     public void assign( String sym, String ct ) {
         if ( StringUtils.isBlank( sym ) ) {
             throw new IllegalArgumentException( "Must supply valid variable name" );
@@ -170,6 +173,7 @@ public class RServeClient extends AbstractRClient {
      * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String[])
      */
+    @Override
     public void assign( String argName, String[] array ) {
         if ( array == null || array.length == 0 ) {
             throw new IllegalArgumentException( "Array must not be null or empty" );
@@ -214,6 +218,7 @@ public class RServeClient extends AbstractRClient {
      * 
      * @see ubic.basecode.util.RClient#getLastError()
      */
+    @Override
     public String getLastError() {
         return connection.getLastError();
     }
@@ -221,6 +226,7 @@ public class RServeClient extends AbstractRClient {
     /**
      * 
      */
+    @Override
     public boolean isConnected() {
         if ( connection != null && connection.isConnected() ) return true;
         return false;
@@ -231,6 +237,7 @@ public class RServeClient extends AbstractRClient {
      * 
      * @see ubic.basecode.util.RClient#retrieveMatrix(java.lang.String)
      */
+    @Override
     public DoubleMatrix<String, String> retrieveMatrix( String variableName ) {
         try {
             log.debug( "Retrieving " + variableName );
@@ -268,6 +275,7 @@ public class RServeClient extends AbstractRClient {
      * 
      * @see ubic.basecode.util.RClient#voidEval(java.lang.String)
      */
+    @Override
     public void voidEval( String command ) {
         if ( command == null ) throw new IllegalArgumentException( "Null command" );
         this.checkConnection();
@@ -356,6 +364,7 @@ public class RServeClient extends AbstractRClient {
      * 
      * @see ubic.basecode.util.r.RClient#eval(java.lang.String)
      */
+    @Override
     public REXP eval( String command ) {
         log.debug( "eval: " + command );
 

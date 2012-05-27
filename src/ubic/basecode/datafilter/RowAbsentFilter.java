@@ -52,6 +52,7 @@ public class RowAbsentFilter<M extends Matrix2D<R, C, V>, R, C, V> extends Abstr
      * @param data The input matrix
      * @return Matrix after filtering.
      */
+    @Override
     public M filter( M data ) {
 
         int numRows = data.rows();

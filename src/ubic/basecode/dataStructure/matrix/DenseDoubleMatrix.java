@@ -62,6 +62,7 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return matrix.toArray();
     }
 
+    @Override
     public int columns() {
         return matrix.columns();
     }
@@ -173,6 +174,7 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return result;
     }
 
+    @Override
     public Double[] getColObj( int col ) {
         Double[] result = new Double[rows()];
         for ( int i = 0; i < rows(); i++ ) {
@@ -233,6 +235,7 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * "\n" ); } return result.toString(); }
      */
 
+    @Override
     public Double getObject( int row, int col ) {
         return new Double( get( row, col ) );
     }
@@ -269,6 +272,7 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return getRow( getRowIndexByName( s ) );
     }
 
+    @Override
     public Double[] getRowObj( int row ) {
         Double[] result = new Double[columns()];
         for ( int i = 0; i < columns(); i++ ) {
@@ -305,14 +309,17 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return returnval;
     }
 
+    @Override
     public boolean isMissing( int i, int j ) {
         return Double.isNaN( get( i, j ) );
     }
 
+    @Override
     public int rows() {
         return matrix.rows();
     }
 
+    @Override
     public void set( int row, int column, Double value ) {
         matrix.set( row, column, value );
     }

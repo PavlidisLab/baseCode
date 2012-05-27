@@ -73,10 +73,12 @@ public class AnnotationPropertyImpl implements AnnotationProperty {
         return true;
     }
 
+    @Override
     public String getContents() {
         return contents;
     }
 
+    @Override
     public String getProperty() {
         if ( property.getLabel( null ) != null ) {
             return property.getLabel( null );

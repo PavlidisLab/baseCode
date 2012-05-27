@@ -86,6 +86,7 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     /**
      * @return
      */
+    @Override
     public int columns() {
         return matrix.numColumns();
     }
@@ -181,6 +182,7 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * 
      * @see ubic.basecode.dataStructure.matrix.NamedPrimitiveMatrix#getColObj(int)
      */
+    @Override
     public Double[] getColObj( int col ) {
         Double[] result = new Double[rows()];
         for ( int i = 0; i < rows(); i++ ) {
@@ -226,6 +228,7 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return result;
     }
 
+    @Override
     public Double getObject( int row, int col ) {
         return new Double( get( row, col ) );
     }
@@ -268,6 +271,7 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return getRow( getRowIndexByName( s ) );
     }
 
+    @Override
     public Double[] getRowObj( int row ) {
         Double[] result = new Double[columns()];
         double[] values = getRow( row );
@@ -305,10 +309,12 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return returnval;
     }
 
+    @Override
     public boolean isMissing( int i, int j ) {
         return Double.isNaN( get( i, j ) );
     }
 
+    @Override
     public int rows() {
         return matrix.numRows();
     }
@@ -318,6 +324,7 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * @param column
      * @param value
      */
+    @Override
     public void set( int row, int column, Double value ) {
         matrix.set( row, column, value );
     }

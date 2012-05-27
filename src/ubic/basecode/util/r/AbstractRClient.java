@@ -126,6 +126,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#assignFactor(java.util.List)
      */
+    @Override
     public String assignFactor( List<String> strings ) {
         String variableName = "f." + variableIdentityNumber( strings );
         return assignFactor( variableName, strings );
@@ -136,6 +137,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#assignFactor(java.lang.String, java.util.List)
      */
+    @Override
     public String assignFactor( String factorName, List<String> list ) {
         String l = assignStringList( list );
         this.voidEval( factorName + "<-factor(" + l + ")" );
@@ -147,6 +149,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#assignMatrix(double[][])
      */
+    @Override
     public String assignMatrix( double[][] matrix ) {
         String matrixVarName = "Matrix_" + variableIdentityNumber( matrix );
         log.debug( "Assigning matrix with variable name " + matrixVarName );
@@ -167,6 +170,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#assignMatrix(ubic.basecode.dataStructure.matrix.DoubleMatrixNamed)
      */
+    @Override
     public String assignMatrix( DoubleMatrix<?, ?> matrix ) {
         return assignMatrix( matrix, StringValueTransformer.getInstance() );
     }
@@ -177,6 +181,7 @@ public abstract class AbstractRClient implements RClient {
      * @see ubic.basecode.util.RClient#assignMatrix(ubic.basecode.dataStructure.matrix.DoubleMatrix,
      * org.apache.commons.collections.Transformer)
      */
+    @Override
     public String assignMatrix( DoubleMatrix<?, ?> matrix, Transformer rowNameExtractor ) {
         String matrixVarName = "Matrix_" + variableIdentityNumber( matrix );
         log.debug( "Assigning matrix with variable name " + matrixVarName );
@@ -200,6 +205,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#assignStringList(java.util.List)
      */
+    @Override
     public String assignStringList( List<?> strings ) {
         String variableName = "stringList." + variableIdentityNumber( strings );
 
@@ -218,6 +224,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#booleanDoubleArrayEval(java.lang.String, java.lang.String, double[])
      */
+    @Override
     public boolean booleanDoubleArrayEval( String command, String argName, double[] arg ) {
         this.assign( argName, arg );
         REXP x = this.eval( command );
@@ -232,6 +239,7 @@ public abstract class AbstractRClient implements RClient {
         return false;
     }
 
+    @Override
     public ObjectMatrix<String, String, Object> dataFrameEval( String command ) {
 
         REXP df = eval( command );
@@ -290,6 +298,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#dataFrame(ubic.basecode.dataStructure.matrix.ObjectMatrix)
      */
+    @Override
     public String dataFrame( ObjectMatrix<String, String, Object> matrix ) {
 
         /*
@@ -366,6 +375,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#doubleArrayDoubleArrayEval(java.lang.String, java.lang.String, double[])
      */
+    @Override
     public double[] doubleArrayDoubleArrayEval( String command, String argName, double[] arg ) {
         try {
             this.assign( argName, arg );
@@ -381,6 +391,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#doubleArrayEval(java.lang.String)
      */
+    @Override
     public double[] doubleArrayEval( String command ) {
         REXP r = this.eval( command );
         if ( r == null ) {
@@ -404,6 +415,7 @@ public abstract class AbstractRClient implements RClient {
      * @see ubic.basecode.util.RClient#doubleArrayTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
      * java.lang.String, double[])
      */
+    @Override
     public double[] doubleArrayTwoDoubleArrayEval( String command, String argName, double[] arg, String argName2,
             double[] arg2 ) {
         this.assign( argName, arg );
@@ -421,6 +433,7 @@ public abstract class AbstractRClient implements RClient {
      * @see ubic.basecode.util.RClient#doubleTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
      * java.lang.String, double[])
      */
+    @Override
     public double doubleTwoDoubleArrayEval( String command, String argName, double[] arg, String argName2, double[] arg2 ) {
         this.assign( argName, arg );
         this.assign( argName2, arg2 );
@@ -437,6 +450,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#intArrayEval(java.lang.String)
      */
+    @Override
     public int[] intArrayEval( String command ) {
         try {
             return eval( command ).asIntegers();
@@ -450,6 +464,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#linearModel(double[], ubic.basecode.dataStructure.matrix.ObjectMatrix)
      */
+    @Override
     public LinearModelSummary linearModel( double[] data, ObjectMatrix<String, String, Object> d ) {
 
         String datName = RandomStringUtils.randomAlphabetic( 10 );
@@ -475,6 +490,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#linearModel(double[], java.util.List)
      */
+    @Override
     @SuppressWarnings( { "unchecked" })
     public LinearModelSummary linearModel( double[] data, Map<String, List<?>> factors ) {
 
@@ -515,6 +531,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#rowApplyLinearModel(java.lang.String, java.lang.String, java.lang.String[])
      */
+    @Override
     public Map<String, LinearModelSummary> rowApplyLinearModel( String dataMatrixVarName, String modelFormula,
             String[] factorNames ) {
 
@@ -618,6 +635,7 @@ public abstract class AbstractRClient implements RClient {
     /**
      * FIXME only partly implemented, possibly not going to stay.
      */
+    @Override
     public List<?> listEval( Class<?> listEntryType, String command ) {
 
         REXP rexp = this.eval( command );
@@ -703,6 +721,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#loadLibrary(java.lang.String)
      */
+    @Override
     public boolean loadLibrary( String libraryName ) {
         try {
             List<String> libraries = stringListEval( "installed.packages()[,1]" );
@@ -729,6 +748,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#oneWayAnova(double[], java.util.List)
      */
+    @Override
     public OneWayAnovaResult oneWayAnova( double[] data, List<String> factor ) {
         String f = assignFactor( factor );
         StringBuffer command = new StringBuffer();
@@ -751,6 +771,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#oneWayAnovaEval(java.lang.String)
      */
+    @Override
     public Map<String, OneWayAnovaResult> oneWayAnovaEval( String command ) {
         REXP rawResult = this.eval( command );
 
@@ -799,6 +820,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#remove(java.lang.String)
      */
+    @Override
     public void remove( String variableName ) {
         this.voidEval( "rm(" + variableName + ")" );
     }
@@ -808,6 +830,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#stringEval(java.lang.String)
      */
+    @Override
     public String stringEval( String command ) {
         try {
             return this.eval( command ).asString();
@@ -821,6 +844,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.r.RClient#stringListEval(java.lang.String)
      */
+    @Override
     public List<String> stringListEval( String command ) {
         try {
             REXP eval = this.eval( command );
@@ -850,6 +874,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.r.RClient#twoWayAnova(double[], java.util.List, java.util.List, boolean)
      */
+    @Override
     public TwoWayAnovaResult twoWayAnova( double[] data, List<String> factor1, List<String> factor2,
             boolean includeInteraction ) {
 
@@ -879,6 +904,7 @@ public abstract class AbstractRClient implements RClient {
      * 
      * @see ubic.basecode.util.RClient#twoWayAnovaEval(java.lang.String, boolean)
      */
+    @Override
     public Map<String, TwoWayAnovaResult> twoWayAnovaEval( String command, boolean withInteractions ) {
         REXP rawResult = this.eval( command );
 

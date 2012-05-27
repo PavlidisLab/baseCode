@@ -49,6 +49,7 @@ public class NormalProbabilityComputer implements ProbabilityComputer {
      * 
      * @see basecode.math.ProbabilityComputer#probability(double)
      */
+    @Override
     public double probability( double value ) {
         return 1.0 - Probability.normal( mean, variance, value );
     }
@@ -58,6 +59,7 @@ public class NormalProbabilityComputer implements ProbabilityComputer {
      * 
      * @see ubic.basecode.math.distribution.ProbabilityComputer#probability(double, boolean)
      */
+    @Override
     public double probability( double value, boolean upperTail ) {
         if ( upperTail ) {
             return probability( value );

@@ -71,6 +71,7 @@ public class JRIClient extends AbstractRClient {
      * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, double[])
      */
+    @Override
     public void assign( String argName, double[] arg ) {
         try {
             connection.assign( argName, arg );
@@ -84,6 +85,7 @@ public class JRIClient extends AbstractRClient {
      * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, int[])
      */
+    @Override
     public void assign( String arg0, int[] arg1 ) {
         try {
             connection.assign( arg0, arg1 );
@@ -97,6 +99,7 @@ public class JRIClient extends AbstractRClient {
      * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String)
      */
+    @Override
     public void assign( String sym, String ct ) {
         try {
             connection.assign( sym, ct );
@@ -110,6 +113,7 @@ public class JRIClient extends AbstractRClient {
      * 
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String[])
      */
+    @Override
     public void assign( String argName, String[] array ) {
         try {
             connection.assign( argName, array );
@@ -123,10 +127,12 @@ public class JRIClient extends AbstractRClient {
      * 
      * @see ubic.basecode.util.RClient#getLastError()
      */
+    @Override
     public String getLastError() {
         return "Sorry, no information";
     }
 
+    @Override
     public boolean isConnected() {
         return true;
     }
@@ -136,6 +142,7 @@ public class JRIClient extends AbstractRClient {
      * 
      * @see ubic.basecode.util.RClient#retrieveMatrix(java.lang.String)
      */
+    @Override
     public DoubleMatrix<String, String> retrieveMatrix( String variableName ) {
         log.debug( "Retrieving " + variableName );
         REXP r = this.eval( variableName );
@@ -162,10 +169,12 @@ public class JRIClient extends AbstractRClient {
      * 
      * @see ubic.basecode.util.RClient#voidEval(java.lang.String)
      */
+    @Override
     public void voidEval( String command ) {
         eval( command );
     }
 
+    @Override
     public REXP eval( String command ) {
         REXP result;
         int key = connection.lock();

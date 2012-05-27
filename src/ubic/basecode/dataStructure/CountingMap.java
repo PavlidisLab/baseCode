@@ -124,6 +124,7 @@ public class CountingMap<K> implements Map<K, Integer> {
      * 
      * @see java.util.Map#clear()
      */
+    @Override
     public void clear() {
         map.clear();
     }
@@ -133,6 +134,7 @@ public class CountingMap<K> implements Map<K, Integer> {
      * 
      * @see java.util.Map#containsKey(java.lang.Object)
      */
+    @Override
     public boolean containsKey( Object key ) {
         return map.containsKey( key );
     }
@@ -142,6 +144,7 @@ public class CountingMap<K> implements Map<K, Integer> {
      * 
      * @see java.util.Map#containsValue(java.lang.Object)
      */
+    @Override
     public boolean containsValue( Object value ) {
         return map.containsValue( value );
     }
@@ -151,6 +154,7 @@ public class CountingMap<K> implements Map<K, Integer> {
      * 
      * @see java.util.Map#entrySet()
      */
+    @Override
     public Set<java.util.Map.Entry<K, Integer>> entrySet() {
         return map.entrySet();
     }
@@ -160,6 +164,7 @@ public class CountingMap<K> implements Map<K, Integer> {
      * 
      * @see java.util.Map#get(java.lang.Object)
      */
+    @Override
     public Integer get( Object key ) {
         return map.containsKey( key ) ? map.get( key ) : 0;
     }
@@ -169,6 +174,7 @@ public class CountingMap<K> implements Map<K, Integer> {
      * 
      * @see java.util.Map#isEmpty()
      */
+    @Override
     public boolean isEmpty() {
         return map.isEmpty();
     }
@@ -178,6 +184,7 @@ public class CountingMap<K> implements Map<K, Integer> {
      * 
      * @see java.util.Map#keySet()
      */
+    @Override
     public Set<K> keySet() {
         return map.keySet();
     }
@@ -187,6 +194,7 @@ public class CountingMap<K> implements Map<K, Integer> {
      * 
      * @see java.util.Map#put(java.lang.Object, java.lang.Object)
      */
+    @Override
     public Integer put( K key, Integer value ) {
         return map.put( key, value );
     }
@@ -196,6 +204,7 @@ public class CountingMap<K> implements Map<K, Integer> {
      * 
      * @see java.util.Map#putAll(java.util.Map)
      */
+    @Override
     public void putAll( Map<? extends K, ? extends Integer> t ) {
         map.putAll( t );
     }
@@ -205,6 +214,7 @@ public class CountingMap<K> implements Map<K, Integer> {
      * 
      * @see java.util.Map#remove(java.lang.Object)
      */
+    @Override
     public Integer remove( Object key ) {
         return map.remove( key );
     }
@@ -214,6 +224,7 @@ public class CountingMap<K> implements Map<K, Integer> {
      * 
      * @see java.util.Map#size()
      */
+    @Override
     public int size() {
         return map.size();
     }
@@ -223,6 +234,7 @@ public class CountingMap<K> implements Map<K, Integer> {
      * 
      * @see java.util.Map#values()
      */
+    @Override
     public Collection<Integer> values() {
         return map.values();
     }
@@ -257,6 +269,7 @@ public class CountingMap<K> implements Map<K, Integer> {
          * 
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
+        @Override
         public int compare( K key1, K key2 ) {
             return map.get( key1 ).compareTo( map.get( key2 ) );
         }
@@ -268,6 +281,7 @@ public class CountingMap<K> implements Map<K, Integer> {
          * 
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
+        @Override
         public int compare( K key1, K key2 ) {
             return map.get( key2 ).compareTo( map.get( key1 ) );
         }

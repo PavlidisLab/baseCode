@@ -51,6 +51,7 @@ public abstract class AbstractGraph<R extends GraphNode<K, V>, K, V> implements 
     /**
      *  
      */
+    @Override
     public abstract void addNode( K key, V value );
 
     /**
@@ -62,6 +63,7 @@ public abstract class AbstractGraph<R extends GraphNode<K, V>, K, V> implements 
      * @param key Object
      * @return true if the graph contains an item referenced by key, false otherwise.
      */
+    @Override
     public abstract boolean containsKey( K key );
 
     /**
@@ -71,6 +73,7 @@ public abstract class AbstractGraph<R extends GraphNode<K, V>, K, V> implements 
      * @see #getNodeContents(Object)
      * @return AbstractGraphNode referenced by the key.
      */
+    @Override
     public R get( K key ) {
         return getItems().get( key );
     }
@@ -87,6 +90,7 @@ public abstract class AbstractGraph<R extends GraphNode<K, V>, K, V> implements 
      * @param key Object
      * @return The object contained by a node, not the node itself.
      */
+    @Override
     public V getNodeContents( K key ) {
         if ( !getItems().containsKey( key ) ) return null;
         return getItems().get( key ).getItem();
@@ -95,6 +99,7 @@ public abstract class AbstractGraph<R extends GraphNode<K, V>, K, V> implements 
     /**
      * Reset the 'visited' marks of the graph to false.
      */
+    @Override
     public void unmarkAll() {
         for ( K item : getItems().keySet() ) {
             if ( !( item instanceof Visitable ) ) {

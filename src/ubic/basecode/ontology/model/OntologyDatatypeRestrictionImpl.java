@@ -38,6 +38,7 @@ public class OntologyDatatypeRestrictionImpl extends OntologyRestrictionImpl imp
         this.type = PropertyFactory.convertType( resource.getOnProperty().asDatatypeProperty() );
     }
 
+    @Override
     public Class<?> getRestrictedTo() {
         return type;
     }

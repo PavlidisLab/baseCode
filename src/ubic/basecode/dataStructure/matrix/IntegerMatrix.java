@@ -40,6 +40,7 @@ public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implement
     /**
      * @return
      */
+    @Override
     public int columns() {
         return matrix.columns();
     }
@@ -53,10 +54,12 @@ public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implement
         return matrix.get( row, column );
     }
 
+    @Override
     public Integer getByKeys( R r, C c ) {
         return this.get( getRowIndexByName( r ), getColIndexByName( c ) );
     }
 
+    @Override
     public Integer[] getColObj( int col ) {
         Integer[] result = new Integer[rows()];
         for ( int i = 0; i < rows(); i++ ) {
@@ -73,10 +76,12 @@ public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implement
         return result;
     }
 
+    @Override
     public Integer getEntry( int row, int column ) {
         return get( row, column );
     }
 
+    @Override
     public Integer getObject( int row, int col ) {
         return get( row, col );
     }
@@ -85,6 +90,7 @@ public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implement
         return ( Integer[] ) viewRow( row ).toArray();
     }
 
+    @Override
     public Integer[] getRowObj( int row ) {
         Integer[] result = new Integer[columns()];
         for ( int i = 0; i < columns(); i++ ) {
@@ -93,6 +99,7 @@ public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implement
         return result;
     }
 
+    @Override
     public boolean isMissing( int i, int j ) {
         return get( i, j ) == null;
     }
@@ -100,10 +107,12 @@ public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implement
     /**
      * @return
      */
+    @Override
     public int rows() {
         return matrix.rows();
     }
 
+    @Override
     public void set( int row, int column, Integer value ) {
         matrix.set( row, column, value );
     }
@@ -113,6 +122,7 @@ public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implement
      * 
      * @see ubic.basecode.dataStructure.matrix.NamedMatrix#set(java.lang.Object, java.lang.Object, java.lang.Object)
      */
+    @Override
     public void setByKeys( R r, C c, Integer v ) {
         this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }

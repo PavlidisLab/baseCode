@@ -78,6 +78,7 @@ public class AffymetrixProbeNameFilter<M extends Matrix2D<R, C, V>, R, C, V> ext
         this.setCriteria( criteria );
     }
 
+    @Override
     public M filter( M data ) {
         List<V[]> MTemp = new Vector<V[]>();
         List<R> rowNames = new Vector<R>();

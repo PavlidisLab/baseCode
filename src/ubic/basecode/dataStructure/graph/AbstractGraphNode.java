@@ -53,6 +53,7 @@ public abstract class AbstractGraphNode<K, V> extends Visitable implements Graph
      * 
      * @return
      */
+    @Override
     public V getItem() {
         return item;
     }
@@ -62,6 +63,7 @@ public abstract class AbstractGraphNode<K, V> extends Visitable implements Graph
      * 
      * @return Object
      */
+    @Override
     public K getKey() {
         return key;
     }
@@ -76,10 +78,12 @@ public abstract class AbstractGraphNode<K, V> extends Visitable implements Graph
         visited = true;
     }
 
+    @Override
     public void setItem( V value ) {
         this.item = value;
     }
 
+    @Override
     public void setValue( K key, V value ) {
         this.item = value;
         this.key = key;

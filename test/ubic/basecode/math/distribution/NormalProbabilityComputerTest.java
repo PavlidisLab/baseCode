@@ -53,7 +53,7 @@ public class NormalProbabilityComputerTest extends TestCase {
             new NormalProbabilityComputer( 0.0, -1.0 );
             fail( "Should have gotten an exception" );
         } catch ( IllegalArgumentException e ) {
-
+            // OK
         }
     }
 
