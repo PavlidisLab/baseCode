@@ -30,7 +30,7 @@ public abstract class AbstractOntologyMemoryBackedService extends AbstractOntolo
 
         model = OntologyLoader.loadMemoryModel( is, this.ontology_URL, OntModelSpec.OWL_MEM );
 
-        index = OntologyIndexer.indexOntology( ontologyName, model );
+        index = OntologyIndexer.indexOntology( ontologyName, model, true );
 
         addTerms( OntologyLoader.initialize( this.ontology_URL, model ) );
 
