@@ -32,6 +32,8 @@ import ubic.basecode.datafilter.AbstractTestFilter;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.util.RegressionTesting;
 import cern.colt.function.DoubleProcedure;
+import cern.colt.matrix.DoubleMatrix1D;
+import cern.jet.math.Functions;
 
 /**
  * @author pavlidis
@@ -66,6 +68,41 @@ public class TestMatrixStats {
         double expectedReturn = -965.3;
         double actualReturn = MatrixStats.min( testdata );
         assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
+    }
+
+    @Test
+    public final void testLogTransform() throws Exception {
+        MatrixStats.logTransform( testdata );
+        assertEquals( Math.log( 44625.7 ) / Math.log( 2 ), testdata.get( 9, 3 ), 0.001 );
+    }
+
+    @Test
+    public final void testConvertLog() throws Exception {
+        DoubleMatrix<String, String> copy = testdata.copy();
+
+        // convert copy to logE form.
+        for ( int j = 0; j < copy.rows(); j++ ) {
+            DoubleMatrix1D row = copy.viewRow( j );
+            row.assign( Functions.log );
+            for ( int i = 0; i < row.size(); i++ ) {
+                copy.set( j, i, row.get( i ) );
+            }
+        }
+
+        MatrixStats.convertToLog2( copy, Math.E );
+
+        for ( int j = 0; j < copy.rows(); j++ ) {
+            DoubleMatrix1D row = copy.viewRow( j );
+            DoubleMatrix1D orow = testdata.viewRow( j );
+
+            orow.assign( Functions.log2 );
+
+            for ( int i = 0; i < orow.size(); i++ ) {
+                assertEquals( orow.get( i ), row.get( i ), 1e-10 );
+            }
+
+        }
+
     }
 
     @Test
@@ -147,8 +184,8 @@ public class TestMatrixStats {
         MatrixStats.rbfNormalize( av, 1 );
         double[][] expected = { { 0.2968, 0.2432, 0.2609, 0.1991 }, { 0.2453, 0.2429, 0.2738, 0.2381 },
                 { 0.273, 0.3368, 0.1252, 0.265 } };
-        assertEquals( true, RegressionTesting
-                .closeEnough( new DenseDoubleMatrix<String, String>( expected ), av, 0.001 ) );
+        assertEquals( true,
+                RegressionTesting.closeEnough( new DenseDoubleMatrix<String, String>( expected ), av, 0.001 ) );
         for ( int i = 0; i < 3; i++ ) {
             assertEquals( 1.0, av.viewRow( i ).zSum(), 0.0001 );
         }

@@ -179,10 +179,29 @@ public class MatrixStats {
      * @param matrixToNormalize
      */
     public static <R, C> void logTransform( DoubleMatrix<R, C> matrix ) {
-
-        for ( int j = 0; j < matrix.rows(); j++ ) { // do each row in turn ...
+        for ( int j = 0; j < matrix.rows(); j++ ) {
             DoubleMatrix1D row = matrix.viewRow( j );
             row.assign( Functions.log2 );
+            for ( int i = 0; i < row.size(); i++ ) {
+                matrix.set( j, i, row.get( i ) );
+            }
+        }
+    }
+
+    /**
+     * Convert a log_b-transformed data set to log 2.
+     * 
+     * @param matrix
+     * @param base the current base
+     */
+    public static <R, C> void convertToLog2( DoubleMatrix<R, C> matrix, double base ) {
+        double v = Math.log( 2.0 ) / Math.log( base );
+        for ( int j = 0; j < matrix.rows(); j++ ) {
+            DoubleMatrix1D row = matrix.viewRow( j );
+            row.assign( Functions.div( v ) );
+            for ( int i = 0; i < row.size(); i++ ) {
+                matrix.set( j, i, row.get( i ) );
+            }
         }
     }
 
