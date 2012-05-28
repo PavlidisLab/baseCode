@@ -403,6 +403,8 @@ class RankData implements Comparable<RankData> {
 
     @Override
     public int compareTo( RankData other ) {
+        if ( this.equals( other ) ) return 0;
+
         if ( this.getValue() < other.getValue() ) {
             return -1;
         } else if ( this.getValue() > other.getValue() ) {
