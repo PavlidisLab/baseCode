@@ -179,22 +179,7 @@ public class Rank {
     public static <K> Map<K, Double> rankTransform( Map<K, Double> m ) {
         return rankTransform( m, false );
     }
-
-    // /**
-    // * Replace the values in one list with values from another, based on ranks. Thus the n'th highest value in the
-    // first
-    // * array is replaced with the n'th highest value in the second.
-    // *
-    // * @param toReplace
-    // * @param sourceOfValues
-    // * @return values in sourceOfValues, in the order of the ranks of to
-    // */
-    // public static List<Double> replaceByRanks( List<Double> toReplace, List<Double> sourceOfValues ) {
-    // if ( toReplace.size() != sourceOfValues.size() ) {
-    // throw new IllegalArgumentException( "Lists must be of same size" );
-    // }
-    // }
-
+    
     /**
      * Ties are broken as for the other methods. CAUTION - ranks start at 0.
      * 
