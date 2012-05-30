@@ -28,6 +28,13 @@ public abstract class AbstractOntologyMemoryBackedService extends AbstractOntolo
             return;
         }
 
+        this.indexReady.set( false );
+        this.modelReady.set( false );
+        this.isInitialized.set( false );
+        this.cacheReady.set( false );
+        if ( this.terms != null ) this.terms.clear();
+        if ( this.individuals != null ) this.individuals.clear();
+
         model = OntologyLoader.loadMemoryModel( is, this.ontology_URL, OntModelSpec.OWL_MEM );
 
         index = OntologyIndexer.indexOntology( ontologyName, model, true );
@@ -40,6 +47,7 @@ public abstract class AbstractOntologyMemoryBackedService extends AbstractOntolo
         cacheReady.set( true );
         modelReady.set( true );
         isInitialized.set( true );
+        log.info( this.getClass().getSimpleName() + " ready" );
     }
 
     @Override
