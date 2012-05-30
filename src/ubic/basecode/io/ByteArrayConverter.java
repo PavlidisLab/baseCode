@@ -172,7 +172,7 @@ public class ByteArrayConverter {
 
         int numDoubles = barray.length / DOUBLE_SIZE;
         if ( numDoubles % width != 0 ) {
-           throw new IllegalArgumentException( "The number of doubles in the byte array (" + numDoubles
+            throw new IllegalArgumentException( "The number of doubles in the byte array (" + numDoubles
                     + ") does not divide evenly into the number of items expected per row (" + width + ")." );
         }
 
@@ -380,6 +380,14 @@ public class ByteArrayConverter {
         }
 
         return bos.toByteArray();
+    }
+
+    /**
+     * @param darray
+     * @return byte[]
+     */
+    public byte[] doubleArrayToBytes( Double[] darray ) {
+        return doubleArrayToBytes( ArrayUtils.toPrimitive( darray ) );
     }
 
     /**
