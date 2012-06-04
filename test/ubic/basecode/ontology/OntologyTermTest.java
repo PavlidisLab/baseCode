@@ -43,20 +43,21 @@ public class OntologyTermTest {
         s.loadTermsInNameSpace( is );
 
         /*
-         * Note that DOID now uses purl.obolibrary.org instead of purl.obo.org, but we are using the 'legacy' OWL
+         * Note that this test uses the 'new style' URIs for DO, but at this writing we actually use purl.org not
+         * purl.obolibrary.org.
          */
 
-        OntologyTerm t = s.getTerm( "http://purl.obo.org/obo/DOID_10040" );
+        OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/DOID_10040" );
         Collection<OntologyTerm> parents = t.getParents( true );
         assertEquals( 1, parents.size() );
         OntologyTerm p = parents.iterator().next();
-        assertEquals( "http://purl.obo.org/obo/DOID_8923", p.getUri() );
+        assertEquals( "http://purl.obolibrary.org/obo/DOID_8923", p.getUri() );
 
         Collection<OntologyTerm> parents2 = t.getParents( false );
         assertEquals( 7, parents2.size() );
         boolean found = false;
         for ( OntologyTerm par : parents2 ) {
-            if ( par.getUri().equals( "http://purl.obo.org/obo/DOID_0060122" ) ) {
+            if ( par.getUri().equals( "http://purl.obolibrary.org/obo/DOID_0060122" ) ) {
                 found = true;
             }
         }
@@ -71,12 +72,12 @@ public class OntologyTermTest {
         InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream( "/data/doid.short.owl.gz" ) );
         s.loadTermsInNameSpace( is );
 
-        OntologyTerm t = s.getTerm( "http://purl.obo.org/obo/DOID_4159" );
+        OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/DOID_4159" );
         Collection<OntologyTerm> children = t.getChildren( true );
         assertEquals( 2, children.size() );
         boolean found = false;
         for ( OntologyTerm par : children ) {
-            if ( par.getUri().equals( "http://purl.obo.org/obo/DOID_8923" ) ) {
+            if ( par.getUri().equals( "http://purl.obolibrary.org/obo/DOID_8923" ) ) {
                 found = true;
             }
         }
@@ -86,7 +87,7 @@ public class OntologyTermTest {
         found = false;
         assertEquals( 6, allchildren.size() );
         for ( OntologyTerm par : allchildren ) {
-            if ( par.getUri().equals( "http://purl.obo.org/obo/DOID_10054" ) ) {
+            if ( par.getUri().equals( "http://purl.obolibrary.org/obo/DOID_10054" ) ) {
                 found = true;
             }
         }
