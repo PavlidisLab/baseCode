@@ -303,15 +303,6 @@ public abstract class AbstractOntologyService {
 
     }
 
-    // TODO: finish this convenience method
-    // public void startInitializationThreadAndWait ( boolean force ) {
-    // startInitializationThread ( force );
-    // while ( !isOntologyLoaded() ) {
-    // Thread.sleep( 5000 );
-    // log.info( "Waiting for mgedontology to load" );
-    // }
-    // }
-
     public synchronized void startInitializationThread( boolean force ) {
 
         if ( initializationThread.isAlive() ) {

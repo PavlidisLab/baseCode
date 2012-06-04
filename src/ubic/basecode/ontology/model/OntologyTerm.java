@@ -41,7 +41,7 @@ public interface OntologyTerm extends OntologyResource {
     public Object getModel();
 
     /**
-     * Note that any restriction superclasses are not returned.
+     * Note that any restriction superclasses are not returned, unless they are has_proper_part
      * 
      * @param direct
      * @return

@@ -21,7 +21,7 @@ package ubic.basecode.ontology.providers;
 import ubic.basecode.ontology.Configuration;
 
 /**
- * Holds a copy of the OBO Disese Ontology on disk. This gets loaded on startup.
+ * Holds a copy of the OBO Disease Ontology.
  * 
  * @author klc
  * @version $Id$
