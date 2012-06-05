@@ -12,68 +12,67 @@ import com.hp.hpl.jena.ontology.OntModel;
  * Eventually connection is killed by MySQL server, so to stop this we do a dummy search when ontology model
  * is idle in the pool. This keeps connection alive.
  */
-public abstract class AbstractOntologyDatabaseBackedService extends
-		AbstractOntologyService {
+public abstract class AbstractOntologyDatabaseBackedService extends AbstractOntologyService {
 
-	private final GenericObjectPool pool;
+    private final GenericObjectPool pool;
 
-	public AbstractOntologyDatabaseBackedService() {
-		super();
-		this.pool = new GenericObjectPool(new PoolableObjectFactory() {
+    public AbstractOntologyDatabaseBackedService() {
+        super();
+        this.pool = new GenericObjectPool( new PoolableObjectFactory() {
 
-			@Override
-			public void activateObject(Object obj) throws Exception {
-				// no op
-			}
+            @Override
+            public void activateObject( Object obj ) {
+                // no op
+            }
 
-			@Override
-			public void destroyObject(Object obj) throws Exception {
-				// ( ( OntModel ) obj ).close();
-				// obj = null;
-			}
+            @Override
+            public void destroyObject( Object obj ) {
+                // ( ( OntModel ) obj ).close();
+                // obj = null;
+            }
 
-			@Override
-			public Object makeObject() throws Exception {
-				log.warn("Making model for: " + ontology_URL);
-				OntModel model = loadModel(ontology_URL);
-				modelReady.set(true);
-				return model;
-			}
+            @Override
+            public Object makeObject() {
+                log.warn( "Making model for: " + ontology_URL );
+                OntModel model = loadModel( ontology_URL );
+                modelReady.set( true );
+                return model;
+            }
 
-			@Override
-			public void passivateObject(Object obj) throws Exception {
-				// no op
-			}
+            @Override
+            public void passivateObject( Object obj ) {
+                // no op
+            }
 
-			// This is called regularly by eviction thread. It should keep db
-			// connection alive.
-			@Override
-			public boolean validateObject(Object obj) {
-				OntModel model = (OntModel) obj;
-				try {
-					OntologySearch.matchIndividuals(model, index, "test");
-					return true;
-				} catch (Exception e) {
-					return false;
-				}
-			}
-		});
+            // This is called regularly by eviction thread. It should keep db
+            // connection alive.
+            @Override
+            public boolean validateObject( Object obj ) {
+                OntModel model = ( OntModel ) obj;
+                try {
+                    OntologySearch.matchIndividuals( model, index, "test" );
+                    return true;
+                } catch ( Exception e ) {
+                    return false;
+                }
+            }
+        } );
 
-		// These could be made into configuration settings (BASECODE)
-		pool.setMaxActive(3);
-		pool.setMaxIdle(2);
-		pool.setMinIdle(1);
+        // These could be made into configuration settings (BASECODE)
+        pool.setMaxActive( 3 );
+        pool.setMaxIdle( 2 );
+        pool.setMinIdle( 1 );
 
-		// Max amount of time to wait for makeObject to return. How long does
-		// loadModel take?
-		pool.setMaxWait(30000);
+        // Max amount of time to wait for makeObject to return. How long does
+        // loadModel take?
+        pool.setMaxWait( 30000 );
 
-		// Settings for eviction thread.
-		pool.setMinEvictableIdleTimeMillis(1000L * 60L * 60L);
-		pool.setTimeBetweenEvictionRunsMillis(1000L * 60L * 30L);
-		pool.setTestWhileIdle(true);
-	}	
-	
+        // Settings for eviction thread.
+        pool.setMinEvictableIdleTimeMillis( 1000L * 60L * 60L );
+        pool.setTimeBetweenEvictionRunsMillis( 1000L * 60L * 30L );
+        pool.setTestWhileIdle( true );
+    }
+
     @Override
     protected OntModel getModel() {
         OntModel model = null;
@@ -93,7 +92,7 @@ public abstract class AbstractOntologyDatabaseBackedService extends
             throw new RuntimeException( e );
         }
     }
-    
+
     @Override
     protected OntModel loadModel( String url ) {
         return OntologyLoader.loadPersistentModel( url, false );

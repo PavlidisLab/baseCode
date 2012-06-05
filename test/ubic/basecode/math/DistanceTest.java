@@ -34,7 +34,7 @@ public class DistanceTest extends TestCase {
     DoubleArrayList y;
 
     @Override
-    public void setUp() throws Exception {
+    public void setUp() {
         x = new DoubleArrayList( new double[] { 1, 3, 4, 6 } );
         y = new DoubleArrayList( new double[] { -5, 2, 4, 6 } );
     }
@@ -115,7 +115,7 @@ public class DistanceTest extends TestCase {
     }
 
     @Test
-    public void testSpearmanOneList1() throws Exception {
+    public void testSpearmanOneList1() {
 
         DoubleArrayList f = new DoubleArrayList( new double[] { 0, 1, 2, 3, 4, 5, 6 } );
         double actual = Distance.spearmanRankCorrelation( f );
@@ -123,7 +123,7 @@ public class DistanceTest extends TestCase {
     }
 
     @Test
-    public void testSpearmanOneList2() throws Exception {
+    public void testSpearmanOneList2() {
 
         DoubleArrayList f = new DoubleArrayList( new double[] { 6, 5, 4, 3, 2, 1, 0 } );
         double actual = Distance.spearmanRankCorrelation( f );
@@ -131,7 +131,7 @@ public class DistanceTest extends TestCase {
     }
 
     @Test
-    public void testSpearmanOneList3() throws Exception {
+    public void testSpearmanOneList3() {
 
         DoubleArrayList f = new DoubleArrayList( new double[] { 10, 6, 5, 4, 3, 2, 1, 0, -100 } );
         double actual = Distance.spearmanRankCorrelation( f );
@@ -139,7 +139,7 @@ public class DistanceTest extends TestCase {
     }
 
     @Test
-    public void testSpearmanOneList4() throws Exception {
+    public void testSpearmanOneList4() {
         DoubleArrayList f = new DoubleArrayList( new double[] { 100, 6, 5, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 100 } );
         double actual = Distance.spearmanRankCorrelation( f );
         assertEquals( 0.0, actual, 0.01 );

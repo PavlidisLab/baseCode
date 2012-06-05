@@ -161,7 +161,7 @@ public class SingularValueDecomposition<R, C> {
         FutureTask<cern.colt.matrix.linalg.SingularValueDecomposition> svdFuture = new FutureTask<cern.colt.matrix.linalg.SingularValueDecomposition>(
                 new Callable<cern.colt.matrix.linalg.SingularValueDecomposition>() {
                     @Override
-                    public cern.colt.matrix.linalg.SingularValueDecomposition call() throws Exception {
+                    public cern.colt.matrix.linalg.SingularValueDecomposition call() {
                         return new cern.colt.matrix.linalg.SingularValueDecomposition( dm );
                     }
                 } );

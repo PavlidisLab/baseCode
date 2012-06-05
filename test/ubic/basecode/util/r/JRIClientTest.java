@@ -84,12 +84,12 @@ public class JRIClientTest extends TestCase {
     }
 
     @Override
-    public void tearDown() throws Exception {
+    public void tearDown() {
         tester = null;
         rc = null;
     }
 
-    public void testAnovaA() throws Exception {
+    public void testAnovaA() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
@@ -111,7 +111,7 @@ public class JRIClientTest extends TestCase {
         assertEquals( 0.2012, r.getMainEffectBfVal(), 0.0001 );
     }
 
-    public void testAnovaB() throws Exception {
+    public void testAnovaB() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
@@ -133,7 +133,7 @@ public class JRIClientTest extends TestCase {
         assertEquals( 0.0511, r.getMainEffectBfVal(), 0.0001 );
     }
 
-    public void testAnovaC() throws Exception {
+    public void testAnovaC() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
@@ -157,7 +157,7 @@ public class JRIClientTest extends TestCase {
         assertEquals( 4.7178, r.getInteractionfVal(), 0.0001 );
     }
 
-    public void testAnovaD() throws Exception {
+    public void testAnovaD() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
@@ -182,7 +182,7 @@ public class JRIClientTest extends TestCase {
         assertEquals( Double.NaN, r.getInteractionfVal() );
     }
 
-    public void testAnovaE() throws Exception {
+    public void testAnovaE() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
@@ -201,11 +201,9 @@ public class JRIClientTest extends TestCase {
     }
 
     /**
-     * One way
-     * 
-     * @throws Exception
+     * One way @
      */
-    public void testAnovaF() throws Exception {
+    public void testAnovaF() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
@@ -224,7 +222,7 @@ public class JRIClientTest extends TestCase {
         assertEquals( 3.739, r.getFVal(), 0.001 );
     }
 
-    public void testAssignAndRetrieveMatrix() throws Exception {
+    public void testAssignAndRetrieveMatrix() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
@@ -235,7 +233,7 @@ public class JRIClientTest extends TestCase {
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
     }
 
-    public void testAssignAndRetrieveMatrixB() throws Exception {
+    public void testAssignAndRetrieveMatrixB() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
@@ -245,7 +243,7 @@ public class JRIClientTest extends TestCase {
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
     }
 
-    public void testDataFrameA() throws Exception {
+    public void testDataFrameA() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
@@ -278,7 +276,7 @@ public class JRIClientTest extends TestCase {
 
     }
 
-    public void testDoubleTwoDoubleArrayEval() throws Exception {
+    public void testDoubleTwoDoubleArrayEval() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
@@ -291,7 +289,7 @@ public class JRIClientTest extends TestCase {
     /*
      * Test method for 'RCommand.exec(String)'
      */
-    public void testExec() throws Exception {
+    public void testExec() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
@@ -306,7 +304,7 @@ public class JRIClientTest extends TestCase {
     /*
      * Test method for 'exec(String)'
      */
-    public void testExecDoubleArray() throws Exception {
+    public void testExecDoubleArray() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
@@ -316,7 +314,7 @@ public class JRIClientTest extends TestCase {
         assertTrue( RegressionTesting.closeEnough( new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, dd, 0.001 ) );
     }
 
-    public void testExecError() throws Exception {
+    public void testExecError() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test." );
             return;
@@ -347,7 +345,7 @@ public class JRIClientTest extends TestCase {
         }
     }
 
-    public void testFactorAssign() throws Exception {
+    public void testFactorAssign() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
@@ -361,11 +359,9 @@ public class JRIClientTest extends TestCase {
     }
 
     /**
-     * Like a two-sample t-test where the intercept is also of interest.
-     * 
-     * @throws Exception
+     * Like a two-sample t-test where the intercept is also of interest. @
      */
-    public void testLinearModelA() throws Exception {
+    public void testLinearModelA() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
@@ -403,11 +399,9 @@ public class JRIClientTest extends TestCase {
     }
 
     /**
-     * With a continuous covariate as well a categorical one.
-     * 
-     * @throws Exception
+     * With a continuous covariate as well a categorical one. @
      */
-    public void testLinearModelB() throws Exception {
+    public void testLinearModelB() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
@@ -457,9 +451,9 @@ public class JRIClientTest extends TestCase {
     }
 
     /**
-     * @throws Exception
+     * @
      */
-    public void testLinearModelC() throws Exception {
+    public void testLinearModelC() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
@@ -510,11 +504,9 @@ public class JRIClientTest extends TestCase {
     }
 
     /**
-     * Basically a one-way anova with 4 levels in the factor.
-     * 
-     * @throws Exception
+     * Basically a one-way anova with 4 levels in the factor. @
      */
-    public void testLinearModelD() throws Exception {
+    public void testLinearModelD() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;
@@ -622,7 +614,7 @@ public class JRIClientTest extends TestCase {
      * res&lt;-topTable(fit)
      * </pre>
      * 
-     * @throws Exception
+     * @
      */
     public void testLimmaA() throws Exception {
         if ( !connected ) {
@@ -662,7 +654,7 @@ public class JRIClientTest extends TestCase {
 
     }
 
-    public void testStringListEval() throws Exception {
+    public void testStringListEval() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
             return;

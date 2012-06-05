@@ -60,21 +60,21 @@ public class FileToolsTest extends TestCase {
     /*
      * Test method for 'basecode.util.FileTools.addImageExtension(String)'
      */
-    public void testAddImageExtension() throws Exception {
+    public void testAddImageExtension() {
         assertTrue( FileTools.addImageExtension( plain.getPath() ).endsWith( ".png" ) );
     }
 
     /*
      * Test method for 'basecode.util.FileTools.changeExtension(String, String)'
      */
-    public void testChangeExtension() throws Exception {
+    public void testChangeExtension() {
         assertTrue( FileTools.changeExtension( plain.getPath(), "barbie" ).endsWith( ".barbie" ) );
     }
 
     /*
      * Test method for 'basecode.util.FileTools.checkPathIsReadableFile(String)'
      */
-    public void testCheckPathIsReadableFile() throws Exception {
+    public void testCheckPathIsReadableFile() {
         try {
             FileTools.checkPathIsReadableFile( plain.getPath() );
         } catch ( IOException e ) {
@@ -82,7 +82,7 @@ public class FileToolsTest extends TestCase {
         }
     }
 
-    public void testCheckPathIsReadableFileNot() throws Exception {
+    public void testCheckPathIsReadableFileNot() {
         try {
             FileTools.checkPathIsReadableFile( plain.getPath() + RandomStringUtils.randomNumeric( 10 ) );
             fail( "Should have thrown an IOException" );
@@ -119,8 +119,8 @@ public class FileToolsTest extends TestCase {
     public void testCopyFileFailOnDirectoryOutput() throws Exception {
 
         try {
-            FileTools.copyPlainOrCompressedFile( File.createTempFile( "junkme", ".txt" ).getAbsolutePath(), tempdir
-                    .getAbsolutePath() );
+            FileTools.copyPlainOrCompressedFile( File.createTempFile( "junkme", ".txt" ).getAbsolutePath(),
+                    tempdir.getAbsolutePath() );
 
             fail( "Should have gotten an exception" );
         } catch ( UnsupportedOperationException e ) {
@@ -178,7 +178,7 @@ public class FileToolsTest extends TestCase {
     /*
      * Test method for 'basecode.util.FileTools.getExtension(String)'
      */
-    public void testGetExtension() throws Exception {
+    public void testGetExtension() {
         assertEquals( "bar", FileTools.getExtension( plain.getPath() ) );
     }
 
@@ -193,70 +193,70 @@ public class FileToolsTest extends TestCase {
     /*
      * Test method for 'basecode.util.FileTools.getWithoutExtension(String)'
      */
-    public void testGetWithoutExtension() throws Exception {
+    public void testGetWithoutExtension() {
         assertFalse( FileTools.chompExtension( plain.getPath() ).endsWith( ".bar" ) );
     }
 
     /*
      * Test method for 'basecode.util.FileTools.getWithoutExtension(String)'
      */
-    public void testGetWithoutExtensionB() throws Exception {
+    public void testGetWithoutExtensionB() {
         assertEquals( "a.b", FileTools.chompExtension( "a.b.jar" ) );
     }
 
     /*
      * Test method for 'basecode.util.FileTools.getWithoutExtension(String)'
      */
-    public void testGetWithoutExtensionC() throws Exception {
+    public void testGetWithoutExtensionC() {
         assertEquals( "a.b.", FileTools.chompExtension( "a.b..jar" ) );
     }
 
     /*
      * Test method for 'basecode.util.FileTools.hasImageExtension(String)'
      */
-    public void testHasImageExtension() throws Exception {
+    public void testHasImageExtension() {
         assertFalse( FileTools.hasImageExtension( plain.getPath() ) );
     }
 
     /*
      * Test method for 'basecode.util.FileTools.hasXMLExtension(String)'
      */
-    public void testHasXMLExtension() throws Exception {
+    public void testHasXMLExtension() {
         assertFalse( FileTools.hasXMLExtension( plain.getPath() ) );
     }
 
     /*
      * Test method for 'basecode.util.FileTools.isGZipped(String)'
      */
-    public void testIsGZipped() throws Exception {
+    public void testIsGZipped() {
         assertFalse( FileTools.isGZipped( plain.getPath() ) );
     }
 
     /*
      * Test method for 'basecode.util.FileTools.isZipped(String)'
      */
-    public void testIsZipped() throws Exception {
+    public void testIsZipped() {
         assertFalse( FileTools.isZipped( plain.getPath() ) );
     }
 
     /*
      * Test method for 'basecode.util.FileTools.testDir(String)'
      */
-    public void testTestDir() throws Exception {
+    public void testTestDir() {
         assertFalse( FileTools.testDir( plain.getPath() ) );
     }
 
     /*
      * Test method for 'basecode.util.FileTools.testFile(File)'
      */
-    public void testTestFileFile() throws Exception {
+    public void testTestFileFile() {
         assertTrue( FileTools.testFile( plain ) );
     }
 
     /*
      * Test method for 'basecode.util.FileTools.testFile(String)'
      */
-    public void testTestFileString() throws Exception {
+    public void testTestFileString() {
         assertTrue( FileTools.testFile( plain.getPath() ) );
     }
 

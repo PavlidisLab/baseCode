@@ -44,7 +44,7 @@ public class CreateSpreadSheet {
 
     protected SpreadSheetSchema schema;
 
-    public CreateSpreadSheet( String filename, SpreadSheetSchema schema ) throws Exception {
+    public CreateSpreadSheet( String filename, SpreadSheetSchema schema ) {
         if ( new File( filename ).exists() ) {
             // throw new Exception( "please delete previous file to prevent overwrite" );
         }

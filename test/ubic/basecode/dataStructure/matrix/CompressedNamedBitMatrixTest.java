@@ -29,7 +29,7 @@ import org.junit.Test;
 public class CompressedNamedBitMatrixTest {
 
     @Test
-    public void testGetRowBitCount() throws Exception {
+    public void testGetRowBitCount() {
         CompressedBitMatrix<String, String> mat = new CompressedBitMatrix<String, String>( 2, 2, 2 );
         mat.set( 0, 0, 0 );
         mat.set( 0, 1, 1 );
@@ -45,7 +45,7 @@ public class CompressedNamedBitMatrixTest {
     }
 
     @Test
-    public final void testTotalBitCount() throws Exception {
+    public final void testTotalBitCount() {
         CompressedBitMatrix<String, String> mat = new CompressedBitMatrix<String, String>( 2, 2, 2 );
         mat.set( 0, 0, 0 );
         mat.set( 0, 1, 1 );

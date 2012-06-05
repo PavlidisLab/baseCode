@@ -36,7 +36,7 @@ import junit.framework.TestCase;
  */
 public class CorrelationStatsTest extends TestCase {
 
-    public void testCorrel() throws Exception {
+    public void testCorrel() {
         // cor(c(1, 3, 4, 6), c(-5, 2, 4, 6))
 
         double[] x = new double[] { 1, 3, 4, 6 };
@@ -46,7 +46,7 @@ public class CorrelationStatsTest extends TestCase {
         assertEquals( expected, actual, 0.0001 );
     }
 
-    public void testCorrelAsByte() throws Exception {
+    public void testCorrelAsByte() {
         assertEquals( 198, CorrelationStats.correlAsByte( 0.55 ) );
         assertEquals( 57, CorrelationStats.correlAsByte( -0.55 ) );
         assertEquals( 127, CorrelationStats.correlAsByte( 0 ) );
@@ -54,7 +54,7 @@ public class CorrelationStatsTest extends TestCase {
         assertEquals( 0, CorrelationStats.correlAsByte( -1 ) );
     }
 
-    public void testCorrelationForPvalue() throws Exception {
+    public void testCorrelationForPvalue() {
         assertEquals( 0.9533, CorrelationStats.correlationForPvalue( 0.02334, 4 ), 0.01 );
         assertEquals( 0.03487332, CorrelationStats.correlationForPvalue( 0.4619, 10 ), 0.01 );
         assertEquals( 0.31008, CorrelationStats.correlationForPvalue( 0.1916, 10 ), 0.01 );
@@ -68,7 +68,7 @@ public class CorrelationStatsTest extends TestCase {
         assertEquals( 1.0, CorrelationStats.correlationForPvalue( 0.0, 20 ), 0.01 );
     }
 
-    public void testInverseFisherTransform() throws Exception {
+    public void testInverseFisherTransform() {
         assertEquals( 0.5, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( 0.5 ) ), 0.001 );
         assertEquals( -0.5, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( -0.5 ) ), 0.001 );
         assertEquals( 0.05, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( 0.05 ) ), 0.001 );
@@ -76,14 +76,14 @@ public class CorrelationStatsTest extends TestCase {
         assertEquals( 0.0, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( 0.0 ) ), 0.001 );
     }
 
-    public void testCorrelTooSmall() throws Exception {
+    public void testCorrelTooSmall() {
         double[] x = new double[] { 1, };
         double[] y = new double[] { -5 };
         double actual = CorrelationStats.correl( x, y );
         assertEquals( Double.NaN, actual );
     }
 
-    public void testPvalue() throws Exception {
+    public void testPvalue() {
         assertEquals( 0.02334, CorrelationStats.pvalue( 0.9533, 4 ), 0.001 );
         assertEquals( 0.4619, CorrelationStats.pvalue( 0.03487, 10 ), 0.001 );
         assertEquals( 0.1916, CorrelationStats.pvalue( 0.31008, 10 ), 0.001 );
@@ -141,19 +141,19 @@ public class CorrelationStatsTest extends TestCase {
         assertEquals( expected, actual, 0.0000001 );
     }
 
-    public void testSpearmanPvalueF() throws Exception {
+    public void testSpearmanPvalueF() {
         double actual = CorrelationStats.spearmanPvalue( 0.9759, 10 );
         double expected = 0.0; // value from R is basically 0
         assertEquals( expected, actual, 0.00001 );
     }
 
-    public void testSpearmanPvalueG() throws Exception {
+    public void testSpearmanPvalueG() {
         double actual = CorrelationStats.spearmanPvalue( 0.9166667, 9 );
         double expected = 0.0007495591; // R result for S=10, N=9
         assertEquals( expected, actual, 0.00001 );
     }
 
-    public void testSpearmanPvalueG2() throws Exception {
+    public void testSpearmanPvalueG2() {
         double actual = CorrelationStats.spearmanPvalue( 0.9166667, 6 );
         double expected = 0.016667; // R result.
         assertEquals( expected, actual, 0.00001 );

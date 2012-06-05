@@ -33,7 +33,7 @@ import ubic.basecode.io.excel.SpreadSheetSchema;
  */
 public class ParamSpreadSheet extends CreateSpreadSheet {
 
-    public ParamSpreadSheet( String filename, SpreadSheetSchema schema ) throws Exception {
+    public ParamSpreadSheet( String filename, SpreadSheetSchema schema ) {
         super( filename, schema );
     }
 

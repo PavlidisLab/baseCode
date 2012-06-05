@@ -29,42 +29,42 @@ import junit.framework.TestCase;
  */
 public class TestWilcoxon extends TestCase {
     /* tests based on catmap */
-    public void testAExact() throws Exception {
+    public void testAExact() {
         /* kinetochore */
         double actualValue = Wilcoxon.wilcoxonP( 5224, 2, 184 );
         double expectedValue = 0.000613671594516244;
         assertEquals( expectedValue, actualValue, 1e-10 );
     }
 
-    public void testBGaussian() throws Exception {
+    public void testBGaussian() {
         /* mitotic cell cycle */
         double actualValue = Wilcoxon.wilcoxonP( 5224, 97, 176069 );
         double expectedValue = 7.36188216415985e-08;
         assertEquals( expectedValue, actualValue, 1e-10 );
     }
 
-    public void testCGaussian() throws Exception {
+    public void testCGaussian() {
         /* nucleus */
         double actualValue = Wilcoxon.wilcoxonP( 5224, 618, 1499756 );
         double expectedValue = 0.000557086593133454;
         assertEquals( expectedValue, actualValue, 1e-6 );
     }
 
-    public void testDVolume() throws Exception {
+    public void testDVolume() {
         /* nuclear division */
         double actualValue = Wilcoxon.wilcoxonP( 5224, 41, 59721 );
         double expectedValue = 2.23181930573246e-07;
         assertEquals( expectedValue, actualValue, 1e-10 );
     }
 
-    public void testEVolume() throws Exception {
+    public void testEVolume() {
         /* DNA replicatoin */
         double actualValue = Wilcoxon.wilcoxonP( 5224, 48, 89794 );
         double expectedValue = 0.000293433699059724;
         assertEquals( expectedValue, actualValue, 1e-6 );
     }
 
-    public void testFVolume() throws Exception {
+    public void testFVolume() {
         /* Mphase */
         double actualValue = Wilcoxon.wilcoxonP( 5224, 42, 60490 );
         double expectedValue = 1.06593257987108e-07;
@@ -85,7 +85,7 @@ public class TestWilcoxon extends TestCase {
 
     }
 
-    public final void testWilxcoxonPExactB() throws Exception {
+    public final void testWilxcoxonPExactB() {
 
         /*
          * x<-c(1,3,5,7,9); y<-c(2,4,6,8,10,11,12,13,14); wilcox.exact(x,y, alternative="less")
@@ -100,7 +100,7 @@ public class TestWilcoxon extends TestCase {
         assertEquals( expectedValue, actualValue, 0.001 );
     }
 
-    public final void testWilxcoxonPExactC() throws Exception {
+    public final void testWilxcoxonPExactC() {
         /*
          * x<-c(1,3 ); y<-c(2 ); wilcox.exact(x,y, alternative="less")
          */
@@ -114,7 +114,7 @@ public class TestWilcoxon extends TestCase {
         assertEquals( expectedValue, actualValue, 0.001 );
     }
 
-    public final void testWilxcoxonPExactD() throws Exception {
+    public final void testWilxcoxonPExactD() {
 
         /*
          * y<-c(1:10, 69:90); x<-c(11:68); wilcox.exact(x,y, alternative="less")
@@ -124,7 +124,7 @@ public class TestWilcoxon extends TestCase {
         assertEquals( expectedValue, actualValue, 0.00001 );
     }
 
-    public final void testWilxcoxonPGauss() throws Exception {
+    public final void testWilxcoxonPGauss() {
 
         /*
          * x<-c(1:100, 201:300, 401:500, 601:700, 801:900); y<-c(101:200, 301:400, 501:600, 701:800); wilcox.exact(x,y,
@@ -137,7 +137,7 @@ public class TestWilcoxon extends TestCase {
         assertEquals( expectedValue, actualValue, 0.001 );
     }
 
-    public final void testWilxcoxonPGaussB() throws Exception {
+    public final void testWilxcoxonPGaussB() {
 
         /*
          * y<-c(1:300, 401:900); x<-c(301:400); wilcox.exact(x,y, alternative="less") > 2.250e-05
@@ -149,7 +149,7 @@ public class TestWilcoxon extends TestCase {
         assertEquals( expectedValue, actualValue, 0.00001 );
     }
 
-    public final void testWilxcoxonPVolume() throws Exception {
+    public final void testWilxcoxonPVolume() {
 
         /*
          * y<-c(1:10, 69:90); x<-c(11:68); wilcox.exact(x,y, alternative="less")
