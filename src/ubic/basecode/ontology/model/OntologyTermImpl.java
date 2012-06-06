@@ -159,10 +159,11 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
                 OntologyTerm child = fromOntClass( ( OntClass ) r );
 
-                work.add( child );
-
-                if ( !direct ) ( ( OntologyTermImpl ) child ).getChildren( false, work );
-
+                // avoid risk of endless regression.
+                if ( !work.contains( child ) ) {
+                    work.add( child );
+                    if ( !direct ) ( ( OntologyTermImpl ) child ).getChildren( false, work );
+                }
             } else {
                 OntologyTerm child = this.fromOntClass( c );
                 work.add( child );
@@ -197,10 +198,10 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
                 // }
 
                 OntologyTerm child = fromOntClass( ( OntClass ) r );
-
-                work.add( child );
-
-                if ( !direct ) ( ( OntologyTermImpl ) child ).getChildren( false, work );
+                if ( !work.contains( child ) ) {
+                    work.add( child );
+                    if ( !direct ) ( ( OntologyTermImpl ) child ).getChildren( false, work );
+                }
 
             }
         }
@@ -298,9 +299,11 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
                 if ( REJECT_PARENT_URI.contains( parent.getUri() ) ) continue;
 
-                work.add( parent );
-
-                if ( !direct ) ( ( OntologyTermImpl ) parent ).getParents( direct, work );
+                // avoid endless regression
+                if ( !work.contains( parent ) ) {
+                    work.add( parent );
+                    if ( !direct ) ( ( OntologyTermImpl ) parent ).getParents( direct, work );
+                }
 
             } else {
                 // not a restriction.
@@ -308,10 +311,12 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
                 if ( REJECT_PARENT_URI.contains( parent.getUri() ) ) continue;
 
-                work.add( parent );
-                if ( !direct ) {
-                    // recurse.
-                    ( ( OntologyTermImpl ) parent ).getParents( direct, work );
+                if ( !work.contains( parent ) ) {
+                    work.add( parent );
+                    if ( !direct ) {
+                        // recurse.
+                        ( ( OntologyTermImpl ) parent ).getParents( direct, work );
+                    }
                 }
             }
 
