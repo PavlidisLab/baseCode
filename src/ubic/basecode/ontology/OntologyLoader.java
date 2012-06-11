@@ -61,6 +61,7 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
  * @version $Id$
  */
 public class OntologyLoader {
+    private static final int MAX_LOAD_TRIES = 3;
     private static Log log = LogFactory.getLog( OntologyLoader.class );
 
     /**
@@ -195,37 +196,59 @@ public class OntologyLoader {
         timer.start();
         OntModel model = getMemoryModel( url, spec );
         InputStream s = null;
-        try {
 
-            URLConnection urlc = new URL( url ).openConnection();
+        int tries = 0;
 
-            // help ensure mis-configured web servers aren't causing trouble.
-            urlc.setRequestProperty( "Accept", "application/rdf+xml" );
-            urlc.connect();
+        Throwable lastException = null;
+        while ( tries < MAX_LOAD_TRIES ) {
+            try {
 
-            s = urlc.getInputStream();
+                URLConnection urlc = new URL( url ).openConnection();
 
-            BufferedReader buf = new BufferedReader( new InputStreamReader( s ) );
+                // help ensure mis-configured web servers aren't causing trouble.
+                urlc.setRequestProperty( "Accept", "application/rdf+xml" );
+                urlc.connect();
 
-            model.read( buf, url );
-            if ( timer.getTime() > 100 ) {
-                log.debug( "Load model: " + timer.getTime() + "ms" );
-            }
-            s.close();
-            return model;
-        } catch ( MalformedURLException e ) {
-            throw new RuntimeException( e );
-        } catch ( IOException e ) {
-            throw new RuntimeException( e );
-        } finally {
-            if ( s != null ) {
-                try {
-                    s.close();
-                } catch ( IOException e ) {
-                    throw new RuntimeException( e );
+                s = urlc.getInputStream();
+
+                if ( tries > 0 ) {
+                    log.info( "Retrying loading of " + url + " [" + tries + "/" + MAX_LOAD_TRIES + " of max tries" );
+                } else {
+                    log.info( "Loading ontology from " + url );
+                }
+
+                BufferedReader buf = new BufferedReader( new InputStreamReader( s ) );
+
+                model.read( buf, url );
+                if ( timer.getTime() > 100 ) {
+                    log.debug( "Load model: " + timer.getTime() + "ms" );
+                }
+                s.close();
+                break;
+            } catch ( MalformedURLException e ) {
+                throw new RuntimeException( e );
+            } catch ( IOException e ) {
+                // try to recover.
+                lastException = e;
+                log.error( e + " retrying?" );
+                tries++;
+            } finally {
+                if ( s != null ) {
+                    try {
+                        s.close();
+                    } catch ( IOException e ) {
+                        log.error( e, e );
+                    }
                 }
             }
         }
+
+        if ( lastException != null ) {
+            throw new RuntimeException( lastException );
+        }
+
+        assert model != null;
+        return model;
     }
 
     /**
