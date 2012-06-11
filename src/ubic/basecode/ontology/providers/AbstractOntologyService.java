@@ -306,12 +306,12 @@ public abstract class AbstractOntologyService {
     public synchronized void startInitializationThread( boolean force ) {
 
         if ( initializationThread.isAlive() ) {
-            log.warn( ontology_URL + " initialization is already running." );
+            log.warn( ontology_URL + " initialization is already running, not restarting." );
             return;
         }
 
         if ( !force && this.isOntologyLoaded() ) {
-            log.warn( ontology_URL + " is already loaded, and force=false" );
+            log.warn( ontology_URL + " is already loaded, and force=false, not restarting" );
             return;
         }
 
@@ -342,22 +342,9 @@ public abstract class AbstractOntologyService {
      * 
      * @returns boolean
      */
-    public synchronized boolean isOntologyLoaded() {
+    public boolean isOntologyLoaded() {
         return isInitialized.get();
     }
-
-    /**
-     * Use this to turn this ontology on or off.
-     * 
-     * @param enabled If false, the ontology will not be loaded.
-     */
-    // public void setEnabled( boolean enabled ) {
-    // this.enabled = enabled;
-    // }
-    //
-    // public boolean isEnabled() {
-    // return enabled;
-    // }
 
     /**
      * The simple name of the ontology. Used for indexing purposes. (ie this will determine the name of the underlying
