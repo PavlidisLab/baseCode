@@ -39,11 +39,6 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
  */
 public class OntologyIndexer {
 
-    /**
-     * Location under gemma.appdata.home where indexes will be stored
-     */
-    private static final String INDEX_DIR = "compass";
-
     private static Log log = LogFactory.getLog( OntologyIndexer.class.getName() );
 
     public static void eraseIndex( String name ) {
@@ -104,13 +99,12 @@ public class OntologyIndexer {
      * @return
      */
     private static File getIndexPath( String name ) {
-        String ontologyDir = Configuration.getString( "ontology.index.dir" );
+        String ontologyDir = Configuration.getString( "ontology.index.dir" ); // e.g., /something/gemmaData/compass
         if ( ontologyDir == null ) {
             ontologyDir = System.getProperty( "java.io.tmpdir" );
         }
 
-        String path = ontologyDir + File.separator + INDEX_DIR + File.separator + "gemma" + File.separator + "ontology"
-                + File.separator + name;
+        String path = ontologyDir + File.separator + "ontology" + File.separator + name;
 
         File indexdir = new File( path );
         return indexdir;
