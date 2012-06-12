@@ -34,7 +34,7 @@ public class TestRCDoubleMatrix1D extends TestCase {
     /*
      * Class under test for double zDotProduct(DoubleMatrix1D)
      */
-    public void testZDotProductDoubleMatrix1D() throws Exception {
+    public void testZDotProductDoubleMatrix1D() {
         double actualReturn = a.zDotProduct( b );
         double expectedReturn = 7;
         assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
@@ -43,7 +43,7 @@ public class TestRCDoubleMatrix1D extends TestCase {
     /*
      * Class under test for double zDotProduct(DoubleMatrix1D)
      */
-    public void testZDotProductDoubleMatrix1DHarder() throws Exception {
+    public void testZDotProductDoubleMatrix1DHarder() {
         double actualReturn = a.zDotProduct( c );
         double expectedReturn = 7;
         assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
@@ -52,7 +52,7 @@ public class TestRCDoubleMatrix1D extends TestCase {
     /*
      * Class under test for double zDotProduct(DoubleMatrix1D)
      */
-    public void testZDotProductDoubleMatrix1DHarderReverse() throws Exception {
+    public void testZDotProductDoubleMatrix1DHarderReverse() {
         double actualReturn = c.zDotProduct( a );
         double expectedReturn = 7;
         assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
@@ -61,7 +61,7 @@ public class TestRCDoubleMatrix1D extends TestCase {
     /*
      * Class under test for double zDotProduct(DoubleMatrix1D)
      */
-    public void testZDotProductDoubleMatrix1DReverse() throws Exception {
+    public void testZDotProductDoubleMatrix1DReverse() {
         double actualReturn = b.zDotProduct( a );
         double expectedReturn = 7;
         assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
@@ -71,7 +71,7 @@ public class TestRCDoubleMatrix1D extends TestCase {
      * @see TestCase#setUp()
      */
     @Override
-    protected void setUp() throws Exception {
+    protected void setUp() {
 
         /*
          * a: 0 1 2 0 5 b: 5 3 2 1 (0)
@@ -94,13 +94,12 @@ public class TestRCDoubleMatrix1D extends TestCase {
         b = new RCDoubleMatrix1D( inb, vb );
 
         c = new DenseDoubleMatrix1D( new double[] { 5, 3, 2, 1 } );
-        super.setUp();
     }
 
     /*
      * Class under test for DoubleMatrix1D assign(DoubleFunction)
      */
-    public void testAssignDoubleFunction() throws Exception {
+    public void testAssignDoubleFunction() {
         DoubleMatrix1D actualReturn = a.assign( new cern.colt.function.DoubleFunction() {
             @Override
             public double apply( double value ) {

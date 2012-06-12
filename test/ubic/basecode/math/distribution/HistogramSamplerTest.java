@@ -29,7 +29,7 @@ public class HistogramSamplerTest extends TestCase {
     /**
      * Test method for {@link ubic.basecode.math.distribution.HistogramSampler#nextSample()}.
      */
-    public final void testNextSample() throws Exception {
+    public final void testNextSample() {
         int[] testHistogram = new int[] { 1, 10, 48, 20, 10, 10, 1 };
 
         HistogramSampler s = new HistogramSampler( testHistogram, -3, 3 );

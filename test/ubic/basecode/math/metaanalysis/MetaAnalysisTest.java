@@ -44,7 +44,7 @@ public class MetaAnalysisTest extends TestCase {
 
     }
 
-    public final void testFisherCombinePvaluesB() throws Exception {
+    public final void testFisherCombinePvaluesB() {
 
         /*
          * Example from gemma

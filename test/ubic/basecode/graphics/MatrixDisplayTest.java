@@ -154,7 +154,7 @@ public class MatrixDisplayTest extends TestCase {
      * 
      */
     @Override
-    protected void tearDown() throws Exception {
+    protected void tearDown() {
         tmp.delete();
         rowNames = null;
         colNames = null;

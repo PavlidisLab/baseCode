@@ -78,7 +78,7 @@ public class TestByteArrayConverter extends TestCase {
     double[] wholeBunchOfDoubles;
 
     // test blob -> double[]
-    public void testByteArrayToDoubleConversionSpeed() throws Exception {
+    public void testByteArrayToDoubleConversionSpeed() {
         byte[] lottaBytes = bac.doubleArrayToBytes( wholeBunchOfDoubles );
         bac.byteArrayToDoubles( lottaBytes );
     }
@@ -87,7 +87,7 @@ public class TestByteArrayConverter extends TestCase {
      * 
      *
      */
-    public void testByteArrayToDoubles() throws Exception {
+    public void testByteArrayToDoubles() {
         double[] actualReturn = bac.byteArrayToDoubles( bac.doubleArrayToBytes( testD ) );
         double[] expectedValue = testD;
         for ( int i = 0; i < actualReturn.length; i++ ) {
@@ -95,7 +95,7 @@ public class TestByteArrayConverter extends TestCase {
         }
     }
 
-    public void testByteArrayToDoubleMatrix() throws Exception {
+    public void testByteArrayToDoubleMatrix() {
         double[][] testm = new double[][] { { 1, 2 }, { 3, 4 }, { 5, 6 } };
         double[][] actualReturn = bac.byteArrayToDoubleMatrix( bac.doubleMatrixToBytes( testm ), 2 );
         for ( int i = 0; i < testm.length; i++ ) {
@@ -106,7 +106,7 @@ public class TestByteArrayConverter extends TestCase {
     }
 
     // test double[] -> blob.
-    public void testDoubleArrayToByteArrayConversionSpeed() throws Exception {
+    public void testDoubleArrayToByteArrayConversionSpeed() {
         bac.doubleArrayToBytes( wholeBunchOfDoubles );
     }
 
@@ -114,7 +114,7 @@ public class TestByteArrayConverter extends TestCase {
      * 
      *
      */
-    public void testDoubleArrayToBytes() throws Exception {
+    public void testDoubleArrayToBytes() {
         byte[] actualReturn = bac.doubleArrayToBytes( testD );
         byte[] expectedValue = expectedBfD;
         for ( int i = 0; i < expectedValue.length; i++ ) {
@@ -123,11 +123,11 @@ public class TestByteArrayConverter extends TestCase {
     }
 
     // test double[] -> delimited string.
-    public void testDoubleArrayToDelimitedStringConversionSpeed() throws Exception {
+    public void testDoubleArrayToDelimitedStringConversionSpeed() {
         sc.doubleArrayToString( wholeBunchOfDoubles );
     }
 
-    public void testIntsToBytes() throws Exception {
+    public void testIntsToBytes() {
         int[] actualReturn = bac.byteArrayToInts( bac.intArrayToBytes( testInts ) );
         for ( int i = 0; i < testInts.length; i++ ) {
             assertEquals( testInts[i], actualReturn[i] );
@@ -135,7 +135,7 @@ public class TestByteArrayConverter extends TestCase {
         }
     }
 
-    public void testStringToBytes() throws Exception {
+    public void testStringToBytes() {
         String[] actualReturn = bac.byteArrayToStrings( bac.stringArrayToBytes( testStrings ) );
         for ( int i = 0; i < testStrings.length; i++ ) {
             assertEquals( testStrings[i], actualReturn[i] );
@@ -143,28 +143,28 @@ public class TestByteArrayConverter extends TestCase {
         }
     }
 
-    public void testByteArrayToBooleans() throws Exception {
+    public void testByteArrayToBooleans() {
         boolean[] actual = bac.byteArrayToBooleans( boolbytes );
         for ( int i = 0; i < testbools.length; i++ ) {
             assertEquals( testbools[i], actual[i] );
         }
     }
 
-    public void testBooleansToByteArray() throws Exception {
+    public void testBooleansToByteArray() {
         byte[] actual = bac.booleanArrayToBytes( testbools );
         for ( int i = 0; i < boolbytes.length; i++ ) {
             assertEquals( boolbytes[i], actual[i] );
         }
     }
 
-    public void testByteArrayToLongs() throws Exception {
+    public void testByteArrayToLongs() {
         long[] actual = bac.byteArrayToLongs( expectedLong );
         for ( int i = 0; i < testlong.length; i++ ) {
             assertEquals( testlong[i], actual[i] );
         }
     }
 
-    public void testBooleansToLongArray() throws Exception {
+    public void testBooleansToLongArray() {
         byte[] actual = bac.longArrayToBytes( testlong );
         for ( int i = 0; i < expectedLong.length; i++ ) {
             assertEquals( expectedLong[i], actual[i] );
@@ -172,16 +172,16 @@ public class TestByteArrayConverter extends TestCase {
     }
 
     // test string -> double[]
-    public void testStringToDoubleArrayConversionSpeed() throws Exception {
+    public void testStringToDoubleArrayConversionSpeed() {
         sc.stringToDoubles( longDoubleString );
     }
 
-    public void testByteArrayToTabbedString() throws Exception {
+    public void testByteArrayToTabbedString() {
         String bools = bac.byteArrayToTabbedString( boolbytes, Boolean.class );
         assertEquals( "true\tfalse\ttrue\ttrue\tfalse\ttrue", bools );
     }
 
-    public void testObjectToBytes() throws Exception {
+    public void testObjectToBytes() {
         checkBytes( boolbytes, bac.toBytes( ArrayUtils.toObject( testbools ) ) );
         checkBytes( expectedBfD, bac.toBytes( ArrayUtils.toObject( testD ) ) );
         checkBytes( expectedBfC, bac.toBytes( ArrayUtils.toObject( testC ) ) );
@@ -204,8 +204,8 @@ public class TestByteArrayConverter extends TestCase {
         bac = new ByteArrayConverter();
         sc = new StringConverter();
 
-        ZipInputStream is = new ZipInputStream( TestByteArrayConverter.class
-                .getResourceAsStream( "/data/melanoma_and_sarcomaMAS5.zip" ) );
+        ZipInputStream is = new ZipInputStream(
+                TestByteArrayConverter.class.getResourceAsStream( "/data/melanoma_and_sarcomaMAS5.zip" ) );
 
         is.getNextEntry();
 

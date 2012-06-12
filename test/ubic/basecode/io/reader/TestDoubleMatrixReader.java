@@ -90,7 +90,7 @@ public class TestDoubleMatrixReader extends TestCase {
 
     }
 
-    public void testReadInputStreamMissingBad() throws Exception {
+    public void testReadInputStreamMissingBad() {
         try {
             matrix = reader.read( ismb );
             fail( "Should have gotten an IO error" );
@@ -144,8 +144,8 @@ public class TestDoubleMatrixReader extends TestCase {
 
         ismb = TestDoubleMatrixReader.class.getResourceAsStream( "/data/testdatamissing-badrows.txt" );
 
-        isbig = new ZipInputStream( TestStringMatrixReader.class
-                .getResourceAsStream( "/data/melanoma_and_sarcomaMAS5.zip" ) );
+        isbig = new ZipInputStream(
+                TestStringMatrixReader.class.getResourceAsStream( "/data/melanoma_and_sarcomaMAS5.zip" ) );
         isbig.getNextEntry();
     }
 

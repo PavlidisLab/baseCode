@@ -43,7 +43,7 @@ public class MultipleTestCorrectionTest extends TestCase {
         }
     }
 
-    public void testBenjaminiHochbergM() throws Exception {
+    public void testBenjaminiHochbergM() {
         DoubleMatrix1D actualResult = MultipleTestCorrection.benjaminiHochberg( new DenseDoubleMatrix1D( values
                 .elements() ) );
         DoubleArrayList expected = new DoubleArrayList( mat.getColumnByName( "BH" ) );
@@ -55,7 +55,7 @@ public class MultipleTestCorrectionTest extends TestCase {
     /*
      * Test method for 'basecode.math.MultipleTestCorrection.BenjaminiHochbergCut(DoubleArrayList, double)'
      */
-    public void testBenjaminiHochbergCut() throws Exception {
+    public void testBenjaminiHochbergCut() {
         double actualResult = MultipleTestCorrection.benjaminiHochbergCut( values, 0.01 );
         double expectedResult = 0.0018;
         assertEquals( expectedResult, actualResult, 0.00001 );
@@ -64,7 +64,7 @@ public class MultipleTestCorrectionTest extends TestCase {
     /*
      * Test method for 'basecode.math.MultipleTestCorrection.BenjaminiYekuteliCut(DoubleArrayList, double)'
      */
-    public void testBenjaminiYekuteliCut() throws Exception {
+    public void testBenjaminiYekuteliCut() {
         double actualResult = MultipleTestCorrection.BenjaminiYekuteliCut( values, 0.01 );
         double expectedResult = 0.00013;
         assertEquals( expectedResult, actualResult, 0.00001 );

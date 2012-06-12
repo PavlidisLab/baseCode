@@ -71,7 +71,7 @@ public class BitUtilTest extends TestCase {
         assertTrue( !asBools[31] );
     }
 
-    public void testSet() throws Exception {
+    public void testSet() {
         byte[] v = new byte[4];
         for ( int i = 0, j = v.length; i < j; i++ ) {
             v[i] = 0x0;

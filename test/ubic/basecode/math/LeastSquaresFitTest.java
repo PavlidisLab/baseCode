@@ -20,7 +20,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math.distribution.FDistribution;
-import org.apache.commons.math.distribution.FDistributionImpl; 
+import org.apache.commons.math.distribution.FDistributionImpl;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -48,6 +48,7 @@ import cern.jet.math.Functions;
  */
 public class LeastSquaresFitTest {
 
+    @SuppressWarnings("unused")
     private static Log log = LogFactory.getLog( LeastSquaresFitTest.class );
 
     /**
@@ -805,7 +806,7 @@ public class LeastSquaresFitTest {
     }
 
     @Test
-    public void testVectorRegress() throws Exception {
+    public void testVectorRegress() {
 
         DoubleMatrix1D vectorA = new DenseDoubleMatrix1D( new double[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 } );
         DoubleMatrix1D vectorB = new DenseDoubleMatrix1D( new double[] { 1, 2, 2, 3, 3, 4, 4, 5, 5, 6 } );

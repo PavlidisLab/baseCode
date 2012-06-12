@@ -79,7 +79,7 @@ public class ExcelUtil {
         return "";
     }
 
-    public static void main( String args[] ) throws Exception {
+    public static void main( String args[] ) {
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet spreadsheet = workbook.createSheet();
         ExcelUtil.setFormula( spreadsheet, 1, 1, "HYPERLINK(\"x\",\"x\")" );

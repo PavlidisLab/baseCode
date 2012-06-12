@@ -57,27 +57,27 @@ public class TestMatrixStats {
     }
 
     @Test
-    public final void testMax() throws Exception {
+    public final void testMax() {
         double expectedReturn = 44625.7;
         double actualReturn = MatrixStats.max( testdata );
         assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
     }
 
     @Test
-    public final void testMin() throws Exception {
+    public final void testMin() {
         double expectedReturn = -965.3;
         double actualReturn = MatrixStats.min( testdata );
         assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
     }
 
     @Test
-    public final void testLogTransform() throws Exception {
+    public final void testLogTransform() {
         MatrixStats.logTransform( testdata );
         assertEquals( Math.log( 44625.7 ) / Math.log( 2 ), testdata.get( 9, 3 ), 0.001 );
     }
 
     @Test
-    public final void testConvertLog() throws Exception {
+    public final void testConvertLog() {
         DoubleMatrix<String, String> copy = testdata.copy();
 
         // convert copy to logE form.
@@ -106,7 +106,7 @@ public class TestMatrixStats {
     }
 
     @Test
-    public final void testStandardize() throws Exception {
+    public final void testStandardize() {
         DoubleMatrix<String, String> standardize = MatrixStats.standardize( testdata );
         assertEquals( 30, standardize.rows() );
         assertEquals( -0.3972279, standardize.get( 3, 4 ), 0.0001 );
@@ -130,7 +130,7 @@ public class TestMatrixStats {
     }
 
     @Test
-    public final void testDoubleStandardize() throws Exception {
+    public final void testDoubleStandardize() {
         DoubleMatrix<String, String> standardize = MatrixStats.doubleStandardize( testdata );
         assertEquals( 30, standardize.rows() );
         assertEquals( -0.472486, standardize.get( 3, 4 ), 0.01 );
@@ -170,7 +170,7 @@ public class TestMatrixStats {
     }
 
     @Test
-    public final void testNan() throws Exception {
+    public final void testNan() {
         boolean[][] actual = MatrixStats.nanStatusMatrix( testrdm );
         assertFalse( actual[0][0] );
         assertFalse( actual[0][3] );
@@ -178,7 +178,7 @@ public class TestMatrixStats {
     }
 
     @Test
-    public final void testRbfNormalize() throws Exception {
+    public final void testRbfNormalize() {
         double[][] actual = { { 0.001, 0.2, 0.13, 0.4 }, { 0.11, 0.12, 0.00013, 0.14 }, { 0.21, 0.0001, 0.99, 0.24 } };
         DenseDoubleMatrix<String, String> av = new DenseDoubleMatrix<String, String>( actual );
         MatrixStats.rbfNormalize( av, 1 );
@@ -192,7 +192,7 @@ public class TestMatrixStats {
     }
 
     @Test
-    public final void testSelfSquare() throws Exception {
+    public final void testSelfSquare() {
         double[][] actual = MatrixStats.selfSquaredMatrix( testrdm );
         assertEquals( 1, actual[0][0], 0.000001 );
         assertEquals( 16, actual[0][3], 0.00001 );

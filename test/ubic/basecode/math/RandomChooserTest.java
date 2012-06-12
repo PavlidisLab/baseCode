@@ -44,7 +44,7 @@ public class RandomChooserTest extends TestCase {
     /**
      * Test method for {@link ubic.basecode.math.RandomChooser#chooserandom(int[], boolean[], int, int)} .
      */
-    public void testChooserandomIntArrayBooleanArrayIntInt() throws Exception {
+    public void testChooserandomIntArrayBooleanArrayIntInt() {
         int[] result = RandomChooser.chooserandom( 100, 10 );
         int[] expected = { 60, 48, 29, 47, 15, 53, 91, 61, 19, 54 };
         for ( int i = 0; i < result.length; i++ ) {
@@ -94,7 +94,7 @@ public class RandomChooserTest extends TestCase {
         assertEquals( 500, total / reps, 5 );
     }
 
-    public void testRandomSubset() throws Exception {
+    public void testRandomSubset() {
         Collection<String> vals = new HashSet<String>();
         vals.add( "a" );
         vals.add( "b" );

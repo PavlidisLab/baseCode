@@ -144,12 +144,12 @@ public class TestDescriptiveWithMissing extends TestCase {
 
     }
 
-    public void testMeanAboveQuantile() throws Exception {
+    public void testMeanAboveQuantile() {
         double actualReturn = DescriptiveWithMissing.meanAboveQuantile( 0.75, data1Nomissing );
         assertEquals( 6, actualReturn, Double.MIN_VALUE );
     }
 
-    public void testMeanEff() throws Exception {
+    public void testMeanEff() {
         double actualReturn = DescriptiveWithMissing.mean( data1missing, 4 );
         assertEquals( 4.75, actualReturn, Double.MIN_VALUE );
     }
