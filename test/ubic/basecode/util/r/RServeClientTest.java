@@ -65,12 +65,12 @@ public class RServeClientTest extends TestCase {
     }
 
     @Override
-    public void tearDown() throws Exception {
+    public void tearDown() {
         tester = null;
         if ( rc != null && rc.isConnected() ) rc.disconnect();
     }
 
-    public void testAssignAndRetrieveMatrix() throws Exception {
+    public void testAssignAndRetrieveMatrix() {
         if ( !connected ) {
             log.warn( "Could not connect to RServe, skipping test." );
             return;
@@ -125,7 +125,7 @@ public class RServeClientTest extends TestCase {
         rc.loadScript( this.getClass().getResourceAsStream( "/ubic/basecode/util/r/linearModels.R" ) );
     }
 
-    public void testDoubleArrayTwoDoubleArrayEval() throws Exception {
+    public void testDoubleArrayTwoDoubleArrayEval() {
         if ( !connected ) {
             log.warn( "Could not connect to RServe, skipping test." );
             return;
@@ -135,7 +135,7 @@ public class RServeClientTest extends TestCase {
         RegressionTesting.closeEnough( expected, actual, Constants.SMALLISH );
     }
 
-    public void testLoadLibrary() throws Exception {
+    public void testLoadLibrary() {
         if ( !connected ) {
             log.warn( "Could not connect to RServe, skipping test." );
             return;
@@ -144,7 +144,7 @@ public class RServeClientTest extends TestCase {
         assertTrue( rc.loadLibrary( "graphics" ) );
     }
 
-    public void testDoubleTwoDoubleArrayEval() throws Exception {
+    public void testDoubleTwoDoubleArrayEval() {
         if ( !connected ) {
             log.warn( "Could not connect to RServe, skipping test." );
             return;
@@ -159,7 +159,7 @@ public class RServeClientTest extends TestCase {
         assertNotNull( cmd ); // should always come up with something.
     }
 
-    public void testStringListEval() throws Exception {
+    public void testStringListEval() {
         if ( !connected ) {
             log.warn( "Could not connect to RServe, skipping test." );
             return;
@@ -170,7 +170,7 @@ public class RServeClientTest extends TestCase {
         assertEquals( "b", actual.get( 1 ) );
     }
 
-    public void testAssignAndRetrieveMatrixB() throws Exception {
+    public void testAssignAndRetrieveMatrixB() {
         if ( !connected ) {
             log.warn( "Could not connect to RServe, skipping test." );
             return;
@@ -180,7 +180,7 @@ public class RServeClientTest extends TestCase {
 
     }
 
-    public void testAssignStringList() throws Exception {
+    public void testAssignStringList() {
         if ( !connected ) {
             log.warn( "Could not connect to RServe, skipping test." );
             return;
@@ -197,7 +197,7 @@ public class RServeClientTest extends TestCase {
         assertEquals( "bar", actualValue );
     }
 
-    public void testTTest() throws Exception {
+    public void testTTest() {
         if ( !connected ) {
             log.warn( "Could not connect to RServe, skipping test." );
             return;
@@ -233,7 +233,7 @@ public class RServeClientTest extends TestCase {
         assertEquals( 0.05, pvalues[0], 0.01 );
     }
 
-    public void testTTestFail() throws Exception {
+    public void testTTestFail() {
         if ( !connected ) {
             log.warn( "Could not connect to RServe, skipping test." );
             return;
@@ -271,7 +271,7 @@ public class RServeClientTest extends TestCase {
     /*
      * Test method for ' RCommand.exec(String)'
      */
-    public void testExec() throws Exception {
+    public void testExec() {
         if ( !connected ) {
             log.warn( "Could not connect to RServe, skipping test." );
             return;
@@ -283,7 +283,7 @@ public class RServeClientTest extends TestCase {
                 actualValue.startsWith( expectedValue ) );
     }
 
-    public void testExecError() throws Exception {
+    public void testExecError() {
         if ( !connected ) {
             log.warn( "Could not connect to RServe, skipping test." );
             return;
@@ -296,7 +296,7 @@ public class RServeClientTest extends TestCase {
         }
     }
 
-    public void testFactorAssign() throws Exception {
+    public void testFactorAssign() {
         if ( !connected ) {
             log.warn( "Could not connect to RServe, skipping test." );
             return;
@@ -312,12 +312,12 @@ public class RServeClientTest extends TestCase {
     /*
      * Test method for ' RCommand.exec(String)'
      */
-    public void testExecDoubleArray() throws Exception {
+    public void testExecDoubleArray() {
         if ( !connected ) {
             log.warn( "Could not connect to RServe, skipping test." );
             return;
         }
-        assertTrue( RegressionTesting.closeEnough( new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, rc
-                .doubleArrayEval( "rep(1, 10)" ), 0.001 ) );
+        assertTrue( RegressionTesting.closeEnough( new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+                rc.doubleArrayEval( "rep(1, 10)" ), 0.001 ) );
     }
 }

@@ -113,8 +113,8 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
             rows.get( itemB ).add( new IndexScoreDyad( nameIndexMap.get( itemA ).intValue(), weight ) );
         }
 
-        SparseDoubleMatrix<String, String> matrix = new SparseDoubleMatrix<String, String>( itemNames.size(), itemNames
-                .size() );
+        SparseDoubleMatrix<String, String> matrix = new SparseDoubleMatrix<String, String>( itemNames.size(),
+                itemNames.size() );
 
         List<String> itemVec = new Vector<String>( itemNames );
         Collections.sort( itemVec );
@@ -142,7 +142,7 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
 
     @Override
     public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames,
-            boolean createEmptyRows, int skipColumns, int maxRows ) throws IOException {
+            boolean createEmptyRows, int skipColumns, int maxRows ) {
         throw new UnsupportedOperationException();
     }
 

@@ -217,7 +217,7 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
     @Override
     public final int getColIndexByName( C columnKey ) {
         Integer c = colMap.get( columnKey );
-        if ( c == null ) throw new IllegalArgumentException( columnKey + " not found" );
+        if ( c == null ) throw new IllegalArgumentException( "'" + columnKey + "' not found" );
         return c.intValue();
     }
 
