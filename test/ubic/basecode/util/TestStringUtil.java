@@ -101,7 +101,7 @@ public class TestStringUtil extends TestCase {
         }
 
         timer.stop();
-        if ( timer.getTime() > 200 ) {
+        if ( timer.getTime() > 2000 ) {
             fail();
         }
         log.debug( "String concat " + timer.getTime() + " milliseconds" );
