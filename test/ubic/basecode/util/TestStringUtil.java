@@ -15,8 +15,6 @@
 package ubic.basecode.util;
 
 import junit.framework.TestCase;
-
-import org.apache.commons.lang.time.StopWatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -88,23 +86,6 @@ public class TestStringUtil extends TestCase {
         assertEquals( expectedReturn[1], actualReturn[1] );
         assertEquals( expectedReturn[2], actualReturn[2] );
         assertEquals( expectedReturn[3], actualReturn[3] );
-    }
-
-    public void testSpeedTwoStringHashKey() {
-        String a = "barblyfoo";
-        String b = "fooblybar";
-        StopWatch timer = new StopWatch();
-        timer.start();
-        int iters = 1000000;
-        for ( int i = 0; i < iters; i++ ) {
-            StringUtil.twoStringHashKey( a, b );
-        }
-
-        timer.stop();
-        if ( timer.getTime() > 2000 ) {
-            fail();
-        }
-        log.debug( "String concat " + timer.getTime() + " milliseconds" );
     }
 
     public void testTwoStringHashKey() {
