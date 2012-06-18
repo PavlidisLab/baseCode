@@ -61,6 +61,10 @@ public class ColorMatrix<A, B> implements Cloneable {
 
     protected Color missingColor = Color.lightGray;
 
+    public static <R, C> ColorMatrix<R, C> newInstance( DoubleMatrix<R, C> matrix ) {
+        return new ColorMatrix<R, C>( matrix );
+    }
+
     public ColorMatrix( DoubleMatrix<A, B> matrix ) {
         init( matrix );
     }

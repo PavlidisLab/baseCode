@@ -78,6 +78,10 @@ public class MatrixDisplay<R, C> extends JPanel {
 
     boolean m_isShowingStandardizedMatrix = false;
 
+    public static <R, C> MatrixDisplay<R, C> newInstance( ColorMatrix<R, C> matrix ) {
+        return new MatrixDisplay<R, C>( matrix );
+    }
+
     public MatrixDisplay( ColorMatrix<R, C> matrix ) {
         init( matrix );
     }
