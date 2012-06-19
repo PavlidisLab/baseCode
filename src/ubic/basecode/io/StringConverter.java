@@ -70,17 +70,4 @@ public class StringConverter {
         return stringArrayToDoubles( sArray );
     }
 
-    // /**
-    // * FIXME this is broken.
-    // *
-    // * @param stringToConvert
-    // * @return byte[]
-    // */
-    // public byte[] stringArrayToBytes( String[] stringsToConvert ) {
-    // if ( stringsToConvert == null ) return null;
-    // for ( int i = 0; i < stringsToConvert.length; i++ ) {
-    // String s = stringsToConvert[i];
-    // }
-    // return null;
-    // }
 }
