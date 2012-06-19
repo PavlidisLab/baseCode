@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<name>baseCode</name>
 	<groupId>baseCode</groupId>
@@ -18,7 +19,7 @@
 		<connection>scm:cvs:ext:@otto.pavlab.chibi.ubc.ca:/cvs:baseCode</connection>
 		<developerConnection>scm:cvs:ext:@otto.pavlab.chibi.ubc.ca:/cvs:baseCode</developerConnection>
 		<url>http://www.chibi.ubc.ca/faculty/pavlidis/fisheye/browse/pavlab/baseCode</url>
-  </scm>
+	</scm>
 	<issueManagement>
 		<system>Bugzilla</system>
 		<url>
@@ -259,7 +260,8 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
+				<artifactId>maven-compiler-plugin</artifactId>		
+				<version>2.5.1</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -386,22 +388,29 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh-external</artifactId>
+				<version>1.0-beta-6</version>
+			</extension>
+		</extensions>
 	</build>
 	<distributionManagement>
 		<site>
 			<id>broca</id>
 			<name>broca</name>
-			<url>scp://otto.pavlab.chibi.ubc.ca:/space/gemmaData/baseCode-site</url>
+			<url>scpexe://otto.pavlab.chibi.ubc.ca:/space/gemmaData/baseCode-site</url>
 		</site>
 		<repository>
 			<id>repo</id>
 			<name>Pavlab</name>
-			<url>scp://otto.pavlab.chibi.ubc.ca:/space/maven2</url>
+			<url>scpexe://otto.pavlab.chibi.ubc.ca:/space/maven2</url>
 		</repository>
 		<snapshotRepository>
 			<id>repo</id>
 			<name>Pavlab</name>
-			<url>scp://otto.pavlab.chibi.ubc.ca:/space/maven2</url>
+			<url>scpexe://otto.pavlab.chibi.ubc.ca:/space/maven2</url>
 		</snapshotRepository>
 	</distributionManagement>
 	<repositories>
