@@ -15,6 +15,7 @@
 package ubic.basecode.ontology.providers;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Collection;
 
@@ -35,20 +36,17 @@ public class ObiServiceTest {
     private static Log log = LogFactory.getLog( ObiServiceTest.class );
 
     @Test
-    public void testLoadAndSearch() {
+    public void testLoadAndSearch() throws Exception {
         ObiService m = new ObiService();
         m.startInitializationThread( true );
         int i = 0;
         while ( !m.isOntologyLoaded() ) {
-            try {
-                Thread.sleep( 1000 );
-                i++;
-                log.info( "Waiting for OBI to load ... " + i );
-            } catch ( InterruptedException e ) {
-                e.printStackTrace();
-            }
 
-            if ( i > 10 ) break;
+            Thread.sleep( 3000 );
+            i++;
+            log.info( "Waiting for OBI to load ... " + i );
+
+            if ( i > 10 ) fail( "OBI Ontology didn't load in time" );
         }
 
         assertTrue( m.isOntologyLoaded() );
