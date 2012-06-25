@@ -8,7 +8,7 @@
 	<version>1.0.12-SNAPSHOT</version>
 	<inceptionYear>2003</inceptionYear>
 	<description>
-		<![CDATA[Data structures, math and statistics tools, and utilities that are often needed across projects.]]>
+	<![CDATA[Data structures, math and statistics tools, and utilities that are often needed across projects.]]>
 	</description>
 	<organization>
 		<name>UBC Centre for High-throughput Biology</name>
@@ -199,7 +199,15 @@
 				<exclusion>
 					<groupId>org.apache.lucene</groupId>
 					<artifactId>lucene-core</artifactId>
-				</exclusion>
+				</exclusion> 
+				<exclusion>
+					<artifactId>org.slf4j</artifactId>
+					<groupId>jcl104-over-slf4j</groupId>
+				</exclusion> 
+				<exclusion>
+					<artifactId>org.slf4j</artifactId>
+					<groupId>slf4j-api</groupId>
+				</exclusion> 
 			</exclusions>
 		</dependency>
 		<dependency>
