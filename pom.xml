@@ -77,13 +77,13 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.13</version>
+			<version>1.2.14</version>
 		</dependency>
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
 			<version>2.8.1</version>
-			<scope>run</scope>
+			<scope>runtime</scope>
 			<type>jar</type>
 		</dependency>
 		<dependency>
@@ -207,6 +207,10 @@
 					<artifactId>org.slf4j</artifactId>
 					<groupId>slf4j-api</groupId>
 				</exclusion> 
+				<exclusion>
+					<artifactId>org.slf4j</artifactId>
+					<groupId>slf4j-log4j12</groupId>
+				</exclusion> 
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -276,6 +280,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.12</version>
 				<configuration>
 					<argLine>-enableassertions -Xmx512m -Djava.awt.headless=true</argLine>
 					<reportsDirectory>target/surefire-reports</reportsDirectory>
