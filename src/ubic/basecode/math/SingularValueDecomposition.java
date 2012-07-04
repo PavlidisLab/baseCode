@@ -40,7 +40,7 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
  */
 public class SingularValueDecomposition<R, C> {
 
-    private static final int MAX_COMPUTE_TIME = 60 * 1000 * 15; // millis
+    private static final int MAX_COMPUTE_TIME = 60 * 1000 * 30; // millis
     private cern.colt.matrix.linalg.SingularValueDecomposition svd;
     private List<C> columnNames;
     private List<R> rowNames;
@@ -178,7 +178,7 @@ public class SingularValueDecomposition<R, C> {
             }
             if ( timer.getTime() > MAX_COMPUTE_TIME ) {
                 svdFuture.cancel( true );
-                throw new RuntimeException( "SVD failed to converge, bailing" );
+                throw new RuntimeException( "SVD failed to converge within " + MAX_COMPUTE_TIME + "ms, bailing" );
             }
         }
         timer.stop();
