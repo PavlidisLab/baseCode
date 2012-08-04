@@ -715,6 +715,7 @@ public class LeastSquaresFit {
     private void computeStats( DoubleMatrix2D dof, DoubleMatrix2D fStats, DoubleMatrix1D denominator,
             DoubleMatrix2D pvalues ) {
         pvalues.assign( Double.NaN );
+        int timesWarned = 0;
         for ( int i = 0; i < fStats.rows(); i++ ) {
 
             int rdof;
@@ -746,6 +747,12 @@ public class LeastSquaresFit {
                     FDistribution pf = new FDistributionImpl( ndof, rdof );
                     pvalues.set( i, j, 1.0 - pf.cumulativeProbability( fStats.get( i, j ) ) );
                 } catch ( MathException e ) {
+                    if ( timesWarned < 10 ) {
+                        log.warn( "Pvalue could not be computed for F=" + fStats.get( i, j ) + "; denominator was="
+                                + denominator.get( i ) + "; Error: " + e.getMessage()
+                                + " (limited warnings of this type will be given)" );
+                        timesWarned++;
+                    }
                     pvalues.set( i, j, Double.NaN );
                 }
 
