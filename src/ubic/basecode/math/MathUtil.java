@@ -18,6 +18,9 @@
  */
 package ubic.basecode.math;
 
+import cern.colt.list.DoubleArrayList;
+import cern.jet.stat.Descriptive;
+
 /**
  * @author pavlidis
  * @version $Id$
@@ -54,6 +57,10 @@ public class MathUtil {
             result += element;
         }
         return result;
+    }
+
+    public static double max( double[] qvaluethresholdsforhitlists ) {
+        return Descriptive.max( new DoubleArrayList( qvaluethresholdsforhitlists ) );
     }
 
 }
