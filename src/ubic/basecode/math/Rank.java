@@ -106,10 +106,8 @@ public class Rank {
      * Ties are resolved by assigning the average rank for tied values. For example, instead of arbitrarily assigning
      * ties ranks 3,4,5, all three values would get a rank of 4 and no value would get a rank of 3 or 5.
      * <p>
-     * Missing values are not handled particularly gracefully: missing values (Double.NaN) are treated as per their
-     * natural sort order.
      * 
-     * @param array DoubleArrayList
+     * @param array DoubleArrayList, cannot have missing values.
      * @param descending - reverse the usual ordering so larger values are the the front.
      * @return cern.colt.list.DoubleArrayList, or null if the input is empty or null.
      */
@@ -134,6 +132,7 @@ public class Rank {
                 v = -v;
             }
             RankData rd = new RankData( i, v );
+            if ( Double.isNaN( v ) ) throw new IllegalArgumentException( "Missing values are not tolerated." );
             ranks.add( rd );
         }
 
@@ -179,9 +178,9 @@ public class Rank {
     public static <K> Map<K, Double> rankTransform( Map<K, Double> m ) {
         return rankTransform( m, false );
     }
-    
+
     /**
-     * Ties are broken as for the other methods. CAUTION - ranks start at 0.
+     * Ties are broken as for the other methods. CAUTION - ranks start at 0. Missing values are not tolerated.
      * 
      * @param <K>
      * @param m
@@ -195,8 +194,9 @@ public class Rank {
         for ( Iterator<K> itr = m.keySet().iterator(); itr.hasNext(); ) {
 
             K key = itr.next();
-
             double val = m.get( key ).doubleValue();
+            if ( Double.isNaN( val ) ) throw new IllegalArgumentException( "Missing values are not tolerated." );
+
             values.add( new KeyAndValueData<K>( 0, key, val ) );
         }
 
