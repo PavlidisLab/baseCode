@@ -55,7 +55,8 @@ public class Wilcoxon {
     private static double LIMIT_FOR_APPROXIMATION = 1e5;
 
     /**
-     * Convience method that computes a p-value using input of two double arrays.
+     * Convenience method that computes a p-value using input of two double arrays. They must not contain missing values
+     * or ties.
      * 
      * @param a
      * @param b
@@ -124,8 +125,9 @@ public class Wilcoxon {
 
         if ( n == 0 && N == 0 ) return 1.0;
 
-        if ( ( !ties ) && ( long ) N * n * R <= LIMIT_FOR_APPROXIMATION || R < N
-                && n * Math.pow( R, 2 ) <= LIMIT_FOR_APPROXIMATION ) {
+        if ( ( !ties )
+                && ( ( long ) N * n * R <= LIMIT_FOR_APPROXIMATION || R < N
+                        && n * Math.pow( R, 2 ) <= LIMIT_FOR_APPROXIMATION ) ) {
             if ( log.isDebugEnabled() ) log.debug( "Using exact method (" + N * n * R + ")" );
             return pExact( N, n, R );
         }
@@ -197,7 +199,7 @@ public class Wilcoxon {
                 assert min_r >= 0;
 
                 if ( min_r > max_r ) {
-                    throw new IllegalStateException();
+                    throw new IllegalStateException( min_r + " > " + max_r );
                 }
 
                 assert max_r >= min_r : String.format( "max_r %d < min_r %d for N=%d, n=%d, r=%d", max_r, min_r, N0,

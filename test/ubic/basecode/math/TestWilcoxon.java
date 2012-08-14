@@ -119,9 +119,39 @@ public class TestWilcoxon extends TestCase {
         /*
          * y<-c(1:10, 69:90); x<-c(11:68); wilcox.exact(x,y, alternative="less")
          */
-        double expectedValue = 0.00153; // I now get 0.001676763 with wilcox.test.
+        double[] y = new double[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81,
+                82, 83, 84, 85, 86, 87, 88, 89, 90 };
+        double[] x = new double[] { 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+                32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
+                58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68 };
+
+        double actualValuea = Wilcoxon.exactWilcoxonP( x, y );
+        double expectedValue = 0.001529; // I now get 0.001676763 with wilcox.test.
+
+        assertEquals( expectedValue, actualValuea, 0.00001 );
+
         double actualValue = Wilcoxon.exactWilcoxonP( 90, 58, 2291 );
         assertEquals( expectedValue, actualValue, 0.00001 );
+    }
+
+    // bug 3133
+    public final void testWilxcoxonPWithTies() {
+
+        // assertEquals( 0.110, Wilcoxon.wilcoxonP( 3, 2, 3, true ), 0.001 );
+
+        /*
+         * x<-c(1,1 ); y<-c(2 ); wilcox.exact(x,y, alternative="less") 0.33
+         */
+
+        double[] x = new double[] { 1, 1 };
+        double[] y = new double[] { 2 };
+        try {
+            Wilcoxon.exactWilcoxonP( x, y );
+            fail( "Should have gotten an exception because of ties" );
+        } catch ( Exception e ) {
+
+        }
+
     }
 
     public final void testWilxcoxonPGauss() {
