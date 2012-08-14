@@ -148,12 +148,32 @@ public class TestRank extends TestCase {
 
     public void testWithNaNs() {
         double x[] = { 1.0, Double.NaN, 1.0 };
-        try {
-            Rank.rankTransform( new DoubleArrayList( x ) ).elements();
-            fail( "Should have gotten an illegal arugment exception" );
-        } catch ( Exception e ) {
-
+        double[] expected = new double[] { 1.5, 3.0, 1.5 };
+        double[] actual = Rank.rankTransform( new DoubleArrayList( x ) ).elements();
+        for ( int i = 0; i < expected.length; i++ ) {
+            assertEquals( "at position " + i, expected[i], actual[i], 0.0001 );
         }
+
+    }
+
+    public void testWithNaNs2() {
+        double x[] = { Double.NaN, 1.0, 1.0 };
+        double[] expected = new double[] { 3.0, 1.5, 1.5 };
+        double[] actual = Rank.rankTransform( new DoubleArrayList( x ) ).elements();
+        for ( int i = 0; i < expected.length; i++ ) {
+            assertEquals( "at position " + i, expected[i], actual[i], 0.0001 );
+        }
+
+    }
+
+    public void testWithNaNs3() {
+        double x[] = { Double.NaN, Double.NaN, 2.0, 2.0, 2.0 };
+        double[] expected = new double[] { 4.5, 4.5, 2.0, 2.0, 2.0 };
+        double[] actual = Rank.rankTransform( new DoubleArrayList( x ) ).elements();
+        for ( int i = 0; i < expected.length; i++ ) {
+            assertEquals( "at position " + i, expected[i], actual[i], 0.0001 );
+        }
+
     }
 
     /*

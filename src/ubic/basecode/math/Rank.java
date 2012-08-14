@@ -19,6 +19,7 @@
 package ubic.basecode.math;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -87,7 +88,8 @@ public class Rank {
      * Ties are resolved by assigning the average rank for tied values. For example, instead of arbitrarily assigning
      * ties ranks 3,4,5, all three values would get a rank of 4 and no value would get a rank of 3 or 5.
      * <p>
-     * Missing values are not allowed.
+     * Missing values are sorted in their natural order, which means they end up all at one end (at the high ('bad')
+     * end)
      * 
      * @param array DoubleArrayList
      * @return cern.colt.list.DoubleArrayList
@@ -100,13 +102,15 @@ public class Rank {
 
     /**
      * Rank transform an array. The ranks are constructed based on the sort order of the elements. That is, low values
-     * get low numbered ranks starting from 1, unless you set descending = true. Missing values are not allowed.
+     * get low numbered ranks starting from 1, unless you set descending = true.
      * <p>
      * Ties are resolved by assigning the average rank for tied values. For example, instead of arbitrarily assigning
      * ties ranks 3,4,5, all three values would get a rank of 4 and no value would get a rank of 3 or 5.
      * <p>
+     * Missing values are sorted in their natural order, which means they end up all at one end (at the high ('bad')
+     * end)
      * 
-     * @param array DoubleArrayList, cannot have missing values.
+     * @param array DoubleArrayList
      * @param descending - reverse the usual ordering so larger values are the the front.
      * @return cern.colt.list.DoubleArrayList, or null if the input is empty or null.
      */
@@ -127,11 +131,12 @@ public class Rank {
         // store the values with their indices - not sorted yet.
         for ( int i = 0; i < size; i++ ) {
             double v = array.get( i );
+
             if ( descending ) {
                 v = -v;
             }
             RankData rd = new RankData( i, v );
-            if ( Double.isNaN( v ) ) throw new IllegalArgumentException( "Missing values are not tolerated." );
+            // if ( Double.isNaN( v ) ) throw new IllegalArgumentException( "Missing values are not tolerated." );
             ranks.add( rd );
         }
 
@@ -144,12 +149,12 @@ public class Rank {
         for ( int i = 0; i < size; i++ ) {
             RankData rankData = ranks.get( i );
             int index = rankData.getIndex();
-            double val = rankData.getValue();
+            Double val = rankData.getValue();
 
             result.set( index, nominalRank ); // might not keep.
 
             // only bump up ranks if we're not tied with the last one.
-            if ( prevVal != null && val != prevVal.doubleValue() ) {
+            if ( prevVal != null && !val.equals( prevVal ) ) {
                 rank = nominalRank;
             } else {
                 // tied. Do not advance the rank.
@@ -169,7 +174,10 @@ public class Rank {
 
     /**
      * Rank transform a map, where the values are numerical (java.lang.Double) values we wish to rank. Ties are broken
-     * as for the other methods. Ranks are zero-based. Missing values are not allowed.
+     * as for the other methods. Ranks are zero-based
+     * <p>
+     * Missing values are sorted in their natural order, which means they end up all at one end (at the high ('bad')
+     * end)
      * 
      * @param m java.util.Map with keys Objects, values Doubles.
      * @return A java.util.Map keys=old keys, values=java.lang.Integer rank of the key.
@@ -179,7 +187,10 @@ public class Rank {
     }
 
     /**
-     * Ties are broken as for the other methods. CAUTION - ranks start at 0. Missing values are not tolerated.
+     * Ties are broken as for the other methods. CAUTION - ranks start at 0.
+     * <p>
+     * Missing values are sorted in their natural order, which means they end up all at one end (at the high ('bad')
+     * end)
      * 
      * @param <K>
      * @param m
@@ -194,7 +205,6 @@ public class Rank {
 
             K key = itr.next();
             double val = m.get( key ).doubleValue();
-            if ( Double.isNaN( val ) ) throw new IllegalArgumentException( "Missing values are not tolerated." );
 
             values.add( new KeyAndValueData<K>( 0, key, val ) );
         }
@@ -254,6 +264,7 @@ public class Rank {
             RankData rankData = ranks.get( i );
             int index = rankData.getIndex();
             double rank = ranksWithTies.getQuick( index );
+
             if ( prev != null ) {
                 if ( rank == prev.doubleValue() ) {
                     // record how many ties we have seen
@@ -378,7 +389,7 @@ class RankData implements Comparable<RankData> {
 
     int index = 0;
 
-    double value = 0;
+    Double value = 0.0;
 
     public RankData( int tindex, double tvalue ) {
         index = tindex;
@@ -387,25 +398,14 @@ class RankData implements Comparable<RankData> {
 
     @Override
     public int compareTo( RankData other ) {
-        if ( this.equals( other ) ) return 0;
-
-        if ( this.getValue() < other.getValue() ) {
-            return -1;
-        } else if ( this.getValue() > other.getValue() ) {
-            return 1;
-        } else {
-            return 0;
-        }
+        return this.value.compareTo( other.getValue() );
     }
 
     @Override
     public boolean equals( Object obj ) {
-        if ( this == obj ) return true;
         if ( obj == null ) return false;
-        if ( getClass() != obj.getClass() ) return false;
-        RankData other = ( RankData ) obj;
-        if ( Double.doubleToLongBits( value ) != Double.doubleToLongBits( other.value ) ) return false;
-        return true;
+        if ( !( obj instanceof RankData ) ) return false;
+        return this.value.equals( ( ( RankData ) obj ).getValue() );
     }
 
     public int getIndex() {
