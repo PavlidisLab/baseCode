@@ -87,8 +87,7 @@ public class Rank {
      * Ties are resolved by assigning the average rank for tied values. For example, instead of arbitrarily assigning
      * ties ranks 3,4,5, all three values would get a rank of 4 and no value would get a rank of 3 or 5.
      * <p>
-     * Missing values are not handled particularly gracefully: missing values (Double.NaN) are treated as per their
-     * natural sort order.
+     * Missing values are not allowed.
      * 
      * @param array DoubleArrayList
      * @return cern.colt.list.DoubleArrayList
@@ -101,7 +100,7 @@ public class Rank {
 
     /**
      * Rank transform an array. The ranks are constructed based on the sort order of the elements. That is, low values
-     * get low numbered ranks starting from 1, unless you set descending = true
+     * get low numbered ranks starting from 1, unless you set descending = true. Missing values are not allowed.
      * <p>
      * Ties are resolved by assigning the average rank for tied values. For example, instead of arbitrarily assigning
      * ties ranks 3,4,5, all three values would get a rank of 4 and no value would get a rank of 3 or 5.
@@ -170,7 +169,7 @@ public class Rank {
 
     /**
      * Rank transform a map, where the values are numerical (java.lang.Double) values we wish to rank. Ties are broken
-     * as for the other methods. Ranks are zero-based.
+     * as for the other methods. Ranks are zero-based. Missing values are not allowed.
      * 
      * @param m java.util.Map with keys Objects, values Doubles.
      * @return A java.util.Map keys=old keys, values=java.lang.Integer rank of the key.

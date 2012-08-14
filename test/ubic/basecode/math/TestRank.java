@@ -146,6 +146,16 @@ public class TestRank extends TestCase {
         }
     }
 
+    public void testWithNaNs() {
+        double x[] = { 1.0, Double.NaN, 1.0 };
+        try {
+            Rank.rankTransform( new DoubleArrayList( x ) ).elements();
+            fail( "Should have gotten an illegal arugment exception" );
+        } catch ( Exception e ) {
+
+        }
+    }
+
     /*
      * @see TestCase#setUp()
      */
