@@ -383,10 +383,6 @@ public class LeastSquaresFit {
 
         for ( int i = 0; i < ssq.rows(); i++ ) {
 
-            // if ( this.rowNames.get( i ).equals( "probe_60" ) ) {
-            // log.info( "MARV" );
-            // }
-
             ssq.set( i, facs.size(), residualSumsOfSquares.get( i ) );
             int rdof;
             if ( this.residualDofs.isEmpty() ) {
@@ -423,9 +419,10 @@ public class LeastSquaresFit {
                 }
 
                 /*
-                 * Accumulate the sum.
+                 * Accumulate the sum. When the data is "constant" you can end up with a tiny but non-zero coefficient,
+                 * but it's bogus. See bug 3177.
                  */
-                if ( !Double.isNaN( valueToAdd ) ) {
+                if ( !Double.isNaN( valueToAdd ) && valueToAdd > Constants.TINY ) {
                     /*
                      * Is this always true?
                      */
