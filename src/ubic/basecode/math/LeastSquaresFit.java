@@ -422,7 +422,7 @@ public class LeastSquaresFit {
                  * Accumulate the sum. When the data is "constant" you can end up with a tiny but non-zero coefficient,
                  * but it's bogus. See bug 3177.
                  */
-                if ( !Double.isNaN( valueToAdd ) && valueToAdd > Constants.TINY ) {
+                if ( !Double.isNaN( valueToAdd ) && valueToAdd > Constants.SMALL ) {
                     /*
                      * Is this always true?
                      */
