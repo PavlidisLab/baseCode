@@ -455,6 +455,25 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
                 }
             }
         }
+
+        Collection<AnnotationProperty> annots = new HashSet<AnnotationProperty>();
+        StmtIterator iterator = ontResource.listProperties();
+        // this is a little slow because we have to go through all statements for the term.
+        while ( iterator.hasNext() ) {
+            Statement state = iterator.next();
+            OntResource res = state.getPredicate().as( OntResource.class );
+            if ( res.isAnnotationProperty() ) {
+                com.hp.hpl.jena.ontology.AnnotationProperty p = res.asAnnotationProperty();
+                RDFNode n = state.getObject();
+
+                if ( p.getLocalName().equalsIgnoreCase( "deprecated" ) ) {
+                    if ( n.toString().indexOf( "true" ) != -1 ) {
+                        return true;
+                    }
+                    break;
+                }
+            }
+        }
         return false;
     }
 
