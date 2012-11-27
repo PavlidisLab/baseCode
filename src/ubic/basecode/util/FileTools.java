@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -42,6 +44,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -186,6 +189,19 @@ public class FileTools {
             }
         }
         return false;
+
+    }
+
+    /**
+     * @param resourcePath
+     * @return
+     * @throws URISyntaxException
+     */
+    public static String resourceToPath( String resourcePath ) throws URISyntaxException {
+        if ( StringUtils.isBlank( resourcePath ) ) throw new IllegalArgumentException();
+        URL resource = FileTools.class.getResource( resourcePath );
+        if ( resource == null ) throw new IllegalArgumentException( "Could not get URL for resource=" + resourcePath );
+        return new File( resource.toURI() ).getAbsolutePath();
     }
 
     /**
