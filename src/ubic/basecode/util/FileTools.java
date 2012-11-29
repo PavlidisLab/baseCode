@@ -205,6 +205,22 @@ public class FileTools {
     }
 
     /**
+     * Avoid getting file names with spaces, slashes, quotes, # etc; replace them with "_".
+     * 
+     * @param ee
+     * @return
+     * @throws IllegalArgumentException if the resulting string is empty, or if the input is empty.
+     */
+    public static String cleanForFileName( String name ) {
+        if ( StringUtils.isBlank( name ) ) throw new IllegalArgumentException( "'name' cannot be blank" );
+        String result = name.replaceAll( "[\\s\'\";,\\/#]+", "_" ).replaceAll( "(^_|_$)", "" );
+        if ( StringUtils.isBlank( result ) ) {
+            throw new IllegalArgumentException( "'" + name + "' was stripped down to an empty string" );
+        }
+        return result;
+    }
+
+    /**
      * Test whether a File is writeable.
      * 
      * @param file

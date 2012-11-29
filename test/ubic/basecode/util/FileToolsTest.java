@@ -43,11 +43,11 @@ import org.apache.commons.lang.RandomStringUtils;
  * @version $Id$
  */
 public class FileToolsTest extends TestCase {
-    File plain;
-
     File compressed;
-    File tempoutput;
+
+    File plain;
     File tempdir;
+    File tempoutput;
     File zipped;
 
     /*
@@ -87,6 +87,34 @@ public class FileToolsTest extends TestCase {
             FileTools.checkPathIsReadableFile( plain.getPath() + RandomStringUtils.randomNumeric( 10 ) );
             fail( "Should have thrown an IOException" );
         } catch ( IOException e ) {
+
+        }
+    }
+
+    public void testCleanFileName() {
+        assertTrue( !FileTools.cleanForFileName( "#foo/bar/crud" ).contains( "/" ) );
+        assertTrue( !FileTools.cleanForFileName( "#foo/bar/crud" ).contains( "#" ) );
+        assertTrue( !FileTools.cleanForFileName( "#foo/bar'''\"\"/crud" ).contains( "\"" ) );
+        assertTrue( !FileTools.cleanForFileName( "#foo/bar'''\"\"/crud" ).contains( "'" ) );
+        assertTrue( !FileTools.cleanForFileName( "#foo/bar/crud" ).contains( "/" ) );
+        assertTrue( !FileTools.cleanForFileName( "#foo/bar/crud" ).contains( "/" ) );
+        assertTrue( !FileTools.cleanForFileName( "foo\bar/crud" ).contains( "\\" ) );
+        assertTrue( !FileTools.cleanForFileName( "foo   ;/crud" ).contains( " " ) );
+        assertEquals( "foo_bar_crud", FileTools.cleanForFileName( "#foo/   bar'''\"\"/crud" ) );
+
+    }
+
+    public void testCleanFileNameErr() {
+        try {
+            FileTools.cleanForFileName( "   " );
+            fail();
+        } catch ( IllegalArgumentException e ) {
+
+        }
+        try {
+            FileTools.cleanForFileName( null );
+            fail();
+        } catch ( IllegalArgumentException e ) {
 
         }
     }
@@ -226,6 +254,8 @@ public class FileToolsTest extends TestCase {
     }
 
     /*
+     * 
+     * 
      * Test method for 'basecode.util.FileTools.isGZipped(String)'
      */
     public void testIsGZipped() {
