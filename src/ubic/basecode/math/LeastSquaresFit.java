@@ -574,7 +574,7 @@ public class LeastSquaresFit {
     }
 
     /**
-     * @param anova
+     * @param anova perform ANOVA, otherwise only basic summarization will be done.
      * @return
      */
     public Map<String, LinearModelSummary> summarizeByKeys( boolean anova ) {
