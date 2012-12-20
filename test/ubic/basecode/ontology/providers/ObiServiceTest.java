@@ -46,7 +46,7 @@ public class ObiServiceTest {
             i++;
             log.info( "Waiting for OBI to load ... " + i );
 
-            if ( i > 10 ) fail( "OBI Ontology didn't load in time" );
+            if ( i > 20 ) fail( "OBI Ontology didn't load in time" );
         }
 
         assertTrue( m.isOntologyLoaded() );
