@@ -740,37 +740,6 @@ public class LeastSquaresFitTest {
 
         ObjectMatrix<String, String, Object> design = new ObjectMatrixImpl<String, String, Object>( 9, 3 );
 
-        design.set( 0, 0, "A" );
-        design.set( 1, 0, "A" );
-        design.set( 2, 0, "A" );
-        design.set( 3, 0, "A" );
-        design.set( 4, 0, "B" );
-        design.set( 5, 0, "B" );
-        design.set( 6, 0, "B" );
-        design.set( 7, 0, "B" );
-        design.set( 8, 0, "B" );
-        design.set( 0, 1, 0.12 );
-        design.set( 1, 1, 0.24 );
-        design.set( 2, 1, 0.48 );
-        design.set( 3, 1, 0.96 );
-        design.set( 4, 1, 0.12 );
-        design.set( 5, 1, 0.24 );
-        design.set( 6, 1, 0.48 );
-        design.set( 7, 1, 0.96 );
-        design.set( 8, 1, 0.96 );
-        design.set( 0, 2, "C" );
-        design.set( 1, 2, "C" );
-        design.set( 2, 2, "D" );
-        design.set( 3, 2, "D" );
-        design.set( 4, 2, "C" );
-        design.set( 5, 2, "C" );
-        design.set( 6, 2, "D" );
-        design.set( 7, 2, "D" );
-        design.set( 8, 2, "D" );
-        design.addColumnName( "Treat" );
-        design.addColumnName( "Value" );
-        design.addColumnName( "Geno" );
-
         DesignMatrix designMatrix = new DesignMatrix( design, true );
         designMatrix.addInteraction( "Treat", "Geno" );
         LeastSquaresFit fit = new LeastSquaresFit( designMatrix, testMatrix );
@@ -803,6 +772,45 @@ public class LeastSquaresFitTest {
 
         }
 
+    }
+
+    /**
+     * Sanity check.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testTwoWayAnovaUnfittable() throws Exception {
+        DoubleMatrixReader f = new DoubleMatrixReader();
+        DoubleMatrix<String, String> testMatrix = f.read( this.getClass()
+                .getResourceAsStream( "/data/lmtest10.dat.txt" ) );
+
+        StringMatrixReader of = new StringMatrixReader();
+        StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
+                "/data/lmtest10.des.txt" ) );
+
+        DesignMatrix d = new DesignMatrix( sampleInfo, true );
+
+        LeastSquaresFit fit = new LeastSquaresFit( d, testMatrix );
+        Map<String, LinearModelSummary> sums = fit.summarizeByKeys( true );
+        assertEquals( 1, sums.size() );
+
+        for ( LinearModelSummary lms : sums.values() ) {
+            GenericAnovaResult a = lms.getAnova();
+            assertNotNull( a );
+            assertEquals( Double.NaN, a.getMainEffectP( "CellType" ), 0.0001 );
+            assertEquals( Double.NaN, a.getMainEffectP( "SamplingTimePoint" ), 0.0001 );
+        }
+
+        DoubleMatrix2D coefficients = fit.getCoefficients();
+        DoubleMatrix2D residuals = fit.getResiduals();
+
+        assertEquals( 2.238, coefficients.get( 0, 0 ), 0.0001 ); // mean.
+        assertEquals( 0.0, coefficients.get( 1, 0 ), 0.0001 );
+
+        for ( int i = 0; i < residuals.rows(); i++ ) {
+            assertEquals( 0.0, residuals.get( 0, i ), 0.00001 );
+        }
     }
 
     @Test

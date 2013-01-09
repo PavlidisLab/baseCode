@@ -1,0 +1,2 @@
+Probe	T-cell-14h-r3	T-cell-14h-r2	T-cell-14h-r1	T-cell-4h-r3	T-cell-4h-r2	T-cell-4h-r1	T-cell-0h-r3	T-cell-0h-r2	T-cell-0h-r1	B-cell-4h-r3	B-cell-4h-r2	B-cell-4h-r1	B-cell-0h-r3	B-cell-0h-r2	B-cell-0h-r1
+1425655_at	2.238	2.238	2.238	2.238	2.238	2.238	2.238	2.238	2.238	2.238	2.238	2.238	2.238	2.238	2.238
