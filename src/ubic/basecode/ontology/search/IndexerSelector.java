@@ -18,8 +18,8 @@
  */
 package ubic.basecode.ontology.search;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,7 +29,6 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Selector;
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.impl.PropertyImpl;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
@@ -42,16 +41,22 @@ public class IndexerSelector implements Selector {
 
     private static Log log = LogFactory.getLog( IndexerSelector.class );
 
-    Collection<Property> badPredicates;
+    private final Collection<String> badPredicates;
 
     public IndexerSelector() {
         // these are predicates that in general should not be useful for indexing
-        badPredicates = new ArrayList<Property>();
-        badPredicates.add( RDFS.comment );
-        badPredicates.add( RDFS.seeAlso );
-        badPredicates.add( RDFS.isDefinedBy );
-        badPredicates.add( new PropertyImpl( "http://www.w3.org/2004/02/skos/core#example" ) );
-        badPredicates.add( new PropertyImpl( "http://neurolex.org/wiki/Special:URIResolver/Property-3AExample" ) );
+        badPredicates = new HashSet<String>();
+        badPredicates.add( RDFS.comment.getURI() );
+        badPredicates.add( RDFS.seeAlso.getURI() );
+        badPredicates.add( RDFS.isDefinedBy.getURI() );
+        badPredicates.add( "http://www.w3.org/2002/07/owl#inverseOf" );
+        badPredicates.add( "http://www.w3.org/2004/02/skos/core#example" );
+        badPredicates.add( "http://neurolex.org/wiki/Special:URIResolver/Property-3AExample" );
+        badPredicates.add( "http://www.ebi.ac.uk/efo/definition" );
+        badPredicates.add( "http://www.ebi.ac.uk/efo/bioportal_provenance" );
+        badPredicates.add( "http://www.ebi.ac.uk/efo/gwas_trait" );
+        badPredicates.add( "http://www.ebi.ac.uk/efo/definition_editor" );
+        badPredicates.add( "http://www.ebi.ac.uk/efo/example_of_usage" );
     }
 
     /*
@@ -101,7 +106,8 @@ public class IndexerSelector implements Selector {
      */
     @Override
     public boolean test( Statement s ) {
-        boolean retain = !( badPredicates.contains( s.getPredicate() ) );
+        boolean retain = !( badPredicates.contains( s.getPredicate().getURI() ) );
+
         if ( !retain && log.isDebugEnabled() ) log.debug( "Removed: " + s.getPredicate() + " " + s.getObject() );
 
         return retain;
