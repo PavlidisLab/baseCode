@@ -32,7 +32,8 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
- * Used to limit which parts of ontologies get indexed for searching.
+ * Used to limit which parts of ontologies get indexed for searching. This avoids indexing some parts of ontologies such
+ * as "examples" and "definitions" but this is set up in a partly ontology-specific way (that is, hard-coded).
  * 
  * @author paul
  * @version $Id$
@@ -41,22 +42,23 @@ public class IndexerSelector implements Selector {
 
     private static Log log = LogFactory.getLog( IndexerSelector.class );
 
-    private final Collection<String> badPredicates;
+    private final Collection<String> unwantedForIndexing;
 
     public IndexerSelector() {
         // these are predicates that in general should not be useful for indexing
-        badPredicates = new HashSet<String>();
-        badPredicates.add( RDFS.comment.getURI() );
-        badPredicates.add( RDFS.seeAlso.getURI() );
-        badPredicates.add( RDFS.isDefinedBy.getURI() );
-        badPredicates.add( "http://www.w3.org/2002/07/owl#inverseOf" );
-        badPredicates.add( "http://www.w3.org/2004/02/skos/core#example" );
-        badPredicates.add( "http://neurolex.org/wiki/Special:URIResolver/Property-3AExample" );
-        badPredicates.add( "http://www.ebi.ac.uk/efo/definition" );
-        badPredicates.add( "http://www.ebi.ac.uk/efo/bioportal_provenance" );
-        badPredicates.add( "http://www.ebi.ac.uk/efo/gwas_trait" );
-        badPredicates.add( "http://www.ebi.ac.uk/efo/definition_editor" );
-        badPredicates.add( "http://www.ebi.ac.uk/efo/example_of_usage" );
+        unwantedForIndexing = new HashSet<String>();
+        unwantedForIndexing.add( RDFS.comment.getURI() );
+        unwantedForIndexing.add( RDFS.seeAlso.getURI() );
+        unwantedForIndexing.add( RDFS.isDefinedBy.getURI() );
+        unwantedForIndexing.add( "http://www.w3.org/2002/07/owl#inverseOf" );
+        unwantedForIndexing.add( "http://www.w3.org/2004/02/skos/core#example" );
+        unwantedForIndexing.add( "http://neurolex.org/wiki/Special:URIResolver/Property-3AExample" );
+        unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/definition" );
+        unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/bioportal_provenance" );
+        unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/gwas_trait" );
+        unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/definition_editor" );
+        unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/example_of_usage" );
+        unwantedForIndexing.add( "http://purl.obolibrary.org/obo/IAO_0000115" ); // 'definition'
     }
 
     /*
@@ -106,9 +108,16 @@ public class IndexerSelector implements Selector {
      */
     @Override
     public boolean test( Statement s ) {
-        boolean retain = !( badPredicates.contains( s.getPredicate().getURI() ) );
+        boolean retain = !unwantedForIndexing.contains( s.getPredicate().getURI() );
 
-        if ( !retain && log.isDebugEnabled() ) log.debug( "Removed: " + s.getPredicate() + " " + s.getObject() );
+        // bit of a special case ...
+        if ( s.getPredicate().getURI().equals( "http://www.w3.org/2002/07/owl#annotatedProperty" ) ) {
+            retain = !unwantedForIndexing.contains( s.getObject().toString() );
+        }
+
+        if ( !retain && log.isDebugEnabled() ) {
+            log.debug( "Removed: " + s );
+        }
 
         return retain;
     }
