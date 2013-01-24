@@ -63,6 +63,8 @@ public class IndexerSelector implements Selector {
         unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/definition_editor" );
         unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/example_of_usage" );
         unwantedForIndexing.add( "http://purl.obolibrary.org/obo/IAO_0000115" ); // 'definition'
+        unwantedForIndexing.add( "http://purl.obolibrary.org/obo/IAO_0000112" ); // 'example of usage
+        unwantedForIndexing.add( "http://purl.obolibrary.org/obo/IAO_0000117"); //  term editor
         unwantedForIndexing
                 .add( "http://ontology.neuinfo.org/NIF/Backend/OBO_annotation_properties.owl#externallySourcedDefinition" );
         unwantedForIndexing
@@ -70,6 +72,9 @@ public class IndexerSelector implements Selector {
 
         unwantedForIndexing
                 .add( "http://ontology.neuinfo.org/NIF/Backend/BIRNLex_annotation_properties.owl#hasBirnlexCurator" );
+        
+        unwantedForIndexing
+        .add( "http://ontology.neuinfo.org/NIF/Backend/BIRNLex_annotation_properties.owl#hasBirnlexCurator" );
 
     }
 

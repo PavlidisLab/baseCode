@@ -90,6 +90,7 @@ public class OntologySearch {
                 } catch ( ARQLuceneException e ) {
                     throw new RuntimeException( e.getCause() );
                 } catch ( JenaException e ) {
+                    log.error( e, e );
                     throw new RuntimeException( e.getCause() );
                 } catch ( Exception e ) {
                     log.error( e.getMessage(), e );
