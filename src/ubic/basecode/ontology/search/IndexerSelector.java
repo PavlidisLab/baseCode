@@ -51,7 +51,11 @@ public class IndexerSelector implements Selector {
         unwantedForIndexing.add( RDFS.seeAlso.getURI() );
         unwantedForIndexing.add( RDFS.isDefinedBy.getURI() );
         unwantedForIndexing.add( "http://www.w3.org/2002/07/owl#inverseOf" );
+        unwantedForIndexing.add( "http://www.w3.org/2002/07/owl#disjointWith" );
         unwantedForIndexing.add( "http://www.w3.org/2004/02/skos/core#example" );
+        unwantedForIndexing.add( "http://www.w3.org/2004/02/skos/core#editorialNote" );
+        unwantedForIndexing.add( "http://www.w3.org/2004/02/skos/core#historyNote" );
+
         unwantedForIndexing.add( "http://neurolex.org/wiki/Special:URIResolver/Property-3AExample" );
         unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/definition" );
         unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/bioportal_provenance" );
@@ -59,6 +63,14 @@ public class IndexerSelector implements Selector {
         unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/definition_editor" );
         unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/example_of_usage" );
         unwantedForIndexing.add( "http://purl.obolibrary.org/obo/IAO_0000115" ); // 'definition'
+        unwantedForIndexing
+                .add( "http://ontology.neuinfo.org/NIF/Backend/OBO_annotation_properties.owl#externallySourcedDefinition" );
+        unwantedForIndexing
+                .add( "http://ontology.neuinfo.org/NIF/Backend/BIRNLex_annotation_properties.owl#birnlexDefinition" );
+
+        unwantedForIndexing
+                .add( "http://ontology.neuinfo.org/NIF/Backend/BIRNLex_annotation_properties.owl#hasBirnlexCurator" );
+
     }
 
     /*

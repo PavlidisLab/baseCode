@@ -532,8 +532,6 @@ public class FileTools {
         return numDeleted;
     }
 
-    // Leon added the below methods
-
     /**
      * Outputs a string to a file.
      */

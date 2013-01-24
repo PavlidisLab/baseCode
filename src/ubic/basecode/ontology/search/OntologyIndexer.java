@@ -20,6 +20,7 @@ package ubic.basecode.ontology.search;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,6 +28,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.FSDirectory;
 
 import ubic.basecode.ontology.Configuration;
+import ubic.basecode.util.FileTools;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.larq.IndexBuilderSubject;
@@ -111,7 +113,7 @@ public class OntologyIndexer {
     }
 
     /**
-     * Create an on-disk index from an existing OntModel. Any existing index will be overwritten.
+     * Create an on-disk index from an existing OntModel. Any existing index will be deleted/overwritten.
      * 
      * @see {@link http://jena.sourceforge.net/ARQ/lucene-arq.html}
      * @param datafile or uri
@@ -122,6 +124,11 @@ public class OntologyIndexer {
     private static IndexLARQ index( String name, OntModel model ) {
 
         File indexdir = getIndexPath( name );
+
+        if ( indexdir.exists() ) {
+            FileTools.deleteFiles( Arrays.asList( indexdir.listFiles() ) );
+            FileTools.deleteDir( indexdir );
+        }
 
         IndexBuilderSubject larqSubjectBuilder = new IndexBuilderSubject( indexdir );
 
