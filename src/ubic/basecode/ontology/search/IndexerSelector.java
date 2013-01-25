@@ -74,9 +74,6 @@ public class IndexerSelector implements Selector {
         unwantedForIndexing
                 .add( "http://ontology.neuinfo.org/NIF/Backend/BIRNLex_annotation_properties.owl#hasBirnlexCurator" );
 
-        unwantedForIndexing
-                .add( "http://ontology.neuinfo.org/NIF/Backend/BIRNLex_annotation_properties.owl#hasBirnlexCurator" );
-
     }
 
     /*
