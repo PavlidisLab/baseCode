@@ -301,7 +301,7 @@ object<-lm(t(dat["1456759_at",]) ~ des$Genotype  + des$OrganismPart  + des$Treat
 summary(object)
 anova(object)
 
-
+# testVectorWeightedRegress (1D)
 x<-c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10 );
 y<-c(1, 2, 2, 3, 3, 4, 4, 5, 5, 6);
 summary(lm(y ~ x))
@@ -314,3 +314,15 @@ fitted(lm(y ~ x, weights = w ))
 mm<-model.matrix(y ~ x)
  lm.wfit(mm, y, w =w) 
 lm.fit(mm*sqrt(w), y*sqrt(w))
+
+# testMatrixWeightedRegress (2D)
+x<-matrix(nrow=2, ncol=5)
+x[1,]<-c(1, 2, 3, 4, 5)
+x[2,]<-c(1, 1, 0, 0, 0)
+y<-matrix(nrow=2, ncol=5)
+y[1,]<-c(1, 2, 2, 3, 3)
+y[2,]<-c(2, 1, 5, 3, 4)
+w<-1/x[1,]
+fit<-lm(t(y) ~ t(x), w=w)
+coefficients(fit)
+residuals(fit)

@@ -217,6 +217,54 @@ public class LeastSquaresFit {
     }
 
     /**
+     * Least squares fit between two matrices. Always adds an intercept!
+     * 
+     * @param vectorA Design
+     * @param vectorB Data
+     * @param weights to be used in modifying the influence of the observations in vectorB.
+     */
+    public LeastSquaresFit( DoubleMatrix2D A, DoubleMatrix2D b, final DoubleMatrix1D weights ) {
+
+        assert A.rows() == b.columns();
+        assert A.rows() == weights.size();
+        this.A = new DenseDoubleMatrix2D( A.rows(), A.columns() + 1 );
+        this.b = new DenseDoubleMatrix2D( b.rows(), b.columns() );
+        this.weights = new DenseDoubleMatrix2D( 1, weights.size() );
+
+        for ( int j = 0; j < A.rows(); j++ ) {
+            for ( int i = 0; i < A.columns(); i++ ) {
+                double ws = weights.get( j );
+                assert ws > 0 && !Double.isInfinite( ws ) && !Double.isNaN( ws );
+                this.weights.set( 0, i, ws );
+                ws = Math.sqrt( ws );
+                this.A.set( j, 0, ws );
+                this.A.set( j, i + 1, A.get( j, i ) * ws );
+            }
+        }
+
+        for ( int j = 0; j < b.rows(); j++ ) {
+            for ( int i = 0; i < b.columns(); i++ ) {
+                double ws = Math.sqrt( weights.get( i ) );
+                this.b.set( j, i, b.get( j, i ) * ws );
+            }
+        }
+
+        lsf();
+
+        residuals = residuals.forEachNonZero( new IntIntDoubleFunction() {
+            @Override
+            public double apply( int row, int col, double nonZeroValue ) {
+                return nonZeroValue / Math.sqrt( weights.get( col ) );
+            }
+        } );
+
+        for ( int j = 0; j < b.rows(); j++ ) {
+            DoubleMatrix1D f2 = b.viewRow( j ).copy().assign( residuals.viewRow( j ), Functions.minus );
+            this.fitted.viewRow( j ).assign( f2 );
+        }
+    }
+    
+    /**
      * Least squares fit between two vectors. Always adds an intercept!
      * 
      * @param vectorA Design
