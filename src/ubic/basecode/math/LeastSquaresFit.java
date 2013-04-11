@@ -263,7 +263,7 @@ public class LeastSquaresFit {
             this.fitted.viewRow( j ).assign( f2 );
         }
     }
-    
+
     /**
      * Least squares fit between two vectors. Always adds an intercept!
      * 
@@ -782,6 +782,15 @@ public class LeastSquaresFit {
 
                 if ( j == fStats.columns() - 1 ) {
                     // don't fill in f & p values for the residual...
+                    pvalues.set( i, j, Double.NaN );
+                    fStats.set( i, j, Double.NaN );
+                    continue;
+                }
+
+                /*
+                 * Taking ratios of two very small values is not meaningful; happens if the data are ~constant.
+                 */
+                if ( fStats.get( i, j ) < Constants.SMALLISH && denominator.get( i ) < Constants.SMALLISH ) {
                     pvalues.set( i, j, Double.NaN );
                     fStats.set( i, j, Double.NaN );
                     continue;
