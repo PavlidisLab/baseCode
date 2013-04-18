@@ -190,6 +190,31 @@ public class Stats {
     }
 
     /**
+     * @param array
+     * @return number of distinct values in the array, within a small constant. Double.NaN is counted as a distinct
+     *         value.
+     */
+    public static Integer numberofDistinctValues( DoubleArrayList array, double tolerance ) {
+
+        Set<Double> distinct = new HashSet<Double>();
+        int r = 1;
+        if ( tolerance > 0.0 ) {
+            r = ( int ) Math.ceil( 1.0 / tolerance );
+        }
+        for ( int i = 0; i < array.size(); i++ ) {
+            double v = array.get( i );
+            if ( tolerance > 0 ) {
+                // this might not be foolproof
+                distinct.add( ( double ) Math.round( v * r ) / r );
+            } else {
+                distinct.add( v );
+            }
+        }
+        return Math.max( 0, distinct.size() );
+
+    }
+
+    /**
      * Given a double array, calculate the quantile requested. Note that no interpolation is done.
      * 
      * @see DescriptiveWithMissing#quantile
@@ -253,31 +278,6 @@ public class Stats {
     }
 
     private Stats() { /* block instantiation */
-    }
-
-    /**
-     * @param array
-     * @return number of distinct values in the array, within a small constant. Double.NaN is counted as a distinct
-     *         value.
-     */
-    public static Integer numberofDistinctValues( DoubleArrayList array, double tolerance ) {
-
-        Set<Double> distinct = new HashSet<Double>();
-        int r = 1;
-        if ( tolerance > 0.0 ) {
-            r = ( int ) Math.ceil( 1.0 / tolerance );
-        }
-        for ( int i = 0; i < array.size(); i++ ) {
-            double v = array.get( i );
-            if ( tolerance > 0 ) {
-                // this might not be foolproof
-                distinct.add( ( double ) Math.round( v * r ) / r );
-            } else {
-                distinct.add( v );
-            }
-        }
-        return Math.max( 0, distinct.size() );
-
     }
 
 }
