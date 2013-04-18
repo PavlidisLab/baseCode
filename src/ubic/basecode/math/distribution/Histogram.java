@@ -34,18 +34,28 @@ import cern.jet.stat.Descriptive;
  * @version $Id$
  */
 public class Histogram {
-    private double[] hist;
-
-    private String name;
-
-    private double min;
-
-    private double max;
-
-    private int nbins;
+    /**
+     *
+     */
+    private static class BinInfo {
+        public int index;
+        public boolean isInRange;
+        public boolean isOverflow;
+        public boolean isUnderflow;
+    }
 
     // total number of entries
     private int entries;
+
+    private double[] hist;
+
+    private double max;
+
+    private double min;
+
+    private String name;
+
+    private int nbins;
 
     // number of values above the maximum bin.
     private double overflow = 0;
@@ -60,13 +70,11 @@ public class Histogram {
      * @param max
      */
     public Histogram( String name, int nbins, double min, double max ) {
-        this.nbins = nbins;
+        init( name, nbins );
+
         this.min = min;
         this.max = max;
-        this.name = name;
-        this.hist = new double[this.nbins];
-        this.underflow = 0;
-        this.overflow = 0;
+
     }
 
     /**
@@ -75,17 +83,22 @@ public class Histogram {
      * @param data
      */
     public Histogram( String name, int nbins, DoubleMatrix1D data ) {
-        this.name = name;
-        this.nbins = nbins;
-        this.hist = new double[this.nbins];
-        this.underflow = 0;
-        this.overflow = 0;
+        init( name, nbins );
 
         this.min = Descriptive.min( new DoubleArrayList( data.toArray() ) );
         this.max = Descriptive.max( new DoubleArrayList( data.toArray() ) );
 
         this.fill( data );
 
+    }
+
+    /**
+     * The number of entries in the histogram (the number of times fill has been called).
+     * 
+     * @return number of entries
+     */
+    public int entries() {
+        return entries;
     }
 
     /**
@@ -112,25 +125,75 @@ public class Histogram {
     }
 
     /**
-     * @param x
-     * @return the index of the bin where x would fall. If x is out of range you get 0 or (nbins - 1).
+     * @param ghr
      */
-    public int getBinOf( double x ) {
-        if ( x < min ) {
-            return 0;
-        } else if ( x > max ) {
-            return nbins - 1;
-        } else {
-            // search for histogram bin into which x falls FIXME make this faster with a binary search
-            double binWidth = stepSize();
-            for ( int i = 0; i < nbins; i++ ) {
-                double highEdge = min + ( i + 1 ) * binWidth;
-                if ( x <= highEdge ) {
-                    return i;
-                }
-            }
-            throw new IllegalStateException( "Failed to find the bin for " + x );
+    public void fill( DoubleMatrix1D ghr ) {
+        for ( int i = 0; i < ghr.size(); i++ ) {
+            this.fill( ghr.getQuick( i ) );
         }
+
+    }
+
+    /**
+     * Add the given number of counts to the given bin.
+     * 
+     * @param binNum
+     * @param count
+     */
+    public void fill( int binNum, int count ) {
+        if ( binNum < 0 || binNum > nbins - 1 ) {
+            throw new IllegalArgumentException( "Invalid bin number" );
+        }
+        if ( count < 0 ) {
+            throw new IllegalArgumentException( "Count must be positive" );
+        }
+        hist[binNum] += count;
+    }
+
+    /**
+     * Find the bin below which i% of the values are contained. This is only approximate (especially if the number of
+     * bins is <~100)
+     * 
+     * @param q
+     * @return approximate quantile. Passing values of 0 and 100 is equivalent to min() and max() respectively.
+     */
+    public Double getApproximateQuantile( int q ) {
+        double t = underflow;
+        if ( q >= 100 ) {
+            return max;
+        }
+        if ( q <= 0 ) {
+            return min;
+        }
+
+        for ( int i = 0; i < hist.length; i++ ) {
+            t += hist[i];
+            if ( t / entries > q / 100.0 ) {
+                return getBinEdges()[i];
+            }
+        }
+
+        return max;
+    }
+
+    /**
+     * Returns the bin heights.
+     * 
+     * @return array of bin heights
+     */
+    public double[] getArray() {
+        return hist;
+    }
+
+    /**
+     * @return the number of items in the bin that has the most members.
+     */
+    public int getBiggestBinSize() {
+        int m = Integer.MIN_VALUE;
+        for ( double d : hist ) {
+            if ( d > m ) m = ( int ) d;
+        }
+        return m;
     }
 
     /**
@@ -167,51 +230,67 @@ public class Histogram {
     }
 
     /**
-     *
+     * @param x
+     * @return the index of the bin where x would fall. If x is out of range you get 0 or (nbins - 1).
      */
-    private static class BinInfo {
-        public int index;
-        public boolean isUnderflow;
-        public boolean isOverflow;
-        public boolean isInRange;
-    }
-
-    /**
-     * Determines the bin for a number in the histogram.
-     * 
-     * @return info on which bin x falls in.
-     */
-    private BinInfo findBin( double x ) {
-        BinInfo bin = new BinInfo();
-        bin.isInRange = false;
-        bin.isUnderflow = false;
-        bin.isOverflow = false;
-        // first check if x is outside the range of the normal histogram bins
+    public int getBinOf( double x ) {
         if ( x < min ) {
-            bin.isUnderflow = true;
+            return 0;
         } else if ( x > max ) {
-            bin.isOverflow = true;
+            return nbins - 1;
         } else {
             // search for histogram bin into which x falls FIXME make this faster with a binary search
             double binWidth = stepSize();
             for ( int i = 0; i < nbins; i++ ) {
                 double highEdge = min + ( i + 1 ) * binWidth;
                 if ( x <= highEdge ) {
-                    bin.isInRange = true;
-                    bin.index = i;
-                    break;
+                    return i;
                 }
             }
+            throw new IllegalStateException( "Failed to find the bin for " + x );
         }
-        return bin;
-
     }
 
     /**
-     * @return size of each bin
+     * The name of the histogram.
+     * 
+     * @return histogram name
      */
-    public double stepSize() {
-        return ( max - min ) / nbins;
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @return maximum x value covered by histogram
+     */
+    public double max() {
+        return max;
+    }
+
+    /**
+     * @return minimum x value covered by histogram
+     */
+    public double min() {
+        return min;
+    }
+
+    /**
+     * Get the number of bins in the histogram. The range of the histogram defined by min and max, and the range is
+     * divided into the number of returned.
+     * 
+     * @return number of bins
+     */
+    public int numberOfBins() {
+        return nbins;
+    }
+
+    /**
+     * The height of the overflow bin.
+     * 
+     * @return number of overflows
+     */
+    public double overflow() {
+        return overflow;
     }
 
     /**
@@ -230,6 +309,22 @@ public class Histogram {
             step += binWidth;
         }
         return series;
+    }
+
+    /**
+     * @return size of each bin
+     */
+    public double stepSize() {
+        return ( max - min ) / nbins;
+    }
+
+    /**
+     * The height of the underflow bin.
+     * 
+     * @return number of underflows
+     */
+    public double underflow() {
+        return underflow;
     }
 
     /**
@@ -267,118 +362,48 @@ public class Histogram {
     }
 
     /**
-     * The number of entries in the histogram (the number of times fill has been called).
+     * Determines the bin for a number in the histogram.
      * 
-     * @return number of entries
+     * @return info on which bin x falls in.
      */
-    public int entries() {
-        return entries;
-    }
-
-    /**
-     * The name of the histogram.
-     * 
-     * @return histogram name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Get the number of bins in the histogram. The range of the histogram defined by min and max, and the range is
-     * divided into the number of returned.
-     * 
-     * @return number of bins
-     */
-    public int numberOfBins() {
-        return nbins;
-    }
-
-    /**
-     * @return minimum x value covered by histogram
-     */
-    public double min() {
-        return min;
-    }
-
-    /**
-     * @return maximum x value covered by histogram
-     */
-    public double max() {
-        return max;
-    }
-
-    /**
-     * The height of the overflow bin.
-     * 
-     * @return number of overflows
-     */
-    public double overflow() {
-        return overflow;
-    }
-
-    /**
-     * The height of the underflow bin.
-     * 
-     * @return number of underflows
-     */
-    public double underflow() {
-        return underflow;
-    }
-
-    /**
-     * Returns the bin heights.
-     * 
-     * @return array of bin heights
-     */
-    public double[] getArray() {
-        return hist;
-    }
-
-    /**
-     * @param ghr
-     */
-    public void fill( DoubleMatrix1D ghr ) {
-        for ( int i = 0; i < ghr.size(); i++ ) {
-            this.fill( ghr.getQuick( i ) );
-        }
-
-    }
-
-    /**
-     * @return the number of items in the bin that has the most members.
-     */
-    public int getBiggestBinSize() {
-        int m = Integer.MIN_VALUE;
-        for ( double d : hist ) {
-            if ( d > m ) m = ( int ) d;
-        }
-        return m;
-    }
-
-    /**
-     * Find the bin below which i% of the values are contained. This is only approximate (especially if the number of
-     * bins is <~100)
-     * 
-     * @param q
-     * @return approximate quantile. Passing values of 0 and 100 is equivalent to min() and max() respectively.
-     */
-    public Double getApproximateQuantile( int q ) {
-        double t = underflow;
-        if ( q >= 100 ) {
-            return max;
-        }
-        if ( q <= 0 ) {
-            return min;
-        }
-
-        for ( int i = 0; i < hist.length; i++ ) {
-            t += hist[i];
-            if ( t / entries > q / 100.0 ) {
-                return getBinEdges()[i];
+    private BinInfo findBin( double x ) {
+        BinInfo bin = new BinInfo();
+        bin.isInRange = false;
+        bin.isUnderflow = false;
+        bin.isOverflow = false;
+        // first check if x is outside the range of the normal histogram bins
+        if ( x < min ) {
+            bin.isUnderflow = true;
+        } else if ( x > max ) {
+            bin.isOverflow = true;
+        } else {
+            // search for histogram bin into which x falls FIXME make this faster with a binary search
+            double binWidth = stepSize();
+            for ( int i = 0; i < nbins; i++ ) {
+                double highEdge = min + ( i + 1 ) * binWidth;
+                if ( x <= highEdge ) {
+                    bin.isInRange = true;
+                    bin.index = i;
+                    break;
+                }
             }
         }
+        return bin;
 
-        return max;
+    }
+
+    /**
+     * @param name
+     * @param nbins
+     */
+    private void init( String n, int nb ) {
+        this.name = n;
+        this.nbins = nb;
+        this.underflow = 0;
+        this.overflow = 0;
+        this.hist = new double[this.nbins];
+        for ( int i = 0; i < hist.length; i++ ) {
+            hist[i] = 0;
+        }
     }
 }

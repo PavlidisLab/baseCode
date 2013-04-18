@@ -113,6 +113,21 @@ public class TestStats extends TestCase {
         assertEquals( expectedReturn, actualReturn, 1e-5 );
     }
 
+    public final void testNumberOfDistinctValues() {
+        int actualReturn = Stats.numberofDistinctValues( new DoubleArrayList( new double[] { 1.0, 1.0, 3.0, 4.0, 5.0,
+                6.0 } ), 0.01 );
+        assertEquals( 5, actualReturn );
+
+        actualReturn = Stats.numberofDistinctValues( data1Nomissing, 0.01 );
+        assertEquals( 5, actualReturn );
+        actualReturn = Stats.numberofDistinctValues( new DoubleArrayList( new double[] { 1.0, 1.0, 3.0, 4.0, 4.00001,
+                5.0, 6.0 } ), 0.0001 );
+        assertEquals( 5, actualReturn );
+        actualReturn = Stats.numberofDistinctValues( new DoubleArrayList( new double[] { 1.0, 1.0, 3.0, 4.0, 4.00001,
+                5.0, 6.0 } ), 0.00001 );
+        assertEquals( 6, actualReturn );
+    }
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -133,8 +148,8 @@ public class TestStats extends TestCase {
                 0.487896010852323, 0.714714352227883, } );
 
     } /*
-         * @see TestCase#tearDown()
-         */
+       * @see TestCase#tearDown()
+       */
 
     @Override
     protected void tearDown() throws Exception {
