@@ -1,0 +1,8 @@
+label	(Intercept)	targets$TreatmentDHT
+Con1	1	0
+Con2	1	0
+Con3	1	0
+Con4	1	0
+DHT1	1	1
+DHT2	1	1
+DHT3	1	1

@@ -14,6 +14,7 @@
  */
 package ubic.basecode.math;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math.distribution.FDistribution;
 import org.apache.commons.math.distribution.FDistributionImpl;
 import org.junit.Test;
+
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
@@ -908,41 +911,74 @@ public class LeastSquaresFitTest {
     @Test
     public void testMatrixWeightedRegress() throws Exception {
 
-        DoubleMatrix2D vectorA = new DenseDoubleMatrix2D( new double[][] { { 1, 2, 3, 4, 5 }, { 1, 1, 0, 0, 0 } } );
-        DoubleMatrix2D vectorB = new DenseDoubleMatrix2D( new double[][] { { 1, 2, 2, 3, 3 }, { 2, 1, 5, 3, 4 } } );
+        DoubleMatrix2D dat = new DenseDoubleMatrix2D( new double[][] { { 1, 2, 3, 4, 5 }, { 1, 1, 6, 3, 2 } } );
+        DoubleMatrix2D des = new DenseDoubleMatrix2D( new double[][] { { 1, 1, 1, 1, 1 }, { 1, 2, 2, 3, 3 },
+                { 2, 1, 5, 3, 4 } } );
 
-        DoubleMatrix1D w = vectorA.viewRow( 0 ).copy().assign( Functions.inv );
+        DoubleMatrix2D w = dat.copy();
+        w.assign( dat );
         Algebra solver = new Algebra();
-        vectorA = solver.transpose( vectorA );
+        des = solver.transpose( des );
+        LeastSquaresFit fit = new LeastSquaresFit( des, dat, w );
 
-        LeastSquaresFit fit = new LeastSquaresFit( vectorA, vectorB, w );
-
-        DoubleMatrix2D coefficients = fit.getCoefficients();
-        DoubleMatrix2D residuals = fit.getResiduals();
-
-        assertEquals( -0.1933, coefficients.get( 0, 0 ), 0.0001 );
-        assertEquals( 0.7227, coefficients.get( 1, 0 ), 0.0001 );
-        assertEquals( 0.5630, coefficients.get( 2, 0 ), 0.0001 );
-        assertEquals( 7.0672, coefficients.get( 0, 1 ), 0.0001 );
-        assertEquals( -0.7731, coefficients.get( 1, 1 ), 0.0001 );
-        assertEquals( -4.3697, coefficients.get( 2, 1 ), 0.0001 );
-
-        double[][] expectedResiduals = new double[][] { { -0.092437, 0.184874, 0.0252101, 0.302521, -0.420168 },
-                { 0.0756303, -0.151261, 0.252101, -0.97479, 0.798319 } };
-
-        for ( int i = 0; i < expectedResiduals.length; i++ ) {
-            for ( int j = 0; j < expectedResiduals.length; j++ ) {
-                assertEquals( expectedResiduals[i][j], residuals.get( i, j ), 0.00001 );
-            }
+        // coefficients
+        DoubleMatrix2D actuals = solver.transpose( fit.getCoefficients() );
+        double[][] expected = new double[][] { { -1.7070, 1.7110, 0.3054 }, { 0.2092, -0.6642, 1.3640 } };
+        for ( int i = 0; i < expected.length; i++ ) {
+            assertArrayEquals( actuals.viewRow( i ).toArray(), expected[i], 0.1 );
         }
 
-        double[][] expectedFitted = new double[][] { { 1.09244, 1.81513, 1.97479, 2.69748, 3.42017 },
-                { 1.92437, 1.15126, 4.7479, 3.97479, 3.20168 } };
+        // fitted
+        actuals = fit.getFitted();
+        expected = new double[][] { { 0.6151, 2.0210, 3.2430, 4.3430, 4.6490 }, { 2.273, 0.245, 5.701, 2.309, 3.673 } };
+        for ( int i = 0; i < expected.length; i++ ) {
+            assertArrayEquals( actuals.viewRow( i ).toArray(), expected[i], 0.1 );
+        }
 
-        for ( int i = 0; i < expectedFitted.length; i++ ) {
-            for ( int j = 0; j < expectedResiduals.length; j++ ) {
-                assertEquals( expectedFitted[i][j], fit.getFitted().get( i, j ), 0.00001 );
-            }
+        // residuals
+        actuals = fit.getResiduals();
+        expected = new double[][] { { 0.38490, -0.02092, -0.24270, -0.34310, 0.35150 },
+                { -1.2730, 0.7550, 0.2986, 0.6910, -1.6730 } };
+        for ( int i = 0; i < expected.length; i++ ) {
+            assertArrayEquals( actuals.viewRow( i ).toArray(), expected[i], 0.1 );
+        }
+
+    }
+
+    /**
+     * Test data with many missing values, two factors
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testMatrixWeightedMeanVariance() throws Exception {
+        DoubleMatrixReader f = new DoubleMatrixReader();
+        DoubleMatrix<String, String> testMatrix = f
+                .read( this.getClass().getResourceAsStream( "/data/lmtest2.dat.txt" ) );
+
+        StringMatrixReader of = new StringMatrixReader();
+        StringMatrix<String, String> sampleInfo = of.read( this.getClass()
+                .getResourceAsStream( "/data/lmtest3.des.txt" ) );
+
+        DesignMatrix d = new DesignMatrix( sampleInfo, true );
+
+        // Coefficients not estimable: y$fact.8095fv_60796
+        // fit$rank < ncol(design)
+        MeanVarianceEstimator est = new MeanVarianceEstimator( d, testMatrix );
+        DoubleMatrix2D w2D = est.getWeights();
+        LeastSquaresFit fit = new LeastSquaresFit( d.getDoubleMatrix(), est.getNormalizedValue(), w2D );
+        DoubleMatrix2D actuals = fit.getCoefficients().viewDice();
+        
+        // note: column 5 has 0's and 1's reversed compared to des.txt!
+        // so signs in column five from R's output have been reversed
+        int[] expectedIndices = new int[] { 0, 40, 80 };
+        double[][] expected = new double[][] {
+                { 13.32, 0.1264, -0.1402, -0.1102, -0.1437, -0.07242, Double.NaN, 0.2211, 0.05124 },
+                { 13.08, 0.2029, 0.1464, 0.03702, 0.342, -0.09954, Double.NaN, 0.02198, 0.1536 },
+                { 13.4, 0.1718, 0.1385, 0.1185, -0.273, 0.0379, Double.NaN, -0.004468, 0.04201 } };
+
+        for ( int i = 0; i < expectedIndices.length; i++ ) {
+            assertArrayEquals( actuals.viewRow( expectedIndices[i] ).toArray(), expected[i], 0.1 );
         }
     }
 }

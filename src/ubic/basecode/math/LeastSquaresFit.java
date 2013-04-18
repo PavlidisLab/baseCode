@@ -217,51 +217,24 @@ public class LeastSquaresFit {
     }
 
     /**
-     * Least squares fit between two matrices. Always adds an intercept!
+     * Least squares fit between two matrices
      * 
      * @param vectorA Design
      * @param vectorB Data
      * @param weights to be used in modifying the influence of the observations in vectorB.
      */
-    public LeastSquaresFit( DoubleMatrix2D A, DoubleMatrix2D b, final DoubleMatrix1D weights ) {
+    public LeastSquaresFit( DoubleMatrix2D A, DoubleMatrix2D b, final DoubleMatrix2D weights ) {
 
         assert A.rows() == b.columns();
-        assert A.rows() == weights.size();
-        this.A = new DenseDoubleMatrix2D( A.rows(), A.columns() + 1 );
-        this.b = new DenseDoubleMatrix2D( b.rows(), b.columns() );
-        this.weights = new DenseDoubleMatrix2D( 1, weights.size() );
+        assert b.columns() == weights.columns();
+        assert b.rows() == weights.rows();
 
-        for ( int j = 0; j < A.rows(); j++ ) {
-            for ( int i = 0; i < A.columns(); i++ ) {
-                double ws = weights.get( j );
-                assert ws > 0 && !Double.isInfinite( ws ) && !Double.isNaN( ws );
-                this.weights.set( 0, i, ws );
-                ws = Math.sqrt( ws );
-                this.A.set( j, 0, ws );
-                this.A.set( j, i + 1, A.get( j, i ) * ws );
-            }
-        }
+        this.A = A;
+        this.b = b;
+        this.weights = weights;
 
-        for ( int j = 0; j < b.rows(); j++ ) {
-            for ( int i = 0; i < b.columns(); i++ ) {
-                double ws = Math.sqrt( weights.get( i ) );
-                this.b.set( j, i, b.get( j, i ) * ws );
-            }
-        }
+        wlsf();
 
-        lsf();
-
-        residuals = residuals.forEachNonZero( new IntIntDoubleFunction() {
-            @Override
-            public double apply( int row, int col, double nonZeroValue ) {
-                return nonZeroValue / Math.sqrt( weights.get( col ) );
-            }
-        } );
-
-        for ( int j = 0; j < b.rows(); j++ ) {
-            DoubleMatrix1D f2 = b.viewRow( j ).copy().assign( residuals.viewRow( j ), Functions.minus );
-            this.fitted.viewRow( j ).assign( f2 );
-        }
     }
 
     /**
@@ -513,6 +486,10 @@ public class LeastSquaresFit {
 
     public DoubleMatrix2D getResiduals() {
         return residuals;
+    }
+
+    public int getResidualDof() {
+        return residualDof;
     }
 
     /**
@@ -835,6 +812,88 @@ public class LeastSquaresFit {
     }
 
     /**
+     * Internal function that does the hard work. The weighted version which works like 'lm.wfit()' in R. TODO cleanup,
+     * forget about sigma!
+     */
+    private void wlsf() {
+
+        Algebra solver = new Algebra();
+
+        /*
+         * weight A and b: wts <- sqrt(w) A * wts, row * wts
+         */
+        ArrayList<DoubleMatrix2D> AwList = new ArrayList<DoubleMatrix2D>( b.rows() );
+        ArrayList<DoubleMatrix1D> bList = new ArrayList<DoubleMatrix1D>( b.rows() );
+        ArrayList<DoubleMatrix1D> wList = new ArrayList<DoubleMatrix1D>( b.rows() );
+        for ( int i = 0; i < b.rows(); i++ ) {
+            DoubleMatrix1D wts = this.weights.viewRow( i ).copy().assign( Functions.sqrt );
+            DoubleMatrix1D bw = b.viewRow( i ).copy().assign( wts, Functions.mult );
+            DoubleMatrix2D Aw = A.copy();
+            for ( int j = 0; j < Aw.columns(); j++ ) {
+                Aw.viewColumn( j ).assign( wts, Functions.mult );
+            }
+            AwList.add( Aw );
+            bList.add( bw );
+            wList.add( wts );
+        }
+
+        double[][] rawResult = new double[b.rows()][];
+
+        /*
+         * Missing values result in the addition of a fair amount of extra code.
+         */
+        if ( this.hasMissing ) {
+
+            for ( int i = 0; i < b.rows(); i++ ) {
+                DoubleMatrix1D bw = bList.get( i );
+                DoubleMatrix2D Aw = AwList.get( i );
+                DoubleMatrix1D wts = wList.get( i );
+                DoubleMatrix1D withoutMissing = ordinaryLeastSquaresWithMissing( bw, Aw );
+                if ( withoutMissing == null ) {
+                    rawResult[i] = new double[A.columns()];
+                } else {
+                    rawResult[i] = withoutMissing.toArray();
+                }
+
+            }
+
+        } else {
+
+            // do QR for each row because A is scaled by different row weights
+            for ( int i = 0; i < b.rows(); i++ ) {
+                DoubleMatrix1D bw = bList.get( i );
+                DoubleMatrix2D Aw = AwList.get( i );
+                DoubleMatrix1D wts = wList.get( i );
+                DoubleMatrix2D bw2D = new DenseDoubleMatrix2D( 1, bw.size() );
+                bw2D.viewRow( 0 ).assign( bw );
+                this.qr = new QRDecompositionPivoting( Aw );
+                this.qrs.add( this.qr );
+                rawResult[i] = qr.solve( solver.transpose( bw2D ) ).viewColumn( 0 ).toArray();
+                this.residualDof = bw.size() - qr.getRank();
+                if ( residualDof <= 0 ) {
+                    throw new IllegalArgumentException( "No residual degrees of freedom to fit the model"
+                            + diagnosis( qr ) );
+                }
+            }
+
+        }
+
+        this.coefficients = solver.transpose( new DenseDoubleMatrix2D( rawResult ) );
+
+        assert this.assign.isEmpty() || this.assign.size() == this.coefficients.rows() : assign.size()
+            + " != # coefficients " + this.coefficients.rows();
+        assert this.coefficients.rows() == A.columns();
+
+        this.fitted = solver.transpose( MatrixUtil.multWithMissing( A, coefficients ) );
+
+        if ( this.hasMissing ) {
+            MatrixUtil.maskMissing( b, fitted );
+        }
+
+        this.residuals = b.copy().assign( fitted, Functions.minus );
+    }
+
+    /**
      * Internal function that does the hard work.
      */
     private void lsf() {
@@ -953,9 +1012,9 @@ public class LeastSquaresFit {
         if ( missing ) {
             rqr = new QRDecompositionPivoting( designWithoutMissing );
         } else {
-            if ( this.qr == null ) {
-                qr = new QRDecompositionPivoting( des );
-            }
+            // in the case of weighted least squares, the Design matrix has different weights
+            // for every row observation, so recompute qr everytime
+            qr = new QRDecompositionPivoting( des );
             rqr = qr;
         }
 

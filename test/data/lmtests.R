@@ -301,7 +301,7 @@ object<-lm(t(dat["1456759_at",]) ~ des$Genotype  + des$OrganismPart  + des$Treat
 summary(object)
 anova(object)
 
-# testVectorWeightedRegress (1D)
+# LeastSquaresFitTest.testVectorWeightedRegress
 x<-c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10 );
 y<-c(1, 2, 2, 3, 3, 4, 4, 5, 5, 6);
 summary(lm(y ~ x))
@@ -315,14 +315,67 @@ mm<-model.matrix(y ~ x)
  lm.wfit(mm, y, w =w) 
 lm.fit(mm*sqrt(w), y*sqrt(w))
 
-# testMatrixWeightedRegress (2D)
+# LeastSquaresFitTest.testMatrixWeightedRegress
 x<-matrix(nrow=2, ncol=5)
 x[1,]<-c(1, 2, 3, 4, 5)
-x[2,]<-c(1, 1, 0, 0, 0)
-y<-matrix(nrow=2, ncol=5)
-y[1,]<-c(1, 2, 2, 3, 3)
-y[2,]<-c(2, 1, 5, 3, 4)
-w<-1/x[1,]
-fit<-lm(t(y) ~ t(x), w=w)
+x[2,]<-c(1, 1, 6, 3, 2)
+design<-matrix(nrow=3, ncol=5)
+design[1,]<-1
+design[2,]<-c(1, 2, 2, 3, 3)
+design[3,]<-c(2, 1, 5, 3, 4)
+design<-t(design)
+w<-x
+fit<-lm.wfit(design, x[1,], w=w[1,])
 coefficients(fit)
 residuals(fit)
+fit$fitted.values
+fit<-lm.wfit(design, x[2,], w=w[2,])
+coefficients(fit)
+residuals(fit)
+fit$fitted.values
+
+# LeastSquaresFitTest.testMatrixWeightedMeanVariance
+library(limma)
+x<-read.csv(header=T,row.names=1,'lmtest2.dat.txt',sep='\t')
+design<-read.csv(header=T,row.names=1,'lmtest3.des.txt',sep='\t')
+design<-as.matrix(design)
+elist<-voom(x,design=design)
+# these three calls should be similar
+fit<-lmFit(elist$E,design=design,weights=elist$weights)
+fitRow1<-lm.wfit(x=design,y=elist$E[1,],w=elist$weights[1,])
+q<-qr(design*sqrt(elist$weights[1,]))
+signif(coefficients(fit)[c(1,41,81),], 4)
+signif(coefficients(fitRow1), 4)
+signif(qr.coef(q,elist$E[1,]*sqrt(elist$weights[1,])),4)
+
+# TestMathUtil.testApprox()
+k<-approxfun(x=c(9:0),y=1/c(1:10)^2, rule=2)
+k(c(9:0)+0.5)
+
+# MeanVarianceEstimatorTest.testColSumsWithMissing
+x<-matrix(nrow=2, ncol=3)
+x[1,]<-c(1, 2, NA)
+x[2,]<-c(4, 5, 6)
+colSums(x, na.rm=T)
+
+# MeanVarianceEstimatorTest.testCountsPerMillionWithMissing
+x<-matrix(nrow=2, ncol=3)
+x[1,]<-c(1, 2, NA)
+x[2,]<-c(4, 5, 6)
+lib.size<-colSums(x, na.rm=T)
+t(log2(t(x+0.5)/(lib.size+1)*1e6))
+
+# MeanVarianceEstimatorTest.testGetWeights
+x<-read.table(header=T,row.names=1,'lmtest11.dat.txt')
+y<-read.table(header=T,row.names=1,'lmtest11.des.txt')
+design<-model.matrix( ~ y$targets.TreatmentDHT )
+w<-voom(x,design)
+w$weights[1,]
+w$weights[100,]
+w$weights[150,]
+
+# QRDecompositionTest.testScaledDesign
+data <- read.csv('lmtest2.dat.txt',header=T,row.names=1,sep='\t')
+design<-read.table('lmtest3.des.txt',row.names=1,header=T)
+q<-qr(design*2)
+q$qr[1:5,1:5]
