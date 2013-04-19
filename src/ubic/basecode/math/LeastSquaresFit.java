@@ -217,7 +217,7 @@ public class LeastSquaresFit {
     }
 
     /**
-     * Least squares fit between two matrices
+     * Weighted least squares fit between two matrices
      * 
      * @param vectorA Design
      * @param vectorB Data
@@ -237,6 +237,31 @@ public class LeastSquaresFit {
 
     }
 
+    /**
+     * Preferred interface for weighted least squares fit between two matrices
+     * 
+     * @param designMatrix
+     * @param data
+     * @param weights to be used in modifying the influence of the observations in vectorB.
+     */
+    public LeastSquaresFit( DesignMatrix designMatrix, DoubleMatrix2D b, final DoubleMatrix2D weights ) {
+
+        this.designMatrix = designMatrix;
+        DoubleMatrix2D X = designMatrix.getDoubleMatrix();
+        this.assign = designMatrix.getAssign();
+        this.terms = designMatrix.getTerms();
+        this.A = X;
+        this.b = b;
+        boolean hasInterceptTerm = this.terms.contains( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME );
+        this.hasIntercept = designMatrix.hasIntercept();
+        assert hasInterceptTerm == this.hasIntercept : diagnosis( null );
+        
+        this.weights = weights;
+
+        wlsf();
+
+    }
+    
     /**
      * Least squares fit between two vectors. Always adds an intercept!
      * 
@@ -824,7 +849,6 @@ public class LeastSquaresFit {
          */
         ArrayList<DoubleMatrix2D> AwList = new ArrayList<DoubleMatrix2D>( b.rows() );
         ArrayList<DoubleMatrix1D> bList = new ArrayList<DoubleMatrix1D>( b.rows() );
-        ArrayList<DoubleMatrix1D> wList = new ArrayList<DoubleMatrix1D>( b.rows() );
         for ( int i = 0; i < b.rows(); i++ ) {
             DoubleMatrix1D wts = this.weights.viewRow( i ).copy().assign( Functions.sqrt );
             DoubleMatrix1D bw = b.viewRow( i ).copy().assign( wts, Functions.mult );
@@ -834,7 +858,6 @@ public class LeastSquaresFit {
             }
             AwList.add( Aw );
             bList.add( bw );
-            wList.add( wts );
         }
 
         double[][] rawResult = new double[b.rows()][];
@@ -847,23 +870,22 @@ public class LeastSquaresFit {
             for ( int i = 0; i < b.rows(); i++ ) {
                 DoubleMatrix1D bw = bList.get( i );
                 DoubleMatrix2D Aw = AwList.get( i );
-                DoubleMatrix1D wts = wList.get( i );
                 DoubleMatrix1D withoutMissing = ordinaryLeastSquaresWithMissing( bw, Aw );
                 if ( withoutMissing == null ) {
                     rawResult[i] = new double[A.columns()];
                 } else {
                     rawResult[i] = withoutMissing.toArray();
                 }
-
             }
 
         } else {
 
             // do QR for each row because A is scaled by different row weights
+            // see lm.series() in R
+            // FIXME Find a way to speed this up
             for ( int i = 0; i < b.rows(); i++ ) {
                 DoubleMatrix1D bw = bList.get( i );
                 DoubleMatrix2D Aw = AwList.get( i );
-                DoubleMatrix1D wts = wList.get( i );
                 DoubleMatrix2D bw2D = new DenseDoubleMatrix2D( 1, bw.size() );
                 bw2D.viewRow( 0 ).assign( bw );
                 this.qr = new QRDecompositionPivoting( Aw );
@@ -875,7 +897,6 @@ public class LeastSquaresFit {
                             + diagnosis( qr ) );
                 }
             }
-
         }
 
         this.coefficients = solver.transpose( new DenseDoubleMatrix2D( rawResult ) );
@@ -1014,7 +1035,9 @@ public class LeastSquaresFit {
         } else {
             // in the case of weighted least squares, the Design matrix has different weights
             // for every row observation, so recompute qr everytime
-            qr = new QRDecompositionPivoting( des );
+            if ( this.qr == null || !this.A.equals( des ) ) {
+                qr = new QRDecompositionPivoting( des );
+            }
             rqr = qr;
         }
 
