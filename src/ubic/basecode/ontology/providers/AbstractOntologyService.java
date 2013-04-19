@@ -204,6 +204,14 @@ public abstract class AbstractOntologyService {
     }
 
     /**
+     * Do not do this except before re-indexing.
+     */
+    public void closeIndex() {
+        if ( index == null ) return;
+        index.close();
+    }
+
+    /**
      * Looks for any ontologyTerms that match the given search string. Obsolete terms are filtered out.
      * 
      * @param search

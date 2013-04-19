@@ -486,8 +486,11 @@ public class FileTools {
 
             if ( log.isDebugEnabled() ) log.debug( "Deleting file " + file.getAbsolutePath() + "." );
 
-            file.getAbsoluteFile().delete();
-            numDeleted++;
+            if ( file.delete() ) {
+                numDeleted++;
+            } else {
+                log.warn( "Failed to delete: " + file );
+            }
 
         }
         log.info( "Deleted " + numDeleted + " files." );
@@ -508,7 +511,6 @@ public class FileTools {
         Iterator<File> iter = directories.iterator();
         while ( iter.hasNext() ) {
             File dir = iter.next();
-
             if ( dir.listFiles().length == 0 ) {
                 dir.getAbsoluteFile().delete();
                 numDeleted++;
@@ -519,16 +521,14 @@ public class FileTools {
 
         /* The top level directory */
         if ( directory.listFiles().length == 0 ) {
-            log.warn( "Deleting top level directory." );
+            log.warn( "Deleting " + directory.getAbsolutePath() );
             directory.getAbsoluteFile().delete();
             numDeleted++;
+        } else {
+            log.info( "Directory " + directory.getAbsolutePath() + " not empty.  Will not delete." );
         }
 
-        else {
-            log.info( "Top level directory " + directory.getAbsolutePath() + " not empty.  Will not delete." );
-        }
-
-        log.info( "Deleted " + numDeleted + " directories." );
+        if ( numDeleted > 1 ) log.info( "Deleted " + numDeleted + " directories." );
         return numDeleted;
     }
 

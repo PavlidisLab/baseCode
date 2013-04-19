@@ -43,8 +43,12 @@ public class OntologyIndexer {
 
     private static Log log = LogFactory.getLog( OntologyIndexer.class.getName() );
 
+    /**
+     * @param name of the ontology e.g. fmaOntology
+     */
     public static void eraseIndex( String name ) {
         File indexdir = getIndexPath( name );
+
         for ( File f : indexdir.listFiles() ) {
             f.delete();
         }
@@ -92,6 +96,11 @@ public class OntologyIndexer {
         }
     }
 
+    /**
+     * @param name
+     * @param model
+     * @return
+     */
     public static IndexLARQ indexOntology( String name, OntModel model ) {
         return indexOntology( name, model, false );
     }
@@ -122,7 +131,9 @@ public class OntologyIndexer {
      * @return
      */
     private static IndexLARQ index( String name, OntModel model ) {
+        eraseIndex( name );
 
+        // double-check.
         File indexdir = getIndexPath( name );
 
         if ( indexdir.exists() ) {
