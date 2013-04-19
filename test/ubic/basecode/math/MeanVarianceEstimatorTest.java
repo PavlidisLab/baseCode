@@ -108,9 +108,42 @@ public class MeanVarianceEstimatorTest {
         double[][] expected = new double[][] { { 0.70312, 0.76108, 0.88965, 0.92339, 0.92094, 0.91994, 0.70312 },
                 { 2.7991, 3.3145, 4.1011, 4.3082, 1.415, 1.4133, 0.70312 },
                 { 29.57, 32.564, 36.943, 38.058, 41.13, 41.094, 23.419 } };
+
         for ( int i = 0; i < expectedIndices.length; i++ ) {
-            assertArrayEquals( actuals.viewRow( expectedIndices[i] ).toArray(), expected[i], 0.1 );
+            assertArrayEquals( expected[i], actuals.viewRow( expectedIndices[i] ).toArray(), 0.1 );
         }
     }
 
+    /**
+     * Duplicate row
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testDuplicateRows() throws Exception {
+        DoubleMatrixReader f = new DoubleMatrixReader();
+        DoubleMatrix<String, String> testMatrix = f.read( this.getClass()
+                .getResourceAsStream( "/data/lmtest11.dat.txt" ) );
+
+        StringMatrixReader of = new StringMatrixReader();
+        StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
+                "/data/lmtest11.des.txt" ) );
+
+        // add a duplicate entry with a different row id but similar expression levels
+        DoubleMatrix2D duplMatrix = new DenseDoubleMatrix2D( testMatrix.asDoubles() );
+        duplMatrix.viewRow( 1 ).assign( duplMatrix.viewRow( 0 ) );
+
+        DesignMatrix d = new DesignMatrix( sampleInfo, true );
+        MeanVarianceEstimator est = new MeanVarianceEstimator( d, duplMatrix );
+        DoubleMatrix2D actuals = est.getWeights();
+
+        int[] expectedIndices = new int[] { 0, 1, 149 };
+        double[][] expected = new double[][] {
+                { 0.755036, 0.812033, 0.938803, 0.973691, 0.970172, 0.968853, 0.755036 },
+                { 0.755036, 0.812033, 0.938803, 0.973691, 0.970172, 0.968853, 0.755036 },
+                { 29.462294, 32.386751, 36.690275, 37.844764, 40.823251, 40.776166, 23.402288 } };
+        for ( int i = 0; i < expectedIndices.length; i++ ) {
+            assertArrayEquals( expected[i], actuals.viewRow( expectedIndices[i] ).toArray(), 0.1 );
+        }
+    }
 }

@@ -14,6 +14,9 @@
  */
 package ubic.basecode.math;
 
+import java.util.Map;
+import java.util.TreeMap;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.math.ArgumentOutsideDomainException;
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.analysis.interpolation.LinearInterpolator;
@@ -34,7 +37,7 @@ import cern.jet.stat.Descriptive;
 
 /**
  * Estimate mean-variance relationship and use this to compute weights for least squares fitting. R's limma.voom()
- * Charity Law and Gordon Smyth. Data matrices with NaNs are not currently supported. 
+ * Charity Law and Gordon Smyth. Data matrices with NaNs are not currently supported.
  * 
  * @author ptan
  * @version $Id $
@@ -87,6 +90,18 @@ public class MeanVarianceEstimator {
 
         this.designMatrix = designMatrix;
         this.b = new DenseDoubleMatrix2D( data.asArray() );
+
+        voom();
+    }
+
+    /**
+     * @param designMatrix
+     * @param data a count matrix
+     */
+    public MeanVarianceEstimator( DesignMatrix designMatrix, DoubleMatrix2D data ) {
+
+        this.designMatrix = designMatrix;
+        this.b = data;
 
         voom();
     }
@@ -243,13 +258,16 @@ public class MeanVarianceEstimator {
         sy.assign( F.chain( F.sqrt, F.div( dof ) ) );
         sy.assign( F.sqrt );
 
-        // only accepts array in strictly increasing order
+        // only accepts array in strictly increasing order (drop duplicates)
         // so combine sx and sy and sort
         assert sx.size() == sy.size();
-        DoubleMatrix2D xy = new DenseDoubleMatrix2D( sx.size(), 2 );
-        xy.viewColumn( 0 ).assign( sx );
-        xy.viewColumn( 1 ).assign( sy );
-        xy = xy.viewSorted( 0 );
+        Map<Double, Double> map = new TreeMap<Double, Double>();
+        for ( int i = 0; i < sx.size(); i++ ) {
+            map.put( sx.get( i ), sy.get( i ) );
+        }
+        DoubleMatrix2D xy = new DenseDoubleMatrix2D( map.size(), 2 );
+        xy.viewColumn( 0 ).assign( ArrayUtils.toPrimitive( map.keySet().toArray( new Double[0] ) ) );
+        xy.viewColumn( 1 ).assign( ArrayUtils.toPrimitive( map.values().toArray( new Double[0] ) ) );
 
         // in R:
         // lowess(c(1:5),c(1:5)^2,f=0.5,iter=3)

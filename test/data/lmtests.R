@@ -379,3 +379,13 @@ data <- read.csv('lmtest2.dat.txt',header=T,row.names=1,sep='\t')
 design<-read.table('lmtest3.des.txt',row.names=1,header=T)
 q<-qr(design*2)
 q$qr[1:5,1:5]
+
+# MeanVarianceEstimatorTest.testDuplicateRows
+x<-read.table(header=T,row.names=1,'lmtest11.dat.txt')
+x[2,]<-x[1,]
+y<-read.table(header=T,row.names=1,'lmtest11.des.txt')
+design<-model.matrix( ~ y$targets.TreatmentDHT )
+w<-voom(x,design)
+w$weights[1,]
+w$weights[2,]
+w$weights[150,]
