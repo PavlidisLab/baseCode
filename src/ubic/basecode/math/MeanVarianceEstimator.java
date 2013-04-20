@@ -14,6 +14,10 @@
  */
 package ubic.basecode.math;
 
+import java.awt.Color;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Map;
 import java.util.TreeMap;
 import org.apache.commons.lang.ArrayUtils;
@@ -22,6 +26,15 @@ import org.apache.commons.math.MathException;
 import org.apache.commons.math.analysis.interpolation.LinearInterpolator;
 import org.apache.commons.math.analysis.interpolation.LoessInterpolator;
 import org.apache.commons.math.analysis.polynomials.PolynomialSplineFunction;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import cern.colt.function.IntIntDoubleFunction;
@@ -72,6 +85,17 @@ public class MeanVarianceEstimator {
      * Normalized variables on log2 scale
      */
     private DoubleMatrix2D E;
+
+    /**
+     * Matrix that contains the mean and variance of the data. Matrix is sorted by increasing mean. Useful for plotting.
+     * mean <- fit$Amean + mean(log2(lib.size+1)) - log2(1e6) variance <- sqrt(fit$sigma)
+     */
+    private DoubleMatrix2D meanVariance;
+
+    /**
+     * Loess fit (x, y)
+     */
+    private DoubleMatrix2D loess;
 
     /**
      * Size of each library
@@ -229,7 +253,6 @@ public class MeanVarianceEstimator {
         // calculate fit$Amean by doing rowSums(CPM) (see limma.getEAWP())
         DoubleMatrix1D Amean = MeanVarianceEstimator.colSums( E.viewDice() ).copy().assign( F.div( E.columns() ) );
 
-        // TODO plot mean variance
         // sx <- fit$Amean + mean(log2(lib.size+1)) - log2(1e6)
         DoubleMatrix1D sx = Amean.copy();
         sx.assign( F.plus( libSize.copy().assign( F.chain( F.log2, F.plus( 1 ) ) ).zSum() / libSize.size() ) );
@@ -272,12 +295,14 @@ public class MeanVarianceEstimator {
         // in R:
         // lowess(c(1:5),c(1:5)^2,f=0.5,iter=3)
         // Note: we start to loose some precision here in comparison with R's lowess
-        double loess[] = null;
+        DoubleMatrix2D loess = new DenseDoubleMatrix2D( xy.rows(), xy.columns() );
         try {
             // fit a lowess curve
             LoessInterpolator loessInterpolator = new LoessInterpolator( MeanVarianceEstimator.BANDWIDTH,
                     MeanVarianceEstimator.ROBUSTNESS_ITERS );
-            loess = loessInterpolator.smooth( xy.viewColumn( 0 ).toArray(), xy.viewColumn( 1 ).toArray() );
+            double[] loessY = loessInterpolator.smooth( xy.viewColumn( 0 ).toArray(), xy.viewColumn( 1 ).toArray() );
+            loess.viewColumn( 0 ).assign( xy.viewColumn( 0 ) );
+            loess.viewColumn( 1 ).assign( loessY );
         } catch ( MathException e ) {
             e.printStackTrace();
             weights = null;
@@ -341,7 +366,8 @@ public class MeanVarianceEstimator {
             }
         }
         assert loess != null;
-        double[] yInterpolate = MeanVarianceEstimator.approx( xy.viewColumn( 0 ).toArray(), loess, xInterpolate );
+        double[] yInterpolate = MeanVarianceEstimator.approx( loess.viewColumn( 0 ).toArray(), loess.viewColumn( 1 )
+                .toArray(), xInterpolate );
 
         // 1D to 2D
         idx = 0;
@@ -355,6 +381,70 @@ public class MeanVarianceEstimator {
         this.lsf = lsf;
         this.weights = weights;
         this.E = E;
+        this.meanVariance = xy;
+        this.loess = loess;
+    }
+
+    /**
+     * Prepares mean-variance data matrix to JFree format
+     */
+    private XYDataset createPlotDataset() {
+        assert meanVariance != null;
+        assert meanVariance.columns() == 2;
+
+        // mean and variance of each gene
+        XYSeries series = new XYSeries( "Mean-variance" );
+        for ( int i = 0; i < meanVariance.rows(); i++ ) {
+            series.add( meanVariance.get( i, 0 ), meanVariance.get( i, 1 ) );
+        }
+
+        // loess fit trend line
+        XYSeries loessSeries = new XYSeries( "Lowess" );
+        for ( int i = 0; i < loess.rows(); i++ ) {
+            loessSeries.add( loess.get( i, 0 ), loess.get( i, 1 ) );
+        }
+
+        XYSeriesCollection dataset = new XYSeriesCollection();
+        dataset.addSeries( series );
+        dataset.addSeries( loessSeries );
+
+        return dataset;
+    }
+
+    /**
+     * Writes out the meanVariance scatter plot.
+     * 
+     * @param outputFilename
+     */
+    public void plot( String outputFilename ) {
+
+        XYDataset dataset = createPlotDataset();
+
+        JFreeChart chart = ChartFactory.createScatterPlot( "Mean-variance trend", "mean = log2(counts + 0.5)",
+                "variance = sqrt(sigma)", dataset, PlotOrientation.VERTICAL, false, false, false );
+
+        // customize look
+        final XYPlot plot = chart.getXYPlot();
+        plot.setBackgroundPaint( Color.white );
+        final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+        renderer.setSeriesPaint( 0, Color.black );
+        renderer.setSeriesPaint( 1, Color.red );
+        renderer.setSeriesLinesVisible( 0, false );
+        renderer.setSeriesLinesVisible( 1, true );
+        renderer.setSeriesShapesVisible( 1, false );
+
+        plot.setRenderer( 0, renderer );
+
+        try {
+            int size = 500;
+            OutputStream os = new FileOutputStream( outputFilename );
+            ChartUtilities.writeChartAsPNG( os, chart, 500, size );
+            os.close();
+            System.out.println( "Mean-variance plot written to " + outputFilename );
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
+
     }
 
     /**

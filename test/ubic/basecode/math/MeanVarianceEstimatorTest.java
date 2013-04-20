@@ -17,6 +17,8 @@ package ubic.basecode.math;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -112,6 +114,9 @@ public class MeanVarianceEstimatorTest {
         for ( int i = 0; i < expectedIndices.length; i++ ) {
             assertArrayEquals( expected[i], actuals.viewRow( expectedIndices[i] ).toArray(), 0.1 );
         }
+        
+        String outputFilename = System.getProperty( "java.io.tmpdir" ) + File.separator + "meanVariance.png";
+        est.plot( outputFilename );
     }
 
     /**
