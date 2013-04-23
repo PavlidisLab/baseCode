@@ -440,7 +440,6 @@ public class MeanVarianceEstimator {
             OutputStream os = new FileOutputStream( outputFilename );
             ChartUtilities.writeChartAsPNG( os, chart, 500, size );
             os.close();
-            System.out.println( "Mean-variance plot written to " + outputFilename );
         } catch ( IOException e ) {
             throw new RuntimeException( e );
         }
