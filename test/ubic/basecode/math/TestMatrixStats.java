@@ -77,6 +77,13 @@ public class TestMatrixStats {
     }
 
     @Test
+    public final void testConvertToLog2Cpm() {
+        double expectedReturn = 17.665;
+        MatrixStats.convertToLog2Cpm( testdata, null );
+        assertEquals( "return value", expectedReturn, testdata.get( 9, 3 ), 0.001 );
+    }
+
+    @Test
     public final void testConvertLog() {
         DoubleMatrix<String, String> copy = testdata.copy();
 

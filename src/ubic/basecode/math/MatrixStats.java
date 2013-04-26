@@ -19,6 +19,7 @@
 package ubic.basecode.math;
 
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix1D;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.SparseDoubleMatrix;
 import cern.colt.function.DoubleFunction;
@@ -201,6 +202,35 @@ public class MatrixStats {
             row.assign( Functions.div( v ) );
             for ( int i = 0; i < row.size(); i++ ) {
                 matrix.set( j, i, row.get( i ) );
+            }
+        }
+    }
+
+    /**
+     * Convert the matrix to log2 counts per million. Equivalent to <code>t(log2(t(counts+0.5)/(lib.size+1)*1e6))</code>
+     * in R.
+     * 
+     * @param matrix
+     * @param librarySize if null, it will default to <code>colSums(matrix)</code>.
+     */
+    public static <R, C> void convertToLog2Cpm( DoubleMatrix<R, C> matrix, DoubleMatrix1D librarySize ) {
+
+        if ( librarySize == null ) {
+            librarySize = new DenseDoubleMatrix1D( matrix.columns() );
+            for ( int i = 0; i < librarySize.size(); i++ ) {
+                librarySize.set( i, DescriptiveWithMissing.sum( new DoubleArrayList( matrix.getColumn( i ) ) ) );
+            }
+        }
+
+        assert librarySize.size() == matrix.columns();
+
+        for ( int j = 0; j < matrix.rows(); j++ ) {
+            DoubleMatrix1D row = matrix.viewRow( j );
+            for ( int i = 0; i < row.size(); i++ ) {
+                double val = matrix.get( j, i );
+                val = ( val + 0.5 ) / ( librarySize.get( i ) + 1.0 ) * Math.pow( 10, 6 );
+                val = Math.log( val ) / Math.log( 2.0 );
+                matrix.set( j, i, val );
             }
         }
     }

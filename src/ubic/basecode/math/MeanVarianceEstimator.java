@@ -159,7 +159,7 @@ public class MeanVarianceEstimator {
     }
 
     /**
-     * Convert counts to counts-per-million In R: y <- t(log2(t(counts+0.5)/(lib.size+1)*1e6))
+     * Convert counts to log2 counts-per-million In R: y <- t(log2(t(counts+0.5)/(lib.size+1)*1e6))
      * 
      * @param counts raw counts
      * @param libSize library size
@@ -264,7 +264,7 @@ public class MeanVarianceEstimator {
 
     /**
      * First ensures that x values are strictly increasing and performs a loess fit afterwards. The loess fit are
-     * determined by BANDWIDTH and ROBUSTNESS_ITERS.
+     * determined by <code>BANDWIDTH</code> and <code>ROBUSTNESS_ITERS</code>.
      * 
      * @param xy
      * @return loessFit
