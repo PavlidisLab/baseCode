@@ -389,3 +389,19 @@ w<-voom(x,design)
 w$weights[1,]
 w$weights[2,]
 w$weights[150,]
+
+# MeanVarianceEstimatorTest.testMeanVarianceNoDesignWithMissing
+cpm <- function(x) {
+    lib.size <- colSums(x, na.rm=T)
+    t(log2(t(x+0.5)/(lib.size+1)*1e6))
+}
+stdVar <- function(x) { # R's var() is a bit different, probably from stdev^2
+     sum((x-mean(x,na.rm=T))^2/(length(which(!is.na(x)))),na.rm=T)
+}
+x<-read.table('example.madata.withmissing.small.txt', row.names=1, header=T, sep='\t')
+x<-cpm(x)
+d<-data.frame(x=(rowMeans(x,na.rm=T)), y=(apply(x,1,stdVar)))
+l<-lowess(x=d$x, y=d$y, f=0.5, iter=3) # lowess doesn't handle missing values
+plot(x=d$x, y=d$y, pch=21, bg='black')
+lines(x=l$x, y=l$y, col='red')
+

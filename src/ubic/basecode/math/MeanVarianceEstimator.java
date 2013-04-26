@@ -21,6 +21,8 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.TreeMap;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math.ArgumentOutsideDomainException;
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.analysis.interpolation.LinearInterpolator;
@@ -50,20 +52,22 @@ import cern.jet.stat.Descriptive;
 
 /**
  * Estimate mean-variance relationship and use this to compute weights for least squares fitting. R's limma.voom()
- * Charity Law and Gordon Smyth. Data matrices with NaNs are not currently supported.
+ * Charity Law and Gordon Smyth. Running voom() on data matrices with NaNs are not currently supported.
  * 
  * @author ptan
- * @version $Id $
+ * @version $Id$
  */
 public class MeanVarianceEstimator {
 
+    private static Log log = LogFactory.getLog( MeanVarianceEstimator.class );
+
     /**
-     * Default lowess span
+     * Default loess span
      */
     public static final double BANDWIDTH = 0.5;
 
     /**
-     * Default number of lowess robustness iterations
+     * Default number of loess robustness iterations
      */
     public static final int ROBUSTNESS_ITERS = 3;
 
@@ -71,15 +75,6 @@ public class MeanVarianceEstimator {
      * inverse variance weights
      */
     private DoubleMatrix2D weights = null;
-
-    private LeastSquaresFit lsf = null;
-
-    private DesignMatrix designMatrix;
-
-    /**
-     * Independent variables
-     */
-    private DoubleMatrix2D b;
 
     /**
      * Normalized variables on log2 scale
@@ -103,31 +98,49 @@ public class MeanVarianceEstimator {
     private DoubleMatrix1D libSize;
 
     /**
-     * Preferred interface if you want control over how the design is set up.
+     * Preferred interface if you want control over how the design is set up. Executes voom() to calculate weights.
      * 
      * @param designMatrix
      * @param data a count matrix
      */
     public MeanVarianceEstimator( DesignMatrix designMatrix, DoubleMatrix<String, String> data ) {
-        assert designMatrix != null;
-        assert data != null;
 
-        this.designMatrix = designMatrix;
-        this.b = new DenseDoubleMatrix2D( data.asArray() );
+        DoubleMatrix2D b = new DenseDoubleMatrix2D( data.asArray() );
+        this.libSize = MeanVarianceEstimator.colSums( b );
+        this.E = MeanVarianceEstimator.countsPerMillion( b, libSize );
 
-        voom();
+        mv();
+        voom( designMatrix.getDoubleMatrix() );
     }
 
     /**
+     * Executes voom() to calculate weights.
+     * 
      * @param designMatrix
      * @param data a count matrix
      */
     public MeanVarianceEstimator( DesignMatrix designMatrix, DoubleMatrix2D data ) {
 
-        this.designMatrix = designMatrix;
-        this.b = data;
+        this.libSize = MeanVarianceEstimator.colSums( data );
+        this.E = MeanVarianceEstimator.countsPerMillion( data, libSize );
 
-        voom();
+        mv();
+        voom( designMatrix.getDoubleMatrix() );
+    }
+
+    /**
+     * Generic method for calculating mean, variance and the loess fit. voom() is not executed and therefore no weights
+     * are calculated.
+     * 
+     * @param designMatrix
+     * @param data a count matrix
+     */
+    public MeanVarianceEstimator( DoubleMatrix2D data ) {
+
+        this.libSize = MeanVarianceEstimator.colSums( data );
+        this.E = MeanVarianceEstimator.countsPerMillion( data, libSize );
+
+        mv();
     }
 
     /**
@@ -215,7 +228,7 @@ public class MeanVarianceEstimator {
                 }
             } catch ( ArgumentOutsideDomainException e ) {
                 // this shouldn't happen anymore
-                e.printStackTrace();
+                log.error( "Error occured while approximating values", e );
                 yInterpolate[i] = Double.NaN;
             }
         }
@@ -224,23 +237,87 @@ public class MeanVarianceEstimator {
     }
 
     /**
+     * Performs row-wise mean (x) and variance (y) and performs a loess fit. Handles missing data.
+     */
+    private void mv() {
+        assert this.E != null;
+
+        // mean-variance
+        DoubleMatrix1D Amean = new DenseDoubleMatrix1D( E.rows() );
+        DoubleMatrix1D variance = Amean.like();
+        for ( int i = 0; i < Amean.size(); i++ ) {
+            DoubleArrayList row = new DoubleArrayList( E.viewRow( i ).toArray() );
+            double rowMean = DescriptiveWithMissing.mean( row );
+            double rowVar = DescriptiveWithMissing.variance( row );
+            Amean.set( i, rowMean );
+            variance.set( i, rowVar );
+
+        }
+
+        this.meanVariance = new DenseDoubleMatrix2D( E.rows(), 2 );
+        this.meanVariance.viewColumn( 0 ).assign( Amean );
+        this.meanVariance.viewColumn( 1 ).assign( variance );
+
+        // fit a loess curve
+        this.loess = loessFit( this.meanVariance );
+    }
+
+    /**
+     * First ensures that x values are strictly increasing and performs a loess fit afterwards. The loess fit are
+     * determined by BANDWIDTH and ROBUSTNESS_ITERS.
+     * 
+     * @param xy
+     * @return loessFit
+     */
+    private DoubleMatrix2D loessFit( DoubleMatrix2D xy ) {
+        assert xy != null;
+
+        DoubleMatrix1D sx = xy.viewColumn( 0 );
+        DoubleMatrix1D sy = xy.viewColumn( 1 );
+        Map<Double, Double> map = new TreeMap<Double, Double>();
+        for ( int i = 0; i < sx.size(); i++ ) {
+            map.put( sx.get( i ), sy.get( i ) );
+        }
+        DoubleMatrix2D xyChecked = new DenseDoubleMatrix2D( map.size(), 2 );
+        xyChecked.viewColumn( 0 ).assign( ArrayUtils.toPrimitive( map.keySet().toArray( new Double[0] ) ) );
+        xyChecked.viewColumn( 1 ).assign( ArrayUtils.toPrimitive( map.values().toArray( new Double[0] ) ) );
+
+        // in R:
+        // loess(c(1:5),c(1:5)^2,f=0.5,iter=3)
+        // Note: we start to loose some precision here in comparison with R's loess
+        DoubleMatrix2D loess = new DenseDoubleMatrix2D( xyChecked.rows(), xyChecked.columns() );
+        try {
+            // fit a loess curve
+            LoessInterpolator loessInterpolator = new LoessInterpolator( MeanVarianceEstimator.BANDWIDTH,
+                    MeanVarianceEstimator.ROBUSTNESS_ITERS );
+            double[] loessY = loessInterpolator.smooth( xyChecked.viewColumn( 0 ).toArray(), xyChecked.viewColumn( 1 )
+                    .toArray() );
+            loess.viewColumn( 0 ).assign( xyChecked.viewColumn( 0 ) );
+            loess.viewColumn( 1 ).assign( loessY );
+        } catch ( MathException e ) {
+            log.error( "Error occured while performing a loess fit", e );
+            weights = null;
+        }
+
+        return loess;
+    }
+
+    /**
      * Performs the heavy duty work of calculating the weights. Throws an "IllegalArgumentException" if there are
      * missing values. See Bug 3383.
      * 
-     * @return
+     * @param designMatrix
      */
-    private void voom() {
-        assert this.b != null;
-        assert this.designMatrix != null;
+    private void voom( DoubleMatrix2D designMatrix ) {
+        assert designMatrix != null;
+        assert this.meanVariance != null;
+        assert this.E != null;
+        assert this.libSize != null;
 
         Algebra solver = new Algebra();
-
         Functions F = Functions.functions; // aliasing
 
-        // convert counts to CPM
-        DoubleMatrix1D libSize = MeanVarianceEstimator.colSums( this.b );
-        DoubleMatrix2D A = this.designMatrix.getDoubleMatrix();
-        DoubleMatrix2D E = MeanVarianceEstimator.countsPerMillion( this.b, libSize );
+        DoubleMatrix2D A = designMatrix;
         DoubleMatrix2D weights = new DenseDoubleMatrix2D( E.rows(), E.columns() );
 
         // perform a linear fit to obtain the mean-variance relationship
@@ -251,7 +328,7 @@ public class MeanVarianceEstimator {
             throw new IllegalArgumentException( "Missing values not supported." );
         }
         // calculate fit$Amean by doing rowSums(CPM) (see limma.getEAWP())
-        DoubleMatrix1D Amean = MeanVarianceEstimator.colSums( E.viewDice() ).copy().assign( F.div( E.columns() ) );
+        DoubleMatrix1D Amean = this.meanVariance.viewColumn( 0 );
 
         // sx <- fit$Amean + mean(log2(lib.size+1)) - log2(1e6)
         DoubleMatrix1D sx = Amean.copy();
@@ -259,15 +336,12 @@ public class MeanVarianceEstimator {
         sx.assign( F.minus( Math.log( Math.pow( 10, 6 ) ) / Math.log( 2 ) ) );
 
         // help("MArrayLM-class")
-        // fit$sigma <- sigma[i] <- sqrt(sum(out$residuals^2)/out$df.residual)
+        // fit$sigma <- sqrt(sum(out$residuals^2)/out$df.residual)
         // sy <- sqrt(fit$sigma)
         int dof = lsf.getResidualDof();
         assert dof != 0; // if you have missing values in the expression matrix, you'll get a 0
         DoubleMatrix2D residuals = lsf.getResiduals();
         DoubleMatrix1D sy = new DenseDoubleMatrix1D( residuals.rows() );
-        // for ( int i = 0; i < residuals.rows(); i++ ) {
-        // sy.set( i, residuals.viewRow( i ).aggregate( F.plus, F.square ) );
-        // }
         for ( int row = 0; row < residuals.rows(); row++ ) {
             double sum = 0;
             for ( int column = 0; column < residuals.columns(); column++ ) {
@@ -283,30 +357,10 @@ public class MeanVarianceEstimator {
 
         // only accepts array in strictly increasing order (drop duplicates)
         // so combine sx and sy and sort
-        assert sx.size() == sy.size();
-        Map<Double, Double> map = new TreeMap<Double, Double>();
-        for ( int i = 0; i < sx.size(); i++ ) {
-            map.put( sx.get( i ), sy.get( i ) );
-        }
-        DoubleMatrix2D xy = new DenseDoubleMatrix2D( map.size(), 2 );
-        xy.viewColumn( 0 ).assign( ArrayUtils.toPrimitive( map.keySet().toArray( new Double[0] ) ) );
-        xy.viewColumn( 1 ).assign( ArrayUtils.toPrimitive( map.values().toArray( new Double[0] ) ) );
-
-        // in R:
-        // lowess(c(1:5),c(1:5)^2,f=0.5,iter=3)
-        // Note: we start to loose some precision here in comparison with R's lowess
-        DoubleMatrix2D loess = new DenseDoubleMatrix2D( xy.rows(), xy.columns() );
-        try {
-            // fit a lowess curve
-            LoessInterpolator loessInterpolator = new LoessInterpolator( MeanVarianceEstimator.BANDWIDTH,
-                    MeanVarianceEstimator.ROBUSTNESS_ITERS );
-            double[] loessY = loessInterpolator.smooth( xy.viewColumn( 0 ).toArray(), xy.viewColumn( 1 ).toArray() );
-            loess.viewColumn( 0 ).assign( xy.viewColumn( 0 ) );
-            loess.viewColumn( 1 ).assign( loessY );
-        } catch ( MathException e ) {
-            e.printStackTrace();
-            weights = null;
-        }
+        DoubleMatrix2D voomXY = new DenseDoubleMatrix2D( sx.size(), 2 );
+        voomXY.viewColumn( 0 ).assign( sx );
+        voomXY.viewColumn( 1 ).assign( sy );
+        DoubleMatrix2D loess = loessFit( voomXY );
 
         // quarterroot fitted counts
         DoubleMatrix2D fittedValues = null;
@@ -352,7 +406,7 @@ public class MeanVarianceEstimator {
         }
         DoubleMatrix2D fittedLogCount = fittedCount.copy().assign( F.log2 );
 
-        // interpolate points using the lowess curve
+        // interpolate points using the loess curve
         // f <- approxfun(l, rule=2)
         // apply trend to individual observations
         // w <- 1 / f(fitted.logcount)^4
@@ -378,11 +432,7 @@ public class MeanVarianceEstimator {
             }
         }
 
-        this.lsf = lsf;
         this.weights = weights;
-        this.E = E;
-        this.meanVariance = xy;
-        this.loess = loess;
     }
 
     /**
@@ -399,7 +449,7 @@ public class MeanVarianceEstimator {
         }
 
         // loess fit trend line
-        XYSeries loessSeries = new XYSeries( "Lowess" );
+        XYSeries loessSeries = new XYSeries( "Loess" );
         for ( int i = 0; i < loess.rows(); i++ ) {
             loessSeries.add( loess.get( i, 0 ), loess.get( i, 1 ) );
         }
@@ -454,16 +504,30 @@ public class MeanVarianceEstimator {
     }
 
     /**
-     * @return normalized expression value on log2 scale
+     * @return log2 counts per million. t(log2(t(counts+0.5)/(lib.size+1)*1e6))
      */
     public DoubleMatrix2D getNormalizedValue() {
         return this.E;
     }
 
     /**
-     * @return inverse variance weights
+     * @return inverse variance weights or null if the DesignMatrix was not provided.
      */
     public DoubleMatrix2D getWeights() {
         return this.weights;
+    }
+
+    /**
+     * @return the mean and variance of the normalized data, columns 0 and 1 respectively
+     */
+    public DoubleMatrix2D getMeanVariance() {
+        return this.meanVariance;
+    }
+
+    /**
+     * @return the loess fit of the mean-variance relationship
+     */
+    public DoubleMatrix2D getLoess() {
+        return this.loess;
     }
 }

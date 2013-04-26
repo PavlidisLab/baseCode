@@ -16,6 +16,7 @@ package ubic.basecode.math;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
@@ -34,7 +35,7 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 
 /**
  * @author ptan
- * @version $Id $
+ * @version $Id$
  */
 public class MeanVarianceEstimatorTest {
 
@@ -62,7 +63,7 @@ public class MeanVarianceEstimatorTest {
 
         double yOut[] = MeanVarianceEstimator.approx( x, y, xInterpolate );
         for ( int i = 0; i < expectedY3.length; i++ ) {
-            assertEquals( yOut[i], expectedY3[i], 0.0001 );
+            assertEquals( expectedY3[i], yOut[i], 0.0001 );
         }
     }
 
@@ -114,9 +115,11 @@ public class MeanVarianceEstimatorTest {
         for ( int i = 0; i < expectedIndices.length; i++ ) {
             assertArrayEquals( expected[i], actuals.viewRow( expectedIndices[i] ).toArray(), 0.1 );
         }
-        
-        String outputFilename = System.getProperty( "java.io.tmpdir" ) + File.separator + "meanVariance.png";
+
+        String outputFilename = System.getProperty( "java.io.tmpdir" ) + File.separator
+                + "meanVariance-testGetWeights.png";
         est.plot( outputFilename );
+        assertTrue( new File( outputFilename ).exists() );
     }
 
     /**
@@ -150,5 +153,41 @@ public class MeanVarianceEstimatorTest {
         for ( int i = 0; i < expectedIndices.length; i++ ) {
             assertArrayEquals( expected[i], actuals.viewRow( expectedIndices[i] ).toArray(), 0.1 );
         }
+    }
+
+    /**
+     * Data has missing values, no Design matrix provided so plot a generic mean-variance plot
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testMeanVarianceNoDesignWithMissing() throws Exception {
+        DoubleMatrixReader f = new DoubleMatrixReader();
+        DoubleMatrix<String, String> testMatrix = f.read( this.getClass().getResourceAsStream(
+                "/data/example.madata.withmissing.small.txt" ) );
+        DoubleMatrix2D data = new DenseDoubleMatrix2D( testMatrix.asDoubles() );
+        MeanVarianceEstimator est = new MeanVarianceEstimator( data );
+        DoubleMatrix2D actuals = null;
+
+        actuals = est.getMeanVariance();
+        assertEquals( 15.33, actuals.get( 0, 0 ), 0.01 );
+        assertEquals( 0.003220, actuals.get( 0, 1 ), 0.001 );
+        assertEquals( 15.28, actuals.get( 4, 0 ), 0.01 );
+        assertEquals( 0.001972, actuals.get( 4, 1 ), 0.001 );
+        assertEquals( 15.97, actuals.get( 18, 0 ), 0.01 );
+        assertEquals( 0.010072, actuals.get( 18, 1 ), 0.001 );
+
+        actuals = est.getLoess();
+        assertEquals( 15.24, actuals.get( 0, 0 ), 0.01 );
+        assertEquals( 0.002620, actuals.get( 0, 1 ), 0.001 );
+        assertEquals( 15.37, actuals.get( 4, 0 ), 0.01 );
+        assertEquals( 0.006238, actuals.get( 4, 1 ), 0.001 );
+        assertEquals( 16.72, actuals.get( 18, 0 ), 0.01 );
+        assertEquals( 0.007320, actuals.get( 18, 1 ), 0.001 );
+
+        String outputFilename = System.getProperty( "java.io.tmpdir" ) + File.separator
+                + "meanVariance-testMeanVarianceNoDesignWithMissing.png";
+        est.plot( outputFilename );
+        assertTrue( new File( outputFilename ).exists() );
     }
 }
