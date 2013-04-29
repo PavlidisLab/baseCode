@@ -18,6 +18,7 @@
  */
 package ubic.basecode.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -47,7 +48,7 @@ public class StatusDebugLogger implements StatusViewer {
      */
     @Override
     public void showError( String s ) {
-        if ( s.length() == 0 ) return;
+        if ( StringUtils.isBlank( s ) ) return;
         log.error( s );
     }
 
