@@ -56,13 +56,13 @@ public class Rank {
 
         ObjectArrayList ranks = new ObjectArrayList( size );
         for ( int i = 0; i < size; i++ ) {
-            RankData rd = new RankData( i, array.get( i ) );
+            RankData<Double> rd = new RankData<Double>( i, array.get( i ) );
             ranks.add( rd );
         }
         ranks.sort();
 
         for ( int i = 0; i < size; i++ ) {
-            RankData rd = ( RankData ) ranks.getQuick( i );
+            RankData<Double> rd = ( RankData<Double> ) ranks.getQuick( i );
             result.setQuick( i, rd.getIndex() );
         }
         return result;
@@ -124,7 +124,7 @@ public class Rank {
             return null;
         }
 
-        List<RankData> ranks = new ArrayList<RankData>( size );
+        List<RankData<Double>> ranks = new ArrayList<RankData<Double>>( size );
         DoubleArrayList result = new DoubleArrayList( new double[size] );
 
         // store the values with their indices - not sorted yet.
@@ -134,7 +134,7 @@ public class Rank {
             if ( descending ) {
                 v = -v;
             }
-            RankData rd = new RankData( i, v );
+            RankData<Double> rd = new RankData<Double>( i, v );
             // if ( Double.isNaN( v ) ) throw new IllegalArgumentException( "Missing values are not tolerated." );
             ranks.add( rd );
         }
@@ -146,9 +146,9 @@ public class Rank {
         int rank = 1;
         int nominalRank = 1; // rank we'd have if no ties.
         for ( int i = 0; i < size; i++ ) {
-            RankData rankData = ranks.get( i );
+            RankData<Double> rankData = ranks.get( i );
             int index = rankData.getIndex();
-            Double val = rankData.getValue();
+            Double val = ( Double ) rankData.getValue();
 
             result.set( index, nominalRank ); // might not keep.
 
@@ -181,7 +181,7 @@ public class Rank {
      * @param m java.util.Map with keys Objects, values Doubles.
      * @return A java.util.Map keys=old keys, values=java.lang.Integer rank of the key.
      */
-    public static <K> Map<K, Double> rankTransform( Map<K, Double> m ) {
+    public static <K> Map<K, Double> rankTransform( Map<K, ? extends Comparable<?>> m ) {
         return rankTransform( m, false );
     }
 
@@ -196,31 +196,42 @@ public class Rank {
      * @param desc if true, the lowest (first) rank will be for the highest value.
      * @return
      */
-    public static <K> Map<K, Double> rankTransform( Map<K, Double> m, boolean desc ) {
+    public static <K> Map<K, Double> rankTransform( Map<K, ? extends Comparable<?>> m, boolean desc ) {
 
         List<KeyAndValueData<K>> values = new ArrayList<KeyAndValueData<K>>();
 
         for ( Iterator<K> itr = m.keySet().iterator(); itr.hasNext(); ) {
 
             K key = itr.next();
-            double val = m.get( key ).doubleValue();
+            Comparable<?> val = m.get( key );
 
             values.add( new KeyAndValueData<K>( 0, key, val ) );
         }
 
+        return rankTransform( m, desc, values );
+    }
+
+    /**
+     * @param m
+     * @param desc
+     * @param values
+     * @return
+     */
+    private static <K> Map<K, Double> rankTransform( Map<K, ? extends Comparable<?>> m, boolean desc,
+            List<KeyAndValueData<K>> values ) {
         /* sort it */
         Collections.sort( values );
         Map<K, Double> result = new HashMap<K, Double>();
 
         Double rank = 0.0;
-        Double prevVal = null;
+        Comparable prevVal = null;
         Double nominalRank = 0.0; // rank we'd have if no ties.
         for ( int i = 0; i < m.size(); i++ ) {
             result.put( values.get( i ).getKey(), ( double ) nominalRank ); // might not keep.
 
-            double val = values.get( i ).getValue();
+            Comparable val = values.get( i ).getValue();
             // only bump up ranks if we're not tied with the last one.
-            if ( prevVal != null && val != prevVal.doubleValue() ) {
+            if ( prevVal != null && !val.equals( prevVal ) ) {
                 rank = nominalRank;
             } else {
                 // tied. Do not advance the rank.
@@ -253,14 +264,14 @@ public class Rank {
     /**
      * @param ranksWithTies
      */
-    private static void fixTies( DoubleArrayList ranksWithTies, List<? extends RankData> ranks ) {
+    private static void fixTies( DoubleArrayList ranksWithTies, List<? extends RankData<?>> ranks ) {
 
         int numties = 1;
         Double prev = null;
         int i = 0;
         // iterate over in order of the values.
         for ( int j = ranksWithTies.size(); i < j; i++ ) {
-            RankData rankData = ranks.get( i );
+            RankData<?> rankData = ranks.get( i );
             int index = rankData.getIndex();
             double rank = ranksWithTies.getQuick( index );
 
@@ -287,7 +298,7 @@ public class Rank {
         // cleanup the end of the array if there were ties there.
         if ( numties > 1 ) {
             for ( int k = 1; k <= numties; k++ ) {
-                int indexOfTied = ( ( RankData ) ranks.get( i - k ) ).getIndex();
+                int indexOfTied = ( ( RankData<?> ) ranks.get( i - k ) ).getIndex();
                 double rawRankInTie = ranksWithTies.getQuick( indexOfTied );
                 double meanRank = meanRank( rawRankInTie, numties );
                 ranksWithTies.setQuick( indexOfTied, meanRank );
@@ -360,20 +371,13 @@ public class Rank {
 class KeyAndValueData<K> extends RankData {
     private K key;
 
-    public KeyAndValueData( int index, K id, double v ) {
+    public KeyAndValueData( int index, K id, Comparable v ) {
         super( index, v );
         this.key = id;
     }
 
     public int compareTo( KeyAndValueData<K> other ) {
-
-        if ( this.value < other.value ) {
-            return -1;
-        } else if ( this.value > other.value ) {
-            return 1;
-        } else {
-            return 0;
-        }
+        return this.value.compareTo( other.getValue() );
     }
 
     public K getKey() {
@@ -384,45 +388,50 @@ class KeyAndValueData<K> extends RankData {
 /*
  * Helper class for rankTransform .
  */
-class RankData implements Comparable<RankData> {
+class RankData<C extends Comparable<C>> implements Comparable<RankData<C>> {
 
     int index = 0;
 
-    Double value = 0.0;
+    C value = null;
 
-    public RankData( int tindex, double tvalue ) {
+    // Double value = 0.0;
+
+    public RankData( int tindex, C tvalue ) {
         index = tindex;
         value = tvalue;
     }
 
     @Override
-    public int compareTo( RankData other ) {
+    public int compareTo( RankData<C> other ) {
         return this.value.compareTo( other.getValue() );
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean equals( Object obj ) {
         if ( obj == null ) return false;
         if ( !( obj instanceof RankData ) ) return false;
-        return this.value.equals( ( ( RankData ) obj ).getValue() );
+        return this.value.equals( ( ( RankData<C> ) obj ).getValue() );
     }
 
     public int getIndex() {
         return index;
     }
 
-    public double getValue() {
+    public C getValue() {
         return value;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        long temp;
-        temp = Double.doubleToLongBits( value );
-        result = prime * result + ( int ) ( temp ^ ( temp >>> 32 ) );
-        return result;
+        // final int prime = 31;
+        // int result = 1;
+        // long temp;
+        // temp = Double.doubleToLongBits( value );
+        // result = prime * result + ( int ) ( temp ^ ( temp >>> 32 ) );
+        // return result;
+        if ( value == null ) return 1;
+        return value.hashCode();
     }
 
     @Override
