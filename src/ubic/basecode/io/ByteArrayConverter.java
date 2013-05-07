@@ -30,6 +30,7 @@ import java.util.List;
 import org.apache.commons.lang.ArrayUtils;
 
 import cern.colt.list.ByteArrayList;
+import cern.colt.list.DoubleArrayList;
 
 /**
  * Class to convert byte arrays (e.g., Blobs) to and from other types of arrays.
@@ -388,6 +389,14 @@ public class ByteArrayConverter {
      */
     public byte[] doubleArrayToBytes( Double[] darray ) {
         return doubleArrayToBytes( ArrayUtils.toPrimitive( darray ) );
+    }
+
+    /**
+     * @param darray
+     * @return
+     */
+    public byte[] doubleArrayToBytes( DoubleArrayList darray ) {
+        return doubleArrayToBytes( ( Double[] ) darray.toList().toArray( new Double[] {} ) );
     }
 
     /**

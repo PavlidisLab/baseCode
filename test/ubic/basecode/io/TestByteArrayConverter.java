@@ -24,6 +24,8 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.lang.ArrayUtils;
 
+import cern.colt.list.DoubleArrayList;
+
 import junit.framework.TestCase;
 
 /**
@@ -47,6 +49,10 @@ public class TestByteArrayConverter extends TestCase {
     StringConverter sc;
 
     double[] testD = new double[] { x, y, z };
+
+    Double[] testDO = new Double[] { x, y, z };
+
+    DoubleArrayList tesDAL = new DoubleArrayList( testD );
 
     int[] testI = new int[] { a, b, c };
 
@@ -117,6 +123,15 @@ public class TestByteArrayConverter extends TestCase {
     public void testDoubleArrayToBytes() {
         byte[] actualReturn = bac.doubleArrayToBytes( testD );
         byte[] expectedValue = expectedBfD;
+        for ( int i = 0; i < expectedValue.length; i++ ) {
+            assertEquals( "return value", expectedValue[i], actualReturn[i] );
+        }
+
+        actualReturn = bac.doubleArrayToBytes( testDO );
+        for ( int i = 0; i < expectedValue.length; i++ ) {
+            assertEquals( "return value", expectedValue[i], actualReturn[i] );
+        }
+        actualReturn = bac.doubleArrayToBytes( tesDAL );
         for ( int i = 0; i < expectedValue.length; i++ ) {
             assertEquals( "return value", expectedValue[i], actualReturn[i] );
         }
