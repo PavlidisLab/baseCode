@@ -14,12 +14,15 @@
  */
 package ubic.basecode.math;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.geom.Ellipse2D;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 import java.util.TreeMap;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -129,8 +132,8 @@ public class MeanVarianceEstimator {
     }
 
     /**
-     * Generic method for calculating mean, variance and the loess fit. voom() is not executed and therefore no weights
-     * are calculated.
+     * Generic method for calculating mean, variance and the loess fit. Calls this.countsPerMillion() to transform the
+     * data. voom() is not executed and therefore no weights are calculated.
      * 
      * @param designMatrix
      * @param data a count matrix
@@ -267,7 +270,7 @@ public class MeanVarianceEstimator {
      * determined by <code>BANDWIDTH</code> and <code>ROBUSTNESS_ITERS</code>.
      * 
      * @param xy
-     * @return loessFit
+     * @return loessFit or null if there are less than 3 data points
      */
     private DoubleMatrix2D loessFit( DoubleMatrix2D xy ) {
         assert xy != null;
@@ -276,6 +279,10 @@ public class MeanVarianceEstimator {
         DoubleMatrix1D sy = xy.viewColumn( 1 );
         Map<Double, Double> map = new TreeMap<Double, Double>();
         for ( int i = 0; i < sx.size(); i++ ) {
+            if ( Double.isNaN( sx.get( i ) ) || Double.isInfinite( sx.get( i ) ) || Double.isNaN( sy.get( i ) )
+                    || Double.isInfinite( sy.get( i ) ) ) {
+                continue;
+            }
             map.put( sx.get( i ), sy.get( i ) );
         }
         DoubleMatrix2D xyChecked = new DenseDoubleMatrix2D( map.size(), 2 );
@@ -296,7 +303,7 @@ public class MeanVarianceEstimator {
             loess.viewColumn( 1 ).assign( loessY );
         } catch ( MathException e ) {
             log.error( "Error occured while performing a loess fit", e );
-            weights = null;
+            loess = null;
         }
 
         return loess;
@@ -479,6 +486,10 @@ public class MeanVarianceEstimator {
         final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         renderer.setSeriesPaint( 0, Color.black );
         renderer.setSeriesPaint( 1, Color.red );
+        renderer.setSeriesShapesFilled( 0, false );
+        renderer.setSeriesShape( 0, new Ellipse2D.Double( 0, 0, 3, 3 ) );
+        renderer.setSeriesStroke( 1, new BasicStroke( 4 ) );
+        renderer.setSeriesShapesVisible( 0, true );
         renderer.setSeriesLinesVisible( 0, false );
         renderer.setSeriesLinesVisible( 1, true );
         renderer.setSeriesShapesVisible( 1, false );
@@ -486,9 +497,9 @@ public class MeanVarianceEstimator {
         plot.setRenderer( 0, renderer );
 
         try {
-            int size = 500;
+            int size = 2 * 200;
             OutputStream os = new FileOutputStream( outputFilename );
-            ChartUtilities.writeChartAsPNG( os, chart, 500, size );
+            ChartUtilities.writeChartAsPNG( os, chart, size, size );
             os.close();
         } catch ( IOException e ) {
             throw new RuntimeException( e );

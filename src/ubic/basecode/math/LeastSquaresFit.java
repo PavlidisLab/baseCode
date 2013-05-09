@@ -168,6 +168,28 @@ public class LeastSquaresFit {
     }
 
     /**
+     * Weighted least squares fit between two matrices
+     * 
+     * @param designMatrix
+     * @param data
+     * @param weights to be used in modifying the influence of the observations in data.
+     */
+    public LeastSquaresFit( DesignMatrix designMatrix, DoubleMatrix<String, String> data, final DoubleMatrix2D weights ) {
+        this.designMatrix = designMatrix;
+        DoubleMatrix2D X = designMatrix.getDoubleMatrix();
+        this.assign = designMatrix.getAssign();
+        this.terms = designMatrix.getTerms();
+        this.A = X;
+        this.rowNames = data.getRowNames();
+        this.b = new DenseDoubleMatrix2D( data.asArray() );
+        boolean hasInterceptTerm = this.terms.contains( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME );
+        this.hasIntercept = designMatrix.hasIntercept();
+        assert hasInterceptTerm == this.hasIntercept : diagnosis( null );
+        this.weights = weights;
+        wlsf();
+    }
+
+    /**
      * Stripped-down interface for simple use. ANOVA not possible (use the other constructors)
      * 
      * @param A Design matrix, which will be used directly in least squares regression
@@ -255,13 +277,13 @@ public class LeastSquaresFit {
         boolean hasInterceptTerm = this.terms.contains( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME );
         this.hasIntercept = designMatrix.hasIntercept();
         assert hasInterceptTerm == this.hasIntercept : diagnosis( null );
-        
+
         this.weights = weights;
 
         wlsf();
 
     }
-    
+
     /**
      * Least squares fit between two vectors. Always adds an intercept!
      * 
@@ -902,7 +924,7 @@ public class LeastSquaresFit {
         this.coefficients = solver.transpose( new DenseDoubleMatrix2D( rawResult ) );
 
         assert this.assign.isEmpty() || this.assign.size() == this.coefficients.rows() : assign.size()
-            + " != # coefficients " + this.coefficients.rows();
+                + " != # coefficients " + this.coefficients.rows();
         assert this.coefficients.rows() == A.columns();
 
         this.fitted = solver.transpose( MatrixUtil.multWithMissing( A, coefficients ) );

@@ -19,15 +19,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.StringWriter;
+import java.text.DecimalFormat;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.StringMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.io.reader.StringMatrixReader;
+import ubic.basecode.io.writer.MatrixWriter;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
@@ -187,6 +191,56 @@ public class MeanVarianceEstimatorTest {
 
         String outputFilename = System.getProperty( "java.io.tmpdir" ) + File.separator
                 + "meanVariance-testMeanVarianceNoDesignWithMissing.png";
+        est.plot( outputFilename );
+        assertTrue( new File( outputFilename ).exists() );
+    }
+
+    /**
+     * Data has missing values, no Design matrix provided so plot a generic mean-variance plot
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testMeanVarianceNoDesignWithColsRowAllMissing() throws Exception {
+
+        double[][] dataPrimitive = new double[][] { { Double.NaN, -0.2, -0.3, -4, -5 },
+                { Double.NaN, 0, 7, Double.NaN, 8 }, { Double.NaN, 9, -0.3, 0.5, Double.NaN },
+                { Double.NaN, 3, -0.3, -0.1, Double.NaN },
+                { Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN } };
+        DoubleMatrix2D data = new DenseDoubleMatrix2D( dataPrimitive );
+        MeanVarianceEstimator est = new MeanVarianceEstimator( data );
+        DoubleMatrix2D actuals = null;
+
+        actuals = est.getMeanVariance();
+        assertEquals( 5, actuals.rows() );
+        assertEquals( 16.55, actuals.get( 0, 0 ), 0.01 );
+        assertEquals( 7.260, actuals.get( 0, 1 ), 0.001 );
+        assertEquals( 16.42, actuals.get( 3, 0 ), 0.01 );
+        assertEquals( 2.688, actuals.get( 3, 1 ), 0.001 );
+        assertEquals( Double.NaN, actuals.get( 4, 0 ), 0.01 );
+        assertEquals( Double.NaN, actuals.get( 4, 1 ), 0.001 );
+
+        actuals = est.getLoess();
+        assertEquals( 4, actuals.rows() );
+        assertEquals( 16.42, actuals.get( 0, 0 ), 0.01 );
+        assertEquals( 2.688, actuals.get( 0, 1 ), 0.001 );
+        assertEquals( 18.76, actuals.get( 3, 0 ), 0.01 );
+        assertEquals( 6.321, actuals.get( 3, 1 ), 0.001 );
+
+        StringWriter s = new StringWriter();
+
+        DoubleMatrix<String, String> m = new DenseDoubleMatrix<String, String>( actuals.rows(), 2 );
+        m = m.transpose();
+        m.viewRow( 0 ).assign( actuals.viewColumn( 0 ) );
+        m.viewRow( 1 ).assign( actuals.viewColumn( 1 ) );
+        m.setRowName( "mean", 0 );
+        m.setRowName( "variance", 1 );
+
+        MatrixWriter<String, String> mw = new MatrixWriter<String, String>( s, new DecimalFormat( "#.##" ) );
+        mw.writeMatrix( m, true );
+
+        String outputFilename = System.getProperty( "java.io.tmpdir" ) + File.separator
+                + "meanVariance-testMeanVarianceNoDesignWithColsRowAllMissing.png";
         est.plot( outputFilename );
         assertTrue( new File( outputFilename ).exists() );
     }

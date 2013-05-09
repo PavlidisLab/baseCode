@@ -354,8 +354,12 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     public DoubleMatrix<C, R> transpose() {
 
         DoubleMatrix<C, R> result = new DenseDoubleMatrix<C, R>( this.columns(), this.rows() );
-        result.setRowNames( this.getColNames() );
-        result.setColumnNames( this.getRowNames() );
+        if ( this.getColNames().size() > 0 ) {
+            result.setRowNames( this.getColNames() );
+        }
+        if ( this.getRowNames().size() > 0 ) {
+            result.setColumnNames( this.getRowNames() );
+        }
 
         for ( int i = 0; i < this.rows(); i++ ) {
             for ( int j = 0; j < this.columns(); j++ ) {
