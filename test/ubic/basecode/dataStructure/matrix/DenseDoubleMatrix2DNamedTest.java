@@ -276,13 +276,14 @@ public class DenseDoubleMatrix2DNamedTest extends TestCase {
     public void testSortByColumnAbsoluteValue() {
         for ( int i = 0; i < testMatrix.columns(); i++ ) {
             List<String> sortByColumnAbsoluteValues = testMatrix.sortByColumnAbsoluteValues( i, false );
-            double last = 0.0;
+            Double last = 0.0;
             for ( String string : sortByColumnAbsoluteValues ) {
-                double d = testMatrix.getRowByName( string )[i];
-
-                assertTrue( Math.abs( d ) >= Math.abs( last ) );
+                Double d = testMatrix.getRowByName( string )[i];
+                assertNotNull( d );
+                assertTrue( "at column " + i + " got " + d + " and prev " + last, Math.abs( d ) >= Math.abs( last ) );
 
                 last = d;
+                assertNotNull( last );
             }
         }
 

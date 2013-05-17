@@ -179,14 +179,10 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
             public int compare( R o1, R o2 ) {
                 double v1 = Math.abs( get( getRowIndexByName( o1 ), i ) );
                 double v2 = Math.abs( get( getRowIndexByName( o2 ), i ) );
-                if ( v1 == v2 ) return 0;
                 if ( descending ) {
-                    if ( v1 < v2 ) return 1;
-                    return -1;
+                    return Double.compare( v2, v1 );
                 }
-                if ( v1 < v2 ) return -1;
-                return 1;
-
+                return Double.compare( v1, v2 );
             }
         } );
         return sorted;

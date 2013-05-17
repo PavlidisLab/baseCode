@@ -452,6 +452,11 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
         return !this.ontResource.listSuperClasses( true ).hasNext();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.ontology.model.OntologyTerm#isTermObsolete()
+     */
     @Override
     public boolean isTermObsolete() {
 
@@ -467,7 +472,6 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
             }
         }
 
-        Collection<AnnotationProperty> annots = new HashSet<AnnotationProperty>();
         StmtIterator iterator = ontResource.listProperties();
         // this is a little slow because we have to go through all statements for the term.
         while ( iterator.hasNext() ) {

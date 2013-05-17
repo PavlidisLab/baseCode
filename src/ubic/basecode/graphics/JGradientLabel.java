@@ -70,7 +70,7 @@ class JGradientLabel extends JLabel {
 
         Dimension d = new Dimension( w, h );
         setSize( d );
-        setPreferredSize( d );
+        setMinimumSize( d );
     } // end constructor
 
     /*

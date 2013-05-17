@@ -20,6 +20,7 @@
 package ubic.basecode.ontology.providers;
 
 import java.io.IOException;
+import java.lang.Thread.State;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -311,37 +312,46 @@ public abstract class AbstractOntologyService {
 
     }
 
-    public synchronized void startInitializationThread( boolean force ) {
+    public void startInitializationThread( boolean force ) {
+        assert initializationThread != null;
+        synchronized ( initializationThread ) {
+            if ( initializationThread.isAlive() ) {
+                log.warn( ontology_URL + " initialization is already running, not restarting." );
+                return;
+            } else if ( initializationThread.isInterrupted() ) {
+                log.warn( ontology_URL + " initialization was interrupted, not restarting." );
+                return;
+            } else if ( !initializationThread.getState().equals( State.NEW ) ) {
+                log.warn( ontology_URL + " initialization was not ready to run: state="
+                        + initializationThread.getState() + ", not restarting." );
+                return;
+            }
 
-        if ( initializationThread.isAlive() ) {
-            log.warn( ontology_URL + " initialization is already running, not restarting." );
-            return;
+            if ( !force && this.isOntologyLoaded() ) {
+                log.warn( ontology_URL + " is already loaded, and force=false, not restarting" );
+                return;
+            }
+
+            String configParameter = "load." + ontologyName;
+            boolean loadOntology = Configuration.getBoolean( configParameter );
+
+            // If loading ontologies is disabled in the configuration, return
+            if ( !force && !loadOntology ) {
+                log.debug( "Loading " + ontologyName + " is disabled (force=" + force + ", " + configParameter + "="
+                        + loadOntology + ")" );
+                return;
+            }
+
+            // Detect configuration problems.
+            if ( StringUtils.isBlank( this.ontology_URL ) ) {
+                log.error( "URL not defined, ontology cannot be loaded (" + this.getClass().getSimpleName() + ")" );
+                return;
+            }
+
+            // This thread indexes ontology and creates local cache for uri->ontology terms mappings.
+            initializationThread.setForceReindexing( force );
+            initializationThread.start();
         }
-
-        if ( !force && this.isOntologyLoaded() ) {
-            log.warn( ontology_URL + " is already loaded, and force=false, not restarting" );
-            return;
-        }
-
-        String configParameter = "load." + ontologyName;
-        boolean loadOntology = Configuration.getBoolean( configParameter );
-
-        // If loading ontologies is disabled in the configuration, return
-        if ( !force && !loadOntology ) {
-            log.debug( "Loading " + ontologyName + " is disabled (force=" + force + ", " + configParameter + "="
-                    + loadOntology + ")" );
-            return;
-        }
-
-        // Detect configuration problems.
-        if ( StringUtils.isBlank( this.ontology_URL ) ) {
-            log.error( "URL not defined, ontology cannot be loaded (" + this.getClass().getSimpleName() + ")" );
-            return;
-        }
-
-        // This thread indexes ontology and creates local cache for uri->ontology terms mappings.
-        initializationThread.setForceReindexing( force );
-        initializationThread.start();
     }
 
     /**

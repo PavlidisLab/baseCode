@@ -14,7 +14,12 @@
  */
 package ubic.basecode.math;
 
-import java.util.Arrays;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 import java.util.Map;
 
@@ -23,12 +28,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math.distribution.FDistribution;
 import org.apache.commons.math.distribution.FDistributionImpl;
 import org.junit.Test;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix1D;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
@@ -968,7 +967,7 @@ public class LeastSquaresFitTest {
         DoubleMatrix2D w2D = est.getWeights();
         LeastSquaresFit fit = new LeastSquaresFit( d.getDoubleMatrix(), est.getNormalizedValue(), w2D );
         DoubleMatrix2D actuals = fit.getCoefficients().viewDice();
-        
+
         // note: column 5 has 0's and 1's reversed compared to des.txt!
         // so signs in column five from R's output have been reversed
         int[] expectedIndices = new int[] { 0, 40, 80 };
