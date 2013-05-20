@@ -340,8 +340,7 @@
 								<quiet>true</quiet>
 								<aggregate>false</aggregate>
 								<links>
-									<link>http://java.sun.com/j2ee/1.4/docs/api</link>
-									<link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+									<link>http://java.sun.com/j2se/1.6.0/docs/api</link>
 									<link>http://dsd.lbl.gov/~hoschek/colt/api/</link>
 								</links>
 							</configuration>
