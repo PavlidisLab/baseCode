@@ -226,8 +226,10 @@ public class ColorMatrix<A, B> implements Cloneable {
         return maxtrix.get( getTrueRowIndex( row ), column );
     }
 
-    public void init( DoubleMatrix<A, B> matrix ) {
-
+    private void init( DoubleMatrix<A, B> matrix ) {
+        if ( matrix == null ) {
+            throw new IllegalArgumentException( "Matrix cannot be null" );
+        }
         maxtrix = matrix; // by reference, or should we clone?
         m_totalRows = maxtrix.rows();
         m_totalColumns = maxtrix.columns();
