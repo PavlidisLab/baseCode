@@ -29,21 +29,18 @@ import javax.swing.JLabel;
  */
 class JGradientLabel extends JLabel {
 
-    // fields
-    protected static final int w = 100;
-    protected static final int h = 20;
-    /**
-     * 
-     */
+    private static final int MINWIDTH = 100;
+    private static final int MINHEIGHT = 10;
     private static final long serialVersionUID = 348823467068723730L;
-    protected Color[] m_colorMap;
+    private Color[] m_colorMap;
 
-    public Color[] getM_colorMap() {
+    public Color[] getColorMap() {
         return m_colorMap;
     }
 
-    public void setM_colorMap( Color[] mColorMap ) {
+    public void setColorMap( Color[] mColorMap ) {
         m_colorMap = mColorMap;
+        this.repaint();
     }
 
     /**
@@ -53,13 +50,11 @@ class JGradientLabel extends JLabel {
      */
     public JGradientLabel( Color[] colorMap ) {
 
-        // colorMap should contain at least two colors
         if ( 0 == colorMap.length ) {
             // if there are no colors, default to grey for both colors
             colorMap = new Color[2];
             colorMap[0] = colorMap[1] = Color.LIGHT_GRAY;
         } else if ( 1 == colorMap.length ) {
-
             // if there is only one color, make the second color the same
             Color color = colorMap[0];
             colorMap = new Color[2];
@@ -68,10 +63,11 @@ class JGradientLabel extends JLabel {
 
         m_colorMap = colorMap;
 
-        Dimension d = new Dimension( w, h );
+        Dimension d = new Dimension( MINWIDTH, MINHEIGHT );
         setSize( d );
+        this.setText( "Scale bar should be here" ); // forces repaint.
         setMinimumSize( d );
-    } // end constructor
+    }
 
     /*
      * (non-Javadoc)
@@ -80,20 +76,24 @@ class JGradientLabel extends JLabel {
      */
     @Override
     protected void paintComponent( Graphics g ) {
+        super.paintComponent( g );
         drawAtLocation( g, 0, 0 );
-    } // end paintComponent
+    }
 
     /**
      * @param g
      * @param x
      * @param y
-     * @param actual width
+     * @return actual width
      */
     public int drawAtLocation( Graphics g, int x, int y ) {
         Graphics2D g2 = ( Graphics2D ) g;
         Color oldColor = g2.getColor();
         final int width = getWidth();
         final int height = getHeight();
+
+        assert width > 0;
+        assert height > 0;
 
         int numColors = m_colorMap.length;
 
@@ -112,4 +112,4 @@ class JGradientLabel extends JLabel {
         g2.setColor( oldColor );
         return currentX - x;
     }
-} // end JGradientLabel
+}
