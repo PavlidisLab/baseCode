@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.index.IndexReader;
@@ -48,6 +49,11 @@ public class OntologyIndexer {
      */
     public static void eraseIndex( String name ) {
         File indexdir = getIndexPath( name );
+
+        if ( indexdir == null || !indexdir.canRead() ) {
+            log.warn( "No index directory for " + name );
+            return;
+        }
 
         for ( File f : indexdir.listFiles() ) {
             f.delete();
@@ -111,9 +117,11 @@ public class OntologyIndexer {
      */
     private static File getIndexPath( String name ) {
         String ontologyDir = Configuration.getString( "ontology.index.dir" ); // e.g., /something/gemmaData/compass
-        if ( ontologyDir == null ) {
+        if ( StringUtils.isBlank( ontologyDir ) ) {
             ontologyDir = System.getProperty( "java.io.tmpdir" );
         }
+
+        assert ontologyDir != null;
 
         String path = ontologyDir + File.separator + "ontology" + File.separator + name;
 
