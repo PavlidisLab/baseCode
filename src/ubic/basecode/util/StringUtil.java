@@ -23,7 +23,6 @@ import java.io.StringReader;
 import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -61,20 +60,6 @@ public class StringUtil {
         }
         return appendee + separator + appendant;
 
-    }
-
-    /**
-     * Method to wrap lines. It attempts to wrap on whitespace.
-     * 
-     * @param string
-     * @param charPerLine
-     * @param delim The string to put at the end of each new line. For example, "\n" or "&lt;br /&gt;";
-     * @return
-     * @deprecated use Commons WordUtils instead.
-     */
-    @Deprecated
-    public static String wrap( String string, int charPerLine, String delim ) {
-        return WordUtils.wrap( string, charPerLine, delim, true );
     }
 
     /**

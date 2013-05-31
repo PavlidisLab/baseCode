@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<name>baseCode</name>
 	<groupId>baseCode</groupId>
@@ -18,7 +19,7 @@
 		<connection>scm:cvs:ext:@otto.pavlab.chibi.ubc.ca:/cvs:baseCode</connection>
 		<developerConnection>scm:cvs:ext:@otto.pavlab.chibi.ubc.ca:/cvs:baseCode</developerConnection>
 		<url>http://www.chibi.ubc.ca/faculty/pavlidis/fisheye/browse/pavlab/baseCode</url>
-  </scm>
+	</scm>
 	<issueManagement>
 		<system>Bugzilla</system>
 		<url>
@@ -454,11 +455,6 @@
 				<enabled>true</enabled>
 				<updatePolicy>never</updatePolicy>
 			</releases>
-		</repository>
-		<repository>
-			<id>jena</id>
-			<name>Jena</name>
-			<url>http://openjena.org/repo/</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>
