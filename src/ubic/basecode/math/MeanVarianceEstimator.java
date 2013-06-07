@@ -79,6 +79,32 @@ public class MeanVarianceEstimator {
      */
     public static final int ROBUSTNESS_ITERS = 3;
 
+    /**
+     * Normalized variables on log2 scale
+     */
+    private DoubleMatrix2D E;
+
+    /**
+     * Size of each library
+     */
+    private DoubleMatrix1D libSize;
+
+    /**
+     * Loess fit (x, y)
+     */
+    private DoubleMatrix2D loess;
+
+    /**
+     * Matrix that contains the mean and variance of the data. Matrix is sorted by increasing mean. Useful for plotting.
+     * mean <- fit$Amean + mean(log2(lib.size+1)) - log2(1e6) variance <- sqrt(fit$sigma)
+     */
+    private DoubleMatrix2D meanVariance;
+
+    /**
+     * inverse variance weights
+     */
+    private DoubleMatrix2D weights = null;
+
     private static Log log = LogFactory.getLog( MeanVarianceEstimator.class );
 
     /**
@@ -172,32 +198,6 @@ public class MeanVarianceEstimator {
 
         return cpm;
     }
-
-    /**
-     * Normalized variables on log2 scale
-     */
-    private DoubleMatrix2D E;
-
-    /**
-     * Size of each library
-     */
-    private DoubleMatrix1D libSize;
-
-    /**
-     * Loess fit (x, y)
-     */
-    private DoubleMatrix2D loess;
-
-    /**
-     * Matrix that contains the mean and variance of the data. Matrix is sorted by increasing mean. Useful for plotting.
-     * mean <- fit$Amean + mean(log2(lib.size+1)) - log2(1e6) variance <- sqrt(fit$sigma)
-     */
-    private DoubleMatrix2D meanVariance;
-
-    /**
-     * inverse variance weights
-     */
-    private DoubleMatrix2D weights = null;
 
     /**
      * Preferred interface if you want control over how the design is set up. Executes voom() to calculate weights.
@@ -352,7 +352,7 @@ public class MeanVarianceEstimator {
      * @param xy
      * @return loessFit or null if there are less than 3 data points
      */
-    private void loessFit( DoubleMatrix2D xy ) {
+    private DoubleMatrix2D loessFit( DoubleMatrix2D xy ) {
         assert xy != null;
 
         DoubleMatrix1D sx = xy.viewColumn( 0 );
@@ -372,20 +372,23 @@ public class MeanVarianceEstimator {
         // in R:
         // loess(c(1:5),c(1:5)^2,f=0.5,iter=3)
         // Note: we start to loose some precision here in comparison with R's loess
-        loess = new DenseDoubleMatrix2D( xyChecked.rows(), xyChecked.columns() );
+        DoubleMatrix2D loessFit = new DenseDoubleMatrix2D( xyChecked.rows(), xyChecked.columns() );
         try {
             // fit a loess curve
             LoessInterpolator loessInterpolator = new LoessInterpolator( MeanVarianceEstimator.BANDWIDTH,
                     MeanVarianceEstimator.ROBUSTNESS_ITERS );
+
             double[] loessY = loessInterpolator.smooth( xyChecked.viewColumn( 0 ).toArray(), xyChecked.viewColumn( 1 )
                     .toArray() );
-            loess.viewColumn( 0 ).assign( xyChecked.viewColumn( 0 ) );
-            loess.viewColumn( 1 ).assign( loessY );
+
+            loessFit.viewColumn( 0 ).assign( xyChecked.viewColumn( 0 ) );
+            loessFit.viewColumn( 1 ).assign( loessY );
         } catch ( MathException e ) {
             log.error( "Error occured while performing a loess fit", e );
-            loess = null;
+            loessFit = null;
         }
 
+        return loessFit;
     }
 
     /**
@@ -411,7 +414,7 @@ public class MeanVarianceEstimator {
         this.meanVariance.viewColumn( 1 ).assign( variance );
 
         // fit a loess curve
-        loessFit( this.meanVariance );
+        this.loess = loessFit( this.meanVariance );
     }
 
     /**
@@ -471,7 +474,7 @@ public class MeanVarianceEstimator {
         DoubleMatrix2D voomXY = new DenseDoubleMatrix2D( sx.size(), 2 );
         voomXY.viewColumn( 0 ).assign( sx );
         voomXY.viewColumn( 1 ).assign( sy );
-        loessFit( voomXY );
+        DoubleMatrix2D fit = loessFit( voomXY );
 
         // quarterroot fitted counts
         DoubleMatrix2D fittedValues = null;
@@ -530,8 +533,8 @@ public class MeanVarianceEstimator {
                 idx++;
             }
         }
-        assert loess != null;
-        double[] yInterpolate = MeanVarianceEstimator.approx( loess.viewColumn( 0 ).toArray(), loess.viewColumn( 1 )
+        assert fit != null;
+        double[] yInterpolate = MeanVarianceEstimator.approx( fit.viewColumn( 0 ).toArray(), fit.viewColumn( 1 )
                 .toArray(), xInterpolate );
 
         // 1D to 2D
