@@ -53,7 +53,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
     private static final String HAS_ALTERNATE_ID = "http://www.geneontology.org/formats/oboInOwl#hasAlternativeId";
 
     /**
-     * Should has_proper_part be used to indicate addtional parent/child rleations.
+     * Should has_proper_part be used to indicate additional parent/child relations.
      */
     private static final boolean USE_PROPER_PART_RESTRICTIONS = true;
 
