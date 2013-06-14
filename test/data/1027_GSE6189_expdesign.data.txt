@@ -1,4 +1,4 @@
-Bioassay	Treatment	SamplingTimePoint	batch
+Bioassay	Treatment	SamplingTimePoint	block
 GSE6189_Biomat_1___3.0_15A_intact_control	Intact	0_Hours	Batch_04_3/30/05
 GSE6189_Biomat_10___3.0_10A_3d_Sham	Sham	3_days	Batch_01_2/16/05
 GSE6189_Biomat_11___3.0_1A_24h_3VO	3_VO	24_hours	Batch_04_3/30/05
