@@ -74,8 +74,10 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
     public OntologyTermImpl( OntClass resource ) {
         this.ontResource = resource;
-        this.label = ontResource.getLabel( null );
-        this.localName = ontResource.getLocalName();
+        if ( ontResource != null ) {
+            this.label = ontResource.getLabel( null );
+            this.localName = ontResource.getLocalName();
+        }
     }
 
     @Override
