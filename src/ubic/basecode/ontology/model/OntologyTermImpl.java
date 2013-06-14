@@ -88,18 +88,10 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
         if ( getClass() != obj.getClass() ) return false;
 
         final OntologyTermImpl that = ( OntologyTermImpl ) obj;
-        if ( ontResource == null ) {
-            log.warn( "ontResource is null in equals()" );
-        }
-        if ( that.ontResource == null ) {
-            log.warn( "argument ontResource is null in equals()" );
-        }
-
         if ( this.getUri() != null ) {
             return ObjectUtils.equals( this.getUri(), that.getUri() );
         }
         return ObjectUtils.equals( this.getTerm(), that.getTerm() );
-
     }
 
     protected OntologyTerm fromOntClass( OntClass ontClass ) {

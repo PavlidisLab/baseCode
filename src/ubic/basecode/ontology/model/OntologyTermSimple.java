@@ -27,8 +27,8 @@ import com.hp.hpl.jena.ontology.OntClass;
  */
 public class OntologyTermSimple extends OntologyTermImpl {
 
-    private String uri;
     private String term;
+    private String uri;
 
     public OntologyTermSimple( OntClass resource ) {
         super( resource );
@@ -91,6 +91,14 @@ public class OntologyTermSimple extends OntologyTermImpl {
     @Override
     public String getUri() {
         return this.uri;
+    }
+
+    @Override
+    public int hashCode() {
+        if ( this.getUri() != null ) {
+            return this.getUri().hashCode();
+        }
+        return this.getTerm().hashCode();
     }
 
     @Override
