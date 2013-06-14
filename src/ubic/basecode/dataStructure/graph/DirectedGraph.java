@@ -50,9 +50,9 @@ import org.apache.commons.logging.LogFactory;
 public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, K, V> {
     private static Log log = LogFactory.getLog( DirectedGraph.class.getName() );
     protected DefaultTreeModel dtm;
-    private JTree treeView;
-
     protected Map<K, DirectedGraphNode<K, V>> items;
+
+    private JTree treeView;
 
     public DirectedGraph() {
         items = new LinkedHashMap<K, DirectedGraphNode<K, V>>();
@@ -108,6 +108,18 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
         this.addParentTo( newChildKey, key );
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.graph.AbstractGraph#addNode(ubic.basecode.dataStructure.graph.GraphNode)
+     */
+    @Override
+    public void addNode( DirectedGraphNode<K, V> node ) {
+        assert node != null;
+        node.setGraph( this );
+        items.put( node.getKey(), node );
+    }
+
     /**
      * Will not be attached to any other node.
      * 
@@ -122,18 +134,6 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
         if ( !items.containsKey( key ) ) {
             items.put( key, new DirectedGraphNode<K, V>( key, item, this ) );
         }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.graph.AbstractGraph#addNode(ubic.basecode.dataStructure.graph.GraphNode)
-     */
-    @Override
-    public void addNode( DirectedGraphNode<K, V> node ) {
-        assert node != null;
-        node.setGraph( this );
-        items.put( node.getKey(), node );
     }
 
     /**
@@ -177,6 +177,17 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
         this.addParentTo( newParentKey, key );
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.graph.AbstractGraph#containsKey(java.lang.Object)
+     */
+    @Override
+    public boolean containsKey( K key ) {
+        if ( key == null ) return false;
+        return getItems().containsKey( key );
+    }
+
     /**
      * @param user_defined
      * @param classID
@@ -203,6 +214,16 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
 
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.graph.AbstractGraph#getItems()
+     */
+    @Override
+    public Map<K, DirectedGraphNode<K, V>> getItems() {
+        return this.items;
+    }
+
     /**
      * @return root of the tree.
      */
@@ -219,17 +240,6 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
     }
 
     /**
-     * Remove edges to nodes that aren't in the graph.
-     */
-    public void prune() {
-        for ( K element : this.items.keySet() ) {
-            assert element != null;
-            DirectedGraphNode<K, V> v = items.get( element );
-            v.prune();
-        }
-    }
-
-    /**
      * Get all the values in thee graph.
      * 
      * @return
@@ -241,6 +251,17 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
             result.add( v.getItem() );
         }
         return result;
+    }
+
+    /**
+     * Remove edges to nodes that aren't in the graph.
+     */
+    public void prune() {
+        for ( K element : this.items.keySet() ) {
+            assert element != null;
+            DirectedGraphNode<K, V> v = items.get( element );
+            v.prune();
+        }
     }
 
     /**
@@ -395,27 +416,6 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
         }
 
         return buf.toString();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.graph.AbstractGraph#containsKey(java.lang.Object)
-     */
-    @Override
-    public boolean containsKey( K key ) {
-        if ( key == null ) return false;
-        return getItems().containsKey( key );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.graph.AbstractGraph#getItems()
-     */
-    @Override
-    public Map<K, DirectedGraphNode<K, V>> getItems() {
-        return this.items;
     }
 
 }

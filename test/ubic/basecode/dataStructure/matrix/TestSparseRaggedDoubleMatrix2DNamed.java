@@ -32,15 +32,21 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @version $Id$
  */
 public class TestSparseRaggedDoubleMatrix2DNamed extends TestCase {
-    SparseRaggedDoubleMatrix<String, String> matrix = null;
     InputStream is = null;
     InputStream isa = null;
+    SparseRaggedDoubleMatrix<String, String> matrix = null;
     SparseRaggedMatrixReader reader = null;
 
     public void testColumns() {
         int actualReturn = matrix.columns();
         int expectedReturn = 3;
         assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
+    public void testGetColRange() {
+        DoubleMatrix<String, String> range = matrix.getColRange( 1, 2 );
+        assertEquals( 2, range.columns() );
+        assertEquals( 3, range.rows() );
     }
 
     /* getRow returns a double[] */
@@ -67,24 +73,18 @@ public class TestSparseRaggedDoubleMatrix2DNamed extends TestCase {
         assertTrue( RegressionTesting.closeEnough( expectedReturn, actualReturn, 0.0001 ) );
     }
 
-    public void testRows() {
-
-        int actualReturn = matrix.rows();
-        int expectedReturn = 3;
-
-        assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
     public void testGetRowRange() {
         DoubleMatrix<String, String> rowRange = matrix.getRowRange( 1, 2 );
         assertEquals( 3, rowRange.columns() );
         assertEquals( 2, rowRange.rows() );
     }
 
-    public void testGetColRange() {
-        DoubleMatrix<String, String> range = matrix.getColRange( 1, 2 );
-        assertEquals( 2, range.columns() );
-        assertEquals( 3, range.rows() );
+    public void testRows() {
+
+        int actualReturn = matrix.rows();
+        int expectedReturn = 3;
+
+        assertEquals( "return value", expectedReturn, actualReturn );
     }
 
     /*

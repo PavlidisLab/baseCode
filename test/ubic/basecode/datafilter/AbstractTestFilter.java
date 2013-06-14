@@ -33,8 +33,8 @@ import ubic.basecode.io.reader.StringMatrixReader;
 public abstract class AbstractTestFilter extends TestCase {
 
     protected DoubleMatrix<String, String> testdata = null;
-    protected StringMatrix<String, String> teststringdata = null;
     protected DoubleMatrix<String, String> testmissingdata = null;
+    protected StringMatrix<String, String> teststringdata = null;
     protected StringMatrix<String, String> teststringmissingdata = null;
 
     public AbstractTestFilter() {

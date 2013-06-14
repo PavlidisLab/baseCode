@@ -26,6 +26,16 @@ import junit.framework.TestCase;
  */
 public class NormalProbabilityComputerTest extends TestCase {
 
+    @SuppressWarnings("unused")
+    public void testInvalidVariance() {
+        try {
+            new NormalProbabilityComputer( 0.0, -1.0 );
+            fail( "Should have gotten an exception" );
+        } catch ( IllegalArgumentException e ) {
+            // OK
+        }
+    }
+
     /**
      * Test method for {@link ubic.basecode.math.distribution.NormalProbabilityComputer#probability(double)}.
      */
@@ -45,16 +55,6 @@ public class NormalProbabilityComputerTest extends TestCase {
     public void testProbabilityDoubleBooleanLower() {
         NormalProbabilityComputer c = new NormalProbabilityComputer( 0.0, 1.0 );
         assertEquals( 1.0 - 0.02275013, c.probability( 2.0, false ), 0.00001 );
-    }
-
-    @SuppressWarnings("unused")
-    public void testInvalidVariance() {
-        try {
-            new NormalProbabilityComputer( 0.0, -1.0 );
-            fail( "Should have gotten an exception" );
-        } catch ( IllegalArgumentException e ) {
-            // OK
-        }
     }
 
 }

@@ -33,6 +33,33 @@ import java.util.Set;
  * @param <K>
  */
 public class CountingMap<K> implements Map<K, Integer> {
+    private class AscendingCountComparator extends CountComparator {
+        /*
+         * (non-Javadoc)
+         * 
+         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+         */
+        @Override
+        public int compare( K key1, K key2 ) {
+            return map.get( key1 ).compareTo( map.get( key2 ) );
+        }
+    }
+
+    private abstract class CountComparator implements Comparator<K> {
+    }
+
+    private class DescendingCountComparator extends CountComparator {
+        /*
+         * (non-Javadoc)
+         * 
+         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+         */
+        @Override
+        public int compare( K key1, K key2 ) {
+            return map.get( key2 ).compareTo( map.get( key1 ) );
+        }
+    }
+
     private Map<K, Integer> map;
 
     /**
@@ -49,74 +76,6 @@ public class CountingMap<K> implements Map<K, Integer> {
      */
     public CountingMap( Map<K, Integer> map ) {
         this.map = map;
-    }
-
-    /**
-     * Increments the count associated with the specified key and returns the incremented count. If the key doesn't
-     * already exist in the map, it will be added.
-     * 
-     * @param key the key whose associated count is to be incremented
-     * @return the incremented value associated with the specified key
-     */
-    public int increment( K key ) {
-        Integer i = map.get( key );
-        if ( i == null ) i = 0;
-        map.put( key, ++i );
-        return i;
-    }
-
-    /**
-     * Increments the count associated with the specified keys. If a key doesn't already exist in the map, it will be
-     * added.
-     * 
-     * @param keys the keys whose associated count is to be incremented
-     */
-    public void incrementAll( Collection<K> keys ) {
-        for ( K key : keys ) {
-            increment( key );
-        }
-    }
-
-    /**
-     * Returns the count associated with the specified key, or zero if the key has never been incremented.
-     * 
-     * @param key the key whose associated count is to be returned
-     * @return the count associated with the specified key, or zero if the key has never been incremented
-     */
-    public int count( K key ) {
-        Integer i = map.get( key );
-        return i == null ? 0 : i;
-    }
-
-    /**
-     * Returns true if the specified key has ever been incremented, false otherwise.
-     * 
-     * @param key the key whose presence is to be tested
-     * @return true if the specified key has ever been incremented, false otherwise
-     */
-    public boolean seen( K key ) {
-        return map.containsKey( key );
-    }
-
-    /**
-     * Returns a list of the keys in this map, sorted by ascending count.
-     * 
-     * @return a list of the keys in this map, sorted by ascending count
-     */
-    public List<K> sortedKeyList() {
-        return sortedKeyList( false );
-    }
-
-    /**
-     * Returns a list of the keys in this map, sorted as specified.
-     * 
-     * @param sortDescending true to sort by descending count, false to sort by ascending count
-     * @return a list of the keys in this map, sorted as specified.
-     */
-    public List<K> sortedKeyList( boolean sortDescending ) {
-        List<K> keys = new ArrayList<K>( keySet() );
-        Collections.sort( keys, sortDescending ? new DescendingCountComparator() : new AscendingCountComparator() );
-        return keys;
     }
 
     /*
@@ -149,6 +108,17 @@ public class CountingMap<K> implements Map<K, Integer> {
         return map.containsValue( value );
     }
 
+    /**
+     * Returns the count associated with the specified key, or zero if the key has never been incremented.
+     * 
+     * @param key the key whose associated count is to be returned
+     * @return the count associated with the specified key, or zero if the key has never been incremented
+     */
+    public int count( K key ) {
+        Integer i = map.get( key );
+        return i == null ? 0 : i;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -159,6 +129,11 @@ public class CountingMap<K> implements Map<K, Integer> {
         return map.entrySet();
     }
 
+    @Override
+    public boolean equals( Object o ) {
+        return map.equals( o );
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -167,6 +142,37 @@ public class CountingMap<K> implements Map<K, Integer> {
     @Override
     public Integer get( Object key ) {
         return map.containsKey( key ) ? map.get( key ) : 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return map.hashCode();
+    }
+
+    /**
+     * Increments the count associated with the specified key and returns the incremented count. If the key doesn't
+     * already exist in the map, it will be added.
+     * 
+     * @param key the key whose associated count is to be incremented
+     * @return the incremented value associated with the specified key
+     */
+    public int increment( K key ) {
+        Integer i = map.get( key );
+        if ( i == null ) i = 0;
+        map.put( key, ++i );
+        return i;
+    }
+
+    /**
+     * Increments the count associated with the specified keys. If a key doesn't already exist in the map, it will be
+     * added.
+     * 
+     * @param keys the keys whose associated count is to be incremented
+     */
+    public void incrementAll( Collection<K> keys ) {
+        for ( K key : keys ) {
+            increment( key );
+        }
     }
 
     /*
@@ -219,6 +225,16 @@ public class CountingMap<K> implements Map<K, Integer> {
         return map.remove( key );
     }
 
+    /**
+     * Returns true if the specified key has ever been incremented, false otherwise.
+     * 
+     * @param key the key whose presence is to be tested
+     * @return true if the specified key has ever been incremented, false otherwise
+     */
+    public boolean seen( K key ) {
+        return map.containsKey( key );
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -229,14 +245,25 @@ public class CountingMap<K> implements Map<K, Integer> {
         return map.size();
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Returns a list of the keys in this map, sorted by ascending count.
      * 
-     * @see java.util.Map#values()
+     * @return a list of the keys in this map, sorted by ascending count
      */
-    @Override
-    public Collection<Integer> values() {
-        return map.values();
+    public List<K> sortedKeyList() {
+        return sortedKeyList( false );
+    }
+
+    /**
+     * Returns a list of the keys in this map, sorted as specified.
+     * 
+     * @param sortDescending true to sort by descending count, false to sort by ascending count
+     * @return a list of the keys in this map, sorted as specified.
+     */
+    public List<K> sortedKeyList( boolean sortDescending ) {
+        List<K> keys = new ArrayList<K>( keySet() );
+        Collections.sort( keys, sortDescending ? new DescendingCountComparator() : new AscendingCountComparator() );
+        return keys;
     }
 
     /**
@@ -251,43 +278,6 @@ public class CountingMap<K> implements Map<K, Integer> {
     }
 
     @Override
-    public boolean equals( Object o ) {
-        return map.equals( o );
-    }
-
-    @Override
-    public int hashCode() {
-        return map.hashCode();
-    }
-
-    private abstract class CountComparator implements Comparator<K> {
-    }
-
-    private class AscendingCountComparator extends CountComparator {
-        /*
-         * (non-Javadoc)
-         * 
-         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-         */
-        @Override
-        public int compare( K key1, K key2 ) {
-            return map.get( key1 ).compareTo( map.get( key2 ) );
-        }
-    }
-
-    private class DescendingCountComparator extends CountComparator {
-        /*
-         * (non-Javadoc)
-         * 
-         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-         */
-        @Override
-        public int compare( K key1, K key2 ) {
-            return map.get( key2 ).compareTo( map.get( key1 ) );
-        }
-    }
-
-    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder( "[" );
         boolean first = true;
@@ -297,6 +287,16 @@ public class CountingMap<K> implements Map<K, Integer> {
             first = false;
         }
         return sb.toString() + "]";
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.util.Map#values()
+     */
+    @Override
+    public Collection<Integer> values() {
+        return map.values();
     }
 
 }

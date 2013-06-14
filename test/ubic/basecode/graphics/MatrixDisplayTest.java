@@ -39,16 +39,16 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 public class MatrixDisplayTest extends TestCase {
     double[][] array = new double[5][5];
 
-    double[] row0 = { 3, 2, 5, 6, 9 };
+    List<String> colNames = new ArrayList<String>();
 
+    double[] row0 = { 3, 2, 5, 6, 9 };
     double[] row1 = { 100, 13, 0, 12, 0 };
     double[] row2 = { 7, 78, 23, 98, 4 };
     double[] row3 = { 54, 7, 8, 3, 1 };
     double[] row4 = { 13, 2, 9, 7, 0 };
-    List<String> rowNames = new ArrayList<String>();
 
+    List<String> rowNames = new ArrayList<String>();
     File tmp;
-    List<String> colNames = new ArrayList<String>();
 
     /**
      * 

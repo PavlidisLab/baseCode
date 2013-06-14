@@ -32,6 +32,21 @@ public class TestRCDoubleMatrix1D extends TestCase {
     DoubleMatrix1D c;
 
     /*
+     * Class under test for DoubleMatrix1D assign(DoubleFunction)
+     */
+    public void testAssignDoubleFunction() {
+        DoubleMatrix1D actualReturn = a.assign( new cern.colt.function.DoubleFunction() {
+            @Override
+            public double apply( double value ) {
+                return 2;
+            }
+        } );
+        DoubleMatrix1D expectedReturn = new RCDoubleMatrix1D( new double[] { 0, 2, 2, 0, 2 } );
+        assertEquals( "return value", new DoubleArrayList( expectedReturn.toArray() ), new DoubleArrayList(
+                actualReturn.toArray() ) );
+    }
+
+    /*
      * Class under test for double zDotProduct(DoubleMatrix1D)
      */
     public void testZDotProductDoubleMatrix1D() {
@@ -94,20 +109,5 @@ public class TestRCDoubleMatrix1D extends TestCase {
         b = new RCDoubleMatrix1D( inb, vb );
 
         c = new DenseDoubleMatrix1D( new double[] { 5, 3, 2, 1 } );
-    }
-
-    /*
-     * Class under test for DoubleMatrix1D assign(DoubleFunction)
-     */
-    public void testAssignDoubleFunction() {
-        DoubleMatrix1D actualReturn = a.assign( new cern.colt.function.DoubleFunction() {
-            @Override
-            public double apply( double value ) {
-                return 2;
-            }
-        } );
-        DoubleMatrix1D expectedReturn = new RCDoubleMatrix1D( new double[] { 0, 2, 2, 0, 2 } );
-        assertEquals( "return value", new DoubleArrayList( expectedReturn.toArray() ), new DoubleArrayList(
-                actualReturn.toArray() ) );
     }
 }

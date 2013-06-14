@@ -35,8 +35,8 @@ public class OntologyClassRestrictionImpl extends OntologyRestrictionImpl implem
      * 
      */
     private static final long serialVersionUID = 1L;
-    private OntologyTerm restrictedTo = null;
     RDFNode value = null;
+    private OntologyTerm restrictedTo = null;
 
     public OntologyClassRestrictionImpl( Restriction term ) {
         super( term );

@@ -68,19 +68,19 @@ public class CorrelationStatsTest extends TestCase {
         assertEquals( 1.0, CorrelationStats.correlationForPvalue( 0.0, 20 ), 0.01 );
     }
 
+    public void testCorrelTooSmall() {
+        double[] x = new double[] { 1, };
+        double[] y = new double[] { -5 };
+        double actual = CorrelationStats.correl( x, y );
+        assertEquals( Double.NaN, actual );
+    }
+
     public void testInverseFisherTransform() {
         assertEquals( 0.5, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( 0.5 ) ), 0.001 );
         assertEquals( -0.5, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( -0.5 ) ), 0.001 );
         assertEquals( 0.05, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( 0.05 ) ), 0.001 );
         assertEquals( 1.0, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( 1.0 ) ), 0.001 );
         assertEquals( 0.0, CorrelationStats.unFisherTransform( CorrelationStats.fisherTransform( 0.0 ) ), 0.001 );
-    }
-
-    public void testCorrelTooSmall() {
-        double[] x = new double[] { 1, };
-        double[] y = new double[] { -5 };
-        double actual = CorrelationStats.correl( x, y );
-        assertEquals( Double.NaN, actual );
     }
 
     public void testPvalue() {

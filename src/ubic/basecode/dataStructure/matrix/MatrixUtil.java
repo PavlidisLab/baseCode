@@ -36,6 +36,17 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 public class MatrixUtil {
 
     /**
+     * @param d
+     * @return true if any of the values are very close to zero.
+     */
+    public static boolean containsNearlyZeros( DoubleMatrix1D d ) {
+        for ( int i = 0; i < d.size(); i++ ) {
+            if ( Math.abs( d.getQuick( i ) ) < Constants.SMALL ) return true;
+        }
+        return false;
+    }
+
+    /**
      * Extract the diagonal from a matrix.
      * 
      * @param matrix
@@ -52,6 +63,49 @@ public class MatrixUtil {
     }
 
     /**
+     * @param n
+     * @param indexToDrop
+     * @return
+     */
+    public static DoubleMatrix2D dropColumn( DoubleMatrix2D n, int indexToDrop ) {
+        int columns = n.columns() - 1;
+        if ( columns < 0 ) throw new IllegalArgumentException( "Must leave some columns" );
+        DoubleMatrix2D res = new DenseDoubleMatrix2D( n.rows(), columns );
+        int k = 0;
+        for ( int j = 0; j < n.columns(); j++ ) {
+            if ( indexToDrop == j ) {
+                continue;
+            }
+            for ( int i = 0; i < n.rows(); i++ ) {
+                res.set( i, k, n.getQuick( i, j ) );
+            }
+            k++;
+        }
+        return res;
+    }
+
+    /**
+     * @param n
+     * @param droppedColumns
+     */
+    public static DoubleMatrix2D dropColumns( DoubleMatrix2D n, Collection<Integer> droppedColumns ) {
+        int columns = n.columns() - droppedColumns.size();
+        if ( columns < 0 ) throw new IllegalArgumentException( "Must leave some columns" );
+        DoubleMatrix2D res = new DenseDoubleMatrix2D( n.rows(), columns );
+        int k = 0;
+        for ( int j = 0; j < n.columns(); j++ ) {
+            if ( droppedColumns.contains( j ) ) {
+                continue;
+            }
+            for ( int i = 0; i < n.rows(); i++ ) {
+                res.set( i, k, n.getQuick( i, j ) );
+            }
+            k++;
+        }
+        return res;
+    }
+
+    /**
      * Makes a copy
      * 
      * @param list
@@ -63,16 +117,6 @@ public class MatrixUtil {
             r.setQuick( i, list.getQuick( i ) );
         }
         return r;
-    }
-
-    /**
-     * Makes a copy
-     * 
-     * @param vector
-     * @return
-     */
-    public static DoubleArrayList toList( DoubleMatrix1D vector ) {
-        return new DoubleArrayList( vector.toArray() );
     }
 
     /**
@@ -200,6 +244,14 @@ public class MatrixUtil {
         return C;
     }
 
+    public static List<Integer> notNearlyZeroIndices( DoubleMatrix1D d ) {
+        List<Integer> result = new ArrayList<Integer>();
+        for ( int i = 0; i < d.size(); i++ ) {
+            if ( Math.abs( d.getQuick( i ) ) > Constants.SMALL ) result.add( i );
+        }
+        return result;
+    }
+
     /**
      * @param data
      * @return a copy of the data with missing values removed (might be empty!)
@@ -220,86 +272,16 @@ public class MatrixUtil {
         return r;
     }
 
-    public static int sizeWithoutMissingValues( DoubleMatrix1D list ) {
-
-        int size = 0;
-        for ( int i = 0; i < list.size(); i++ ) {
-            double v = list.getQuick( i );
-            if ( !Double.isNaN( v ) && !Double.isInfinite( v ) ) {
-                size++;
-            }
-        }
-        return size;
-    }
-
-    /**
-     * @param d
-     * @return true if any of the values are very close to zero.
-     */
-    public static boolean containsNearlyZeros( DoubleMatrix1D d ) {
-        for ( int i = 0; i < d.size(); i++ ) {
-            if ( Math.abs( d.getQuick( i ) ) < Constants.SMALL ) return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param n
-     * @param droppedColumns
-     */
-    public static DoubleMatrix2D dropColumns( DoubleMatrix2D n, Collection<Integer> droppedColumns ) {
-        int columns = n.columns() - droppedColumns.size();
-        if ( columns < 0 ) throw new IllegalArgumentException( "Must leave some columns" );
-        DoubleMatrix2D res = new DenseDoubleMatrix2D( n.rows(), columns );
+    public static DoubleMatrix1D select( DoubleMatrix1D v, Collection<Integer> selected ) {
+        DoubleMatrix1D result = new DenseDoubleMatrix1D( selected.size() );
         int k = 0;
-        for ( int j = 0; j < n.columns(); j++ ) {
-            if ( droppedColumns.contains( j ) ) {
-                continue;
-            }
-            for ( int i = 0; i < n.rows(); i++ ) {
-                res.set( i, k, n.getQuick( i, j ) );
-            }
-            k++;
-        }
-        return res;
-    }
-
-    /**
-     * @param n
-     * @param indexToDrop
-     * @return
-     */
-    public static DoubleMatrix2D dropColumn( DoubleMatrix2D n, int indexToDrop ) {
-        int columns = n.columns() - 1;
-        if ( columns < 0 ) throw new IllegalArgumentException( "Must leave some columns" );
-        DoubleMatrix2D res = new DenseDoubleMatrix2D( n.rows(), columns );
-        int k = 0;
-        for ( int j = 0; j < n.columns(); j++ ) {
-            if ( indexToDrop == j ) {
-                continue;
-            }
-            for ( int i = 0; i < n.rows(); i++ ) {
-                res.set( i, k, n.getQuick( i, j ) );
-            }
-            k++;
-        }
-        return res;
-    }
-
-    public static DoubleMatrix2D selectRows( DoubleMatrix2D n, Collection<Integer> selected ) {
-        int nrows = selected.size();
-        DoubleMatrix2D res = new DenseDoubleMatrix2D( nrows, n.columns() );
-        for ( int j = 0; j < n.columns(); j++ ) {
-            int m = 0;
-            for ( int i = 0; i < n.rows(); i++ ) {
-                if ( !selected.contains( i ) ) {
-                    continue;
-                }
-                res.set( m, j, n.getQuick( i, j ) );
-                m++;
+        for ( int i = 0; i < v.size(); i++ ) {
+            if ( selected.contains( i ) ) {
+                result.set( k, v.getQuick( i ) );
+                k++;
             }
         }
-        return res;
+        return result;
     }
 
     public static DoubleMatrix2D selectColumns( DoubleMatrix2D n, Collection<Integer> selected ) {
@@ -358,24 +340,42 @@ public class MatrixUtil {
         return res;
     }
 
-    public static List<Integer> notNearlyZeroIndices( DoubleMatrix1D d ) {
-        List<Integer> result = new ArrayList<Integer>();
-        for ( int i = 0; i < d.size(); i++ ) {
-            if ( Math.abs( d.getQuick( i ) ) > Constants.SMALL ) result.add( i );
-        }
-        return result;
-    }
-
-    public static DoubleMatrix1D select( DoubleMatrix1D v, Collection<Integer> selected ) {
-        DoubleMatrix1D result = new DenseDoubleMatrix1D( selected.size() );
-        int k = 0;
-        for ( int i = 0; i < v.size(); i++ ) {
-            if ( selected.contains( i ) ) {
-                result.set( k, v.getQuick( i ) );
-                k++;
+    public static DoubleMatrix2D selectRows( DoubleMatrix2D n, Collection<Integer> selected ) {
+        int nrows = selected.size();
+        DoubleMatrix2D res = new DenseDoubleMatrix2D( nrows, n.columns() );
+        for ( int j = 0; j < n.columns(); j++ ) {
+            int m = 0;
+            for ( int i = 0; i < n.rows(); i++ ) {
+                if ( !selected.contains( i ) ) {
+                    continue;
+                }
+                res.set( m, j, n.getQuick( i, j ) );
+                m++;
             }
         }
-        return result;
+        return res;
+    }
+
+    public static int sizeWithoutMissingValues( DoubleMatrix1D list ) {
+
+        int size = 0;
+        for ( int i = 0; i < list.size(); i++ ) {
+            double v = list.getQuick( i );
+            if ( !Double.isNaN( v ) && !Double.isInfinite( v ) ) {
+                size++;
+            }
+        }
+        return size;
+    }
+
+    /**
+     * Makes a copy
+     * 
+     * @param vector
+     * @return
+     */
+    public static DoubleArrayList toList( DoubleMatrix1D vector ) {
+        return new DoubleArrayList( vector.toArray() );
     }
 
 }

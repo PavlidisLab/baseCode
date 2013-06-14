@@ -85,17 +85,17 @@ public abstract class AbstractOntologyDatabaseBackedService extends AbstractOnto
     }
 
     @Override
+    protected OntModel loadModel( String url ) {
+        return OntologyLoader.loadPersistentModel( url, false );
+    }
+
+    @Override
     protected void releaseModel( OntModel m ) {
         try {
             pool.returnObject( m );
         } catch ( Exception e ) {
             throw new RuntimeException( e );
         }
-    }
-
-    @Override
-    protected OntModel loadModel( String url ) {
-        return OntologyLoader.loadPersistentModel( url, false );
     }
 
 }

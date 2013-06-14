@@ -29,8 +29,8 @@ import ubic.basecode.dataStructure.Visitable;
  */
 public abstract class AbstractGraphNode<K, V> extends Visitable implements GraphNode<K, V> {
     protected static Log log = LogFactory.getLog( GraphNode.class );
-    protected K key;
     protected V item;
+    protected K key;
     protected boolean visited = false;
 
     /**

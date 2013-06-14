@@ -32,8 +32,8 @@ import cern.jet.random.Uniform;
 public class HistogramSampler {
 
     private double[] cdf;
-    private Uniform uniformDist;
     private IAxis histogramAxis;
+    private Uniform uniformDist;
 
     /**
      * @param histogram

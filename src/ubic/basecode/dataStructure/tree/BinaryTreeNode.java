@@ -26,10 +26,10 @@ import ubic.basecode.dataStructure.Visitable;
  */
 public class BinaryTreeNode<T> extends Visitable {
 
-    private BinaryTreeNode<T> left = null;
-    private BinaryTreeNode<T> right = null;
-    private BinaryTreeNode<T> parent = null;
     private T contents;
+    private BinaryTreeNode<T> left = null;
+    private BinaryTreeNode<T> parent = null;
+    private BinaryTreeNode<T> right = null;
 
     public BinaryTreeNode() {
 
@@ -47,22 +47,6 @@ public class BinaryTreeNode<T> extends Visitable {
     public BinaryTreeNode( T contents ) {
         super();
         this.contents = contents;
-    }
-
-    public BinaryTreeNode<T> insertLeft( T c ) {
-        if ( this.getLeft() != null ) {
-            throw new IllegalArgumentException( "Already has left" );
-        }
-        this.left = new BinaryTreeNode<T>( c );
-        return left;
-    }
-
-    public BinaryTreeNode<T> insertRight( T c ) {
-        if ( this.getRight() != null ) {
-            throw new IllegalArgumentException( "Already has right" );
-        }
-        this.right = new BinaryTreeNode<T>( c );
-        return right;
     }
 
     /**
@@ -83,6 +67,22 @@ public class BinaryTreeNode<T> extends Visitable {
      * @return
      */
     public BinaryTreeNode<T> getRight() {
+        return right;
+    }
+
+    public BinaryTreeNode<T> insertLeft( T c ) {
+        if ( this.getLeft() != null ) {
+            throw new IllegalArgumentException( "Already has left" );
+        }
+        this.left = new BinaryTreeNode<T>( c );
+        return left;
+    }
+
+    public BinaryTreeNode<T> insertRight( T c ) {
+        if ( this.getRight() != null ) {
+            throw new IllegalArgumentException( "Already has right" );
+        }
+        this.right = new BinaryTreeNode<T>( c );
         return right;
     }
 

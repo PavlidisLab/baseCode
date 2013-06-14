@@ -47,9 +47,9 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrixFactory;
  */
 public class LinearModelSummary implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     public static final String INTERCEPT_COEFFICIENT_NAME = "(Intercept)";
+
+    private static final long serialVersionUID = 1L;
 
     private Double adjRSquared = Double.NaN;
 
@@ -57,11 +57,19 @@ public class LinearModelSummary implements Serializable {
 
     private DoubleMatrix<String, String> coefficients = null;
 
+    private Integer denominatorDof = null;
+
     private List<String> factorNames = null;
 
     private Map<String, List<String>> factorValueNames = new HashMap<String, List<String>>();
 
     private String formula = null;
+
+    private Double fStat = Double.NaN;
+
+    private String key = null;
+
+    private Integer numeratorDof = null;
 
     private Double[] residuals = null;
 
@@ -69,30 +77,12 @@ public class LinearModelSummary implements Serializable {
 
     private Map<String, Collection<String>> term2CoefficientNames = new HashMap<String, Collection<String>>();
 
-    private Double fStat = Double.NaN;
-
-    private Integer numeratorDof = null;
-
-    private Integer denominatorDof = null;
-
-    private String key = null;
-
     // private DoubleMatrix<String, String> covariance;
 
     /**
      * Construct an empty summary. Use for model fits that fail due to 0 degrees of freedom, etc.
      */
     public LinearModelSummary() {
-    }
-
-    /**
-     * Construct an empty summary. Use for model fits that fail due to 0 degrees of freedom, etc.
-     * 
-     * @param key identifier
-     */
-    public LinearModelSummary( String key ) {
-        this();
-        this.key = key;
     }
 
     /**
@@ -126,6 +116,16 @@ public class LinearModelSummary implements Serializable {
      */
     public LinearModelSummary( REXP summaryLm, String[] factorNames ) {
         this( summaryLm, null, factorNames );
+    }
+
+    /**
+     * Construct an empty summary. Use for model fits that fail due to 0 degrees of freedom, etc.
+     * 
+     * @param key identifier
+     */
+    public LinearModelSummary( String key ) {
+        this();
+        this.key = key;
     }
 
     /**
@@ -170,6 +170,13 @@ public class LinearModelSummary implements Serializable {
      */
     public Double getAdjRSquared() {
         return adjRSquared;
+    }
+
+    /**
+     * @return may be null if ANOVA was not run.
+     */
+    public GenericAnovaResult getAnova() {
+        return this.anovaResult;
     }
 
     /**
@@ -566,13 +573,6 @@ public class LinearModelSummary implements Serializable {
                 }
             }
         }
-    }
-
-    /**
-     * @return may be null if ANOVA was not run.
-     */
-    public GenericAnovaResult getAnova() {
-        return this.anovaResult;
     }
 
 }

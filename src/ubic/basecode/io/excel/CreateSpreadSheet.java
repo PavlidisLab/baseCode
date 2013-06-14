@@ -35,14 +35,14 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 public class CreateSpreadSheet {
     protected static Log log = LogFactory.getLog( CreateSpreadSheet.class );
 
+    protected String filename;
+    protected SpreadSheetSchema schema;
     /**
      * @param args
      */
     protected HSSFSheet spreadsheet;
-    protected HSSFWorkbook workbook;
-    protected String filename;
 
-    protected SpreadSheetSchema schema;
+    protected HSSFWorkbook workbook;
 
     public CreateSpreadSheet( String filename, SpreadSheetSchema schema ) {
         if ( new File( filename ).exists() ) {

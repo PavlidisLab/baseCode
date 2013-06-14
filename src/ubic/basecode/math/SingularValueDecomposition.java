@@ -41,11 +41,11 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 public class SingularValueDecomposition<R, C> {
 
     private static final int MAX_COMPUTE_TIME = 60 * 1000 * 120; // millis
-    private cern.colt.matrix.linalg.SingularValueDecomposition svd;
     private List<C> columnNames;
     private List<R> rowNames;
-
     private DoubleMatrix<Integer, Integer> sMatrix;
+
+    private cern.colt.matrix.linalg.SingularValueDecomposition svd;
 
     private DoubleMatrix<R, Integer> uMatrix;
 

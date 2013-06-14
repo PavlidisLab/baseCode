@@ -36,9 +36,9 @@ import com.hp.hpl.jena.db.IDBConnection;
  */
 public class OntologyDataSource {
 
-    private static Log log = LogFactory.getLog( OntologyDataSource.class );
-
     private static BasicDataSource dataSource;
+
+    private static Log log = LogFactory.getLog( OntologyDataSource.class );
 
     static {
         String dbUrl = Configuration.getString( "jena.db.url" );

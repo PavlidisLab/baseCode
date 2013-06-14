@@ -49,11 +49,11 @@ import com.hp.hpl.jena.shared.JenaException;
  */
 public class OntologySearch {
 
-    private static Log log = LogFactory.getLog( OntologySearch.class.getName() );
-
     // Lucene cannot properly parse these characters... gives a query parse error.
     // OntologyTerms don't contain them anyway
     private final static char[] INVALID_CHARS = { ':', '(', ')', '?', '^', '[', ']', '{', '}', '!', '~', '"', '\'' };
+
+    private static Log log = LogFactory.getLog( OntologySearch.class.getName() );
 
     /**
      * Find classes that match the query string. Obsolete terms are not returned.

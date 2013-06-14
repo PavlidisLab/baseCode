@@ -41,30 +41,38 @@ public class MultipleTestCorrection {
     private static Log log = LogFactory.getLog( MultipleTestCorrection.class );
 
     /**
-     * Benjamini-Hochberg method. Determines the maximum p value to maintain the false discovery rate. (Assuming pvalues
-     * are independent);
-     * 
-     * @param pvalues list of pvalues. Need not be sorted.
-     * @param fdr false discovery rate (value q in B-H).
-     * @return The maximum pvalue that maintains the false discovery rate
-     * @throws IllegalArgumentException if invalid pvalues are encountered.
+     * @param pvalues
+     * @return false discovery rates computed using the method of Benjamini and Hochberg
      */
-    public static double benjaminiHochbergCut( DoubleArrayList pvalues, double fdr ) {
-        int numpvals = pvalues.size();
-        DoubleArrayList pvalcop = pvalues.copy();
-        pvalcop.sort();
+    public static DoubleArrayList benjaminiHochberg( DoubleArrayList pvalues ) {
+        int nump = pvalues.size();
+        int n = nump;
 
-        for ( int i = numpvals - 1; i >= 0; i-- ) {
+        IntArrayList order = Rank.order( pvalues );
 
-            double p = pvalcop.get( i );
-            if ( p < 0.0 || p > 1.0 ) throw new IllegalArgumentException( "p-value must be in range [0,1]" );
+        DoubleMatrix1D tmp = new DenseDoubleMatrix1D( nump );
 
-            double thresh = fdr * i / numpvals;
-            if ( p < thresh ) {
-                return p;
-            }
+        DoubleArrayList sorted = pvalues.copy();
+        sorted.sort();
+
+        double previous = 1.0;
+        for ( int i = sorted.size() - 1; i >= 0; i-- ) {
+            double pval = sorted.get( i );
+            // never let the qvalue increase.
+            double qval = Math.min( pval * nump / n, previous );
+            tmp.set( i, qval );
+            previous = qval;
+            n--;
         }
-        return 0.0;
+        DoubleArrayList results = new DoubleArrayList( nump );
+        for ( int i = 0; i < nump; i++ ) {
+            results.add( 0.0 );
+        }
+        for ( int i = 0; i < nump; i++ ) {
+            results.set( order.get( i ), tmp.get( i ) );
+        }
+
+        return results;
     }
 
     /**
@@ -116,38 +124,30 @@ public class MultipleTestCorrection {
     }
 
     /**
-     * @param pvalues
-     * @return false discovery rates computed using the method of Benjamini and Hochberg
+     * Benjamini-Hochberg method. Determines the maximum p value to maintain the false discovery rate. (Assuming pvalues
+     * are independent);
+     * 
+     * @param pvalues list of pvalues. Need not be sorted.
+     * @param fdr false discovery rate (value q in B-H).
+     * @return The maximum pvalue that maintains the false discovery rate
+     * @throws IllegalArgumentException if invalid pvalues are encountered.
      */
-    public static DoubleArrayList benjaminiHochberg( DoubleArrayList pvalues ) {
-        int nump = pvalues.size();
-        int n = nump;
+    public static double benjaminiHochbergCut( DoubleArrayList pvalues, double fdr ) {
+        int numpvals = pvalues.size();
+        DoubleArrayList pvalcop = pvalues.copy();
+        pvalcop.sort();
 
-        IntArrayList order = Rank.order( pvalues );
+        for ( int i = numpvals - 1; i >= 0; i-- ) {
 
-        DoubleMatrix1D tmp = new DenseDoubleMatrix1D( nump );
+            double p = pvalcop.get( i );
+            if ( p < 0.0 || p > 1.0 ) throw new IllegalArgumentException( "p-value must be in range [0,1]" );
 
-        DoubleArrayList sorted = pvalues.copy();
-        sorted.sort();
-
-        double previous = 1.0;
-        for ( int i = sorted.size() - 1; i >= 0; i-- ) {
-            double pval = sorted.get( i );
-            // never let the qvalue increase.
-            double qval = Math.min( pval * nump / n, previous );
-            tmp.set( i, qval );
-            previous = qval;
-            n--;
+            double thresh = fdr * i / numpvals;
+            if ( p < thresh ) {
+                return p;
+            }
         }
-        DoubleArrayList results = new DoubleArrayList( nump );
-        for ( int i = 0; i < nump; i++ ) {
-            results.add( 0.0 );
-        }
-        for ( int i = 0; i < nump; i++ ) {
-            results.set( order.get( i ), tmp.get( i ) );
-        }
-
-        return results;
+        return 0.0;
     }
 
     /**

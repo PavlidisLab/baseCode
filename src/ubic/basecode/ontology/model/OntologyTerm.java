@@ -38,6 +38,8 @@ public interface OntologyTerm extends OntologyResource {
 
     public Collection<OntologyIndividual> getIndividuals( boolean direct );
 
+    public String getLocalName();
+
     public Object getModel();
 
     /**
@@ -59,7 +61,5 @@ public interface OntologyTerm extends OntologyResource {
 
     /** check to see if the term is obsolete, if it is it should not be used */
     public boolean isTermObsolete();
-
-    public String getLocalName();
 
 }

@@ -40,11 +40,34 @@ import ubic.basecode.util.RegressionTesting;
  * @version $Id$
  */
 public class MatrixWriterTest extends TestCase {
+    double[][][] data3d = { { { 1, 2 }, { 3, 4 } }, { { 5, 6 }, { 7, 8 } } };
+
     DoubleMatrix<String, String> matrix = null;
 
     Writer w;
 
-    double[][][] data3d = { { { 1, 2 }, { 3, 4 } }, { { 5, 6 }, { 7, 8 } } };
+    public void testWrite3DMatrix() throws Exception {
+        MatrixWriter<String, String> writer = new MatrixWriter<String, String>( w );
+        DoubleMatrix3D<String, String, String> m3 = new DenseDouble3dMatrix<String, String, String>( data3d );
+        List<String> sln = new ArrayList<String>();
+        sln.add( "Slice1" );
+        sln.add( "Slice2" );
+        List<String> rn = new ArrayList<String>();
+        rn.add( "row1" );
+        rn.add( "row2" );
+        List<String> cn = new ArrayList<String>();
+        cn.add( "col1" );
+        cn.add( "col2" );
+
+        m3.setColumnNames( cn );
+        m3.setRowNames( rn );
+        m3.setSliceNames( sln );
+        writer.writeMatrix( m3, true );
+        String actual = w.toString();
+        String expected = RegressionTesting.readTestResult( "/data/testmatrixwriter3doutput.txt" );
+        assertEquals( expected, actual );
+
+    }
 
     /**
      * Test method for
@@ -70,29 +93,6 @@ public class MatrixWriterTest extends TestCase {
         os.close();
         String actual = RegressionTesting.readTestResult( file );
         String expected = RegressionTesting.readTestResult( "/data/testmatrixwriter2doutput.txt" );
-        assertEquals( expected, actual );
-
-    }
-
-    public void testWrite3DMatrix() throws Exception {
-        MatrixWriter<String, String> writer = new MatrixWriter<String, String>( w );
-        DoubleMatrix3D<String, String, String> m3 = new DenseDouble3dMatrix<String, String, String>( data3d );
-        List<String> sln = new ArrayList<String>();
-        sln.add( "Slice1" );
-        sln.add( "Slice2" );
-        List<String> rn = new ArrayList<String>();
-        rn.add( "row1" );
-        rn.add( "row2" );
-        List<String> cn = new ArrayList<String>();
-        cn.add( "col1" );
-        cn.add( "col2" );
-
-        m3.setColumnNames( cn );
-        m3.setRowNames( rn );
-        m3.setSliceNames( sln );
-        writer.writeMatrix( m3, true );
-        String actual = w.toString();
-        String expected = RegressionTesting.readTestResult( "/data/testmatrixwriter3doutput.txt" );
         assertEquals( expected, actual );
 
     }

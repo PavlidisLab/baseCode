@@ -81,6 +81,15 @@ public class OntologyIndexer {
     }
 
     /**
+     * @param name
+     * @param model
+     * @return
+     */
+    public static IndexLARQ indexOntology( String name, OntModel model ) {
+        return indexOntology( name, model, false );
+    }
+
+    /**
      * Loads or creates an index from an existing OntModel. Any existing index will loaded unless force=true.
      * 
      * @param name
@@ -97,18 +106,9 @@ public class OntologyIndexer {
         try {
             return getSubjectIndex( name );
         } catch ( Exception e ) {
-            log.info( "Error loading index from disk, re-indexing" );
+            log.info( "Error loading index from disk, re-indexing " + name );
             return index( name, model );
         }
-    }
-
-    /**
-     * @param name
-     * @param model
-     * @return
-     */
-    public static IndexLARQ indexOntology( String name, OntModel model ) {
-        return indexOntology( name, model, false );
     }
 
     /**
@@ -149,6 +149,7 @@ public class OntologyIndexer {
             FileTools.deleteDir( indexdir );
         }
 
+        log.info( "Index to: " + indexdir );
         IndexBuilderSubject larqSubjectBuilder = new IndexBuilderSubject( indexdir );
 
         StmtIterator listStatements = model.listStatements( new IndexerSelector() );

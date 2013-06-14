@@ -29,24 +29,6 @@ public class RCDoubleMatrix1DTest extends TestCase {
 
     RCDoubleMatrix1D tester;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        tester = new RCDoubleMatrix1D( new double[] { 1.0, 2.0, 3.0, Double.NaN, 5.0, 8.0 } );
-    }
-
-    /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.RCDoubleMatrix1D#zSum()}.
-     */
-    public void testZSum() {
-        assertEquals( 19.0, tester.zSum(), 0.00001 );
-    }
-
     public void testAssign() {
         tester.assign( new DoubleFunction() {
             @Override
@@ -72,6 +54,24 @@ public class RCDoubleMatrix1DTest extends TestCase {
         assertEquals( 0, tester.get( 3 ), 0.0001 );
         assertEquals( 5, tester.get( 4 ), 0.0001 );
 
+    }
+
+    /**
+     * Test method for {@link ubic.basecode.dataStructure.matrix.RCDoubleMatrix1D#zSum()}.
+     */
+    public void testZSum() {
+        assertEquals( 19.0, tester.zSum(), 0.00001 );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        tester = new RCDoubleMatrix1D( new double[] { 1.0, 2.0, 3.0, Double.NaN, 5.0, 8.0 } );
     }
 
 }

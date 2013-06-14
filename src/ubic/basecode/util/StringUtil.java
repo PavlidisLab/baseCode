@@ -33,22 +33,6 @@ import au.com.bytecode.opencsv.CSVReader;
 public class StringUtil {
 
     /**
-     * @param numFields
-     * @param line
-     * @return
-     */
-    public static String[] csvSplit( String line ) {
-
-        CSVReader reader = new CSVReader( new StringReader( line ) );
-
-        try {
-            return reader.readNext();
-        } catch ( IOException e ) {
-            throw new RuntimeException( e );
-        }
-    }
-
-    /**
      * @param appendee The string to be added to
      * @param appendant The string to add to the end of the appendee
      * @param separator The string to put between the joined strings, if necessary.
@@ -60,32 +44,6 @@ public class StringUtil {
         }
         return appendee + separator + appendant;
 
-    }
-
-    /**
-     * Given a set of strings, identify any suffix they have in common.
-     * 
-     * @param strings
-     * @return the commons suffix, null if there isn't one.
-     */
-    public static String commonSuffix( Collection<String> strings ) {
-        String shortest = shortestString( strings );
-
-        if ( shortest == null || shortest.length() == 0 ) return null;
-
-        String test = shortest;
-        while ( test.length() > 0 ) {
-            boolean found = true;
-            for ( String string : strings ) {
-                if ( !string.endsWith( test ) ) {
-                    found = false;
-                    break;
-                }
-            }
-            if ( found ) return test;
-            test = test.substring( 1 );
-        }
-        return null;
     }
 
     /**
@@ -115,12 +73,46 @@ public class StringUtil {
         return null;
     }
 
-    private static String shortestString( Collection<String> strings ) {
-        String shortest = null;
-        for ( String string : strings ) {
-            if ( shortest == null || string.length() < shortest.length() ) shortest = string;
+    /**
+     * Given a set of strings, identify any suffix they have in common.
+     * 
+     * @param strings
+     * @return the commons suffix, null if there isn't one.
+     */
+    public static String commonSuffix( Collection<String> strings ) {
+        String shortest = shortestString( strings );
+
+        if ( shortest == null || shortest.length() == 0 ) return null;
+
+        String test = shortest;
+        while ( test.length() > 0 ) {
+            boolean found = true;
+            for ( String string : strings ) {
+                if ( !string.endsWith( test ) ) {
+                    found = false;
+                    break;
+                }
+            }
+            if ( found ) return test;
+            test = test.substring( 1 );
         }
-        return shortest;
+        return null;
+    }
+
+    /**
+     * @param numFields
+     * @param line
+     * @return
+     */
+    public static String[] csvSplit( String line ) {
+
+        CSVReader reader = new CSVReader( new StringReader( line ) );
+
+        try {
+            return reader.readNext();
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     /**
@@ -134,6 +126,14 @@ public class StringUtil {
             return new Long( stringi.hashCode() | ( long ) stringj.hashCode() << 32 );
         }
         return new Long( stringj.hashCode() | ( long ) stringi.hashCode() << 32 );
+    }
+
+    private static String shortestString( Collection<String> strings ) {
+        String shortest = null;
+        for ( String string : strings ) {
+            if ( shortest == null || string.length() < shortest.length() ) shortest = string;
+        }
+        return shortest;
     }
 
 }

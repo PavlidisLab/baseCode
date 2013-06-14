@@ -62,9 +62,9 @@ public class BatchIterator<E> implements Iterable<Collection<E>>, Iterator<Colle
         return new BatchIterator<E>( collection, batchSize );
     }
 
-    private Iterator<E> individualIterator;
-
     private int batchSize;
+
+    private Iterator<E> individualIterator;
 
     /**
      * Returns a BatchIterator over the specified collection.

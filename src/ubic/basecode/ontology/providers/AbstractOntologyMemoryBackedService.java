@@ -77,13 +77,13 @@ public abstract class AbstractOntologyMemoryBackedService extends AbstractOntolo
     }
 
     @Override
-    protected synchronized void releaseModel( OntModel m ) {
-        // do nothing
+    protected synchronized OntModel loadModel( String url ) {
+        return OntologyLoader.loadMemoryModel( url );
     }
 
     @Override
-    protected synchronized OntModel loadModel( String url ) {
-        return OntologyLoader.loadMemoryModel( url );
+    protected synchronized void releaseModel( OntModel m ) {
+        // do nothing
     }
 
 }

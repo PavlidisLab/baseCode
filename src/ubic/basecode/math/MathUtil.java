@@ -46,6 +46,10 @@ public class MathUtil {
         return result;
     }
 
+    public static double max( double[] qvaluethresholdsforhitlists ) {
+        return Descriptive.max( new DoubleArrayList( qvaluethresholdsforhitlists ) );
+    }
+
     /**
      * @param array of integers
      * @return The sum of the values in the array.
@@ -57,10 +61,6 @@ public class MathUtil {
             result += element;
         }
         return result;
-    }
-
-    public static double max( double[] qvaluethresholdsforhitlists ) {
-        return Descriptive.max( new DoubleArrayList( qvaluethresholdsforhitlists ) );
     }
 
 }

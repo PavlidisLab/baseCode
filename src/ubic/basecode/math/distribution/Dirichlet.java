@@ -31,10 +31,10 @@ import cern.jet.stat.Descriptive;
  */
 public class Dirichlet {
 
+    private DoubleArrayList p;
+
     // private Algebra a = new Algebra();
     private RandomEngine r;
-
-    private DoubleArrayList p;
     private Beta rbeta;
 
     /**

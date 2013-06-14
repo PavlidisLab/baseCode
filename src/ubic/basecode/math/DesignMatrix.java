@@ -53,36 +53,36 @@ public class DesignMatrix {
 
     private static Log log = LogFactory.getLog( DesignMatrix.class );
 
-    private DoubleMatrix<String, String> matrix;
-
     /**
      * 
      */
     private List<Integer> assign = new ArrayList<Integer>();
 
     /**
-     * Store which terms show up in which columns of the design
+     * Names of factors for which at least some coefficients were dropped.
      */
-    private Map<String, List<Integer>> terms = new LinkedHashMap<String, List<Integer>>();
+    private final Set<String> droppedFactors = new HashSet<String>();
 
     private boolean hasIntercept = false;
 
-    /**
-     * Saved version of the original factors provided.
-     */
-    private final Map<String, List<Object>> valuesForFactors = new LinkedHashMap<String, List<Object>>();
+    private final Set<String[]> interactions = new LinkedHashSet<String[]>();
 
     /**
      * Only applied for categorical factors.
      */
     private final Map<String, List<String>> levelsForFactors = new LinkedHashMap<String, List<String>>();
 
-    private final Set<String[]> interactions = new LinkedHashSet<String[]>();
+    private DoubleMatrix<String, String> matrix;
 
     /**
-     * Names of factors for which at least some coefficients were dropped.
+     * Store which terms show up in which columns of the design
      */
-    private final Set<String> droppedFactors = new HashSet<String>();
+    private Map<String, List<Integer>> terms = new LinkedHashMap<String, List<Integer>>();
+
+    /**
+     * Saved version of the original factors provided.
+     */
+    private final Map<String, List<Object>> valuesForFactors = new LinkedHashMap<String, List<Object>>();
 
     /**
      * @param factor in form of Doubles or Strings. Any other types will yield errors.
@@ -320,6 +320,45 @@ public class DesignMatrix {
     @Override
     public String toString() {
         return this.matrix.toString();
+    }
+
+    /**
+     * Refresh the design matrix, for example after releveling.
+     */
+    protected void rebuild() {
+        this.matrix = null;
+        this.assign.clear();
+        this.terms.clear();
+
+        if ( this.hasIntercept ) {
+            int nrows = valuesForFactors.get( valuesForFactors.keySet().iterator().next() ).size();
+            matrix = addIntercept( nrows );
+        }
+
+        int i = 0;
+        for ( String factorName : valuesForFactors.keySet() ) {
+            List<Object> factorValues = valuesForFactors.get( factorName );
+            this.valuesForFactors.put( factorName, factorValues );
+
+            if ( factorValues.get( 0 ) instanceof String && !this.levelsForFactors.containsKey( factorName ) ) {
+                this.levels( factorName, factorValues.toArray( new String[] {} ) );
+            }
+
+            matrix = buildDesign( i + 1, factorValues, matrix, 2, factorName );
+
+            i++;
+        }
+
+        if ( !this.interactions.isEmpty() ) {
+            List<String[]> redoInteractionTerms = new ArrayList<String[]>();
+            for ( String[] interactionTerms : interactions ) {
+                redoInteractionTerms.add( interactionTerms );
+            }
+            this.interactions.clear();
+            for ( String[] t : redoInteractionTerms ) {
+                this.addInteraction( t );
+            }
+        }
     }
 
     /**
@@ -602,45 +641,6 @@ public class DesignMatrix {
         }
         this.levelsForFactors.put( factorName, result );
         return result;
-    }
-
-    /**
-     * Refresh the design matrix, for example after releveling.
-     */
-    protected void rebuild() {
-        this.matrix = null;
-        this.assign.clear();
-        this.terms.clear();
-
-        if ( this.hasIntercept ) {
-            int nrows = valuesForFactors.get( valuesForFactors.keySet().iterator().next() ).size();
-            matrix = addIntercept( nrows );
-        }
-
-        int i = 0;
-        for ( String factorName : valuesForFactors.keySet() ) {
-            List<Object> factorValues = valuesForFactors.get( factorName );
-            this.valuesForFactors.put( factorName, factorValues );
-
-            if ( factorValues.get( 0 ) instanceof String && !this.levelsForFactors.containsKey( factorName ) ) {
-                this.levels( factorName, factorValues.toArray( new String[] {} ) );
-            }
-
-            matrix = buildDesign( i + 1, factorValues, matrix, 2, factorName );
-
-            i++;
-        }
-
-        if ( !this.interactions.isEmpty() ) {
-            List<String[]> redoInteractionTerms = new ArrayList<String[]>();
-            for ( String[] interactionTerms : interactions ) {
-                redoInteractionTerms.add( interactionTerms );
-            }
-            this.interactions.clear();
-            for ( String[] t : redoInteractionTerms ) {
-                this.addInteraction( t );
-            }
-        }
     }
 
 }

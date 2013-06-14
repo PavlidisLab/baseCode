@@ -33,6 +33,15 @@ public class RConnectionFactory {
     private static Log log = LogFactory.getLog( RConnectionFactory.class.getName() );
 
     /**
+     * Get connection; if Rserve is used, connect to localhost.
+     * 
+     * @return
+     */
+    public static RClient getRConnection() {
+        return getRConnection( "localhost" );
+    }
+
+    /**
      * @param hostName The host to use for rserve connections, used only for RServe
      * @return
      */
@@ -54,15 +63,6 @@ public class RConnectionFactory {
         }
 
         return rc;
-    }
-
-    /**
-     * Get connection; if Rserve is used, connect to localhost.
-     * 
-     * @return
-     */
-    public static RClient getRConnection() {
-        return getRConnection( "localhost" );
     }
 
     /**

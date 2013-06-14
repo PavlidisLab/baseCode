@@ -68,61 +68,50 @@ public class LeastSquaresFit {
      */
     // private static Algebra solver = new Algebra();
 
-    /**
-     * Model fix coefficients (the x in Ax=b)
-     */
-    private DoubleMatrix2D coefficients = null;
-
-    /**
-     * 
-     */
-    private boolean hasMissing = false;
-
-    /**
-     * Fitted values
-     */
-    private DoubleMatrix2D fitted;
-
-    /**
-     * Residuals of the fit
-     */
-    private DoubleMatrix2D residuals;
-
-    /**
-     * QR decomposition of the design matrix
-     */
-    private QRDecompositionPivoting qr;
+    private static Log log = LogFactory.getLog( LeastSquaresFit.class );
 
     /**
      * The (raw) design matrix
      */
     private DoubleMatrix2D A;
 
-    /**
-     * Independent variables
-     */
-    private DoubleMatrix2D b;
-
-    private int residualDof;
-
-    private boolean hasWarned = false;
-
     /*
      * Lists which factors (terms) are associated with which columns of the design matrix; 0 indicates the intercept.
      */
     private List<Integer> assign = new ArrayList<Integer>();
 
-    /*
-     * Names of the factors (terms)
+    private List<List<Integer>> assigns = new ArrayList<List<Integer>>();
+
+    /**
+     * Independent variables
      */
-    private List<String> terms;
+    private DoubleMatrix2D b;
+
+    /**
+     * Model fix coefficients (the x in Ax=b)
+     */
+    private DoubleMatrix2D coefficients = null;
 
     private DesignMatrix designMatrix;
 
-    /*
-     * Optional, but useful
+    /**
+     * Fitted values
      */
-    private List<String> rowNames;
+    private DoubleMatrix2D fitted;
+
+    private boolean hasIntercept = true;
+
+    /**
+     * 
+     */
+    private boolean hasMissing = false;
+
+    private boolean hasWarned = false;
+
+    /**
+     * QR decomposition of the design matrix
+     */
+    private QRDecompositionPivoting qr;
 
     /*
      * Used if we have missing values so QR might be different for each row (possible optimization to consider: only
@@ -130,22 +119,33 @@ public class LeastSquaresFit {
      */
     private List<QRDecompositionPivoting> qrs = new ArrayList<QRDecompositionPivoting>();
 
+    private int residualDof;
+
     /*
      * Used if we have missing value so RDOF might be different for each row (we can actually get away without this)
      */
     private List<Integer> residualDofs = new ArrayList<Integer>();
 
-    private boolean hasIntercept = true;
-    private List<List<Integer>> assigns = new ArrayList<List<Integer>>();
+    /**
+     * Residuals of the fit
+     */
+    private DoubleMatrix2D residuals;
+    /*
+     * Optional, but useful
+     */
+    private List<String> rowNames;
+
+    /*
+     * Names of the factors (terms)
+     */
+    private List<String> terms;
+
+    // private List<Integer[]> pivotIndicesList = new ArrayList<Integer[]>();
 
     /*
      * For weighted regression
      */
     private DoubleMatrix2D weights = null;
-
-    // private List<Integer[]> pivotIndicesList = new ArrayList<Integer[]>();
-
-    private static Log log = LogFactory.getLog( LeastSquaresFit.class );
 
     /**
      * Preferred interface if you want control over how the design is set up.
@@ -187,76 +187,6 @@ public class LeastSquaresFit {
         assert hasInterceptTerm == this.hasIntercept : diagnosis( null );
         this.weights = weights;
         wlsf();
-    }
-
-    /**
-     * Stripped-down interface for simple use. ANOVA not possible (use the other constructors)
-     * 
-     * @param A Design matrix, which will be used directly in least squares regression
-     * @param b Data matrix, containing data in rows.
-     */
-    public LeastSquaresFit( DoubleMatrix2D A, DoubleMatrix2D b ) {
-        this.A = A;
-        this.b = b;
-        lsf();
-    }
-
-    /**
-     * Least squares fit between two vectors. Always adds an intercept!
-     * 
-     * @param vectorA Design
-     * @param vectorB Data
-     * @param weights to be used in modifying the influence of the observations in vectorB.
-     */
-    public LeastSquaresFit( DoubleMatrix1D vectorA, DoubleMatrix1D vectorB, final DoubleMatrix1D weights ) {
-
-        assert vectorA.size() == vectorB.size();
-        assert vectorA.size() == weights.size();
-
-        this.A = new DenseDoubleMatrix2D( vectorA.size(), 2 );
-        this.b = new DenseDoubleMatrix2D( 1, vectorB.size() );
-        this.weights = new DenseDoubleMatrix2D( 1, weights.size() );
-
-        for ( int i = 0; i < vectorA.size(); i++ ) {
-            double ws = Math.sqrt( weights.get( i ) );
-            A.set( i, 0, ws );
-            A.set( i, 1, vectorA.get( i ) * ws );
-            b.set( 0, i, vectorB.get( i ) * ws );
-            this.weights.set( 0, i, weights.get( i ) );
-        }
-
-        lsf();
-
-        residuals = residuals.forEachNonZero( new IntIntDoubleFunction() {
-            @Override
-            public double apply( int row, int col, double nonZeroValue ) {
-                return nonZeroValue / Math.sqrt( weights.get( col ) );
-            }
-        } );
-
-        DoubleMatrix1D f2 = vectorB.copy().assign( residuals.viewRow( 0 ), Functions.minus );
-        this.fitted.viewRow( 0 ).assign( f2 );
-    }
-
-    /**
-     * Weighted least squares fit between two matrices
-     * 
-     * @param vectorA Design
-     * @param vectorB Data
-     * @param weights to be used in modifying the influence of the observations in vectorB.
-     */
-    public LeastSquaresFit( DoubleMatrix2D A, DoubleMatrix2D b, final DoubleMatrix2D weights ) {
-
-        assert A.rows() == b.columns();
-        assert b.columns() == weights.columns();
-        assert b.rows() == weights.rows();
-
-        this.A = A;
-        this.b = b;
-        this.weights = weights;
-
-        wlsf();
-
     }
 
     /**
@@ -303,6 +233,76 @@ public class LeastSquaresFit {
         }
 
         lsf();
+    }
+
+    /**
+     * Least squares fit between two vectors. Always adds an intercept!
+     * 
+     * @param vectorA Design
+     * @param vectorB Data
+     * @param weights to be used in modifying the influence of the observations in vectorB.
+     */
+    public LeastSquaresFit( DoubleMatrix1D vectorA, DoubleMatrix1D vectorB, final DoubleMatrix1D weights ) {
+
+        assert vectorA.size() == vectorB.size();
+        assert vectorA.size() == weights.size();
+
+        this.A = new DenseDoubleMatrix2D( vectorA.size(), 2 );
+        this.b = new DenseDoubleMatrix2D( 1, vectorB.size() );
+        this.weights = new DenseDoubleMatrix2D( 1, weights.size() );
+
+        for ( int i = 0; i < vectorA.size(); i++ ) {
+            double ws = Math.sqrt( weights.get( i ) );
+            A.set( i, 0, ws );
+            A.set( i, 1, vectorA.get( i ) * ws );
+            b.set( 0, i, vectorB.get( i ) * ws );
+            this.weights.set( 0, i, weights.get( i ) );
+        }
+
+        lsf();
+
+        residuals = residuals.forEachNonZero( new IntIntDoubleFunction() {
+            @Override
+            public double apply( int row, int col, double nonZeroValue ) {
+                return nonZeroValue / Math.sqrt( weights.get( col ) );
+            }
+        } );
+
+        DoubleMatrix1D f2 = vectorB.copy().assign( residuals.viewRow( 0 ), Functions.minus );
+        this.fitted.viewRow( 0 ).assign( f2 );
+    }
+
+    /**
+     * Stripped-down interface for simple use. ANOVA not possible (use the other constructors)
+     * 
+     * @param A Design matrix, which will be used directly in least squares regression
+     * @param b Data matrix, containing data in rows.
+     */
+    public LeastSquaresFit( DoubleMatrix2D A, DoubleMatrix2D b ) {
+        this.A = A;
+        this.b = b;
+        lsf();
+    }
+
+    /**
+     * Weighted least squares fit between two matrices
+     * 
+     * @param vectorA Design
+     * @param vectorB Data
+     * @param weights to be used in modifying the influence of the observations in vectorB.
+     */
+    public LeastSquaresFit( DoubleMatrix2D A, DoubleMatrix2D b, final DoubleMatrix2D weights ) {
+
+        assert A.rows() == b.columns();
+        assert b.columns() == weights.columns();
+        assert b.rows() == weights.rows();
+
+        this.A = A;
+        this.b = b;
+        this.weights = weights;
+
+        wlsf();
+
     }
 
     /**
@@ -531,12 +531,12 @@ public class LeastSquaresFit {
         return fitted;
     }
 
-    public DoubleMatrix2D getResiduals() {
-        return residuals;
-    }
-
     public int getResidualDof() {
         return residualDof;
+    }
+
+    public DoubleMatrix2D getResiduals() {
+        return residuals;
     }
 
     /**
@@ -668,6 +668,160 @@ public class LeastSquaresFit {
         return result;
     }
 
+    /**
+     * Note: does not populate the ANOVA.
+     * 
+     * @param i
+     * @return
+     */
+    protected LinearModelSummary summarize( int i ) {
+
+        String key = null;
+        if ( this.rowNames != null ) {
+            key = this.rowNames.get( i );
+            if ( key == null ) log.warn( "Key null at " + i );
+        }
+
+        QRDecompositionPivoting qrd = null;
+        if ( this.qrs.isEmpty() ) {
+            qrd = this.qr; // no missing values, so it's global
+        } else {
+            qrd = this.qrs.get( i ); // row-specific
+        }
+
+        if ( qrd == null ) {
+            log.debug( "QR was null for item " + i );
+            return new LinearModelSummary( key );
+        }
+
+        int rdf;
+        if ( this.residualDofs.isEmpty() ) {
+            rdf = this.residualDof; // no missing values, so it's global
+        } else {
+            rdf = this.residualDofs.get( i ); // row-specific
+        }
+
+        if ( rdf == 0 ) {
+            return new LinearModelSummary( key );
+        }
+        DoubleMatrix1D coef = coefficients.viewColumn( i );
+        DoubleMatrix1D r = MatrixUtil.removeMissing( this.residuals.viewRow( i ) );
+        DoubleMatrix1D f = MatrixUtil.removeMissing( fitted.viewRow( i ) );
+        DoubleMatrix1D est = MatrixUtil.removeMissing( coef );
+
+        if ( est.size() == 0 ) {
+            log.warn( "No coefficients estimated for row " + i + this.diagnosis( qrd ) );
+            log.info( "Data for this row:\n" + this.b.viewRow( i ) );
+            return new LinearModelSummary( key );
+        }
+
+        int p = qrd.getRank();
+        int n = qrd.getQ().rows();
+        assert rdf == n - p : "Rank was not correct, expected " + rdf + " but got Q rows=" + n + ", #Coef=" + p
+                + diagnosis( qrd );
+
+        double mss;
+        if ( hasIntercept ) {
+            mss = f.copy().assign( Functions.minus( Descriptive.mean( new DoubleArrayList( f.toArray() ) ) ) )
+                    .assign( Functions.square ).aggregate( Functions.plus, Functions.identity );
+        } else {
+            mss = f.copy().assign( Functions.square ).aggregate( Functions.plus, Functions.identity );
+        }
+
+        double rss = r.copy().assign( Functions.square ).aggregate( Functions.plus, Functions.identity );
+        double resvar = rss / rdf;
+
+        /*
+         * These next two lines could be computationally expensive; there is no need to compute these over and over in
+         * many cases.
+         */
+        DoubleMatrix2D qrdR = qrd.getR();
+        DoubleMatrix2D R = dpotri( qrdR.viewPart( 0, 0, qrd.getRank(), qrd.getRank() ) );
+
+        // matrix to hold the coefficients.
+        DoubleMatrix<String, String> coeffMat = DoubleMatrixFactory.dense( coef.size(), 4 );
+        coeffMat.assign( Double.NaN );
+        coeffMat.setColumnNames( Arrays.asList( new String[] { "Estimate", "Std. Error", "t value", "Pr(>|t|)" } ) );
+
+        DoubleMatrix1D se = MatrixUtil.diagonal( R ).assign( Functions.mult( resvar ) ).assign( Functions.sqrt );
+
+        if ( est.size() != se.size() ) {
+            /*
+             * This should actually not happen, due to pivoting.
+             */
+            if ( !hasWarned ) {
+                log.warn( "T statistics could not be computed because of missing values (singularity?) " + i
+                        + this.diagnosis( qrd ) );
+                log.warn( "Data for this row:\n" + this.b.viewRow( i ) );
+                log.warn( "Additional warnings suppressed" );
+                hasWarned = true;
+            }
+            return new LinearModelSummary( key, terms, ArrayUtils.toObject( this.residuals.viewRow( i ).toArray() ),
+                    coeffMat, 0.0, 0.0, 0.0, 0, 0, null );
+        }
+
+        DoubleMatrix1D tval = est.copy().assign( se, Functions.div );
+        TDistribution tdist = new TDistributionImpl( rdf );
+
+        int j = 0;
+        for ( int ti = 0; ti < coef.size(); ti++ ) {
+            double c = coef.get( ti );
+            assert this.designMatrix != null;
+            List<String> colNames = this.designMatrix.getMatrix().getColNames();
+
+            String dmcolname;
+            if ( colNames == null ) {
+                dmcolname = "Column_" + ti;
+            } else {
+                dmcolname = colNames.get( ti );
+            }
+
+            /* FIXME the contrast should be stored in there. */
+            coeffMat.addRowName( dmcolname );
+            if ( Double.isNaN( c ) ) {
+                continue;
+            }
+
+            coeffMat.set( ti, 0, est.get( j ) );
+            coeffMat.set( ti, 1, se.get( j ) );
+            coeffMat.set( ti, 2, tval.get( j ) );
+
+            try {
+                double pval = 2.0 * ( 1.0 - tdist.cumulativeProbability( Math.abs( tval.get( j ) ) ) );
+                coeffMat.set( ti, 3, pval );
+            } catch ( MathException e ) {
+                coeffMat.set( ti, 3, Double.NaN );
+            }
+            j++;
+
+        }
+
+        double rsquared = 0.0;
+        double adjRsquared = 0.0;
+        double fstatistic = 0.0;
+        int numdf = 0;
+        int dendf = 0;
+        // is there anything besides the intercept???
+        if ( terms.size() > 1 || !hasIntercept ) {
+            int dfint = hasIntercept ? 1 : 0;
+            rsquared = mss / ( mss + rss );
+            adjRsquared = 1 - ( 1 - rsquared * ( ( n - dfint ) / ( double ) rdf ) );
+            fstatistic = mss / ( p - dfint ) / resvar;
+
+            numdf = p - dfint;
+            dendf = rdf;
+
+        } else {
+            // intercept only, apparently.
+            rsquared = 0.0;
+            adjRsquared = 0.0;
+        }
+
+        LinearModelSummary lms = new LinearModelSummary( key, terms, ArrayUtils.toObject( this.residuals.viewRow( i )
+                .toArray() ), coeffMat, rsquared, adjRsquared, fstatistic, numdf, dendf, null );
+        return lms;
+    }
+
     private void addInteraction() {
         if ( designMatrix.getTerms().size() == 1 ) {
             throw new IllegalArgumentException( "Need at least two factors for interactions" );
@@ -691,28 +845,6 @@ public class LeastSquaresFit {
                 }
             }
         }
-    }
-
-    /**
-     * Mimics functionality of chol2inv from R (which just calls LAPACK::dpotri)
-     * 
-     * @param x upper triangular matrix (from qr)
-     * @return symmetric matrix X'X^-1
-     */
-    private DoubleMatrix2D dpotri( DoubleMatrix2D x ) {
-
-        // this is not numerically stable
-        // DoubleMatrix2D mult = solver.mult( solver.transpose( qrdR ), qrdR );
-        // DoubleMatrix2D R = solver.inverse( mult );
-
-        DenseMatrix denseMatrix = new DenseMatrix( x.copy().toArray() );
-        intW status = new intW( 0 );
-        LAPACK.getInstance().dpotri( "U", x.columns(), denseMatrix.getData(), x.columns(), status );
-        if ( status.val != 0 ) {
-            throw new IllegalStateException( "Could not invert matrix" );
-        }
-
-        return new DenseDoubleMatrix2D( Matrices.getArray( denseMatrix ) );
     }
 
     /**
@@ -859,81 +991,25 @@ public class LeastSquaresFit {
     }
 
     /**
-     * Internal function that does the hard work. The weighted version which works like 'lm.wfit()' in R. TODO cleanup,
-     * forget about sigma!
+     * Mimics functionality of chol2inv from R (which just calls LAPACK::dpotri)
+     * 
+     * @param x upper triangular matrix (from qr)
+     * @return symmetric matrix X'X^-1
      */
-    private void wlsf() {
+    private DoubleMatrix2D dpotri( DoubleMatrix2D x ) {
 
-        Algebra solver = new Algebra();
+        // this is not numerically stable
+        // DoubleMatrix2D mult = solver.mult( solver.transpose( qrdR ), qrdR );
+        // DoubleMatrix2D R = solver.inverse( mult );
 
-        /*
-         * weight A and b: wts <- sqrt(w) A * wts, row * wts
-         */
-        ArrayList<DoubleMatrix2D> AwList = new ArrayList<DoubleMatrix2D>( b.rows() );
-        ArrayList<DoubleMatrix1D> bList = new ArrayList<DoubleMatrix1D>( b.rows() );
-        for ( int i = 0; i < b.rows(); i++ ) {
-            DoubleMatrix1D wts = this.weights.viewRow( i ).copy().assign( Functions.sqrt );
-            DoubleMatrix1D bw = b.viewRow( i ).copy().assign( wts, Functions.mult );
-            DoubleMatrix2D Aw = A.copy();
-            for ( int j = 0; j < Aw.columns(); j++ ) {
-                Aw.viewColumn( j ).assign( wts, Functions.mult );
-            }
-            AwList.add( Aw );
-            bList.add( bw );
+        DenseMatrix denseMatrix = new DenseMatrix( x.copy().toArray() );
+        intW status = new intW( 0 );
+        LAPACK.getInstance().dpotri( "U", x.columns(), denseMatrix.getData(), x.columns(), status );
+        if ( status.val != 0 ) {
+            throw new IllegalStateException( "Could not invert matrix" );
         }
 
-        double[][] rawResult = new double[b.rows()][];
-
-        /*
-         * Missing values result in the addition of a fair amount of extra code.
-         */
-        if ( this.hasMissing ) {
-
-            for ( int i = 0; i < b.rows(); i++ ) {
-                DoubleMatrix1D bw = bList.get( i );
-                DoubleMatrix2D Aw = AwList.get( i );
-                DoubleMatrix1D withoutMissing = ordinaryLeastSquaresWithMissing( bw, Aw );
-                if ( withoutMissing == null ) {
-                    rawResult[i] = new double[A.columns()];
-                } else {
-                    rawResult[i] = withoutMissing.toArray();
-                }
-            }
-
-        } else {
-
-            // do QR for each row because A is scaled by different row weights
-            // see lm.series() in R
-            // FIXME Find a way to speed this up
-            for ( int i = 0; i < b.rows(); i++ ) {
-                DoubleMatrix1D bw = bList.get( i );
-                DoubleMatrix2D Aw = AwList.get( i );
-                DoubleMatrix2D bw2D = new DenseDoubleMatrix2D( 1, bw.size() );
-                bw2D.viewRow( 0 ).assign( bw );
-                this.qr = new QRDecompositionPivoting( Aw );
-                this.qrs.add( this.qr );
-                rawResult[i] = qr.solve( solver.transpose( bw2D ) ).viewColumn( 0 ).toArray();
-                this.residualDof = bw.size() - qr.getRank();
-                if ( residualDof <= 0 ) {
-                    throw new IllegalArgumentException( "No residual degrees of freedom to fit the model"
-                            + diagnosis( qr ) );
-                }
-            }
-        }
-
-        this.coefficients = solver.transpose( new DenseDoubleMatrix2D( rawResult ) );
-
-        assert this.assign.isEmpty() || this.assign.size() == this.coefficients.rows() : assign.size()
-                + " != # coefficients " + this.coefficients.rows();
-        assert this.coefficients.rows() == A.columns();
-
-        this.fitted = solver.transpose( MatrixUtil.multWithMissing( A, coefficients ) );
-
-        if ( this.hasMissing ) {
-            MatrixUtil.maskMissing( b, fitted );
-        }
-
-        this.residuals = b.copy().assign( fitted, Functions.minus );
+        return new DenseDoubleMatrix2D( Matrices.getArray( denseMatrix ) );
     }
 
     /**
@@ -1147,156 +1223,80 @@ public class LeastSquaresFit {
     }
 
     /**
-     * Note: does not populate the ANOVA.
-     * 
-     * @param i
-     * @return
+     * Internal function that does the hard work. The weighted version which works like 'lm.wfit()' in R. TODO cleanup,
+     * forget about sigma!
      */
-    protected LinearModelSummary summarize( int i ) {
+    private void wlsf() {
 
-        String key = null;
-        if ( this.rowNames != null ) {
-            key = this.rowNames.get( i );
-            if ( key == null ) log.warn( "Key null at " + i );
-        }
-
-        QRDecompositionPivoting qrd = null;
-        if ( this.qrs.isEmpty() ) {
-            qrd = this.qr; // no missing values, so it's global
-        } else {
-            qrd = this.qrs.get( i ); // row-specific
-        }
-
-        if ( qrd == null ) {
-            log.debug( "QR was null for item " + i );
-            return new LinearModelSummary( key );
-        }
-
-        int rdf;
-        if ( this.residualDofs.isEmpty() ) {
-            rdf = this.residualDof; // no missing values, so it's global
-        } else {
-            rdf = this.residualDofs.get( i ); // row-specific
-        }
-
-        if ( rdf == 0 ) {
-            return new LinearModelSummary( key );
-        }
-        DoubleMatrix1D coef = coefficients.viewColumn( i );
-        DoubleMatrix1D r = MatrixUtil.removeMissing( this.residuals.viewRow( i ) );
-        DoubleMatrix1D f = MatrixUtil.removeMissing( fitted.viewRow( i ) );
-        DoubleMatrix1D est = MatrixUtil.removeMissing( coef );
-
-        if ( est.size() == 0 ) {
-            log.warn( "No coefficients estimated for row " + i + this.diagnosis( qrd ) );
-            log.info( "Data for this row:\n" + this.b.viewRow( i ) );
-            return new LinearModelSummary( key );
-        }
-
-        int p = qrd.getRank();
-        int n = qrd.getQ().rows();
-        assert rdf == n - p : "Rank was not correct, expected " + rdf + " but got Q rows=" + n + ", #Coef=" + p
-                + diagnosis( qrd );
-
-        double mss;
-        if ( hasIntercept ) {
-            mss = f.copy().assign( Functions.minus( Descriptive.mean( new DoubleArrayList( f.toArray() ) ) ) )
-                    .assign( Functions.square ).aggregate( Functions.plus, Functions.identity );
-        } else {
-            mss = f.copy().assign( Functions.square ).aggregate( Functions.plus, Functions.identity );
-        }
-
-        double rss = r.copy().assign( Functions.square ).aggregate( Functions.plus, Functions.identity );
-        double resvar = rss / rdf;
+        Algebra solver = new Algebra();
 
         /*
-         * These next two lines could be computationally expensive; there is no need to compute these over and over in
-         * many cases.
+         * weight A and b: wts <- sqrt(w) A * wts, row * wts
          */
-        DoubleMatrix2D qrdR = qrd.getR();
-        DoubleMatrix2D R = dpotri( qrdR.viewPart( 0, 0, qrd.getRank(), qrd.getRank() ) );
-
-        // matrix to hold the coefficients.
-        DoubleMatrix<String, String> coeffMat = DoubleMatrixFactory.dense( coef.size(), 4 );
-        coeffMat.assign( Double.NaN );
-        coeffMat.setColumnNames( Arrays.asList( new String[] { "Estimate", "Std. Error", "t value", "Pr(>|t|)" } ) );
-
-        DoubleMatrix1D se = MatrixUtil.diagonal( R ).assign( Functions.mult( resvar ) ).assign( Functions.sqrt );
-
-        if ( est.size() != se.size() ) {
-            /*
-             * This should actually not happen, due to pivoting.
-             */
-            if ( !hasWarned ) {
-                log.warn( "T statistics could not be computed because of missing values (singularity?) " + i
-                        + this.diagnosis( qrd ) );
-                log.warn( "Data for this row:\n" + this.b.viewRow( i ) );
-                log.warn( "Additional warnings suppressed" );
-                hasWarned = true;
+        ArrayList<DoubleMatrix2D> AwList = new ArrayList<DoubleMatrix2D>( b.rows() );
+        ArrayList<DoubleMatrix1D> bList = new ArrayList<DoubleMatrix1D>( b.rows() );
+        for ( int i = 0; i < b.rows(); i++ ) {
+            DoubleMatrix1D wts = this.weights.viewRow( i ).copy().assign( Functions.sqrt );
+            DoubleMatrix1D bw = b.viewRow( i ).copy().assign( wts, Functions.mult );
+            DoubleMatrix2D Aw = A.copy();
+            for ( int j = 0; j < Aw.columns(); j++ ) {
+                Aw.viewColumn( j ).assign( wts, Functions.mult );
             }
-            return new LinearModelSummary( key, terms, ArrayUtils.toObject( this.residuals.viewRow( i ).toArray() ),
-                    coeffMat, 0.0, 0.0, 0.0, 0, 0, null );
+            AwList.add( Aw );
+            bList.add( bw );
         }
 
-        DoubleMatrix1D tval = est.copy().assign( se, Functions.div );
-        TDistribution tdist = new TDistributionImpl( rdf );
+        double[][] rawResult = new double[b.rows()][];
 
-        int j = 0;
-        for ( int ti = 0; ti < coef.size(); ti++ ) {
-            double c = coef.get( ti );
-            assert this.designMatrix != null;
-            List<String> colNames = this.designMatrix.getMatrix().getColNames();
+        /*
+         * Missing values result in the addition of a fair amount of extra code.
+         */
+        if ( this.hasMissing ) {
 
-            String dmcolname;
-            if ( colNames == null ) {
-                dmcolname = "Column_" + ti;
-            } else {
-                dmcolname = colNames.get( ti );
+            for ( int i = 0; i < b.rows(); i++ ) {
+                DoubleMatrix1D bw = bList.get( i );
+                DoubleMatrix2D Aw = AwList.get( i );
+                DoubleMatrix1D withoutMissing = ordinaryLeastSquaresWithMissing( bw, Aw );
+                if ( withoutMissing == null ) {
+                    rawResult[i] = new double[A.columns()];
+                } else {
+                    rawResult[i] = withoutMissing.toArray();
+                }
             }
-
-            /* FIXME the contrast should be stored in there. */
-            coeffMat.addRowName( dmcolname );
-            if ( Double.isNaN( c ) ) {
-                continue;
-            }
-
-            coeffMat.set( ti, 0, est.get( j ) );
-            coeffMat.set( ti, 1, se.get( j ) );
-            coeffMat.set( ti, 2, tval.get( j ) );
-
-            try {
-                double pval = 2.0 * ( 1.0 - tdist.cumulativeProbability( Math.abs( tval.get( j ) ) ) );
-                coeffMat.set( ti, 3, pval );
-            } catch ( MathException e ) {
-                coeffMat.set( ti, 3, Double.NaN );
-            }
-            j++;
-
-        }
-
-        double rsquared = 0.0;
-        double adjRsquared = 0.0;
-        double fstatistic = 0.0;
-        int numdf = 0;
-        int dendf = 0;
-        // is there anything besides the intercept???
-        if ( terms.size() > 1 || !hasIntercept ) {
-            int dfint = hasIntercept ? 1 : 0;
-            rsquared = mss / ( mss + rss );
-            adjRsquared = 1 - ( 1 - rsquared * ( ( n - dfint ) / ( double ) rdf ) );
-            fstatistic = mss / ( p - dfint ) / resvar;
-
-            numdf = p - dfint;
-            dendf = rdf;
 
         } else {
-            // intercept only, apparently.
-            rsquared = 0.0;
-            adjRsquared = 0.0;
+
+            // do QR for each row because A is scaled by different row weights
+            // see lm.series() in R
+            // FIXME Find a way to speed this up
+            for ( int i = 0; i < b.rows(); i++ ) {
+                DoubleMatrix1D bw = bList.get( i );
+                DoubleMatrix2D Aw = AwList.get( i );
+                DoubleMatrix2D bw2D = new DenseDoubleMatrix2D( 1, bw.size() );
+                bw2D.viewRow( 0 ).assign( bw );
+                this.qr = new QRDecompositionPivoting( Aw );
+                this.qrs.add( this.qr );
+                rawResult[i] = qr.solve( solver.transpose( bw2D ) ).viewColumn( 0 ).toArray();
+                this.residualDof = bw.size() - qr.getRank();
+                if ( residualDof <= 0 ) {
+                    throw new IllegalArgumentException( "No residual degrees of freedom to fit the model"
+                            + diagnosis( qr ) );
+                }
+            }
         }
 
-        LinearModelSummary lms = new LinearModelSummary( key, terms, ArrayUtils.toObject( this.residuals.viewRow( i )
-                .toArray() ), coeffMat, rsquared, adjRsquared, fstatistic, numdf, dendf, null );
-        return lms;
+        this.coefficients = solver.transpose( new DenseDoubleMatrix2D( rawResult ) );
+
+        assert this.assign.isEmpty() || this.assign.size() == this.coefficients.rows() : assign.size()
+                + " != # coefficients " + this.coefficients.rows();
+        assert this.coefficients.rows() == A.columns();
+
+        this.fitted = solver.transpose( MatrixUtil.multWithMissing( A, coefficients ) );
+
+        if ( this.hasMissing ) {
+            MatrixUtil.maskMissing( b, fitted );
+        }
+
+        this.residuals = b.copy().assign( fitted, Functions.minus );
     }
 }

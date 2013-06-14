@@ -40,23 +40,18 @@ import org.rosuda.REngine.REXPMismatchException;
 public class GenericAnovaResult extends AnovaResult implements Serializable {
 
     /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-
-    Map<String, AnovaEffect> mainEffects = new LinkedHashMap<String, AnovaEffect>();
-
-    Map<InteractionFactor, AnovaEffect> interactionEffects = new HashMap<InteractionFactor, AnovaEffect>();
-
-    private AnovaEffect residual;
-
-    /**
      * Represents a set of factors in an interaction term.
      */
     private static class InteractionFactor {
 
         // Treeset - keep them sorted to be consistent across instances.
         private Set<String> factorNames = new TreeSet<String>();
+
+        public InteractionFactor( String... factorNames ) {
+            for ( String f : factorNames ) {
+                this.factorNames.add( f );
+            }
+        }
 
         /*
          * (non-Javadoc)
@@ -82,69 +77,37 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
         public int hashCode() {
             return StringUtils.join( factorNames, "_x_x_" ).hashCode();
         }
+    }
 
-        public InteractionFactor( String... factorNames ) {
-            for ( String f : factorNames ) {
-                this.factorNames.add( f );
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    Map<InteractionFactor, AnovaEffect> interactionEffects = new HashMap<InteractionFactor, AnovaEffect>();
+
+    Map<String, AnovaEffect> mainEffects = new LinkedHashMap<String, AnovaEffect>();
+
+    private AnovaEffect residual;
+
+    /**
+     * @param effects
+     */
+    public GenericAnovaResult( Collection<AnovaEffect> effects ) {
+        for ( AnovaEffect ae : effects ) {
+            String termLabel = ae.getEffectName();
+            boolean isInteraction = ae.isInteraction();
+
+            if ( isInteraction ) { // kind of lame way to detect interaction rows.
+                interactionEffects.put( new InteractionFactor( StringUtils.split( termLabel, ":" ) ), ae );
+            } else if ( termLabel.equals( "Residual" ) ) {
+                this.residualDf = ae.getDegreesOfFreedom();
+                this.residual = ae;
+            } else {
+
+                mainEffects.put( termLabel, ae );
             }
         }
-    }
-
-    /**
-     * @return names of main effects factors like 'f', 'g'.
-     */
-    public Collection<String> getMainEffectFactorNames() {
-        return mainEffects.keySet();
-    }
-
-    public boolean hasInteractions() {
-        return !interactionEffects.isEmpty();
-    }
-
-    public Double getMainEffectP( String factorName ) {
-        if ( mainEffects.get( factorName ) == null ) {
-            return Double.NaN;
-        }
-        return mainEffects.get( factorName ).getPValue();
-    }
-
-    public Double getMainEffectF( String factorName ) {
-        if ( mainEffects.get( factorName ) == null ) {
-            return Double.NaN;
-        }
-        return mainEffects.get( factorName ).getFStatistic();
-    }
-
-    public Integer getMainEffectDof( String factorName ) {
-        if ( mainEffects.get( factorName ) == null ) {
-            return null;
-        }
-        return mainEffects.get( factorName ).getDegreesOfFreedom();
-    }
-
-    public Double getInteractionEffectP() {
-        if ( interactionEffects.size() > 1 ) {
-            throw new IllegalArgumentException( "Must specify which interaction" );
-        }
-        if ( interactionEffects.isEmpty() ) {
-            return null;
-        }
-        return interactionEffects.values().iterator().next().getPValue();
-    }
-
-    /**
-     * @param factorsName e.g. f,g
-     * @return
-     */
-    public Double getInteractionEffectP( String... factorNames ) {
-        InteractionFactor interactionFactor = new InteractionFactor( factorNames );
-        if ( interactionEffects.isEmpty() ) {
-            return null;
-        }
-        if ( !interactionEffects.containsKey( interactionFactor ) ) {
-            return Double.NaN;
-        }
-        return interactionEffects.get( interactionFactor ).getPValue();
     }
 
     /**
@@ -180,24 +143,61 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
 
     }
 
-    /**
-     * @param effects
-     */
-    public GenericAnovaResult( Collection<AnovaEffect> effects ) {
-        for ( AnovaEffect ae : effects ) {
-            String termLabel = ae.getEffectName();
-            boolean isInteraction = ae.isInteraction();
-
-            if ( isInteraction ) { // kind of lame way to detect interaction rows.
-                interactionEffects.put( new InteractionFactor( StringUtils.split( termLabel, ":" ) ), ae );
-            } else if ( termLabel.equals( "Residual" ) ) {
-                this.residualDf = ae.getDegreesOfFreedom();
-                this.residual = ae;
-            } else {
-
-                mainEffects.put( termLabel, ae );
-            }
+    public Double getInteractionEffectP() {
+        if ( interactionEffects.size() > 1 ) {
+            throw new IllegalArgumentException( "Must specify which interaction" );
         }
+        if ( interactionEffects.isEmpty() ) {
+            return null;
+        }
+        return interactionEffects.values().iterator().next().getPValue();
+    }
+
+    /**
+     * @param factorsName e.g. f,g
+     * @return
+     */
+    public Double getInteractionEffectP( String... factorNames ) {
+        InteractionFactor interactionFactor = new InteractionFactor( factorNames );
+        if ( interactionEffects.isEmpty() ) {
+            return null;
+        }
+        if ( !interactionEffects.containsKey( interactionFactor ) ) {
+            return Double.NaN;
+        }
+        return interactionEffects.get( interactionFactor ).getPValue();
+    }
+
+    public Integer getMainEffectDof( String factorName ) {
+        if ( mainEffects.get( factorName ) == null ) {
+            return null;
+        }
+        return mainEffects.get( factorName ).getDegreesOfFreedom();
+    }
+
+    public Double getMainEffectF( String factorName ) {
+        if ( mainEffects.get( factorName ) == null ) {
+            return Double.NaN;
+        }
+        return mainEffects.get( factorName ).getFStatistic();
+    }
+
+    /**
+     * @return names of main effects factors like 'f', 'g'.
+     */
+    public Collection<String> getMainEffectFactorNames() {
+        return mainEffects.keySet();
+    }
+
+    public Double getMainEffectP( String factorName ) {
+        if ( mainEffects.get( factorName ) == null ) {
+            return Double.NaN;
+        }
+        return mainEffects.get( factorName ).getPValue();
+    }
+
+    public boolean hasInteractions() {
+        return !interactionEffects.isEmpty();
     }
 
     @Override

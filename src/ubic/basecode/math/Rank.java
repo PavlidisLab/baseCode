@@ -212,56 +212,6 @@ public class Rank {
     }
 
     /**
-     * @param m
-     * @param desc
-     * @param values
-     * @return
-     */
-    private static <K> Map<K, Double> rankTransform( Map<K, ? extends Comparable<?>> m, boolean desc,
-            List<KeyAndValueData<K>> values ) {
-        /* sort it */
-        Collections.sort( values );
-        Map<K, Double> result = new HashMap<K, Double>();
-
-        Double rank = 0.0;
-        Comparable prevVal = null;
-        Double nominalRank = 0.0; // rank we'd have if no ties.
-        for ( int i = 0; i < m.size(); i++ ) {
-            result.put( values.get( i ).getKey(), ( double ) nominalRank ); // might not keep.
-
-            Comparable val = values.get( i ).getValue();
-            // only bump up ranks if we're not tied with the last one.
-            if ( prevVal != null && !val.equals( prevVal ) ) {
-                rank = nominalRank;
-            } else {
-                // tied. Do not advance the rank.
-                result.put( values.get( i ).getKey(), rank );
-            }
-
-            prevVal = val;
-            nominalRank++;
-
-        }
-
-        fixTies( result, values );
-
-        if ( desc ) {
-            /*
-             * Reverse all the values.
-             */
-            Map<K, Double> finalResult = new HashMap<K, Double>();
-            double mr = result.size();
-            for ( K k : result.keySet() ) {
-                double d = result.get( k );
-                finalResult.put( k, mr - d - 1.0 );
-            }
-            return finalResult;
-        }
-
-        return result;
-    }
-
-    /**
      * @param ranksWithTies
      */
     private static void fixTies( DoubleArrayList ranksWithTies, List<? extends RankData<?>> ranks ) {
@@ -362,6 +312,56 @@ public class Rank {
             total = total + rawRank + i;
         }
         return total / numties;
+    }
+
+    /**
+     * @param m
+     * @param desc
+     * @param values
+     * @return
+     */
+    private static <K> Map<K, Double> rankTransform( Map<K, ? extends Comparable<?>> m, boolean desc,
+            List<KeyAndValueData<K>> values ) {
+        /* sort it */
+        Collections.sort( values );
+        Map<K, Double> result = new HashMap<K, Double>();
+
+        Double rank = 0.0;
+        Comparable prevVal = null;
+        Double nominalRank = 0.0; // rank we'd have if no ties.
+        for ( int i = 0; i < m.size(); i++ ) {
+            result.put( values.get( i ).getKey(), ( double ) nominalRank ); // might not keep.
+
+            Comparable val = values.get( i ).getValue();
+            // only bump up ranks if we're not tied with the last one.
+            if ( prevVal != null && !val.equals( prevVal ) ) {
+                rank = nominalRank;
+            } else {
+                // tied. Do not advance the rank.
+                result.put( values.get( i ).getKey(), rank );
+            }
+
+            prevVal = val;
+            nominalRank++;
+
+        }
+
+        fixTies( result, values );
+
+        if ( desc ) {
+            /*
+             * Reverse all the values.
+             */
+            Map<K, Double> finalResult = new HashMap<K, Double>();
+            double mr = result.size();
+            for ( K k : result.keySet() ) {
+                double d = result.get( k );
+                finalResult.put( k, mr - d - 1.0 );
+            }
+            return finalResult;
+        }
+
+        return result;
     }
 }
 

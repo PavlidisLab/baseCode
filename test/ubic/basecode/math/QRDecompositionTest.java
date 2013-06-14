@@ -31,9 +31,9 @@ import cern.colt.matrix.linalg.Algebra;
 import cern.jet.math.Functions;
 
 public class QRDecompositionTest {
-    Algebra solver = new Algebra();
     @SuppressWarnings("unused")
     private static Log log = LogFactory.getLog( QRDecompositionTest.class );
+    Algebra solver = new Algebra();
 
     /**
      * @throws Exception
@@ -144,6 +144,40 @@ public class QRDecompositionTest {
     }
 
     /**
+     * Case where the Design matrix values include values other than 1's and 0's.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testScaledDesign() throws Exception {
+
+        DoubleMatrixReader of = new DoubleMatrixReader();
+        DoubleMatrix<String, String> d = of.read( this.getClass().getResourceAsStream( "/data/lmtest3.des.txt" ) );
+        QRDecompositionPivoting qrlrs = null;
+        DoubleMatrix2D qr = null;
+
+        // this is ok if we only have 1's and 0's
+        assertEquals( 9, d.columns() );
+        qrlrs = new QRDecompositionPivoting( new DenseDoubleMatrix2D( d.asArray() ) );
+        qr = qrlrs.getQR();
+        assertEquals( -3.741657, qr.get( 0, 0 ), 0.001 );
+        assertEquals( 0.0, qr.get( 8, 8 ), 0.001 );
+        assertEquals( -8.660254e-01, qr.get( 4, 4 ), 0.001 );
+        assertEquals( -1, qr.get( 5, 5 ), 0.001 );
+
+        // but now we multiply by 2
+        assertEquals( 9, d.columns() );
+        DoubleMatrix2D d2 = new DenseDoubleMatrix2D( d.asArray() );
+        d2.assign( Functions.mult( 2 ) );
+        qrlrs = new QRDecompositionPivoting( d2 );
+        qr = qrlrs.getQR();
+        assertEquals( -7.483315, qr.get( 0, 0 ), 0.001 );
+        assertEquals( 0.0, qr.get( 8, 8 ), 0.001 );
+        assertEquals( 3.070598, qr.get( 1, 1 ), 0.001 );
+        assertEquals( -1.11658105, qr.get( 1, 2 ), 0.001 );
+    }
+
+    /**
      * @throws Exception
      */
     @Test
@@ -214,39 +248,5 @@ public class QRDecompositionTest {
             assertEquals( "At : " + i, expectedCoeffs[i], result.get( i ), 0.0001 );
         }
 
-    }
-
-    /**
-     * Case where the Design matrix values include values other than 1's and 0's.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testScaledDesign() throws Exception {
-
-        DoubleMatrixReader of = new DoubleMatrixReader();
-        DoubleMatrix<String, String> d = of.read( this.getClass().getResourceAsStream( "/data/lmtest3.des.txt" ) );
-        QRDecompositionPivoting qrlrs = null;
-        DoubleMatrix2D qr = null;
-
-        // this is ok if we only have 1's and 0's
-        assertEquals( 9, d.columns() );
-        qrlrs = new QRDecompositionPivoting( new DenseDoubleMatrix2D( d.asArray() ) );
-        qr = qrlrs.getQR();
-        assertEquals( -3.741657, qr.get( 0, 0 ), 0.001 );
-        assertEquals( 0.0, qr.get( 8, 8 ), 0.001 );
-        assertEquals( -8.660254e-01, qr.get( 4, 4 ), 0.001 );
-        assertEquals( -1, qr.get( 5, 5 ), 0.001 );
-
-        // but now we multiply by 2
-        assertEquals( 9, d.columns() );
-        DoubleMatrix2D d2 = new DenseDoubleMatrix2D( d.asArray() );
-        d2.assign( Functions.mult( 2 ) );
-        qrlrs = new QRDecompositionPivoting( d2 );
-        qr = qrlrs.getQR();
-        assertEquals( -7.483315, qr.get( 0, 0 ), 0.001 );
-        assertEquals( 0.0, qr.get( 8, 8 ), 0.001 );
-        assertEquals( 3.070598, qr.get( 1, 1 ), 0.001 );
-        assertEquals( -1.11658105, qr.get( 1, 2 ), 0.001 );
     }
 }

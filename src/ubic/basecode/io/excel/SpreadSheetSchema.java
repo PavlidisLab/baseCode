@@ -30,8 +30,8 @@ import org.apache.commons.logging.LogFactory;
  * @author lfrench
  */
 public class SpreadSheetSchema {
-    protected Map<String, Integer> positions;
     protected Log log = LogFactory.getLog( SpreadSheetSchema.class );
+    protected Map<String, Integer> positions;
 
     // ?geoLabel ?description ?CUI ?SUI ?mapping ?phrase ?mentionLabel
     public SpreadSheetSchema() {

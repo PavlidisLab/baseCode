@@ -48,39 +48,41 @@ public class MatrixDisplay<R, C> extends JPanel {
 
     private static final int DEFAULT_SCALE_BAR_WIDTH = 100;
 
-    private static final long serialVersionUID = -8078532270193813539L;
-
     private final static Log log = LogFactory.getLog( MatrixDisplay.class );
 
-    protected boolean m_isShowLabels = false;
-    //
-    protected int m_ratioWidth = 0;
-    protected int m_rowLabelWidth; // max
-    protected int m_columnLabelHeight; // max
-
-    protected boolean m_isShowScale = false;
-
-    protected int m_labelGutter = 5;
-
-    protected int m_fontGutter;
-    protected Font m_labelFont = null;
-    protected int m_fontSize = 10;
-    protected final int m_maxFontSize = 10;
-    protected final int m_defaultResolution = 120;
-    protected int m_resolution = m_defaultResolution;
-    protected int m_textSize = 0;
-    protected int m_maxColumnLength = 0;
-    protected Dimension m_cellSize = new Dimension( 10, 10 ); // in pixels
-    // data fields
-    ColorMatrix<R, C> colorMatrix; // reference to standardized or unstandardized matrix
-    ColorMatrix<R, C> m_unstandardizedMatrix;
-    ColorMatrix<R, C> m_standardizedMatrix;
-
-    boolean m_isShowingStandardizedMatrix = false;
+    private static final long serialVersionUID = -8078532270193813539L;
 
     public static <R, C> MatrixDisplay<R, C> newInstance( ColorMatrix<R, C> matrix ) {
         return new MatrixDisplay<R, C>( matrix );
     }
+    // data fields
+    ColorMatrix<R, C> colorMatrix; // reference to standardized or unstandardized matrix
+    boolean m_isShowingStandardizedMatrix = false;
+    ColorMatrix<R, C> m_standardizedMatrix;
+
+    ColorMatrix<R, C> m_unstandardizedMatrix;
+
+    final int SCALE_BAR_ROOM = 40;
+
+    protected Dimension m_cellSize = new Dimension( 10, 10 ); // in pixels
+    protected int m_columnLabelHeight; // max
+    protected final int m_defaultResolution = 120;
+    protected int m_fontGutter;
+    protected int m_fontSize = 10;
+    protected boolean m_isShowLabels = false;
+    protected boolean m_isShowScale = false;
+    protected Font m_labelFont = null;
+    protected int m_labelGutter = 5;
+    protected int m_maxColumnLength = 0;
+    protected final int m_maxFontSize = 10;
+    //
+    protected int m_ratioWidth = 0;
+
+    protected int m_resolution = m_defaultResolution;
+
+    protected int m_rowLabelWidth; // max
+
+    protected int m_textSize = 0;
 
     public MatrixDisplay( ColorMatrix<R, C> matrix ) {
         init( matrix );
@@ -161,6 +163,10 @@ public class MatrixDisplay<R, C> extends JPanel {
         return colorMatrix.getMissingColor();
     }
 
+    public double getRawValue( int row, int column ) {
+        return m_unstandardizedMatrix.getValue( row, column );
+    }
+
     public double[] getRow( int row ) {
         return colorMatrix.getRow( row );
     }
@@ -192,10 +198,6 @@ public class MatrixDisplay<R, C> extends JPanel {
     public boolean getStandardizedEnabled() {
 
         return m_isShowingStandardizedMatrix;
-    }
-
-    public double getRawValue( int row, int column ) {
-        return m_unstandardizedMatrix.getValue( row, column );
     }
 
     public double getValue( int row, int column ) {
@@ -353,11 +355,6 @@ public class MatrixDisplay<R, C> extends JPanel {
         initSize();
     }
 
-    public void setScaleBarVisible( boolean isShowScale ) {
-        m_isShowScale = isShowScale;
-        initSize();
-    }
-
     /**
      * @param matrix the new matrix to use; will resize this display component as necessary
      */
@@ -381,6 +378,11 @@ public class MatrixDisplay<R, C> extends JPanel {
 
     public void setRowKeys( int[] rowKeys ) {
         colorMatrix.setRowKeys( rowKeys );
+    }
+
+    public void setScaleBarVisible( boolean isShowScale ) {
+        m_isShowScale = isShowScale;
+        initSize();
     }
 
     public void setStandardizedEnabled( boolean showStandardizedMatrix ) {
@@ -429,38 +431,61 @@ public class MatrixDisplay<R, C> extends JPanel {
         this.setLabelsVisible( oldLabelSate );
     }
 
-    final int SCALE_BAR_ROOM = 40;
-
     /**
-     * @param g
-     * @param d
+     * compute the size of the matrix in pixels.
+     * 
+     * @param withLabels
+     * @return
      */
-    protected void drawScaleBar( Graphics g, Dimension d, double displayMin, double displayMax ) {
-        /*
-         * FIXME this is all a bit of a hack
-         */
-        g.setColor( Color.white );
-        int upperLeftScalebarGutter = 10;
-        int scaleBarHeight = 10; // these and text height have to total < SCALE_BAR_ROOM
-        int desiredScaleBarLength = ( int ) Math.min( DEFAULT_SCALE_BAR_WIDTH, d.getWidth() );
+    protected Dimension computeSize( boolean showLabels, boolean showScalebar ) {
 
-        if ( desiredScaleBarLength < 10 ) {
-            log.warn( "Can't draw a scale bar that small: " + desiredScaleBarLength );
-            return;
+        if ( colorMatrix == null ) {
+            return null;
         }
 
-        g.drawRect( upperLeftScalebarGutter, upperLeftScalebarGutter, desiredScaleBarLength, upperLeftScalebarGutter );
-        JGradientLabel scalebar = new JGradientLabel( new ColorMap( this.getColorMap() ).getPalette() );
-        scalebar.setBackground( Color.white );
-        scalebar.setSize( new Dimension( desiredScaleBarLength, scaleBarHeight ) );
-        int actualWidth = scalebar.drawAtLocation( g, upperLeftScalebarGutter, upperLeftScalebarGutter );
-        g.setColor( Color.black );
-        g.drawString( String.format( "%.2g", displayMin ), 0, upperLeftScalebarGutter + scaleBarHeight + m_fontGutter
-                + g.getFontMetrics().getHeight() );
-        g.drawString( String.format( "%.2g", displayMax ), actualWidth, upperLeftScalebarGutter + scaleBarHeight
-                + m_fontGutter + g.getFontMetrics().getHeight() );
-        g.drawRect( upperLeftScalebarGutter, upperLeftScalebarGutter, actualWidth, scaleBarHeight );
-    }
+        // row label width and height (font-dependent)
+        setFont();
+        m_rowLabelWidth = m_labelGutter
+                + Util.maxStringPixelWidth( colorMatrix.getRowNames(), this.getFontMetrics( m_labelFont ) );
+        m_rowLabelWidth += m_labelGutter; // this is optional (leaves some space on the right)
+        if ( m_maxColumnLength > 0 ) {
+            String[] cols = colorMatrix.getColumnNames();
+            for ( int i = 0; i < cols.length; i++ ) {
+                cols[i] = padColumnString( cols[i] );
+
+            }
+            // fix column height to ~5 pixels per character. This prevents a slightly different column height
+            // for different letters.
+            m_columnLabelHeight = 5 * m_maxColumnLength;
+        } else {
+            m_columnLabelHeight = Util.maxStringPixelWidth( colorMatrix.getColumnNames(),
+                    this.getFontMetrics( m_labelFont ) );
+        }
+
+        // m_columnLabelHeight += m_labelGutter; // this is optional (leaves some
+        // space on top)
+
+        // height and width of this display component
+        int height = m_cellSize.height * colorMatrix.getRowCount();
+        int width = m_cellSize.width * colorMatrix.getColumnCount();
+
+        // adjust for row and column labels
+        if ( showLabels ) {
+            width += m_rowLabelWidth;
+            height += m_columnLabelHeight + m_labelGutter;
+        }
+
+        if ( showScalebar ) {
+            height += SCALE_BAR_ROOM; /* scale bar height */
+            // if ( width < DEFAULT_SCALE_BAR_WIDTH ) { /* scale bar width */
+            // width = DEFAULT_SCALE_BAR_WIDTH;
+            // }
+        }
+
+        // set the sizes
+        return new Dimension( width, height );
+
+    } // end getSize
 
     /**
      * Draws column names vertically (turned 90 degrees counter-clockwise)
@@ -589,60 +614,35 @@ public class MatrixDisplay<R, C> extends JPanel {
     } // end rawRowName
 
     /**
-     * compute the size of the matrix in pixels.
-     * 
-     * @param withLabels
-     * @return
+     * @param g
+     * @param d
      */
-    protected Dimension computeSize( boolean showLabels, boolean showScalebar ) {
+    protected void drawScaleBar( Graphics g, Dimension d, double displayMin, double displayMax ) {
+        /*
+         * FIXME this is all a bit of a hack
+         */
+        g.setColor( Color.white );
+        int upperLeftScalebarGutter = 10;
+        int scaleBarHeight = 10; // these and text height have to total < SCALE_BAR_ROOM
+        int desiredScaleBarLength = ( int ) Math.min( DEFAULT_SCALE_BAR_WIDTH, d.getWidth() );
 
-        if ( colorMatrix == null ) {
-            return null;
+        if ( desiredScaleBarLength < 10 ) {
+            log.warn( "Can't draw a scale bar that small: " + desiredScaleBarLength );
+            return;
         }
 
-        // row label width and height (font-dependent)
-        setFont();
-        m_rowLabelWidth = m_labelGutter
-                + Util.maxStringPixelWidth( colorMatrix.getRowNames(), this.getFontMetrics( m_labelFont ) );
-        m_rowLabelWidth += m_labelGutter; // this is optional (leaves some space on the right)
-        if ( m_maxColumnLength > 0 ) {
-            String[] cols = colorMatrix.getColumnNames();
-            for ( int i = 0; i < cols.length; i++ ) {
-                cols[i] = padColumnString( cols[i] );
-
-            }
-            // fix column height to ~5 pixels per character. This prevents a slightly different column height
-            // for different letters.
-            m_columnLabelHeight = 5 * m_maxColumnLength;
-        } else {
-            m_columnLabelHeight = Util.maxStringPixelWidth( colorMatrix.getColumnNames(),
-                    this.getFontMetrics( m_labelFont ) );
-        }
-
-        // m_columnLabelHeight += m_labelGutter; // this is optional (leaves some
-        // space on top)
-
-        // height and width of this display component
-        int height = m_cellSize.height * colorMatrix.getRowCount();
-        int width = m_cellSize.width * colorMatrix.getColumnCount();
-
-        // adjust for row and column labels
-        if ( showLabels ) {
-            width += m_rowLabelWidth;
-            height += m_columnLabelHeight + m_labelGutter;
-        }
-
-        if ( showScalebar ) {
-            height += SCALE_BAR_ROOM; /* scale bar height */
-            // if ( width < DEFAULT_SCALE_BAR_WIDTH ) { /* scale bar width */
-            // width = DEFAULT_SCALE_BAR_WIDTH;
-            // }
-        }
-
-        // set the sizes
-        return new Dimension( width, height );
-
-    } // end getSize
+        g.drawRect( upperLeftScalebarGutter, upperLeftScalebarGutter, desiredScaleBarLength, upperLeftScalebarGutter );
+        JGradientLabel scalebar = new JGradientLabel( new ColorMap( this.getColorMap() ).getPalette() );
+        scalebar.setBackground( Color.white );
+        scalebar.setSize( new Dimension( desiredScaleBarLength, scaleBarHeight ) );
+        int actualWidth = scalebar.drawAtLocation( g, upperLeftScalebarGutter, upperLeftScalebarGutter );
+        g.setColor( Color.black );
+        g.drawString( String.format( "%.2g", displayMin ), 0, upperLeftScalebarGutter + scaleBarHeight + m_fontGutter
+                + g.getFontMetrics().getHeight() );
+        g.drawString( String.format( "%.2g", displayMax ), actualWidth, upperLeftScalebarGutter + scaleBarHeight
+                + m_fontGutter + g.getFontMetrics().getHeight() );
+        g.drawRect( upperLeftScalebarGutter, upperLeftScalebarGutter, actualWidth, scaleBarHeight );
+    }
 
     /**
      * Sets the display size

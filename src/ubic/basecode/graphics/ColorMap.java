@@ -25,22 +25,22 @@ import java.awt.Color;
  * @version $Id$
  */
 public class ColorMap {
-
-    public static final int m_defaultSuggestedNumberOfColors = 32;
     public static final Color DARK_RED = new Color( 128, 0, 0 );
+
+    public static final Color[] BLACKBODY_COLORMAP = { Color.black, DARK_RED, Color.orange, Color.yellow, Color.white };
     public static final Color[] GREENRED_COLORMAP = { Color.green, Color.black, Color.red };
 
+    public static final int m_defaultSuggestedNumberOfColors = 32;
     public static final Color[] REDGREEN_COLORMAP = { Color.red, Color.black, Color.green };
-    public static final Color[] BLACKBODY_COLORMAP = { Color.black, DARK_RED, Color.orange, Color.yellow, Color.white };
-    /** first color in the current color map */
-    protected Color m_minColor;
-    /** last color in the current color map */
-    protected Color m_maxColor;
-    protected Color[] m_customColorMap;
-
-    protected Color[] m_currentColorMap = GREENRED_COLORMAP; // reference to a
     // color map
     protected Color[] m_colorPalette;
+    protected Color[] m_currentColorMap = GREENRED_COLORMAP; // reference to a
+    protected Color[] m_customColorMap;
+
+    /** last color in the current color map */
+    protected Color m_maxColor;
+    /** first color in the current color map */
+    protected Color m_minColor;
 
     public ColorMap() {
 

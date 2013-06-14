@@ -28,6 +28,30 @@ package ubic.basecode.util;
 public interface StatusViewer {
 
     /**
+     * Clear the status display. Implementers that do not write to GUI elements probably don't need to do anything.
+     */
+    public abstract void clear();
+
+    /**
+     * Print an error status messge.
+     * 
+     * @param s
+     */
+    public abstract void showError( String s );
+
+    /**
+     * @param e
+     */
+    public abstract void showError( String message, Throwable e );
+
+    /**
+     * @param e
+     */
+    public abstract void showError( Throwable e );
+
+    public void showProgress( String message );
+
+    /**
      * Print the status to the location appropriate for this application.
      * 
      * @param s
@@ -41,31 +65,7 @@ public interface StatusViewer {
     public abstract void showStatus( String s, boolean callSuper );
 
     /**
-     * Print an error status messge.
-     * 
-     * @param s
-     */
-    public abstract void showError( String s );
-
-    /**
      * @param s
      */
     public abstract void showWarning( String s );
-
-    /**
-     * @param e
-     */
-    public abstract void showError( Throwable e );
-
-    /**
-     * @param e
-     */
-    public abstract void showError( String message, Throwable e );
-
-    /**
-     * Clear the status display. Implementers that do not write to GUI elements probably don't need to do anything.
-     */
-    public abstract void clear();
-
-    public void showProgress( String message );
 }

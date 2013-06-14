@@ -29,8 +29,8 @@ import cern.colt.matrix.DoubleMatrix1D;
  */
 public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
 
-    DoubleMatrix<String, String> testdata;
     DoubleMatrixReader f = new DoubleMatrixReader();
+    DoubleMatrix<String, String> testdata;
 
     /*
      * Test method for 'basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamed.columns()'
@@ -39,18 +39,17 @@ public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
         assertTrue( testdata.columns() == 12 );
     }
 
-    /*
-     * Test method for 'basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamed.get(int, int)'
-     */
-    public void testGet() {
-        assertEquals( 27873.8, testdata.get( 2, 4 ), 0.0001 );
-    }
+    public void testConstructFromArray() {
+        FastRowAccessDoubleMatrix<String, String> actual = new FastRowAccessDoubleMatrix<String, String>( testdata
+                .asArray() );
+        double[][] testM = testdata.asArray();
 
-    /*
-     * Test method for 'basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamed.getColObj(int)'
-     */
-    public void testGetColObj() {
-
+        for ( int i = 0; i < testM.length; i++ ) {
+            int len = testM[i].length;
+            for ( int j = 0; j < len; j++ ) {
+                assertEquals( testM[i][j], actual.get( i, j ) );
+            }
+        }
     }
 
     public void testCopy() {
@@ -65,6 +64,20 @@ public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
                 assertEquals( testM[i][j], actual.get( i, j ) );
             }
         }
+
+    }
+
+    /*
+     * Test method for 'basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamed.get(int, int)'
+     */
+    public void testGet() {
+        assertEquals( 27873.8, testdata.get( 2, 4 ), 0.0001 );
+    }
+
+    /*
+     * Test method for 'basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamed.getColObj(int)'
+     */
+    public void testGetColObj() {
 
     }
 
@@ -84,17 +97,17 @@ public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
         assertEquals( 27873.8, res.get( 4 ), 0.001 );
     }
 
-    public void testGetRowRange() {
-        DoubleMatrix<String, String> rowRange = testdata.getRowRange( 1, 4 );
-        assertEquals( 12, rowRange.columns() );
-        assertEquals( 4, rowRange.rows() );
-    }
-
     /*
      * Test method for 'basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamed.getRowObj(int)'
      */
     public void testGetRowObj() {
 
+    }
+
+    public void testGetRowRange() {
+        DoubleMatrix<String, String> rowRange = testdata.getRowRange( 1, 4 );
+        assertEquals( 12, rowRange.columns() );
+        assertEquals( 4, rowRange.rows() );
     }
 
     /*
@@ -109,6 +122,11 @@ public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
      */
     public void testRows() {
         assertTrue( testdata.rows() == 30 );
+    }
+
+    public void testSet() {
+        testdata.set( 1, 2, 3.0 );
+        assertEquals( 3.0, testdata.get( 1, 2 ), 0.00001 );
     }
 
     /*
@@ -127,30 +145,12 @@ public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
         assertEquals( 3.0, testdata.get( 1, 2 ), 0.00001 );
     }
 
-    public void testSet() {
-        testdata.set( 1, 2, 3.0 );
-        assertEquals( 3.0, testdata.get( 1, 2 ), 0.00001 );
-    }
-
     /*
      * Test method for 'basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamed.viewRow(int)'
      */
     public void testViewRow() {
         DoubleMatrix1D res = testdata.viewRow( 1 );
         assertEquals( 242.1, res.get( 2 ), 0.001 );
-    }
-
-    public void testConstructFromArray() {
-        FastRowAccessDoubleMatrix<String, String> actual = new FastRowAccessDoubleMatrix<String, String>( testdata
-                .asArray() );
-        double[][] testM = testdata.asArray();
-
-        for ( int i = 0; i < testM.length; i++ ) {
-            int len = testM[i].length;
-            for ( int j = 0; j < len; j++ ) {
-                assertEquals( testM[i][j], actual.get( i, j ) );
-            }
-        }
     }
 
     /*

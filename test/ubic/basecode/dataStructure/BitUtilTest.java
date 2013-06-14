@@ -26,68 +26,6 @@ import junit.framework.TestCase;
  */
 public class BitUtilTest extends TestCase {
 
-    public void testGet() {
-        byte[] v = new byte[4];
-        for ( int i = 0, j = v.length; i < j; i++ ) {
-            v[i] = 0x0;
-        }
-        BitUtil.set( v, 4 );
-        BitUtil.set( v, 14 );
-        BitUtil.set( v, 10 );
-        BitUtil.set( v, 3 );
-        BitUtil.set( v, 11 );
-        BitUtil.set( v, 30 );
-
-        assertTrue( BitUtil.get( v, 4 ) );
-        assertTrue( BitUtil.get( v, 14 ) );
-
-    }
-
-    public void testToBool() {
-        byte[] v = new byte[4];
-        for ( int i = 0, j = v.length; i < j; i++ ) {
-            v[i] = 0x0;
-        }
-        BitUtil.set( v, 4 );
-        BitUtil.set( v, 14 );
-        BitUtil.set( v, 10 );
-        BitUtil.set( v, 3 );
-        BitUtil.set( v, 11 );
-        BitUtil.set( v, 30 );
-
-        boolean[] asBools = BitUtil.asBools( v );
-
-        assertEquals( 32, asBools.length );
-
-        assertTrue( asBools[4] );
-        assertTrue( !asBools[0] );
-
-        assertTrue( asBools[3] );
-        assertTrue( !asBools[5] );
-
-        assertTrue( asBools[14] );
-        assertTrue( !asBools[15] );
-        assertTrue( asBools[30] );
-        assertTrue( !asBools[31] );
-    }
-
-    public void testSet() {
-        byte[] v = new byte[4];
-        for ( int i = 0, j = v.length; i < j; i++ ) {
-            v[i] = 0x0;
-        }
-        BitUtil.set( v, 4 );
-        BitUtil.set( v, 14 );
-        BitUtil.set( v, 10 );
-        BitUtil.set( v, 3 );
-        BitUtil.set( v, 11 );
-        BitUtil.set( v, 30 );
-
-        StringBuilder buf = prettyprint( v );
-        // System.err.println(buf.toString());
-        assertEquals( "00011000 00110010 00000000 00000010 ", buf.toString() );
-    }
-
     public void testClear() {
         byte[] v = new byte[4];
         for ( int i = 0, j = v.length; i < j; i++ ) {
@@ -121,6 +59,68 @@ public class BitUtilTest extends TestCase {
         assertEquals( 6, BitUtil.count( v ) );
         BitUtil.clear( v, 14 );
         assertEquals( 5, BitUtil.count( v ) );
+    }
+
+    public void testGet() {
+        byte[] v = new byte[4];
+        for ( int i = 0, j = v.length; i < j; i++ ) {
+            v[i] = 0x0;
+        }
+        BitUtil.set( v, 4 );
+        BitUtil.set( v, 14 );
+        BitUtil.set( v, 10 );
+        BitUtil.set( v, 3 );
+        BitUtil.set( v, 11 );
+        BitUtil.set( v, 30 );
+
+        assertTrue( BitUtil.get( v, 4 ) );
+        assertTrue( BitUtil.get( v, 14 ) );
+
+    }
+
+    public void testSet() {
+        byte[] v = new byte[4];
+        for ( int i = 0, j = v.length; i < j; i++ ) {
+            v[i] = 0x0;
+        }
+        BitUtil.set( v, 4 );
+        BitUtil.set( v, 14 );
+        BitUtil.set( v, 10 );
+        BitUtil.set( v, 3 );
+        BitUtil.set( v, 11 );
+        BitUtil.set( v, 30 );
+
+        StringBuilder buf = prettyprint( v );
+        // System.err.println(buf.toString());
+        assertEquals( "00011000 00110010 00000000 00000010 ", buf.toString() );
+    }
+
+    public void testToBool() {
+        byte[] v = new byte[4];
+        for ( int i = 0, j = v.length; i < j; i++ ) {
+            v[i] = 0x0;
+        }
+        BitUtil.set( v, 4 );
+        BitUtil.set( v, 14 );
+        BitUtil.set( v, 10 );
+        BitUtil.set( v, 3 );
+        BitUtil.set( v, 11 );
+        BitUtil.set( v, 30 );
+
+        boolean[] asBools = BitUtil.asBools( v );
+
+        assertEquals( 32, asBools.length );
+
+        assertTrue( asBools[4] );
+        assertTrue( !asBools[0] );
+
+        assertTrue( asBools[3] );
+        assertTrue( !asBools[5] );
+
+        assertTrue( asBools[14] );
+        assertTrue( !asBools[15] );
+        assertTrue( asBools[30] );
+        assertTrue( !asBools[31] );
     }
 
     /**

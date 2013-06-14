@@ -29,9 +29,9 @@ public class DatatypePropertyImpl extends OntologyPropertyImpl implements Dataty
      */
     private static final long serialVersionUID = 1L;
 
-    private com.hp.hpl.jena.ontology.DatatypeProperty resource;
-
     Class<?> type;
+
+    private com.hp.hpl.jena.ontology.DatatypeProperty resource;
 
     public DatatypePropertyImpl( com.hp.hpl.jena.ontology.DatatypeProperty resource  ) {
         this.resource = resource; 

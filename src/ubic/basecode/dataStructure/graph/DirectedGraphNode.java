@@ -30,14 +30,14 @@ import java.util.Set;
  */
 public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements Comparable<DirectedGraphNode<K, V>> {
 
-    protected Set<K> parents;
+    DirectedGraph<K, V> graph;
     // immeddiate parents, references to other GraphNodes by keys.
     protected Set<K> children;
     // immediate children, references to other GraphNodes by keys.
 
-    protected int topoSortOrder = 0;
+    protected Set<K> parents;
 
-    DirectedGraph<K, V> graph;
+    protected int topoSortOrder = 0;
 
     /**
      * @param key Object

@@ -79,32 +79,6 @@ public class MeanVarianceEstimator {
      */
     public static final int ROBUSTNESS_ITERS = 3;
 
-    /**
-     * Normalized variables on log2 scale
-     */
-    private DoubleMatrix2D E;
-
-    /**
-     * Size of each library
-     */
-    private DoubleMatrix1D libSize;
-
-    /**
-     * Loess fit (x, y)
-     */
-    private DoubleMatrix2D loess;
-
-    /**
-     * Matrix that contains the mean and variance of the data. Matrix is sorted by increasing mean. Useful for plotting.
-     * mean <- fit$Amean + mean(log2(lib.size+1)) - log2(1e6) variance <- sqrt(fit$sigma)
-     */
-    private DoubleMatrix2D meanVariance;
-
-    /**
-     * inverse variance weights
-     */
-    private DoubleMatrix2D weights = null;
-
     private static Log log = LogFactory.getLog( MeanVarianceEstimator.class );
 
     /**
@@ -198,6 +172,32 @@ public class MeanVarianceEstimator {
 
         return cpm;
     }
+
+    /**
+     * Normalized variables on log2 scale
+     */
+    private DoubleMatrix2D E;
+
+    /**
+     * Size of each library
+     */
+    private DoubleMatrix1D libSize;
+
+    /**
+     * Loess fit (x, y)
+     */
+    private DoubleMatrix2D loess;
+
+    /**
+     * Matrix that contains the mean and variance of the data. Matrix is sorted by increasing mean. Useful for plotting.
+     * mean <- fit$Amean + mean(log2(lib.size+1)) - log2(1e6) variance <- sqrt(fit$sigma)
+     */
+    private DoubleMatrix2D meanVariance;
+
+    /**
+     * inverse variance weights
+     */
+    private DoubleMatrix2D weights = null;
 
     /**
      * Preferred interface if you want control over how the design is set up. Executes voom() to calculate weights.

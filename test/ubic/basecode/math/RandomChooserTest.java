@@ -53,6 +53,33 @@ public class RandomChooserTest extends TestCase {
     }
 
     /**
+     * Test method for {@link ubic.basecode.math.RandomChooser#chooserandomWrep(int[], int, int)} .
+     */
+    public void testChooserandomWrep() {
+        int[] result = RandomChooser.chooserandomWrep( 100, 500 );
+        assertEquals( 500, result.length );
+        assertEquals( 76, result[0] );
+        assertEquals( 55, result[10] );
+        assertEquals( 55, result[11] );
+    }
+
+    public void testRandomSubset() {
+        Collection<String> vals = new HashSet<String>();
+        vals.add( "a" );
+        vals.add( "b" );
+        vals.add( "c" );
+        vals.add( "d" );
+        vals.add( "e" );
+        vals.add( "f" );
+        Set<String> result = RandomChooser.chooseRandomSubset( 2, vals );
+
+        /*
+         * Note: this used to test for specific values but for some reason this doesn't work on latest java+winxp?
+         */
+        assertEquals( 2, result.size() );
+    }
+
+    /**
      * Check correctness of the sampling algorithm for choosing subsets of size 2. The average value should come out
      * close to k/2.
      * 
@@ -92,33 +119,6 @@ public class RandomChooserTest extends TestCase {
             total += m / 2.0;
         }
         assertEquals( 500, total / reps, 5 );
-    }
-
-    public void testRandomSubset() {
-        Collection<String> vals = new HashSet<String>();
-        vals.add( "a" );
-        vals.add( "b" );
-        vals.add( "c" );
-        vals.add( "d" );
-        vals.add( "e" );
-        vals.add( "f" );
-        Set<String> result = RandomChooser.chooseRandomSubset( 2, vals );
-
-        /*
-         * Note: this used to test for specific values but for some reason this doesn't work on latest java+winxp?
-         */
-        assertEquals( 2, result.size() );
-    }
-
-    /**
-     * Test method for {@link ubic.basecode.math.RandomChooser#chooserandomWrep(int[], int, int)} .
-     */
-    public void testChooserandomWrep() {
-        int[] result = RandomChooser.chooserandomWrep( 100, 500 );
-        assertEquals( 500, result.length );
-        assertEquals( 76, result[0] );
-        assertEquals( 55, result[10] );
-        assertEquals( 55, result[11] );
     }
 
 }

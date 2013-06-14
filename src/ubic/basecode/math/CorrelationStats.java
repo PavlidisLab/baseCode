@@ -34,12 +34,14 @@ public class CorrelationStats {
 
     /* for spearman - for n <= this, we compute exact probabilities. */
     final static int n_small = 9;
-    private static DoubleMatrix2D correlationPvalLookup;
-
-    private static DoubleMatrix2D spearmanPvalLookup;
     private static final double BINSIZE = 0.005; // resolution of correlation.
     // Differences smaller than this
     // are considered meaningless.
+
+    /* Edgeworth coefficients for spearman p-value computation : */
+    private static final double c1 = 0.2274, c2 = 0.2531, c3 = 0.1745, c4 = 0.0758, c5 = 0.1033, c6 = 0.3932,
+            c7 = 0.0879, c8 = 0.0151, c9 = 0.0072, c10 = 0.0831, c11 = 0.0131, c12 = 4.6e-4;
+    private static DoubleMatrix2D correlationPvalLookup;
 
     private static final int MAXCOUNT = 1000; // maximum number of things.
 
@@ -49,9 +51,7 @@ public class CorrelationStats {
     // 10^e-256/PVALCHOP are
     // 'clipped'.
 
-    /* Edgeworth coefficients for spearman p-value computation : */
-    private static final double c1 = 0.2274, c2 = 0.2531, c3 = 0.1745, c4 = 0.0758, c5 = 0.1033, c6 = 0.3932,
-            c7 = 0.0879, c8 = 0.0151, c9 = 0.0072, c10 = 0.0831, c11 = 0.0131, c12 = 4.6e-4;
+    private static DoubleMatrix2D spearmanPvalLookup;
 
     static {
         int numbins = ( int ) Math.ceil( 1.0 / BINSIZE );

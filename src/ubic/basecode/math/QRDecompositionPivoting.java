@@ -36,23 +36,16 @@ import cern.jet.math.Functions;
  */
 public class QRDecompositionPivoting {
 
-    /**
-     * Used to decide when to pivot
-     */
-    private double tolerance = 1e-7;
+    private static Log log = LogFactory.getLog( QRDecompositionPivoting.class );
+
+    DoubleMatrix1D originalNorms;
+
+    private int[] jpvt;
 
     /**
      * Rank
      */
     private int k = 0;
-
-    private int[] jpvt;
-
-    private DoubleMatrix1D qraux;
-
-    private DoubleMatrix2D QR;
-
-    private boolean pivoting = true;
 
     /**
      * Rows in input
@@ -63,13 +56,20 @@ public class QRDecompositionPivoting {
      * Columns in input
      */
     private int p;
-    DoubleMatrix1D originalNorms;
+
+    private boolean pivoting = true;
+
+    private DoubleMatrix2D QR;
+    private DoubleMatrix1D qraux;
     /**
      * Diagonal of R
      */
     private DoubleMatrix1D Rdiag;
 
-    private static Log log = LogFactory.getLog( QRDecompositionPivoting.class );
+    /**
+     * Used to decide when to pivot
+     */
+    private double tolerance = 1e-7;
 
     /**
      * @param A the matrix to decompose, pivoting will be used.
@@ -425,6 +425,40 @@ public class QRDecompositionPivoting {
         // return result;
     }
 
+    /**
+     * Returns a String with (propertyName, propertyValue) pairs. Useful for debugging or to quickly get the rough
+     * picture.
+     */
+    @Override
+    public String toString() {
+        StringBuilder buf = new StringBuilder();
+        String unknown = "Illegal operation or error: ";
+
+        buf.append( "-----------------------------------------------------------------\n" );
+        buf.append( "QRDecomposition(A) \n" );
+        buf.append( "-----------------------------------------------------------------\n" );
+
+        buf.append( "rank = " + k );
+
+        buf.append( "\n\nQ = " );
+        try {
+            buf.append( String.valueOf( this.getQ() ) );
+        } catch ( IllegalArgumentException exc ) {
+            buf.append( unknown + exc.getMessage() );
+        }
+
+        buf.append( "\n\nR = " );
+        try {
+            buf.append( String.valueOf( this.getR() ) );
+        } catch ( IllegalArgumentException exc ) {
+            buf.append( unknown + exc.getMessage() );
+        }
+
+        buf.append( "\n\nQRaux = " + this.qraux );
+
+        return buf.toString();
+    }
+
     protected String diagnose() {
         StringBuilder buf = new StringBuilder();
         buf.append( "Rank = " + k + "\n" );
@@ -432,6 +466,15 @@ public class QRDecompositionPivoting {
         buf.append( "Qraux: " + qraux + "\n" );
         buf.append( "Pivot indices: " + StringUtils.join( ArrayUtils.toObject( jpvt ), "  " ) + "\n" );
         return buf.toString();
+    }
+
+    /**
+     * For testing.
+     * 
+     * @return
+     */
+    protected DoubleMatrix2D getQR() {
+        return QR;
     }
 
     /**
@@ -479,48 +522,5 @@ public class QRDecompositionPivoting {
         qraux.set( p - 1, t );
         work.set( p - 1, w0 );
         k = k - 1;
-    }
-
-    /**
-     * For testing.
-     * 
-     * @return
-     */
-    protected DoubleMatrix2D getQR() {
-        return QR;
-    }
-
-    /**
-     * Returns a String with (propertyName, propertyValue) pairs. Useful for debugging or to quickly get the rough
-     * picture.
-     */
-    @Override
-    public String toString() {
-        StringBuilder buf = new StringBuilder();
-        String unknown = "Illegal operation or error: ";
-
-        buf.append( "-----------------------------------------------------------------\n" );
-        buf.append( "QRDecomposition(A) \n" );
-        buf.append( "-----------------------------------------------------------------\n" );
-
-        buf.append( "rank = " + k );
-
-        buf.append( "\n\nQ = " );
-        try {
-            buf.append( String.valueOf( this.getQ() ) );
-        } catch ( IllegalArgumentException exc ) {
-            buf.append( unknown + exc.getMessage() );
-        }
-
-        buf.append( "\n\nR = " );
-        try {
-            buf.append( String.valueOf( this.getR() ) );
-        } catch ( IllegalArgumentException exc ) {
-            buf.append( unknown + exc.getMessage() );
-        }
-
-        buf.append( "\n\nQRaux = " + this.qraux );
-
-        return buf.toString();
     }
 }

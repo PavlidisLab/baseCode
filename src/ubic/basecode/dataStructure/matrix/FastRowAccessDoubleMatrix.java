@@ -250,6 +250,35 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     /*
      * (non-Javadoc)
      * 
+     * @see ubic.basecode.dataStructure.matrix.DoubleMatrix#subsetColumns(java.util.List)
+     */
+    @Override
+    public DoubleMatrix<R, C> subsetColumns( List<C> columns ) {
+
+        DoubleMatrix<R, C> returnval = new DenseDoubleMatrix<R, C>( this.rows(), columns.size() );
+        returnval.setRowNames( this.getRowNames() );
+        for ( int i = 0; i < this.rows(); i++ ) {
+            int currentColumn = 0;
+            for ( C c : columns ) {
+                int j = this.getColIndexByName( c );
+
+                returnval.set( i, currentColumn, this.get( i, j ) );
+
+                if ( i == 0 ) {
+                    returnval.setColumnName( c, currentColumn );
+                }
+
+                currentColumn++;
+
+            }
+
+        }
+        return returnval;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see ubic.basecode.dataStructure.matrix.DoubleMatrix#subsetRows(java.util.Collection)
      */
     @Override
@@ -276,35 +305,6 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
             throw new IllegalArgumentException( "Invalid rows to select, some are not in the original matrix" );
         }
 
-        return returnval;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.DoubleMatrix#subsetColumns(java.util.List)
-     */
-    @Override
-    public DoubleMatrix<R, C> subsetColumns( List<C> columns ) {
-
-        DoubleMatrix<R, C> returnval = new DenseDoubleMatrix<R, C>( this.rows(), columns.size() );
-        returnval.setRowNames( this.getRowNames() );
-        for ( int i = 0; i < this.rows(); i++ ) {
-            int currentColumn = 0;
-            for ( C c : columns ) {
-                int j = this.getColIndexByName( c );
-
-                returnval.set( i, currentColumn, this.get( i, j ) );
-
-                if ( i == 0 ) {
-                    returnval.setColumnName( c, currentColumn );
-                }
-
-                currentColumn++;
-
-            }
-
-        }
         return returnval;
     }
 

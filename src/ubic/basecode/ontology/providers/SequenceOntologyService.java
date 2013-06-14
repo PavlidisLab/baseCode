@@ -22,7 +22,7 @@ package ubic.basecode.ontology.providers;
 import ubic.basecode.ontology.Configuration;
 
 /**
- * TODO Document Me
+ * Support for the Sequence Ontology
  * 
  * @author Paul
  * @version $Id$
@@ -33,7 +33,7 @@ public class SequenceOntologyService extends AbstractOntologyMemoryBackedService
 
     @Override
     protected String getOntologyName() {
-        return "sequenceOntology";
+        return "seqOntology";
     }
 
     @Override

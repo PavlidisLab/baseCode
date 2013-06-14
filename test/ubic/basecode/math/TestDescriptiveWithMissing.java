@@ -30,17 +30,17 @@ import cern.jet.stat.Descriptive;
 public class TestDescriptiveWithMissing extends TestCase {
 
     private DoubleArrayList data1missing;
+    private DoubleArrayList data1missingNotInOrder;
     private DoubleArrayList data1Nomissing;
     private DoubleArrayList data2missing;
     private DoubleArrayList data2Nomissing;
     private DoubleArrayList data3shortmissing;
-    private DoubleArrayList data3shortNomissing;
 
-    private DoubleArrayList datacortest1Nomissing;
-    private DoubleArrayList datacortest2Nomissing;
+    private DoubleArrayList data3shortNomissing;
     private DoubleArrayList datacortest1missing;
+    private DoubleArrayList datacortest1Nomissing;
     private DoubleArrayList datacortest2missing;
-    private DoubleArrayList data1missingNotInOrder;
+    private DoubleArrayList datacortest2Nomissing;
 
     public void testCorrelationA() {
         double s1 = Math.sqrt( Descriptive.sampleVariance( datacortest1Nomissing.size(),
@@ -65,31 +65,6 @@ public class TestDescriptiveWithMissing extends TestCase {
         double actualReturn = DescriptiveWithMissing.correlation( data1missing, s1m, data2missing, s2m );
 
         assertEquals( expectedReturn, actualReturn, 1e-15 );
-    }
-
-    public void testMeanDoubleAr() {
-        double[] tar = new double[] { 0.4, 0.6, Double.NaN, 0, 6, 449.2, -39.1 };
-        assertEquals( 83.42, DescriptiveWithMissing.mean( tar, 5 ), 0.00001 );
-    }
-
-    public void testMeanDoubleArB() {
-        double[] tar = new double[] { 0.4, 0.6, Double.NaN, 0, 6, 449.2, -39.1 };
-        assertEquals( Double.NaN, DescriptiveWithMissing.mean( tar, 0 ) );
-    }
-
-    public void testOptimizedCorrelation() {
-        double[] x;
-        double[] y;
-        x = new double[] { 1, 3, 4, 6 };
-        y = new double[] { -5, 2, Double.NaN, 1 };
-        double expected = 0.7172042;
-        double[] xx = new double[] { 1, 9, 16, 36 };
-        double[] yy = new double[] { 25, 4, Double.NaN, 1 };
-        boolean[] nx = { false, false, false, false };
-        boolean[] ny = { false, false, true, false };
-        double actual = DescriptiveWithMissing.correlation( x, y, xx, yy, nx, ny );
-        assertEquals( expected, actual, 0.000001 );
-
     }
 
     public void testCovariance() {
@@ -149,6 +124,16 @@ public class TestDescriptiveWithMissing extends TestCase {
         assertEquals( 6, actualReturn, Double.MIN_VALUE );
     }
 
+    public void testMeanDoubleAr() {
+        double[] tar = new double[] { 0.4, 0.6, Double.NaN, 0, 6, 449.2, -39.1 };
+        assertEquals( 83.42, DescriptiveWithMissing.mean( tar, 5 ), 0.00001 );
+    }
+
+    public void testMeanDoubleArB() {
+        double[] tar = new double[] { 0.4, 0.6, Double.NaN, 0, 6, 449.2, -39.1 };
+        assertEquals( Double.NaN, DescriptiveWithMissing.mean( tar, 0 ) );
+    }
+
     public void testMeanEff() {
         double actualReturn = DescriptiveWithMissing.mean( data1missing, 4 );
         assertEquals( 4.75, actualReturn, Double.MIN_VALUE );
@@ -166,6 +151,21 @@ public class TestDescriptiveWithMissing extends TestCase {
         double expectedReturn = Descriptive.min( data1Nomissing );
         double actualReturn = DescriptiveWithMissing.min( data1missing );
         assertEquals( expectedReturn, actualReturn, Double.MIN_VALUE );
+    }
+
+    public void testOptimizedCorrelation() {
+        double[] x;
+        double[] y;
+        x = new double[] { 1, 3, 4, 6 };
+        y = new double[] { -5, 2, Double.NaN, 1 };
+        double expected = 0.7172042;
+        double[] xx = new double[] { 1, 9, 16, 36 };
+        double[] yy = new double[] { 25, 4, Double.NaN, 1 };
+        boolean[] nx = { false, false, false, false };
+        boolean[] ny = { false, false, true, false };
+        double actual = DescriptiveWithMissing.correlation( x, y, xx, yy, nx, ny );
+        assertEquals( expected, actual, 0.000001 );
+
     }
 
     public void testProduct() {
@@ -218,6 +218,18 @@ public class TestDescriptiveWithMissing extends TestCase {
         assertEquals( expectedReturn, actualReturn, Double.MIN_VALUE );
     }
 
+    public void testSumOfPowerDeviationsA() {
+        for ( int k = -2; k < 6; k++ ) {
+            for ( int c = 0; c < 2; c++ ) {
+                double expectedReturn = Descriptive.sumOfPowerDeviations( data1Nomissing, k, c );
+                double actualReturn = DescriptiveWithMissing.sumOfPowerDeviations( data1missing, k, c );
+
+                assertEquals( "For k=" + k + " c=" + c, expectedReturn, actualReturn, 0.000001 );
+
+            }
+        }
+    }
+
     public void testSumOfSquares() {
         double expectedReturn = Descriptive.sumOfSquares( data1Nomissing );
         double actualReturn = DescriptiveWithMissing.sumOfSquares( data1missing );
@@ -241,18 +253,6 @@ public class TestDescriptiveWithMissing extends TestCase {
                 DescriptiveWithMissing.sizeWithoutMissingValues( data1missing ),
                 DescriptiveWithMissing.sum( data1missing ), DescriptiveWithMissing.sumOfSquares( data1missing ) );
         assertEquals( expectedReturn, actualReturn, 0.000001 );
-    }
-
-    public void testSumOfPowerDeviationsA() {
-        for ( int k = -2; k < 6; k++ ) {
-            for ( int c = 0; c < 2; c++ ) {
-                double expectedReturn = Descriptive.sumOfPowerDeviations( data1Nomissing, k, c );
-                double actualReturn = DescriptiveWithMissing.sumOfPowerDeviations( data1missing, k, c );
-
-                assertEquals( "For k=" + k + " c=" + c, expectedReturn, actualReturn, 0.000001 );
-
-            }
-        }
     }
 
     public void testWeightedMean() {

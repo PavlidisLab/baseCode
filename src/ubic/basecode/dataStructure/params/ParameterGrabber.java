@@ -32,23 +32,6 @@ import java.util.Map;
  * @version $Id$
  */
 public class ParameterGrabber {
-    public static String paramsToLine( Map<String, String> params ) {
-        return paramsToLine( params, true );
-    }
-
-    public static String paramsToLine( Map<String, String> params, boolean sort ) {
-        List<String> sortedKeys = new LinkedList<String>( params.keySet() );
-
-        if ( sort ) Collections.sort( sortedKeys );
-
-        String line = "";
-        for ( String key : sortedKeys ) {
-            line += key + "=" + params.get( key ) + ", ";
-        }
-        line = line.substring( 0, line.length() - 2 );
-        return line;
-    }
-
     /**
      * Given an instance of a class this method will extract its primitive variable names and their values using
      * reflection.
@@ -84,5 +67,22 @@ public class ParameterGrabber {
             params.putAll( parents );
         }
         return params;
+    }
+
+    public static String paramsToLine( Map<String, String> params ) {
+        return paramsToLine( params, true );
+    }
+
+    public static String paramsToLine( Map<String, String> params, boolean sort ) {
+        List<String> sortedKeys = new LinkedList<String>( params.keySet() );
+
+        if ( sort ) Collections.sort( sortedKeys );
+
+        String line = "";
+        for ( String key : sortedKeys ) {
+            line += key + "=" + params.get( key ) + ", ";
+        }
+        line = line.substring( 0, line.length() - 2 );
+        return line;
     }
 }

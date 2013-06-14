@@ -38,22 +38,6 @@ public abstract interface Matrix2D<R, C, V> {
     public void addColumnName( C s );
 
     /**
-     * Add a column name associated with an index.
-     * 
-     * @param s Object a column name
-     * @param index int the column index associated with this name
-     */
-    public void setColumnName( C s, int index );
-
-    /**
-     * Add a row name associated with a row index.
-     * 
-     * @param s Object
-     * @param index int
-     */
-    public void setRowName( R s, int index );
-
-    /**
      * Attempt to coerce the entries into doubles.
      * <p>
      * Numeric entries (Double, BigDecimal, Integer, BigInteger) and Strings that can be parsed as doubles are
@@ -63,6 +47,13 @@ public abstract interface Matrix2D<R, C, V> {
      * @return
      */
     public double[][] asDoubles();
+
+    /**
+     * Set all values in the matrix to the given value.
+     * 
+     * @param value
+     */
+    public void assign( V value );
 
     /**
      * Get the number of columns the matrix has.
@@ -192,13 +183,6 @@ public abstract interface Matrix2D<R, C, V> {
     public void set( int row, int column, V value );
 
     /**
-     * Set all values in the matrix to the given value.
-     * 
-     * @param value
-     */
-    public void assign( V value );
-
-    /**
      * @param r
      * @param c
      * @param v
@@ -206,9 +190,25 @@ public abstract interface Matrix2D<R, C, V> {
     public void setByKeys( R r, C c, V v );
 
     /**
+     * Add a column name associated with an index.
+     * 
+     * @param s Object a column name
+     * @param index int the column index associated with this name
+     */
+    public void setColumnName( C s, int index );
+
+    /**
      * @param v
      */
     public void setColumnNames( List<C> v );
+
+    /**
+     * Add a row name associated with a row index.
+     * 
+     * @param s Object
+     * @param index int
+     */
+    public void setRowName( R s, int index );
 
     /**
      * @param v

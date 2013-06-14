@@ -34,11 +34,11 @@ import ubic.basecode.util.RegressionTesting;
  */
 public class TestSparseRaggedDouble2DNamedMatrixReader extends TestCase {
 
-    SparseRaggedDoubleMatrix<String, String> matrix = null;
     InputStream is = null;
-    SparseRaggedMatrixReader reader = null;
     InputStream isa = null;
     InputStream isbig = null;
+    SparseRaggedDoubleMatrix<String, String> matrix = null;
+    SparseRaggedMatrixReader reader = null;
 
     /*
      * Class under test for NamedMatrix read(InputStream)

@@ -136,6 +136,11 @@ public class StringMatrixReader extends AbstractMatrixReader<StringMatrix<String
         return matrix;
     }
 
+    @Override
+    public StringMatrix<String, String> read( String filename ) throws IOException {
+        return this.read( filename, -1 );
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -160,11 +165,6 @@ public class StringMatrixReader extends AbstractMatrixReader<StringMatrix<String
         }
         InputStream stream = FileTools.getInputStreamFromPlainOrCompressedFile( filename );
         return read( stream, maxRows, numColumnsToSkip );
-    }
-
-    @Override
-    public StringMatrix<String, String> read( String filename ) throws IOException {
-        return this.read( filename, -1 );
     }
 
 }

@@ -141,13 +141,13 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
     }
 
     @Override
-    public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames,
-            boolean createEmptyRows, int skipColumns, int maxRows ) {
+    public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames ) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames ) {
+    public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames,
+            boolean createEmptyRows, int skipColumns, int maxRows ) {
         throw new UnsupportedOperationException();
     }
 

@@ -8,10 +8,18 @@ import java.util.Map;
  */
 public class DoubleAddingMap<K> extends HashMap<K, Double> {
 
-    public void addPutAll( Map<? extends K, ? extends Double> map ) {
-        for ( Map.Entry<? extends K, ? extends Double> entry : map.entrySet() ) {
-            addPut( entry.getKey(), entry.getValue() );
-        }
+    private static final long serialVersionUID = 2;
+
+    public static void main( String args[] ) {
+        DoubleAddingMap<String> test = new DoubleAddingMap<String>();
+        test.addPut( "A", .5 );
+        test.addPut( "A", .5 );
+        test.addPut( "B", 22d );
+        System.out.println( test.addPut( "A", .5 ) );
+        System.out.println( test.toString() );
+        test.addPutAll( test );
+        System.out.println( test.addPut( "A", .5 ) );
+        System.out.println( test.toString() );
     }
 
     /**
@@ -31,17 +39,9 @@ public class DoubleAddingMap<K> extends HashMap<K, Double> {
         return sum;
     }
 
-    public static void main( String args[] ) {
-        DoubleAddingMap<String> test = new DoubleAddingMap<String>();
-        test.addPut( "A", .5 );
-        test.addPut( "A", .5 );
-        test.addPut( "B", 22d );
-        System.out.println( test.addPut( "A", .5 ) );
-        System.out.println( test.toString() );
-        test.addPutAll( test );
-        System.out.println( test.addPut( "A", .5 ) );
-        System.out.println( test.toString() );
+    public void addPutAll( Map<? extends K, ? extends Double> map ) {
+        for ( Map.Entry<? extends K, ? extends Double> entry : map.entrySet() ) {
+            addPut( entry.getKey(), entry.getValue() );
+        }
     }
-
-    private static final long serialVersionUID = 2;
 }

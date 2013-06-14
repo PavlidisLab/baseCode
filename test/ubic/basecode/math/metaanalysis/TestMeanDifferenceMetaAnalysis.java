@@ -27,11 +27,11 @@ import cern.colt.list.DoubleArrayList;
  */
 public class TestMeanDifferenceMetaAnalysis extends TestCase {
 
-    MeanDifferenceMetaAnalysis uf;
-    MeanDifferenceMetaAnalysis ur;
-
     DoubleArrayList ds2cv;
     DoubleArrayList ds2d;
+
+    MeanDifferenceMetaAnalysis uf;
+    MeanDifferenceMetaAnalysis ur;
 
     public void testRunFixedE() {
         uf.run( ds2d, ds2cv );

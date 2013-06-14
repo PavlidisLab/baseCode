@@ -17,11 +17,11 @@ public class TestWishart extends TestCase {
 
     private static Log log = LogFactory.getLog( TestWishart.class.getName() );
 
+    DoubleMatrix2D cov;
     Wishart t1;
     Wishart t2;
     Wishart t3;
     Wishart t4;
-    DoubleMatrix2D cov;
 
     public void testNextDoubleMatrix() {
         DoubleMatrix2D actualReturn = t1.nextDoubleMatrix();

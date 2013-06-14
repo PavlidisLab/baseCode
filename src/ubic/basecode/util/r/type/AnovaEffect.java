@@ -43,21 +43,6 @@ public class AnovaEffect implements Serializable {
 
     private Double meanSq = Double.NaN;
 
-    @Override
-    public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append( StringUtils.rightPad( StringUtils.abbreviate( getEffectName(), 10 ), 10 ) + "\t" );
-        buf.append( getDegreesOfFreedom() + "\t" );
-        buf.append( String.format( "%.4f", getSsQ() ) + "\t" );
-        buf.append( String.format( "%.4f", getMeanSq() ) + "\t" );
-
-        if ( fStatistic != null ) {
-            buf.append( StringUtils.rightPad( String.format( "%.3f", getFStatistic() ), 6 ) + "\t" );
-            buf.append( String.format( "%.3g", getPValue() ) );
-        }
-        return buf.toString();
-    }
-
     private Double pValue = Double.NaN;
 
     private Double ssQ = Double.NaN;
@@ -130,6 +115,21 @@ public class AnovaEffect implements Serializable {
      */
     public boolean isInteraction() {
         return isInteraction;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder buf = new StringBuilder();
+        buf.append( StringUtils.rightPad( StringUtils.abbreviate( getEffectName(), 10 ), 10 ) + "\t" );
+        buf.append( getDegreesOfFreedom() + "\t" );
+        buf.append( String.format( "%.4f", getSsQ() ) + "\t" );
+        buf.append( String.format( "%.4f", getMeanSq() ) + "\t" );
+
+        if ( fStatistic != null ) {
+            buf.append( StringUtils.rightPad( String.format( "%.3f", getFStatistic() ), 6 ) + "\t" );
+            buf.append( String.format( "%.3g", getPValue() ) );
+        }
+        return buf.toString();
     }
 
 }

@@ -41,46 +41,23 @@ import cern.jet.math.Functions;
  */
 public class TestMatrixStats {
 
-    private DoubleMatrix<String, String> testdata = null;
+    double[][] testrdm = { { 1, 2, 3, 4 }, { 11, 12, 13, 14 }, { 21, Double.NaN, 23, 24 } };
     private DoubleMatrix<String, String> smallT = null;
 
-    double[][] testrdm = { { 1, 2, 3, 4 }, { 11, 12, 13, 14 }, { 21, Double.NaN, 23, 24 } };
+    private DoubleMatrix<String, String> testdata = null;
 
-    @Test
-    public final void testCorrelationMatrix() throws Exception {
-        DoubleMatrix<String, String> actualReturn = MatrixStats.correlationMatrix( testdata );
+    /*
+     * @see TestCase#setUp()
+     */
+    @Before
+    public void setUp() throws Exception {
         DoubleMatrixReader f = new DoubleMatrixReader();
-        DoubleMatrix<String, String> expectedReturn = f.read( AbstractTestFilter.class
-                .getResourceAsStream( "/data/correlation-matrix-testoutput.txt" ) );
 
-        assertEquals( true, RegressionTesting.closeEnough( expectedReturn, actualReturn, 0.001 ) );
-    }
+        testdata = f.read( AbstractTestFilter.class.getResourceAsStream( "/data/testdata.txt" ) );
 
-    @Test
-    public final void testMax() {
-        double expectedReturn = 44625.7;
-        double actualReturn = MatrixStats.max( testdata );
-        assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
-    }
-
-    @Test
-    public final void testMin() {
-        double expectedReturn = -965.3;
-        double actualReturn = MatrixStats.min( testdata );
-        assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
-    }
-
-    @Test
-    public final void testLogTransform() {
-        MatrixStats.logTransform( testdata );
-        assertEquals( Math.log( 44625.7 ) / Math.log( 2 ), testdata.get( 9, 3 ), 0.001 );
-    }
-
-    @Test
-    public final void testConvertToLog2Cpm() {
-        double expectedReturn = 17.665;
-        MatrixStats.convertToLog2Cpm( testdata, null );
-        assertEquals( "return value", expectedReturn, testdata.get( 9, 3 ), 0.001 );
+        smallT = DoubleMatrixFactory.dense( testrdm );
+        smallT.setRowNames( java.util.Arrays.asList( new String[] { "a", "b", "c" } ) );
+        smallT.setColumnNames( java.util.Arrays.asList( new String[] { "w", "x", "y", "z" } ) );
     }
 
     @Test
@@ -113,27 +90,20 @@ public class TestMatrixStats {
     }
 
     @Test
-    public final void testStandardize() {
-        DoubleMatrix<String, String> standardize = MatrixStats.standardize( testdata );
-        assertEquals( 30, standardize.rows() );
-        assertEquals( -0.3972279, standardize.get( 3, 4 ), 0.0001 );
-        assertEquals( -0.7385692, standardize.get( 13, 5 ), 0.0001 );
+    public final void testConvertToLog2Cpm() {
+        double expectedReturn = 17.665;
+        MatrixStats.convertToLog2Cpm( testdata, null );
+        assertEquals( "return value", expectedReturn, testdata.get( 9, 3 ), 0.001 );
+    }
 
-        MatrixRowStats.means( standardize ).forEach( new DoubleProcedure() {
-            @Override
-            public boolean apply( double element ) {
-                assertEquals( 0.0, element, 0.001 );
-                return true;
-            }
-        } );
+    @Test
+    public final void testCorrelationMatrix() throws Exception {
+        DoubleMatrix<String, String> actualReturn = MatrixStats.correlationMatrix( testdata );
+        DoubleMatrixReader f = new DoubleMatrixReader();
+        DoubleMatrix<String, String> expectedReturn = f.read( AbstractTestFilter.class
+                .getResourceAsStream( "/data/correlation-matrix-testoutput.txt" ) );
 
-        MatrixRowStats.sampleStandardDeviations( standardize ).forEach( new DoubleProcedure() {
-            @Override
-            public boolean apply( double element ) {
-                assertEquals( 1.0, element, 0.001 );
-                return true;
-            }
-        } );
+        assertEquals( true, RegressionTesting.closeEnough( expectedReturn, actualReturn, 0.001 ) );
     }
 
     @Test
@@ -177,6 +147,26 @@ public class TestMatrixStats {
     }
 
     @Test
+    public final void testLogTransform() {
+        MatrixStats.logTransform( testdata );
+        assertEquals( Math.log( 44625.7 ) / Math.log( 2 ), testdata.get( 9, 3 ), 0.001 );
+    }
+
+    @Test
+    public final void testMax() {
+        double expectedReturn = 44625.7;
+        double actualReturn = MatrixStats.max( testdata );
+        assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
+    }
+
+    @Test
+    public final void testMin() {
+        double expectedReturn = -965.3;
+        double actualReturn = MatrixStats.min( testdata );
+        assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
+    }
+
+    @Test
     public final void testNan() {
         boolean[][] actual = MatrixStats.nanStatusMatrix( testrdm );
         assertFalse( actual[0][0] );
@@ -205,18 +195,28 @@ public class TestMatrixStats {
         assertEquals( 16, actual[0][3], 0.00001 );
     }
 
-    /*
-     * @see TestCase#setUp()
-     */
-    @Before
-    public void setUp() throws Exception {
-        DoubleMatrixReader f = new DoubleMatrixReader();
+    @Test
+    public final void testStandardize() {
+        DoubleMatrix<String, String> standardize = MatrixStats.standardize( testdata );
+        assertEquals( 30, standardize.rows() );
+        assertEquals( -0.3972279, standardize.get( 3, 4 ), 0.0001 );
+        assertEquals( -0.7385692, standardize.get( 13, 5 ), 0.0001 );
 
-        testdata = f.read( AbstractTestFilter.class.getResourceAsStream( "/data/testdata.txt" ) );
+        MatrixRowStats.means( standardize ).forEach( new DoubleProcedure() {
+            @Override
+            public boolean apply( double element ) {
+                assertEquals( 0.0, element, 0.001 );
+                return true;
+            }
+        } );
 
-        smallT = DoubleMatrixFactory.dense( testrdm );
-        smallT.setRowNames( java.util.Arrays.asList( new String[] { "a", "b", "c" } ) );
-        smallT.setColumnNames( java.util.Arrays.asList( new String[] { "w", "x", "y", "z" } ) );
+        MatrixRowStats.sampleStandardDeviations( standardize ).forEach( new DoubleProcedure() {
+            @Override
+            public boolean apply( double element ) {
+                assertEquals( 1.0, element, 0.001 );
+                return true;
+            }
+        } );
     }
 
 }

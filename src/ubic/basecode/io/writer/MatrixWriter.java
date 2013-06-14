@@ -43,15 +43,15 @@ public class MatrixWriter<R, C> {
 
     public static final String DEFAULT_SEP = "\t";
     public static final String DEFAULT_TOP_LEFT = "ID";
-    protected Writer out;
-    protected Format formatter;
-    protected String sep;
-
-    protected String topLeft;
-
-    protected Map<?, String> sliceNameMap;
     protected Map<C, String> colNameMap = new HashMap<C, String>();
+    protected Format formatter;
+    protected Writer out;
+
     protected Map<R, String> rowNameMap = new HashMap<R, String>();
+
+    protected String sep;
+    protected Map<?, String> sliceNameMap;
+    protected String topLeft;
 
     public MatrixWriter( OutputStream out ) {
         this( out, null, DEFAULT_SEP );

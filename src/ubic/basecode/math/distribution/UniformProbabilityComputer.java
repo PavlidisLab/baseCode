@@ -26,8 +26,8 @@ package ubic.basecode.math.distribution;
  */
 public class UniformProbabilityComputer implements ProbabilityComputer {
 
-    double min = 0;
     double max = 1;
+    double min = 0;
 
     /**
      * Create a UniformProbabilityComputer where the density is defined over the unit inteval [0,1].

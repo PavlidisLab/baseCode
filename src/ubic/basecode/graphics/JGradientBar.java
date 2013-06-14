@@ -40,9 +40,9 @@ public class JGradientBar extends JPanel {
     protected final static Color[] EMPTY = { Color.GRAY, Color.GRAY };
 
     private static final long serialVersionUID = 6668982782351006998L;
-    protected JNumberLabel m_min;
-    protected JNumberLabel m_max;
     protected JGradientLabel gradient;
+    protected JNumberLabel m_max;
+    protected JNumberLabel m_min;
 
     public JGradientBar() {
         this( EMPTY );
@@ -77,8 +77,8 @@ public class JGradientBar extends JPanel {
 
 class JNumberLabel extends JLabel {
 
-    protected static final DecimalFormat m_scientificNotation = new DecimalFormat( "0.00" );
     protected static final DecimalFormat m_regular = new DecimalFormat();
+    protected static final DecimalFormat m_scientificNotation = new DecimalFormat( "0.00" );
     protected static final int MINIMUM_WIDTH = 60;
     protected static final int w = 40;
 

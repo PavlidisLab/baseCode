@@ -1,7 +1,7 @@
 /*
- * The Gemma project
+ * The baseCode project
  * 
- * Copyright (c) 2007 University of British Columbia
+ * Copyright (c) 2013 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,29 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.ontology.model;
 
+package ubic.basecode.ontology.providers;
+
+import ubic.basecode.ontology.Configuration;
 
 /**
- * @author pavlidis
+ * Support for the units ontology
+ * 
+ * @author Paul
  * @version $Id$
  */
-public interface OntologyCardinalityRestriction extends OntologyRestriction {
+public class UnitsOntologyService extends AbstractOntologyMemoryBackedService {
 
-    public enum CardinalityType {
-        CARDINALITY, MAX_CARDINALITY, MIN_CARDINALITY
+    private static final String UNITs_ONTOLOGY_URL = "url.unitsOntology";
+
+    @Override
+    protected String getOntologyName() {
+        return "unitsOntology";
     }
 
-    public int getCardinality();
-
-    public CardinalityType getCardinalityType();
+    @Override
+    protected String getOntologyUrl() {
+        return Configuration.getString( UNITs_ONTOLOGY_URL );
+    }
 
 }

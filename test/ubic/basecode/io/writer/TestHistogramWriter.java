@@ -33,8 +33,8 @@ import ubic.basecode.util.RegressionTesting;
  */
 public class TestHistogramWriter extends TestCase {
 
-    HistogramWriter w = new HistogramWriter();
     Histogram1D m = new Histogram1D( "test", 10, 1, 10 );
+    HistogramWriter w = new HistogramWriter();
 
     public final void testWriter() {
         String expectedReturn = "";

@@ -35,10 +35,10 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
 
     private static Log log = LogFactory.getLog( TestRowAbsentFilter.class.getName() );
 
-    StringMatrix<String, String> testpdata = null;
-
     RowAbsentFilter<DoubleMatrix<String, String>, String, String, Double> fd = new RowAbsentFilter<DoubleMatrix<String, String>, String, String, Double>();
+
     RowAbsentFilter<StringMatrix<String, String>, String, String, String> fs = new RowAbsentFilter<StringMatrix<String, String>, String, String, String>();
+    StringMatrix<String, String> testpdata = null;
 
     /*
      * Class under test for DoubleMatrixNamed filter(DoubleMatrixNamed)

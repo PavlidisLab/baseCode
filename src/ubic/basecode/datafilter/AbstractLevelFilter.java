@@ -30,10 +30,10 @@ import ubic.basecode.math.Stats;
  */
 public abstract class AbstractLevelFilter<R, C> extends AbstractFilter<DoubleMatrix<R, C>, R, C, Double> {
 
-    protected double lowCut = -Double.MAX_VALUE;
     protected double highCut = Double.MAX_VALUE;
-    protected boolean useLowAsFraction = false;
+    protected double lowCut = -Double.MAX_VALUE;
     protected boolean useHighAsFraction = false;
+    protected boolean useLowAsFraction = false;
 
     /**
      * Set the high threshold for removal. If not set, no filtering will occur.

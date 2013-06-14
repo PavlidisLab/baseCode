@@ -29,19 +29,10 @@ import javax.swing.JLabel;
  */
 class JGradientLabel extends JLabel {
 
-    private static final int MINWIDTH = 100;
     private static final int MINHEIGHT = 10;
+    private static final int MINWIDTH = 100;
     private static final long serialVersionUID = 348823467068723730L;
     private Color[] m_colorMap;
-
-    public Color[] getColorMap() {
-        return m_colorMap;
-    }
-
-    public void setColorMap( Color[] mColorMap ) {
-        m_colorMap = mColorMap;
-        this.repaint();
-    }
 
     /**
      * Creates a new instance of JGradientLabel
@@ -67,17 +58,6 @@ class JGradientLabel extends JLabel {
         setSize( d );
         this.setText( "Scale bar should be here" ); // forces repaint.
         setMinimumSize( d );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
-     */
-    @Override
-    protected void paintComponent( Graphics g ) {
-        super.paintComponent( g );
-        drawAtLocation( g, 0, 0 );
     }
 
     /**
@@ -111,5 +91,25 @@ class JGradientLabel extends JLabel {
         }
         g2.setColor( oldColor );
         return currentX - x;
+    }
+
+    public Color[] getColorMap() {
+        return m_colorMap;
+    }
+
+    public void setColorMap( Color[] mColorMap ) {
+        m_colorMap = mColorMap;
+        this.repaint();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+     */
+    @Override
+    protected void paintComponent( Graphics g ) {
+        super.paintComponent( g );
+        drawAtLocation( g, 0, 0 );
     }
 }

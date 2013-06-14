@@ -29,13 +29,13 @@ import cern.colt.list.DoubleArrayList;
  */
 public class TestCorrelationEffectMetaAnalysis extends TestCase {
 
-    CorrelationEffectMetaAnalysis zf;
-    CorrelationEffectMetaAnalysis zr;
+    DoubleArrayList ds3n;
+    DoubleArrayList ds3r;
     CorrelationEffectMetaAnalysis uf;
     CorrelationEffectMetaAnalysis ur;
 
-    DoubleArrayList ds3n;
-    DoubleArrayList ds3r;
+    CorrelationEffectMetaAnalysis zf;
+    CorrelationEffectMetaAnalysis zr;
 
     public void testRunUFEffect() {
         uf.run( ds3r, ds3n );

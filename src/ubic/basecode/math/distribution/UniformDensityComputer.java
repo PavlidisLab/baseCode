@@ -24,8 +24,8 @@ package ubic.basecode.math.distribution;
  */
 public class UniformDensityComputer implements DensityGenerator {
 
-    double min = 0;
     double max = 1;
+    double min = 0;
 
     /**
      * Create a UniformDensityComputer where the density is defined over the unit inteval [0,1].

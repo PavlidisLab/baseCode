@@ -72,17 +72,17 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
         return var;
     }
 
-    private boolean transform = false;
+    private double bsv; // between-studies variance component;
 
+    private double e; // unconditional effect;
     private boolean fixed = true;
-    private double z; // z score
+    private double n; // total sample size
     private double p; // probability
     private double q; // q-score;
-    private double e; // unconditional effect;
+    private boolean transform = false;
     private double v; // unconditional variance;
-    private double n; // total sample size
 
-    private double bsv; // between-studies variance component;
+    private double z; // z score
 
     public CorrelationEffectMetaAnalysis() {
     }

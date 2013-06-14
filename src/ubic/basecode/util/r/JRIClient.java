@@ -122,6 +122,40 @@ public class JRIClient extends AbstractRClient {
         }
     }
 
+    @Override
+    public REXP eval( String command ) {
+        REXP result;
+        int key = connection.lock();
+        try {
+
+            result = connection.parseAndEval( "try(" + command + ", silent=T)" );
+
+            if ( result == null ) {
+                throw new RuntimeException( "Error from R, could not sucessfully evaluate: " + command );
+            }
+
+            if ( !result.isString() ) {
+                return result;
+            }
+            String a = result.asString();
+
+            /*
+             * There is no better way to do this, apparently.
+             */
+            if ( a != null && a.startsWith( "Error" ) ) {
+                throw new RuntimeException( "Error from R when running " + command + ": " + a );
+            }
+
+            return result;
+        } catch ( REngineException e ) {
+            throw new RuntimeException( e );
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        } finally {
+            connection.unlock( key );
+        }
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -172,40 +206,6 @@ public class JRIClient extends AbstractRClient {
     @Override
     public void voidEval( String command ) {
         eval( command );
-    }
-
-    @Override
-    public REXP eval( String command ) {
-        REXP result;
-        int key = connection.lock();
-        try {
-
-            result = connection.parseAndEval( "try(" + command + ", silent=T)" );
-
-            if ( result == null ) {
-                throw new RuntimeException( "Error from R, could not sucessfully evaluate: " + command );
-            }
-
-            if ( !result.isString() ) {
-                return result;
-            }
-            String a = result.asString();
-
-            /*
-             * There is no better way to do this, apparently.
-             */
-            if ( a != null && a.startsWith( "Error" ) ) {
-                throw new RuntimeException( "Error from R when running " + command + ": " + a );
-            }
-
-            return result;
-        } catch ( REngineException e ) {
-            throw new RuntimeException( e );
-        } catch ( REXPMismatchException e ) {
-            throw new RuntimeException( e );
-        } finally {
-            connection.unlock( key );
-        }
     }
 
     /**

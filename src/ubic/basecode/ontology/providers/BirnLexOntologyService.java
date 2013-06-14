@@ -25,13 +25,16 @@ import ubic.basecode.ontology.Configuration;
 import ubic.basecode.ontology.model.OntologyTerm;
 
 import ubic.basecode.ontology.providers.AbstractOntologyMemoryBackedService;
+
 /**
  * Holds a complete copy of the BirnLex Ontology. This gets loaded on startup. BirnLex is small, only about 1500 terms
  * (as of 12/2007) so we can hold it in memory.
  * 
  * @author klc
  * @version $Id$
+ * @deprecated in favour of NIFSTD Ontology
  */
+@Deprecated
 public class BirnLexOntologyService extends AbstractOntologyMemoryBackedService {
 
     private static final String BIRNLEX_ONTOLOGY_URL = "url.birnlexOntology";
@@ -60,6 +63,7 @@ public class BirnLexOntologyService extends AbstractOntologyMemoryBackedService 
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.gemma.ontology.AbstractOntologyService#getOntologyName()
      */
     @Override

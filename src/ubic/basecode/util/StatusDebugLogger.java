@@ -30,15 +30,9 @@ public class StatusDebugLogger implements StatusViewer {
 
     protected static final Log log = LogFactory.getLog( StatusDebugLogger.class );
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.util.StatusViewer#setStatus(java.lang.String)
-     */
     @Override
-    public void showStatus( String s ) {
-        if ( s.length() == 0 ) return;
-        log.info( s );
+    public void clear() {
+        // don't need to do anything.
     }
 
     /*
@@ -52,22 +46,33 @@ public class StatusDebugLogger implements StatusViewer {
         log.error( s );
     }
 
-    @Override
-    public void showError( Throwable e ) {
-        log.error( e, e );
-    }
-
-    @Override
-    public void clear() {
-        // don't need to do anything.
-    }
-
     /*
      * (non-Javadoc)
      */
     @Override
     public void showError( String message, Throwable e ) {
         log.error( message, e );
+    }
+
+    @Override
+    public void showError( Throwable e ) {
+        log.error( e, e );
+    }
+
+    @Override
+    public void showProgress( String message ) {
+        log.info( message + ( message.endsWith( "..." ) ? "" : " ..." ) );
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.util.StatusViewer#setStatus(java.lang.String)
+     */
+    @Override
+    public void showStatus( String s ) {
+        if ( s.length() == 0 ) return;
+        log.info( s );
     }
 
     @Override
@@ -78,11 +83,6 @@ public class StatusDebugLogger implements StatusViewer {
     @Override
     public void showWarning( String s ) {
         log.warn( s );
-    }
-
-    @Override
-    public void showProgress( String message ) {
-        log.info( message + ( message.endsWith( "..." ) ? "" : " ..." ) );
     }
 
 }

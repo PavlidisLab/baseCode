@@ -37,9 +37,9 @@ import cern.colt.matrix.DoubleMatrix1D;
  */
 public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> implements PrimitiveMatrix<R, C, Double> {
 
-    private static final long serialVersionUID = 1L;
-
     protected static Log log = LogFactory.getLog( DoubleMatrix.class.getName() );
+
+    private static final long serialVersionUID = 1L;
 
     public abstract double[][] asArray();
 
@@ -111,6 +111,45 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
         this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
     }
 
+    /**
+     * @param i
+     * @param descending
+     */
+    public List<R> sortByColumnAbsoluteValues( final int i, final boolean descending ) {
+        List<R> sorted = new ArrayList<R>( this.getRowNames() );
+
+        Collections.sort( sorted, new Comparator<R>() {
+
+            @Override
+            public int compare( R o1, R o2 ) {
+                double v1 = Math.abs( get( getRowIndexByName( o1 ), i ) );
+                double v2 = Math.abs( get( getRowIndexByName( o2 ), i ) );
+                if ( descending ) {
+                    return Double.compare( v2, v1 );
+                }
+                return Double.compare( v1, v2 );
+            }
+        } );
+        return sorted;
+
+    }
+
+    /**
+     * Create a copy of this matrix with only the selected columns, in the selected order.
+     * 
+     * @param columns
+     * @return
+     */
+    public abstract DoubleMatrix<R, C> subsetColumns( List<C> columns );
+
+    /**
+     * Create a copy of this matrix with only the selected rows, in the selected order.
+     * 
+     * @param rowNames
+     * @return
+     */
+    public abstract DoubleMatrix<R, C> subsetRows( List<R> rowNames );
+
     /*
      * For more advanced matrix writing see the MatrixWriter class (non-Javadoc)
      * 
@@ -160,50 +199,11 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
         return buf.toString();
     }
 
+    public abstract DoubleMatrix<C, R> transpose();
+
     /**
      * @param j
      * @return
      */
     public abstract DoubleMatrix1D viewRow( int j );
-
-    /**
-     * @param i
-     * @param descending
-     */
-    public List<R> sortByColumnAbsoluteValues( final int i, final boolean descending ) {
-        List<R> sorted = new ArrayList<R>( this.getRowNames() );
-
-        Collections.sort( sorted, new Comparator<R>() {
-
-            @Override
-            public int compare( R o1, R o2 ) {
-                double v1 = Math.abs( get( getRowIndexByName( o1 ), i ) );
-                double v2 = Math.abs( get( getRowIndexByName( o2 ), i ) );
-                if ( descending ) {
-                    return Double.compare( v2, v1 );
-                }
-                return Double.compare( v1, v2 );
-            }
-        } );
-        return sorted;
-
-    }
-
-    public abstract DoubleMatrix<C, R> transpose();
-
-    /**
-     * Create a copy of this matrix with only the selected rows, in the selected order.
-     * 
-     * @param rowNames
-     * @return
-     */
-    public abstract DoubleMatrix<R, C> subsetRows( List<R> rowNames );
-
-    /**
-     * Create a copy of this matrix with only the selected columns, in the selected order.
-     * 
-     * @param columns
-     * @return
-     */
-    public abstract DoubleMatrix<R, C> subsetColumns( List<C> columns );
 }

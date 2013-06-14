@@ -31,8 +31,8 @@ import ubic.basecode.dataStructure.matrix.StringMatrix;
  */
 public class TestStringMatrixReader extends TestCase {
 
-    StringMatrix<String, String> matrix = null;
     InputStream is = null;
+    StringMatrix<String, String> matrix = null;
     StringMatrixReader reader = null;
 
     public void testReadInputStreamColumnCount() {

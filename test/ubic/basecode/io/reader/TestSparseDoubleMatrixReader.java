@@ -30,9 +30,9 @@ import ubic.basecode.math.Constants;
  * @version $Id$
  */
 public class TestSparseDoubleMatrixReader extends TestCase {
-    DoubleMatrix<String, String> matrix = null;
     InputStream is = null;
     InputStream isa = null;
+    DoubleMatrix<String, String> matrix = null;
     SparseDoubleMatrixReader reader = null;
 
     public void testReadJW() throws Exception {

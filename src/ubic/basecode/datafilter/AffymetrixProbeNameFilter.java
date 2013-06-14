@@ -34,10 +34,6 @@ import ubic.basecode.dataStructure.matrix.MatrixUtil;
 public class AffymetrixProbeNameFilter<M extends Matrix2D<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
 
     /**
-     * Filter probes that contain the '_st' (sense strand) tag
-     */
-    public static final int ST = 1;
-    /**
      * Filter probes that have the AFFX prefix.
      */
     public static final int AFFX = 2;
@@ -46,23 +42,27 @@ public class AffymetrixProbeNameFilter<M extends Matrix2D<R, C, V>, R, C, V> ext
      */
     public static final int F = 3;
     /**
-     * Filter probes that have the "_x_at" tag.
-     */
-    public static final int X = 4;
-    /**
      * Filter probes that have the "_g_at" (group) tag.
      */
     public static final int G = 5;
-
-    private boolean skip_ST = false;
+    /**
+     * Filter probes that contain the '_st' (sense strand) tag
+     */
+    public static final int ST = 1;
+    /**
+     * Filter probes that have the "_x_at" tag.
+     */
+    public static final int X = 4;
 
     private boolean skip_AFFX = false;
 
     private boolean skip_F = false;
 
-    private boolean skip_X = false;
-
     private boolean skip_G = false;
+
+    private boolean skip_ST = false;
+
+    private boolean skip_X = false;
 
     /**
      * Filter probes with all criteria switched on.

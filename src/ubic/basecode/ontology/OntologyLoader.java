@@ -61,8 +61,8 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
  * @version $Id$
  */
 public class OntologyLoader {
-    private static final int MAX_LOAD_TRIES = 3;
     private static Log log = LogFactory.getLog( OntologyLoader.class );
+    private static final int MAX_LOAD_TRIES = 3;
 
     /**
      * @return
@@ -72,22 +72,6 @@ public class OntologyLoader {
 
         ModelMaker maker = po.getRDBMaker( false );
         return maker;
-    }
-
-    /**
-     * Deletes all cached ontologies from the system. Use with care!
-     */
-    protected static void wipePersistentStore() {
-
-        IDBConnection conn = OntologyDataSource.getConnection();
-
-        try {
-            conn.cleanDB();
-            conn.close();
-        } catch ( SQLException e ) {
-            throw new RuntimeException();
-        }
-
     }
 
     /**
@@ -287,6 +271,22 @@ public class OntologyLoader {
         spec.setImportModelMaker( maker );
 
         return ModelFactory.createOntologyModel( spec, base );
+    }
+
+    /**
+     * Deletes all cached ontologies from the system. Use with care!
+     */
+    protected static void wipePersistentStore() {
+
+        IDBConnection conn = OntologyDataSource.getConnection();
+
+        try {
+            conn.cleanDB();
+            conn.close();
+        } catch ( SQLException e ) {
+            throw new RuntimeException();
+        }
+
     }
 
     /**

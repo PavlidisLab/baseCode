@@ -47,6 +47,11 @@ public class OntologyTermSimple extends OntologyTermImpl {
     }
 
     @Override
+    public String getComment() {
+        return "";
+    }
+
+    @Override
     public Collection<OntologyIndividual> getIndividuals() {
         throw new UnsupportedOperationException( "Use a OntologyTermImpl" );
 

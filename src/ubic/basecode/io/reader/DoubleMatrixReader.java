@@ -47,14 +47,14 @@ import cern.colt.list.DoubleArrayList;
  */
 public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String, String>, Double> {
 
-    private int numHeadings;
-    private List<String> colNames;
     private static NumberFormat nf = NumberFormat.getInstance();
     static {
         if ( nf instanceof DecimalFormat ) {
             // ( ( DecimalFormat ) nf ).setDecimalSeparatorAlwaysShown( true );
         }
     }
+    private List<String> colNames;
+    private int numHeadings;
 
     /**
      * @param stream InputStream stream to read from
@@ -76,36 +76,6 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
     public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames )
             throws IOException {
         return read( stream, wantedRowNames, true, 0, -1 );
-    }
-
-    /**
-     * @param stream
-     * @param wantedRowNames
-     * @param numberOfColumnsToSkip
-     * @return
-     * @throws IOException
-     */
-    public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames,
-            int numberOfColumnsToSkip ) throws IOException {
-        return read( stream, wantedRowNames, true, numberOfColumnsToSkip, -1 );
-    }
-
-    /**
-     * @param fileName
-     * @param wantedRowNames if null, takes all rows
-     * @param numberOfColumnsToSkip how many columns to skip -- not counting the first column. So if you set this to 4,
-     *        the first four data columns will be skipped.
-     * @return
-     * @throws IOException
-     */
-    public DoubleMatrix<String, String> read( String fileName, Collection<String> wantedRowNames,
-            int numberOfColumnsToSkip ) throws IOException {
-        File infile = new File( fileName );
-        if ( !infile.exists() || !infile.canRead() ) {
-            throw new IOException( "Could not read from file " + fileName );
-        }
-        InputStream stream = FileTools.getInputStreamFromPlainOrCompressedFile( fileName );
-        return read( stream, wantedRowNames, true, numberOfColumnsToSkip, -1 );
     }
 
     /**
@@ -193,6 +163,18 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
     }
 
     /**
+     * @param stream
+     * @param wantedRowNames
+     * @param numberOfColumnsToSkip
+     * @return
+     * @throws IOException
+     */
+    public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames,
+            int numberOfColumnsToSkip ) throws IOException {
+        return read( stream, wantedRowNames, true, numberOfColumnsToSkip, -1 );
+    }
+
+    /**
      * @param filename data file to read from (can be compressed)
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
@@ -200,11 +182,6 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
     @Override
     public DoubleMatrix<String, String> read( String filename ) throws IOException {
         return read( filename, null, -1 );
-    }
-
-    @Override
-    public DoubleMatrix<String, String> read( String filename, int maxRows ) throws IOException {
-        return read( filename, null, maxRows );
     }
 
     /**
@@ -223,6 +200,29 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
         InputStream stream = FileTools.getInputStreamFromPlainOrCompressedFile( filename );
         return read( stream, wantedRowNames, -1 );
     } // end read
+
+    /**
+     * @param fileName
+     * @param wantedRowNames if null, takes all rows
+     * @param numberOfColumnsToSkip how many columns to skip -- not counting the first column. So if you set this to 4,
+     *        the first four data columns will be skipped.
+     * @return
+     * @throws IOException
+     */
+    public DoubleMatrix<String, String> read( String fileName, Collection<String> wantedRowNames,
+            int numberOfColumnsToSkip ) throws IOException {
+        File infile = new File( fileName );
+        if ( !infile.exists() || !infile.canRead() ) {
+            throw new IOException( "Could not read from file " + fileName );
+        }
+        InputStream stream = FileTools.getInputStreamFromPlainOrCompressedFile( fileName );
+        return read( stream, wantedRowNames, true, numberOfColumnsToSkip, -1 );
+    }
+
+    @Override
+    public DoubleMatrix<String, String> read( String filename, int maxRows ) throws IOException {
+        return read( filename, null, maxRows );
+    }
 
     protected DoubleArrayList createEmptyRow( int numColumns ) {
 

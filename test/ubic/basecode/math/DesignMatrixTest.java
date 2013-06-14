@@ -34,6 +34,26 @@ public class DesignMatrixTest extends TestCase {
     private static Log log = LogFactory.getLog( DesignMatrixTest.class );
 
     /**
+     * This matrix is singular.
+     * 
+     * @throws Exception
+     */
+    public void test2() throws Exception {
+        StringMatrixReader of = new StringMatrixReader();
+        StringMatrix<String, String> sampleInfo = of.read( this.getClass()
+                .getResourceAsStream( "/data/lmtest2.des.txt" ) );
+        DesignMatrix d = new DesignMatrix( sampleInfo, true );
+        // log.info( d );
+
+        DoubleMatrix<String, String> m = d.getMatrix();
+
+        assertEquals( 9, d.getMatrix().columns() );
+
+        assertEquals( 1.0, m.get( 11, 0 ), 0.0001 );
+        assertEquals( 0.0, m.get( 12, 8 ), 0.0001 );
+    }
+
+    /**
      * @throws Exception
      */
     public void testA() throws Exception {
@@ -93,72 +113,6 @@ public class DesignMatrixTest extends TestCase {
         designMatrix.rebuild();
         designMatrix.rebuild();
         assertEquals( beforeRebuild, designMatrix.toString() );
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testInteractionC() throws Exception {
-        ObjectMatrix<String, String, Object> design = new ObjectMatrixImpl<String, String, Object>( 9, 3 );
-
-        design.set( 0, 0, "A" );
-        design.set( 1, 0, "A" );
-        design.set( 2, 0, "A" );
-        design.set( 3, 0, "A" );
-        design.set( 4, 0, "B" );
-        design.set( 5, 0, "B" );
-        design.set( 6, 0, "B" );
-        design.set( 7, 0, "B" );
-        design.set( 8, 0, "B" );
-        design.set( 0, 1, 0.12 );
-        design.set( 1, 1, 0.24 );
-        design.set( 2, 1, 0.48 );
-        design.set( 3, 1, 0.96 );
-        design.set( 4, 1, 0.12 );
-        design.set( 5, 1, 0.24 );
-        design.set( 6, 1, 0.48 );
-        design.set( 7, 1, 0.96 );
-        design.set( 8, 1, 0.96 );
-        design.set( 0, 2, "C" );
-        design.set( 1, 2, "C" );
-        design.set( 2, 2, "D" );
-        design.set( 3, 2, "D" );
-        design.set( 4, 2, "C" );
-        design.set( 5, 2, "C" );
-        design.set( 6, 2, "D" );
-        design.set( 7, 2, "D" );
-        design.set( 8, 2, "D" );
-        design.addColumnName( "Treat" );
-        design.addColumnName( "Value" );
-        design.addColumnName( "Geno" );
-
-        DesignMatrix designMatrix = new DesignMatrix( design, true );
-        designMatrix.addInteraction( "Treat", "Geno" );
-
-        DoubleMatrix<String, String> matrix = designMatrix.getMatrix();
-        assertEquals( 5, matrix.columns() );
-        assertEquals( 1, matrix.get( 0, 0 ), 0.001 );
-        assertEquals( 1, matrix.get( 4, 0 ), 0.001 );
-        assertEquals( 0, matrix.get( 0, 1 ), 0.001 );
-        assertEquals( 1, matrix.get( 4, 1 ), 0.001 );
-        assertEquals( 0.12, matrix.get( 4, 2 ), 0.001 );
-        assertEquals( 0.96, matrix.get( 7, 2 ), 0.001 );
-
-        assertEquals( 0, matrix.get( 4, 4 ), 0.001 );
-        assertEquals( 0, matrix.get( 4, 4 ), 0.001 );
-        assertEquals( 1, matrix.get( 8, 4 ), 0.001 );
-        assertEquals( "TreatB", matrix.getColName( 1 ) );
-        assertEquals( "Value", matrix.getColName( 2 ) );
-        assertEquals( "GenoD", matrix.getColName( 3 ) );
-        assertEquals( "TreatB:GenoD", matrix.getColName( 4 ) );
-
-        String beforeRebuild = designMatrix.toString();
-        designMatrix.rebuild();
-        designMatrix.rebuild();
-        designMatrix.rebuild();
-        designMatrix.rebuild();
-        assertEquals( beforeRebuild, designMatrix.toString() );
-
     }
 
     /**
@@ -244,22 +198,68 @@ public class DesignMatrixTest extends TestCase {
     }
 
     /**
-     * This matrix is singular.
-     * 
      * @throws Exception
      */
-    public void test2() throws Exception {
-        StringMatrixReader of = new StringMatrixReader();
-        StringMatrix<String, String> sampleInfo = of.read( this.getClass()
-                .getResourceAsStream( "/data/lmtest2.des.txt" ) );
-        DesignMatrix d = new DesignMatrix( sampleInfo, true );
-        // log.info( d );
+    public void testInteractionC() throws Exception {
+        ObjectMatrix<String, String, Object> design = new ObjectMatrixImpl<String, String, Object>( 9, 3 );
 
-        DoubleMatrix<String, String> m = d.getMatrix();
+        design.set( 0, 0, "A" );
+        design.set( 1, 0, "A" );
+        design.set( 2, 0, "A" );
+        design.set( 3, 0, "A" );
+        design.set( 4, 0, "B" );
+        design.set( 5, 0, "B" );
+        design.set( 6, 0, "B" );
+        design.set( 7, 0, "B" );
+        design.set( 8, 0, "B" );
+        design.set( 0, 1, 0.12 );
+        design.set( 1, 1, 0.24 );
+        design.set( 2, 1, 0.48 );
+        design.set( 3, 1, 0.96 );
+        design.set( 4, 1, 0.12 );
+        design.set( 5, 1, 0.24 );
+        design.set( 6, 1, 0.48 );
+        design.set( 7, 1, 0.96 );
+        design.set( 8, 1, 0.96 );
+        design.set( 0, 2, "C" );
+        design.set( 1, 2, "C" );
+        design.set( 2, 2, "D" );
+        design.set( 3, 2, "D" );
+        design.set( 4, 2, "C" );
+        design.set( 5, 2, "C" );
+        design.set( 6, 2, "D" );
+        design.set( 7, 2, "D" );
+        design.set( 8, 2, "D" );
+        design.addColumnName( "Treat" );
+        design.addColumnName( "Value" );
+        design.addColumnName( "Geno" );
 
-        assertEquals( 9, d.getMatrix().columns() );
+        DesignMatrix designMatrix = new DesignMatrix( design, true );
+        designMatrix.addInteraction( "Treat", "Geno" );
 
-        assertEquals( 1.0, m.get( 11, 0 ), 0.0001 );
-        assertEquals( 0.0, m.get( 12, 8 ), 0.0001 );
+        DoubleMatrix<String, String> matrix = designMatrix.getMatrix();
+        assertEquals( 5, matrix.columns() );
+        assertEquals( 1, matrix.get( 0, 0 ), 0.001 );
+        assertEquals( 1, matrix.get( 4, 0 ), 0.001 );
+        assertEquals( 0, matrix.get( 0, 1 ), 0.001 );
+        assertEquals( 1, matrix.get( 4, 1 ), 0.001 );
+        assertEquals( 0.12, matrix.get( 4, 2 ), 0.001 );
+        assertEquals( 0.96, matrix.get( 7, 2 ), 0.001 );
+
+        assertEquals( 0, matrix.get( 4, 4 ), 0.001 );
+        assertEquals( 0, matrix.get( 4, 4 ), 0.001 );
+        assertEquals( 1, matrix.get( 8, 4 ), 0.001 );
+        assertEquals( "TreatB", matrix.getColName( 1 ) );
+        assertEquals( "Value", matrix.getColName( 2 ) );
+        assertEquals( "GenoD", matrix.getColName( 3 ) );
+        assertEquals( "TreatB:GenoD", matrix.getColName( 4 ) );
+
+        String beforeRebuild = designMatrix.toString();
+        designMatrix.rebuild();
+        designMatrix.rebuild();
+        designMatrix.rebuild();
+        designMatrix.rebuild();
+        assertEquals( beforeRebuild, designMatrix.toString() );
+
     }
 }

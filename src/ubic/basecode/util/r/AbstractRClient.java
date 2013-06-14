@@ -239,60 +239,6 @@ public abstract class AbstractRClient implements RClient {
         return false;
     }
 
-    @Override
-    public ObjectMatrix<String, String, Object> dataFrameEval( String command ) {
-
-        REXP df = eval( command );
-
-        try {
-
-            RList dfl = df.asList();
-
-            if ( !df.getAttribute( "class" ).asString().equals( "data.frame" ) ) {
-                throw new IllegalArgumentException( "Command did not return a dataframe" );
-            }
-
-            String[] rowNames = df.getAttribute( "row.names" ).asStrings();
-            String[] colNames = df.getAttribute( "names" ).asStrings();
-
-            assert dfl.size() == colNames.length;
-
-            ObjectMatrix<String, String, Object> result = new ObjectMatrixImpl<String, String, Object>(
-                    rowNames.length, colNames.length );
-
-            result.setRowNames( Arrays.asList( rowNames ) );
-            result.setColumnNames( Arrays.asList( colNames ) );
-
-            for ( int i = 0; i < dfl.size(); i++ ) {
-                REXP column = ( REXP ) dfl.get( i );
-
-                if ( column.isNumeric() ) {
-                    double[] asDoubles = column.asDoubles();
-
-                    for ( int j = 0; j < rowNames.length; j++ ) {
-                        result.set( j, i, asDoubles[j] );
-                    }
-
-                } else {
-                    String[] asStrings = column.asStrings();
-
-                    for ( int j = 0; j < rowNames.length; j++ ) {
-                        result.set( j, i, asStrings[j] );
-                    }
-
-                }
-
-            }
-
-            return result;
-        } catch ( REXPMismatchException e ) {
-
-            throw new RuntimeException( e );
-
-        }
-
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -367,6 +313,60 @@ public abstract class AbstractRClient implements RClient {
         eval( "names(" + varName + ")<-" + colV );
 
         return varName;
+
+    }
+
+    @Override
+    public ObjectMatrix<String, String, Object> dataFrameEval( String command ) {
+
+        REXP df = eval( command );
+
+        try {
+
+            RList dfl = df.asList();
+
+            if ( !df.getAttribute( "class" ).asString().equals( "data.frame" ) ) {
+                throw new IllegalArgumentException( "Command did not return a dataframe" );
+            }
+
+            String[] rowNames = df.getAttribute( "row.names" ).asStrings();
+            String[] colNames = df.getAttribute( "names" ).asStrings();
+
+            assert dfl.size() == colNames.length;
+
+            ObjectMatrix<String, String, Object> result = new ObjectMatrixImpl<String, String, Object>(
+                    rowNames.length, colNames.length );
+
+            result.setRowNames( Arrays.asList( rowNames ) );
+            result.setColumnNames( Arrays.asList( colNames ) );
+
+            for ( int i = 0; i < dfl.size(); i++ ) {
+                REXP column = ( REXP ) dfl.get( i );
+
+                if ( column.isNumeric() ) {
+                    double[] asDoubles = column.asDoubles();
+
+                    for ( int j = 0; j < rowNames.length; j++ ) {
+                        result.set( j, i, asDoubles[j] );
+                    }
+
+                } else {
+                    String[] asStrings = column.asStrings();
+
+                    for ( int j = 0; j < rowNames.length; j++ ) {
+                        result.set( j, i, asStrings[j] );
+                    }
+
+                }
+
+            }
+
+            return result;
+        } catch ( REXPMismatchException e ) {
+
+            throw new RuntimeException( e );
+
+        }
 
     }
 
@@ -462,32 +462,6 @@ public abstract class AbstractRClient implements RClient {
     /*
      * (non-Javadoc)
      * 
-     * @see ubic.basecode.util.RClient#linearModel(double[], ubic.basecode.dataStructure.matrix.ObjectMatrix)
-     */
-    @Override
-    public LinearModelSummary linearModel( double[] data, ObjectMatrix<String, String, Object> d ) {
-
-        String datName = RandomStringUtils.randomAlphabetic( 10 );
-        assign( datName, data );
-
-        String df = dataFrame( d );
-
-        String varNames = StringUtils.join( d.getColNames(), "+" );
-
-        String lmName = RandomStringUtils.randomAlphabetic( 10 );
-        String command = lmName + "<-lm(" + datName + " ~ " + varNames + ", data=" + df + ", na.action=na.exclude)";
-        voidEval( command );
-
-        REXP lmsum = eval( "summary(" + lmName + ")" );
-        REXP anova = eval( "anova(" + lmName + ")" );
-
-        return new LinearModelSummary( lmsum, anova, d.getColNames().toArray( new String[] {} ) );
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see ubic.basecode.util.RClient#linearModel(double[], java.util.List)
      */
     @Override
@@ -529,107 +503,27 @@ public abstract class AbstractRClient implements RClient {
     /*
      * (non-Javadoc)
      * 
-     * @see ubic.basecode.util.RClient#rowApplyLinearModel(java.lang.String, java.lang.String, java.lang.String[])
+     * @see ubic.basecode.util.RClient#linearModel(double[], ubic.basecode.dataStructure.matrix.ObjectMatrix)
      */
     @Override
-    public Map<String, LinearModelSummary> rowApplyLinearModel( String dataMatrixVarName, String modelFormula,
-            String[] factorNames ) {
+    public LinearModelSummary linearModel( double[] data, ObjectMatrix<String, String, Object> d ) {
 
-        String lmres = "lmlist." + RandomStringUtils.randomAlphanumeric( 10 );
+        String datName = RandomStringUtils.randomAlphabetic( 10 );
+        assign( datName, data );
 
-        log.info( "Starting model fitting ..." );
+        String df = dataFrame( d );
 
-        loadScript( this.getClass().getResourceAsStream( "/ubic/basecode/util/r/linearModels.R" ) );
+        String varNames = StringUtils.join( d.getColNames(), "+" );
 
-        String command = lmres + "<-rowlm(" + modelFormula + ", data.frame(" + dataMatrixVarName + ") )";
+        String lmName = RandomStringUtils.randomAlphabetic( 10 );
+        String command = lmName + "<-lm(" + datName + " ~ " + varNames + ", data=" + df + ", na.action=na.exclude)";
+        voidEval( command );
 
-        log.debug( command );
-        this.voidEval( command );
+        REXP lmsum = eval( "summary(" + lmName + ")" );
+        REXP anova = eval( "anova(" + lmName + ")" );
 
-        log.info( "Model fits complete, summarizing ..." );
-        REXP rawLmSummaries = this.eval( "lapply(" + lmres + ", function(x){ try(summary(x), silent=T)})" );
+        return new LinearModelSummary( lmsum, anova, d.getColNames().toArray( new String[] {} ) );
 
-        if ( rawLmSummaries == null ) {
-            log.warn( "No results from apply(... lm)" );
-            return null;
-        }
-
-        log.info( "Summaries done, doing hypothesis tests ..." );
-        /* this tends to be the slow part. */
-        REXP rawAnova = this.eval( "lapply(" + lmres + ", function(x){ try(anova(x), silent=T)})" );
-
-        Map<String, LinearModelSummary> result = new HashMap<String, LinearModelSummary>();
-        try {
-            log.info( "Processing the results ..." );
-
-            RList rawLmList = rawLmSummaries.asList();
-            if ( rawLmList == null ) {
-                log.warn( "Raw lm summary results were null" );
-                return null;
-            }
-
-            RList rawAnovaList = rawAnova.asList();
-            if ( rawAnovaList == null ) {
-                return null;
-            }
-
-            log.debug( rawLmList.size() + " results." );
-
-            assert rawLmList.size() == rawAnovaList.size();
-
-            for ( int i = 0; i < rawLmList.size(); i++ ) {
-
-                REXP lmSummary = rawLmList.at( i );
-                REXP anova = rawAnovaList.at( i );
-
-                String elementIdentifier = rawLmList.keyAt( i );
-
-                assert elementIdentifier != null;
-                assert elementIdentifier.equals( rawAnovaList.keyAt( i ) );
-
-                if ( log.isDebugEnabled() ) log.debug( "Key: " + elementIdentifier );
-
-                if ( !lmSummary.isList() || !lmSummary.getAttribute( "class" ).asString().equals( "summary.lm" ) ) {
-                    log.debug( "No lm for " + elementIdentifier );
-                    result.put( elementIdentifier, new LinearModelSummary( elementIdentifier ) );
-                } else {
-                    LinearModelSummary linearModelSummary = new LinearModelSummary( lmSummary, anova, factorNames );
-                    result.put( elementIdentifier, linearModelSummary );
-                }
-
-            }
-        } catch ( REXPMismatchException e ) {
-            throw new RuntimeException( e );
-        }
-
-        return result;
-    }
-
-    /**
-     * There is a pretty annoying limitation of this. The file must contain only one statement. You can get around this
-     * by using c(x<-1,x<-2). See testScript.R
-     * 
-     * @param is
-     */
-    protected void loadScript( InputStream is ) {
-        try {
-
-            BufferedReader reader = new BufferedReader( new InputStreamReader( is ) );
-            String line = null;
-            StringBuilder buf = new StringBuilder();
-            while ( ( line = reader.readLine() ) != null ) {
-                if ( line.startsWith( "#" ) || StringUtils.isBlank( line ) ) {
-                    continue;
-                }
-                buf.append( StringUtils.trim( line ) + "\n" );
-            }
-            is.close();
-            log.debug( buf.toString() );
-            this.voidEval( buf.toString() );
-
-        } catch ( IOException e ) {
-            throw new RuntimeException( e );
-        }
     }
 
     /**
@@ -828,6 +722,85 @@ public abstract class AbstractRClient implements RClient {
     /*
      * (non-Javadoc)
      * 
+     * @see ubic.basecode.util.RClient#rowApplyLinearModel(java.lang.String, java.lang.String, java.lang.String[])
+     */
+    @Override
+    public Map<String, LinearModelSummary> rowApplyLinearModel( String dataMatrixVarName, String modelFormula,
+            String[] factorNames ) {
+
+        String lmres = "lmlist." + RandomStringUtils.randomAlphanumeric( 10 );
+
+        log.info( "Starting model fitting ..." );
+
+        loadScript( this.getClass().getResourceAsStream( "/ubic/basecode/util/r/linearModels.R" ) );
+
+        String command = lmres + "<-rowlm(" + modelFormula + ", data.frame(" + dataMatrixVarName + ") )";
+
+        log.debug( command );
+        this.voidEval( command );
+
+        log.info( "Model fits complete, summarizing ..." );
+        REXP rawLmSummaries = this.eval( "lapply(" + lmres + ", function(x){ try(summary(x), silent=T)})" );
+
+        if ( rawLmSummaries == null ) {
+            log.warn( "No results from apply(... lm)" );
+            return null;
+        }
+
+        log.info( "Summaries done, doing hypothesis tests ..." );
+        /* this tends to be the slow part. */
+        REXP rawAnova = this.eval( "lapply(" + lmres + ", function(x){ try(anova(x), silent=T)})" );
+
+        Map<String, LinearModelSummary> result = new HashMap<String, LinearModelSummary>();
+        try {
+            log.info( "Processing the results ..." );
+
+            RList rawLmList = rawLmSummaries.asList();
+            if ( rawLmList == null ) {
+                log.warn( "Raw lm summary results were null" );
+                return null;
+            }
+
+            RList rawAnovaList = rawAnova.asList();
+            if ( rawAnovaList == null ) {
+                return null;
+            }
+
+            log.debug( rawLmList.size() + " results." );
+
+            assert rawLmList.size() == rawAnovaList.size();
+
+            for ( int i = 0; i < rawLmList.size(); i++ ) {
+
+                REXP lmSummary = rawLmList.at( i );
+                REXP anova = rawAnovaList.at( i );
+
+                String elementIdentifier = rawLmList.keyAt( i );
+
+                assert elementIdentifier != null;
+                assert elementIdentifier.equals( rawAnovaList.keyAt( i ) );
+
+                if ( log.isDebugEnabled() ) log.debug( "Key: " + elementIdentifier );
+
+                if ( !lmSummary.isList() || !lmSummary.getAttribute( "class" ).asString().equals( "summary.lm" ) ) {
+                    log.debug( "No lm for " + elementIdentifier );
+                    result.put( elementIdentifier, new LinearModelSummary( elementIdentifier ) );
+                } else {
+                    LinearModelSummary linearModelSummary = new LinearModelSummary( lmSummary, anova, factorNames );
+                    result.put( elementIdentifier, linearModelSummary );
+                }
+
+            }
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
+
+        return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see ubic.basecode.util.RClient#stringEval(java.lang.String)
      */
     @Override
@@ -946,6 +919,33 @@ public abstract class AbstractRClient implements RClient {
 
         return result;
 
+    }
+
+    /**
+     * There is a pretty annoying limitation of this. The file must contain only one statement. You can get around this
+     * by using c(x<-1,x<-2). See testScript.R
+     * 
+     * @param is
+     */
+    protected void loadScript( InputStream is ) {
+        try {
+
+            BufferedReader reader = new BufferedReader( new InputStreamReader( is ) );
+            String line = null;
+            StringBuilder buf = new StringBuilder();
+            while ( ( line = reader.readLine() ) != null ) {
+                if ( line.startsWith( "#" ) || StringUtils.isBlank( line ) ) {
+                    continue;
+                }
+                buf.append( StringUtils.trim( line ) + "\n" );
+            }
+            is.close();
+            log.debug( buf.toString() );
+            this.voidEval( buf.toString() );
+
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     /**

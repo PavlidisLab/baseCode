@@ -45,19 +45,19 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
  */
 public class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm {
 
+    private static final String HAS_ALTERNATE_ID = "http://www.geneontology.org/formats/oboInOwl#hasAlternativeId";
+    private static final String NOTHING = "http://www.w3.org/2002/07/owl#Nothing";
+    private static Set<String> REJECT_PARENT_URI = new HashSet<String>();
+
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
-    private static final String NOTHING = "http://www.w3.org/2002/07/owl#Nothing";
-    private static final String HAS_ALTERNATE_ID = "http://www.geneontology.org/formats/oboInOwl#hasAlternativeId";
 
     /**
      * Should has_proper_part be used to indicate additional parent/child relations.
      */
     private static final boolean USE_PROPER_PART_RESTRICTIONS = true;
-
-    private static Set<String> REJECT_PARENT_URI = new HashSet<String>();
     static {
         REJECT_PARENT_URI.add( "http://www.ifomis.org/bfo/1.1/snap#IndependentContinuant" );
         REJECT_PARENT_URI.add( "http://www.ifomis.org/bfo/1.1/snap#Continuant" );
@@ -67,10 +67,10 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
         REJECT_PARENT_URI.add( "http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#birnlex_6" );
     }
 
-    private transient OntClass ontResource = null;
     private String label = null;
-
     private String localName = null;
+
+    private transient OntClass ontResource = null;
 
     public OntologyTermImpl( OntClass resource ) {
         this.ontResource = resource;
@@ -92,10 +92,6 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
             return ObjectUtils.equals( this.getUri(), that.getUri() );
         }
         return ObjectUtils.equals( this.getTerm(), that.getTerm() );
-    }
-
-    protected OntologyTerm fromOntClass( OntClass ontClass ) {
-        return new OntologyTermImpl( ontClass );
     }
 
     @Override
@@ -134,82 +130,6 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
         Collection<OntologyTerm> result = new HashSet<OntologyTerm>();
         getChildren( direct, result );
         return result;
-    }
-
-    /**
-     * @param direct
-     * @param work
-     */
-    private void getChildren( boolean direct, Collection<OntologyTerm> work ) {
-
-        // get children by recursion, don't rely on the jena api.
-        ExtendedIterator<OntClass> iterator = ontResource.listSubClasses( true );
-        while ( iterator.hasNext() ) {
-            OntClass c = iterator.next();
-            // some reasoners will infer owl#Nothing as a subclass of everything
-            if ( c.getURI().equals( NOTHING ) ) continue;
-
-            if ( USE_PROPER_PART_RESTRICTIONS && c.isRestriction() ) {
-
-                Restriction restriction = c.asRestriction();
-
-                OntProperty onProperty = restriction.getOnProperty();
-
-                if ( !onProperty.getURI().equals( "http://www.obofoundry.org/ro/ro.owl#has_proper_part" ) ) {
-                    continue;
-                }
-
-                Resource r = getRestrictionValue( restriction );
-                if ( r == null ) continue;
-
-                OntologyTerm child = fromOntClass( ( OntClass ) r );
-
-                // avoid risk of endless regression.
-                if ( !work.contains( child ) ) {
-                    work.add( child );
-                    if ( !direct ) ( ( OntologyTermImpl ) child ).getChildren( false, work );
-                }
-            } else {
-                OntologyTerm child = this.fromOntClass( c );
-                work.add( child );
-                if ( !direct ) ( ( OntologyTermImpl ) child ).getChildren( false, work );
-            }
-            // log.info( c );
-        }
-
-        if ( USE_PROPER_PART_RESTRICTIONS ) {
-            ExtendedIterator<OntClass> sciterator = this.ontResource.listSuperClasses( true );
-            while ( sciterator.hasNext() ) {
-                OntClass c = sciterator.next();
-                if ( !c.isRestriction() ) {
-                    continue;
-                }
-
-                Restriction restriction = c.asRestriction();
-
-                OntProperty onProperty = restriction.getOnProperty();
-
-                if ( !onProperty.getURI().equals( "http://www.obofoundry.org/ro/ro.owl#has_proper_part" ) ) {
-                    continue;
-                }
-
-                Resource r = getRestrictionValue( restriction );
-                if ( r == null ) continue;
-
-                // if ( !( r instanceof OntClass ) ) {
-                // // means our owl file is incomplete, is in tests.
-                // log.info( r );
-                // continue;
-                // }
-
-                OntologyTerm child = fromOntClass( ( OntClass ) r );
-                if ( !work.contains( child ) ) {
-                    work.add( child );
-                    if ( !direct ) ( ( OntologyTermImpl ) child ).getChildren( false, work );
-                }
-
-            }
-        }
     }
 
     /*
@@ -271,64 +191,6 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
     }
 
     /**
-     * @param direct
-     * @param work
-     */
-    private void getParents( boolean direct, Collection<OntologyTerm> work ) {
-        assert work != null;
-        if ( !ontResource.isClass() ) {
-            return;
-        }
-
-        ExtendedIterator<OntClass> iterator = ontResource.listSuperClasses( true );
-
-        while ( iterator.hasNext() ) {
-            OntClass c = iterator.next();
-            if ( USE_PROPER_PART_RESTRICTIONS && c.isRestriction() ) {
-                Restriction restriction = c.asRestriction();
-
-                OntProperty onProperty = restriction.getOnProperty();
-
-                if ( !onProperty.getURI().equals( "http://www.obofoundry.org/ro/ro.owl#proper_part_of" ) ) {
-                    continue;
-                }
-
-                Resource r = getRestrictionValue( restriction );
-
-                if ( r == null ) continue;
-
-                assert r != null;
-                if ( log.isDebugEnabled() ) log.debug( " Some from:" + r + " " + onProperty.getURI() );
-
-                OntologyTerm parent = fromOntClass( ( OntClass ) r );
-
-                if ( REJECT_PARENT_URI.contains( parent.getUri() ) ) continue;
-
-                // avoid endless regression
-                if ( !work.contains( parent ) ) {
-                    work.add( parent );
-                    if ( !direct ) ( ( OntologyTermImpl ) parent ).getParents( direct, work );
-                }
-
-            } else {
-                // not a restriction.
-                OntologyTerm parent = this.fromOntClass( c );
-
-                if ( REJECT_PARENT_URI.contains( parent.getUri() ) ) continue;
-
-                if ( !work.contains( parent ) ) {
-                    work.add( parent );
-                    if ( !direct ) {
-                        // recurse.
-                        ( ( OntologyTermImpl ) parent ).getParents( direct, work );
-                    }
-                }
-            }
-
-        }
-    }
-
-    /**
      * 
      */
     @Override
@@ -383,19 +245,6 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
         }
 
         return result;
-    }
-
-    private Resource getRestrictionValue( Restriction restriction ) {
-        Resource r = null;
-
-        if ( restriction.isSomeValuesFromRestriction() ) {
-            SomeValuesFromRestriction some = restriction.asSomeValuesFromRestriction();
-            r = some.getSomeValuesFrom();
-        } else if ( restriction.isAllValuesFromRestriction() ) {
-            AllValuesFromRestriction allValues = restriction.asAllValuesFromRestriction();
-            r = allValues.getAllValuesFrom();
-        }
-        return r;
     }
 
     /*
@@ -502,6 +351,157 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
             res = ontResource.toString();
         }
         return res;
+    }
+
+    protected OntologyTerm fromOntClass( OntClass ontClass ) {
+        return new OntologyTermImpl( ontClass );
+    }
+
+    /**
+     * @param direct
+     * @param work
+     */
+    private void getChildren( boolean direct, Collection<OntologyTerm> work ) {
+
+        // get children by recursion, don't rely on the jena api.
+        ExtendedIterator<OntClass> iterator = ontResource.listSubClasses( true );
+        while ( iterator.hasNext() ) {
+            OntClass c = iterator.next();
+            // some reasoners will infer owl#Nothing as a subclass of everything
+            if ( c.getURI().equals( NOTHING ) ) continue;
+
+            if ( USE_PROPER_PART_RESTRICTIONS && c.isRestriction() ) {
+
+                Restriction restriction = c.asRestriction();
+
+                OntProperty onProperty = restriction.getOnProperty();
+
+                if ( !onProperty.getURI().equals( "http://www.obofoundry.org/ro/ro.owl#has_proper_part" ) ) {
+                    continue;
+                }
+
+                Resource r = getRestrictionValue( restriction );
+                if ( r == null ) continue;
+
+                OntologyTerm child = fromOntClass( ( OntClass ) r );
+
+                // avoid risk of endless regression.
+                if ( !work.contains( child ) ) {
+                    work.add( child );
+                    if ( !direct ) ( ( OntologyTermImpl ) child ).getChildren( false, work );
+                }
+            } else {
+                OntologyTerm child = this.fromOntClass( c );
+                work.add( child );
+                if ( !direct ) ( ( OntologyTermImpl ) child ).getChildren( false, work );
+            }
+            // log.info( c );
+        }
+
+        if ( USE_PROPER_PART_RESTRICTIONS ) {
+            ExtendedIterator<OntClass> sciterator = this.ontResource.listSuperClasses( true );
+            while ( sciterator.hasNext() ) {
+                OntClass c = sciterator.next();
+                if ( !c.isRestriction() ) {
+                    continue;
+                }
+
+                Restriction restriction = c.asRestriction();
+
+                OntProperty onProperty = restriction.getOnProperty();
+
+                if ( !onProperty.getURI().equals( "http://www.obofoundry.org/ro/ro.owl#has_proper_part" ) ) {
+                    continue;
+                }
+
+                Resource r = getRestrictionValue( restriction );
+                if ( r == null ) continue;
+
+                // if ( !( r instanceof OntClass ) ) {
+                // // means our owl file is incomplete, is in tests.
+                // log.info( r );
+                // continue;
+                // }
+
+                OntologyTerm child = fromOntClass( ( OntClass ) r );
+                if ( !work.contains( child ) ) {
+                    work.add( child );
+                    if ( !direct ) ( ( OntologyTermImpl ) child ).getChildren( false, work );
+                }
+
+            }
+        }
+    }
+
+    /**
+     * @param direct
+     * @param work
+     */
+    private void getParents( boolean direct, Collection<OntologyTerm> work ) {
+        assert work != null;
+        if ( !ontResource.isClass() ) {
+            return;
+        }
+
+        ExtendedIterator<OntClass> iterator = ontResource.listSuperClasses( true );
+
+        while ( iterator.hasNext() ) {
+            OntClass c = iterator.next();
+            if ( USE_PROPER_PART_RESTRICTIONS && c.isRestriction() ) {
+                Restriction restriction = c.asRestriction();
+
+                OntProperty onProperty = restriction.getOnProperty();
+
+                if ( !onProperty.getURI().equals( "http://www.obofoundry.org/ro/ro.owl#proper_part_of" ) ) {
+                    continue;
+                }
+
+                Resource r = getRestrictionValue( restriction );
+
+                if ( r == null ) continue;
+
+                assert r != null;
+                if ( log.isDebugEnabled() ) log.debug( " Some from:" + r + " " + onProperty.getURI() );
+
+                OntologyTerm parent = fromOntClass( ( OntClass ) r );
+
+                if ( REJECT_PARENT_URI.contains( parent.getUri() ) ) continue;
+
+                // avoid endless regression
+                if ( !work.contains( parent ) ) {
+                    work.add( parent );
+                    if ( !direct ) ( ( OntologyTermImpl ) parent ).getParents( direct, work );
+                }
+
+            } else {
+                // not a restriction.
+                OntologyTerm parent = this.fromOntClass( c );
+
+                if ( REJECT_PARENT_URI.contains( parent.getUri() ) ) continue;
+
+                if ( !work.contains( parent ) ) {
+                    work.add( parent );
+                    if ( !direct ) {
+                        // recurse.
+                        ( ( OntologyTermImpl ) parent ).getParents( direct, work );
+                    }
+                }
+            }
+
+        }
+    }
+
+    private Resource getRestrictionValue( Restriction restriction ) {
+        Resource r = null;
+
+        if ( restriction.isSomeValuesFromRestriction() ) {
+            SomeValuesFromRestriction some = restriction.asSomeValuesFromRestriction();
+            r = some.getSomeValuesFrom();
+        } else if ( restriction.isAllValuesFromRestriction() ) {
+            AllValuesFromRestriction allValues = restriction.asAllValuesFromRestriction();
+            r = allValues.getAllValuesFrom();
+        }
+        return r;
     }
 
 }

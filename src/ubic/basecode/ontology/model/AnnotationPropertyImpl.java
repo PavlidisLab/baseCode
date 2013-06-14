@@ -33,9 +33,9 @@ import com.hp.hpl.jena.rdf.model.impl.PropertyImpl;
  */
 public class AnnotationPropertyImpl implements AnnotationProperty {
 
-    private com.hp.hpl.jena.ontology.AnnotationProperty property;
-
     private String contents;
+
+    private com.hp.hpl.jena.ontology.AnnotationProperty property;
 
     /**
      * @param prop property for the statement

@@ -44,11 +44,11 @@ import ubic.basecode.util.r.RServeClient;
 public class RServeClientTest extends TestCase {
     private static Log log = LogFactory.getLog( RServeClientTest.class.getName() );
 
-    RServeClient rc = null;
     boolean connected = false;
-    DoubleMatrix<String, String> tester;
+    RServeClient rc = null;
     double[] test1 = new double[] { -1.2241396, -0.6794486, -0.8475404, -0.4119554, -2.1980083 };
     double[] test2 = new double[] { 0.67676154, 0.20346679, 0.09289084, 0.68850551, 0.61120011 };
+    DoubleMatrix<String, String> tester;
 
     @Override
     public void setUp() throws Exception {
@@ -89,6 +89,120 @@ public class RServeClientTest extends TestCase {
 
     }
 
+    public void testAssignAndRetrieveMatrixB() {
+        if ( !connected ) {
+            log.warn( "Could not connect to RServe, skipping test." );
+            return;
+        }
+        DoubleMatrix<String, String> result = rc.retrieveMatrix( rc.assignMatrix( tester.asArray() ) );
+        assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
+
+    }
+
+    public void testAssignStringList() {
+        if ( !connected ) {
+            log.warn( "Could not connect to RServe, skipping test." );
+            return;
+        }
+
+        List<String> l = new ArrayList<String>();
+        l.add( "foo" );
+        l.add( "bar" );
+
+        String varname = rc.assignStringList( l );
+        String actualValue = rc.stringEval( varname + "[1]" );
+        assertEquals( "foo", actualValue );
+        actualValue = rc.stringEval( varname + "[2]" );
+        assertEquals( "bar", actualValue );
+    }
+
+    public void testDoubleArrayTwoDoubleArrayEval() {
+        if ( !connected ) {
+            log.warn( "Could not connect to RServe, skipping test." );
+            return;
+        }
+        double[] actual = rc.doubleArrayTwoDoubleArrayEval( "a-b", "a", test1, "b", test2 );
+        double[] expected = new double[] { -1.9009011, -0.8829154, -0.9404312, -1.1004609, -2.8092084 };
+        RegressionTesting.closeEnough( expected, actual, Constants.SMALLISH );
+    }
+
+    public void testDoubleTwoDoubleArrayEval() {
+        if ( !connected ) {
+            log.warn( "Could not connect to RServe, skipping test." );
+            return;
+        }
+        double actual = rc.doubleTwoDoubleArrayEval( "cor(a,b)", "a", test1, "b", test2 );
+        double expected = -0.29843518070456654;
+        assertEquals( expected, actual, Constants.SMALLISH );
+    }
+
+    /*
+     * Test method for ' RCommand.exec(String)'
+     */
+    public void testExec() {
+        if ( !connected ) {
+            log.warn( "Could not connect to RServe, skipping test." );
+            return;
+        }
+        String actualValue = rc.stringEval( "R.version.string" );
+        String expectedValue = "R version 2";
+
+        assertTrue( "rc.eval() return version " + actualValue + ", expected something starting with R version 2",
+                actualValue.startsWith( expectedValue ) );
+    }
+
+    /*
+     * Test method for ' RCommand.exec(String)'
+     */
+    public void testExecDoubleArray() {
+        if ( !connected ) {
+            log.warn( "Could not connect to RServe, skipping test." );
+            return;
+        }
+        assertTrue( RegressionTesting.closeEnough( new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+                rc.doubleArrayEval( "rep(1, 10)" ), 0.001 ) );
+    }
+
+    public void testExecError() {
+        if ( !connected ) {
+            log.warn( "Could not connect to RServe, skipping test." );
+            return;
+        }
+        try {
+            rc.stringEval( "library(fooblydoobly)" );
+            fail( "Should have gotten an exception" );
+        } catch ( Exception e ) {
+            assertTrue( e.getMessage().startsWith( "Error from R" ) );
+        }
+    }
+
+    public void testFactorAssign() {
+        if ( !connected ) {
+            log.warn( "Could not connect to RServe, skipping test." );
+            return;
+        }
+
+        List<String> list = new ArrayList<String>();
+        list.add( "a" );
+        list.add( "b" );
+        String factor = rc.assignFactor( list );
+        assertNotNull( factor );
+    }
+
+    public void testFindExecutable() throws Exception {
+        String cmd = RServeClient.findRserveCommand();
+        assertNotNull( cmd ); // should always come up with something.
+    }
+
+    public void testLoadLibrary() {
+        if ( !connected ) {
+            log.warn( "Could not connect to RServe, skipping test." );
+            return;
+        }
+        assertFalse( rc.loadLibrary( "foooobly" ) );
+        assertTrue( rc.loadLibrary( "graphics" ) );
+    }
+
     public void testLoadScript() throws Exception {
         if ( !connected ) {
             log.warn( "Could not connect to RServe, skipping test." );
@@ -125,40 +239,6 @@ public class RServeClientTest extends TestCase {
         rc.loadScript( this.getClass().getResourceAsStream( "/ubic/basecode/util/r/linearModels.R" ) );
     }
 
-    public void testDoubleArrayTwoDoubleArrayEval() {
-        if ( !connected ) {
-            log.warn( "Could not connect to RServe, skipping test." );
-            return;
-        }
-        double[] actual = rc.doubleArrayTwoDoubleArrayEval( "a-b", "a", test1, "b", test2 );
-        double[] expected = new double[] { -1.9009011, -0.8829154, -0.9404312, -1.1004609, -2.8092084 };
-        RegressionTesting.closeEnough( expected, actual, Constants.SMALLISH );
-    }
-
-    public void testLoadLibrary() {
-        if ( !connected ) {
-            log.warn( "Could not connect to RServe, skipping test." );
-            return;
-        }
-        assertFalse( rc.loadLibrary( "foooobly" ) );
-        assertTrue( rc.loadLibrary( "graphics" ) );
-    }
-
-    public void testDoubleTwoDoubleArrayEval() {
-        if ( !connected ) {
-            log.warn( "Could not connect to RServe, skipping test." );
-            return;
-        }
-        double actual = rc.doubleTwoDoubleArrayEval( "cor(a,b)", "a", test1, "b", test2 );
-        double expected = -0.29843518070456654;
-        assertEquals( expected, actual, Constants.SMALLISH );
-    }
-
-    public void testFindExecutable() throws Exception {
-        String cmd = RServeClient.findRserveCommand();
-        assertNotNull( cmd ); // should always come up with something.
-    }
-
     public void testStringListEval() {
         if ( !connected ) {
             log.warn( "Could not connect to RServe, skipping test." );
@@ -168,33 +248,6 @@ public class RServeClientTest extends TestCase {
         assertEquals( 2, actual.size() );
         assertEquals( "a", actual.get( 0 ) );
         assertEquals( "b", actual.get( 1 ) );
-    }
-
-    public void testAssignAndRetrieveMatrixB() {
-        if ( !connected ) {
-            log.warn( "Could not connect to RServe, skipping test." );
-            return;
-        }
-        DoubleMatrix<String, String> result = rc.retrieveMatrix( rc.assignMatrix( tester.asArray() ) );
-        assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
-
-    }
-
-    public void testAssignStringList() {
-        if ( !connected ) {
-            log.warn( "Could not connect to RServe, skipping test." );
-            return;
-        }
-
-        List<String> l = new ArrayList<String>();
-        l.add( "foo" );
-        l.add( "bar" );
-
-        String varname = rc.assignStringList( l );
-        String actualValue = rc.stringEval( varname + "[1]" );
-        assertEquals( "foo", actualValue );
-        actualValue = rc.stringEval( varname + "[2]" );
-        assertEquals( "bar", actualValue );
     }
 
     public void testTTest() {
@@ -266,58 +319,5 @@ public class RServeClientTest extends TestCase {
         assertEquals( 1, r.length );
         assertEquals( 1.0, r[0], 0.00001 );
 
-    }
-
-    /*
-     * Test method for ' RCommand.exec(String)'
-     */
-    public void testExec() {
-        if ( !connected ) {
-            log.warn( "Could not connect to RServe, skipping test." );
-            return;
-        }
-        String actualValue = rc.stringEval( "R.version.string" );
-        String expectedValue = "R version 2";
-
-        assertTrue( "rc.eval() return version " + actualValue + ", expected something starting with R version 2",
-                actualValue.startsWith( expectedValue ) );
-    }
-
-    public void testExecError() {
-        if ( !connected ) {
-            log.warn( "Could not connect to RServe, skipping test." );
-            return;
-        }
-        try {
-            rc.stringEval( "library(fooblydoobly)" );
-            fail( "Should have gotten an exception" );
-        } catch ( Exception e ) {
-            assertTrue( e.getMessage().startsWith( "Error from R" ) );
-        }
-    }
-
-    public void testFactorAssign() {
-        if ( !connected ) {
-            log.warn( "Could not connect to RServe, skipping test." );
-            return;
-        }
-
-        List<String> list = new ArrayList<String>();
-        list.add( "a" );
-        list.add( "b" );
-        String factor = rc.assignFactor( list );
-        assertNotNull( factor );
-    }
-
-    /*
-     * Test method for ' RCommand.exec(String)'
-     */
-    public void testExecDoubleArray() {
-        if ( !connected ) {
-            log.warn( "Could not connect to RServe, skipping test." );
-            return;
-        }
-        assertTrue( RegressionTesting.closeEnough( new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-                rc.doubleArrayEval( "rep(1, 10)" ), 0.001 ) );
     }
 }

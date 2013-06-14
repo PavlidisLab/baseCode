@@ -64,9 +64,9 @@ import cern.jet.stat.Descriptive;
 public class RowLevelFilter<R, C> extends AbstractLevelFilter<R, C> {
 
     /**
-     * Use the minimum of the row as the criterion.
+     * Use the coefficient of variation as the criterion
      */
-    public static final int MIN = 1;
+    public static final int CV = 6;
 
     /**
      * Use the maximum of the row as the criterion.
@@ -74,28 +74,28 @@ public class RowLevelFilter<R, C> extends AbstractLevelFilter<R, C> {
     public static final int MAX = 2;
 
     /**
+     * Use the mean as the criterion.
+     */
+    public static final int MEAN = 4;
+
+    /**
      * Use the median as the criterion.
      */
     public static final int MEDIAN = 3;
 
     /**
-     * Use the mean as the criterion.
+     * Use the minimum of the row as the criterion.
      */
-    public static final int MEAN = 4;
+    public static final int MIN = 1;
 
     /**
      * Use the range as the criterion
      */
     public static final int RANGE = 5;
 
-    /**
-     * Use the coefficient of variation as the criterion
-     */
-    public static final int CV = 6;
+    private int method = MAX;
 
     private boolean removeAllNegative = false;
-
-    private int method = MAX;
 
     /**
      * @param data

@@ -33,9 +33,9 @@ import java.util.Map;
  */
 public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java.io.Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     protected static final int MAX_ROWS_TO_PRINT = 100;
+
+    private static final long serialVersionUID = 1L;
     private Map<C, Integer> colMap;
     private List<C> colNames;
     private int lastColumnIndex = 0;
@@ -80,26 +80,6 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
 
     }
 
-    @Override
-    public final void setColumnName( C s, int i ) {
-
-        if ( s == null ) {
-            throw new IllegalArgumentException( "Column name cannot be null" );
-        }
-
-        if ( colMap.containsKey( s ) ) {
-            throw new IllegalArgumentException( "Duplicate column name " + s );
-        }
-
-        if ( this.colNames.size() > i ) {
-            this.colNames.set( i, s );
-        } else {
-            this.colNames.add( s );
-        }
-
-        this.colMap.put( s, i );
-    }
-
     /**
      * Add a row name when we don't care what the index will be. The index will be set by the method. This is useful for
      * when we need to set up a matrix before we know how many column or rows there are.
@@ -118,24 +98,6 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
         this.rowNames.add( s );
         this.rowMap.put( s, lastRowIndex );
         lastRowIndex++;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see basecode.dataStructure.NamedMatrix#addRowName(java.lang.String, int)
-     */
-    @Override
-    public final void setRowName( R s, int i ) {
-        if ( s == null ) {
-            throw new IllegalArgumentException( "Row name cannot be null" );
-        }
-        if ( this.hasRow( s ) ) {
-            throw new IllegalArgumentException( "Duplicate row name " + s );
-        }
-
-        this.rowNames.add( s );
-        this.rowMap.put( s, i );
     }
 
     /*
@@ -308,6 +270,26 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
     }
 
     @Override
+    public final void setColumnName( C s, int i ) {
+
+        if ( s == null ) {
+            throw new IllegalArgumentException( "Column name cannot be null" );
+        }
+
+        if ( colMap.containsKey( s ) ) {
+            throw new IllegalArgumentException( "Duplicate column name " + s );
+        }
+
+        if ( this.colNames.size() > i ) {
+            this.colNames.set( i, s );
+        } else {
+            this.colNames.add( s );
+        }
+
+        this.colMap.put( s, i );
+    }
+
+    @Override
     public void setColumnNames( List<C> v ) {
         this.colNames.clear();
         this.colMap.clear();
@@ -315,6 +297,24 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
         for ( int i = 0; i < v.size(); i++ ) {
             setColumnName( v.get( i ), i );
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see basecode.dataStructure.NamedMatrix#addRowName(java.lang.String, int)
+     */
+    @Override
+    public final void setRowName( R s, int i ) {
+        if ( s == null ) {
+            throw new IllegalArgumentException( "Row name cannot be null" );
+        }
+        if ( this.hasRow( s ) ) {
+            throw new IllegalArgumentException( "Duplicate row name " + s );
+        }
+
+        this.rowNames.add( s );
+        this.rowMap.put( s, i );
     }
 
     @Override

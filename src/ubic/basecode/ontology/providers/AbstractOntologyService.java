@@ -51,55 +51,17 @@ import com.hp.hpl.jena.query.larq.IndexLARQ;
  */
 public abstract class AbstractOntologyService {
 
-    protected static final Log log = LogFactory.getLog( AbstractOntologyService.class );
-
-    protected String ontology_URL;
-    protected String ontologyName;
-
-    protected IndexLARQ index;
-    protected Map<String, OntologyTerm> terms;
-    protected Map<String, OntologyIndividual> individuals;
-
-    protected AtomicBoolean cacheReady = new AtomicBoolean( false );
-    protected AtomicBoolean indexReady = new AtomicBoolean( false );
-    protected AtomicBoolean modelReady = new AtomicBoolean( false );
-
-    protected AtomicBoolean isInitialized = new AtomicBoolean( false );
-
-    protected OntologyInitializationThread initializationThread;
-
-    // private boolean enabled = false;
-
-    /**
-     * 
-     */
-    public AbstractOntologyService() {
-        super();
-        ontology_URL = getOntologyUrl();
-        ontologyName = getOntologyName();
-
-        initializationThread = new OntologyInitializationThread( false );
-        initializationThread.setName( ontologyName + "_load_thread" );
-        // To prevent VM from waiting on this thread to shutdown (if shutting down).
-        initializationThread.setDaemon( true );
-
-    }
-
     protected class OntologyInitializationThread extends Thread {
-
-        public boolean isForceReindexing() {
-            return forceReindexing;
-        }
-
-        public void setForceReindexing( boolean forceReindexing ) {
-            this.forceReindexing = forceReindexing;
-        }
 
         private boolean forceReindexing = false;
 
         public OntologyInitializationThread( boolean forceRefresh ) {
             super();
             this.forceReindexing = forceRefresh;
+        }
+
+        public boolean isForceReindexing() {
+            return forceReindexing;
         }
 
         @Override
@@ -120,13 +82,7 @@ public abstract class AbstractOntologyService {
                 /*
                  * Indexing will be slow the first time (can take hours for large ontologies).
                  */
-                log.info( "Loading Index for " + ontologyName );
-                index = OntologyIndexer.indexOntology( ontologyName, model, forceReindexing );
-
-                if ( loadTime.getTime() > 5000 ) {
-                    log.info( "Done Loading Index for " + ontologyName + " Ontology in " + loadTime.getTime() / 1000
-                            + "s" );
-                }
+                index( forceReindexing );
 
                 indexReady.set( true );
 
@@ -160,6 +116,52 @@ public abstract class AbstractOntologyService {
                 releaseModel( model );
             }
         }
+
+        public void setForceReindexing( boolean forceReindexing ) {
+            this.forceReindexing = forceReindexing;
+        }
+    }
+
+    protected static final Log log = LogFactory.getLog( AbstractOntologyService.class );
+
+    protected AtomicBoolean cacheReady = new AtomicBoolean( false );
+    protected IndexLARQ index;
+
+    protected AtomicBoolean indexReady = new AtomicBoolean( false );
+    protected Map<String, OntologyIndividual> individuals;
+    protected OntologyInitializationThread initializationThread;
+
+    protected AtomicBoolean isInitialized = new AtomicBoolean( false );
+    protected AtomicBoolean modelReady = new AtomicBoolean( false );
+    protected String ontology_URL;
+
+    protected String ontologyName;
+
+    protected Map<String, OntologyTerm> terms;
+
+    // private boolean enabled = false;
+
+    /**
+     * 
+     */
+    public AbstractOntologyService() {
+        super();
+        ontology_URL = getOntologyUrl();
+        ontologyName = getOntologyName();
+
+        initializationThread = new OntologyInitializationThread( false );
+        initializationThread.setName( ontologyName + "_load_thread" );
+        // To prevent VM from waiting on this thread to shutdown (if shutting down).
+        initializationThread.setDaemon( true );
+
+    }
+
+    /**
+     * Do not do this except before re-indexing.
+     */
+    public void closeIndex() {
+        if ( index == null ) return;
+        index.close();
     }
 
     /**
@@ -205,14 +207,6 @@ public abstract class AbstractOntologyService {
     }
 
     /**
-     * Do not do this except before re-indexing.
-     */
-    public void closeIndex() {
-        if ( index == null ) return;
-        index.close();
-    }
-
-    /**
      * Looks for any ontologyTerms that match the given search string. Obsolete terms are filtered out.
      * 
      * @param search
@@ -235,6 +229,11 @@ public abstract class AbstractOntologyService {
         return matches;
     }
 
+    public Set<String> getAllURIs() {
+        if ( terms == null ) return null;
+        return new HashSet<String>( terms.keySet() );
+    }
+
     // /**
     // * @param matches
     // * @return
@@ -248,11 +247,6 @@ public abstract class AbstractOntologyService {
     // }
     // return filteredResults;
     // }
-
-    public Set<String> getAllURIs() {
-        if ( terms == null ) return null;
-        return new HashSet<String>( terms.keySet() );
-    }
 
     /**
      * Looks through both Terms and Individuals for a OntologyResource that has a uri matching the uri given. If no
@@ -312,6 +306,35 @@ public abstract class AbstractOntologyService {
 
     }
 
+    /**
+     * Create the search index.
+     * 
+     * @param force
+     */
+    public void index( boolean force ) {
+        StopWatch timer = new StopWatch();
+        timer.start();
+        log.info( "Preparing index for " + ontologyName );
+        OntModel model = getModel();
+        assert model != null;
+        index = OntologyIndexer.indexOntology( ontologyName, model, force );
+
+        if ( timer.getTime() > 5000 ) {
+            log.info( "Done Loading Index for " + ontologyName + " Ontology in " + timer.getTime() / 1000 + "s" );
+        }
+
+    }
+
+    /**
+     * Used for determining if the Gene Ontology has finished loading into memory. Although calls like getParents,
+     * getChildren will still work (its much faster once the ontologies have been preloaded into memory.)
+     * 
+     * @returns boolean
+     */
+    public boolean isOntologyLoaded() {
+        return isInitialized.get();
+    }
+
     public void startInitializationThread( boolean force ) {
         assert initializationThread != null;
         synchronized ( initializationThread ) {
@@ -355,14 +378,26 @@ public abstract class AbstractOntologyService {
     }
 
     /**
-     * Used for determining if the Gene Ontology has finished loading into memory. Although calls like getParents,
-     * getChildren will still work (its much faster once the ontologies have been preloaded into memory.)
-     * 
-     * @returns boolean
+     * @param newTerms
      */
-    public boolean isOntologyLoaded() {
-        return isInitialized.get();
+    protected void addTerms( Collection<OntologyResource> newTerms ) {
+
+        if ( newTerms == null || newTerms.isEmpty() ) {
+            log.warn( "No terms!" );
+            return;
+        }
+
+        if ( terms == null ) terms = new HashMap<String, OntologyTerm>();
+        if ( individuals == null ) individuals = new HashMap<String, OntologyIndividual>();
+
+        for ( OntologyResource term : newTerms ) {
+            if ( term.getUri() == null ) continue;
+            if ( term instanceof OntologyTerm ) terms.put( term.getUri(), ( OntologyTerm ) term );
+            if ( term instanceof OntologyIndividual ) individuals.put( term.getUri(), ( OntologyIndividual ) term );
+        }
     }
+
+    protected abstract OntModel getModel();
 
     /**
      * The simple name of the ontology. Used for indexing purposes. (ie this will determine the name of the underlying
@@ -398,28 +433,6 @@ public abstract class AbstractOntologyService {
         Collection<OntologyResource> t = OntologyLoader.initialize( url, m );
         addTerms( t );
     }
-
-    /**
-     * @param newTerms
-     */
-    protected void addTerms( Collection<OntologyResource> newTerms ) {
-
-        if ( newTerms == null || newTerms.isEmpty() ) {
-            log.warn( "No terms!" );
-            return;
-        }
-
-        if ( terms == null ) terms = new HashMap<String, OntologyTerm>();
-        if ( individuals == null ) individuals = new HashMap<String, OntologyIndividual>();
-
-        for ( OntologyResource term : newTerms ) {
-            if ( term.getUri() == null ) continue;
-            if ( term instanceof OntologyTerm ) terms.put( term.getUri(), ( OntologyTerm ) term );
-            if ( term instanceof OntologyIndividual ) individuals.put( term.getUri(), ( OntologyIndividual ) term );
-        }
-    }
-
-    protected abstract OntModel getModel();
 
     protected abstract void releaseModel( OntModel m );
 

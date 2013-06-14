@@ -449,6 +449,85 @@ public class LeastSquaresFitTest {
     }
 
     /**
+     * Test data with many missing values, two factors
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testMatrixWeightedMeanVariance() throws Exception {
+        DoubleMatrixReader f = new DoubleMatrixReader();
+        DoubleMatrix<String, String> testMatrix = f
+                .read( this.getClass().getResourceAsStream( "/data/lmtest2.dat.txt" ) );
+
+        StringMatrixReader of = new StringMatrixReader();
+        StringMatrix<String, String> sampleInfo = of.read( this.getClass()
+                .getResourceAsStream( "/data/lmtest3.des.txt" ) );
+
+        DesignMatrix d = new DesignMatrix( sampleInfo, true );
+
+        // Coefficients not estimable: y$fact.8095fv_60796
+        // fit$rank < ncol(design)
+        MeanVarianceEstimator est = new MeanVarianceEstimator( d, testMatrix );
+        DoubleMatrix2D w2D = est.getWeights();
+        LeastSquaresFit fit = new LeastSquaresFit( d.getDoubleMatrix(), est.getNormalizedValue(), w2D );
+        DoubleMatrix2D actuals = fit.getCoefficients().viewDice();
+
+        // note: column 5 has 0's and 1's reversed compared to des.txt!
+        // so signs in column five from R's output have been reversed
+        int[] expectedIndices = new int[] { 0, 40, 80 };
+        double[][] expected = new double[][] {
+                { 13.32, 0.1264, -0.1402, -0.1102, -0.1437, -0.07242, Double.NaN, 0.2211, 0.05124 },
+                { 13.08, 0.2029, 0.1464, 0.03702, 0.342, -0.09954, Double.NaN, 0.02198, 0.1536 },
+                { 13.4, 0.1718, 0.1385, 0.1185, -0.273, 0.0379, Double.NaN, -0.004468, 0.04201 } };
+
+        for ( int i = 0; i < expectedIndices.length; i++ ) {
+            assertArrayEquals( actuals.viewRow( expectedIndices[i] ).toArray(), expected[i], 0.1 );
+        }
+    }
+
+    /**
+     * Weighted least squares test for 2D matrices
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testMatrixWeightedRegress() throws Exception {
+
+        DoubleMatrix2D dat = new DenseDoubleMatrix2D( new double[][] { { 1, 2, 3, 4, 5 }, { 1, 1, 6, 3, 2 } } );
+        DoubleMatrix2D des = new DenseDoubleMatrix2D( new double[][] { { 1, 1, 1, 1, 1 }, { 1, 2, 2, 3, 3 },
+                { 2, 1, 5, 3, 4 } } );
+
+        DoubleMatrix2D w = dat.copy();
+        w.assign( dat );
+        Algebra solver = new Algebra();
+        des = solver.transpose( des );
+        LeastSquaresFit fit = new LeastSquaresFit( des, dat, w );
+
+        // coefficients
+        DoubleMatrix2D actuals = solver.transpose( fit.getCoefficients() );
+        double[][] expected = new double[][] { { -1.7070, 1.7110, 0.3054 }, { 0.2092, -0.6642, 1.3640 } };
+        for ( int i = 0; i < expected.length; i++ ) {
+            assertArrayEquals( actuals.viewRow( i ).toArray(), expected[i], 0.1 );
+        }
+
+        // fitted
+        actuals = fit.getFitted();
+        expected = new double[][] { { 0.6151, 2.0210, 3.2430, 4.3430, 4.6490 }, { 2.273, 0.245, 5.701, 2.309, 3.673 } };
+        for ( int i = 0; i < expected.length; i++ ) {
+            assertArrayEquals( actuals.viewRow( i ).toArray(), expected[i], 0.1 );
+        }
+
+        // residuals
+        actuals = fit.getResiduals();
+        expected = new double[][] { { 0.38490, -0.02092, -0.24270, -0.34310, 0.35150 },
+                { -1.2730, 0.7550, 0.2986, 0.6910, -1.6730 } };
+        for ( int i = 0; i < expected.length; i++ ) {
+            assertArrayEquals( actuals.viewRow( i ).toArray(), expected[i], 0.1 );
+        }
+
+    }
+
+    /**
      * Has a lot of missing values.
      * 
      * @throws Exception
@@ -565,60 +644,49 @@ public class LeastSquaresFitTest {
     }
 
     /**
-     * Check for problem reported by TF -- Gemma gives slightly different result. Problem is not at this level.
+     * Originally causes failures during summarization step. There are two pivoted columns.
      * 
      * @throws Exception
      */
     @Test
-    public void testTwoWayAnovaWithInteractions() throws Exception {
+    public void testSingular2() throws Exception {
         DoubleMatrixReader f = new DoubleMatrixReader();
         DoubleMatrix<String, String> testMatrix = f.read( this.getClass().getResourceAsStream(
-                "/data/GSE8441_expmat_8probes.txt" ) );
+                "/data/1027_GSE6189.data.test.txt" ) );
 
         StringMatrixReader of = new StringMatrixReader();
         StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
-                "/data/606_GSE8441_expdesign.data.txt" ) );
+                "/data/1027_GSE6189_expdesign.data.txt" ) );
         DesignMatrix d = new DesignMatrix( sampleInfo, true );
-        d.addInteraction();
 
-        assertEquals( 4, d.getMatrix().columns() );
-
-        assertEquals( 22, testMatrix.columns() );
-
-        LeastSquaresFit fit = new LeastSquaresFit( d, testMatrix );
+        LeastSquaresFit fit = new LeastSquaresFit( d, testMatrix.getRowRange( 0, 0 ) );
 
         Map<String, LinearModelSummary> sums = fit.summarizeByKeys( true );
-        assertEquals( 8, sums.size() );
-
+        assertEquals( 1, sums.size() );
         for ( LinearModelSummary lms : sums.values() ) {
             GenericAnovaResult a = lms.getAnova();
             assertNotNull( a );
         }
-
-        LinearModelSummary s = sums.get( "217757_at" );
-        GenericAnovaResult anova = s.getAnova();
-
+        LinearModelSummary s = sums.get( "1367452_at" );
+        assertNotNull( s );
         assertNotNull( s.getCoefficients() );
-        assertEquals( 0.763, s.getCoefficients().get( 2, 3 ), 0.001 );
-        assertEquals( 18, s.getResidualDof().intValue() );
-        assertEquals( 3, s.getNumeratorDof().intValue() );
-        assertEquals( 0.299, s.getF(), 0.01 );
-        assertEquals( 0.8257, s.getP(), 0.001 );
 
-        assertEquals( 0.5876, anova.getMainEffectF( "Treatment" ), 0.0001 );
-        assertEquals( 0.5925, anova.getInteractionEffectP(), 0.001 );
+        // log.info( s.getCoefficients() );
 
-        s = sums.get( "202851_at" );
-        anova = s.getAnova();
-        assertNotNull( s.getCoefficients() );
-        assertEquals( 0.787, s.getCoefficients().get( 2, 3 ), 0.001 );
-        assertEquals( 18, s.getResidualDof().intValue() );
-        assertEquals( 3, s.getNumeratorDof().intValue() );
-        assertEquals( 0.1773, s.getF(), 0.01 );
-        assertEquals( 0.9104, s.getP(), 0.001 );
+        // log.info( s.getAnova() );
 
-        assertEquals( 0.3777, anova.getMainEffectF( "Treatment" ), 0.0001 );
-        assertEquals( 0.9956, anova.getInteractionEffectP(), 0.001 );
+        // our model matrix ends up with different coefficients than R which are
+        // double[] rcoef = new double[] { 14.96355, 0.14421, -0.11525, 0.24257, Double.NaN, 0.04093, 0.06660,
+        // Double.NaN };
+
+        // here are the coefs we get in R if we use the exact model matrix we get drom our DesignMatrix
+        double[] coef = new double[] { 15.10776244, -0.01689300, 0.09835841, -0.20163964, Double.NaN, -0.04092962,
+                Double.NaN, 0.06660370 };
+
+        for ( int i = 0; i < s.getCoefficients().rows(); i++ ) {
+            assertEquals( coef[i], s.getCoefficients().get( i, 0 ), 0.0001 );
+        }
+
     }
 
     @Test
@@ -685,49 +753,99 @@ public class LeastSquaresFitTest {
     }
 
     /**
-     * Originally causes failures during summarization step. There are two pivoted columns.
+     * Sanity check.
      * 
      * @throws Exception
      */
     @Test
-    public void testSingular2() throws Exception {
+    public void testTwoWayAnovaUnfittable() throws Exception {
         DoubleMatrixReader f = new DoubleMatrixReader();
-        DoubleMatrix<String, String> testMatrix = f.read( this.getClass().getResourceAsStream(
-                "/data/1027_GSE6189.data.test.txt" ) );
+        DoubleMatrix<String, String> testMatrix = f.read( this.getClass()
+                .getResourceAsStream( "/data/lmtest10.dat.txt" ) );
 
         StringMatrixReader of = new StringMatrixReader();
         StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
-                "/data/1027_GSE6189_expdesign.data.txt" ) );
+                "/data/lmtest10.des.txt" ) );
+
         DesignMatrix d = new DesignMatrix( sampleInfo, true );
 
-        LeastSquaresFit fit = new LeastSquaresFit( d, testMatrix.getRowRange( 0, 0 ) );
-
+        LeastSquaresFit fit = new LeastSquaresFit( d, testMatrix );
         Map<String, LinearModelSummary> sums = fit.summarizeByKeys( true );
         assertEquals( 1, sums.size() );
+
+        for ( LinearModelSummary lms : sums.values() ) {
+            GenericAnovaResult a = lms.getAnova();
+            assertNotNull( a );
+            assertEquals( Double.NaN, a.getMainEffectP( "CellType" ), 0.0001 );
+            assertEquals( Double.NaN, a.getMainEffectP( "SamplingTimePoint" ), 0.0001 );
+        }
+
+        DoubleMatrix2D coefficients = fit.getCoefficients();
+        DoubleMatrix2D residuals = fit.getResiduals();
+
+        assertEquals( 2.238, coefficients.get( 0, 0 ), 0.0001 ); // mean.
+        assertEquals( 0.0, coefficients.get( 1, 0 ), 0.0001 );
+
+        for ( int i = 0; i < residuals.rows(); i++ ) {
+            assertEquals( 0.0, residuals.get( 0, i ), 0.00001 );
+        }
+    }
+
+    /**
+     * Check for problem reported by TF -- Gemma gives slightly different result. Problem is not at this level.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testTwoWayAnovaWithInteractions() throws Exception {
+        DoubleMatrixReader f = new DoubleMatrixReader();
+        DoubleMatrix<String, String> testMatrix = f.read( this.getClass().getResourceAsStream(
+                "/data/GSE8441_expmat_8probes.txt" ) );
+
+        StringMatrixReader of = new StringMatrixReader();
+        StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
+                "/data/606_GSE8441_expdesign.data.txt" ) );
+        DesignMatrix d = new DesignMatrix( sampleInfo, true );
+        d.addInteraction();
+
+        assertEquals( 4, d.getMatrix().columns() );
+
+        assertEquals( 22, testMatrix.columns() );
+
+        LeastSquaresFit fit = new LeastSquaresFit( d, testMatrix );
+
+        Map<String, LinearModelSummary> sums = fit.summarizeByKeys( true );
+        assertEquals( 8, sums.size() );
+
         for ( LinearModelSummary lms : sums.values() ) {
             GenericAnovaResult a = lms.getAnova();
             assertNotNull( a );
         }
-        LinearModelSummary s = sums.get( "1367452_at" );
-        assertNotNull( s );
+
+        LinearModelSummary s = sums.get( "217757_at" );
+        GenericAnovaResult anova = s.getAnova();
+
         assertNotNull( s.getCoefficients() );
+        assertEquals( 0.763, s.getCoefficients().get( 2, 3 ), 0.001 );
+        assertEquals( 18, s.getResidualDof().intValue() );
+        assertEquals( 3, s.getNumeratorDof().intValue() );
+        assertEquals( 0.299, s.getF(), 0.01 );
+        assertEquals( 0.8257, s.getP(), 0.001 );
 
-        // log.info( s.getCoefficients() );
+        assertEquals( 0.5876, anova.getMainEffectF( "Treatment" ), 0.0001 );
+        assertEquals( 0.5925, anova.getInteractionEffectP(), 0.001 );
 
-        // log.info( s.getAnova() );
+        s = sums.get( "202851_at" );
+        anova = s.getAnova();
+        assertNotNull( s.getCoefficients() );
+        assertEquals( 0.787, s.getCoefficients().get( 2, 3 ), 0.001 );
+        assertEquals( 18, s.getResidualDof().intValue() );
+        assertEquals( 3, s.getNumeratorDof().intValue() );
+        assertEquals( 0.1773, s.getF(), 0.01 );
+        assertEquals( 0.9104, s.getP(), 0.001 );
 
-        // our model matrix ends up with different coefficients than R which are
-        // double[] rcoef = new double[] { 14.96355, 0.14421, -0.11525, 0.24257, Double.NaN, 0.04093, 0.06660,
-        // Double.NaN };
-
-        // here are the coefs we get in R if we use the exact model matrix we get drom our DesignMatrix
-        double[] coef = new double[] { 15.10776244, -0.01689300, 0.09835841, -0.20163964, Double.NaN, -0.04092962,
-                Double.NaN, 0.06660370 };
-
-        for ( int i = 0; i < s.getCoefficients().rows(); i++ ) {
-            assertEquals( coef[i], s.getCoefficients().get( i, 0 ), 0.0001 );
-        }
-
+        assertEquals( 0.3777, anova.getMainEffectF( "Treatment" ), 0.0001 );
+        assertEquals( 0.9956, anova.getInteractionEffectP(), 0.001 );
     }
 
     /**
@@ -808,45 +926,6 @@ public class LeastSquaresFitTest {
 
     }
 
-    /**
-     * Sanity check.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testTwoWayAnovaUnfittable() throws Exception {
-        DoubleMatrixReader f = new DoubleMatrixReader();
-        DoubleMatrix<String, String> testMatrix = f.read( this.getClass()
-                .getResourceAsStream( "/data/lmtest10.dat.txt" ) );
-
-        StringMatrixReader of = new StringMatrixReader();
-        StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
-                "/data/lmtest10.des.txt" ) );
-
-        DesignMatrix d = new DesignMatrix( sampleInfo, true );
-
-        LeastSquaresFit fit = new LeastSquaresFit( d, testMatrix );
-        Map<String, LinearModelSummary> sums = fit.summarizeByKeys( true );
-        assertEquals( 1, sums.size() );
-
-        for ( LinearModelSummary lms : sums.values() ) {
-            GenericAnovaResult a = lms.getAnova();
-            assertNotNull( a );
-            assertEquals( Double.NaN, a.getMainEffectP( "CellType" ), 0.0001 );
-            assertEquals( Double.NaN, a.getMainEffectP( "SamplingTimePoint" ), 0.0001 );
-        }
-
-        DoubleMatrix2D coefficients = fit.getCoefficients();
-        DoubleMatrix2D residuals = fit.getResiduals();
-
-        assertEquals( 2.238, coefficients.get( 0, 0 ), 0.0001 ); // mean.
-        assertEquals( 0.0, coefficients.get( 1, 0 ), 0.0001 );
-
-        for ( int i = 0; i < residuals.rows(); i++ ) {
-            assertEquals( 0.0, residuals.get( 0, i ), 0.00001 );
-        }
-    }
-
     @Test
     public void testVectorRegress() {
 
@@ -899,85 +978,6 @@ public class LeastSquaresFitTest {
 
         for ( int i = 0; i < expectedFitted.length; i++ ) {
             assertEquals( expectedFitted[i], fit.getFitted().get( 0, i ), 0.00001 );
-        }
-    }
-
-    /**
-     * Weighted least squares test for 2D matrices
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testMatrixWeightedRegress() throws Exception {
-
-        DoubleMatrix2D dat = new DenseDoubleMatrix2D( new double[][] { { 1, 2, 3, 4, 5 }, { 1, 1, 6, 3, 2 } } );
-        DoubleMatrix2D des = new DenseDoubleMatrix2D( new double[][] { { 1, 1, 1, 1, 1 }, { 1, 2, 2, 3, 3 },
-                { 2, 1, 5, 3, 4 } } );
-
-        DoubleMatrix2D w = dat.copy();
-        w.assign( dat );
-        Algebra solver = new Algebra();
-        des = solver.transpose( des );
-        LeastSquaresFit fit = new LeastSquaresFit( des, dat, w );
-
-        // coefficients
-        DoubleMatrix2D actuals = solver.transpose( fit.getCoefficients() );
-        double[][] expected = new double[][] { { -1.7070, 1.7110, 0.3054 }, { 0.2092, -0.6642, 1.3640 } };
-        for ( int i = 0; i < expected.length; i++ ) {
-            assertArrayEquals( actuals.viewRow( i ).toArray(), expected[i], 0.1 );
-        }
-
-        // fitted
-        actuals = fit.getFitted();
-        expected = new double[][] { { 0.6151, 2.0210, 3.2430, 4.3430, 4.6490 }, { 2.273, 0.245, 5.701, 2.309, 3.673 } };
-        for ( int i = 0; i < expected.length; i++ ) {
-            assertArrayEquals( actuals.viewRow( i ).toArray(), expected[i], 0.1 );
-        }
-
-        // residuals
-        actuals = fit.getResiduals();
-        expected = new double[][] { { 0.38490, -0.02092, -0.24270, -0.34310, 0.35150 },
-                { -1.2730, 0.7550, 0.2986, 0.6910, -1.6730 } };
-        for ( int i = 0; i < expected.length; i++ ) {
-            assertArrayEquals( actuals.viewRow( i ).toArray(), expected[i], 0.1 );
-        }
-
-    }
-
-    /**
-     * Test data with many missing values, two factors
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testMatrixWeightedMeanVariance() throws Exception {
-        DoubleMatrixReader f = new DoubleMatrixReader();
-        DoubleMatrix<String, String> testMatrix = f
-                .read( this.getClass().getResourceAsStream( "/data/lmtest2.dat.txt" ) );
-
-        StringMatrixReader of = new StringMatrixReader();
-        StringMatrix<String, String> sampleInfo = of.read( this.getClass()
-                .getResourceAsStream( "/data/lmtest3.des.txt" ) );
-
-        DesignMatrix d = new DesignMatrix( sampleInfo, true );
-
-        // Coefficients not estimable: y$fact.8095fv_60796
-        // fit$rank < ncol(design)
-        MeanVarianceEstimator est = new MeanVarianceEstimator( d, testMatrix );
-        DoubleMatrix2D w2D = est.getWeights();
-        LeastSquaresFit fit = new LeastSquaresFit( d.getDoubleMatrix(), est.getNormalizedValue(), w2D );
-        DoubleMatrix2D actuals = fit.getCoefficients().viewDice();
-
-        // note: column 5 has 0's and 1's reversed compared to des.txt!
-        // so signs in column five from R's output have been reversed
-        int[] expectedIndices = new int[] { 0, 40, 80 };
-        double[][] expected = new double[][] {
-                { 13.32, 0.1264, -0.1402, -0.1102, -0.1437, -0.07242, Double.NaN, 0.2211, 0.05124 },
-                { 13.08, 0.2029, 0.1464, 0.03702, 0.342, -0.09954, Double.NaN, 0.02198, 0.1536 },
-                { 13.4, 0.1718, 0.1385, 0.1185, -0.273, 0.0379, Double.NaN, -0.004468, 0.04201 } };
-
-        for ( int i = 0; i < expectedIndices.length; i++ ) {
-            assertArrayEquals( actuals.viewRow( expectedIndices[i] ).toArray(), expected[i], 0.1 );
         }
     }
 }

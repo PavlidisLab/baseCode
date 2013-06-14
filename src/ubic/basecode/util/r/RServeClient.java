@@ -47,20 +47,18 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
  */
 public class RServeClient extends AbstractRClient {
 
+    final static Log log = LogFactory.getLog( RServeClient.class );
+
     /**
      * 
      */
     private static final int DEFAULT_PORT = 6311;
 
-    final static Log log = LogFactory.getLog( RServeClient.class );
-
     private static final int MAX_CONNECT_TRIES = 10;
-
-    private final static String os = System.getProperty( "os.name" ).toLowerCase();
 
     private static final int MAX_EVAL_TRIES = 3;
 
-    private RConnection connection = null;
+    private final static String os = System.getProperty( "os.name" ).toLowerCase();
 
     /**
      * @return
@@ -89,15 +87,7 @@ public class RServeClient extends AbstractRClient {
         return rserveExecutable;
     }
 
-    /**
-     * @param host
-     * @throws IOException
-     */
-    protected RServeClient( String host ) throws IOException {
-        if ( !connect( host, DEFAULT_PORT ) ) {
-            throw new IOException( "Could not connect to Rserve" );
-        }
-    }
+    private RConnection connection = null;
 
     /**
      * Gets connection on default host (localhost) and port (6311)
@@ -106,6 +96,16 @@ public class RServeClient extends AbstractRClient {
      */
     protected RServeClient() throws IOException {
         if ( !connect() ) {
+            throw new IOException( "Could not connect to Rserve" );
+        }
+    }
+
+    /**
+     * @param host
+     * @throws IOException
+     */
+    protected RServeClient( String host ) throws IOException {
+        if ( !connect( host, DEFAULT_PORT ) ) {
             throw new IOException( "Could not connect to Rserve" );
         }
     }
@@ -201,6 +201,63 @@ public class RServeClient extends AbstractRClient {
     public void disconnect() {
         if ( connection != null && connection.isConnected() ) connection.close();
         connection = null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.util.r.RClient#eval(java.lang.String)
+     */
+    @Override
+    public REXP eval( String command ) {
+        log.debug( "eval: " + command );
+
+        int lockValue = 0;
+        try {
+
+            /*
+             * Failures due to communication? try repeatedly.
+             */
+            for ( int i = 0; i < MAX_EVAL_TRIES + 1; i++ ) {
+                RuntimeException ex = null;
+                try {
+                    checkConnection();
+                    lockValue = connection.lock();
+                    REXP r = connection.eval( "try(" + command + ", silent=T)" );
+                    if ( r == null ) return null;
+
+                    if ( r.inherits( "try-error" ) ) {
+                        /*
+                         * This is not an eval error that would warrant a retry.
+                         */
+                        throw new RuntimeException( "Error from R: " + r.asString() );
+                    }
+                    return r;
+
+                } catch ( RserveException e ) {
+                    ex = new RuntimeException( "Error excecuting " + command + ": " + e.getMessage(), e );
+                } catch ( REXPMismatchException e ) {
+                    throw new RuntimeException( "Error processing apparent error object returned by " + command + ": "
+                            + e.getMessage(), e );
+                }
+
+                if ( i == MAX_EVAL_TRIES ) {
+                    throw ex;
+                }
+
+                try {
+                    log.debug( "Eval failed, retrying" );
+                    Thread.sleep( 200 );
+                } catch ( InterruptedException e ) {
+                    return null;
+                }
+
+            }
+
+            throw new RuntimeException( "Evaluation failed! No details available" );
+        } finally {
+            if ( lockValue != 0 ) connection.unlock( lockValue );
+        }
     }
 
     /*
@@ -313,25 +370,6 @@ public class RServeClient extends AbstractRClient {
     }
 
     /**
-     * @param host
-     * @param port
-     * @return
-     */
-    private boolean connect( String host, int port ) {
-        if ( connection != null && connection.isConnected() ) {
-            return true;
-        }
-        try {
-            connection = new RConnection( host, port );
-        } catch ( RserveException e ) {
-            log.error( "Could not connect to RServe: " + e.getMessage() );
-            return false;
-        }
-        log.info( "Connected via RServe." );
-        return true;
-    }
-
-    /**
      * @param beQuiet
      */
     private boolean connect( boolean beQuiet ) {
@@ -359,61 +397,23 @@ public class RServeClient extends AbstractRClient {
         return false;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.util.r.RClient#eval(java.lang.String)
+    /**
+     * @param host
+     * @param port
+     * @return
      */
-    @Override
-    public REXP eval( String command ) {
-        log.debug( "eval: " + command );
-
-        int lockValue = 0;
-        try {
-
-            /*
-             * Failures due to communication? try repeatedly.
-             */
-            for ( int i = 0; i < MAX_EVAL_TRIES + 1; i++ ) {
-                RuntimeException ex = null;
-                try {
-                    checkConnection();
-                    lockValue = connection.lock();
-                    REXP r = connection.eval( "try(" + command + ", silent=T)" );
-                    if ( r == null ) return null;
-
-                    if ( r.inherits( "try-error" ) ) {
-                        /*
-                         * This is not an eval error that would warrant a retry.
-                         */
-                        throw new RuntimeException( "Error from R: " + r.asString() );
-                    }
-                    return r;
-
-                } catch ( RserveException e ) {
-                    ex = new RuntimeException( "Error excecuting " + command + ": " + e.getMessage(), e );
-                } catch ( REXPMismatchException e ) {
-                    throw new RuntimeException( "Error processing apparent error object returned by " + command + ": "
-                            + e.getMessage(), e );
-                }
-
-                if ( i == MAX_EVAL_TRIES ) {
-                    throw ex;
-                }
-
-                try {
-                    log.debug( "Eval failed, retrying" );
-                    Thread.sleep( 200 );
-                } catch ( InterruptedException e ) {
-                    return null;
-                }
-
-            }
-
-            throw new RuntimeException( "Evaluation failed! No details available" );
-        } finally {
-            if ( lockValue != 0 ) connection.unlock( lockValue );
+    private boolean connect( String host, int port ) {
+        if ( connection != null && connection.isConnected() ) {
+            return true;
         }
+        try {
+            connection = new RConnection( host, port );
+        } catch ( RserveException e ) {
+            log.error( "Could not connect to RServe: " + e.getMessage() );
+            return false;
+        }
+        log.info( "Connected via RServe." );
+        return true;
     }
 
     /**

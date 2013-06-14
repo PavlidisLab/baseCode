@@ -79,72 +79,6 @@ public class ExcelUtil {
         return "";
     }
 
-    public static void main( String args[] ) {
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet spreadsheet = workbook.createSheet();
-        ExcelUtil.setFormula( spreadsheet, 1, 1, "HYPERLINK(\"x\",\"x\")" );
-
-    }
-
-    /**
-     * @param sheet
-     * @param row
-     * @param col
-     * @param value
-     */
-    public static void setFormula( HSSFSheet sheet, int row, int col, String value ) {
-        HSSFRow r = sheet.getRow( row );
-        if ( r == null ) {
-            r = sheet.createRow( row );
-        }
-        HSSFCell c = r.createCell( col );
-        c.setCellType( Cell.CELL_TYPE_FORMULA );
-        c.setCellFormula( value );
-    }
-
-    /**
-     * @param sheet
-     * @param row
-     * @param col
-     * @param value
-     */
-    public static void setValue( HSSFSheet sheet, int row, int col, int value ) {
-        setValue( sheet, row, col, ( double ) value );
-    }
-
-    /**
-     * @param sheet
-     * @param row
-     * @param col
-     * @param value
-     */
-    public static void setValue( HSSFSheet sheet, int row, int col, double value ) {
-        HSSFRow r = sheet.getRow( row );
-        if ( r == null ) {
-            r = sheet.createRow( row );
-        }
-        HSSFCell c = r.createCell( col );
-        c.setCellType( Cell.CELL_TYPE_NUMERIC );
-        c.setCellValue( value );
-
-    }
-
-    /**
-     * @param sheet
-     * @param row
-     * @param col
-     * @param value
-     */
-    public static void setValue( HSSFSheet sheet, int row, int col, String value ) {
-        HSSFRow r = sheet.getRow( row );
-        if ( r == null ) {
-            r = sheet.createRow( row );
-        }
-        HSSFCell c = r.createCell( col );
-        c.setCellType( Cell.CELL_TYPE_STRING );
-        c.setCellValue( new HSSFRichTextString( value ) );
-    }
-
     /**
      * @param sheet
      * @param column
@@ -154,6 +88,20 @@ public class ExcelUtil {
      */
     public static Set<String> grabColumnValues( HSSFSheet sheet, int column, boolean header, boolean clean ) {
         return new HashSet<String>( grabColumnValuesList( sheet, column, header, clean ) );
+    }
+
+    /**
+     * Gets all the strings from a column, possibly exlcuding header and possibly triming and lowercasing
+     * 
+     * @param sheet
+     * @param column
+     * @param header true if it has a header
+     * @param clean if true it will trim and lowercase the strings
+     * @return
+     */
+    public static Set<String> grabColumnValues( HSSFSheet sheet, int column, boolean header, boolean clean,
+            SpreadSheetFilter f ) {
+        return new HashSet<String>( grabColumnValuesList( sheet, column, header, clean, f ) );
     }
 
     /**
@@ -170,20 +118,6 @@ public class ExcelUtil {
                 return true;
             }
         } );
-    }
-
-    /**
-     * Gets all the strings from a column, possibly exlcuding header and possibly triming and lowercasing
-     * 
-     * @param sheet
-     * @param column
-     * @param header true if it has a header
-     * @param clean if true it will trim and lowercase the strings
-     * @return
-     */
-    public static Set<String> grabColumnValues( HSSFSheet sheet, int column, boolean header, boolean clean,
-            SpreadSheetFilter f ) {
-        return new HashSet<String>( grabColumnValuesList( sheet, column, header, clean, f ) );
     }
 
     /**
@@ -215,5 +149,71 @@ public class ExcelUtil {
             }
         }
         return result;
+    }
+
+    public static void main( String args[] ) {
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet spreadsheet = workbook.createSheet();
+        ExcelUtil.setFormula( spreadsheet, 1, 1, "HYPERLINK(\"x\",\"x\")" );
+
+    }
+
+    /**
+     * @param sheet
+     * @param row
+     * @param col
+     * @param value
+     */
+    public static void setFormula( HSSFSheet sheet, int row, int col, String value ) {
+        HSSFRow r = sheet.getRow( row );
+        if ( r == null ) {
+            r = sheet.createRow( row );
+        }
+        HSSFCell c = r.createCell( col );
+        c.setCellType( Cell.CELL_TYPE_FORMULA );
+        c.setCellFormula( value );
+    }
+
+    /**
+     * @param sheet
+     * @param row
+     * @param col
+     * @param value
+     */
+    public static void setValue( HSSFSheet sheet, int row, int col, double value ) {
+        HSSFRow r = sheet.getRow( row );
+        if ( r == null ) {
+            r = sheet.createRow( row );
+        }
+        HSSFCell c = r.createCell( col );
+        c.setCellType( Cell.CELL_TYPE_NUMERIC );
+        c.setCellValue( value );
+
+    }
+
+    /**
+     * @param sheet
+     * @param row
+     * @param col
+     * @param value
+     */
+    public static void setValue( HSSFSheet sheet, int row, int col, int value ) {
+        setValue( sheet, row, col, ( double ) value );
+    }
+
+    /**
+     * @param sheet
+     * @param row
+     * @param col
+     * @param value
+     */
+    public static void setValue( HSSFSheet sheet, int row, int col, String value ) {
+        HSSFRow r = sheet.getRow( row );
+        if ( r == null ) {
+            r = sheet.createRow( row );
+        }
+        HSSFCell c = r.createCell( col );
+        c.setCellType( Cell.CELL_TYPE_STRING );
+        c.setCellValue( new HSSFRichTextString( value ) );
     }
 }

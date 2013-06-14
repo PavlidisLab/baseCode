@@ -36,14 +36,14 @@ import ubic.basecode.dataStructure.matrix.StringMatrix;
  */
 public class RowAbsentFilter<M extends Matrix2D<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
 
-    private StringMatrix<R, C> flags = null;
-
-    private double minPresentFraction = 0.0;
-    private int minPresentCount = 0;
-    private boolean keepMarginal = false;
-    private boolean fractionIsSet = false;
     private boolean countIsSet = false;
+
+    private StringMatrix<R, C> flags = null;
     private boolean flagsSet = false;
+    private boolean fractionIsSet = false;
+    private boolean keepMarginal = false;
+    private int minPresentCount = 0;
+    private double minPresentFraction = 0.0;
 
     /**
      * The data is going to be filtered in accordance to strings in 'flags'. These are either 'A', 'P' or 'M' for

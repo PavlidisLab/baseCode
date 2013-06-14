@@ -35,14 +35,14 @@ import org.apache.commons.logging.LogFactory;
  */
 public class Configuration {
 
-    private static Log log = LogFactory.getLog( Configuration.class );
-
     private static CompositeConfiguration config;
 
     /**
      * Name of the resource containing defaults
      */
     private static final String DEFAULT_CONFIGURATION = "ontology.properties";
+
+    private static Log log = LogFactory.getLog( Configuration.class );
 
     /**
      * The name of the file users can use to customize.
@@ -90,11 +90,11 @@ public class Configuration {
 
     }
 
-    public static String getString( String key ) {
-        return config.getString( key );
-    }
-
     public static boolean getBoolean( String key ) {
         return config.getBoolean( key, false );
+    }
+
+    public static String getString( String key ) {
+        return config.getString( key );
     }
 }

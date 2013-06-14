@@ -67,66 +67,6 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return matrix.columns();
     }
 
-    @Override
-    public DoubleMatrix<R, C> subsetRows( List<R> rowNames ) {
-
-        DoubleMatrix<R, C> returnval = new DenseDoubleMatrix<R, C>( rowNames.size(), this.columns() );
-
-        int currentRow = 0;
-        for ( R rowName : rowNames ) {
-
-            if ( !this.containsRowName( rowName ) ) continue;
-
-            int i = this.getRowIndexByName( rowName );
-
-            returnval.setRowName( rowName, currentRow );
-            for ( int j = 0, m = this.columns(); j < m; j++ ) {
-                if ( currentRow == 0 ) {
-                    C colName = this.getColName( j );
-                    returnval.setColumnName( colName, j );
-                }
-                returnval.set( currentRow, j, this.get( i, j ) );
-            }
-            currentRow++;
-        }
-
-        if ( !returnval.getRowNames().containsAll( rowNames ) ) {
-            throw new IllegalArgumentException( "Invalid rows to select, some are not in the original matrix" );
-        }
-
-        return returnval;
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.DoubleMatrix#subsetColumns(java.util.List)
-     */
-    @Override
-    public DoubleMatrix<R, C> subsetColumns( List<C> columns ) {
-
-        DoubleMatrix<R, C> returnval = new DenseDoubleMatrix<R, C>( this.rows(), columns.size() );
-        returnval.setRowNames( this.getRowNames() );
-        for ( int i = 0; i < this.rows(); i++ ) {
-            int currentColumn = 0;
-            for ( C c : columns ) {
-                int j = this.getColIndexByName( c );
-
-                returnval.set( i, currentColumn, this.get( i, j ) );
-
-                if ( i == 0 ) {
-                    returnval.setColumnName( c, currentColumn );
-                }
-
-                currentColumn++;
-
-            }
-
-        }
-        return returnval;
-    }
-
     /**
      * @return basecode.dataStructure.DenseDoubleMatrix2DNamed
      */
@@ -332,22 +272,64 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return matrix.size();
     }
 
-    /**
-     * @param column int
-     * @return cern.colt.matrix.DoubleMatrix1D
-     */
-    public DoubleMatrix1D viewColumn( int column ) {
-        return matrix.viewColumn( column );
-    }
-
-    /**
-     * @param row int
-     * @return DoubleMatrix1D
-     * @see DenseDoubleMatrix#viewRow(int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.DoubleMatrix#subsetColumns(java.util.List)
      */
     @Override
-    public DoubleMatrix1D viewRow( int row ) {
-        return matrix.viewRow( row );
+    public DoubleMatrix<R, C> subsetColumns( List<C> columns ) {
+
+        DoubleMatrix<R, C> returnval = new DenseDoubleMatrix<R, C>( this.rows(), columns.size() );
+        returnval.setRowNames( this.getRowNames() );
+        for ( int i = 0; i < this.rows(); i++ ) {
+            int currentColumn = 0;
+            for ( C c : columns ) {
+                int j = this.getColIndexByName( c );
+
+                returnval.set( i, currentColumn, this.get( i, j ) );
+
+                if ( i == 0 ) {
+                    returnval.setColumnName( c, currentColumn );
+                }
+
+                currentColumn++;
+
+            }
+
+        }
+        return returnval;
+    }
+
+    @Override
+    public DoubleMatrix<R, C> subsetRows( List<R> rowNames ) {
+
+        DoubleMatrix<R, C> returnval = new DenseDoubleMatrix<R, C>( rowNames.size(), this.columns() );
+
+        int currentRow = 0;
+        for ( R rowName : rowNames ) {
+
+            if ( !this.containsRowName( rowName ) ) continue;
+
+            int i = this.getRowIndexByName( rowName );
+
+            returnval.setRowName( rowName, currentRow );
+            for ( int j = 0, m = this.columns(); j < m; j++ ) {
+                if ( currentRow == 0 ) {
+                    C colName = this.getColName( j );
+                    returnval.setColumnName( colName, j );
+                }
+                returnval.set( currentRow, j, this.get( i, j ) );
+            }
+            currentRow++;
+        }
+
+        if ( !returnval.getRowNames().containsAll( rowNames ) ) {
+            throw new IllegalArgumentException( "Invalid rows to select, some are not in the original matrix" );
+        }
+
+        return returnval;
+
     }
 
     @Override
@@ -369,6 +351,24 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
 
         return result;
 
+    }
+
+    /**
+     * @param column int
+     * @return cern.colt.matrix.DoubleMatrix1D
+     */
+    public DoubleMatrix1D viewColumn( int column ) {
+        return matrix.viewColumn( column );
+    }
+
+    /**
+     * @param row int
+     * @return DoubleMatrix1D
+     * @see DenseDoubleMatrix#viewRow(int)
+     */
+    @Override
+    public DoubleMatrix1D viewRow( int row ) {
+        return matrix.viewRow( row );
     }
 
 }

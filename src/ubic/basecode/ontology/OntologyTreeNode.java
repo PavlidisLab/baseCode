@@ -30,16 +30,16 @@ import ubic.basecode.ontology.model.OntologyTerm;
  */
 public class OntologyTreeNode {
 
-    private boolean expanded;
-    private boolean isTarget;
-    private boolean draggable;
-    private boolean allowDrag;
     private boolean allowChildren;
+    private boolean allowDrag;
     private boolean allowDrop;
+    private List<OntologyTreeNode> children;
+    private boolean draggable;
+    private boolean expanded;
+    private String id;
+    private boolean isTarget;
     private boolean leaf;
     private String text;
-    private String id;
-    private List<OntologyTreeNode> children;
     private String uiProvider;
 
     public OntologyTreeNode() {

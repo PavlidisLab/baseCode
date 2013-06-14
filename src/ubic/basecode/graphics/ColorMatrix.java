@@ -39,31 +39,31 @@ public class ColorMatrix<A, B> implements Cloneable {
 
     // data fields
 
+    public static <R, C> ColorMatrix<R, C> newInstance( DoubleMatrix<R, C> matrix ) {
+        return new ColorMatrix<R, C>( matrix );
+    }
     protected Color[] colorMap = ColorMap.BLACKBODY_COLORMAP;
-    protected Color[][] colors;
 
+    protected Color[][] colors;
     protected double displayMax;
+
     /**
      * Min and max values to display, which might not be the actual min and max values in the matrix. For instance, we
      * might want to clip values, or show a bigger color range for equal comparison with other rows or matrices.
      */
     protected double displayMin;
-
     protected DoubleMatrixReader m_matrixReader;
     /** to be able to sort the rows by an arbitrary key */
     protected int m_rowKeys[];
-    protected int m_totalRows, m_totalColumns;
 
+    protected int m_totalRows, m_totalColumns;
     protected double max;
+
     protected DoubleMatrix<A, B> maxtrix;
 
     protected double min;
 
     protected Color missingColor = Color.lightGray;
-
-    public static <R, C> ColorMatrix<R, C> newInstance( DoubleMatrix<R, C> matrix ) {
-        return new ColorMatrix<R, C>( matrix );
-    }
 
     public ColorMatrix( DoubleMatrix<A, B> matrix ) {
         init( matrix );
@@ -226,23 +226,6 @@ public class ColorMatrix<A, B> implements Cloneable {
         return maxtrix.get( getTrueRowIndex( row ), column );
     }
 
-    private void init( DoubleMatrix<A, B> matrix ) {
-        if ( matrix == null ) {
-            throw new IllegalArgumentException( "Matrix cannot be null" );
-        }
-        maxtrix = matrix; // by reference, or should we clone?
-        m_totalRows = maxtrix.rows();
-        m_totalColumns = maxtrix.columns();
-        colors = new Color[m_totalRows][m_totalColumns];
-        createRowKeys();
-
-        displayMin = min = MatrixStats.min( maxtrix );
-        displayMax = max = MatrixStats.max( maxtrix );
-
-        // map values to colors
-        mapValuesToColors();
-    }
-
     public void mapValuesToColors() {
         ColorMap colorMapO = new ColorMap( colorMap );
         double range = displayMax - displayMin;
@@ -349,20 +332,6 @@ public class ColorMatrix<A, B> implements Cloneable {
 
     } // end standardize
 
-    private void colRangeCheck( int column ) {
-        if ( column >= m_totalColumns )
-            throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalColumns
-                    + " columns, so the maximum possible column index is " + ( m_totalColumns - 1 ) + ". Column index "
-                    + column + " is too high." );
-    }
-
-    private void rowRangeCheck( int row ) {
-        if ( row >= m_totalRows )
-            throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalRows
-                    + " rows, so the maximum possible row index is " + ( m_totalRows - 1 ) + ". Row index " + row
-                    + " is too high." );
-    }
-
     /**
      * To be able to sort the rows by an arbitrary key. Creates <code>m_rowKeys</code> array and initializes it in
      * ascending order from 0 to <code>m_totalRows</code> -1, so that by default it matches the physical order of the
@@ -398,5 +367,36 @@ public class ColorMatrix<A, B> implements Cloneable {
 
         }
     } // end setRow
+
+    private void colRangeCheck( int column ) {
+        if ( column >= m_totalColumns )
+            throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalColumns
+                    + " columns, so the maximum possible column index is " + ( m_totalColumns - 1 ) + ". Column index "
+                    + column + " is too high." );
+    }
+
+    private void init( DoubleMatrix<A, B> matrix ) {
+        if ( matrix == null ) {
+            throw new IllegalArgumentException( "Matrix cannot be null" );
+        }
+        maxtrix = matrix; // by reference, or should we clone?
+        m_totalRows = maxtrix.rows();
+        m_totalColumns = maxtrix.columns();
+        colors = new Color[m_totalRows][m_totalColumns];
+        createRowKeys();
+
+        displayMin = min = MatrixStats.min( maxtrix );
+        displayMax = max = MatrixStats.max( maxtrix );
+
+        // map values to colors
+        mapValuesToColors();
+    }
+
+    private void rowRangeCheck( int row ) {
+        if ( row >= m_totalRows )
+            throw new ArrayIndexOutOfBoundsException( "The matrix has only " + m_totalRows
+                    + " rows, so the maximum possible row index is " + ( m_totalRows - 1 ) + ". Row index " + row
+                    + " is too high." );
+    }
 
 } // end class ColorMatrix

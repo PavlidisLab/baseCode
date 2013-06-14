@@ -37,27 +37,6 @@ public class RandomChooser {
     private static Random generator = new Random();
 
     /**
-     * @param sourcedata
-     * @param deck
-     * @param numNeeded
-     * @return
-     */
-    public static List<? extends Object> chooserandom( List<? extends Object> sourcedata, int[] deck, int numNeeded ) {
-        if ( numNeeded <= 0 ) throw new IllegalArgumentException( "numNeeded must be greater than zero" );
-        int rand, i, temp;
-        int sourceSize = sourcedata.size();
-        Object[] result = new Object[numNeeded];
-        for ( i = 0; i < numNeeded; i++ ) {
-            rand = generator.nextInt( sourceSize - i ) + i; // a value between i and max.
-            temp = deck[rand];
-            deck[rand] = deck[i];
-            deck[i] = temp;
-            result[i] = sourcedata.get( temp );
-        }
-        return Arrays.asList( result );
-    }
-
-    /**
      * Fill randomvals with random numbers from sourcedata, without replacement.
      * 
      * @param sourcedata Data to be randomly selected
@@ -126,6 +105,27 @@ public class RandomChooser {
             deck[rand] = deck[i];
             deck[i] = randomnums[i];
         }
+    }
+
+    /**
+     * @param sourcedata
+     * @param deck
+     * @param numNeeded
+     * @return
+     */
+    public static List<? extends Object> chooserandom( List<? extends Object> sourcedata, int[] deck, int numNeeded ) {
+        if ( numNeeded <= 0 ) throw new IllegalArgumentException( "numNeeded must be greater than zero" );
+        int rand, i, temp;
+        int sourceSize = sourcedata.size();
+        Object[] result = new Object[numNeeded];
+        for ( i = 0; i < numNeeded; i++ ) {
+            rand = generator.nextInt( sourceSize - i ) + i; // a value between i and max.
+            temp = deck[rand];
+            deck[rand] = deck[i];
+            deck[i] = temp;
+            result[i] = sourcedata.get( temp );
+        }
+        return Arrays.asList( result );
     }
 
     /**

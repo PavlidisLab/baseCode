@@ -41,9 +41,9 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
 
     public abstract M read( InputStream stream ) throws IOException;
 
-    public abstract M read( String filename, int maxRows ) throws IOException;
-
     public abstract M read( String filename ) throws IOException;
+
+    public abstract M read( String filename, int maxRows ) throws IOException;
 
     /**
      * @param dis

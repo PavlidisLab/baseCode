@@ -36,41 +36,19 @@ import cern.jet.stat.Gamma;
 public class SpecFunc {
 
     /**
-     * Ported from R phyper.c
-     * <p>
-     * Sample of n balls from NR red and NB black ones; x are red
-     * <p>
+     * See dbinom_raw.
+     * <hr>
      * 
-     * @param x - number of reds retrieved == successes
-     * @param NR - number of reds in the urn. == positives
-     * @param NB - number of blacks in the urn == negatives
-     * @param n - the total number of objects drawn == successes + failures
-     * @param lowerTail
-     * @return cumulative hypergeometric distribution.
+     * @param x Number of successes
+     * @param n Number of trials
+     * @param p Probability of success
+     * @return
      */
-    public static double phyper( int x, int NR, int NB, int n, boolean lowerTail ) {
+    public static double dbinom( double x, double n, double p ) {
 
-        double d, pd;
+        if ( p < 0 || p > 1 || n < 0 ) throw new IllegalArgumentException();
 
-        if ( NR < 0 || NB < 0 || n < 0 || n > NR + NB ) {
-            throw new IllegalArgumentException("Need NR>=0, NB>=0,n>=0,n>NR+NB");
-        }
-
-        if ( x * ( NR + NB ) > n * NR ) {
-            /* Swap tails. */
-            int oldNB = NB;
-            NB = NR;
-            NR = oldNB;
-            x = n - x - 1;
-            lowerTail = !lowerTail;
-        }
-
-        if ( x < 0 ) return 0.0;
-
-        d = dhyper( x, NR, NB, n );
-        pd = pdhyper( x, NR, NB, n );
-
-        return lowerTail ? d * pd : 1.0 - ( d * pd );
+        return dbinom_raw( x, n, p, 1 - p );
     }
 
     /**
@@ -116,56 +94,82 @@ public class SpecFunc {
     }
 
     /**
-     * See dbinom_raw.
-     * <hr>
-     * 
-     * @param x Number of successes
-     * @param n Number of trials
-     * @param p Probability of success
-     * @return
-     */
-    public static double dbinom( double x, double n, double p ) {
-
-        if ( p < 0 || p > 1 || n < 0 ) throw new IllegalArgumentException();
-
-        return dbinom_raw( x, n, p, 1 - p );
-    }
-
-    /**
      * Ported from R phyper.c
      * <p>
-     * Calculate
-     * 
-     * <pre>
-     *       phyper (x, NR, NB, n, TRUE, FALSE)
-     * [log]  ----------------------------------
-     *         dhyper (x, NR, NB, n, FALSE)
-     * </pre>
-     * 
-     * without actually calling phyper. This assumes that
-     * 
-     * <pre>
-     * x * ( NR + NB ) &lt;= n * NR
-     * </pre>
-     * 
-     * <hr>
+     * Sample of n balls from NR red and NB black ones; x are red
+     * <p>
      * 
      * @param x - number of reds retrieved == successes
      * @param NR - number of reds in the urn. == positives
      * @param NB - number of blacks in the urn == negatives
      * @param n - the total number of objects drawn == successes + failures
+     * @param lowerTail
+     * @return cumulative hypergeometric distribution.
      */
-    private static double pdhyper( int x, int NR, int NB, int n ) {
-        double sum = 0.0;
-        double term = 1.0;
+    public static double phyper( int x, int NR, int NB, int n, boolean lowerTail ) {
 
-        while ( x > 0.0 && term >= Double.MIN_VALUE * sum ) {
-            term *= ( double ) x * ( NB - n + x ) / ( n + 1 - x ) / ( NR + 1 - x );
-            sum += term;
-            x--;
+        double d, pd;
+
+        if ( NR < 0 || NB < 0 || n < 0 || n > NR + NB ) {
+            throw new IllegalArgumentException("Need NR>=0, NB>=0,n>=0,n>NR+NB");
         }
 
-        return 1.0 + sum;
+        if ( x * ( NR + NB ) > n * NR ) {
+            /* Swap tails. */
+            int oldNB = NB;
+            NB = NR;
+            NR = oldNB;
+            x = n - x - 1;
+            lowerTail = !lowerTail;
+        }
+
+        if ( x < 0 ) return 0.0;
+
+        d = dhyper( x, NR, NB, n );
+        pd = pdhyper( x, NR, NB, n );
+
+        return lowerTail ? d * pd : 1.0 - ( d * pd );
+    }
+
+    /**
+     * Ported from bd0.c in R source.
+     * <p>
+     * Evaluates the "deviance part"
+     * 
+     * <pre>
+     *    bd0(x,M) :=  M * D0(x/M) = M*[ x/M * log(x/M) + 1 - (x/M) ] =
+     *         =  x * log(x/M) + M - x
+     * </pre>
+     * 
+     * where M = E[X] = n*p (or = lambda), for x, M &gt; 0
+     * <p>
+     * in a manner that should be stable (with small relative error) for all x and np. In particular for x/np close to
+     * 1, direct evaluation fails, and evaluation is based on the Taylor series of log((1+v)/(1-v)) with v =
+     * (x-np)/(x+np).
+     * 
+     * @param x
+     * @param np
+     * @return
+     */
+    private static double bd0( double x, double np ) {
+        double ej, s, s1, v;
+        int j;
+
+        if ( Math.abs( x - np ) < 0.1 * ( x + np ) ) {
+            v = ( x - np ) / ( x + np );
+            s = ( x - np ) * v;/* s using v -- change by MM */
+            ej = 2 * x * v;
+            v = v * v;
+            for ( j = 1;; j++ ) { /* Taylor series */
+                ej *= v;
+                s1 = s + ej / ( ( j << 1 ) + 1 );
+                if ( s1 == s ) /* last term was effectively 0 */
+                return ( s1 );
+                s = s1;
+            }
+        }
+        /* else: | x - np | is not too small */
+        return ( x * Math.log( x / np ) + np - x );
     }
 
     /**
@@ -212,6 +216,43 @@ public class SpecFunc {
         f = ( 2 * Math.PI * x * ( n - x ) ) / n;
 
         return Math.exp( lc ) / Math.sqrt( f );
+    }
+
+    /**
+     * Ported from R phyper.c
+     * <p>
+     * Calculate
+     * 
+     * <pre>
+     *       phyper (x, NR, NB, n, TRUE, FALSE)
+     * [log]  ----------------------------------
+     *         dhyper (x, NR, NB, n, FALSE)
+     * </pre>
+     * 
+     * without actually calling phyper. This assumes that
+     * 
+     * <pre>
+     * x * ( NR + NB ) &lt;= n * NR
+     * </pre>
+     * 
+     * <hr>
+     * 
+     * @param x - number of reds retrieved == successes
+     * @param NR - number of reds in the urn. == positives
+     * @param NB - number of blacks in the urn == negatives
+     * @param n - the total number of objects drawn == successes + failures
+     */
+    private static double pdhyper( int x, int NR, int NB, int n ) {
+        double sum = 0.0;
+        double term = 1.0;
+
+        while ( x > 0.0 && term >= Double.MIN_VALUE * sum ) {
+            term *= ( double ) x * ( NB - n + x ) / ( n + 1 - x ) / ( NR + 1 - x );
+            sum += term;
+            x--;
+        }
+
+        return 1.0 + sum;
     }
 
     /**
@@ -285,47 +326,6 @@ public class SpecFunc {
         if ( n > 35 ) return ( ( S0 - ( S1 - ( S2 - S3 / nn ) / nn ) / nn ) / n );
         /* 15 < n <= 35 : */
         return ( ( S0 - ( S1 - ( S2 - ( S3 - S4 / nn ) / nn ) / nn ) / nn ) / n );
-    }
-
-    /**
-     * Ported from bd0.c in R source.
-     * <p>
-     * Evaluates the "deviance part"
-     * 
-     * <pre>
-     *    bd0(x,M) :=  M * D0(x/M) = M*[ x/M * log(x/M) + 1 - (x/M) ] =
-     *         =  x * log(x/M) + M - x
-     * </pre>
-     * 
-     * where M = E[X] = n*p (or = lambda), for x, M &gt; 0
-     * <p>
-     * in a manner that should be stable (with small relative error) for all x and np. In particular for x/np close to
-     * 1, direct evaluation fails, and evaluation is based on the Taylor series of log((1+v)/(1-v)) with v =
-     * (x-np)/(x+np).
-     * 
-     * @param x
-     * @param np
-     * @return
-     */
-    private static double bd0( double x, double np ) {
-        double ej, s, s1, v;
-        int j;
-
-        if ( Math.abs( x - np ) < 0.1 * ( x + np ) ) {
-            v = ( x - np ) / ( x + np );
-            s = ( x - np ) * v;/* s using v -- change by MM */
-            ej = 2 * x * v;
-            v = v * v;
-            for ( j = 1;; j++ ) { /* Taylor series */
-                ej *= v;
-                s1 = s + ej / ( ( j << 1 ) + 1 );
-                if ( s1 == s ) /* last term was effectively 0 */
-                return ( s1 );
-                s = s1;
-            }
-        }
-        /* else: | x - np | is not too small */
-        return ( x * Math.log( x / np ) + np - x );
     }
 
 }

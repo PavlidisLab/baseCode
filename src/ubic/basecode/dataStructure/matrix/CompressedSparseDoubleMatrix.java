@@ -113,60 +113,6 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
 
     }
 
-    @Override
-    public DoubleMatrix<R, C> subsetRows( List<R> rowNames ) {
-        DoubleMatrix<R, C> returnval = new CompressedSparseDoubleMatrix<R, C>( rowNames.size(), this.columns() );
-
-        int currentRow = 0;
-        for ( R rowName : rowNames ) {
-
-            if ( !this.containsRowName( rowName ) ) continue;
-
-            int i = this.getRowIndexByName( rowName );
-            returnval.setRowName( rowName, currentRow );
-            for ( int j = 0; j < this.columns(); j++ ) {
-                if ( currentRow == 0 ) {
-                    returnval.setColumnName( this.getColName( j ), j );
-                }
-                returnval.set( currentRow, j, this.get( i, j ) );
-            }
-            currentRow++;
-        }
-        if ( !returnval.getRowNames().containsAll( rowNames ) ) {
-            throw new IllegalArgumentException( "Invalid rows to select, some are not in the original matrix" );
-        }
-        return returnval;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.DoubleMatrix#subsetColumns(java.util.List)
-     */
-    @Override
-    public DoubleMatrix<R, C> subsetColumns( List<C> columns ) {
-
-        DoubleMatrix<R, C> returnval = new DenseDoubleMatrix<R, C>( this.rows(), columns.size() );
-        returnval.setRowNames( this.getRowNames() );
-        for ( int i = 0; i < this.rows(); i++ ) {
-            int currentColumn = 0;
-            for ( C c : columns ) {
-                int j = this.getColIndexByName( c );
-
-                returnval.set( i, currentColumn, this.get( i, j ) );
-
-                if ( i == 0 ) {
-                    returnval.setColumnName( c, currentColumn );
-                }
-
-                currentColumn++;
-
-            }
-
-        }
-        return returnval;
-    }
-
     /**
      * @param row
      * @param column
@@ -336,6 +282,65 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return matrix.numColumns() * matrix.numRows();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.DoubleMatrix#subsetColumns(java.util.List)
+     */
+    @Override
+    public DoubleMatrix<R, C> subsetColumns( List<C> columns ) {
+
+        DoubleMatrix<R, C> returnval = new DenseDoubleMatrix<R, C>( this.rows(), columns.size() );
+        returnval.setRowNames( this.getRowNames() );
+        for ( int i = 0; i < this.rows(); i++ ) {
+            int currentColumn = 0;
+            for ( C c : columns ) {
+                int j = this.getColIndexByName( c );
+
+                returnval.set( i, currentColumn, this.get( i, j ) );
+
+                if ( i == 0 ) {
+                    returnval.setColumnName( c, currentColumn );
+                }
+
+                currentColumn++;
+
+            }
+
+        }
+        return returnval;
+    }
+
+    @Override
+    public DoubleMatrix<R, C> subsetRows( List<R> rowNames ) {
+        DoubleMatrix<R, C> returnval = new CompressedSparseDoubleMatrix<R, C>( rowNames.size(), this.columns() );
+
+        int currentRow = 0;
+        for ( R rowName : rowNames ) {
+
+            if ( !this.containsRowName( rowName ) ) continue;
+
+            int i = this.getRowIndexByName( rowName );
+            returnval.setRowName( rowName, currentRow );
+            for ( int j = 0; j < this.columns(); j++ ) {
+                if ( currentRow == 0 ) {
+                    returnval.setColumnName( this.getColName( j ), j );
+                }
+                returnval.set( currentRow, j, this.get( i, j ) );
+            }
+            currentRow++;
+        }
+        if ( !returnval.getRowNames().containsAll( rowNames ) ) {
+            throw new IllegalArgumentException( "Invalid rows to select, some are not in the original matrix" );
+        }
+        return returnval;
+    }
+
+    @Override
+    public DoubleMatrix<C, R> transpose() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * 
      */
@@ -361,11 +366,6 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     @Override
     public DoubleMatrix1D viewRow( int row ) {
         return new DenseDoubleMatrix1D( getRow( row ) );
-    }
-
-    @Override
-    public DoubleMatrix<C, R> transpose() {
-        throw new UnsupportedOperationException();
     }
 
 }

@@ -34,8 +34,8 @@ import cern.colt.list.IntArrayList;
 public class RowMissingFilter<M extends Matrix2D<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
 
     private static final int ABSOLUTEMINPRESENT = 1;
-    private int minPresentCount = 5;
     private double maxFractionRemoved = 0.0;
+    private int minPresentCount = 5;
     private double minPresentFraction = 1.0;
     private boolean minPresentFractionIsSet = false;
     private boolean minPresentIsSet = false;

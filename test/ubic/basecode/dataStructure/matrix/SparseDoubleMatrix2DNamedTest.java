@@ -29,31 +29,95 @@ import cern.colt.matrix.DoubleMatrix1D;
  */
 public class SparseDoubleMatrix2DNamedTest extends TestCase {
 
-    SparseDoubleMatrix<String, String> testM;
     double[][] testData = { { 1, 2, 3, 4 }, { 11, 12, 13, 14 }, { 21, Double.NaN, 23, 24 } };
+    SparseDoubleMatrix<String, String> testM;
     DoubleMatrix<String, String> testMatrix;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        SparseDoubleMatrixReader f = new SparseDoubleMatrixReader();
-        testMatrix = f.read( this.getClass().getResourceAsStream( "/data/adjacencylist-testmatrix.txt" ) );
-        assert testMatrix instanceof SparseDoubleMatrix<?, ?> : "Got a " + testMatrix.getClass().getName();
-        testM = new SparseDoubleMatrix<String, String>( testData );
-        testM.setRowNames( java.util.Arrays.asList( new String[] { "a", "b", "c" } ) );
-        testM.setColumnNames( java.util.Arrays.asList( new String[] { "w", "x", "y", "z" } ) );
+    /**
+     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#columns()}.
+     */
+    public void testColumns() {
+        assertEquals( 4, testM.columns() );
     }
 
-    public void testGetRowRange() {
-        DoubleMatrix<String, String> rowRange = testMatrix.getRowRange( 1, 2 );
-        assertEquals( 3, rowRange.columns() );
-        assertEquals( 2, rowRange.rows() );
+    public void testCopy() {
+        DoubleMatrix<String, String> actual = testM.copy();
+        for ( int i = 0; i < testData.length; i++ ) {
+            assertEquals( testM.getRowName( i ), actual.getRowName( i ) );
+            int len = testData[i].length;
+            for ( int j = 0; j < len; j++ ) {
+                assertEquals( testM.getColName( j ), actual.getColName( j ) );
+                assertEquals( testData[i][j], actual.get( i, j ) );
+            }
+        }
+
+    }
+
+    /**
+     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#get(int, int)}.
+     */
+    public void testGet() {
+        assertEquals( 24.0, testM.get( 2, 3 ) );
+        assertEquals( 1.0, testM.get( 0, 0 ) );
+        assertEquals( 13.0, testM.get( 1, 2 ) );
+        assertEquals( Double.NaN, testM.get( 2, 1 ) );
+        assertEquals( 23.0, testM.get( 2, 2 ) );
+    }
+
+    /**
+     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#getByKeys(Object, Object)}.
+     */
+    public void testGetByKeys() {
+        assertEquals( 24.0, testM.getByKeys( "c", "z" ) );
+        assertEquals( 1.0, testM.getByKeys( "a", "w" ) );
+        assertEquals( 13.0, testM.getByKeys( "b", "y" ) );
+        assertEquals( Double.NaN, testM.getByKeys( "c", "x" ) );
+        assertEquals( 23.0, testM.getByKeys( "c", "y" ) );
+    }
+
+    /**
+     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#getColByName(java.lang.Object)}.
+     */
+    public void testGetColByName() {
+        double[] actual = testM.getColumnByName( "x" );
+        assertEquals( 2, actual[0], 0.000001 );
+        assertEquals( 12, actual[1], 0.000001 );
+        assertEquals( Double.NaN, actual[2] );
+    }
+
+    /**
+     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#getColObj(int)}.
+     */
+    public void testGetColObj() {
+        Double[] actual = testM.getColObj( 0 );
+        assertEquals( 3, actual.length );
+        assertEquals( 1.0, actual[0], 0.000001 );
+        assertEquals( 11.0, actual[1], 0.000001 );
+        assertEquals( 21.0, actual[2], 0.000001 );
     }
 
     public void testGetColRange() {
         DoubleMatrix<String, String> range = testMatrix.getColRange( 1, 2 );
         assertEquals( 2, range.columns() );
         assertEquals( 3, range.rows() );
+    }
+
+    /**
+     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#getColumn(int)}.
+     */
+    public void testGetColumn() {
+        double[] actual = testM.getColumn( 1 );
+        assertEquals( 3, actual.length );
+        assertEquals( 2, actual[0], 0.000001 );
+        assertEquals( 12.0, actual[1], 0.000001 );
+        assertEquals( Double.NaN, actual[2] );
+    }
+
+    /**
+     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#getObject(int, int)}.
+     */
+    public void testGetObject() {
+        assertEquals( 4.0, testM.getObject( 0, 3 ), 0.000001 );
     }
 
     /**
@@ -66,17 +130,6 @@ public class SparseDoubleMatrix2DNamedTest extends TestCase {
         assertEquals( 12.0, actual[1], 0.000001 );
         assertEquals( 13.0, actual[2], 0.000001 );
         assertEquals( 14.0, actual[3], 0.000001 );
-    }
-
-    /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#getColumn(int)}.
-     */
-    public void testGetColumn() {
-        double[] actual = testM.getColumn( 1 );
-        assertEquals( 3, actual.length );
-        assertEquals( 2, actual[0], 0.000001 );
-        assertEquals( 12.0, actual[1], 0.000001 );
-        assertEquals( Double.NaN, actual[2] );
     }
 
     /**
@@ -104,95 +157,6 @@ public class SparseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#set(int, int, double)}.
-     */
-    public void testSet() {
-        testM.set( 2, 2, 666.0 );
-        double[] actual = testM.getRow( 2 );
-        assertEquals( 666.0, actual[2], 0.00001 );
-    }
-
-    /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#toString()}.
-     */
-    public void testToString() {
-        String actual = testM.toString();
-        assertEquals(
-                "# 3x4 matrix: showing up to 100 rows\nlabel\tw\tx\ty\tz\na\t1.000\t2.000\t3.000\t4.000\nb\t11.00\t12.00\t13.00\t14.00\nc\t21.00\t\t23.00\t24.00\n",
-                actual );
-    }
-
-    /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#get(int, int)}.
-     */
-    public void testGet() {
-        assertEquals( 24.0, testM.get( 2, 3 ) );
-        assertEquals( 1.0, testM.get( 0, 0 ) );
-        assertEquals( 13.0, testM.get( 1, 2 ) );
-        assertEquals( Double.NaN, testM.get( 2, 1 ) );
-        assertEquals( 23.0, testM.get( 2, 2 ) );
-    }
-
-    /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#getByKeys(Object, Object)}.
-     */
-    public void testGetByKeys() {
-        assertEquals( 24.0, testM.getByKeys( "c", "z" ) );
-        assertEquals( 1.0, testM.getByKeys( "a", "w" ) );
-        assertEquals( 13.0, testM.getByKeys( "b", "y" ) );
-        assertEquals( Double.NaN, testM.getByKeys( "c", "x" ) );
-        assertEquals( 23.0, testM.getByKeys( "c", "y" ) );
-    }
-
-    /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#viewRow(int)}.
-     */
-    public void testViewRow() {
-        DoubleMatrix1D actual = testM.viewRow( 0 );
-        assertEquals( 4, actual.size() );
-        assertEquals( 1.0, actual.get( 0 ), 0.000001 );
-        assertEquals( 2.0, actual.get( 1 ), 0.000001 );
-        assertEquals( 3.0, actual.get( 2 ), 0.000001 );
-        assertEquals( 4.0, actual.get( 3 ), 0.000001 );
-
-    }
-
-    /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#columns()}.
-     */
-    public void testColumns() {
-        assertEquals( 4, testM.columns() );
-    }
-
-    /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#getColByName(java.lang.Object)}.
-     */
-    public void testGetColByName() {
-        double[] actual = testM.getColumnByName( "x" );
-        assertEquals( 2, actual[0], 0.000001 );
-        assertEquals( 12, actual[1], 0.000001 );
-        assertEquals( Double.NaN, actual[2] );
-    }
-
-    /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#getColObj(int)}.
-     */
-    public void testGetColObj() {
-        Double[] actual = testM.getColObj( 0 );
-        assertEquals( 3, actual.length );
-        assertEquals( 1.0, actual[0], 0.000001 );
-        assertEquals( 11.0, actual[1], 0.000001 );
-        assertEquals( 21.0, actual[2], 0.000001 );
-    }
-
-    /**
-     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#getObject(int, int)}.
-     */
-    public void testGetObject() {
-        assertEquals( 4.0, testM.getObject( 0, 3 ), 0.000001 );
-    }
-
-    /**
      * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#getRowObj(int)}.
      */
     public void testGetRowObj() {
@@ -202,6 +166,12 @@ public class SparseDoubleMatrix2DNamedTest extends TestCase {
         assertEquals( 2.0, actual[1], 0.000001 );
         assertEquals( 3.0, actual[2], 0.000001 );
         assertEquals( 4.0, actual[3], 0.000001 );
+    }
+
+    public void testGetRowRange() {
+        DoubleMatrix<String, String> rowRange = testMatrix.getRowRange( 1, 2 );
+        assertEquals( 3, rowRange.columns() );
+        assertEquals( 2, rowRange.rows() );
     }
 
     /**
@@ -219,6 +189,15 @@ public class SparseDoubleMatrix2DNamedTest extends TestCase {
         assertEquals( 3, testM.rows() );
     }
 
+    /**
+     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#set(int, int, double)}.
+     */
+    public void testSet() {
+        testM.set( 2, 2, 666.0 );
+        double[] actual = testM.getRow( 2 );
+        assertEquals( 666.0, actual[2], 0.00001 );
+    }
+
     public void testSize() {
         assertEquals( 12, testM.size() );
     }
@@ -234,17 +213,14 @@ public class SparseDoubleMatrix2DNamedTest extends TestCase {
 
     }
 
-    public void testCopy() {
-        DoubleMatrix<String, String> actual = testM.copy();
-        for ( int i = 0; i < testData.length; i++ ) {
-            assertEquals( testM.getRowName( i ), actual.getRowName( i ) );
-            int len = testData[i].length;
-            for ( int j = 0; j < len; j++ ) {
-                assertEquals( testM.getColName( j ), actual.getColName( j ) );
-                assertEquals( testData[i][j], actual.get( i, j ) );
-            }
-        }
-
+    /**
+     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#toString()}.
+     */
+    public void testToString() {
+        String actual = testM.toString();
+        assertEquals(
+                "# 3x4 matrix: showing up to 100 rows\nlabel\tw\tx\ty\tz\na\t1.000\t2.000\t3.000\t4.000\nb\t11.00\t12.00\t13.00\t14.00\nc\t21.00\t\t23.00\t24.00\n",
+                actual );
     }
 
     public void testViewColumn() {
@@ -253,6 +229,30 @@ public class SparseDoubleMatrix2DNamedTest extends TestCase {
         assertEquals( 1.0, actual.get( 0 ), 0.000001 );
         assertEquals( 11.0, actual.get( 1 ), 0.000001 );
         assertEquals( 21.0, actual.get( 2 ), 0.000001 );
+    }
+
+    /**
+     * Test method for {@link ubic.basecode.dataStructure.matrix.SparseDoubleMatrix#viewRow(int)}.
+     */
+    public void testViewRow() {
+        DoubleMatrix1D actual = testM.viewRow( 0 );
+        assertEquals( 4, actual.size() );
+        assertEquals( 1.0, actual.get( 0 ), 0.000001 );
+        assertEquals( 2.0, actual.get( 1 ), 0.000001 );
+        assertEquals( 3.0, actual.get( 2 ), 0.000001 );
+        assertEquals( 4.0, actual.get( 3 ), 0.000001 );
+
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        SparseDoubleMatrixReader f = new SparseDoubleMatrixReader();
+        testMatrix = f.read( this.getClass().getResourceAsStream( "/data/adjacencylist-testmatrix.txt" ) );
+        assert testMatrix instanceof SparseDoubleMatrix<?, ?> : "Got a " + testMatrix.getClass().getName();
+        testM = new SparseDoubleMatrix<String, String>( testData );
+        testM.setRowNames( java.util.Arrays.asList( new String[] { "a", "b", "c" } ) );
+        testM.setColumnNames( java.util.Arrays.asList( new String[] { "w", "x", "y", "z" } ) );
     }
 
 }

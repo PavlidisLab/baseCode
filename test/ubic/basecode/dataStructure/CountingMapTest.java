@@ -15,18 +15,6 @@ public class CountingMapTest extends TestCase
     private final String KEY_4 = "key4";
     
     /**
-     * Test method for {@link ca.elmonline.util.CountingMap#increment(java.lang.Object)}.
-     */
-    public void testIncrement()
-    {
-        CountingMap<String> map = new CountingMap<String>();
-        assertEquals("increment of new key returns 1",
-                map.increment( KEY_1 ), 1);
-        assertEquals("increment of same key returns 2",
-                map.increment( KEY_1 ), 2);
-    }
-
-    /**
      * Test method for {@link ca.elmonline.util.CountingMap#count(java.lang.Object)}.
      */
     public void testCount() {
@@ -39,6 +27,18 @@ public class CountingMapTest extends TestCase
         map.increment( KEY_1 );
         assertEquals("count of twice-incremented key returns 2",
                 map.count( KEY_1 ), 2);
+    }
+
+    /**
+     * Test method for {@link ca.elmonline.util.CountingMap#increment(java.lang.Object)}.
+     */
+    public void testIncrement()
+    {
+        CountingMap<String> map = new CountingMap<String>();
+        assertEquals("increment of new key returns 1",
+                map.increment( KEY_1 ), 1);
+        assertEquals("increment of same key returns 2",
+                map.increment( KEY_1 ), 2);
     }
 
     /**
@@ -70,16 +70,6 @@ public class CountingMapTest extends TestCase
         }
     }
     
-    public void testSummation() {
-        CountingMap<String> map = new CountingMap<String>();
-        map.increment( KEY_1 );
-        map.increment( KEY_2 ); map.increment( KEY_2 );
-        map.increment( KEY_3 ); map.increment( KEY_3 );
-        map.increment( KEY_4 ); map.increment( KEY_4 ); map.increment( KEY_4 );
-        assertEquals( map.summation(), 8);
-    }
-    
-    
     /**
      * Test method for {@link ca.elmonline.util.CountingMap#sortedEntrySet(boolean)}.
      */
@@ -95,5 +85,15 @@ public class CountingMapTest extends TestCase
                 fail("subsequent count greater than previous value in supposedly sorted entry set");
             previous = map.get( key );
         }
+    }
+    
+    
+    public void testSummation() {
+        CountingMap<String> map = new CountingMap<String>();
+        map.increment( KEY_1 );
+        map.increment( KEY_2 ); map.increment( KEY_2 );
+        map.increment( KEY_3 ); map.increment( KEY_3 );
+        map.increment( KEY_4 ); map.increment( KEY_4 ); map.increment( KEY_4 );
+        assertEquals( map.summation(), 8);
     }
 }

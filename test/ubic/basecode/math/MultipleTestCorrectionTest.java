@@ -28,24 +28,15 @@ import cern.colt.matrix.impl.DenseDoubleMatrix1D;
  */
 public class MultipleTestCorrectionTest extends TestCase {
 
-    private DoubleArrayList values;
-
     DoubleMatrix<String, String> mat;
+
+    private DoubleArrayList values;
 
     /**
      * @throws Exception
      */
     public void testBenjaminiHochberg() throws Exception {
         DoubleArrayList actualResult = MultipleTestCorrection.benjaminiHochberg( values );
-        DoubleArrayList expected = new DoubleArrayList( mat.getColumnByName( "BH" ) );
-        for ( int i = 0; i < actualResult.size(); i++ ) {
-            assertEquals( "At " + i, expected.get( i ), actualResult.get( i ), expected.get( i ) / 10.0 );
-        }
-    }
-
-    public void testBenjaminiHochbergM() {
-        DoubleMatrix1D actualResult = MultipleTestCorrection.benjaminiHochberg( new DenseDoubleMatrix1D( values
-                .elements() ) );
         DoubleArrayList expected = new DoubleArrayList( mat.getColumnByName( "BH" ) );
         for ( int i = 0; i < actualResult.size(); i++ ) {
             assertEquals( "At " + i, expected.get( i ), actualResult.get( i ), expected.get( i ) / 10.0 );
@@ -59,6 +50,15 @@ public class MultipleTestCorrectionTest extends TestCase {
         double actualResult = MultipleTestCorrection.benjaminiHochbergCut( values, 0.01 );
         double expectedResult = 0.0018;
         assertEquals( expectedResult, actualResult, 0.00001 );
+    }
+
+    public void testBenjaminiHochbergM() {
+        DoubleMatrix1D actualResult = MultipleTestCorrection.benjaminiHochberg( new DenseDoubleMatrix1D( values
+                .elements() ) );
+        DoubleArrayList expected = new DoubleArrayList( mat.getColumnByName( "BH" ) );
+        for ( int i = 0; i < actualResult.size(); i++ ) {
+            assertEquals( "At " + i, expected.get( i ), actualResult.get( i ), expected.get( i ) / 10.0 );
+        }
     }
 
     /*

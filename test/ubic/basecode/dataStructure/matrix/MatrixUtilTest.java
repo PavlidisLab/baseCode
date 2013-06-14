@@ -59,8 +59,14 @@ public class MatrixUtilTest {
     }
 
     @Test
-    public void testSelectRows() {
-        assertEquals( 3, MatrixUtil.selectRows( testData, Arrays.asList( new Integer[] { 2, 3, 4 } ) ).rows() );
+    public void testSelectColumnsAndRows() {
+        Algebra A = new Algebra();
+        DoubleMatrix2D square = A.mult( testData, A.transpose( testData ) );
+        assertEquals( square.rows(), square.columns() );
+        assertEquals( 3, MatrixUtil.selectColumnsAndRows( square, Arrays.asList( new Integer[] { 2, 3, 4 } ) ).rows() );
+        assertEquals( 3, MatrixUtil.selectColumnsAndRows( square, Arrays.asList( new Integer[] { 2, 3, 4 } ) )
+                .columns() );
+
     }
 
     @Test
@@ -74,14 +80,8 @@ public class MatrixUtilTest {
     }
 
     @Test
-    public void testSelectColumnsAndRows() {
-        Algebra A = new Algebra();
-        DoubleMatrix2D square = A.mult( testData, A.transpose( testData ) );
-        assertEquals( square.rows(), square.columns() );
-        assertEquals( 3, MatrixUtil.selectColumnsAndRows( square, Arrays.asList( new Integer[] { 2, 3, 4 } ) ).rows() );
-        assertEquals( 3, MatrixUtil.selectColumnsAndRows( square, Arrays.asList( new Integer[] { 2, 3, 4 } ) )
-                .columns() );
-
+    public void testSelectRows() {
+        assertEquals( 3, MatrixUtil.selectRows( testData, Arrays.asList( new Integer[] { 2, 3, 4 } ) ).rows() );
     }
 
 }

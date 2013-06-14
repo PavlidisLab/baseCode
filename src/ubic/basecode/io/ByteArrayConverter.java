@@ -43,14 +43,6 @@ public class ByteArrayConverter {
 
     // sizes are in bytes.
 
-    private static final int CHAR_SIZE = 2;
-
-    private static final int DOUBLE_SIZE = 8;
-
-    private static final int INT_SIZE = 4;
-
-    private static final int LONG_SIZE = 8;
-
     /**
      * 3.3.4 The boolean Type
      * <p>
@@ -70,6 +62,14 @@ public class ByteArrayConverter {
      * @see http://java.sun.com/docs/books/vmspec/2nd-edition/html/Overview.doc.html#12237
      */
     private static final int BOOL_SIZE = 1; // erm...this seems to work.
+
+    private static final int CHAR_SIZE = 2;
+
+    private static final int DOUBLE_SIZE = 8;
+
+    private static final int INT_SIZE = 4;
+
+    private static final int LONG_SIZE = 8;
 
     /**
      * @param boolarray
@@ -348,19 +348,6 @@ public class ByteArrayConverter {
     }
 
     /**
-     * @param array
-     * @return
-     */
-    private String formatAsString( Object[] array ) {
-        StringBuffer buf = new StringBuffer();
-        for ( int i = 0; i < array.length; i++ ) {
-            buf.append( array[i] );
-            if ( i != array.length - 1 ) buf.append( "\t" ); // so we don't have a trailing tab.
-        }
-        return buf.toString();
-    }
-
-    /**
      * @param carray
      * @return byte[]
      */
@@ -387,6 +374,24 @@ public class ByteArrayConverter {
      * @param darray
      * @return byte[]
      */
+    public byte[] doubleArrayToBytes( double[] darray ) {
+        if ( darray == null ) return null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream( bos );
+        try {
+            for ( double element : darray ) {
+                dos.writeDouble( element );
+            }
+        } catch ( IOException e ) {
+            // do nothing
+        }
+        return bos.toByteArray();
+    }
+
+    /**
+     * @param darray
+     * @return byte[]
+     */
     public byte[] doubleArrayToBytes( Double[] darray ) {
         return doubleArrayToBytes( ArrayUtils.toPrimitive( darray ) );
     }
@@ -400,21 +405,25 @@ public class ByteArrayConverter {
     }
 
     /**
-     * @param darray
-     * @return byte[]
+     * @param testm
+     * @return
      */
-    public byte[] doubleArrayToBytes( double[] darray ) {
-        if ( darray == null ) return null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream( bos );
-        try {
-            for ( double element : darray ) {
-                dos.writeDouble( element );
+    public byte[] doubleMatrixToBytes( double[][] testm ) {
+
+        if ( testm == null || testm.length == 0 ) throw new IllegalArgumentException( "Null or empty matrix" );
+
+        int rowSize = testm[0].length;
+
+        double[] a = new double[testm.length * rowSize];
+
+        for ( int i = 0; i < testm.length; i++ ) {
+            if ( testm[i].length != rowSize ) throw new IllegalArgumentException( "Cannot serialize ragged matrix" );
+            for ( int j = 0; j < rowSize; j++ ) {
+                a[j + rowSize * i] = testm[i][j];
             }
-        } catch ( IOException e ) {
-            // do nothing
         }
-        return bos.toByteArray();
+        return doubleArrayToBytes( a );
+
     }
 
     /**
@@ -553,24 +562,15 @@ public class ByteArrayConverter {
     }
 
     /**
-     * @param testm
+     * @param array
      * @return
      */
-    public byte[] doubleMatrixToBytes( double[][] testm ) {
-
-        if ( testm == null || testm.length == 0 ) throw new IllegalArgumentException( "Null or empty matrix" );
-
-        int rowSize = testm[0].length;
-
-        double[] a = new double[testm.length * rowSize];
-
-        for ( int i = 0; i < testm.length; i++ ) {
-            if ( testm[i].length != rowSize ) throw new IllegalArgumentException( "Cannot serialize ragged matrix" );
-            for ( int j = 0; j < rowSize; j++ ) {
-                a[j + rowSize * i] = testm[i][j];
-            }
+    private String formatAsString( Object[] array ) {
+        StringBuffer buf = new StringBuffer();
+        for ( int i = 0; i < array.length; i++ ) {
+            buf.append( array[i] );
+            if ( i != array.length - 1 ) buf.append( "\t" ); // so we don't have a trailing tab.
         }
-        return doubleArrayToBytes( a );
-
+        return buf.toString();
     }
 }

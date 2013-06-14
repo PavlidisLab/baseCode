@@ -51,10 +51,42 @@ public class RegressionTesting {
 
     private static Log log = LogFactory.getLog( RegressionTesting.class.getName() );
 
-    private RegressionTesting() { /* block instantiation */
+    /**
+     * @param a expected
+     * @param b measured
+     * @param tolerance
+     */
+    public static boolean closeEnough( double[] a, double[] b, double tolerance ) {
+        if ( a.length != b.length ) return false;
+
+        for ( int i = 0; i < a.length; i++ ) {
+            if ( Math.abs( a[i] - b[i] ) > tolerance ) {
+                log.error( "Expected " + a[i] + " got " + b[i] + " at " + i );
+                return false;
+            }
+        }
+        return true;
+
     }
 
     // private String resourcePath = "";
+
+    /**
+     * Test whether two DoubleArrayLists are 'close enough' to call equal.
+     * 
+     * @param a
+     * @param b
+     * @param tolerance
+     * @return
+     */
+    public static boolean closeEnough( DoubleArrayList a, DoubleArrayList b, double tolerance ) {
+        if ( a.size() != b.size() ) return false;
+
+        for ( int i = 0; i < a.size(); i++ ) {
+            if ( Math.abs( a.get( i ) - b.get( i ) ) > tolerance ) return false;
+        }
+        return true;
+    }
 
     /**
      * Test whether two AbstractNamedDoubleMatrix are 'close enough' to call equal.
@@ -89,41 +121,6 @@ public class RegressionTesting {
      */
     public static boolean closeEnough( DoubleMatrix1D a, DoubleMatrix1D b, double tolerance ) {
         return closeEnough( a.toArray(), b.toArray(), tolerance );
-    }
-
-    /**
-     * @param a expected
-     * @param b measured
-     * @param tolerance
-     */
-    public static boolean closeEnough( double[] a, double[] b, double tolerance ) {
-        if ( a.length != b.length ) return false;
-
-        for ( int i = 0; i < a.length; i++ ) {
-            if ( Math.abs( a[i] - b[i] ) > tolerance ) {
-                log.error( "Expected " + a[i] + " got " + b[i] + " at " + i );
-                return false;
-            }
-        }
-        return true;
-
-    }
-
-    /**
-     * Test whether two DoubleArrayLists are 'close enough' to call equal.
-     * 
-     * @param a
-     * @param b
-     * @param tolerance
-     * @return
-     */
-    public static boolean closeEnough( DoubleArrayList a, DoubleArrayList b, double tolerance ) {
-        if ( a.size() != b.size() ) return false;
-
-        for ( int i = 0; i < a.size(); i++ ) {
-            if ( Math.abs( a.get( i ) - b.get( i ) ) > tolerance ) return false;
-        }
-        return true;
     }
 
     public static boolean closeEnough( DoubleMatrix2D a, DoubleMatrix2D b, double tolerance ) {
@@ -303,6 +300,9 @@ public class RegressionTesting {
         }
         buf.close();
         resultBuf.close();
+    }
+
+    private RegressionTesting() { /* block instantiation */
     }
 
     /**

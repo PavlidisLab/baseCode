@@ -26,6 +26,10 @@ import junit.framework.TestCase;
  */
 public class BinaryTreeTest extends TestCase {
 
+    BinaryTreeNode<String> testNode;
+
+    BinaryTree<String> tree;
+
     private BinaryTreeNode<String> testEmptyNode;
 
     /**
@@ -70,11 +74,6 @@ public class BinaryTreeTest extends TestCase {
         assertNull( foo.getLeft() );
     }
 
-    public void testIsLeaf() {
-        assertTrue( testEmptyNode.isLeaf() );
-        assertFalse( testNode.isLeaf() );
-    }
-
     /**
      * Test method for {@link ubic.basecode.dataStructure.tree.BinaryTree#isEmpty()}.
      */
@@ -82,6 +81,10 @@ public class BinaryTreeTest extends TestCase {
         assertFalse( tree.isEmpty() );
     }
 
+    public void testIsLeaf() {
+        assertTrue( testEmptyNode.isLeaf() );
+        assertFalse( testNode.isLeaf() );
+    }
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -94,7 +97,4 @@ public class BinaryTreeTest extends TestCase {
         testEmptyNode = testNode.insertLeft( "foob" );
 
     }
-
-    BinaryTree<String> tree;
-    BinaryTreeNode<String> testNode;
 }

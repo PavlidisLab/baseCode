@@ -39,10 +39,10 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
 
     private static final long serialVersionUID = -8911689395488681312L;
 
-    private boolean isDirty = true;
-
-    private Vector<List<Double>> matrix;
     int columns = 0;
+
+    private boolean isDirty = true;
+    private Vector<List<Double>> matrix;
 
     public SparseRaggedDoubleMatrix() {
         matrix = new Vector<List<Double>>();
@@ -130,37 +130,6 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         }
         return returnval;
 
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.DoubleMatrix#subsetRows(java.util.Collection)
-     */
-    @Override
-    public DoubleMatrix<R, C> subsetRows( List<R> rowNames ) {
-        DoubleMatrix<R, C> returnval = new SparseRaggedDoubleMatrix<R, C>();
-
-        int currentRow = 0;
-        for ( int i = 0; i < this.rows(); i++ ) {
-            R rowName = this.getRowName( i );
-            if ( !rowNames.contains( rowName ) ) {
-                continue;
-            }
-            returnval.setRowName( rowName, currentRow );
-
-            for ( int j = 0; j < this.columns(); j++ ) {
-                if ( i == currentRow ) {
-                    returnval.setColumnName( this.getColName( j ), j );
-                }
-                returnval.set( currentRow, j, this.get( i, j ) );
-            }
-            currentRow++;
-        }
-        if ( !returnval.getRowNames().containsAll( rowNames ) ) {
-            throw new IllegalArgumentException( "Invalid rows to select, some are not in the original matrix" );
-        }
-        return returnval;
     }
 
     /**
@@ -359,6 +328,47 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         row.set( j, d );
     }
 
+    @Override
+    public DoubleMatrix<R, C> subsetColumns( List<C> c ) {
+        throw new UnsupportedOperationException();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.DoubleMatrix#subsetRows(java.util.Collection)
+     */
+    @Override
+    public DoubleMatrix<R, C> subsetRows( List<R> rowNames ) {
+        DoubleMatrix<R, C> returnval = new SparseRaggedDoubleMatrix<R, C>();
+
+        int currentRow = 0;
+        for ( int i = 0; i < this.rows(); i++ ) {
+            R rowName = this.getRowName( i );
+            if ( !rowNames.contains( rowName ) ) {
+                continue;
+            }
+            returnval.setRowName( rowName, currentRow );
+
+            for ( int j = 0; j < this.columns(); j++ ) {
+                if ( i == currentRow ) {
+                    returnval.setColumnName( this.getColName( j ), j );
+                }
+                returnval.set( currentRow, j, this.get( i, j ) );
+            }
+            currentRow++;
+        }
+        if ( !returnval.getRowNames().containsAll( rowNames ) ) {
+            throw new IllegalArgumentException( "Invalid rows to select, some are not in the original matrix" );
+        }
+        return returnval;
+    }
+
+    @Override
+    public DoubleMatrix<C, R> transpose() {
+        throw new UnsupportedOperationException();
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -367,16 +377,6 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     @Override
     public DoubleMatrix1D viewRow( int i ) {
         return new RCDoubleMatrix1D( this.getRow( i ) );
-    }
-
-    @Override
-    public DoubleMatrix<C, R> transpose() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public DoubleMatrix<R, C> subsetColumns( List<C> c ) {
-        throw new UnsupportedOperationException();
     }
 
 }

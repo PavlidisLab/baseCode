@@ -14,21 +14,21 @@ import org.rosuda.REngine.RList;
  */
 public class HTest {
 
-    private Double statistic = Double.NaN;
+    private String alternative = "";
+
+    private String dataname = "";
+
+    private Double estimate = Double.NaN;
+
+    private String method = "";
+
+    private Double nullvalue = Double.NaN;
 
     private Double parameter = Double.NaN;
 
     private Double pvalue = Double.NaN;
 
-    private Double estimate = Double.NaN;
-
-    private Double nullvalue = Double.NaN;
-
-    private String method = "";
-
-    private String dataname = "";
-
-    private String alternative = "";
+    private Double statistic = Double.NaN;
 
     public HTest() {
     }
@@ -67,8 +67,24 @@ public class HTest {
 
     }
 
-    public Double getStatistic() {
-        return statistic;
+    public String getAlternative() {
+        return alternative;
+    }
+
+    public String getDataname() {
+        return dataname;
+    }
+
+    public Double getEstimate() {
+        return estimate;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public Double getNullvalue() {
+        return nullvalue;
     }
 
     public Double getParameter() {
@@ -79,24 +95,8 @@ public class HTest {
         return pvalue;
     }
 
-    public Double getEstimate() {
-        return estimate;
-    }
-
-    public Double getNullvalue() {
-        return nullvalue;
-    }
-
-    public String getMethod() {
-        return method;
-    }
-
-    public String getDataname() {
-        return dataname;
-    }
-
-    public String getAlternative() {
-        return alternative;
+    public Double getStatistic() {
+        return statistic;
     }
 
 }

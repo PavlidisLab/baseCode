@@ -8,8 +8,8 @@ import junit.framework.TestCase;
  * $Id$
  */
 public class TestStringConverter extends TestCase {
-    StringConverter sc;
     ByteArrayConverter bac;
+    StringConverter sc;
 
     /**
      * 

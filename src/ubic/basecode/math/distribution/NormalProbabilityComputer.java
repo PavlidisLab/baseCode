@@ -26,8 +26,8 @@ import cern.jet.stat.Probability;
  */
 public class NormalProbabilityComputer implements ProbabilityComputer {
 
-    double variance;
     double mean;
+    double variance;
 
     /**
      * @param mean

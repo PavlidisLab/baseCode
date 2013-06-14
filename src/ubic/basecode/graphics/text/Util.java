@@ -33,14 +33,27 @@ import java.awt.geom.AffineTransform;
 public class Util {
 
     /**
-     * @param text the string whose pixel width is to be measured
-     * @param fm FontMetrics object for the Component or Graphics.
-     * @return the pixel width of the string for the specified font.
+     * Draws a string vertically, turned 90 degrees counter-clockwise. Read carefully what the <i>x </i> and <i>y </i>
+     * coordinates means; chances are that if you draw to (x,y) = (0,0), you won't see anything.
+     * 
+     * @param g the graphics context on which to draw
+     * @param text the string to draw
+     * @param font the font to use
+     * @param x the <i>x </i> coordinate where you want to place the baseline of the text.
+     * @param y the <i>y </i> coordinate where you want to place the first letter of the text.
      */
-    public static int stringPixelWidth( String text, FontMetrics fm ) {
-        return fm.charsWidth( text.toCharArray(), 0, text.length() );
+    public static void drawVerticalString( Graphics g, String text, Font font, int x, int y ) {
+        Graphics2D g2 = ( Graphics2D ) g;
+        AffineTransform fontAT = new AffineTransform();
+        // fontAT.shear(0.2, 0.0); // slant text backwards
+        fontAT.setToRotation( Math.PI * 3.0f / 2.0f ); // counter-clockwise 90
+        // degrees
+        FontRenderContext frc = g2.getFontRenderContext();
+        Font theDerivedFont = font.deriveFont( fontAT );
+        TextLayout tstring = new TextLayout( text, theDerivedFont, frc );
+        tstring.draw( g2, x, y );
 
-    } // end stringPixelWidth
+    } // end drawVerticalString
 
     /**
      * @param strings an array of strings whose pixels widths to compare
@@ -65,25 +78,12 @@ public class Util {
     } // end getMaxPixelWidth
 
     /**
-     * Draws a string vertically, turned 90 degrees counter-clockwise. Read carefully what the <i>x </i> and <i>y </i>
-     * coordinates means; chances are that if you draw to (x,y) = (0,0), you won't see anything.
-     * 
-     * @param g the graphics context on which to draw
-     * @param text the string to draw
-     * @param font the font to use
-     * @param x the <i>x </i> coordinate where you want to place the baseline of the text.
-     * @param y the <i>y </i> coordinate where you want to place the first letter of the text.
+     * @param text the string whose pixel width is to be measured
+     * @param fm FontMetrics object for the Component or Graphics.
+     * @return the pixel width of the string for the specified font.
      */
-    public static void drawVerticalString( Graphics g, String text, Font font, int x, int y ) {
-        Graphics2D g2 = ( Graphics2D ) g;
-        AffineTransform fontAT = new AffineTransform();
-        // fontAT.shear(0.2, 0.0); // slant text backwards
-        fontAT.setToRotation( Math.PI * 3.0f / 2.0f ); // counter-clockwise 90
-        // degrees
-        FontRenderContext frc = g2.getFontRenderContext();
-        Font theDerivedFont = font.deriveFont( fontAT );
-        TextLayout tstring = new TextLayout( text, theDerivedFont, frc );
-        tstring.draw( g2, x, y );
+    public static int stringPixelWidth( String text, FontMetrics fm ) {
+        return fm.charsWidth( text.toCharArray(), 0, text.length() );
 
-    } // end drawVerticalString
+    } // end stringPixelWidth
 }

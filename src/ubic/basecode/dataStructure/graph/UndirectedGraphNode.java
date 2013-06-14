@@ -27,8 +27,8 @@ import java.util.Set;
  */
 public class UndirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements Comparable<UndirectedGraphNode<K, V>> {
 
-    private Set<UndirectedGraphNode<K, V>> neighbors;
     private Graph<UndirectedGraphNode<K, V>, K, V> graph;
+    private Set<UndirectedGraphNode<K, V>> neighbors;
 
     public UndirectedGraphNode( K key ) {
         super( key );
@@ -55,10 +55,6 @@ public class UndirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implement
         return 0;
     }
 
-    public int numNeighbors() {
-        return neighbors.size();
-    }
-
     /*
      * (non-Javadoc)
      * @see ubic.basecode.dataStructure.graph.GraphNode#getGraph()
@@ -66,6 +62,10 @@ public class UndirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implement
     @Override
     public Graph<UndirectedGraphNode<K, V>, K, V> getGraph() {
         return graph;
+    }
+
+    public int numNeighbors() {
+        return neighbors.size();
     }
 
 }

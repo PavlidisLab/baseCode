@@ -46,13 +46,13 @@ public class Wilcoxon {
 
     private static final Map<CacheKey, BigInteger> cache = new ConcurrentHashMap<CacheKey, BigInteger>();
 
-    private static Log log = LogFactory.getLog( Wilcoxon.class.getName() );
-
     /**
      * For smaller sample sizes, we compute exactly. Below 1e5 we start to notice some loss of precision (like one part
      * in 1e5). Setting this too high really slows things down for high-throughput applications.
      */
     private static double LIMIT_FOR_APPROXIMATION = 1e5;
+
+    private static Log log = LogFactory.getLog( Wilcoxon.class.getName() );
 
     /**
      * Convenience method that computes a p-value using input of two double arrays. They must not contain missing values
@@ -87,29 +87,15 @@ public class Wilcoxon {
     }
 
     /**
-     * @param N total number of items (in and not in the class)
-     * @param ranks of items in the class (one-based)
+     * Only use when you know there are no ties.
+     * 
+     * @param N
+     * @param n
+     * @param R
      * @return
      */
-    public static double wilcoxonP( int N, List<Double> ranks ) {
-
-        /*
-         * Check for ties; cannot compute exact when there are ties.
-         */
-        Collections.sort( ranks );
-        Double p = null;
-        boolean ties = false;
-        for ( Double r : ranks ) {
-            if ( p != null ) {
-                if ( r.equals( p ) ) {
-                    ties = true;
-                    break;
-                }
-            }
-            p = r;
-        }
-
-        return wilcoxonP( N, ranks.size(), Rank.rankSum( ranks ), ties );
+    public static double wilcoxonP( int N, int n, int R ) {
+        return wilcoxonP( N, n, R, false );
     }
 
     /**
@@ -141,6 +127,32 @@ public class Wilcoxon {
 
         if ( log.isDebugEnabled() ) log.debug( "Using gaussian method (" + N * n * R + ")" );
         return p;
+    }
+
+    /**
+     * @param N total number of items (in and not in the class)
+     * @param ranks of items in the class (one-based)
+     * @return
+     */
+    public static double wilcoxonP( int N, List<Double> ranks ) {
+
+        /*
+         * Check for ties; cannot compute exact when there are ties.
+         */
+        Collections.sort( ranks );
+        Double p = null;
+        boolean ties = false;
+        for ( Double r : ranks ) {
+            if ( p != null ) {
+                if ( r.equals( p ) ) {
+                    ties = true;
+                    break;
+                }
+            }
+            p = r;
+        }
+
+        return wilcoxonP( N, ranks.size(), Rank.rankSum( ranks ), ties );
     }
 
     private static void addToCache( int N, int n, int R, BigInteger value ) {
@@ -323,23 +335,11 @@ public class Wilcoxon {
         cache.remove( N );
     }
 
-    /**
-     * Only use when you know there are no ties.
-     * 
-     * @param N
-     * @param n
-     * @param R
-     * @return
-     */
-    public static double wilcoxonP( int N, int n, int R ) {
-        return wilcoxonP( N, n, R, false );
-    }
-
 }
 
 class CacheKey {
-    private int N;
     private int n;
+    private int N;
     private int R;
 
     public CacheKey( int N, int n, int R ) {
@@ -347,16 +347,6 @@ class CacheKey {
         this.N = N;
         this.n = n;
         this.R = R;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + N;
-        result = prime * result + n;
-        result = prime * result + R;
-        return result;
     }
 
     @Override
@@ -368,6 +358,16 @@ class CacheKey {
         if ( R != other.R ) return false;
 
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + N;
+        result = prime * result + n;
+        result = prime * result + R;
+        return result;
     }
 
 }

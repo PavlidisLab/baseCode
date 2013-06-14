@@ -27,6 +27,14 @@ public class ParamKeeper {
         paramLines.add( params );
     }
 
+    public String toCSVString() {
+        String result = "";
+        for ( Map<String, String> params : paramLines ) {
+            result += ParameterGrabber.paramsToLine( params ) + "\n";
+        }
+        return result;
+    }
+
     public void writeExcel( String filename ) throws Exception {
         // get all the keys
         Set<String> keySet = new HashSet<String>();
@@ -48,14 +56,6 @@ public class ParamKeeper {
 
         // write file
         s.save();
-    }
-
-    public String toCSVString() {
-        String result = "";
-        for ( Map<String, String> params : paramLines ) {
-            result += ParameterGrabber.paramsToLine( params ) + "\n";
-        }
-        return result;
     }
 
 }

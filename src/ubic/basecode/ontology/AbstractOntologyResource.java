@@ -30,9 +30,9 @@ import ubic.basecode.ontology.model.OntologyResource;
  */
 public abstract class AbstractOntologyResource implements OntologyResource {
 
-    private static final long serialVersionUID = 1L;
-
     protected static Log log = LogFactory.getLog( OntologyPropertyImpl.class.getName() );
+
+    private static final long serialVersionUID = 1L;
 
     @Override
     public int compareTo( OntologyResource other ) {

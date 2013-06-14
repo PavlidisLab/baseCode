@@ -40,15 +40,15 @@ import cern.jet.stat.Probability;
  */
 public class MeanDifferenceMetaAnalysis extends MetaAnalysis {
 
-    private boolean fixed = true;
+    private double bsv; // between-studies variance component;
 
-    private double z; // z score
+    private double e; // unconditional effect;
+    private boolean fixed = true;
+    private double n; // total sample size
     private double p; // probability
     private double q; // q-score;
-    private double e; // unconditional effect;
     private double v; // unconditional variance;
-    private double n; // total sample size
-    private double bsv; // between-studies variance component;
+    private double z; // z score
 
     /**
      * @param b

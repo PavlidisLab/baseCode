@@ -39,28 +39,6 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
 
     private static final long serialVersionUID = 1775002416710933373L;
 
-    @Override
-    public ObjectMatrix<R, C, double[]> subset( int startRow, int startCol, int numRow, int numCol ) {
-        int endRow = startRow + numRow - 1;
-        super.checkRowRange( startRow, endRow );
-        int endCol = startCol + numCol - 1;
-        super.checkColRange( startCol, endCol );
-        ObjectMatrix<R, C, double[]> result = new CompressedBitMatrix<R, C>( numRow, numCol, this.totalBitsPerItem );
-        int r = 0;
-        for ( int i = startRow; i < endRow; i++ ) {
-            int c = 0;
-            for ( int j = startCol; j < endCol; j++ ) {
-                result.set( r, c++, this.get( i, j ) );
-            }
-            r++;
-        }
-        /*
-         * FIXME set up the row/column names.
-         */
-        return result;
-
-    }
-
     /**
      * Count the number of one-bits of the passed-in <code>double</code> val.
      * 
@@ -76,8 +54,8 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
     private FlexCompRowMatrix[] matrix;
 
     private int rows = 0, cols = 0;
-    private int totalBitsPerItem;
 
+    private int totalBitsPerItem;
     /**
      * Constructs a matrix with specified rows, columns, and total bits per element
      * 
@@ -343,6 +321,28 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
     @Override
     public void setByKeys( R r, C c, double[] v ) {
         this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
+    }
+
+    @Override
+    public ObjectMatrix<R, C, double[]> subset( int startRow, int startCol, int numRow, int numCol ) {
+        int endRow = startRow + numRow - 1;
+        super.checkRowRange( startRow, endRow );
+        int endCol = startCol + numCol - 1;
+        super.checkColRange( startCol, endCol );
+        ObjectMatrix<R, C, double[]> result = new CompressedBitMatrix<R, C>( numRow, numCol, this.totalBitsPerItem );
+        int r = 0;
+        for ( int i = startRow; i < endRow; i++ ) {
+            int c = 0;
+            for ( int j = startCol; j < endCol; j++ ) {
+                result.set( r, c++, this.get( i, j ) );
+            }
+            r++;
+        }
+        /*
+         * FIXME set up the row/column names.
+         */
+        return result;
+
     }
 
     /**

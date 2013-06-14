@@ -31,12 +31,22 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
  */
 public class TestDoubleMatrixReader extends TestCase {
 
-    DoubleMatrix<String, String> matrix = null;
     InputStream is = null;
-    DoubleMatrixReader reader = null;
+    ZipInputStream isbig = null; // missing, with bad rows.
     InputStream ism = null;
     InputStream ismb = null; // missing, with bad rows.
-    ZipInputStream isbig = null; // missing, with bad rows.
+    DoubleMatrix<String, String> matrix = null;
+    DoubleMatrixReader reader = null;
+
+    public void testReadBlankCorner() throws Exception {
+        InputStream nis = TestDoubleMatrixReader.class.getResourceAsStream( "/data/testdata-blankcorner.txt" );
+        matrix = reader.read( nis );
+        assertTrue( matrix.containsColumnName( "sample1" ) && matrix.containsColumnName( "sample12" ) );
+
+        assertEquals( 12, matrix.getColNames().size() );
+        assertEquals( 12, matrix.columns() );
+
+    }
 
     public void testReadInputStreamColumnCount() throws Exception {
 
@@ -52,16 +62,6 @@ public class TestDoubleMatrixReader extends TestCase {
         boolean actualReturn = matrix.containsColumnName( "sample1" ) && matrix.containsColumnName( "sample12" );
         boolean expectedReturn = true;
         assertEquals( expectedReturn, actualReturn );
-
-    }
-
-    public void testReadBlankCorner() throws Exception {
-        InputStream nis = TestDoubleMatrixReader.class.getResourceAsStream( "/data/testdata-blankcorner.txt" );
-        matrix = reader.read( nis );
-        assertTrue( matrix.containsColumnName( "sample1" ) && matrix.containsColumnName( "sample12" ) );
-
-        assertEquals( 12, matrix.getColNames().size() );
-        assertEquals( 12, matrix.columns() );
 
     }
 
