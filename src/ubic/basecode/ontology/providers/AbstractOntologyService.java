@@ -43,6 +43,7 @@ import ubic.basecode.ontology.search.OntologyIndexer;
 import ubic.basecode.ontology.search.OntologySearch;
 
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.query.larq.ARQLuceneException;
 import com.hp.hpl.jena.query.larq.IndexLARQ;
 
 /**
@@ -317,6 +318,15 @@ public abstract class AbstractOntologyService {
         log.info( "Preparing index for " + ontologyName );
         OntModel model = getModel();
         assert model != null;
+
+        if ( index != null ) {
+            try {
+                index.close();
+            } catch ( ARQLuceneException e ) {
+                log.warn( "Closing index before reindexing failed: " + e.getMessage() );
+            }
+        }
+
         index = OntologyIndexer.indexOntology( ontologyName, model, force );
 
         if ( timer.getTime() > 5000 ) {
