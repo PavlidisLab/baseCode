@@ -261,11 +261,11 @@ public class FileTools {
             if ( file.delete() ) {
                 numDeleted++;
             } else {
-                log.warn( "Failed to delete: " + file );
+                log.warn( "Failed to delete: " + file + " read=" + file.canRead() + " write=" + file.canWrite() );
             }
 
         }
-        log.info( "Deleted " + numDeleted + " files." );
+        if ( numDeleted > 0 ) log.info( "Deleted " + numDeleted + " files." );
         return numDeleted;
     }
 

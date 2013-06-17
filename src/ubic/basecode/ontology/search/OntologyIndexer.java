@@ -21,12 +21,18 @@ package ubic.basecode.ontology.search;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriter.MaxFieldLength;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.LockObtainFailedException;
 
 import ubic.basecode.ontology.Configuration;
 import ubic.basecode.util.FileTools;
@@ -132,34 +138,53 @@ public class OntologyIndexer {
     /**
      * Create an on-disk index from an existing OntModel. Any existing index will be deleted/overwritten.
      * 
-     * @see {@link http://jena.sourceforge.net/ARQ/lucene-arq.html}
+     * @see {@link http://jena.apache.org/documentation/larq/}
      * @param datafile or uri
      * @param name used to refer to this index later
      * @param model
      * @return
      */
     private static IndexLARQ index( String name, OntModel model ) {
-        eraseIndex( name );
+        // eraseIndex( name );
 
         // double-check.
         File indexdir = getIndexPath( name );
+        //
+        // if ( indexdir.exists() ) {
+        // List<File> files = Arrays.asList( indexdir.listFiles() );
+        // int c = FileTools.deleteFiles( files );
+        // if ( c == files.size() ) {
+        // FileTools.deleteDir( indexdir );
+        // }
+        // }
 
-        if ( indexdir.exists() ) {
-            FileTools.deleteFiles( Arrays.asList( indexdir.listFiles() ) );
-            FileTools.deleteDir( indexdir );
-        }
-
+        // try {
         log.info( "Index to: " + indexdir );
-        IndexBuilderSubject larqSubjectBuilder = new IndexBuilderSubject( indexdir );
+
+        // IndexWriter indexWriter = new IndexWriter( indexdir, new StandardAnalyzer(), true, MaxFieldLength.LIMITED );
 
         StmtIterator listStatements = model.listStatements( new IndexerSelector() );
 
+        IndexBuilderSubject larqSubjectBuilder = new IndexBuilderSubject( indexdir );
+
         larqSubjectBuilder.indexStatements( listStatements );
+        // indexWriter.close();
 
         larqSubjectBuilder.closeWriter();
+        // larqSubjectBuilder.flushWriter();
 
         IndexLARQ index = larqSubjectBuilder.getIndex();
-
         return index;
+        // } catch ( CorruptIndexException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // } catch ( LockObtainFailedException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // } catch ( IOException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+
     }
 }

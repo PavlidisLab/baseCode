@@ -194,7 +194,10 @@ public abstract class AbstractOntologyService {
      */
     public Collection<OntologyResource> findResources( String searchString ) {
 
-        if ( !isOntologyLoaded() ) return new HashSet<OntologyResource>();
+        if ( !isOntologyLoaded() ) {
+            log.warn( "Ontology is not ready: " + this.getClass() );
+            return new HashSet<OntologyResource>();
+        }
 
         assert index != null : "attempt to search " + this.getOntologyName() + " when index is null";
 
@@ -318,14 +321,16 @@ public abstract class AbstractOntologyService {
         log.info( "Preparing index for " + ontologyName );
         OntModel model = getModel();
         assert model != null;
-
-        if ( index != null ) {
-            try {
-                index.close();
-            } catch ( ARQLuceneException e ) {
-                log.warn( "Closing index before reindexing failed: " + e.getMessage() );
-            }
-        }
+        //
+        // if ( index != null ) {
+        // try {
+        // // index.close();
+        //
+        // // log.info( "Index closed" );
+        // } catch ( ARQLuceneException e ) {
+        // log.warn( "Closing index before reindexing failed: " + e.getMessage() );
+        // }
+        // }
 
         index = OntologyIndexer.indexOntology( ontologyName, model, force );
 
@@ -343,6 +348,14 @@ public abstract class AbstractOntologyService {
      */
     public boolean isOntologyLoaded() {
         return isInitialized.get();
+    }
+
+    /**
+     * @return
+     */
+    public boolean isEnabled() {
+        String configParameter = "load." + ontologyName;
+        return Configuration.getBoolean( configParameter );
     }
 
     public void startInitializationThread( boolean force ) {
@@ -365,13 +378,12 @@ public abstract class AbstractOntologyService {
                 return;
             }
 
-            String configParameter = "load." + ontologyName;
-            boolean loadOntology = Configuration.getBoolean( configParameter );
+            boolean loadOntology = isEnabled();
 
             // If loading ontologies is disabled in the configuration, return
             if ( !force && !loadOntology ) {
-                log.debug( "Loading " + ontologyName + " is disabled (force=" + force + ", " + configParameter + "="
-                        + loadOntology + ")" );
+                log.debug( "Loading " + ontologyName + " is disabled (force=" + force + ", " + "Configuration load."
+                        + ontologyName + "=" + loadOntology + ")" );
                 return;
             }
 
