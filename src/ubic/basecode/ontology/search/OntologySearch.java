@@ -206,12 +206,18 @@ public class OntologySearch {
             try { // Use wildcard search.
                 iterator = runSearch( index, queryString + "*" );
             } catch ( ARQLuceneException e ) { // retry without wildcard
-                log.info( "Caught " + e + " caused by " + e.getCause() + " reason " + e.getMessage()
-                        + ". Retrying search without wildcard." );
+                log.error( "Caught " + e + " caused by " + e.getCause() + " while searching " + model + " for "
+                        + queryString + ". Retrying search without wildcard." );
                 iterator = runSearch( index, queryString );
             }
         } else {
-            iterator = runSearch( index, queryString );
+            try {
+                iterator = runSearch( index, queryString );
+            } catch ( ARQLuceneException e ) { // retry without wildcard
+                log.error( "Caught " + e + " caused by " + e.getCause() + " while searching " + model + " for "
+                        + queryString + ". Retrying search without wildcard." );
+                throw e;
+            }
         }
 
         while ( iterator != null && iterator.hasNext() ) {
@@ -295,7 +301,7 @@ public class OntologySearch {
         if ( StringUtils.isBlank( strippedQuery ) ) {
             throw new IllegalArgumentException( "Query cannot be blank" );
         }
-        // try {
+
         StopWatch timer = new StopWatch();
         timer.start();
         NodeIterator iterator = index.searchModelByIndex( strippedQuery );
@@ -305,12 +311,6 @@ public class OntologySearch {
         }
 
         return iterator;
-        /*
-         * } catch (ARQLuceneException e) { // We assume this is lucene's TooManyClauses exception. (see bug#145) //
-         * TODO: maybe we should check. .getCause()? throw e; } catch ( Exception e ) { log.error(
-         * "Failed Search for query: " + queryString + " Error was: " + e + " Caused by: " + e.getCause().getMessage()
-         * ); } return null;
-         */
-    }
 
+    }
 }
