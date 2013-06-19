@@ -20,22 +20,14 @@ package ubic.basecode.ontology.search;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriter.MaxFieldLength;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.LockObtainFailedException;
 
 import ubic.basecode.ontology.Configuration;
-import ubic.basecode.util.FileTools;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.larq.IndexBuilderSubject;
@@ -49,22 +41,6 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 public class OntologyIndexer {
 
     private static Log log = LogFactory.getLog( OntologyIndexer.class.getName() );
-
-    /**
-     * @param name of the ontology e.g. fmaOntology
-     */
-    public static void eraseIndex( String name ) {
-        File indexdir = getIndexPath( name );
-
-        if ( indexdir == null || !indexdir.canRead() ) {
-            log.warn( "No index directory for " + name );
-            return;
-        }
-
-        for ( File f : indexdir.listFiles() ) {
-            f.delete();
-        }
-    }
 
     /**
      * @param name
@@ -145,23 +121,10 @@ public class OntologyIndexer {
      * @return
      */
     private static IndexLARQ index( String name, OntModel model ) {
-        // eraseIndex( name );
 
-        // double-check.
         File indexdir = getIndexPath( name );
-        //
-        // if ( indexdir.exists() ) {
-        // List<File> files = Arrays.asList( indexdir.listFiles() );
-        // int c = FileTools.deleteFiles( files );
-        // if ( c == files.size() ) {
-        // FileTools.deleteDir( indexdir );
-        // }
-        // }
 
-        // try {
         log.info( "Index to: " + indexdir );
-
-        // IndexWriter indexWriter = new IndexWriter( indexdir, new StandardAnalyzer(), true, MaxFieldLength.LIMITED );
 
         StmtIterator listStatements = model.listStatements( new IndexerSelector() );
 
@@ -171,20 +134,9 @@ public class OntologyIndexer {
         // indexWriter.close();
 
         larqSubjectBuilder.closeWriter();
-        // larqSubjectBuilder.flushWriter();
 
         IndexLARQ index = larqSubjectBuilder.getIndex();
         return index;
-        // } catch ( CorruptIndexException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // } catch ( LockObtainFailedException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // } catch ( IOException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
 
     }
 }
