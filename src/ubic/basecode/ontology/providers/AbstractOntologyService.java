@@ -42,8 +42,7 @@ import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.search.OntologyIndexer;
 import ubic.basecode.ontology.search.OntologySearch;
 
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.query.larq.ARQLuceneException;
+import com.hp.hpl.jena.ontology.OntModel; 
 import com.hp.hpl.jena.query.larq.IndexLARQ;
 
 /**
