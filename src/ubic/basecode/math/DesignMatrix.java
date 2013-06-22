@@ -158,6 +158,16 @@ public class DesignMatrix {
     public void addInteraction( String... interactionTerms ) {
 
         /*
+         * If any of these terms were already dropped, bail.
+         */
+        for ( String t1 : interactionTerms ) {
+            if ( !this.getLevelsForFactors().containsKey( t1 ) ) {
+                log.warn( "Can't add interaction involving a non-existent or unused factor: " + t1 );
+                return;
+            }
+        }
+
+        /*
          * Figure out which columns of the data we need to look at.
          * 
          * If the factor is in >1 columns - we have to add two or more columns
@@ -169,14 +179,6 @@ public class DesignMatrix {
 
         for ( String t1 : interactionTerms ) {
 
-            /*
-             * If any of these terms were already dropped, bail.
-             */
-            if ( this.getDroppedFactors().contains( t1 ) ) {
-                log.warn( "Can't add interaction involving a dropped factor: " + t1 );
-                return;
-            }
-
             if ( doneTerms.contains( t1 ) ) continue;
             List<Integer> cols1 = terms.get( t1 );
 
@@ -186,6 +188,8 @@ public class DesignMatrix {
                     if ( t1.equals( t2 ) ) continue;
                     doneTerms.add( t2 );
                     List<Integer> cols2 = terms.get( t2 );
+
+                    assert cols2 != null;
 
                     for ( int j = 0; j < cols2.size(); j++ ) {
                         double[] col2i = this.matrix.getColumn( cols2.get( j ) );
@@ -245,10 +249,6 @@ public class DesignMatrix {
 
     public DoubleMatrix2D getDoubleMatrix() {
         return new DenseDoubleMatrix2D( matrix.asDoubles() );
-    }
-
-    public Set<String> getDroppedFactors() {
-        return droppedFactors;
     }
 
     public Map<String, List<String>> getLevelsForFactors() {
@@ -331,7 +331,7 @@ public class DesignMatrix {
         this.terms.clear();
 
         if ( this.hasIntercept ) {
-            int nrows = valuesForFactors.get( valuesForFactors.keySet().iterator().next() ).size();
+            int nrows = valuesForFactors.values().iterator().next().size();
             matrix = addIntercept( nrows );
         }
 
