@@ -153,6 +153,8 @@ public class DesignMatrix {
     }
 
     /**
+     * This will not add the interaction unless all of the terms are already part of the design.
+     * 
      * @param interactionTerms
      */
     public void addInteraction( String... interactionTerms ) {
@@ -162,7 +164,7 @@ public class DesignMatrix {
          */
         for ( String t1 : interactionTerms ) {
             if ( !this.getLevelsForFactors().containsKey( t1 ) ) {
-                log.warn( "Can't add interaction involving a non-existent or unused factor: " + t1 );
+                log.warn( "Can't add interaction involving a non-existent or unused terms: " + t1 );
                 return;
             }
         }
