@@ -42,7 +42,7 @@ import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.search.OntologyIndexer;
 import ubic.basecode.ontology.search.OntologySearch;
 
-import com.hp.hpl.jena.ontology.OntModel; 
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.larq.IndexLARQ;
 
 /**
@@ -353,6 +353,7 @@ public abstract class AbstractOntologyService {
      * @return
      */
     public boolean isEnabled() {
+        if ( isOntologyLoaded() ) return true; // could have forced, without setting config
         String configParameter = "load." + ontologyName;
         return Configuration.getBoolean( configParameter );
     }
