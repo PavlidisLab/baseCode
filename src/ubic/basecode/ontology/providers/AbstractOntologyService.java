@@ -320,16 +320,6 @@ public abstract class AbstractOntologyService {
         log.info( "Preparing index for " + ontologyName );
         OntModel model = getModel();
         assert model != null;
-        //
-        // if ( index != null ) {
-        // try {
-        // // index.close();
-        //
-        // // log.info( "Index closed" );
-        // } catch ( ARQLuceneException e ) {
-        // log.warn( "Closing index before reindexing failed: " + e.getMessage() );
-        // }
-        // }
 
         index = OntologyIndexer.indexOntology( ontologyName, model, force );
 
