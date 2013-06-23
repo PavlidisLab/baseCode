@@ -44,15 +44,25 @@ public abstract class AbstractOntologyMemoryBackedService extends AbstractOntolo
         if ( initializationThread.isAlive() ) {
             log.warn( ontology_URL + " initialization is already running, trying to cancel ..." );
             initializationThread.cancel();
-        }
 
-        // wait for the thread to die.
-        while ( initializationThread.isAlive() ) {
-            try {
-                Thread.sleep( 5000 );
-                log.warn( "Waiting for auto-initialization to stop so manual initialization can begin ..." );
-            } catch ( InterruptedException e ) {
-                // no-op.
+            // wait for the thread to die.
+            int maxWait = 10;
+            int wait = 0;
+            while ( initializationThread.isAlive() ) {
+                try {
+                    Thread.sleep( 5000 );
+                    log.warn( "Waiting for auto-initialization to stop so manual initialization can begin ..." );
+                } catch ( InterruptedException e ) {
+                    // no-op.
+                }
+                if ( ++wait >= maxWait ) {
+                    log.error( "Got tired of waiting" );
+                    break;
+                }
+                if ( initializationThread.isInterrupted() ) {
+                    log.warn( "Got interrupt." );
+                    break;
+                }
             }
         }
 

@@ -64,6 +64,7 @@ public abstract class AbstractOntologyService {
 
         public void cancel() {
             this.cancel.set( true );
+            this.interrupt();
         }
 
         public boolean isCancelled() {
@@ -77,19 +78,13 @@ public abstract class AbstractOntologyService {
         @Override
         public void run() {
 
-            try {
-                Thread.sleep( 200 );
-            } catch ( InterruptedException e1 ) {
-                // just waiting a little to see if we get a quick cancellation.
-            }
+            terms = new HashMap<String, OntologyTerm>();
+            individuals = new HashMap<String, OntologyIndividual>();
 
             if ( isCancelled() ) {
                 log.warn( "Cancelled initialization" );
                 return;
             }
-
-            terms = new HashMap<String, OntologyTerm>();
-            individuals = new HashMap<String, OntologyIndividual>();
 
             log.info( "Loading " + ontologyName + " Ontology..." );
             StopWatch loadTime = new StopWatch();
@@ -97,11 +92,6 @@ public abstract class AbstractOntologyService {
 
             OntModel model = getModel(); // can be slow part.
             assert model != null;
-
-            if ( isCancelled() ) {
-                log.warn( "Cancelled initialization" );
-                return;
-            }
 
             try {
 
