@@ -42,8 +42,18 @@ public abstract class AbstractOntologyMemoryBackedService extends AbstractOntolo
      */
     public synchronized void loadTermsInNameSpace( InputStream is ) {
         if ( initializationThread.isAlive() ) {
-            log.warn( ontology_URL + " initialization is already running, will not load from input stream" );
-            return;
+            log.warn( ontology_URL + " initialization is already running, trying to cancel ..." );
+            initializationThread.cancel();
+        }
+
+        // wait for the thread to die.
+        while ( initializationThread.isAlive() ) {
+            try {
+                Thread.sleep( 5000 );
+                log.warn( "Waiting for auto-initialization to stop so manual initialization can begin ..." );
+            } catch ( InterruptedException e ) {
+                // no-op.
+            }
         }
 
         this.indexReady.set( false );

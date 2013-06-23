@@ -53,11 +53,21 @@ public abstract class AbstractOntologyService {
 
     protected class OntologyInitializationThread extends Thread {
 
+        AtomicBoolean cancel = new AtomicBoolean( false );
+
         private boolean forceReindexing = false;
 
         public OntologyInitializationThread( boolean forceRefresh ) {
             super();
             this.forceReindexing = forceRefresh;
+        }
+
+        public void cancel() {
+            this.cancel.set( true );
+        }
+
+        public boolean isCancelled() {
+            return cancel.get();
         }
 
         public boolean isForceReindexing() {
@@ -67,6 +77,17 @@ public abstract class AbstractOntologyService {
         @Override
         public void run() {
 
+            try {
+                Thread.sleep( 200 );
+            } catch ( InterruptedException e1 ) {
+                // just waiting a little to see if we get a quick cancellation.
+            }
+
+            if ( isCancelled() ) {
+                log.warn( "Cancelled initialization" );
+                return;
+            }
+
             terms = new HashMap<String, OntologyTerm>();
             individuals = new HashMap<String, OntologyIndividual>();
 
@@ -74,8 +95,13 @@ public abstract class AbstractOntologyService {
             StopWatch loadTime = new StopWatch();
             loadTime.start();
 
-            OntModel model = getModel();
+            OntModel model = getModel(); // can be slow part.
             assert model != null;
+
+            if ( isCancelled() ) {
+                log.warn( "Cancelled initialization" );
+                return;
+            }
 
             try {
 
@@ -85,6 +111,11 @@ public abstract class AbstractOntologyService {
                 index( forceReindexing );
 
                 indexReady.set( true );
+
+                if ( isCancelled() ) {
+                    log.error( "Cancelled initialization" );
+                    return;
+                }
 
                 /*
                  * This creates a cache of URI (String) --> OntologyTerms. ?? Does Jena provide an easier way to do
@@ -330,6 +361,15 @@ public abstract class AbstractOntologyService {
     }
 
     /**
+     * @return
+     */
+    public boolean isEnabled() {
+        if ( isOntologyLoaded() ) return true; // could have forced, without setting config
+        String configParameter = "load." + ontologyName;
+        return Configuration.getBoolean( configParameter );
+    }
+
+    /**
      * Used for determining if the Gene Ontology has finished loading into memory. Although calls like getParents,
      * getChildren will still work (its much faster once the ontologies have been preloaded into memory.)
      * 
@@ -337,15 +377,6 @@ public abstract class AbstractOntologyService {
      */
     public boolean isOntologyLoaded() {
         return isInitialized.get();
-    }
-
-    /**
-     * @return
-     */
-    public boolean isEnabled() {
-        if ( isOntologyLoaded() ) return true; // could have forced, without setting config
-        String configParameter = "load." + ontologyName;
-        return Configuration.getBoolean( configParameter );
     }
 
     public void startInitializationThread( boolean force ) {
@@ -402,10 +433,17 @@ public abstract class AbstractOntologyService {
         if ( terms == null ) terms = new HashMap<String, OntologyTerm>();
         if ( individuals == null ) individuals = new HashMap<String, OntologyIndividual>();
 
+        int i = 0;
         for ( OntologyResource term : newTerms ) {
             if ( term.getUri() == null ) continue;
             if ( term instanceof OntologyTerm ) terms.put( term.getUri(), ( OntologyTerm ) term );
             if ( term instanceof OntologyIndividual ) individuals.put( term.getUri(), ( OntologyIndividual ) term );
+
+            if ( ++i % 1000 == 0 && initializationThread.isCancelled() ) {
+                log.error( "Cancelled initialization" );
+                this.isInitialized.set( false );
+                return;
+            }
         }
     }
 
