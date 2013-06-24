@@ -302,15 +302,20 @@ public class OntologySearch {
             throw new IllegalArgumentException( "Query cannot be blank" );
         }
 
-        StopWatch timer = new StopWatch();
-        timer.start();
-        NodeIterator iterator = index.searchModelByIndex( strippedQuery );
+        try {
+            StopWatch timer = new StopWatch();
+            timer.start();
+            NodeIterator iterator = index.searchModelByIndex( strippedQuery );
 
-        if ( timer.getTime() > 100 ) {
-            log.info( "Ontology resource search for: " + queryString + ": " + timer.getTime() + "ms" );
+            if ( timer.getTime() > 100 ) {
+                log.info( "Ontology resource search for: " + queryString + ": " + timer.getTime() + "ms" );
+            }
+            return iterator;
+        } catch ( ARQLuceneException e ) {
+            // index is closed?
+            log.error( "Error while searching: " + e.getMessage(), e );
+            return null;
         }
-
-        return iterator;
 
     }
 }
