@@ -535,6 +535,10 @@ public class LeastSquaresFit {
         return residualDof;
     }
 
+    public List<Integer> getResidualDofs() {
+        return residualDofs;
+    }
+
     public DoubleMatrix2D getResiduals() {
         return residuals;
     }

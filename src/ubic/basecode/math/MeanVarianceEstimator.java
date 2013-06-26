@@ -28,6 +28,7 @@ import java.awt.geom.Ellipse2D;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -438,9 +439,7 @@ public class MeanVarianceEstimator {
         // fit3<-lm(t(yCpm) ~ as.matrix(design.matrix[,2]))
         // or gFit <- lmFit(yCpm, design=design.matrix)
         LeastSquaresFit lsf = new LeastSquaresFit( A, E );
-        if ( lsf.isHasMissing() ) {
-            throw new IllegalArgumentException( "Missing values not supported." );
-        }
+
         // calculate fit$Amean by doing rowSums(CPM) (see limma.getEAWP())
         DoubleMatrix1D Amean = this.meanVariance.viewColumn( 0 );
 
@@ -452,8 +451,6 @@ public class MeanVarianceEstimator {
         // help("MArrayLM-class")
         // fit$sigma <- sqrt(sum(out$residuals^2)/out$df.residual)
         // sy <- sqrt(fit$sigma)
-        int dof = lsf.getResidualDof();
-        assert dof != 0; // if you have missing values in the expression matrix, you'll get a 0
         DoubleMatrix2D residuals = lsf.getResiduals();
         DoubleMatrix1D sy = new DenseDoubleMatrix1D( residuals.rows() );
         for ( int row = 0; row < residuals.rows(); row++ ) {
@@ -466,7 +463,20 @@ public class MeanVarianceEstimator {
             }
             sy.set( row, sum );
         }
-        sy.assign( chain( sqrt, div( dof ) ) );
+        // if you have missing values in the expression matrix
+        // you'll get a residual dof of 0
+        if ( lsf.isHasMissing() ) {
+            // calculate it per row
+            List<Integer> dofs = lsf.getResidualDofs();
+            assert dofs.size() == sy.size();
+            for ( int i = 0; i < sy.size(); i++ ) {
+                sy.set( i, Math.sqrt( sy.get( i ) / dofs.get( i ) ) );
+            }
+        } else {
+            int dof = lsf.getResidualDof();
+            assert dof != 0;
+            sy.assign( chain( sqrt, div( dof ) ) );
+        }
         sy.assign( sqrt );
 
         // only accepts array in strictly increasing order (drop duplicates)

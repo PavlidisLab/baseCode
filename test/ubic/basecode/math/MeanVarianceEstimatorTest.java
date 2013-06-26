@@ -16,6 +16,7 @@ package ubic.basecode.math;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -239,9 +240,45 @@ public class MeanVarianceEstimatorTest {
         assertEquals( 16.72, actuals.get( 18, 0 ), 0.01 );
         assertEquals( 0.007320, actuals.get( 18, 1 ), 0.001 );
 
+        actuals = est.getWeights();
+        assertNull( actuals );
+
         String outputFilename = System.getProperty( "java.io.tmpdir" ) + File.separator
                 + "meanVariance-testMeanVarianceNoDesignWithMissing.png";
         est.plot( outputFilename );
         assertTrue( new File( outputFilename ).exists() );
+    }
+
+    /**
+     * Data has missing values and a Design matrix is also provided as well. Bug 3478.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testMeanVarianceWithDesignWithMissing() throws Exception {
+        DoubleMatrixReader f = new DoubleMatrixReader();
+        DoubleMatrix<String, String> testMatrix = f.read( this.getClass().getResourceAsStream(
+                "/data/example.madata.withmissing.small.txt" ) );
+
+        StringMatrixReader of = new StringMatrixReader();
+        StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
+                "/data/example.metadata.small.txt" ) );
+
+        DesignMatrix d = new DesignMatrix( sampleInfo, true );
+        MeanVarianceEstimator est = new MeanVarianceEstimator( d, testMatrix );
+        DoubleMatrix2D actuals = est.getWeights();
+
+        // quick mv() sanity checks
+        actuals = est.getMeanVariance();
+        assertEquals( 15.33, actuals.get( 0, 0 ), 0.01 );
+        assertEquals( 0.010072, actuals.get( 18, 1 ), 0.001 );
+        actuals = est.getLoess();
+        assertEquals( 15.24, actuals.get( 0, 0 ), 0.01 );
+        assertEquals( 0.007320, actuals.get( 18, 1 ), 0.001 );
+
+        // the real test
+        actuals = est.getWeights();
+        assertEquals( 135.839, actuals.get( 0, 0 ), 0.001 );
+        assertEquals( 69.075, actuals.get( 18, 1 ), 0.001 );
     }
 }
