@@ -45,18 +45,20 @@ public class ROC {
             sumOfRanks += r; // ranks are 1-based.
         }
 
-        int inGroup = ranks.size();
-        int outGroup = totalSize - inGroup;
+        Long inGroup = new Long( ranks.size() );
+        Long outGroup = totalSize - inGroup;
 
-        double t1 = inGroup * ( inGroup + 1.0 ) / 2.0;
+        Double t1 = inGroup * ( inGroup + 1.0 ) / 2.0;
 
-        double t2 = inGroup * outGroup;
+        Long t2 = inGroup * outGroup;
 
-        double t3 = sumOfRanks - t1;
+        assert t2 > 0;
 
-        double auc = Math.max( 0.0, 1.0 - t3 / t2 );
+        Double t3 = sumOfRanks - t1;
 
-        assert auc >= 0.0 && auc <= 1.0 : "AUC was " + auc;
+        Double auc = Math.max( 0.0, 1.0 - t3 / t2 );
+
+        assert auc >= 0.0 && auc <= 1.0 : "AUC was " + auc + " t1=" + t1 + "t2=" + t2 + " t3=" + t3;
 
         return auc;
 

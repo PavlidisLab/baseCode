@@ -18,6 +18,7 @@
  */
 package ubic.basecode.math;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
@@ -42,6 +43,19 @@ public class TestROC extends TestCase {
         double actualReturn = ROC.rocpval( 10, ranksOfPositives );
         double expectedReturn = 0.13333333;
         assertEquals( "return value", expectedReturn, actualReturn, 0.00001 );
+    }
+
+    /**
+     * Bug 3620
+     */
+    public void testBig() {
+        int totalSize = 450000;
+        List<Double> x = new LinkedList<Double>();
+        for ( int i = 0; i < 200000; i++ ) {
+            x.add( ( int ) ( Math.random() * 300000 ) + 1d );
+        }
+        assertTrue( 1.0 >= ROC.aroc( totalSize, x ) );
+
     }
 
     /*
