@@ -154,14 +154,6 @@ public class OntologySearch {
                     throw new RuntimeException( e.getCause() );
                 } catch ( JenaException je ) {
 
-                    // If there is a jena DB connection exception should try again
-                    // before bailing for good (have noticed this happens intermitently on production)
-                    // The keep alive thread should stop this from happening but it doesn't gaurantee it
-
-                    // As this method is static it can be called from alot of
-                    // places. Making the call recursive with a max attempts to
-                    // retry could end up in a race condition.
-
                     log.error( "Trying again: " + je, je );
                     try {
                         Individual cl = r.as( Individual.class );
