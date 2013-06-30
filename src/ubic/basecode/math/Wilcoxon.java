@@ -155,7 +155,7 @@ public class Wilcoxon {
         return wilcoxonP( N, ranks.size(), Rank.rankSum( ranks ), ties );
     }
 
-    private static void addToCache( int N, int n, int R, BigInteger value ) {
+    private static void addToCache( long N, long n, long R, BigInteger value ) {
         cache.put( new CacheKey( N, n, R ), value );
     }
 
@@ -165,7 +165,7 @@ public class Wilcoxon {
      * @param r0
      * @return
      */
-    private static boolean cacheContains( int N, int n, int R ) {
+    private static boolean cacheContains( long N, long n, long R ) {
         return cache.containsKey( new CacheKey( N, n, R ) );
     }
 
@@ -192,21 +192,21 @@ public class Wilcoxon {
             if ( N > 2 ) removeFromCache( N - 2 );
 
             /* n has to be less than N */
-            int min_n = Math.max( 0, n0 + N - N0 );
-            int max_n = Math.min( n0, N );
+            long min_n = Math.max( 0, n0 + N - N0 );
+            long max_n = Math.min( n0, N );
 
             assert min_n >= 0;
             assert max_n >= min_n;
 
-            for ( int n = min_n; n <= max_n; n++ ) {
+            for ( long n = min_n; n <= max_n; n++ ) {
 
                 /* The rank sum is in the interval n(n+1)/2 to n(2N-n+1)/2. Other values need not be looked at. */
-                int bestPossibleRankSum = n * ( n + 1 ) / 2;
-                int worstPossibleRankSum = n * ( 2 * N - n + 1 ) / 2;
+                long bestPossibleRankSum = n * ( n + 1 ) / 2;
+                long worstPossibleRankSum = n * ( 2 * N - n + 1 ) / 2;
 
                 /* Ensure value looked at is valid for the original set of parameters. */
-                int min_r = Math.max( bestPossibleRankSum, R0 - ( N0 + N + 1 ) * ( N0 - N ) / 2 );
-                int max_r = Math.min( worstPossibleRankSum, R0 );
+                long min_r = Math.max( bestPossibleRankSum, R0 - ( N0 + N + 1 ) * ( N0 - N ) / 2 );
+                long max_r = Math.min( worstPossibleRankSum, R0 );
 
                 assert min_r >= 0;
 
@@ -218,12 +218,12 @@ public class Wilcoxon {
                         n0, R0 );
 
                 /* R greater than this, have already computed it in parts */
-                int foo = n * ( 2 * N - n - 1 ) / 2;
+                long foo = n * ( 2 * N - n - 1 ) / 2;
 
                 /* R less than this, we have already computed it in parts */
-                int bar = N + ( n - 1 ) * n / 2;
+                long bar = N + ( n - 1 ) * n / 2;
 
-                for ( int r = min_r; r <= max_r; r++ ) {
+                for ( long r = min_r; r <= max_r; r++ ) {
 
                     if ( n == 0 || n == N || r == bestPossibleRankSum ) {
                         addToCache( N, n, r, BigInteger.ONE );
@@ -249,7 +249,7 @@ public class Wilcoxon {
      * @param R
      * @return
      */
-    private static BigInteger getFromCache( int N, int n, int R ) {
+    private static BigInteger getFromCache( long N, long n, long R ) {
 
         if ( !cacheContains( N, n, R ) ) {
             throw new IllegalStateException( "No value stored for N=" + N + ", n=" + n + ", R=" + R );
@@ -338,11 +338,11 @@ public class Wilcoxon {
 }
 
 class CacheKey {
-    private int n;
-    private int N;
-    private int R;
+    private long n;
+    private long N;
+    private long R;
 
-    public CacheKey( int N, int n, int R ) {
+    public CacheKey( long N, long n, long R ) {
         super();
         this.N = N;
         this.n = n;
@@ -363,11 +363,11 @@ class CacheKey {
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = 1;
+        long result = 1;
         result = prime * result + N;
         result = prime * result + n;
         result = prime * result + R;
-        return result;
+        return ( int ) result; // problem: overflows?
     }
 
 }
