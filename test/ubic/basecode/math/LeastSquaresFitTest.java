@@ -458,6 +458,8 @@ public class LeastSquaresFitTest {
         DoubleMatrixReader f = new DoubleMatrixReader();
         DoubleMatrix<String, String> testMatrix = f
                 .read( this.getClass().getResourceAsStream( "/data/lmtest2.dat.txt" ) );
+        DoubleMatrix1D librarySize = MatrixStats.colSums( testMatrix );
+        MatrixStats.convertToLog2Cpm( testMatrix, librarySize );
 
         StringMatrixReader of = new StringMatrixReader();
         StringMatrix<String, String> sampleInfo = of.read( this.getClass()
@@ -467,7 +469,7 @@ public class LeastSquaresFitTest {
 
         // Coefficients not estimable: y$fact.8095fv_60796
         // fit$rank < ncol(design)
-        MeanVarianceEstimator est = new MeanVarianceEstimator( d, testMatrix );
+        MeanVarianceEstimator est = new MeanVarianceEstimator( d, testMatrix, librarySize );
         DoubleMatrix2D w2D = est.getWeights();
         LeastSquaresFit fit = new LeastSquaresFit( d.getDoubleMatrix(), est.getNormalizedValue(), w2D );
         DoubleMatrix2D actuals = fit.getCoefficients().viewDice();

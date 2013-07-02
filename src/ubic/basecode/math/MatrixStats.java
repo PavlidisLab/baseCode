@@ -54,6 +54,23 @@ public class MatrixStats {
     }
 
     /**
+     * Calculates the library size by performing colSums(data). NaN values are omitted from calculations.
+     * 
+     * @param <R>
+     * @param <C>
+     * @param data
+     * @return column sums
+     */
+    public static <R, C> DoubleMatrix1D colSums( DoubleMatrix<R, C> data ) {
+        assert data != null;
+        DoubleMatrix1D librarySize = new DenseDoubleMatrix1D( data.columns() );
+        for ( int i = 0; i < librarySize.size(); i++ ) {
+            librarySize.set( i, DescriptiveWithMissing.sum( new DoubleArrayList( data.getColumn( i ) ) ) );
+        }
+        return librarySize;
+    }
+
+    /**
      * Convert the matrix to log2 counts per million. Equivalent to <code>t(log2(t(counts+0.5)/(lib.size+1)*1e6))</code>
      * in R.
      * 

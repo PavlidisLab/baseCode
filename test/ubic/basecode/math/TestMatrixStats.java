@@ -18,6 +18,7 @@
  */
 package ubic.basecode.math;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -33,6 +34,7 @@ import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.util.RegressionTesting;
 import cern.colt.function.DoubleProcedure;
 import cern.colt.matrix.DoubleMatrix1D;
+import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import cern.jet.math.Functions;
 
 /**
@@ -219,4 +221,27 @@ public class TestMatrixStats {
         } );
     }
 
+    @Test
+    public void testColSumsWithMissing() throws Exception {
+        DoubleMatrix<String, String> counts = new DenseDoubleMatrix<String, String>( new double[][] {
+                { 1, 2, Double.NaN }, { 4, 5, 6 } } );
+        DoubleMatrix1D expected = new DenseDoubleMatrix1D( new double[] { 5, 7, 6 } );
+        DoubleMatrix1D actual = MatrixStats.colSums( counts );
+        assertArrayEquals( expected.toArray(), actual.toArray(), 0.0001 );
+    }
+
+    @Test
+    public void testCountsPerMillionWithMissing() throws Exception {
+        DoubleMatrix<String, String> counts = new DenseDoubleMatrix<String, String>( new double[][] {
+                { 1, 2, Double.NaN }, { 4, 5, 6 } } );
+        DoubleMatrix1D libSize = MatrixStats.colSums( counts );
+        MatrixStats.convertToLog2Cpm( counts, libSize );
+        DoubleMatrix<String, String> actual = counts;
+        DoubleMatrix<String, String> expected = new DenseDoubleMatrix<String, String>( new double[][] {
+                { 17.93157, 18.2535, Double.NaN }, { 19.51653, 19.3910, 19.82465 } } );
+
+        for ( int i = 0; i < expected.rows(); i++ ) {
+            assertArrayEquals( expected.viewRow( i ).toArray(), actual.viewRow( i ).toArray(), 0.0001 );
+        }
+    }
 }

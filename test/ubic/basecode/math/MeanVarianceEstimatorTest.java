@@ -17,11 +17,6 @@ package ubic.basecode.math;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.StringWriter;
-import java.text.DecimalFormat;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,10 +27,8 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.StringMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.io.reader.StringMatrixReader;
-import ubic.basecode.io.writer.MatrixWriter;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
-import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 
 /**
@@ -72,27 +65,6 @@ public class MeanVarianceEstimatorTest {
         }
     }
 
-    @Test
-    public void testColSumsWithMissing() throws Exception {
-        DoubleMatrix2D counts = new DenseDoubleMatrix2D( new double[][] { { 1, 2, Double.NaN }, { 4, 5, 6 } } );
-        DoubleMatrix1D expected = new DenseDoubleMatrix1D( new double[] { 5, 7, 6 } );
-        DoubleMatrix1D actual = MeanVarianceEstimator.colSums( counts );
-        assertArrayEquals( expected.toArray(), actual.toArray(), 0.0001 );
-    }
-
-    @Test
-    public void testCountsPerMillionWithMissing() throws Exception {
-        DoubleMatrix2D counts = new DenseDoubleMatrix2D( new double[][] { { 1, 2, Double.NaN }, { 4, 5, 6 } } );
-        DoubleMatrix1D libSize = MeanVarianceEstimator.colSums( counts );
-        DoubleMatrix2D actual = MeanVarianceEstimator.countsPerMillion( counts, libSize );
-        DoubleMatrix2D expected = new DenseDoubleMatrix2D( new double[][] { { 17.93157, 18.2535, Double.NaN },
-                { 19.51653, 19.3910, 19.82465 } } );
-
-        for ( int i = 0; i < expected.rows(); i++ ) {
-            assertArrayEquals( expected.viewRow( i ).toArray(), actual.viewRow( i ).toArray(), 0.0001 );
-        }
-    }
-
     /**
      * Duplicate row
      * 
@@ -109,11 +81,13 @@ public class MeanVarianceEstimatorTest {
                 "/data/lmtest11.des.txt" ) );
 
         // add a duplicate entry with a different row id but similar expression levels
-        DoubleMatrix2D duplMatrix = new DenseDoubleMatrix2D( testMatrix.asDoubles() );
+        DoubleMatrix<String, String> duplMatrix = new DenseDoubleMatrix<String, String>( testMatrix.asDoubles() );
         duplMatrix.viewRow( 1 ).assign( duplMatrix.viewRow( 0 ) );
+        DoubleMatrix1D libSize = MatrixStats.colSums( duplMatrix );
+        MatrixStats.convertToLog2Cpm( duplMatrix, libSize );
 
         DesignMatrix d = new DesignMatrix( sampleInfo, true );
-        MeanVarianceEstimator est = new MeanVarianceEstimator( d, duplMatrix );
+        MeanVarianceEstimator est = new MeanVarianceEstimator( d, duplMatrix, libSize );
         DoubleMatrix2D actuals = est.getWeights();
 
         int[] expectedIndices = new int[] { 0, 1, 149 };
@@ -136,13 +110,15 @@ public class MeanVarianceEstimatorTest {
         DoubleMatrixReader f = new DoubleMatrixReader();
         DoubleMatrix<String, String> testMatrix = f.read( this.getClass()
                 .getResourceAsStream( "/data/lmtest11.dat.txt" ) );
+        DoubleMatrix1D libSize = MatrixStats.colSums( testMatrix );
+        MatrixStats.convertToLog2Cpm( testMatrix, libSize );
 
         StringMatrixReader of = new StringMatrixReader();
         StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
                 "/data/lmtest11.des.txt" ) );
 
         DesignMatrix d = new DesignMatrix( sampleInfo, true );
-        MeanVarianceEstimator est = new MeanVarianceEstimator( d, testMatrix );
+        MeanVarianceEstimator est = new MeanVarianceEstimator( d, testMatrix, libSize );
         DoubleMatrix2D actuals = est.getWeights();
 
         int[] expectedIndices = new int[] { 0, 99, 149 };
@@ -153,11 +129,6 @@ public class MeanVarianceEstimatorTest {
         for ( int i = 0; i < expectedIndices.length; i++ ) {
             assertArrayEquals( expected[i], actuals.viewRow( expectedIndices[i] ).toArray(), 0.1 );
         }
-
-        String outputFilename = System.getProperty( "java.io.tmpdir" ) + File.separator
-                + "meanVariance-testGetWeights.png";
-        est.plot( outputFilename );
-        assertTrue( new File( outputFilename ).exists() );
     }
 
     /**
@@ -172,8 +143,10 @@ public class MeanVarianceEstimatorTest {
                 { Double.NaN, 0, 7, Double.NaN, 8 }, { Double.NaN, 9, -0.3, 0.5, Double.NaN },
                 { Double.NaN, 3, -0.3, -0.1, Double.NaN },
                 { Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN } };
-        DoubleMatrix2D data = new DenseDoubleMatrix2D( dataPrimitive );
-        MeanVarianceEstimator est = new MeanVarianceEstimator( data );
+        DoubleMatrix<String, String> data = new DenseDoubleMatrix<String, String>( dataPrimitive );
+        DoubleMatrix1D libSize = MatrixStats.colSums( data );
+        MatrixStats.convertToLog2Cpm( data, libSize );
+        MeanVarianceEstimator est = new MeanVarianceEstimator( new DenseDoubleMatrix2D( data.asArray() ) );
         DoubleMatrix2D actuals = null;
 
         actuals = est.getMeanVariance();
@@ -191,23 +164,6 @@ public class MeanVarianceEstimatorTest {
         assertEquals( 2.688, actuals.get( 0, 1 ), 0.001 );
         assertEquals( 18.76, actuals.get( 3, 0 ), 0.01 );
         assertEquals( 6.321, actuals.get( 3, 1 ), 0.001 );
-
-        StringWriter s = new StringWriter();
-
-        DoubleMatrix<String, String> m = new DenseDoubleMatrix<String, String>( actuals.rows(), 2 );
-        m = m.transpose();
-        m.viewRow( 0 ).assign( actuals.viewColumn( 0 ) );
-        m.viewRow( 1 ).assign( actuals.viewColumn( 1 ) );
-        m.setRowName( "mean", 0 );
-        m.setRowName( "variance", 1 );
-
-        MatrixWriter<String, String> mw = new MatrixWriter<String, String>( s, new DecimalFormat( "#.##" ) );
-        mw.writeMatrix( m, true );
-
-        String outputFilename = System.getProperty( "java.io.tmpdir" ) + File.separator
-                + "meanVariance-testMeanVarianceNoDesignWithColsRowAllMissing.png";
-        est.plot( outputFilename );
-        assertTrue( new File( outputFilename ).exists() );
     }
 
     /**
@@ -220,8 +176,10 @@ public class MeanVarianceEstimatorTest {
         DoubleMatrixReader f = new DoubleMatrixReader();
         DoubleMatrix<String, String> testMatrix = f.read( this.getClass().getResourceAsStream(
                 "/data/example.madata.withmissing.small.txt" ) );
-        DoubleMatrix2D data = new DenseDoubleMatrix2D( testMatrix.asDoubles() );
-        MeanVarianceEstimator est = new MeanVarianceEstimator( data );
+        DoubleMatrix<String, String> data = new DenseDoubleMatrix<String, String>( testMatrix.asDoubles() );
+        DoubleMatrix1D libSize = MatrixStats.colSums( data );
+        MatrixStats.convertToLog2Cpm( data, libSize );
+        MeanVarianceEstimator est = new MeanVarianceEstimator( new DenseDoubleMatrix2D( data.asArray() ) );
         DoubleMatrix2D actuals = null;
 
         actuals = est.getMeanVariance();
@@ -242,11 +200,6 @@ public class MeanVarianceEstimatorTest {
 
         actuals = est.getWeights();
         assertNull( actuals );
-
-        String outputFilename = System.getProperty( "java.io.tmpdir" ) + File.separator
-                + "meanVariance-testMeanVarianceNoDesignWithMissing.png";
-        est.plot( outputFilename );
-        assertTrue( new File( outputFilename ).exists() );
     }
 
     /**
@@ -259,13 +212,15 @@ public class MeanVarianceEstimatorTest {
         DoubleMatrixReader f = new DoubleMatrixReader();
         DoubleMatrix<String, String> testMatrix = f.read( this.getClass().getResourceAsStream(
                 "/data/example.madata.withmissing.small.txt" ) );
+        DoubleMatrix1D libSize = MatrixStats.colSums( testMatrix );
+        MatrixStats.convertToLog2Cpm( testMatrix, libSize );
 
         StringMatrixReader of = new StringMatrixReader();
         StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
                 "/data/example.metadata.small.txt" ) );
 
         DesignMatrix d = new DesignMatrix( sampleInfo, true );
-        MeanVarianceEstimator est = new MeanVarianceEstimator( d, testMatrix );
+        MeanVarianceEstimator est = new MeanVarianceEstimator( d, testMatrix, libSize );
         DoubleMatrix2D actuals = est.getWeights();
 
         // quick mv() sanity checks

@@ -22,12 +22,6 @@ import static cern.jet.math.Functions.mult;
 import static cern.jet.math.Functions.plus;
 import static cern.jet.math.Functions.sqrt;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.geom.Ellipse2D;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -40,15 +34,6 @@ import org.apache.commons.math.MathException;
 import org.apache.commons.math.analysis.interpolation.LinearInterpolator;
 import org.apache.commons.math.analysis.interpolation.LoessInterpolator;
 import org.apache.commons.math.analysis.polynomials.PolynomialSplineFunction;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.xy.XYDataset;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import cern.colt.function.IntIntDoubleFunction;
@@ -135,54 +120,14 @@ public class MeanVarianceEstimator {
     }
 
     /**
-     * Calculates the library size by performing colSums(data). NaN values are omitted from calculations.
-     * 
-     * @param data raw counts
-     * @return total counts for each column
-     */
-    public static DoubleMatrix1D colSums( DoubleMatrix2D data ) {
-        assert data != null;
-        DoubleMatrix1D libSize = new DenseDoubleMatrix1D( data.columns() );
-        for ( int i = 0; i < libSize.size(); i++ ) {
-            libSize.set( i, DescriptiveWithMissing.sum( new DoubleArrayList( data.viewColumn( i ).toArray() ) ) );
-        }
-        return libSize;
-    }
-
-    /**
-     * Convert counts to log2 counts-per-million In R: y <- t(log2(t(counts+0.5)/(lib.size+1)*1e6))
-     * 
-     * @param counts raw counts
-     * @param libSize library size
-     * @return normalized counts
-     */
-    public static DoubleMatrix2D countsPerMillion( DoubleMatrix2D counts, DoubleMatrix1D libSize ) {
-        assert counts != null;
-        assert libSize != null;
-
-        DoubleMatrix2D cpm = counts.copy();
-
-        cpm.assign( plus( 0.5 ) );
-        cpm = cpm.viewDice();
-        DoubleMatrix1D cpmDenom = libSize.copy().assign( plus( 1 ) );
-        for ( int i = 0; i < cpm.columns(); i++ ) {
-            cpm.viewColumn( i ).assign( cpmDenom, div );
-        }
-        cpm.assign( chain( log2, mult( Math.pow( 10, 6 ) ) ) );
-        cpm = cpm.viewDice();
-
-        return cpm;
-    }
-
-    /**
      * Normalized variables on log2 scale
      */
     private DoubleMatrix2D E;
 
     /**
-     * Size of each library
+     * Size of each library (column).
      */
-    private DoubleMatrix1D libSize;
+    private DoubleMatrix1D librarySize;
 
     /**
      * Loess fit (x, y)
@@ -204,13 +149,15 @@ public class MeanVarianceEstimator {
      * Preferred interface if you want control over how the design is set up. Executes voom() to calculate weights.
      * 
      * @param designMatrix
-     * @param data a count matrix
+     * @param data a normalized count matrix
+     * @param librarySize library size (matrix column sum)
      */
-    public MeanVarianceEstimator( DesignMatrix designMatrix, DoubleMatrix<String, String> data ) {
+    public MeanVarianceEstimator( DesignMatrix designMatrix, DoubleMatrix<String, String> data,
+            DoubleMatrix1D librarySize ) {
 
         DoubleMatrix2D b = new DenseDoubleMatrix2D( data.asArray() );
-        this.libSize = MeanVarianceEstimator.colSums( b );
-        this.E = MeanVarianceEstimator.countsPerMillion( b, libSize );
+        this.librarySize = librarySize;
+        this.E = b;
 
         mv();
         voom( designMatrix.getDoubleMatrix() );
@@ -220,28 +167,26 @@ public class MeanVarianceEstimator {
      * Executes voom() to calculate weights.
      * 
      * @param designMatrix
-     * @param data a count matrix
+     * @param data a normalized count matrix
+     * @param librarySize library size (matrix column sum)
      */
-    public MeanVarianceEstimator( DesignMatrix designMatrix, DoubleMatrix2D data ) {
+    public MeanVarianceEstimator( DesignMatrix designMatrix, DoubleMatrix2D data, DoubleMatrix1D librarySize ) {
 
-        this.libSize = MeanVarianceEstimator.colSums( data );
-        this.E = MeanVarianceEstimator.countsPerMillion( data, libSize );
+        this.librarySize = librarySize;
+        this.E = data;
 
         mv();
         voom( designMatrix.getDoubleMatrix() );
     }
 
     /**
-     * Generic method for calculating mean, variance and the loess fit. Calls this.countsPerMillion() to transform the
-     * data. voom() is not executed and therefore no weights are calculated.
+     * Generic method for calculating mean, variance and the loess fit. voom() is not executed and therefore no weights
+     * are calculated.
      * 
-     * @param designMatrix
-     * @param data a count matrix
+     * @param data a normalized count matrix
      */
     public MeanVarianceEstimator( DoubleMatrix2D data ) {
-
-        this.libSize = MeanVarianceEstimator.colSums( data );
-        this.E = MeanVarianceEstimator.countsPerMillion( data, libSize );
+        this.E = data;
 
         mv();
     }
@@ -249,8 +194,8 @@ public class MeanVarianceEstimator {
     /**
      * @return total library size
      */
-    public DoubleMatrix1D getLibSize() {
-        return this.libSize;
+    public DoubleMatrix1D getLibrarySize() {
+        return this.librarySize;
     }
 
     /**
@@ -279,71 +224,6 @@ public class MeanVarianceEstimator {
      */
     public DoubleMatrix2D getWeights() {
         return this.weights;
-    }
-
-    /**
-     * Writes out the meanVariance scatter plot.
-     * 
-     * @param outputFilename
-     */
-    public void plot( String outputFilename ) {
-
-        XYDataset dataset = createPlotDataset();
-
-        JFreeChart chart = ChartFactory.createScatterPlot( "Mean-variance trend", "mean = log2(counts + 0.5)",
-                "variance = sqrt(sigma)", dataset, PlotOrientation.VERTICAL, false, false, false );
-
-        // customize look
-        final XYPlot plot = chart.getXYPlot();
-        plot.setBackgroundPaint( Color.white );
-        final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        renderer.setSeriesPaint( 0, Color.black );
-        renderer.setSeriesPaint( 1, Color.red );
-        renderer.setSeriesShapesFilled( 0, false );
-        renderer.setSeriesShape( 0, new Ellipse2D.Double( 0, 0, 3, 3 ) );
-        renderer.setSeriesStroke( 1, new BasicStroke( 4 ) );
-        renderer.setSeriesShapesVisible( 0, true );
-        renderer.setSeriesLinesVisible( 0, false );
-        renderer.setSeriesLinesVisible( 1, true );
-        renderer.setSeriesShapesVisible( 1, false );
-
-        plot.setRenderer( 0, renderer );
-
-        try {
-            int size = 2 * 200;
-            OutputStream os = new FileOutputStream( outputFilename );
-            ChartUtilities.writeChartAsPNG( os, chart, size, size );
-            os.close();
-        } catch ( IOException e ) {
-            throw new RuntimeException( e );
-        }
-
-    }
-
-    /**
-     * Prepares mean-variance data matrix to JFree format
-     */
-    private XYDataset createPlotDataset() {
-        assert meanVariance != null;
-        assert meanVariance.columns() == 2;
-
-        // mean and variance of each gene
-        XYSeries series = new XYSeries( "Mean-variance" );
-        for ( int i = 0; i < meanVariance.rows(); i++ ) {
-            series.add( meanVariance.get( i, 0 ), meanVariance.get( i, 1 ) );
-        }
-
-        // loess fit trend line
-        XYSeries loessSeries = new XYSeries( "Loess" );
-        for ( int i = 0; i < loess.rows(); i++ ) {
-            loessSeries.add( loess.get( i, 0 ), loess.get( i, 1 ) );
-        }
-
-        XYSeriesCollection dataset = new XYSeriesCollection();
-        dataset.addSeries( series );
-        dataset.addSeries( loessSeries );
-
-        return dataset;
     }
 
     /**
@@ -428,7 +308,7 @@ public class MeanVarianceEstimator {
         assert designMatrix != null;
         assert this.meanVariance != null;
         assert this.E != null;
-        assert this.libSize != null;
+        assert this.librarySize != null;
 
         Algebra solver = new Algebra();
 
@@ -445,7 +325,7 @@ public class MeanVarianceEstimator {
 
         // sx <- fit$Amean + mean(log2(lib.size+1)) - log2(1e6)
         DoubleMatrix1D sx = Amean.copy();
-        sx.assign( plus( libSize.copy().assign( chain( log2, plus( 1 ) ) ).zSum() / libSize.size() ) );
+        sx.assign( plus( librarySize.copy().assign( chain( log2, plus( 1 ) ) ).zSum() / librarySize.size() ) );
         sx.assign( minus( Math.log( Math.pow( 10, 6 ) ) / Math.log( 2 ) ) );
 
         // help("MArrayLM-class")
@@ -523,7 +403,7 @@ public class MeanVarianceEstimator {
             }
         } );
         DoubleMatrix2D fittedCount = fittedCpm.copy();
-        DoubleMatrix1D libSizePlusOne = libSize.assign( plus( 1 ) );
+        DoubleMatrix1D libSizePlusOne = librarySize.assign( plus( 1 ) );
         for ( int i = 0; i < fittedCount.rows(); i++ ) {
             fittedCount.viewRow( i ).assign( libSizePlusOne, mult );
             fittedCount.viewRow( i ).assign( mult( Math.pow( 10, -6 ) ) );
