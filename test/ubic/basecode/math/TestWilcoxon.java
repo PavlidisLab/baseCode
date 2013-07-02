@@ -43,6 +43,14 @@ public class TestWilcoxon extends TestCase {
         assertEquals( expectedValue, actualValue, 1e-10 );
     }
 
+    public void testBig() {
+        int N0 = 473395;
+        int n0 = 36081;
+        long R0 = 224102826025L;
+        double r = Wilcoxon.wilcoxonP( N0, n0, R0 );
+        assertEquals( 1.0, r, 1e-5 );
+    }
+
     public void testCGaussian() {
         /* nucleus */
         double actualValue = Wilcoxon.wilcoxonP( 5224, 618, 1499756 );

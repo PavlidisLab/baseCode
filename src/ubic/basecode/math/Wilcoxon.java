@@ -50,7 +50,7 @@ public class Wilcoxon {
      * For smaller sample sizes, we compute exactly. Below 1e5 we start to notice some loss of precision (like one part
      * in 1e5). Setting this too high really slows things down for high-throughput applications.
      */
-    private static double LIMIT_FOR_APPROXIMATION = 1e5;
+    private static long LIMIT_FOR_APPROXIMATION = 100000L;
 
     private static Log log = LogFactory.getLog( Wilcoxon.class.getName() );
 
@@ -73,6 +73,10 @@ public class Wilcoxon {
         for ( int i = 0; i < a.length; i++ ) {
             aSum += abR.get( i );
         }
+
+        if ( aSum > LIMIT_FOR_APPROXIMATION ) {
+            throw new IllegalArgumentException( "Computation of exact wilcoxon for large values of rank sum will fail." );
+        }
         return pExact( fullLength, a.length, aSum );
     }
 
@@ -83,6 +87,9 @@ public class Wilcoxon {
      * @return
      */
     public static double exactWilcoxonP( int N, int n, int R ) {
+        if ( R > LIMIT_FOR_APPROXIMATION ) {
+            throw new IllegalArgumentException( "Computation of exact wilcoxon for large values of R will fail." );
+        }
         return pExact( N, n, R );
     }
 
@@ -94,7 +101,7 @@ public class Wilcoxon {
      * @param R
      * @return
      */
-    public static double wilcoxonP( int N, int n, int R ) {
+    public static double wilcoxonP( int N, int n, long R ) {
         return wilcoxonP( N, n, R, false );
     }
 
@@ -105,17 +112,17 @@ public class Wilcoxon {
      * @param ties set to true if you know there are ties
      * @return
      */
-    public static double wilcoxonP( int N, int n, int R, boolean ties ) {
+    public static double wilcoxonP( int N, int n, long R, boolean ties ) {
 
         if ( n > N ) throw new IllegalArgumentException( "n must be less than N (n=" + n + ", N=" + N + ")" );
 
         if ( n == 0 && N == 0 ) return 1.0;
 
         if ( ( !ties )
-                && ( ( long ) N * n * R <= LIMIT_FOR_APPROXIMATION || R < N
-                        && n * Math.pow( R, 2 ) <= LIMIT_FOR_APPROXIMATION ) ) {
+                && ( ( ( long ) N * ( long ) n <= LIMIT_FOR_APPROXIMATION && ( long ) n * R <= LIMIT_FOR_APPROXIMATION && ( long ) N
+                        * ( long ) n * R <= LIMIT_FOR_APPROXIMATION ) || ( R < N && n * Math.pow( ( long ) R, 2 ) <= LIMIT_FOR_APPROXIMATION ) ) ) {
             if ( log.isDebugEnabled() ) log.debug( "Using exact method (" + N * n * R + ")" );
-            return pExact( N, n, R );
+            return pExact( N, n, ( int ) R );
         }
 
         double p = pGaussian( N, n, R );
@@ -152,7 +159,9 @@ public class Wilcoxon {
             p = r;
         }
 
-        return wilcoxonP( N, ranks.size(), Rank.rankSum( ranks ), ties );
+        long rankSum = Rank.rankSum( ranks );
+
+        return wilcoxonP( N, ranks.size(), rankSum, ties );
     }
 
     private static void addToCache( long N, long n, long R, BigInteger value ) {
@@ -289,7 +298,7 @@ public class Wilcoxon {
      * @param R
      * @return
      */
-    private static double pVolume( int N, int n, int R ) {
+    private static double pVolume( int N, int n, long R ) {
 
         double t = R / ( double ) N;
 
