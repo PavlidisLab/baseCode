@@ -18,24 +18,48 @@
  */
 package ubic.basecode.io.writer;
 
+import static org.junit.Assert.assertEquals;
 import hep.aida.ref.Histogram1D;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
 import ubic.basecode.util.RegressionTesting;
 
 /**
  * @author pavlidis
  * @version $Id$
  */
-public class TestHistogramWriter extends TestCase {
+public class TestHistogramWriter {
 
     Histogram1D m = new Histogram1D( "test", 10, 1, 10 );
     HistogramWriter w = new HistogramWriter();
 
+    /*
+     * @see TestCase#setUp()
+     */
+    @Before
+    public void setUp() throws Exception {
+        m.fill( 1.0 );
+        m.fill( 1.0 );
+        m.fill( 2.0 );
+        m.fill( 1.0 );
+        m.fill( 5.0 );
+        m.fill( 11.0 );
+        m.fill( 6.0 );
+        m.fill( 6.0 );
+        m.fill( 4.0 );
+        m.fill( 4.0 );
+        m.fill( 4.0 );
+        m.fill( 4.0 );
+
+    }
+
+    @Test
     public final void testWriter() {
         String expectedReturn = "";
         String actualReturn = "";
@@ -56,35 +80,6 @@ public class TestHistogramWriter extends TestCase {
         }
 
         assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
-    /*
-     * @see TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        m.fill( 1.0 );
-        m.fill( 1.0 );
-        m.fill( 2.0 );
-        m.fill( 1.0 );
-        m.fill( 5.0 );
-        m.fill( 11.0 );
-        m.fill( 6.0 );
-        m.fill( 6.0 );
-        m.fill( 4.0 );
-        m.fill( 4.0 );
-        m.fill( 4.0 );
-        m.fill( 4.0 );
-
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
 }

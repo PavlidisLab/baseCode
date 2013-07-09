@@ -128,9 +128,9 @@ public class StringDistance {
      * @param t
      * @param weight Controls how quickly (normalized by the length of the string) the bias towards the front drops off.
      *        The penalty for mismatches drops off linearly for the fraction of the String represented by
-     *        <code>weight</code>. A weight of 1.0 indicates the bias should be linear across the length of the
-     *        string. Intermediate values (e.g., 0.25) mean that differences beyond the first 1/4 of the string results
-     *        in no penalty.
+     *        <code>weight</code>. A weight of 1.0 indicates the bias should be linear across the length of the string.
+     *        Intermediate values (e.g., 0.25) mean that differences beyond the first 1/4 of the string results in no
+     *        penalty.
      * @return
      */
     public static double prefixWeightedHammingDistance( String s, String t, double weight ) {

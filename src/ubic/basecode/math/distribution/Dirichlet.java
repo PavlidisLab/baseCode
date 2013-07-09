@@ -85,9 +85,9 @@ public class Dirichlet {
 // ) { stop("error in call to rdirichlet") }
 // mat <- matrix ( NA, n, length(p) )
 // mat[,1] <- rbeta ( n, p[1], sum(p[-1]) )
-//     
+//
 // for ( i in 2:(length(p)-1) ) {
-//    
+//
 // mat[,i] <- ( rbeta ( n, p[i], sum(p[(i+1):length(p)]) )
 // * ( 1 - apply ((mat[,1:(i-1),drop=F]), 1, sum) )
 // )

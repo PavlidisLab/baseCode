@@ -18,20 +18,38 @@
  */
 package ubic.basecode.math;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author pavlidis
  * @version $Id$
  */
-public class TestROC extends TestCase {
+public class TestROC {
 
     List<Double> ranksOfPositives;
 
+    /*
+     * @see TestCase#setUp()
+     */
+    @Before
+    public void setUp() throws Exception {
+
+        // set up the ranks of the positives
+        ranksOfPositives = new Vector<Double>();
+        ranksOfPositives.add( 1.0 );
+        ranksOfPositives.add( 4.0 );
+        ranksOfPositives.add( 6.0 );
+    }
+
+    @Test
     public void testAroc() {
         double actualReturn = ROC.aroc( 10, ranksOfPositives );
         double expectedReturn = ( 21.0 - 5.0 ) / 21.0;
@@ -39,6 +57,7 @@ public class TestROC extends TestCase {
     }
 
     // wilcox.test(c(1,4,6), c(2,3,5,7,8,9,10), paired=F, alternative="l")
+    @Test
     public void testArocPvalue() {
         double actualReturn = ROC.rocpval( 10, ranksOfPositives );
         double expectedReturn = 0.13333333;
@@ -48,6 +67,7 @@ public class TestROC extends TestCase {
     /**
      * Bug 3620
      */
+    @Test
     public void testBig() {
         int totalSize = 450000;
         List<Double> x = new LinkedList<Double>();
@@ -56,20 +76,6 @@ public class TestROC extends TestCase {
         }
         assertTrue( 1.0 >= ROC.aroc( totalSize, x ) );
 
-    }
-
-    /*
-     * @see TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        // set up the ranks of the positives
-        ranksOfPositives = new Vector<Double>();
-        ranksOfPositives.add( 1.0 );
-        ranksOfPositives.add( 4.0 );
-        ranksOfPositives.add( 6.0 );
     }
 
 }

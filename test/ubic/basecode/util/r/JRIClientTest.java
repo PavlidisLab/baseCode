@@ -18,17 +18,23 @@
  */
 package ubic.basecode.util.r;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.rosuda.REngine.REXP;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
@@ -37,7 +43,6 @@ import ubic.basecode.dataStructure.matrix.ObjectMatrixImpl;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.math.Constants;
 import ubic.basecode.util.RegressionTesting;
-import ubic.basecode.util.r.JRIClient;
 import ubic.basecode.util.r.type.HTest;
 import ubic.basecode.util.r.type.LinearModelSummary;
 import ubic.basecode.util.r.type.OneWayAnovaResult;
@@ -47,7 +52,7 @@ import ubic.basecode.util.r.type.TwoWayAnovaResult;
  * @author pavlidis
  * @version $Id$
  */
-public class JRIClientTest extends TestCase {
+public class JRIClientTest {
     private static Log log = LogFactory.getLog( JRIClientTest.class.getName() );
 
     boolean connected = true;
@@ -56,7 +61,7 @@ public class JRIClientTest extends TestCase {
     double[] test2 = new double[] { 0.67676154, 0.20346679, 0.09289084, 0.68850551, 0.61120011 };
     DoubleMatrix<String, String> tester;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
 
         connected = JRIClient.ready();
@@ -83,12 +88,13 @@ public class JRIClientTest extends TestCase {
         assert rc.isConnected();
     }
 
-    @Override
+    @After
     public void tearDown() {
         tester = null;
         rc = null;
     }
 
+    @Test
     public void testAnovaA() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -111,6 +117,7 @@ public class JRIClientTest extends TestCase {
         assertEquals( 0.2012, r.getMainEffectBfVal(), 0.0001 );
     }
 
+    @Test
     public void testAnovaB() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -133,6 +140,7 @@ public class JRIClientTest extends TestCase {
         assertEquals( 0.0511, r.getMainEffectBfVal(), 0.0001 );
     }
 
+    @Test
     public void testAnovaC() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -157,6 +165,7 @@ public class JRIClientTest extends TestCase {
         assertEquals( 4.7178, r.getInteractionfVal(), 0.0001 );
     }
 
+    @Test
     public void testAnovaD() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -176,12 +185,13 @@ public class JRIClientTest extends TestCase {
         TwoWayAnovaResult r = rc.twoWayAnova( data, Arrays.asList( f1 ), Arrays.asList( f2 ), true );
         assertEquals( 0.006562, r.getMainEffectAPval(), 0.00001 );
         assertEquals( 0.548142, r.getMainEffectBPval(), 0.0001 );
-        assertEquals( Double.NaN, r.getInteractionPval() );
+        assertEquals( Double.NaN, r.getInteractionPval(), 0.0001 );
         assertEquals( 9412.4049, r.getMainEffectAfVal(), 0.0001 );
         assertEquals( 0.7381, r.getMainEffectBfVal(), 0.0001 );
-        assertEquals( Double.NaN, r.getInteractionfVal() );
+        assertEquals( Double.NaN, r.getInteractionfVal(), 0.0001 );
     }
 
+    @Test
     public void testAnovaE() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -203,6 +213,7 @@ public class JRIClientTest extends TestCase {
     /**
      * One way @
      */
+    @Test
     public void testAnovaF() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -222,6 +233,7 @@ public class JRIClientTest extends TestCase {
         assertEquals( 3.739, r.getFVal(), 0.001 );
     }
 
+    @Test
     public void testAssignAndRetrieveMatrix() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -233,6 +245,7 @@ public class JRIClientTest extends TestCase {
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
     }
 
+    @Test
     public void testAssignAndRetrieveMatrixB() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -243,6 +256,7 @@ public class JRIClientTest extends TestCase {
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
     }
 
+    @Test
     public void testDataFrameA() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -276,6 +290,7 @@ public class JRIClientTest extends TestCase {
 
     }
 
+    @Test
     public void testDoubleTwoDoubleArrayEval() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -289,6 +304,7 @@ public class JRIClientTest extends TestCase {
     /*
      * Test method for 'RCommand.exec(String)'
      */
+    @Test
     public void testExec() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -304,6 +320,7 @@ public class JRIClientTest extends TestCase {
     /*
      * Test method for 'exec(String)'
      */
+    @Test
     public void testExecDoubleArray() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -314,6 +331,7 @@ public class JRIClientTest extends TestCase {
         assertTrue( RegressionTesting.closeEnough( new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, dd, 0.001 ) );
     }
 
+    @Test
     public void testExecError() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test." );
@@ -345,6 +363,7 @@ public class JRIClientTest extends TestCase {
         }
     }
 
+    @Test
     public void testFactorAssign() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -387,6 +406,7 @@ public class JRIClientTest extends TestCase {
      * 
      * @
      */
+    @Test
     public void testLimmaA() throws Exception {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -428,6 +448,7 @@ public class JRIClientTest extends TestCase {
     /**
      * Like a two-sample t-test where the intercept is also of interest. @
      */
+    @Test
     public void testLinearModelA() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -468,6 +489,7 @@ public class JRIClientTest extends TestCase {
     /**
      * With a continuous covariate as well a categorical one. @
      */
+    @Test
     public void testLinearModelB() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -520,6 +542,7 @@ public class JRIClientTest extends TestCase {
     /**
      * @
      */
+    @Test
     public void testLinearModelC() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -573,6 +596,7 @@ public class JRIClientTest extends TestCase {
     /**
      * Basically a one-way anova with 4 levels in the factor. @
      */
+    @Test
     public void testLinearModelD() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -613,6 +637,7 @@ public class JRIClientTest extends TestCase {
         assertEquals( 0.00667, lms.getP(), 0.0001 );
     }
 
+    @Test
     public void testListEvalA() throws Exception {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -633,6 +658,7 @@ public class JRIClientTest extends TestCase {
 
     }
 
+    @Test
     public void testListEvalB() throws Exception {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );
@@ -654,6 +680,7 @@ public class JRIClientTest extends TestCase {
 
     }
 
+    @Test
     public void testStringListEval() {
         if ( !connected ) {
             log.warn( "Cannot load JRI, skipping test" );

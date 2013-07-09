@@ -14,19 +14,22 @@
  */
 package ubic.basecode.util;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
 
 /**
  * @author pavlidis
  * @version $Id$
  */
-public class TestStringUtil extends TestCase {
+public class TestStringUtil {
 
     private static Log log = LogFactory.getLog( TestStringUtil.class.getName() );
 
     // simple case
+    @Test
     public void testCsvSplitA() {
         String i = "foo,bar,aloo,balloo";
         String[] actualReturn = StringUtil.csvSplit( i );
@@ -38,6 +41,7 @@ public class TestStringUtil extends TestCase {
     }
 
     // field has comma
+    @Test
     public void testCsvSplitB() {
         String i = "foo,bar,aloo,\"bal,loo\"";
         String[] actualReturn = StringUtil.csvSplit( i );
@@ -49,6 +53,7 @@ public class TestStringUtil extends TestCase {
     }
 
     // two fields have commas
+    @Test
     public void testCsvSplitC() {
         String i = "\"f,oo\",bar,aloo,\"bal,loo\"";
         String[] actualReturn = StringUtil.csvSplit( i );
@@ -59,6 +64,7 @@ public class TestStringUtil extends TestCase {
     }
 
     // two commas in one field.
+    @Test
     public void testCsvSplitD() {
         String i = "foo,\"b,a,r\",aloo,balloo";
         String[] actualReturn = StringUtil.csvSplit( i );
@@ -68,6 +74,7 @@ public class TestStringUtil extends TestCase {
     }
 
     // comma at start of field
+    @Test
     public void testCsvSplitE() {
         String i = "foo,\",bar\",aloo,balloo";
         String[] actualReturn = StringUtil.csvSplit( i );
@@ -78,6 +85,7 @@ public class TestStringUtil extends TestCase {
     }
 
     // empty quoted field
+    @Test
     public void testCsvSplitF() {
         String i = "foo,\"\",aloo,balloo";
         String[] actualReturn = StringUtil.csvSplit( i );
@@ -88,6 +96,7 @@ public class TestStringUtil extends TestCase {
         assertEquals( expectedReturn[3], actualReturn[3] );
     }
 
+    @Test
     public void testTwoStringHashKey() {
         String i = "foo";
         String j = "bar";
@@ -107,25 +116,11 @@ public class TestStringUtil extends TestCase {
 
     }
 
+    @Test
     public void testTwoStringHashKeyB() {
         String i = "foo";
         String j = "bar";
         assertEquals( StringUtil.twoStringHashKey( i, j ), StringUtil.twoStringHashKey( j, i ) );
     }
 
-    /*
-     * @see TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
 }

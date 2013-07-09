@@ -18,7 +18,6 @@
  */
 package ubic.basecode.ontology.model;
 
- 
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.Restriction;
 
@@ -28,17 +27,17 @@ import com.hp.hpl.jena.ontology.Restriction;
  */
 public class RestrictionFactory {
 
-    public static OntologyRestriction asRestriction( Restriction restriction  ) {
+    public static OntologyRestriction asRestriction( Restriction restriction ) {
 
         OntProperty onProperty = restriction.getOnProperty();
 
         if ( onProperty.isDatatypeProperty() ) {
-            return new OntologyDatatypeRestrictionImpl( restriction    );
+            return new OntologyDatatypeRestrictionImpl( restriction );
         } else if ( onProperty.isObjectProperty() ) {
             if ( restriction.isCardinalityRestriction() ) {
-                return new OntologyCardinalityRestrictionImpl( restriction    );
+                return new OntologyCardinalityRestrictionImpl( restriction );
             }
-            return new OntologyClassRestrictionImpl( restriction    );
+            return new OntologyClassRestrictionImpl( restriction );
 
         } else {
             throw new UnsupportedOperationException( "Sorry, can't convert "

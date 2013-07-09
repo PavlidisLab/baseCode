@@ -18,18 +18,21 @@
  */
 package ubic.basecode.dataStructure.graph;
 
+import static junit.framework.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class TestDirectedGraph extends TestCase {
+public class TestDirectedGraph {
     DirectedGraph<String, String> testGraph;
     DirectedGraph<String, String> testGraphCycle; // has a cycle.
 
@@ -38,8 +41,9 @@ public class TestDirectedGraph extends TestCase {
      * 
      * @param arg0
      */
-    public TestDirectedGraph( String arg0 ) {
-        super( arg0 );
+    @Before
+    public void setup() {
+
         testGraph = new DirectedGraph<String, String>();
 
         testGraph.addNode( "b", "bee." );
@@ -78,6 +82,7 @@ public class TestDirectedGraph extends TestCase {
         testGraphCycle.addParentTo( "f", "e" ); // cycle
     }
 
+    @Test
     public void testGetChildren() {
         DirectedGraphNode<String, String> n = testGraph.get( "c" );
         String actualReturn = n.getChildGraph().toString();
@@ -85,6 +90,7 @@ public class TestDirectedGraph extends TestCase {
         assertEquals( "return", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testTopoSort() {
         testGraph.topoSort();
         List<DirectedGraphNode<String, String>> nodes = new ArrayList<DirectedGraphNode<String, String>>( testGraph
@@ -100,26 +106,11 @@ public class TestDirectedGraph extends TestCase {
         assertEquals( "return", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testToString() {
         String expectedReturn = "aaa.\n\tbee.\n\tcee.\n\t\tdee.\n\t\teee.\n\t\teff.\n";
         String actualReturn = testGraph.toString();
         assertEquals( "return", expectedReturn, actualReturn );
-    }
-
-    /*
-     * @see TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
 }

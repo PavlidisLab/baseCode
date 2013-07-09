@@ -18,8 +18,7 @@
  */
 package ubic.basecode.ontology.model;
 
-import ubic.basecode.ontology.AbstractOntologyResource;
- 
+
 /**
  * @author pavlidis
  * @version $Id$

@@ -75,13 +75,13 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
     @Override
     public DoubleMatrix1D assign( double[] v ) {
         this.indexes = new IntArrayList();
-        this.values = new DoubleArrayList(); 
+        this.values = new DoubleArrayList();
         for ( int i = 0; i < v.length; i++ ) {
             if ( v[i] == 0 || Double.isNaN( v[i] ) ) {
                 continue;
             }
             this.indexes.add( i );
-            this.values.add( v[i] );  
+            this.values.add( v[i] );
         }
         this.size = v.length;
         return this;
@@ -222,7 +222,7 @@ public class RCDoubleMatrix1D extends DoubleMatrix1D {
      * 
      * @see cern.colt.matrix.DoubleMatrix1D#viewSelectionLike(int[])
      */
-    @Override 
+    @Override
     protected DoubleMatrix1D viewSelectionLike( int[] offsets ) {
         throw new UnsupportedOperationException(); // should never be called
     }

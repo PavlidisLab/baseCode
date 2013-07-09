@@ -18,21 +18,24 @@
  */
 package ubic.basecode.io;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import cern.colt.list.DoubleArrayList;
-
-import junit.framework.TestCase;
 
 /**
  * @version $Id$
  * @author pavlidis
  */
-public class TestByteArrayConverter extends TestCase {
+public class TestByteArrayConverter {
     private int a = 424542;
     private int b = 25425;
 
@@ -83,132 +86,11 @@ public class TestByteArrayConverter extends TestCase {
 
     private double[] wholeBunchOfDoubles;
 
-    public void testBooleansToByteArray() {
-        byte[] actual = bac.booleanArrayToBytes( testbools );
-        for ( int i = 0; i < boolbytes.length; i++ ) {
-            assertEquals( boolbytes[i], actual[i] );
-        }
-    }
-
-    public void testBooleansToLongArray() {
-        byte[] actual = bac.longArrayToBytes( testlong );
-        for ( int i = 0; i < expectedLong.length; i++ ) {
-            assertEquals( expectedLong[i], actual[i] );
-        }
-    }
-
-    public void testByteArrayToBooleans() {
-        boolean[] actual = bac.byteArrayToBooleans( boolbytes );
-        for ( int i = 0; i < testbools.length; i++ ) {
-            assertEquals( testbools[i], actual[i] );
-        }
-    }
-
-    // test blob -> double[]
-    public void testByteArrayToDoubleConversionSpeed() {
-        byte[] lottaBytes = bac.doubleArrayToBytes( wholeBunchOfDoubles );
-        bac.byteArrayToDoubles( lottaBytes );
-    }
-
-    public void testByteArrayToDoubleMatrix() {
-        double[][] testm = new double[][] { { 1, 2 }, { 3, 4 }, { 5, 6 } };
-        double[][] actualReturn = bac.byteArrayToDoubleMatrix( bac.doubleMatrixToBytes( testm ), 2 );
-        for ( int i = 0; i < testm.length; i++ ) {
-            for ( int j = 0; j < testm[i].length; j++ ) {
-                assertEquals( testm[i][j], actualReturn[i][j], 0.001 );
-            }
-        }
-    }
-
-    /**
-     * 
-     *
-     */
-    public void testByteArrayToDoubles() {
-        double[] actualReturn = bac.byteArrayToDoubles( bac.doubleArrayToBytes( testD ) );
-        double[] expectedValue = testD;
-        for ( int i = 0; i < actualReturn.length; i++ ) {
-            assertEquals( "return value", expectedValue[i], actualReturn[i], 0 );
-        }
-    }
-
-    public void testByteArrayToLongs() {
-        long[] actual = bac.byteArrayToLongs( expectedLong );
-        for ( int i = 0; i < testlong.length; i++ ) {
-            assertEquals( testlong[i], actual[i] );
-        }
-    }
-
-    public void testByteArrayToTabbedString() {
-        String bools = bac.byteArrayToTabbedString( boolbytes, Boolean.class );
-        assertEquals( "true\tfalse\ttrue\ttrue\tfalse\ttrue", bools );
-    }
-
-    // test double[] -> blob.
-    public void testDoubleArrayToByteArrayConversionSpeed() {
-        bac.doubleArrayToBytes( wholeBunchOfDoubles );
-    }
-
-    /**
-     * 
-     *
-     */
-    public void testDoubleArrayToBytes() {
-        byte[] actualReturn = bac.doubleArrayToBytes( testD );
-        byte[] expectedValue = expectedBfD;
-        for ( int i = 0; i < expectedValue.length; i++ ) {
-            assertEquals( "return value", expectedValue[i], actualReturn[i] );
-        }
-
-        actualReturn = bac.doubleArrayToBytes( testDO );
-        for ( int i = 0; i < expectedValue.length; i++ ) {
-            assertEquals( "return value", expectedValue[i], actualReturn[i] );
-        }
-        actualReturn = bac.doubleArrayToBytes( tesDAL );
-        for ( int i = 0; i < expectedValue.length; i++ ) {
-            assertEquals( "return value", expectedValue[i], actualReturn[i] );
-        }
-    }
-
-    // test double[] -> delimited string.
-    public void testDoubleArrayToDelimitedStringConversionSpeed() {
-        sc.doubleArrayToString( wholeBunchOfDoubles );
-    }
-
-    public void testIntsToBytes() {
-        int[] actualReturn = bac.byteArrayToInts( bac.intArrayToBytes( testInts ) );
-        for ( int i = 0; i < testInts.length; i++ ) {
-            assertEquals( testInts[i], actualReturn[i] );
-            // System.err.println( actualReturn[i] );
-        }
-    }
-
-    public void testObjectToBytes() {
-        checkBytes( boolbytes, bac.toBytes( ArrayUtils.toObject( testbools ) ) );
-        checkBytes( expectedBfD, bac.toBytes( ArrayUtils.toObject( testD ) ) );
-        checkBytes( expectedBfC, bac.toBytes( ArrayUtils.toObject( testC ) ) );
-        checkBytes( expectedBfI, bac.toBytes( ArrayUtils.toObject( testI ) ) );
-    }
-
-    public void testStringToBytes() {
-        String[] actualReturn = bac.byteArrayToStrings( bac.stringArrayToBytes( testStrings ) );
-        for ( int i = 0; i < testStrings.length; i++ ) {
-            assertEquals( testStrings[i], actualReturn[i] );
-            // System.err.println( actualReturn[i] );
-        }
-    }
-
-    // test string -> double[]
-    public void testStringToDoubleArrayConversionSpeed() {
-        sc.stringToDoubles( longDoubleString );
-    }
-
     /*
      * @see TestCase#setUp()
      */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
 
         bac = new ByteArrayConverter();
         sc = new StringConverter();
@@ -246,13 +128,147 @@ public class TestByteArrayConverter extends TestCase {
     /*
      * @see TestCase#tearDown()
      */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
         longDoubleString = null;
         wholeBunchOfDoubles = null;
         bac = null;
         sc = null;
+    }
+
+    @Test
+    public void testBooleansToByteArray() {
+        byte[] actual = bac.booleanArrayToBytes( testbools );
+        for ( int i = 0; i < boolbytes.length; i++ ) {
+            assertEquals( boolbytes[i], actual[i] );
+        }
+    }
+
+    @Test
+    public void testBooleansToLongArray() {
+        byte[] actual = bac.longArrayToBytes( testlong );
+        for ( int i = 0; i < expectedLong.length; i++ ) {
+            assertEquals( expectedLong[i], actual[i] );
+        }
+    }
+
+    @Test
+    public void testByteArrayToBooleans() {
+        boolean[] actual = bac.byteArrayToBooleans( boolbytes );
+        for ( int i = 0; i < testbools.length; i++ ) {
+            assertEquals( testbools[i], actual[i] );
+        }
+    }
+
+    // test blob -> double[]
+    @Test
+    public void testByteArrayToDoubleConversionSpeed() {
+        byte[] lottaBytes = bac.doubleArrayToBytes( wholeBunchOfDoubles );
+        bac.byteArrayToDoubles( lottaBytes );
+    }
+
+    @Test
+    public void testByteArrayToDoubleMatrix() {
+        double[][] testm = new double[][] { { 1, 2 }, { 3, 4 }, { 5, 6 } };
+        double[][] actualReturn = bac.byteArrayToDoubleMatrix( bac.doubleMatrixToBytes( testm ), 2 );
+        for ( int i = 0; i < testm.length; i++ ) {
+            for ( int j = 0; j < testm[i].length; j++ ) {
+                assertEquals( testm[i][j], actualReturn[i][j], 0.001 );
+            }
+        }
+    }
+
+    /**
+     * 
+     *
+     */
+    @Test
+    public void testByteArrayToDoubles() {
+        double[] actualReturn = bac.byteArrayToDoubles( bac.doubleArrayToBytes( testD ) );
+        double[] expectedValue = testD;
+        for ( int i = 0; i < actualReturn.length; i++ ) {
+            assertEquals( "return value", expectedValue[i], actualReturn[i], 0 );
+        }
+    }
+
+    @Test
+    public void testByteArrayToLongs() {
+        long[] actual = bac.byteArrayToLongs( expectedLong );
+        for ( int i = 0; i < testlong.length; i++ ) {
+            assertEquals( testlong[i], actual[i] );
+        }
+    }
+
+    @Test
+    public void testByteArrayToTabbedString() {
+        String bools = bac.byteArrayToTabbedString( boolbytes, Boolean.class );
+        assertEquals( "true\tfalse\ttrue\ttrue\tfalse\ttrue", bools );
+    }
+
+    // test double[] -> blob.
+    @Test
+    public void testDoubleArrayToByteArrayConversionSpeed() {
+        bac.doubleArrayToBytes( wholeBunchOfDoubles );
+    }
+
+    /**
+     * 
+     *
+     */
+    @Test
+    public void testDoubleArrayToBytes() {
+        byte[] actualReturn = bac.doubleArrayToBytes( testD );
+        byte[] expectedValue = expectedBfD;
+        for ( int i = 0; i < expectedValue.length; i++ ) {
+            assertEquals( "return value", expectedValue[i], actualReturn[i] );
+        }
+
+        actualReturn = bac.doubleArrayToBytes( testDO );
+        for ( int i = 0; i < expectedValue.length; i++ ) {
+            assertEquals( "return value", expectedValue[i], actualReturn[i] );
+        }
+        actualReturn = bac.doubleArrayToBytes( tesDAL );
+        for ( int i = 0; i < expectedValue.length; i++ ) {
+            assertEquals( "return value", expectedValue[i], actualReturn[i] );
+        }
+    }
+
+    // test double[] -> delimited string.
+    @Test
+    public void testDoubleArrayToDelimitedStringConversionSpeed() {
+        sc.doubleArrayToString( wholeBunchOfDoubles );
+    }
+
+    @Test
+    public void testIntsToBytes() {
+        int[] actualReturn = bac.byteArrayToInts( bac.intArrayToBytes( testInts ) );
+        for ( int i = 0; i < testInts.length; i++ ) {
+            assertEquals( testInts[i], actualReturn[i] );
+            // System.err.println( actualReturn[i] );
+        }
+    }
+
+    @Test
+    public void testObjectToBytes() {
+        checkBytes( boolbytes, bac.toBytes( ArrayUtils.toObject( testbools ) ) );
+        checkBytes( expectedBfD, bac.toBytes( ArrayUtils.toObject( testD ) ) );
+        checkBytes( expectedBfC, bac.toBytes( ArrayUtils.toObject( testC ) ) );
+        checkBytes( expectedBfI, bac.toBytes( ArrayUtils.toObject( testI ) ) );
+    }
+
+    @Test
+    public void testStringToBytes() {
+        String[] actualReturn = bac.byteArrayToStrings( bac.stringArrayToBytes( testStrings ) );
+        for ( int i = 0; i < testStrings.length; i++ ) {
+            assertEquals( testStrings[i], actualReturn[i] );
+            // System.err.println( actualReturn[i] );
+        }
+    }
+
+    // test string -> double[]
+    @Test
+    public void testStringToDoubleArrayConversionSpeed() {
+        sc.stringToDoubles( longDoubleString );
     }
 
     private void checkBytes( byte[] expected, byte[] actual ) {

@@ -18,6 +18,11 @@
  */
 package ubic.basecode.datafilter;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
 /**
@@ -28,30 +33,23 @@ public class TestItemLevelFilter extends AbstractTestFilter {
 
     ItemLevelFilter<String, String> f = null;
 
+    /*
+     * @see TestCase#setUp()
+     */
+    @Before
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        f = new ItemLevelFilter<String, String>();
+    }
+
+    @Test
     public final void testFilter() {
         f.setLowCut( 0.0 );
         DoubleMatrix<String, String> result = f.filter( testdata );
         int expectedReturn = 283;
         int actualReturn = result.rows() * result.columns() - result.numMissing();
         assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
-    /*
-     * @see TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        f = new ItemLevelFilter<String, String>();
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-
     }
 
 }

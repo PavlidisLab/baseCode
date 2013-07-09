@@ -24,14 +24,22 @@ import java.io.IOException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jena.larq.IndexBuilderSubject;
+import org.apache.jena.larq.IndexLARQ;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.MultiReader;
+import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
 
 import ubic.basecode.ontology.Configuration;
 
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.query.larq.IndexBuilderSubject;
-import com.hp.hpl.jena.query.larq.IndexLARQ;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 /**
@@ -44,22 +52,11 @@ public class OntologyIndexer {
 
     /**
      * @param name
-     * @return
+     * @return indexlarq with default analyzer (English)
      */
     public static IndexLARQ getSubjectIndex( String name ) {
-        log.debug( "Loading index: " + name );
-        File indexdir = getIndexPath( name );
-        try {
-            FSDirectory directory = FSDirectory.getDirectory( indexdir );
-            if ( IndexReader.indexExists( directory ) ) {
-                IndexReader reader = IndexReader.open( directory );
-                return new IndexLARQ( reader );
-            }
-            throw new IllegalArgumentException( "No index with name " + name );
-
-        } catch ( IOException e ) {
-            throw new RuntimeException( e );
-        }
+        Analyzer analyzer = new EnglishAnalyzer( Version.LUCENE_36 );
+        return getSubjectIndex( name, analyzer );
     }
 
     /**
@@ -112,6 +109,35 @@ public class OntologyIndexer {
     }
 
     /**
+     * @param name
+     * @param analyzer
+     * @return
+     */
+    private static IndexLARQ getSubjectIndex( String name, Analyzer analyzer ) {
+        log.debug( "Loading index: " + name );
+        File indexdir = getIndexPath( name );
+        File indexdirstd = getIndexPath( name + ".std" );
+        try {
+            FSDirectory directory = FSDirectory.open( indexdir );
+            FSDirectory directorystd = FSDirectory.open( indexdirstd );
+            if ( !IndexReader.indexExists( directory ) ) {
+                throw new IllegalArgumentException( "No index with name " + indexdir );
+            }
+            if ( !IndexReader.indexExists( directorystd ) ) {
+                throw new IllegalArgumentException( "No index with name " + indexdirstd );
+            }
+
+            IndexReader reader = IndexReader.open( directory );
+            IndexReader readerstd = IndexReader.open( directorystd );
+            MultiReader r = new MultiReader( reader, readerstd );
+            return new IndexLARQ( r, analyzer );
+
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    /**
      * Create an on-disk index from an existing OntModel. Any existing index will be deleted/overwritten.
      * 
      * @see {@link http://jena.apache.org/documentation/larq/}
@@ -124,19 +150,77 @@ public class OntologyIndexer {
 
         File indexdir = getIndexPath( name );
 
-        log.info( "Index to: " + indexdir );
+        try {
+            FSDirectory dir = FSDirectory.open( indexdir );
+            log.info( "Index to: " + indexdir );
 
-        StmtIterator listStatements = model.listStatements( new IndexerSelector() );
+            /*
+             * adjust the analyzer ...
+             */
+            Analyzer analyzer = new EnglishAnalyzer( Version.LUCENE_36 );
+            IndexWriterConfig config = new IndexWriterConfig( Version.LUCENE_36, analyzer );
+            IndexWriter indexWriter = new IndexWriter( dir, config );
+            indexWriter.deleteAll(); // start with clean slate.
+            assert 0 == indexWriter.numDocs();
 
-        IndexBuilderSubject larqSubjectBuilder = new IndexBuilderSubject( indexdir );
+            IndexBuilderSubject larqSubjectBuilder = new IndexBuilderSubject( indexWriter );
+            StmtIterator listStatements = model.listStatements( new IndexerSelector() );
+            larqSubjectBuilder.indexStatements( listStatements );
+            indexWriter.commit();
+            log.info( indexWriter.numDocs() + " Statements indexed..." );
+            indexWriter.close();
 
-        larqSubjectBuilder.indexStatements( listStatements );
-        // indexWriter.close();
+            Directory dirstd = indexStd( name, model );
 
-        larqSubjectBuilder.closeWriter();
+            MultiReader r = new MultiReader( IndexReader.open( dir ), IndexReader.open( dirstd ) );
 
-        IndexLARQ index = larqSubjectBuilder.getIndex();
-        return index;
-
+            // workaround to get the EnglishAnalyzer.
+            IndexLARQ index = new IndexLARQ( r, new EnglishAnalyzer( Version.LUCENE_36 ) );
+            // larqSubjectBuilder.getIndex(); // always returns a StandardAnalyazer
+            assert index.getLuceneQueryParser().getAnalyzer() instanceof EnglishAnalyzer;
+            return index;
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
     }
+
+    /**
+     * We need to also analyze using the Standard analyzer, which doesn't do stemming and allows wildcard.
+     */
+    private static Directory indexStd( String name, OntModel model ) throws IOException {
+
+        File file = getIndexPath( name + ".std" );
+
+        FSDirectory dir = FSDirectory.open( file );
+        dir.getLockFactory().clearLock( dir.getLockID() );
+        log.info( "Index to: " + file );
+        Analyzer analyzer = new StandardAnalyzer( Version.LUCENE_36 );
+        IndexWriterConfig config = new IndexWriterConfig( Version.LUCENE_36, analyzer );
+        IndexWriter indexWriter = new IndexWriter( dir, config );
+        indexWriter.deleteAll();
+        IndexBuilderSubject larqSubjectBuilder = new IndexBuilderSubject( indexWriter );
+        StmtIterator listStatements = model.listStatements( new IndexerSelector() );
+        larqSubjectBuilder.indexStatements( listStatements );
+        indexWriter.commit();
+        log.info( indexWriter.numDocs() + " Statements indexed..." );
+        indexWriter.close();
+        return dir;
+    }
+    /*
+     * Allow adding custom stopwords for particular ontologies like "disease" for DO.
+     */
+    // private static Set<?> getStopWords( String name ) {
+    // /*
+    // * Look for a file like 'name.stopwordsfile'
+    // */
+    // Set<String> stopWords = new HashSet<String>();
+    // String path = Configuration.getString( name + ".stopwordsfile" );
+    // if ( StringUtils.isNotBlank( path ) ) {
+    //
+    // } else {
+    //
+    // }
+    //
+    // return stopWords;
+    // }
 }

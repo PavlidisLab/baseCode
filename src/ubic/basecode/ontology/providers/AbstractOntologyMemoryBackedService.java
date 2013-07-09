@@ -17,12 +17,11 @@ package ubic.basecode.ontology.providers;
 import java.io.IOException;
 import java.io.InputStream;
 
+import ubic.basecode.ontology.OntologyLoader;
+import ubic.basecode.ontology.search.OntologyIndexer;
+
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
-
-import ubic.basecode.ontology.OntologyLoader;
-import ubic.basecode.ontology.providers.AbstractOntologyService;
-import ubic.basecode.ontology.search.OntologyIndexer;
 
 /**
  * This class has some stuff that's specific to in-memory ontologies. Unlike database backed ontologies we don't use a

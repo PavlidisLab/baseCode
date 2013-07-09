@@ -18,7 +18,11 @@
  */
 package ubic.basecode.math.metaanalysis;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import cern.colt.list.DoubleArrayList;
 
 /**
@@ -27,7 +31,7 @@ import cern.colt.list.DoubleArrayList;
  * @author pavlidis
  * @version $Id$
  */
-public class TestCorrelationEffectMetaAnalysis extends TestCase {
+public class TestCorrelationEffectMetaAnalysis {
 
     DoubleArrayList ds3n;
     DoubleArrayList ds3r;
@@ -37,90 +41,11 @@ public class TestCorrelationEffectMetaAnalysis extends TestCase {
     CorrelationEffectMetaAnalysis zf;
     CorrelationEffectMetaAnalysis zr;
 
-    public void testRunUFEffect() {
-        uf.run( ds3r, ds3n );
-
-        double actualReturn = uf.getE();
-
-        double expectedReturn = 0.39779;
-        assertEquals( "return value", expectedReturn, actualReturn, 0.001 );
-    }
-
-    public void testRunUFVar() {
-        uf.run( ds3r, ds3n );
-
-        double actualReturn = uf.getV();
-        double expectedReturn = 0.00118;
-
-        assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
-    }
-
-    public void testRunUFZscore() {
-        uf.run( ds3r, ds3n );
-
-        double actualReturn = uf.getZ();
-
-        double expectedReturn = 11.56;
-        assertEquals( "return value", expectedReturn, actualReturn, 0.1 ); // this is failing with 0.01
-    }
-
-    //
-    public void testRunURBSV() {
-        ur.run( ds3r, ds3n );
-        double actualReturn = ur.getBsv();
-        double expectedReturn = 0.0085;
-        assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
-    }
-
-    //   
-    // public void testRunURZscore() {
-    // ur.run( ds3r, ds3n );
-    // double actualReturn = ur.getZ();
-    // double expectedReturn = 0;
-    // assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
-    // }
-
-    public void testRunZFEffect() {
-        zf.run( ds3r, ds3n );
-        double actualReturn = zf.getE();
-        double expectedReturn = 0.379;
-        assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
-    }
-
-    public void testRunZFVar() {
-        zf.run( ds3r, ds3n );
-        double actualReturn = zf.getV();
-        double expectedReturn = 0.0019;
-        assertEquals( "return value", expectedReturn, actualReturn, 0.001 );
-    }
-
-    public void testRunZFZscore() {
-        zf.run( ds3r, ds3n );
-        double actualReturn = zf.getZ();
-        double expectedReturn = 8.748; // the value in the book (8.64) suffers from some serious roundoff errors.
-        assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
-    }
-
-    public void testRunZRBSV() {
-        zr.run( ds3r, ds3n );
-        double actualReturn = zr.getBsv();
-        double expectedReturn = 0.0041;
-        assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
-    }
-
-    public void testRunZRQval() {
-        zr.run( ds3r, ds3n );
-        double actualReturn = zr.getQ();
-        double expectedReturn = 20.94;
-        assertEquals( "return value", expectedReturn, actualReturn, 0.1 );
-    }
-
     /*
      * @see TestCase#setUp()
      */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
 
         // From Appendix A of Cooper and Hedges: Data Set III.
         ds3n = new DoubleArrayList( new double[] { 10, 20, 13, 22, 28, 12, 12, 36, 19, 12, 36, 75, 33, 121, 37, 14, 40,
@@ -135,19 +60,98 @@ public class TestCorrelationEffectMetaAnalysis extends TestCase {
         ur = new CorrelationEffectMetaAnalysis( false, false );
     }
 
+    @Test
+    public void testRunUFEffect() {
+        uf.run( ds3r, ds3n );
+
+        double actualReturn = uf.getE();
+
+        double expectedReturn = 0.39779;
+        assertEquals( "return value", expectedReturn, actualReturn, 0.001 );
+    }
+
+    @Test
+    public void testRunUFVar() {
+        uf.run( ds3r, ds3n );
+
+        double actualReturn = uf.getV();
+        double expectedReturn = 0.00118;
+
+        assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
+    }
+
+    @Test
+    public void testRunUFZscore() {
+        uf.run( ds3r, ds3n );
+
+        double actualReturn = uf.getZ();
+
+        double expectedReturn = 11.56;
+        assertEquals( "return value", expectedReturn, actualReturn, 0.1 ); // this is failing with 0.01
+    }
+
+    //
+    // public void testRunURZscore() {
+    // ur.run( ds3r, ds3n );
+    // double actualReturn = ur.getZ();
+    // double expectedReturn = 0;
+    // assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
+    // }
+
+    //
+    @Test
+    public void testRunURBSV() {
+        ur.run( ds3r, ds3n );
+        double actualReturn = ur.getBsv();
+        double expectedReturn = 0.0085;
+        assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
+    }
+
+    @Test
+    public void testRunZFEffect() {
+        zf.run( ds3r, ds3n );
+        double actualReturn = zf.getE();
+        double expectedReturn = 0.379;
+        assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
+    }
+
+    @Test
+    public void testRunZFVar() {
+        zf.run( ds3r, ds3n );
+        double actualReturn = zf.getV();
+        double expectedReturn = 0.0019;
+        assertEquals( "return value", expectedReturn, actualReturn, 0.001 );
+    }
+
+    @Test
+    public void testRunZFZscore() {
+        zf.run( ds3r, ds3n );
+        double actualReturn = zf.getZ();
+        double expectedReturn = 8.748; // the value in the book (8.64) suffers from some serious roundoff errors.
+        assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
+    }
+
+    @Test
+    public void testRunZRBSV() {
+        zr.run( ds3r, ds3n );
+        double actualReturn = zr.getBsv();
+        double expectedReturn = 0.0041;
+        assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
+    }
+
+    @Test
+    public void testRunZRQval() {
+        zr.run( ds3r, ds3n );
+        double actualReturn = zr.getQ();
+        double expectedReturn = 20.94;
+        assertEquals( "return value", expectedReturn, actualReturn, 0.1 );
+    }
+
     // public void testRunZRZscore() {
     // zr.run( ds3r, ds3n );
     // double actualReturn = zr.getZ();
     // double expectedReturn = 0;
     // assertEquals( "return value", expectedReturn, actualReturn, 0.00001 );
     // }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
 
 }

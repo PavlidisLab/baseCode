@@ -18,6 +18,12 @@
  */
 package ubic.basecode.datafilter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.StringMatrix;
 
@@ -30,8 +36,20 @@ import ubic.basecode.dataStructure.matrix.StringMatrix;
 public class TestRowMissingFilter extends AbstractTestFilter {
 
     RowMissingFilter<DoubleMatrix<String, String>, String, String, Double> f = null;
-    RowMissingFilter<StringMatrix<String, String>, String, String, String> fss = null; 
+    RowMissingFilter<StringMatrix<String, String>, String, String, String> fss = null;
 
+    /*
+     * @see TestCase#setUp()
+     */
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        f = new RowMissingFilter<DoubleMatrix<String, String>, String, String, Double>();
+        fss = new RowMissingFilter<StringMatrix<String, String>, String, String, String>();
+    }
+
+    @Test
     public void testFilter() {
         f.setMinPresentCount( 12 );
         DoubleMatrix<String, String> filtered = f.filter( testdata );
@@ -40,6 +58,7 @@ public class TestRowMissingFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testFilterFraction() {
         f.setMinPresentFraction( 1.0 );
         DoubleMatrix<String, String> filtered = f.filter( testmissingdata );
@@ -48,26 +67,29 @@ public class TestRowMissingFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testFilterFractionInvalid() {
         try {
             f.setMinPresentFraction( 934109821 );
             fail( "Should have gotten an exception" );
         } catch ( IllegalArgumentException e ) {
-
+            // ok
         }
 
     }
 
+    @Test
     public void testFilterFractionInvalid2() {
         try {
             f.setMinPresentCount( -1093 );
             fail( "Should have gotten an exception" );
         } catch ( IllegalArgumentException e ) {
-
+            // ok
         }
 
     }
 
+    @Test
     public void testFilterNoFiltering() {
         DoubleMatrix<String, String> filtered = f.filter( testdata );
         int expectedReturn = testdata.rows();
@@ -75,17 +97,19 @@ public class TestRowMissingFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testFilterPresentCountInvalid() {
         try {
             f.setMinPresentCount( 129 );
             f.filter( testmissingdata );
             fail( "Should have gotten an exception" );
         } catch ( IllegalStateException e ) {
-
+            // ok
         }
 
     }
 
+    @Test
     public void testFilterStringMatrix() {
         fss.setMinPresentCount( 12 );
         StringMatrix<String, String> filtered = fss.filter( teststringmissingdata );
@@ -94,6 +118,7 @@ public class TestRowMissingFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testFilterWithMissing() {
         f.setMinPresentCount( 12 );
         DoubleMatrix<String, String> filtered = f.filter( testmissingdata );
@@ -102,6 +127,7 @@ public class TestRowMissingFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testFilterWithMissingLessStringent() {
 
         f.setMinPresentCount( 10 );
@@ -111,6 +137,7 @@ public class TestRowMissingFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testFilterWithMissingLowMaxFraction() {
         f.setMaxFractionRemoved( 0.1 );
         f.setMinPresentCount( 12 );
@@ -120,33 +147,15 @@ public class TestRowMissingFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testMaxFractionRemovedInvalid() {
         try {
             f.setMaxFractionRemoved( 934109821 );
             fail( "Should have gotten an exception" );
         } catch ( IllegalArgumentException e ) {
-
+            // ok
         }
 
-    }
-
-    /*
-     * @see TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        f = new RowMissingFilter<DoubleMatrix<String, String>, String, String, Double>();
-        fss = new RowMissingFilter<StringMatrix<String, String>, String, String, String>(); 
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        f = null;
-        super.tearDown();
     }
 
 }

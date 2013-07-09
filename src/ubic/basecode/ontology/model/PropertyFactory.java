@@ -20,7 +20,7 @@ package ubic.basecode.ontology.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
- 
+
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
@@ -40,12 +40,12 @@ public class PropertyFactory {
      * @param source
      * @return
      */
-    public static ubic.basecode.ontology.model.OntologyProperty asProperty( OntProperty property  ) {
+    public static ubic.basecode.ontology.model.OntologyProperty asProperty( OntProperty property ) {
 
         if ( property.isObjectProperty() ) {
-            return new ObjectPropertyImpl( property.asObjectProperty()  );
+            return new ObjectPropertyImpl( property.asObjectProperty() );
         } else if ( property.isDatatypeProperty() ) {
-            return new DatatypePropertyImpl( property.asDatatypeProperty()    );
+            return new DatatypePropertyImpl( property.asDatatypeProperty() );
         } else {
             log.warn( "Sorry, can't convert " + property.getClass().getName() + ": " + property );
             return null;

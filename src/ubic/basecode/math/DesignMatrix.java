@@ -33,7 +33,6 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrix;
 import ubic.basecode.dataStructure.matrix.StringMatrix;
 import ubic.basecode.util.r.type.LinearModelSummary;
-
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 

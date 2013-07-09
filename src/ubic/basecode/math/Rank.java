@@ -148,7 +148,7 @@ public class Rank {
         for ( int i = 0; i < size; i++ ) {
             RankData<Double> rankData = ranks.get( i );
             int index = rankData.getIndex();
-            Double val = ( Double ) rankData.getValue();
+            Double val = rankData.getValue();
 
             result.set( index, nominalRank ); // might not keep.
 
@@ -317,22 +317,23 @@ public class Rank {
     /**
      * @param m
      * @param desc
-     * @param values
+     * @param values this gets sorted.
      * @return
      */
+    @SuppressWarnings("unchecked")
     private static <K> Map<K, Double> rankTransform( Map<K, ? extends Comparable<?>> m, boolean desc,
             List<KeyAndValueData<K>> values ) {
-        /* sort it */
+
         Collections.sort( values );
         Map<K, Double> result = new HashMap<K, Double>();
 
         Double rank = 0.0;
-        Comparable prevVal = null;
+        Comparable<K> prevVal = null;
         Double nominalRank = 0.0; // rank we'd have if no ties.
         for ( int i = 0; i < m.size(); i++ ) {
             result.put( values.get( i ).getKey(), ( double ) nominalRank ); // might not keep.
 
-            Comparable val = values.get( i ).getValue();
+            Comparable<K> val = values.get( i ).getValue();
             // only bump up ranks if we're not tied with the last one.
             if ( prevVal != null && !val.equals( prevVal ) ) {
                 rank = nominalRank;
@@ -368,10 +369,11 @@ public class Rank {
 /*
  * Helper class for rankTransform map.
  */
+@SuppressWarnings({ "unchecked", "rawtypes" })
 class KeyAndValueData<K> extends RankData {
     private K key;
 
-    public KeyAndValueData( int index, K id, Comparable v ) {
+    public KeyAndValueData( int index, K id, Comparable<?> v ) {
         super( index, v );
         this.key = id;
     }
@@ -393,8 +395,6 @@ class RankData<C extends Comparable<C>> implements Comparable<RankData<C>> {
     int index = 0;
 
     C value = null;
-
-    // Double value = 0.0;
 
     public RankData( int tindex, C tvalue ) {
         index = tindex;
@@ -424,12 +424,6 @@ class RankData<C extends Comparable<C>> implements Comparable<RankData<C>> {
 
     @Override
     public int hashCode() {
-        // final int prime = 31;
-        // int result = 1;
-        // long temp;
-        // temp = Double.doubleToLongBits( value );
-        // result = prime * result + ( int ) ( temp ^ ( temp >>> 32 ) );
-        // return result;
         if ( value == null ) return 1;
         return value.hashCode();
     }

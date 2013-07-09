@@ -14,17 +14,21 @@
  */
 package ubic.basecode.math;
 
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.Test;
+
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.datafilter.AbstractTestFilter;
 import ubic.basecode.io.reader.DoubleMatrixReader;
-import junit.framework.TestCase;
 
 /**
  * @author paul
  * @version $Id$
  */
-public class SingularValueDecompositionTest extends TestCase {
+public class SingularValueDecompositionTest {
 
+    @Test
     public void testSingularValueDecomposition() throws Exception {
 
         DoubleMatrixReader f = new DoubleMatrixReader();

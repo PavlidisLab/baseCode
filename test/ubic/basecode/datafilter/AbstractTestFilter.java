@@ -18,7 +18,9 @@
  */
 package ubic.basecode.datafilter;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.StringMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
@@ -30,7 +32,7 @@ import ubic.basecode.io.reader.StringMatrixReader;
  * @author Pavlidis
  * @version $Id$
  */
-public abstract class AbstractTestFilter extends TestCase {
+public abstract class AbstractTestFilter {
 
     protected DoubleMatrix<String, String> testdata = null;
     protected DoubleMatrix<String, String> testmissingdata = null;
@@ -41,9 +43,9 @@ public abstract class AbstractTestFilter extends TestCase {
         super();
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
+
         DoubleMatrixReader f = new DoubleMatrixReader();
         StringMatrixReader s = new StringMatrixReader();
 
@@ -57,9 +59,9 @@ public abstract class AbstractTestFilter extends TestCase {
         assert teststringmissingdata != null && teststringmissingdata.size() > 0;
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
+
         testdata = null;
         testmissingdata = null;
         teststringdata = null;

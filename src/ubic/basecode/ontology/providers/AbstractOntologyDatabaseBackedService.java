@@ -5,6 +5,7 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 
 import ubic.basecode.ontology.OntologyLoader;
 import ubic.basecode.ontology.search.OntologySearch;
+
 import com.hp.hpl.jena.ontology.OntModel;
 
 /* This class has some stuff that's specific to database backed ontologies. 

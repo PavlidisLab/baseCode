@@ -17,7 +17,7 @@
  *
  */
 package ubic.basecode.ontology.model;
- 
+
 import com.hp.hpl.jena.ontology.Restriction;
 
 /**
@@ -34,7 +34,7 @@ public class OntologyCardinalityRestrictionImpl extends OntologyRestrictionImpl 
     int cardinality = 0;
     CardinalityType cardType;
 
-    public OntologyCardinalityRestrictionImpl( Restriction resource  ) {
+    public OntologyCardinalityRestrictionImpl( Restriction resource ) {
         super( resource );
 
         if ( resource.isMaxCardinalityRestriction() ) {

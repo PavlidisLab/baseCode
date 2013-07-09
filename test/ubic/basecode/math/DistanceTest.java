@@ -18,8 +18,9 @@
  */
 package ubic.basecode.math;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import cern.colt.list.DoubleArrayList;
@@ -28,17 +29,18 @@ import cern.colt.list.DoubleArrayList;
  * @author paul
  * @version $Id$
  */
-public class DistanceTest extends TestCase {
+public class DistanceTest {
 
     DoubleArrayList x;
     DoubleArrayList y;
 
-    @Override
+    @Before
     public void setUp() {
         x = new DoubleArrayList( new double[] { 1, 3, 4, 6 } );
         y = new DoubleArrayList( new double[] { -5, 2, 4, 6 } );
     }
 
+    @Test
     public void testCorrelationOfStandardizedDoubleArrayDoubleArray() {
         double actualValue = Distance.correlationOfStandardized( new double[] { -1.20096, -0.24019, 0.24019, 1.20096 },
                 new double[] { -1.41, 0.0522233, 0.47, 0.8877 } );
@@ -46,6 +48,7 @@ public class DistanceTest extends TestCase {
         assertEquals( expectedValue, actualValue, 0.001 );
     }
 
+    @Test
     public void testCorrelationOfStandardizedDoubleArrayListDoubleArrayList() {
         /*
          * a<-c(-1.20096, + -0.24019, 0.24019, 1.20096) ; b<-c(-1.41, 0.0522233, 0.47, 0.8877); cor(a,b)
@@ -56,12 +59,14 @@ public class DistanceTest extends TestCase {
         assertEquals( expectedValue, actualValue, 0.001 );
     }
 
+    @Test
     public void testEuclDistance() {
         double actualValue = Distance.euclDistance( x, y );
         double expectedValue = 6.0827;
         assertEquals( expectedValue, actualValue, 0.001 );
     }
 
+    @Test
     public void testManhattanDistance() {
         double actualValue = Distance.manhattanDistance( x, y );
         double expectedValue = 7.0;
@@ -99,12 +104,14 @@ public class DistanceTest extends TestCase {
         assertEquals( 0.0, actual, 0.01 );
     }
 
+    @Test
     public void testSpearmanRankCorrelation() {
         double actualValue = Distance.spearmanRankCorrelation( x, y );
         double expectedValue = 1.0;
         assertEquals( expectedValue, actualValue, 0.001 );
     }
 
+    @Test
     public void testSpearmanRankCorrelation2() {
         // Example - R returns 0.3356643,
         double[] a = new double[] { 98.0, 91.0, 23.0, 58.0, 106.0, 31.0, 30.0, 69.0, 27.0, 9.0, 22.0, 40.0 };
@@ -115,6 +122,7 @@ public class DistanceTest extends TestCase {
         assertEquals( expectedValue, actualValue, 0.001 );
     }
 
+    @Test
     public void testSpearmanRankCorrelation3() {
         // Example - R returns -0.8193465
         double[] a = new double[] { 0.3444789380683436, 0.25730556300327256, -0.3537694496071584, 0.30107097096672647,
@@ -128,6 +136,7 @@ public class DistanceTest extends TestCase {
         assertEquals( expectedValue, actualValue, 0.001 );
     }
 
+    @Test
     public void testSpearmanRankCorrelationNaN() {
         // Example - R returns 0.8597647 using use = "complete.obs" parameter // not for me PP
 

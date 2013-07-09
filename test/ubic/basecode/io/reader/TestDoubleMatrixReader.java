@@ -18,18 +18,25 @@
  */
 package ubic.basecode.io.reader;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipInputStream;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
 /**
  * @author pavlidis
  * @version $Id$
  */
-public class TestDoubleMatrixReader extends TestCase {
+public class TestDoubleMatrixReader {
 
     InputStream is = null;
     ZipInputStream isbig = null; // missing, with bad rows.
@@ -38,105 +45,11 @@ public class TestDoubleMatrixReader extends TestCase {
     DoubleMatrix<String, String> matrix = null;
     DoubleMatrixReader reader = null;
 
-    public void testReadBlankCorner() throws Exception {
-        InputStream nis = TestDoubleMatrixReader.class.getResourceAsStream( "/data/testdata-blankcorner.txt" );
-        matrix = reader.read( nis );
-        assertTrue( matrix.containsColumnName( "sample1" ) && matrix.containsColumnName( "sample12" ) );
-
-        assertEquals( 12, matrix.getColNames().size() );
-        assertEquals( 12, matrix.columns() );
-
-    }
-
-    public void testReadInputStreamColumnCount() throws Exception {
-
-        matrix = reader.read( is );
-        int actualReturn = matrix.columns();
-        int expectedReturn = 12;
-        assertEquals( expectedReturn, actualReturn );
-
-    }
-
-    public void testReadInputStreamGotColName() throws Exception {
-        matrix = reader.read( is );
-        boolean actualReturn = matrix.containsColumnName( "sample1" ) && matrix.containsColumnName( "sample12" );
-        boolean expectedReturn = true;
-        assertEquals( expectedReturn, actualReturn );
-
-    }
-
-    public void testReadInputStreamGotColNameSkipColumn() throws Exception {
-        matrix = reader.read( is, null, 7 );
-        assertEquals( 5, matrix.columns() );
-        assertTrue( !matrix.containsColumnName( "sample2" ) && matrix.containsColumnName( "sample12" ) );
-    }
-
-    public void testReadInputStreamGotRowName() throws Exception {
-
-        matrix = reader.read( is );
-        boolean actualReturn = matrix.containsRowName( "gene1_at" ) && matrix.containsRowName( "AFFXgene30_at" );
-        boolean expectedReturn = true;
-        assertEquals( expectedReturn, actualReturn );
-
-    }
-
-    public void testReadInputStreamMissing() throws Exception {
-
-        matrix = reader.read( ism );
-        int actualReturn = matrix.rows();
-        int expectedReturn = 30;
-        assertEquals( 12, matrix.getRow( 3 ).length );
-        assertEquals( expectedReturn, actualReturn );
-
-    }
-
-    public void testReadInputStreamMissingBad() {
-        try {
-            matrix = reader.read( ismb );
-            fail( "Should have gotten an IO error" );
-        } catch ( IOException e ) {
-            //
-        }
-    }
-
-    public void testReadInputStreamMissingSpaces() throws Exception {
-        InputStream isl = this.getClass().getResourceAsStream( "/data/luo-prostate.sample.txt" );
-        matrix = reader.read( isl );
-        int actualReturn = matrix.rows();
-        int expectedReturn = 173;
-        assertEquals( 25, matrix.getRow( 3 ).length );
-        assertEquals( expectedReturn, actualReturn );
-
-    }
-
-    /*
-     * Class under test for NamedMatrix read(InputStream)
-     */
-    public void testReadInputStreamRowCount() throws Exception {
-
-        matrix = reader.read( is );
-        int actualReturn = matrix.rows();
-        int expectedReturn = 30;
-        assertEquals( "return value", expectedReturn, actualReturn );
-
-    }
-
-    public void testSmallNumbers() throws Exception {
-        reader = new DoubleMatrixReader();
-        is = TestStringMatrixReader.class.getResourceAsStream( "/data/multtest.test.randord.txt" );
-        matrix = reader.read( is );
-        double d = matrix.get( 101, 0 );
-        assertEquals( 7.6e-07, d, 1e-6 );
-        assertEquals( 0.5, matrix.get( 296, 0 ), 1e-6 );
-        assertEquals( 2.6e-10, matrix.get( 206, 0 ), 1e-11 );
-    }
-
     /*
      * @see TestCase#setUp()
      */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         reader = new DoubleMatrixReader();
         is = TestDoubleMatrixReader.class.getResourceAsStream( "/data/testdata.txt" );
 
@@ -152,14 +65,116 @@ public class TestDoubleMatrixReader extends TestCase {
     /*
      * @see TestCase#tearDown()
      */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
         is.close();
         ism.close();
         ismb.close();
         isbig.close();
         matrix = null;
+    }
+
+    @Test
+    public void testReadBlankCorner() throws Exception {
+        InputStream nis = TestDoubleMatrixReader.class.getResourceAsStream( "/data/testdata-blankcorner.txt" );
+        matrix = reader.read( nis );
+        assertTrue( matrix.containsColumnName( "sample1" ) && matrix.containsColumnName( "sample12" ) );
+
+        assertEquals( 12, matrix.getColNames().size() );
+        assertEquals( 12, matrix.columns() );
+
+    }
+
+    @Test
+    public void testReadInputStreamColumnCount() throws Exception {
+
+        matrix = reader.read( is );
+        int actualReturn = matrix.columns();
+        int expectedReturn = 12;
+        assertEquals( expectedReturn, actualReturn );
+
+    }
+
+    @Test
+    public void testReadInputStreamGotColName() throws Exception {
+        matrix = reader.read( is );
+        boolean actualReturn = matrix.containsColumnName( "sample1" ) && matrix.containsColumnName( "sample12" );
+        boolean expectedReturn = true;
+        assertEquals( expectedReturn, actualReturn );
+
+    }
+
+    @Test
+    public void testReadInputStreamGotColNameSkipColumn() throws Exception {
+        matrix = reader.read( is, null, 7 );
+        assertEquals( 5, matrix.columns() );
+        assertTrue( !matrix.containsColumnName( "sample2" ) && matrix.containsColumnName( "sample12" ) );
+    }
+
+    @Test
+    public void testReadInputStreamGotRowName() throws Exception {
+
+        matrix = reader.read( is );
+        boolean actualReturn = matrix.containsRowName( "gene1_at" ) && matrix.containsRowName( "AFFXgene30_at" );
+        boolean expectedReturn = true;
+        assertEquals( expectedReturn, actualReturn );
+
+    }
+
+    @Test
+    public void testReadInputStreamMissing() throws Exception {
+
+        matrix = reader.read( ism );
+        int actualReturn = matrix.rows();
+        int expectedReturn = 30;
+        assertEquals( 12, matrix.getRow( 3 ).length );
+        assertEquals( expectedReturn, actualReturn );
+
+    }
+
+    @Test
+    public void testReadInputStreamMissingBad() {
+        try {
+            matrix = reader.read( ismb );
+            fail( "Should have gotten an IO error" );
+        } catch ( IOException e ) {
+            //
+        }
+    }
+
+    @Test
+    public void testReadInputStreamMissingSpaces() throws Exception {
+        InputStream isl = this.getClass().getResourceAsStream( "/data/luo-prostate.sample.txt" );
+        matrix = reader.read( isl );
+        int actualReturn = matrix.rows();
+        int expectedReturn = 173;
+        assertEquals( 25, matrix.getRow( 3 ).length );
+        assertEquals( expectedReturn, actualReturn );
+
+    }
+
+    /*
+     * Class under test for NamedMatrix read(InputStream)
+     */
+    @Test
+    public void testReadInputStreamRowCount() throws Exception {
+
+        matrix = reader.read( is );
+        int actualReturn = matrix.rows();
+        int expectedReturn = 30;
+        assertEquals( "return value", expectedReturn, actualReturn );
+
+    }
+
+    @Test
+    public void testSmallNumbers() throws Exception {
+        reader = new DoubleMatrixReader();
+        is = TestStringMatrixReader.class.getResourceAsStream( "/data/multtest.test.randord.txt" );
+        matrix = reader.read( is );
+        double d = matrix.get( 101, 0 );
+        assertEquals( 7.6e-07, d, 1e-6 );
+        assertEquals( 0.5, matrix.get( 296, 0 ), 1e-6 );
+        assertEquals( 2.6e-10, matrix.get( 206, 0 ), 1e-11 );
     }
 
 }

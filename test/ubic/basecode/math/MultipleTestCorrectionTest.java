@@ -15,7 +15,11 @@
 
 package ubic.basecode.math;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import cern.colt.list.DoubleArrayList;
@@ -26,15 +30,30 @@ import cern.colt.matrix.impl.DenseDoubleMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public class MultipleTestCorrectionTest extends TestCase {
+public class MultipleTestCorrectionTest {
 
     DoubleMatrix<String, String> mat;
 
     private DoubleArrayList values;
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Before
+    public void setUp() throws Exception {
+
+        DoubleMatrixReader dmr = new DoubleMatrixReader();
+        mat = dmr.read( this.getClass().getResourceAsStream( "/data/multtest.test.randord.txt" ) );
+        values = new DoubleArrayList( mat.getColumnByName( "rawp" ) );
+        values.trimToSize();
+    }
+
     /**
      * @throws Exception
      */
+    @Test
     public void testBenjaminiHochberg() throws Exception {
         DoubleArrayList actualResult = MultipleTestCorrection.benjaminiHochberg( values );
         DoubleArrayList expected = new DoubleArrayList( mat.getColumnByName( "BH" ) );
@@ -46,12 +65,14 @@ public class MultipleTestCorrectionTest extends TestCase {
     /*
      * Test method for 'basecode.math.MultipleTestCorrection.BenjaminiHochbergCut(DoubleArrayList, double)'
      */
+    @Test
     public void testBenjaminiHochbergCut() {
         double actualResult = MultipleTestCorrection.benjaminiHochbergCut( values, 0.01 );
         double expectedResult = 0.0018;
         assertEquals( expectedResult, actualResult, 0.00001 );
     }
 
+    @Test
     public void testBenjaminiHochbergM() {
         DoubleMatrix1D actualResult = MultipleTestCorrection.benjaminiHochberg( new DenseDoubleMatrix1D( values
                 .elements() ) );
@@ -64,6 +85,7 @@ public class MultipleTestCorrectionTest extends TestCase {
     /*
      * Test method for 'basecode.math.MultipleTestCorrection.BenjaminiYekuteliCut(DoubleArrayList, double)'
      */
+    @Test
     public void testBenjaminiYekuteliCut() {
         double actualResult = MultipleTestCorrection.BenjaminiYekuteliCut( values, 0.01 );
         double expectedResult = 0.00013;
@@ -73,24 +95,11 @@ public class MultipleTestCorrectionTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testBonferroniCut() throws Exception {
         double actualResult = MultipleTestCorrection.BonferroniCut( values, 0.01 );
         double expectedResult = 3.30E-06;
         assertEquals( expectedResult, actualResult, 0.00001 );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        DoubleMatrixReader dmr = new DoubleMatrixReader();
-        mat = dmr.read( this.getClass().getResourceAsStream( "/data/multtest.test.randord.txt" ) );
-        values = new DoubleArrayList( mat.getColumnByName( "rawp" ) );
-        values.trimToSize();
     }
 
 }

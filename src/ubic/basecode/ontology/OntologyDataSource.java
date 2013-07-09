@@ -25,11 +25,10 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.hp.hpl.jena.db.DBConnection;
-import com.hp.hpl.jena.db.IDBConnection;
+import com.hp.hpl.jena.sdb.sql.SDBConnection;
 
 /**
- * A pooled datasource for Ontology data
+ * A pooled datasource for Ontology data in a disk store.
  * 
  * @author paul
  * @version $Id$
@@ -69,19 +68,19 @@ public class OntologyDataSource {
         dataSource.setMaxIdle( 4 );
         dataSource.setMaxWait( 20000L );
         dataSource.setInitialSize( 4 );
-        
+
         // Checks if connection has expired before returning it.
-        dataSource.setTestOnBorrow(true);
-        dataSource.setValidationQuery("SELECT 1");
+        dataSource.setTestOnBorrow( true );
+        dataSource.setValidationQuery( "SELECT 1" );
     }
 
     /**
      * @return a connection to the Ontology store
      */
-    public static IDBConnection getConnection() {
+    public static SDBConnection getConnection() {
         String type = Configuration.getString( "jena.db.type" );
         try {
-            return new DBConnection( dataSource.getConnection(), type );
+            return new SDBConnection( dataSource.getConnection(), type );
         } catch ( SQLException e ) {
             throw new RuntimeException( e );
         }

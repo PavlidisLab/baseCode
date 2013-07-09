@@ -26,7 +26,6 @@ import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.math.Constants;
 import ubic.basecode.math.DescriptiveWithMissing;
 import ubic.basecode.math.MatrixStats;
-import ubic.basecode.graphics.ColorMap;
 import cern.colt.list.DoubleArrayList;
 
 /**
@@ -42,6 +41,7 @@ public class ColorMatrix<A, B> implements Cloneable {
     public static <R, C> ColorMatrix<R, C> newInstance( DoubleMatrix<R, C> matrix ) {
         return new ColorMatrix<R, C>( matrix );
     }
+
     protected Color[] colorMap = ColorMap.BLACKBODY_COLORMAP;
 
     protected Color[][] colors;

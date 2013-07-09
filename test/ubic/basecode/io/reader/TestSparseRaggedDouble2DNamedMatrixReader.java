@@ -18,12 +18,17 @@
  */
 package ubic.basecode.io.reader;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipInputStream;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.SparseRaggedDoubleMatrix;
 import ubic.basecode.util.RegressionTesting;
@@ -32,7 +37,7 @@ import ubic.basecode.util.RegressionTesting;
  * @author pavlidis
  * @version $Id$
  */
-public class TestSparseRaggedDouble2DNamedMatrixReader extends TestCase {
+public class TestSparseRaggedDouble2DNamedMatrixReader {
 
     InputStream is = null;
     InputStream isa = null;
@@ -41,8 +46,21 @@ public class TestSparseRaggedDouble2DNamedMatrixReader extends TestCase {
     SparseRaggedMatrixReader reader = null;
 
     /*
+     * @see TestCase#setUp()
+     */@Before
+    public void setUp() throws Exception {
+        reader = new SparseRaggedMatrixReader();
+        is = TestSparseRaggedDouble2DNamedMatrixReader.class.getResourceAsStream( "/data/JW-testmatrix.txt" );
+        isa = TestSparseRaggedDouble2DNamedMatrixReader.class
+                .getResourceAsStream( "/data/adjacencylist-testmatrix.txt" );
+        isbig = TestSparseRaggedDouble2DNamedMatrixReader.class
+                .getResourceAsStream( "/data/adjacency_list.7ormore.txt" );
+    }
+
+    /*
      * Class under test for NamedMatrix read(InputStream)
      */
+    @Test
     public void testReadInputStream() throws Exception {
         matrix = ( SparseRaggedDoubleMatrix<String, String> ) reader.read( is, 1 );
         List<String> columnNames = new ArrayList<String>();
@@ -59,6 +77,7 @@ public class TestSparseRaggedDouble2DNamedMatrixReader extends TestCase {
     /*
      * Class under test for NamedMatrix readFromAdjList(InputStream)
      */
+    @Test
     public void testReadStreamAdjList() throws Exception {
 
         matrix = ( SparseRaggedDoubleMatrix<String, String> ) reader.readFromAdjList( isa );
@@ -78,32 +97,19 @@ public class TestSparseRaggedDouble2DNamedMatrixReader extends TestCase {
     /*
      * Class under test for NamedMatrix readFromAdjList(InputStream) - bigger matrix
      */
+    @Test
     public void testReadStreamAdjListBig() throws Exception {
 
         matrix = ( SparseRaggedDoubleMatrix<String, String> ) reader.readFromAdjList( isbig );
         matrix.setColumnNames( matrix.getRowNames() );
 
-        ZipInputStream zis = new ZipInputStream( TestSparseDoubleMatrixReader.class
-                .getResourceAsStream( "/data/adjacency_list.7ormore.output.zip" ) );
+        ZipInputStream zis = new ZipInputStream(
+                TestSparseDoubleMatrixReader.class.getResourceAsStream( "/data/adjacency_list.7ormore.output.zip" ) );
         zis.getNextEntry();
         DoubleMatrix<String, String> expectedReturn = reader.read( zis );
 
         assertTrue( RegressionTesting.closeEnough( expectedReturn, matrix, 0.0001 ) );
 
-    }
-
-    /*
-     * @see TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        reader = new SparseRaggedMatrixReader();
-        is = TestSparseRaggedDouble2DNamedMatrixReader.class.getResourceAsStream( "/data/JW-testmatrix.txt" );
-        isa = TestSparseRaggedDouble2DNamedMatrixReader.class
-                .getResourceAsStream( "/data/adjacencylist-testmatrix.txt" );
-        isbig = TestSparseRaggedDouble2DNamedMatrixReader.class
-                .getResourceAsStream( "/data/adjacency_list.7ormore.txt" );
     }
 
 }

@@ -16,13 +16,11 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.ontology;
+package ubic.basecode.ontology.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ubic.basecode.ontology.model.OntologyPropertyImpl;
-import ubic.basecode.ontology.model.OntologyResource;
 
 /**
  * @author pavlidis

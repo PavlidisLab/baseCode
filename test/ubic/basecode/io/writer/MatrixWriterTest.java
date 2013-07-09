@@ -18,6 +18,9 @@
  */
 package ubic.basecode.io.writer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,7 +30,9 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
 import ubic.basecode.dataStructure.matrix.DenseDouble3dMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix3D;
@@ -39,13 +44,22 @@ import ubic.basecode.util.RegressionTesting;
  * @author Paul
  * @version $Id$
  */
-public class MatrixWriterTest extends TestCase {
+public class MatrixWriterTest {
     double[][][] data3d = { { { 1, 2 }, { 3, 4 } }, { { 5, 6 }, { 7, 8 } } };
 
     DoubleMatrix<String, String> matrix = null;
 
     Writer w;
 
+    @Before
+    public void setUp() throws Exception {
+        DoubleMatrixReader reader = new DoubleMatrixReader();
+        InputStream is = TestStringMatrixReader.class.getResourceAsStream( "/data/testdata.txt" );
+        matrix = reader.read( is );
+        w = new StringWriter();
+    }
+
+    @Test
     public void testWrite3DMatrix() throws Exception {
         MatrixWriter<String, String> writer = new MatrixWriter<String, String>( w );
         DoubleMatrix3D<String, String, String> m3 = new DenseDouble3dMatrix<String, String, String>( data3d );
@@ -74,6 +88,7 @@ public class MatrixWriterTest extends TestCase {
      * {@link ubic.basecode.io.writer.MatrixWriter#writeMatrix(ubic.basecode.dataStructure.matrix.NamedMatrix, boolean)}
      * .
      */
+    @Test
     public void testWriteMatrix() throws Exception {
         MatrixWriter<String, String> writer = new MatrixWriter<String, String>( w, "\t" );
         writer.setTopLeft( "gene" );
@@ -83,6 +98,7 @@ public class MatrixWriterTest extends TestCase {
         assertEquals( expected, actual );
     }
 
+    @Test
     public void testWriteMatrixB() throws Exception {
         File file = File.createTempFile( "foo", "bar" );
         OutputStream os = new PrintStream( file );
@@ -95,14 +111,5 @@ public class MatrixWriterTest extends TestCase {
         String expected = RegressionTesting.readTestResult( "/data/testmatrixwriter2doutput.txt" );
         assertEquals( expected, actual );
 
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        DoubleMatrixReader reader = new DoubleMatrixReader();
-        InputStream is = TestStringMatrixReader.class.getResourceAsStream( "/data/testdata.txt" );
-        matrix = reader.read( is );
-        w = new StringWriter();
     }
 }

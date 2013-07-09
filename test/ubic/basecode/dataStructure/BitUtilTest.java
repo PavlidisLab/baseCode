@@ -18,14 +18,19 @@
  */
 package ubic.basecode.dataStructure;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 /**
  * @author paul
  * @version $Id$
  */
-public class BitUtilTest extends TestCase {
+public class BitUtilTest {
 
+    @Test
     public void testClear() {
         byte[] v = new byte[4];
         for ( int i = 0, j = v.length; i < j; i++ ) {
@@ -43,6 +48,7 @@ public class BitUtilTest extends TestCase {
         assertTrue( BitUtil.get( v, 30 ) );
     }
 
+    @Test
     public void testCount() {
         byte[] v = new byte[4];
         for ( int i = 0, j = v.length; i < j; i++ ) {
@@ -61,6 +67,7 @@ public class BitUtilTest extends TestCase {
         assertEquals( 5, BitUtil.count( v ) );
     }
 
+    @Test
     public void testGet() {
         byte[] v = new byte[4];
         for ( int i = 0, j = v.length; i < j; i++ ) {
@@ -78,6 +85,7 @@ public class BitUtilTest extends TestCase {
 
     }
 
+    @Test
     public void testSet() {
         byte[] v = new byte[4];
         for ( int i = 0, j = v.length; i < j; i++ ) {
@@ -95,6 +103,7 @@ public class BitUtilTest extends TestCase {
         assertEquals( "00011000 00110010 00000000 00000010 ", buf.toString() );
     }
 
+    @Test
     public void testToBool() {
         byte[] v = new byte[4];
         for ( int i = 0, j = v.length; i < j; i++ ) {

@@ -18,7 +18,6 @@
  */
 package ubic.basecode.ontology.model;
 
-
 public interface DatatypeProperty extends OntologyProperty {
 
     public Class<?> getType();

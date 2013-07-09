@@ -18,8 +18,14 @@
  */
 package ubic.basecode.datafilter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.StringMatrix;
@@ -41,8 +47,31 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
     StringMatrix<String, String> testpdata = null;
 
     /*
+     * @see TestCase#setUp()
+     */
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        StringMatrixReader s = new StringMatrixReader();
+        testpdata = s.read( AbstractTestFilter.class.getResourceAsStream( "/data/test-presence-data.txt" ) );
+    }
+
+    /*
+     * @see TestCase#tearDown()
+     */
+    @Override
+    @After
+    public void tearDown() throws Exception {
+        super.tearDown();
+        testpdata = null;
+        testdata = null;
+    }
+
+    /*
      * Class under test for DoubleMatrixNamed filter(DoubleMatrixNamed)
      */
+    @Test
     public void testFilter() {
         fd.setFlagMatrix( testpdata );
         fd.setMinPresentCount( 12 );
@@ -53,6 +82,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testFilterFraction() {
         fd.setFlagMatrix( testpdata );
         fd.setMinPresentFraction( 1.0 );
@@ -63,6 +93,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testFilterFractionInvalid() {
         try {
             fd.setFlagMatrix( testpdata );
@@ -75,6 +106,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
 
     }
 
+    @Test
     public void testFilterKeepMarginal() {
         fd.setFlagMatrix( testpdata );
         fd.setKeepMarginal( true );
@@ -85,6 +117,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testFilterNullFlags() {
         try {
             fd.setFlagMatrix( null );
@@ -96,6 +129,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
         }
     }
 
+    @Test
     public void testFilterPresentCountInvalid() {
         try {
             fd.setFlagMatrix( testpdata );
@@ -108,6 +142,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
 
     }
 
+    @Test
     public void testFilterStringMatrix() {
         fs.setFlagMatrix( testpdata );
         fs.setMinPresentCount( 12 );
@@ -118,6 +153,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testFilterWithMissing() {
         fd.setFlagMatrix( testpdata );
         fd.setMinPresentCount( 12 );
@@ -127,6 +163,7 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testFilterWithMissingLessStringent() {
         fd.setFlagMatrix( testpdata );
         fd.setMinPresentCount( 8 );
@@ -134,27 +171,6 @@ public class TestRowAbsentFilter extends AbstractTestFilter {
         int expectedReturn = 24;
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
-    /*
-     * @see TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        StringMatrixReader s = new StringMatrixReader();
-        testpdata = s.read( AbstractTestFilter.class.getResourceAsStream( "/data/test-presence-data.txt" ) );
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        testpdata = null;
-        testdata = null;
-        super.tearDown();
     }
 
 }

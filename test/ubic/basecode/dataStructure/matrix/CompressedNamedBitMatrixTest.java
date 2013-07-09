@@ -18,7 +18,7 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 

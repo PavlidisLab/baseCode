@@ -46,12 +46,14 @@ public interface RClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, int[])
      */
     public void assign( String arg0, int[] arg1 );
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, java.lang.String)
      */
     public void assign( String sym, String ct );
@@ -184,6 +186,7 @@ public interface RClient {
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.rosuda.JRclient.Rconnection#getLastError()
      */
     public String getLastError();

@@ -1,49 +1,34 @@
 package ubic.basecode.io;
 
-import junit.framework.TestCase;
-
 //import javax.sql.rowset.serial;
 
 /**
  * $Id$
  */
-public class TestStringConverter extends TestCase {
-    ByteArrayConverter bac;
-    StringConverter sc;
+public class TestStringConverter {
+    ByteArrayConverter bac = new ByteArrayConverter();
+
+    StringConverter sc = new StringConverter();
 
     /**
      * 
      *
      */
-    public void testStringToBytes() {
-        // System.err.println(" CONVERTING STRING TO BYTES ");
+    // public void testStringToBytes() {
+    // System.err.println(" CONVERTING STRING TO BYTES ");
 
-        // byte[] actualReturn = sc.stringArrayToBytes( null );
-        // byte[] expectedValue = actualReturn;
-        // for ( int i = 0; i < actualReturn.length; i++ ) {
-        // //System.err.println("actualReturn:["+i+"]"+ actualReturn[i]);//new
-        // // Integer(actualReturn[i]).toBinaryString(actualReturn[i]));
-        // assertEquals( "return value", expectedValue[i], actualReturn[i], 0 );
-        // }
-    }
+    // byte[] actualReturn = sc.stringArrayToBytes( null );
+    // byte[] expectedValue = actualReturn;
+    // for ( int i = 0; i < actualReturn.length; i++ ) {
+    // //System.err.println("actualReturn:["+i+"]"+ actualReturn[i]);//new
+    // // Integer(actualReturn[i]).toBinaryString(actualReturn[i]));
+    // assertEquals( "return value", expectedValue[i], actualReturn[i], 0 );
+    // }
+    // }
 
     /*
      * @see TestCase#setUp()
      */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        sc = new StringConverter();
-        bac = new ByteArrayConverter();
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
 
     // /**
     // *

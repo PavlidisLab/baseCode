@@ -14,7 +14,10 @@
  */
 package ubic.basecode.math;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 import ubic.basecode.math.distribution.ProbabilityComputer;
 import ubic.basecode.math.distribution.UniformProbabilityComputer;
 import cern.colt.list.DoubleArrayList;
@@ -23,7 +26,7 @@ import cern.colt.list.DoubleArrayList;
  * @author pavlidis
  * @version $Id$
  */
-public class TestKSTest extends TestCase {
+public class TestKSTest {
 
     // uniform (r)
     DoubleArrayList x = new DoubleArrayList( new double[] { 0.42084388, 0.08428030, 0.51525081, 0.02165163, 0.99627802,
@@ -33,6 +36,7 @@ public class TestKSTest extends TestCase {
     DoubleArrayList y = new DoubleArrayList( new double[] { -0.09503411, 2.33677197, 0.61934707, 0.83549049,
             0.09643316, -0.57449861, -1.40573974, 0.51279445, -0.09593008, 1.48125008 } );
 
+    @Test
     public void testKSTestOneSample() {
         // ks.test(n, punif, 0, 1)
 
@@ -51,6 +55,7 @@ public class TestKSTest extends TestCase {
     /**
      * 
      */
+    @Test
     public void testKSTestTwoSample() {
         double actualReturn = KSTest.twoSample( x, y );
         double expectedReturn = 0.4175; // from R ks.test(x,y); D = 0.4.
@@ -58,23 +63,6 @@ public class TestKSTest extends TestCase {
         assertEquals( 0.40, KSTest.twoSampleStatistic( x, y ), 0.001 );
 
         assertEquals( expectedReturn, actualReturn, 0.0001 );
-    }
-
-    /*
-     * @see TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
 }

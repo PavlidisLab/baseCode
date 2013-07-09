@@ -18,7 +18,12 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
@@ -27,31 +32,44 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
+public class FastRowAccessDoubleMatrix2DNamedTest {
 
     DoubleMatrixReader f = new DoubleMatrixReader();
     DoubleMatrix<String, String> testdata;
 
     /*
-     * Test method for 'basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamed.columns()'
+     * @see TestCase#setUp()
      */
-    public void testColumns() {
-        assertTrue( testdata.columns() == 12 );
+    @Before
+    public void setUp() throws Exception {
+        testdata = f.read( FastRowAccessDoubleMatrix2DNamedTest.class.getResourceAsStream( "/data/testdata.txt" ) );
+        assert testdata instanceof FastRowAccessDoubleMatrix<?, ?>;
+
     }
 
+    /*
+     * Test method for 'basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamed.columns()'
+     */
+    @Test
+    public void testColumns() {
+        assertEquals( 12, testdata.columns() );
+    }
+
+    @Test
     public void testConstructFromArray() {
-        FastRowAccessDoubleMatrix<String, String> actual = new FastRowAccessDoubleMatrix<String, String>( testdata
-                .asArray() );
+        FastRowAccessDoubleMatrix<String, String> actual = new FastRowAccessDoubleMatrix<String, String>(
+                testdata.asArray() );
         double[][] testM = testdata.asArray();
 
         for ( int i = 0; i < testM.length; i++ ) {
             int len = testM[i].length;
             for ( int j = 0; j < len; j++ ) {
-                assertEquals( testM[i][j], actual.get( i, j ) );
+                assertEquals( testM[i][j], actual.get( i, j ), 0.00001 );
             }
         }
     }
 
+    @Test
     public void testCopy() {
         DoubleMatrix<String, String> actual = testdata.copy();
         double[][] testM = testdata.asArray();
@@ -61,7 +79,7 @@ public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
             int len = testM[i].length;
             for ( int j = 0; j < len; j++ ) {
                 assertEquals( testdata.getColName( j ), actual.getColName( j ) );
-                assertEquals( testM[i][j], actual.get( i, j ) );
+                assertEquals( testM[i][j], actual.get( i, j ), 0.00001 );
             }
         }
 
@@ -70,6 +88,7 @@ public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
     /*
      * Test method for 'basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamed.get(int, int)'
      */
+    @Test
     public void testGet() {
         assertEquals( 27873.8, testdata.get( 2, 4 ), 0.0001 );
     }
@@ -77,13 +96,16 @@ public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
     /*
      * Test method for 'basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamed.getColObj(int)'
      */
+    @Test
     public void testGetColObj() {
-
+        Double[] c = testdata.getColObj( 4 );
+        assertEquals( 30, c.length );
     }
 
     /*
      * Test method for 'basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamed.getRow(int)'
      */
+    @Test
     public void testGetRow() {
         double[] res = testdata.getRow( 2 );
         assertEquals( 27873.8, res[4], 0.001 );
@@ -100,10 +122,13 @@ public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
     /*
      * Test method for 'basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamed.getRowObj(int)'
      */
+    @Test
     public void testGetRowObj() {
-
+        Double[] rowRange = testdata.getRowObj( 4 );
+        assertEquals( 12, rowRange.length );
     }
 
+    @Test
     public void testGetRowRange() {
         DoubleMatrix<String, String> rowRange = testdata.getRowRange( 1, 4 );
         assertEquals( 12, rowRange.columns() );
@@ -113,17 +138,23 @@ public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
     /*
      * Test method for 'basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamed.isMissing(int, int)'
      */
-    public void testIsMissing() {
-
+    @Test
+    public void testIsMissing() throws Exception {
+        assertTrue( !testdata.isMissing( 5, 3 ) );
+        DoubleMatrix<String, String> md = f.read( FastRowAccessDoubleMatrix2DNamedTest.class
+                .getResourceAsStream( "/data/testdatamissing.txt" ) );
+        assertTrue( md.isMissing( 5, 3 ) );
     }
 
     /*
      * Test method for 'basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamed.rows()'
      */
+    @Test
     public void testRows() {
         assertTrue( testdata.rows() == 30 );
     }
 
+    @Test
     public void testSet() {
         testdata.set( 1, 2, 3.0 );
         assertEquals( 3.0, testdata.get( 1, 2 ), 0.00001 );
@@ -140,6 +171,7 @@ public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
     /*
      * Test method for 'basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamed.set(int, int, Object)'
      */
+    @Test
     public void testSetIntIntObject() {
         testdata.set( 1, 2, new Double( 3.0 ) );
         assertEquals( 3.0, testdata.get( 1, 2 ), 0.00001 );
@@ -148,27 +180,10 @@ public class FastRowAccessDoubleMatrix2DNamedTest extends TestCase {
     /*
      * Test method for 'basecode.dataStructure.matrix.FastRowAccessDoubleMatrix2DNamed.viewRow(int)'
      */
+    @Test
     public void testViewRow() {
         DoubleMatrix1D res = testdata.viewRow( 1 );
         assertEquals( 242.1, res.get( 2 ), 0.001 );
-    }
-
-    /*
-     * @see TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        testdata = f.read( FastRowAccessDoubleMatrix2DNamedTest.class.getResourceAsStream( "/data/testdata.txt" ) );
-        assert testdata instanceof FastRowAccessDoubleMatrix<?, ?>;
-        super.setUp();
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
 }

@@ -17,8 +17,7 @@
  *
  */
 package ubic.basecode.ontology.model;
-  
-import ubic.basecode.ontology.AbstractOntologyResource;
+
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
 import com.hp.hpl.jena.enhanced.GraphPersonality;
@@ -38,8 +37,8 @@ public class OntologyIndividualImpl extends AbstractOntologyResource implements 
     private Individual ind;
     private String uri;
 
-    public OntologyIndividualImpl( Individual ind  ) {
-        this.ind = ind; 
+    public OntologyIndividualImpl( Individual ind ) {
+        this.ind = ind;
         this.uri = ind.getURI();
     }
 
@@ -55,7 +54,7 @@ public class OntologyIndividualImpl extends AbstractOntologyResource implements 
             throw new IllegalStateException( "sorry, can't handle that of instance" );
         }
 
-        return new OntologyTermImpl( cl  );
+        return new OntologyTermImpl( cl );
     }
 
     @Override

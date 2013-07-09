@@ -14,21 +14,24 @@
  */
 package ubic.basecode.math;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrixImpl;
 import ubic.basecode.dataStructure.matrix.StringMatrix;
 import ubic.basecode.io.reader.StringMatrixReader;
-import junit.framework.TestCase;
 
 /**
  * @author paul
  * @version $Id$
  */
-public class DesignMatrixTest extends TestCase {
+public class DesignMatrixTest {
 
     @SuppressWarnings("unused")
     private static Log log = LogFactory.getLog( DesignMatrixTest.class );
@@ -38,6 +41,7 @@ public class DesignMatrixTest extends TestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void test2() throws Exception {
         StringMatrixReader of = new StringMatrixReader();
         StringMatrix<String, String> sampleInfo = of.read( this.getClass()
@@ -56,6 +60,7 @@ public class DesignMatrixTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testA() throws Exception {
         StringMatrixReader of = new StringMatrixReader();
         StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
@@ -76,6 +81,7 @@ public class DesignMatrixTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testB() throws Exception {
         ObjectMatrix<String, String, Object> design = new ObjectMatrixImpl<String, String, Object>( 8, 2 );
 
@@ -118,6 +124,7 @@ public class DesignMatrixTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testInteractionAndRelevel() throws Exception {
         ObjectMatrix<String, String, Object> design = new ObjectMatrixImpl<String, String, Object>( 8, 2 );
 
@@ -200,6 +207,7 @@ public class DesignMatrixTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testInteractionC() throws Exception {
         ObjectMatrix<String, String, Object> design = new ObjectMatrixImpl<String, String, Object>( 9, 3 );
 

@@ -50,6 +50,12 @@ public class IndexerSelector implements Selector {
         unwantedForIndexing.add( RDFS.comment.getURI() );
         unwantedForIndexing.add( RDFS.seeAlso.getURI() );
         unwantedForIndexing.add( RDFS.isDefinedBy.getURI() );
+        unwantedForIndexing.add( "http://purl.org/dc/elements/1.1/creator" );
+        unwantedForIndexing.add( "http://purl.org/dc/elements/1.1/contributor" );
+        unwantedForIndexing.add( "http://purl.org/dc/elements/1.1/source" );
+        unwantedForIndexing.add( "http://purl.org/dc/elements/1.1/title" );
+        unwantedForIndexing.add( "http://purl.org/dc/elements/1.1/description" );
+
         unwantedForIndexing.add( "http://www.w3.org/2002/07/owl#inverseOf" );
         unwantedForIndexing.add( "http://www.w3.org/2002/07/owl#disjointWith" );
         unwantedForIndexing.add( "http://www.w3.org/2004/02/skos/core#example" );

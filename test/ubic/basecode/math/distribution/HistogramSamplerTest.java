@@ -18,17 +18,20 @@
  */
 package ubic.basecode.math.distribution;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 /**
  * @author Paul
  * @version $Id$
  */
-public class HistogramSamplerTest extends TestCase {
+public class HistogramSamplerTest {
 
     /**
      * Test method for {@link ubic.basecode.math.distribution.HistogramSampler#nextSample()}.
      */
+    @Test
     public final void testNextSample() {
         int[] testHistogram = new int[] { 1, 10, 48, 20, 10, 10, 1 };
 

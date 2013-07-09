@@ -18,6 +18,10 @@
  */
 package ubic.basecode.datafilter;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.StringMatrix;
 
@@ -27,6 +31,7 @@ import ubic.basecode.dataStructure.matrix.StringMatrix;
  */
 public class TestRowAffyNameFilter extends AbstractTestFilter {
 
+    @Test
     public void testFilter() {
         AffymetrixProbeNameFilter<DoubleMatrix<String, String>, String, String, Double> fi = new AffymetrixProbeNameFilter<DoubleMatrix<String, String>, String, String, Double>(
                 new int[] { AffymetrixProbeNameFilter.AFFX, AffymetrixProbeNameFilter.X, AffymetrixProbeNameFilter.ST,
@@ -38,6 +43,7 @@ public class TestRowAffyNameFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testStringFilter() {
         AffymetrixProbeNameFilter<StringMatrix<String, String>, String, String, String> fi = new AffymetrixProbeNameFilter<StringMatrix<String, String>, String, String, String>(
                 new int[] { AffymetrixProbeNameFilter.AFFX, AffymetrixProbeNameFilter.X, AffymetrixProbeNameFilter.ST,
@@ -47,16 +53,6 @@ public class TestRowAffyNameFilter extends AbstractTestFilter {
         // and two _f_ tags.
         int actualReturn = filtered.rows();
         assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
 }

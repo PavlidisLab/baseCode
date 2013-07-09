@@ -60,7 +60,7 @@ public class SpecFunc {
      * hypergeometric probability is the probability of x successes:
      * 
      * <pre>
-     *          
+     * 
      *               choose(r, x) * choose(b, n-x)
      * (x; r,b,n) =  -----------------------------  =
      *                     choose(r+b, n)
@@ -111,7 +111,7 @@ public class SpecFunc {
         double d, pd;
 
         if ( NR < 0 || NB < 0 || n < 0 || n > NR + NB ) {
-            throw new IllegalArgumentException("Need NR>=0, NB>=0,n>=0,n>NR+NB");
+            throw new IllegalArgumentException( "Need NR>=0, NB>=0,n>=0,n>NR+NB" );
         }
 
         if ( x * ( NR + NB ) > n * NR ) {

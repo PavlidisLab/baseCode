@@ -18,15 +18,21 @@
  */
 package ubic.basecode.ontology.search;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jena.larq.IndexLARQ;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 
 import ubic.basecode.ontology.model.OntologyIndividual;
 import ubic.basecode.ontology.model.OntologyIndividualImpl;
@@ -37,11 +43,10 @@ import ubic.basecode.ontology.model.OntologyTermImpl;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.query.larq.ARQLuceneException;
-import com.hp.hpl.jena.query.larq.IndexLARQ;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.shared.JenaException;
+import com.hp.hpl.jena.sparql.ARQException;
 
 /**
  * @author pavlidis
@@ -87,7 +92,7 @@ public class OntologySearch {
                     if ( impl2.isTermObsolete() ) continue;
                     results.add( impl2 );
                     if ( log.isDebugEnabled() ) log.debug( impl2 );
-                } catch ( ARQLuceneException e ) {
+                } catch ( ARQException e ) {
                     throw new RuntimeException( e.getCause() );
                 } catch ( JenaException e ) {
                     log.error( e, e );
@@ -123,7 +128,7 @@ public class OntologySearch {
         if ( lastWordLength > 1 ) {
             try { // Use wildcard search.
                 iterator = runSearch( index, queryString + "*" );
-            } catch ( ARQLuceneException e ) { // retry without wildcard
+            } catch ( ARQException e ) { // retry without wildcard
                 log.info( "Caught " + e + " caused by " + e.getCause() + " reason " + e.getMessage()
                         + ". Retrying search without wildcard." );
                 iterator = runSearch( index, queryString );
@@ -150,7 +155,7 @@ public class OntologySearch {
                     OntologyIndividual impl2 = new OntologyIndividualImpl( cl );
                     results.add( impl2 );
                     if ( log.isDebugEnabled() ) log.debug( impl2 );
-                } catch ( ARQLuceneException e ) {
+                } catch ( ARQException e ) {
                     throw new RuntimeException( e.getCause() );
                 } catch ( JenaException je ) {
 
@@ -197,7 +202,7 @@ public class OntologySearch {
         if ( lastWordLength > 1 ) {
             try { // Use wildcard search.
                 iterator = runSearch( index, queryString + "*" );
-            } catch ( ARQLuceneException e ) { // retry without wildcard
+            } catch ( ARQException e ) { // retry without wildcard
                 log.error( "Caught " + e + " caused by " + e.getCause() + " while searching " + model + " for "
                         + queryString + ". Retrying search without wildcard." );
                 iterator = runSearch( index, queryString );
@@ -205,7 +210,7 @@ public class OntologySearch {
         } else {
             try {
                 iterator = runSearch( index, queryString );
-            } catch ( ARQLuceneException e ) { // retry without wildcard
+            } catch ( ARQException e ) { // retry without wildcard
                 log.error( "Caught " + e + " caused by " + e.getCause() + " while searching " + model + " for "
                         + queryString + ". Retrying search without wildcard." );
                 throw e;
@@ -290,20 +295,34 @@ public class OntologySearch {
      */
     private static NodeIterator runSearch( IndexLARQ index, String queryString ) {
         String strippedQuery = StringUtils.strip( queryString );
+
         if ( StringUtils.isBlank( strippedQuery ) ) {
             throw new IllegalArgumentException( "Query cannot be blank" );
         }
 
+        String query = queryString.replaceAll( " AND ", " " );
+        List<String> list = new ArrayList<String>();
+        Matcher m = Pattern.compile( "([^\"]\\S*|\".+?\")\\s*" ).matcher( query );
+        while ( m.find() ) {
+            list.add( m.group( 1 ) );
+        }
+        String enhancedQuery = StringUtils.join( list, " " + Operator.AND + " " );
+        /*
+         * Note that LARQ does not allow you to change the default operator without making it non-thread-safe.
+         */
+
         try {
             StopWatch timer = new StopWatch();
             timer.start();
-            NodeIterator iterator = index.searchModelByIndex( strippedQuery );
+            index.getLuceneQueryParser().setDefaultOperator( Operator.AND );
+            NodeIterator iterator = index.searchModelByIndex( enhancedQuery );
 
             if ( timer.getTime() > 100 ) {
-                log.info( "Ontology resource search for: " + queryString + ": " + timer.getTime() + "ms" );
+                log.info( "Ontology resource search for: " + queryString + " (parsed to: " + enhancedQuery + ") : "
+                        + timer.getTime() + "ms" );
             }
             return iterator;
-        } catch ( ARQLuceneException e ) {
+        } catch ( ARQException e ) {
             // index is closed?
             log.error( "Error while searching: " + e.getMessage(), e );
             return null;

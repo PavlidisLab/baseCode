@@ -63,6 +63,15 @@ public class TestMatrixStats {
     }
 
     @Test
+    public void testColSumsWithMissing() throws Exception {
+        DoubleMatrix<String, String> counts = new DenseDoubleMatrix<String, String>( new double[][] {
+                { 1, 2, Double.NaN }, { 4, 5, 6 } } );
+        DoubleMatrix1D expected = new DenseDoubleMatrix1D( new double[] { 5, 7, 6 } );
+        DoubleMatrix1D actual = MatrixStats.colSums( counts );
+        assertArrayEquals( expected.toArray(), actual.toArray(), 0.0001 );
+    }
+
+    @Test
     public final void testConvertLog() {
         DoubleMatrix<String, String> copy = testdata.copy();
 
@@ -106,6 +115,21 @@ public class TestMatrixStats {
                 .getResourceAsStream( "/data/correlation-matrix-testoutput.txt" ) );
 
         assertEquals( true, RegressionTesting.closeEnough( expectedReturn, actualReturn, 0.001 ) );
+    }
+
+    @Test
+    public void testCountsPerMillionWithMissing() throws Exception {
+        DoubleMatrix<String, String> counts = new DenseDoubleMatrix<String, String>( new double[][] {
+                { 1, 2, Double.NaN }, { 4, 5, 6 } } );
+        DoubleMatrix1D libSize = MatrixStats.colSums( counts );
+        MatrixStats.convertToLog2Cpm( counts, libSize );
+        DoubleMatrix<String, String> actual = counts;
+        DoubleMatrix<String, String> expected = new DenseDoubleMatrix<String, String>( new double[][] {
+                { 17.93157, 18.2535, Double.NaN }, { 19.51653, 19.3910, 19.82465 } } );
+
+        for ( int i = 0; i < expected.rows(); i++ ) {
+            assertArrayEquals( expected.viewRow( i ).toArray(), actual.viewRow( i ).toArray(), 0.0001 );
+        }
     }
 
     @Test
@@ -219,29 +243,5 @@ public class TestMatrixStats {
                 return true;
             }
         } );
-    }
-
-    @Test
-    public void testColSumsWithMissing() throws Exception {
-        DoubleMatrix<String, String> counts = new DenseDoubleMatrix<String, String>( new double[][] {
-                { 1, 2, Double.NaN }, { 4, 5, 6 } } );
-        DoubleMatrix1D expected = new DenseDoubleMatrix1D( new double[] { 5, 7, 6 } );
-        DoubleMatrix1D actual = MatrixStats.colSums( counts );
-        assertArrayEquals( expected.toArray(), actual.toArray(), 0.0001 );
-    }
-
-    @Test
-    public void testCountsPerMillionWithMissing() throws Exception {
-        DoubleMatrix<String, String> counts = new DenseDoubleMatrix<String, String>( new double[][] {
-                { 1, 2, Double.NaN }, { 4, 5, 6 } } );
-        DoubleMatrix1D libSize = MatrixStats.colSums( counts );
-        MatrixStats.convertToLog2Cpm( counts, libSize );
-        DoubleMatrix<String, String> actual = counts;
-        DoubleMatrix<String, String> expected = new DenseDoubleMatrix<String, String>( new double[][] {
-                { 17.93157, 18.2535, Double.NaN }, { 19.51653, 19.3910, 19.82465 } } );
-
-        for ( int i = 0; i < expected.rows(); i++ ) {
-            assertArrayEquals( expected.viewRow( i ).toArray(), actual.viewRow( i ).toArray(), 0.0001 );
-        }
     }
 }

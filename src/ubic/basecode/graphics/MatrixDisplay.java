@@ -55,6 +55,7 @@ public class MatrixDisplay<R, C> extends JPanel {
     public static <R, C> MatrixDisplay<R, C> newInstance( ColorMatrix<R, C> matrix ) {
         return new MatrixDisplay<R, C>( matrix );
     }
+
     // data fields
     ColorMatrix<R, C> colorMatrix; // reference to standardized or unstandardized matrix
     boolean m_isShowingStandardizedMatrix = false;

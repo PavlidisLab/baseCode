@@ -18,7 +18,10 @@
  */
 package ubic.basecode.math;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import org.junit.Test;
 
 /**
  * Gold standard (?) is the exactRankTests (http://cran.r-project.org/src/contrib/Descriptions/exactRankTests.html) or
@@ -27,8 +30,9 @@ import junit.framework.TestCase;
  * @author pavlidis
  * @version $Id$
  */
-public class TestWilcoxon extends TestCase {
+public class TestWilcoxon {
     /* tests based on catmap */
+    @Test
     public void testAExact() {
         /* kinetochore */
         double actualValue = Wilcoxon.wilcoxonP( 5224, 2, 184 );
@@ -36,6 +40,7 @@ public class TestWilcoxon extends TestCase {
         assertEquals( expectedValue, actualValue, 1e-10 );
     }
 
+    @Test
     public void testBGaussian() {
         /* mitotic cell cycle */
         double actualValue = Wilcoxon.wilcoxonP( 5224, 97, 176069 );
@@ -43,6 +48,7 @@ public class TestWilcoxon extends TestCase {
         assertEquals( expectedValue, actualValue, 1e-10 );
     }
 
+    @Test
     public void testBig() {
         int N0 = 473395;
         int n0 = 36081;
@@ -51,6 +57,7 @@ public class TestWilcoxon extends TestCase {
         assertEquals( 1.0, r, 1e-5 );
     }
 
+    @Test
     public void testCGaussian() {
         /* nucleus */
         double actualValue = Wilcoxon.wilcoxonP( 5224, 618, 1499756 );
@@ -58,6 +65,7 @@ public class TestWilcoxon extends TestCase {
         assertEquals( expectedValue, actualValue, 1e-6 );
     }
 
+    @Test
     public void testDVolume() {
         /* nuclear division */
         double actualValue = Wilcoxon.wilcoxonP( 5224, 41, 59721 );
@@ -65,6 +73,7 @@ public class TestWilcoxon extends TestCase {
         assertEquals( expectedValue, actualValue, 1e-10 );
     }
 
+    @Test
     public void testEVolume() {
         /* DNA replicatoin */
         double actualValue = Wilcoxon.wilcoxonP( 5224, 48, 89794 );
@@ -72,6 +81,7 @@ public class TestWilcoxon extends TestCase {
         assertEquals( expectedValue, actualValue, 1e-6 );
     }
 
+    @Test
     public void testFVolume() {
         /* Mphase */
         double actualValue = Wilcoxon.wilcoxonP( 5224, 42, 60490 );
@@ -79,6 +89,7 @@ public class TestWilcoxon extends TestCase {
         assertEquals( expectedValue, actualValue, 1e-10 );
     }
 
+    @Test
     public final void testWilcoxonPExactA() {
 
         int N = 10;
@@ -93,6 +104,7 @@ public class TestWilcoxon extends TestCase {
 
     }
 
+    @Test
     public final void testWilxcoxonPExactB() {
 
         /*
@@ -108,6 +120,7 @@ public class TestWilcoxon extends TestCase {
         assertEquals( expectedValue, actualValue, 0.001 );
     }
 
+    @Test
     public final void testWilxcoxonPExactC() {
         /*
          * x<-c(1,3 ); y<-c(2 ); wilcox.exact(x,y, alternative="less")
@@ -122,6 +135,7 @@ public class TestWilcoxon extends TestCase {
         assertEquals( expectedValue, actualValue, 0.001 );
     }
 
+    @Test
     public final void testWilxcoxonPExactD() {
 
         /*
@@ -142,6 +156,7 @@ public class TestWilcoxon extends TestCase {
         assertEquals( expectedValue, actualValue, 0.00001 );
     }
 
+    @Test
     public final void testWilxcoxonPGauss() {
 
         /*
@@ -155,6 +170,7 @@ public class TestWilcoxon extends TestCase {
         assertEquals( expectedValue, actualValue, 0.001 );
     }
 
+    @Test
     public final void testWilxcoxonPGaussB() {
 
         /*
@@ -167,6 +183,7 @@ public class TestWilcoxon extends TestCase {
         assertEquals( expectedValue, actualValue, 0.00001 );
     }
 
+    @Test
     public final void testWilxcoxonPVolume() {
 
         /*
@@ -179,6 +196,7 @@ public class TestWilcoxon extends TestCase {
     }
 
     // bug 3133
+    @Test
     public final void testWilxcoxonPWithTies() {
 
         // assertEquals( 0.110, Wilcoxon.wilcoxonP( 3, 2, 3, true ), 0.001 );
@@ -193,25 +211,9 @@ public class TestWilcoxon extends TestCase {
             Wilcoxon.exactWilcoxonP( x, y );
             fail( "Should have gotten an exception because of ties" );
         } catch ( Exception e ) {
-
+            // ok
         }
 
-    }
-
-    /*
-     * @see TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
 }

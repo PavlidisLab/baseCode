@@ -18,18 +18,21 @@
  */
 package ubic.basecode.util;
 
+import static org.junit.Assert.assertEquals;
+
 import java.sql.Blob;
 
 import javax.sql.rowset.serial.SerialBlob;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author paul
  * @version $Id$
  */
-public class SQLUtilsTest extends TestCase {
+public class SQLUtilsTest {
 
+    @Test
     public void testBlobToString() throws Exception {
         String expectedValue = "a,b";
         byte[] charArray = expectedValue.getBytes();

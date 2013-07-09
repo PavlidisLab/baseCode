@@ -18,23 +18,25 @@
  */
 package ubic.basecode.math;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author paul
  * @version $Id$
  */
-public class RandomChooserTest extends TestCase {
+public class RandomChooserTest {
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
 
         // Note that this does not make algorithm 100% reproducible across all
         // java/platform versions.
@@ -44,6 +46,7 @@ public class RandomChooserTest extends TestCase {
     /**
      * Test method for {@link ubic.basecode.math.RandomChooser#chooserandom(int[], boolean[], int, int)} .
      */
+    @Test
     public void testChooserandomIntArrayBooleanArrayIntInt() {
         int[] result = RandomChooser.chooserandom( 100, 10 );
         int[] expected = { 60, 48, 29, 47, 15, 53, 91, 61, 19, 54 };
@@ -55,6 +58,7 @@ public class RandomChooserTest extends TestCase {
     /**
      * Test method for {@link ubic.basecode.math.RandomChooser#chooserandomWrep(int[], int, int)} .
      */
+    @Test
     public void testChooserandomWrep() {
         int[] result = RandomChooser.chooserandomWrep( 100, 500 );
         assertEquals( 500, result.length );
@@ -63,6 +67,7 @@ public class RandomChooserTest extends TestCase {
         assertEquals( 55, result[11] );
     }
 
+    @Test
     public void testRandomSubset() {
         Collection<String> vals = new HashSet<String>();
         vals.add( "a" );
@@ -85,6 +90,7 @@ public class RandomChooserTest extends TestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testRepeat() throws Exception {
         int k = 1000;
 
@@ -105,6 +111,7 @@ public class RandomChooserTest extends TestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testRepeatSubset() throws Exception {
         List<Integer> k = new ArrayList<Integer>();
         int max = 1000;

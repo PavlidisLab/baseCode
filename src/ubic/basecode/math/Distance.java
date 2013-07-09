@@ -18,7 +18,7 @@
  */
 package ubic.basecode.math;
 
-import cern.colt.list.DoubleArrayList; 
+import cern.colt.list.DoubleArrayList;
 
 /**
  * Alternative distance and similarity metrics for vectors.
@@ -120,7 +120,7 @@ public class Distance {
      */
     public static double manhattanDistance( DoubleArrayList x, DoubleArrayList y ) {
         int j;
-        double sum = 0.0; 
+        double sum = 0.0;
 
         if ( x.size() != y.size() ) {
             throw new ArithmeticException();
@@ -129,7 +129,7 @@ public class Distance {
         int length = x.size();
         for ( j = 0; j < length; j++ ) {
             if ( !Double.isNaN( x.elements()[j] ) && !Double.isNaN( y.elements()[j] ) ) {
-                sum += Math.abs( x.elements()[j] - y.elements()[j] ); 
+                sum += Math.abs( x.elements()[j] - y.elements()[j] );
             }
         }
         return sum;
@@ -155,16 +155,14 @@ public class Distance {
 
         return 1.0 - ( 6.0 * s ) / ( n * ( Math.pow( n, 2 ) - 1 ) );
     }
-    
 
-    //    
+    //
     // public static double mutualInformation(DoubleMatrix1D x, DoubleMatrix1D y) {
     // double h = 0.1; // toto: estimate this. Tricky.
-    //        
-    //        
-    //        
+    //
+    //
+    //
     // }
-    
 
     /**
      * Spearman Rank Correlation. This does the rank transformation of the data. Only mutually non-NaN values are used.

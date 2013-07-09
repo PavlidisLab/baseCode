@@ -27,7 +27,6 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -44,7 +43,6 @@ import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.model.OntologyTermImpl;
 import ubic.basecode.ontology.model.PropertyFactory;
 
-import com.hp.hpl.jena.db.IDBConnection;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -67,11 +65,10 @@ public class OntologyLoader {
     /**
      * @return
      */
-    public static ModelMaker getRDBMaker() {
+    public static Model getRDBMaker() {
         PersistentOntology po = new PersistentOntology();
 
-        ModelMaker maker = po.getRDBMaker( false );
-        return maker;
+        return po.getRDBMaker();
     }
 
     /**
@@ -274,22 +271,6 @@ public class OntologyLoader {
     }
 
     /**
-     * Deletes all cached ontologies from the system. Use with care!
-     */
-    protected static void wipePersistentStore() {
-
-        IDBConnection conn = OntologyDataSource.getConnection();
-
-        try {
-            conn.cleanDB();
-            conn.close();
-        } catch ( SQLException e ) {
-            throw new RuntimeException();
-        }
-
-    }
-
-    /**
      * Get model backed by persistent store.
      * 
      * @param url
@@ -302,21 +283,19 @@ public class OntologyLoader {
             throw new IllegalArgumentException( "OWL URL must not be blank" );
         }
         OntModelSpec spec = new OntModelSpec( OntModelSpec.OWL_DL_MEM_TRANS_INF );
-        ModelMaker maker = getRDBMaker();
-        spec.setImportModelMaker( maker );
-        Model base;
-        if ( url == null ) {
-            base = maker.createDefaultModel();
-        } else {
-            base = maker.createModel( url, false );
+
+        Model base = getRDBMaker();
+
+        if ( url != null ) {
+            base = base.read( url );
         }
+
         try {
             return ModelFactory.createOntologyModel( spec, base );
         } finally {
             if ( timer.getTime() > 100 ) {
                 log.debug( "Load model: " + timer.getTime() + "ms" );
             }
-            maker.close();
         }
 
     }

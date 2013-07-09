@@ -119,8 +119,8 @@ public class Wilcoxon {
         if ( n == 0 && N == 0 ) return 1.0;
 
         if ( ( !ties )
-                && ( ( ( long ) N * ( long ) n <= LIMIT_FOR_APPROXIMATION && ( long ) n * R <= LIMIT_FOR_APPROXIMATION && ( long ) N
-                        * ( long ) n * R <= LIMIT_FOR_APPROXIMATION ) || ( R < N && n * Math.pow( ( long ) R, 2 ) <= LIMIT_FOR_APPROXIMATION ) ) ) {
+                && ( ( ( long ) N * ( long ) n <= LIMIT_FOR_APPROXIMATION && n * R <= LIMIT_FOR_APPROXIMATION && ( long ) N
+                        * ( long ) n * R <= LIMIT_FOR_APPROXIMATION ) || ( R < N && n * Math.pow( R, 2 ) <= LIMIT_FOR_APPROXIMATION ) ) ) {
             if ( log.isDebugEnabled() ) log.debug( "Using exact method (" + N * n * R + ")" );
             return pExact( N, n, ( int ) R );
         }

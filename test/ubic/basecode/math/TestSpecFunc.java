@@ -18,14 +18,17 @@
  */
 package ubic.basecode.math;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 /**
  * @author pavlidis
  * @version $Id$
  */
-public class TestSpecFunc extends TestCase {
+public class TestSpecFunc {
 
+    @Test
     public final void testCumHyperGeometric() {
         // phyper(2, 20, 100, 50);
         // [1] 0.001077697
@@ -34,15 +37,17 @@ public class TestSpecFunc extends TestCase {
         assertEquals( expectedReturn, actualReturn, 1e-5 );
     }
 
+    @Test
     public final void testCumHyperGeometricB() {
         // GO:0043371 ingroupoverthresh=0 setsize=5 totalinputsize=15799 totaloverthresh=24 oraP=0.007573332171226688
         double expectedReturn = 0.00757333;
         // phyper(0, 5, 15794, 24, lower.tail=F);
-        
-        double actualReturn = SpecFunc.phyper( 0, 5, 15799-5, 24, false );
+
+        double actualReturn = SpecFunc.phyper( 0, 5, 15799 - 5, 24, false );
         assertEquals( expectedReturn, actualReturn, 1e-5 );
     }
 
+    @Test
     public final void testCumHyperGeometricUT() {
         // phyper(18, 20, 100, 50, lower.tail=F);
         // [1] 7.384185e-08
@@ -52,6 +57,7 @@ public class TestSpecFunc extends TestCase {
         assertEquals( expectedReturn, actualReturn, 1e-5 );
     }
 
+    @Test
     public final void testdBinom() {
         // dbinom(2, 100, 0.1) == 0.001623197
         double expectedReturn = 0.001623197;
@@ -59,7 +65,7 @@ public class TestSpecFunc extends TestCase {
         assertEquals( expectedReturn, actualReturn, 1e-5 );
     }
 
-    
+    @Test
     public final void testHypergeometric() {
         // hypergeometric( int positives, int successes,
         // int negatives, int failures )
@@ -70,22 +76,6 @@ public class TestSpecFunc extends TestCase {
         double expectedReturn = 0.0009644643;
         double actualReturn = SpecFunc.dhyper( 2, 20, 100, 50 );
         assertEquals( expectedReturn, actualReturn, 1e-5 );
-    }
-    
-    /*
-     * @see TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
 }

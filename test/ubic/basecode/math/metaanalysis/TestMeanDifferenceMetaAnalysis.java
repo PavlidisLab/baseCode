@@ -18,14 +18,18 @@
  */
 package ubic.basecode.math.metaanalysis;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import cern.colt.list.DoubleArrayList;
 
 /**
  * @author pavlidis
  * @version $Id$
  */
-public class TestMeanDifferenceMetaAnalysis extends TestCase {
+public class TestMeanDifferenceMetaAnalysis {
 
     DoubleArrayList ds2cv;
     DoubleArrayList ds2d;
@@ -33,71 +37,13 @@ public class TestMeanDifferenceMetaAnalysis extends TestCase {
     MeanDifferenceMetaAnalysis uf;
     MeanDifferenceMetaAnalysis ur;
 
-    public void testRunFixedE() {
-        uf.run( ds2d, ds2cv );
-        double actualReturn = uf.getE();
-        double expectedReturn = 0.06;
-        assertEquals( "return value", expectedReturn, actualReturn, 0.001 );
-    }
-
-    public void testRunFixedQ() {
-        uf.run( ds2d, ds2cv );
-        double actualReturn = uf.getQ();
-        double expectedReturn = 35.83;
-        assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
-    }
-
-    public void testRunFixedVar() {
-        uf.run( ds2d, ds2cv );
-        double actualReturn = uf.getV();
-        double expectedReturn = 0.00133;
-        assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
-    }
-
-    public void testRunFixedZ() {
-        uf.run( ds2d, ds2cv );
-        double actualReturn = uf.getZ();
-        double expectedReturn = 1.65;
-        assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
-    }
-
-    public void testRunRandomBSV() {
-        ur.run( ds2d, ds2cv );
-        double actualReturn = ur.getBsv();
-        double expectedReturn = 0.026; // using eqn 18-23
-        assertEquals( "return value", expectedReturn, actualReturn, 0.001 );
-    }
-
-    public void testRunRandomE() {
-        ur.run( ds2d, ds2cv );
-        double actualReturn = ur.getE();
-        double expectedReturn = 0.0893;
-        assertEquals( "return value", expectedReturn, actualReturn, 0.001 );
-    }
-
-    // note we are using the weighted variance model of 18-3.
-    public void testRunRandomVar() {
-        ur.run( ds2d, ds2cv );
-        double actualReturn = ur.getV();
-        double expectedReturn = 0.0031136;
-        assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
-    }
-
-    public void testRunRandomZ() {
-        ur.run( ds2d, ds2cv );
-        double actualReturn = ur.getZ();
-        double expectedReturn = 1.60;
-        assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
-    }
-
     /*
      * @see TestCase#setUp()
      */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
 
-        // data set 2 from Appendix A of Cooper and Hedges. They give us the conditoinal variances (standard errors)
+        // data set 2 from Appendix A of Cooper and Hedges. They give us the conditional variances (standard errors)
         // instead of the raw ns.
 
         // these are actually the standard errors (sqrt var)
@@ -128,7 +74,7 @@ public class TestMeanDifferenceMetaAnalysis extends TestCase {
         // bloodstream infection
         // inf.ctrl : number of standard catheters resulting in
         // bloodstream infection
-        //     
+        //
         // Veenstra D et al (1998) "Efficacy of Antiseptic Impregnated
         // Central Venous Catheters in Preventing Nosocomial Infections: A
         // Meta-analysis" JAMA 281:261-267
@@ -141,12 +87,69 @@ public class TestMeanDifferenceMetaAnalysis extends TestCase {
 
     }
 
-    /*
-     * @see TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @Test
+    public void testRunFixedE() {
+        uf.run( ds2d, ds2cv );
+        double actualReturn = uf.getE();
+        double expectedReturn = 0.06;
+        assertEquals( "return value", expectedReturn, actualReturn, 0.001 );
+    }
+
+    @Test
+    public void testRunFixedQ() {
+        uf.run( ds2d, ds2cv );
+        double actualReturn = uf.getQ();
+        double expectedReturn = 35.83;
+        assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
+    }
+
+    @Test
+    public void testRunFixedVar() {
+        uf.run( ds2d, ds2cv );
+        double actualReturn = uf.getV();
+        double expectedReturn = 0.00133;
+        assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
+    }
+
+    @Test
+    public void testRunFixedZ() {
+        uf.run( ds2d, ds2cv );
+        double actualReturn = uf.getZ();
+        double expectedReturn = 1.65;
+        assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
+    }
+
+    @Test
+    public void testRunRandomBSV() {
+        ur.run( ds2d, ds2cv );
+        double actualReturn = ur.getBsv();
+        double expectedReturn = 0.026; // using eqn 18-23
+        assertEquals( "return value", expectedReturn, actualReturn, 0.001 );
+    }
+
+    @Test
+    public void testRunRandomE() {
+        ur.run( ds2d, ds2cv );
+        double actualReturn = ur.getE();
+        double expectedReturn = 0.0893;
+        assertEquals( "return value", expectedReturn, actualReturn, 0.001 );
+    }
+
+    // note we are using the weighted variance model of 18-3.
+    @Test
+    public void testRunRandomVar() {
+        ur.run( ds2d, ds2cv );
+        double actualReturn = ur.getV();
+        double expectedReturn = 0.0031136;
+        assertEquals( "return value", expectedReturn, actualReturn, 0.0001 );
+    }
+
+    @Test
+    public void testRunRandomZ() {
+        ur.run( ds2d, ds2cv );
+        double actualReturn = ur.getZ();
+        double expectedReturn = 1.60;
+        assertEquals( "return value", expectedReturn, actualReturn, 0.01 );
     }
 
 }

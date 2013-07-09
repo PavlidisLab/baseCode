@@ -18,10 +18,14 @@
  */
 package ubic.basecode.math;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
 
@@ -29,11 +33,28 @@ import cern.colt.list.IntArrayList;
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class TestRank extends TestCase {
+public class TestRank {
 
     DoubleArrayList testdata = null;
     Map<String, Double> testmap = null;
 
+    /*
+     * @see TestCase#setUp()
+     */
+    @Before
+    public void setUp() throws Exception {
+        testdata = new DoubleArrayList( new double[] { 10.0, 11.0, 12.0, 13.0, 114.0, 5.0 } );
+        testmap = new HashMap<String, Double>();
+        testmap.put( "Ten", new Double( 10.0 ) );
+        testmap.put( "Eleven", new Double( 11.0 ) );
+        testmap.put( "Twelve", new Double( 12.0 ) );
+        testmap.put( "Thirteen", new Double( 13.0 ) );
+        testmap.put( "HundredFourteen", new Double( 114.0 ) );
+        testmap.put( "Five", new Double( 5.0 ) );
+
+    }
+
+    @Test
     public void testOrder() {
         double[] a = new double[] { 49.0, 43.0, 310.0, 20.0, 20.0, 688.0, 498.0, 533.0, 723.0, 1409.0, 279.0 };
         DoubleArrayList al = new DoubleArrayList( a );
@@ -46,6 +67,7 @@ public class TestRank extends TestCase {
         }
     }
 
+    @Test
     public void testOrderB() {
         double[] a = new double[] { 2, 3, 1, 5, 4 };
         DoubleArrayList al = new DoubleArrayList( a );
@@ -59,18 +81,21 @@ public class TestRank extends TestCase {
     /*
      * Class under test for DoubleArrayList rankTransform(DoubleArrayList)
      */
+    @Test
     public void testRankTransformDoubleArrayList() {
         DoubleArrayList actualReturn = Rank.rankTransform( testdata );
         DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 2, 3, 4, 5, 6, 1 } );
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testRankTransformDoubleArrayListDesc() {
         DoubleArrayList actualReturn = Rank.rankTransform( testdata, true );
         DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 5, 4, 3, 2, 1, 6 } );
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testRankTransformMap() {
 
         Map<String, Double> actualReturn = Rank.rankTransform( testmap );
@@ -84,6 +109,7 @@ public class TestRank extends TestCase {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testRankTransformMapDesc() {
         Map<String, Double> actualReturn = Rank.rankTransform( testmap, true );
         Map<String, Double> expectedReturn = new HashMap<String, Double>();
@@ -96,6 +122,7 @@ public class TestRank extends TestCase {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testRankWithTies() {
         double[] a = new double[] { 49.0, 43.0, 310.0, 20.0, 20.0, 688.0, 498.0, 533.0, 723.0, 1409.0, 279.0 };
         DoubleArrayList al = new DoubleArrayList( a );
@@ -106,6 +133,7 @@ public class TestRank extends TestCase {
         }
     }
 
+    @Test
     public void testRankWithTiesB() {
         double[] a = new double[] { 49.0, 43.0, 310.0, 20.0, 20.0, 688.0, 498.0, 533.0, 723.0, 1409.0, 279.0, 279.0 };
         DoubleArrayList al = new DoubleArrayList( a );
@@ -116,6 +144,7 @@ public class TestRank extends TestCase {
         }
     }
 
+    @Test
     public void testRankWithTiesC() {
         double[] a = new double[] { 49.0, 43.0, 310.0, 20.0, 279.0, 20.0, 688.0, 498.0, 533.0, 723.0, 1409.0, 279.0 };
         DoubleArrayList al = new DoubleArrayList( a );
@@ -126,6 +155,7 @@ public class TestRank extends TestCase {
         }
     }
 
+    @Test
     public void testRankWithTiesD() {
         double[] a = new double[] { 49.0, 49.0 };
         DoubleArrayList al = new DoubleArrayList( a );
@@ -136,6 +166,7 @@ public class TestRank extends TestCase {
         }
     }
 
+    @Test
     public void testRankWithTiesE() {
         double[] a = new double[] { 49.0, 1.0, 49.0, 49.0 };
         DoubleArrayList al = new DoubleArrayList( a );
@@ -146,6 +177,7 @@ public class TestRank extends TestCase {
         }
     }
 
+    @Test
     public void testWithNaNs() {
         double x[] = { 1.0, Double.NaN, 1.0 };
         double[] expected = new double[] { 1.5, 3.0, 1.5 };
@@ -156,6 +188,7 @@ public class TestRank extends TestCase {
 
     }
 
+    @Test
     public void testWithNaNs2() {
         double x[] = { Double.NaN, 1.0, 1.0 };
         double[] expected = new double[] { 3.0, 1.5, 1.5 };
@@ -166,6 +199,7 @@ public class TestRank extends TestCase {
 
     }
 
+    @Test
     public void testWithNaNs3() {
         double x[] = { Double.NaN, Double.NaN, 2.0, 2.0, 2.0 };
         double[] expected = new double[] { 4.5, 4.5, 2.0, 2.0, 2.0 };
@@ -176,30 +210,4 @@ public class TestRank extends TestCase {
 
     }
 
-    /*
-     * @see TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        testdata = new DoubleArrayList( new double[] { 10.0, 11.0, 12.0, 13.0, 114.0, 5.0 } );
-        testmap = new HashMap<String, Double>();
-        testmap.put( "Ten", new Double( 10.0 ) );
-        testmap.put( "Eleven", new Double( 11.0 ) );
-        testmap.put( "Twelve", new Double( 12.0 ) );
-        testmap.put( "Thirteen", new Double( 13.0 ) );
-        testmap.put( "HundredFourteen", new Double( 114.0 ) );
-        testmap.put( "Five", new Double( 5.0 ) );
-
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        testdata = null;
-        testmap = null;
-    }
 }

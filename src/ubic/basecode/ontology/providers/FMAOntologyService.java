@@ -33,6 +33,7 @@ public class FMAOntologyService extends AbstractOntologyMemoryBackedService {
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.gemma.ontology.AbstractOntologyService#getOntologyName()
      */
     @Override

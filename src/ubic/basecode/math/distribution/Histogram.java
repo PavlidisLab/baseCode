@@ -21,6 +21,7 @@ package ubic.basecode.math.distribution;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
+
 import org.jfree.data.xy.XYSeries;
 
 import cern.colt.list.DoubleArrayList;

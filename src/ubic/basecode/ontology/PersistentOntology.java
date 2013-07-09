@@ -18,12 +18,17 @@
  */
 package ubic.basecode.ontology;
 
-import com.hp.hpl.jena.db.IDBConnection;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.ModelMaker;
+import com.hp.hpl.jena.sdb.SDBFactory;
+import com.hp.hpl.jena.sdb.Store;
+import com.hp.hpl.jena.sdb.StoreDesc;
+import com.hp.hpl.jena.sdb.sql.SDBConnection;
+import com.hp.hpl.jena.sdb.store.DatabaseType;
+import com.hp.hpl.jena.sdb.store.LayoutType;
 
 /**
  * Originally based on: PersistentOntology.java Copyright 2002, 2003, 2004, 2005, 2006, 2007 Hewlett-Packard Development
@@ -45,24 +50,16 @@ public class PersistentOntology {
     }
 
     /**
-     * @param dbURL
-     * @param dbUser
-     * @param dbPw
-     * @param dbType e.g. 'mysql'
-     * @param cleanDB
      * @return
      */
-    public ModelMaker getRDBMaker( boolean clean ) {
+    public Model getRDBMaker() {
         try {
             // Create database connection
-            IDBConnection conn = OntologyDataSource.getConnection();
-
-            if ( clean ) {
-                conn.cleanDB();
-            }
-
-            // Create a model maker object
-            return ModelFactory.createModelRDBMaker( conn );
+            SDBConnection conn = OntologyDataSource.getConnection();
+            StoreDesc storeDesc = new StoreDesc( LayoutType.LayoutTripleNodesHash, DatabaseType.MySQL );
+            Store store = SDBFactory.connectStore( conn, storeDesc );
+            Model model = SDBFactory.connectDefaultModel( store );
+            return model;
         } catch ( Exception e ) {
             throw new RuntimeException( e );
         }

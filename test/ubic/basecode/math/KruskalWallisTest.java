@@ -14,16 +14,20 @@
  */
 package ubic.basecode.math;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
-import junit.framework.TestCase;
 
 /**
  * @author paul
  * @version $Id$
  */
-public class KruskalWallisTest extends TestCase {
+public class KruskalWallisTest {
 
+    @Test
     public void testKW() {
 
         double[] s = new double[] { 2.9, 3.0, 2.5, 2.6, 3.2, 3.8, 2.7, 4.0, 2.4, 2.8, 3.4, 3.7, 2.2, 2.0 };

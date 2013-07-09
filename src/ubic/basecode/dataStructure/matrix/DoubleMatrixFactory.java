@@ -41,8 +41,7 @@ public class DoubleMatrixFactory {
      * @return
      */
     public static DenseDoubleMatrix<String, String> dense( DoubleMatrix<String, String> T ) {
-        DenseDoubleMatrix<String, String> copy = new DenseDoubleMatrix<String, String>( T.rows(), T
-                .columns() );
+        DenseDoubleMatrix<String, String> copy = new DenseDoubleMatrix<String, String>( T.rows(), T.columns() );
         copy.setRowNames( T.getRowNames() );
         copy.setColumnNames( T.getColNames() );
         for ( int i = 0; i < T.rows(); i++ ) {

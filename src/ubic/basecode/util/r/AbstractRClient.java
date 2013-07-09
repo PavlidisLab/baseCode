@@ -465,7 +465,7 @@ public abstract class AbstractRClient implements RClient {
      * @see ubic.basecode.util.RClient#linearModel(double[], java.util.List)
      */
     @Override
-    @SuppressWarnings( { "unchecked" })
+    @SuppressWarnings({ "unchecked" })
     public LinearModelSummary linearModel( double[] data, Map<String, List<?>> factors ) {
 
         String datName = RandomStringUtils.randomAlphabetic( 10 );

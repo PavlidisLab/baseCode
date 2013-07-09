@@ -18,17 +18,21 @@
  */
 package ubic.basecode.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import java.util.Collection;
 import java.util.HashSet;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author pavlidis
  * @version $Id$
  */
-public class StringUtilTest extends TestCase {
+public class StringUtilTest {
 
+    @Test
     public void testCommonPrefix() {
         Collection<String> test = new HashSet<String>();
         test.add( "aadaab" );
@@ -39,6 +43,7 @@ public class StringUtilTest extends TestCase {
         assertEquals( "aa", p );
     }
 
+    @Test
     public void testCommonPrefixNone() {
         Collection<String> test = new HashSet<String>();
         test.add( "aadaac" );
@@ -49,6 +54,7 @@ public class StringUtilTest extends TestCase {
         assertNull( p );
     }
 
+    @Test
     public void testCommonSuffix() {
         Collection<String> test = new HashSet<String>();
         test.add( "aadaab" );
@@ -59,6 +65,7 @@ public class StringUtilTest extends TestCase {
         assertEquals( "b", suf );
     }
 
+    @Test
     public void testCommonSuffixNone() {
         Collection<String> test = new HashSet<String>();
         test.add( "aaabf" );

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Similar to ubic.gemma.util.CountingMap.  Except instead it adds the values of the keys.
+ * Similar to ubic.gemma.util.CountingMap. Except instead it adds the values of the keys.
  */
 public class DoubleAddingMap<K> extends HashMap<K, Double> {
 
@@ -24,7 +24,7 @@ public class DoubleAddingMap<K> extends HashMap<K, Double> {
 
     /**
      * adds the current value to the value of this key. If the current value is null then value becomes the d parameter.
-     *
+     * 
      * @return the value at this key.
      */
     public Double addPut( K key, Double d ) {

@@ -18,8 +18,14 @@
  */
 package ubic.basecode.datafilter;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.HashSet;
 import java.util.Set;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.StringMatrix;
@@ -33,46 +39,10 @@ public class TestRowNameFilter extends AbstractTestFilter {
 
     protected Set<String> testfilterlist;
 
-    public void testFilter() {
-        RowNameFilter<DoubleMatrix<String, String>, String, String, Double> fi = new RowNameFilter<DoubleMatrix<String, String>, String, String, Double>(
-                testfilterlist );
-        DoubleMatrix<String, String> filtered = fi.filter( testdata );
-        int expectedReturn = 4;
-        int actualReturn = filtered.rows();
-        assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
-    public void testFilterExclude() {
-        RowNameFilter<DoubleMatrix<String, String>, String, String, Double> fi = new RowNameFilter<DoubleMatrix<String, String>, String, String, Double>(
-                testfilterlist, true );
-        DoubleMatrix<String, String> filtered = fi.filter( testdata );
-        int expectedReturn = testdata.rows() - 4;
-        int actualReturn = filtered.rows();
-        assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
-    public void testFilterString() {
-        RowNameFilter<StringMatrix<String, String>, String, String, String> fi = new RowNameFilter<StringMatrix<String, String>, String, String, String>(
-                testfilterlist );
-        StringMatrix<String, String> filtered = fi.filter( teststringdata );
-        int expectedReturn = 4;
-        int actualReturn = filtered.rows();
-        assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
-    public void testFilterStringExclude() {
-        RowNameFilter<StringMatrix<String, String>, String, String, String> fi = new RowNameFilter<StringMatrix<String, String>, String, String, String>(
-                testfilterlist, true );
-        StringMatrix<String, String> filtered = fi.filter( teststringdata );
-        int expectedReturn = teststringdata.rows() - 4;
-        int actualReturn = filtered.rows();
-        assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
     @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
-
         testfilterlist = new HashSet<String>();
         testfilterlist.add( "gene1_at" );
         testfilterlist.add( "gene4_at" );
@@ -82,9 +52,50 @@ public class TestRowNameFilter extends AbstractTestFilter {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         super.tearDown();
         testfilterlist = null;
+    }
+
+    @Test
+    public void testFilter() {
+        RowNameFilter<DoubleMatrix<String, String>, String, String, Double> fi = new RowNameFilter<DoubleMatrix<String, String>, String, String, Double>(
+                testfilterlist );
+        DoubleMatrix<String, String> filtered = fi.filter( testdata );
+        int expectedReturn = 4;
+        int actualReturn = filtered.rows();
+        assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
+    @Test
+    public void testFilterExclude() {
+        RowNameFilter<DoubleMatrix<String, String>, String, String, Double> fi = new RowNameFilter<DoubleMatrix<String, String>, String, String, Double>(
+                testfilterlist, true );
+        DoubleMatrix<String, String> filtered = fi.filter( testdata );
+        int expectedReturn = testdata.rows() - 4;
+        int actualReturn = filtered.rows();
+        assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
+    @Test
+    public void testFilterString() {
+        RowNameFilter<StringMatrix<String, String>, String, String, String> fi = new RowNameFilter<StringMatrix<String, String>, String, String, String>(
+                testfilterlist );
+        StringMatrix<String, String> filtered = fi.filter( teststringdata );
+        int expectedReturn = 4;
+        int actualReturn = filtered.rows();
+        assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
+    @Test
+    public void testFilterStringExclude() {
+        RowNameFilter<StringMatrix<String, String>, String, String, String> fi = new RowNameFilter<StringMatrix<String, String>, String, String, String>(
+                testfilterlist, true );
+        StringMatrix<String, String> filtered = fi.filter( teststringdata );
+        int expectedReturn = teststringdata.rows() - 4;
+        int actualReturn = filtered.rows();
+        assertEquals( "return value", expectedReturn, actualReturn );
     }
 
 }

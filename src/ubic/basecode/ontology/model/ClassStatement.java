@@ -18,7 +18,6 @@
  */
 package ubic.basecode.ontology.model;
 
-
 /**
  * @author pavlidis
  * @version $Id$

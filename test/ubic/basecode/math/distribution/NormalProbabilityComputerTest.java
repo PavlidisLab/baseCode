@@ -18,15 +18,19 @@
  */
 package ubic.basecode.math.distribution;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import org.junit.Test;
 
 /**
  * @author Paul
  * @version $Id$
  */
-public class NormalProbabilityComputerTest extends TestCase {
+public class NormalProbabilityComputerTest {
 
     @SuppressWarnings("unused")
+    @Test
     public void testInvalidVariance() {
         try {
             new NormalProbabilityComputer( 0.0, -1.0 );
@@ -39,6 +43,7 @@ public class NormalProbabilityComputerTest extends TestCase {
     /**
      * Test method for {@link ubic.basecode.math.distribution.NormalProbabilityComputer#probability(double)}.
      */
+    @Test
     public void testProbabilityDouble() {
         NormalProbabilityComputer c = new NormalProbabilityComputer( 0.0, 1.0 );
         assertEquals( 0.02275013, c.probability( 2.0 ), 0.00001 );
@@ -47,11 +52,13 @@ public class NormalProbabilityComputerTest extends TestCase {
     /**
      * Test method for {@link ubic.basecode.math.distribution.NormalProbabilityComputer#probability(double, boolean)}.
      */
+    @Test
     public void testProbabilityDoubleBoolean() {
         NormalProbabilityComputer c = new NormalProbabilityComputer( 0.0, 1.0 );
         assertEquals( 0.02275013, c.probability( 2.0, true ), 0.00001 );
     }
 
+    @Test
     public void testProbabilityDoubleBooleanLower() {
         NormalProbabilityComputer c = new NormalProbabilityComputer( 0.0, 1.0 );
         assertEquals( 1.0 - 0.02275013, c.probability( 2.0, false ), 0.00001 );

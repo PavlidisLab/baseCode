@@ -18,18 +18,22 @@
  */
 package ubic.basecode.math.metaanalysis;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 import cern.colt.list.DoubleArrayList;
-import junit.framework.TestCase;
 
 /**
  * @author paul
  * @version $Id$
  */
-public class MetaAnalysisTest extends TestCase {
+public class MetaAnalysisTest {
 
     /**
      * @throws Exception
      */
+    @Test
     public final void testFisherCombinePvalues() throws Exception {
 
         /*
@@ -44,6 +48,7 @@ public class MetaAnalysisTest extends TestCase {
 
     }
 
+    @Test
     public final void testFisherCombinePvaluesB() {
 
         /*

@@ -21,7 +21,6 @@ package ubic.basecode.ontology.model;
 import java.util.Collection;
 import java.util.HashSet;
 
-
 import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntResource;
@@ -41,7 +40,7 @@ public class ObjectPropertyImpl extends OntologyPropertyImpl implements ubic.bas
 
     public ObjectPropertyImpl( ObjectProperty resource ) {
         this.isFunctional = resource.isFunctionalProperty();
-        this.resource = resource; 
+        this.resource = resource;
     }
 
     @Override
@@ -57,7 +56,7 @@ public class ObjectPropertyImpl extends OntologyPropertyImpl implements ubic.bas
             OntResource r = iterator.next();
             if ( r.isClass() ) {
                 OntClass class1 = r.asClass();
-                result.add( new OntologyTermImpl( class1  ) );
+                result.add( new OntologyTermImpl( class1 ) );
             } else {
                 log.warn( "Don't know how to deal with " + r );
             }

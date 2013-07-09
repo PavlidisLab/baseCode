@@ -17,7 +17,7 @@
  *
  */
 package ubic.basecode.ontology.model;
- 
+
 import com.hp.hpl.jena.ontology.Restriction;
 
 /**
@@ -34,9 +34,9 @@ public abstract class OntologyRestrictionImpl extends OntologyTermImpl implement
     private static final long serialVersionUID = 1L;
     protected OntologyProperty restrictionOn = null;
 
-    public OntologyRestrictionImpl( Restriction resource  ) {
-        super( resource  );
-        this.restrictionOn = PropertyFactory.asProperty( resource.getOnProperty()  );
+    public OntologyRestrictionImpl( Restriction resource ) {
+        super( resource );
+        this.restrictionOn = PropertyFactory.asProperty( resource.getOnProperty() );
     }
 
     @Override

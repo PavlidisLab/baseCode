@@ -56,6 +56,7 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
     private int rows = 0, cols = 0;
 
     private int totalBitsPerItem;
+
     /**
      * Constructs a matrix with specified rows, columns, and total bits per element
      * 

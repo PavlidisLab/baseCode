@@ -18,9 +18,9 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
+import junit.framework.TestCase;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
-import junit.framework.TestCase;
 
 /**
  * T
@@ -97,8 +97,7 @@ public class CompressedSparseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for
-     * {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#getObject(int, int)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#getObject(int, int)}.
      */
     public void testGetObject() {
         assertEquals( 4.0, testM.getObject( 0, 3 ), 0.000001 );
@@ -117,8 +116,7 @@ public class CompressedSparseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for
-     * {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#getRowArrayList(int)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#getRowArrayList(int)}.
      */
     public void testGetRowArrayList() {
         DoubleArrayList actual = testM.getRowArrayList( 2 );
@@ -155,8 +153,7 @@ public class CompressedSparseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for
-     * {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#isMissing(int, int)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#isMissing(int, int)}.
      */
     public void testIsMissing() {
         assertFalse( testM.isMissing( 2, 2 ) );
@@ -171,8 +168,7 @@ public class CompressedSparseDoubleMatrix2DNamedTest extends TestCase {
     }
 
     /**
-     * Test method for
-     * {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#set(int, int, double)}.
+     * Test method for {@link ubic.basecode.dataStructure.matrix.CompressedSparseDoubleMatrix#set(int, int, double)}.
      */
     public void testSet() {
         testM.set( 2, 2, 666.0 );

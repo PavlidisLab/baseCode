@@ -18,7 +18,11 @@
  */
 package ubic.basecode.math;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.datafilter.AbstractTestFilter;
 import ubic.basecode.io.reader.DoubleMatrixReader;
@@ -29,10 +33,22 @@ import cern.colt.list.DoubleArrayList;
  * @author pavlidis
  * @version $Id$
  */
-public class TestMatrixRowStats extends TestCase {
+public class TestMatrixRowStats {
 
     protected DoubleMatrix<String, String> testdata = null;
 
+    /*
+     * @see TestCase#setUp()
+     */
+    @Before
+    public void setUp() throws Exception {
+
+        DoubleMatrixReader f = new DoubleMatrixReader();
+
+        testdata = f.read( AbstractTestFilter.class.getResourceAsStream( "/data/testdata.txt" ) );
+    }
+
+    @Test
     public final void testMeans() {
         DoubleArrayList actualReturn = MatrixRowStats.means( testdata );
         DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 134.708333333333, 168.641666666667,
@@ -44,6 +60,7 @@ public class TestMatrixRowStats extends TestCase {
         assertEquals( true, RegressionTesting.closeEnough( expectedReturn, actualReturn, 0.0001 ) );
     }
 
+    @Test
     public final void testStandardDeviations() {
 
         DoubleArrayList actualReturn = MatrixRowStats.sampleStandardDeviations( testdata );
@@ -60,6 +77,7 @@ public class TestMatrixRowStats extends TestCase {
     /*
      * Class under test for DoubleArrayList sumOfSquares(DoubleMatrixNamed)
      */
+    @Test
     public final void testSumOfSquaresDoubleMatrixNamed() {
         DoubleArrayList actualReturn = MatrixRowStats.sumOfSquares( testdata );
         DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 293847.67, 500060.93, 11146426060.47,
@@ -73,6 +91,7 @@ public class TestMatrixRowStats extends TestCase {
     /*
      * Class under test for DoubleArrayList sumOfSquares(DoubleMatrixNamed, DoubleArrayList)
      */
+    @Test
     public final void testSumOfSquaresDoubleMatrixNamedDoubleArrayList() {
         DoubleArrayList actualReturn = MatrixRowStats.sumOfSquares( testdata );
         DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 293847.67, 500060.93, 11146426060.47,
@@ -84,6 +103,7 @@ public class TestMatrixRowStats extends TestCase {
         assertEquals( true, RegressionTesting.closeEnough( expectedReturn, actualReturn, 0.0001 ) );
     }
 
+    @Test
     public final void testSums() {
 
         DoubleArrayList actualReturn = MatrixRowStats.sums( testdata );
@@ -92,25 +112,6 @@ public class TestMatrixRowStats extends TestCase {
                 -2065.9, 9739.6, 11044.4, 9904.5, -134.3, 261.5, 11124.7, 4759.2, 1295.2, 12961.6, 4994.2, 27189.1,
                 148.7, 479561.9, -3999.5 } );
         assertEquals( true, RegressionTesting.closeEnough( expectedReturn, actualReturn, 0.0001 ) );
-    }
-
-    /*
-     * @see TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        DoubleMatrixReader f = new DoubleMatrixReader();
-
-        testdata = f.read( AbstractTestFilter.class.getResourceAsStream( "/data/testdata.txt" ) );
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
 }

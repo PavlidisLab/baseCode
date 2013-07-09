@@ -34,8 +34,8 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrixFactory;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.dataStructure.matrix.DoubleMatrixFactory;
 import ubic.basecode.util.FileTools;
 import cern.colt.list.DoubleArrayList;
 
@@ -351,7 +351,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
             columnNumber++;
             previousToken = tok;
         } // end while (st.hasMoreTokens())
-        // done parsing one row -- no more tokens
+          // done parsing one row -- no more tokens
 
         if ( rowTemp.size() > numHeadings ) {
             throw new IOException( "Too many values (" + rowTemp.size() + ") in row  (based on headings count of "

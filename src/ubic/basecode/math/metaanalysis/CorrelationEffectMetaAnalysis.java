@@ -40,7 +40,6 @@ public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
      * <pre>
      * v_i = ( 1 - r_i &circ; 2 ) &circ; 2 / ( n_i - 1 )
      * </pre>
-     * 
      * <p>
      * I added a regularization to this, so that we don't get ridiculous variances when correlations are close to 1
      * (this happens). If the correlation is very close to 1 (or -1), we fudge it to be a value less close to 1 (e.g.,

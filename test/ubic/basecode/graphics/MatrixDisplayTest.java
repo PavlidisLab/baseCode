@@ -18,6 +18,8 @@
  */
 package ubic.basecode.graphics;
 
+import static org.junit.Assert.assertFalse;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,10 +27,10 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-import ubic.basecode.graphics.ColorMatrix;
-import ubic.basecode.graphics.MatrixDisplay;
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
@@ -36,7 +38,7 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
  * @author keshav
  * @version $Id$
  */
-public class MatrixDisplayTest extends TestCase {
+public class MatrixDisplayTest {
     double[][] array = new double[5][5];
 
     List<String> colNames = new ArrayList<String>();
@@ -52,83 +54,9 @@ public class MatrixDisplayTest extends TestCase {
 
     /**
      * 
-     *
      */
-    public void testSaveImage() {
-
-        DoubleMatrix<String, String> matrix = new DenseDoubleMatrix<String, String>( array );
-        matrix.setRowNames( rowNames );
-        matrix.setColumnNames( colNames );
-        ColorMatrix<String, String> colorMatrix = new ColorMatrix<String, String>( matrix );
-        MatrixDisplay<String, String> display = new MatrixDisplay<String, String>( colorMatrix );
-        display.setLabelsVisible( true );
-
-        boolean fail = false;
-        try {
-            display.saveImage( tmp.getAbsolutePath() );
-        } catch ( IOException e ) {
-            fail = true;
-            e.printStackTrace();
-        } finally {
-            assertFalse( fail );
-        }
-    }
-
-    /**
-     * 
-     *
-     */
-    public void testSaveImageStandardize() {
-
-        DoubleMatrix<String, String> matrix = new DenseDoubleMatrix<String, String>( array );
-        matrix.setRowNames( rowNames );
-        matrix.setColumnNames( colNames );
-        ColorMatrix<String, String> colorMatrix = new ColorMatrix<String, String>( matrix );
-        MatrixDisplay<String, String> display = new MatrixDisplay<String, String>( colorMatrix );
-        display.setLabelsVisible( true );
-
-        boolean fail = false;
-        try {
-            display.saveImage( tmp.getAbsolutePath() );
-        } catch ( IOException e ) {
-            fail = true;
-            e.printStackTrace();
-        } finally {
-            assertFalse( fail );
-        }
-    }
-
-    /**
-     * 
-     *
-     */
-    public void testWriteOutAsPNG() {
-        DoubleMatrix<String, String> matrix = new DenseDoubleMatrix<String, String>( array );
-        matrix.setRowNames( rowNames );
-        matrix.setColumnNames( colNames );
-        ColorMatrix<String, String> colorMatrix = new ColorMatrix<String, String>( matrix );
-        MatrixDisplay<String, String> display = new MatrixDisplay<String, String>( colorMatrix );
-        display.setLabelsVisible( true );
-
-        boolean fail = false;
-        try {
-            File tempfile = File.createTempFile( "testOuputStream", ".png" );
-            System.err.println( "Saved to: " + tempfile );
-            OutputStream stream = new FileOutputStream( tempfile );
-            display.saveImageToPng( colorMatrix, stream, true, false, true );
-        } catch ( IOException e ) {
-            fail = true;
-            e.printStackTrace();
-        } finally {
-            assertFalse( fail );
-        }
-    }
-
-    /**
-     * 
-     */
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         tmp = File.createTempFile( "testimage", ".png" );
 
         array[0] = row0;
@@ -153,12 +81,85 @@ public class MatrixDisplayTest extends TestCase {
     /**
      * 
      */
-    @Override
-    protected void tearDown() {
+    @After
+    public void tearDown() {
         tmp.delete();
         rowNames = null;
         colNames = null;
 
+    }
+
+    @Test
+    public void testSaveImage() {
+
+        DoubleMatrix<String, String> matrix = new DenseDoubleMatrix<String, String>( array );
+        matrix.setRowNames( rowNames );
+        matrix.setColumnNames( colNames );
+        ColorMatrix<String, String> colorMatrix = new ColorMatrix<String, String>( matrix );
+        MatrixDisplay<String, String> display = new MatrixDisplay<String, String>( colorMatrix );
+        display.setLabelsVisible( true );
+
+        boolean fail = false;
+        try {
+            display.saveImage( tmp.getAbsolutePath() );
+        } catch ( IOException e ) {
+            fail = true;
+            e.printStackTrace();
+        } finally {
+            assertFalse( fail );
+        }
+    }
+
+    /**
+     * 
+     *
+     */
+    @Test
+    public void testSaveImageStandardize() {
+
+        DoubleMatrix<String, String> matrix = new DenseDoubleMatrix<String, String>( array );
+        matrix.setRowNames( rowNames );
+        matrix.setColumnNames( colNames );
+        ColorMatrix<String, String> colorMatrix = new ColorMatrix<String, String>( matrix );
+        MatrixDisplay<String, String> display = new MatrixDisplay<String, String>( colorMatrix );
+        display.setLabelsVisible( true );
+
+        boolean fail = false;
+        try {
+            display.saveImage( tmp.getAbsolutePath() );
+        } catch ( IOException e ) {
+            fail = true;
+            e.printStackTrace();
+        } finally {
+            assertFalse( fail );
+        }
+    }
+
+    /**
+     * 
+     *
+     */
+    @Test
+    public void testWriteOutAsPNG() {
+        DoubleMatrix<String, String> matrix = new DenseDoubleMatrix<String, String>( array );
+        matrix.setRowNames( rowNames );
+        matrix.setColumnNames( colNames );
+        ColorMatrix<String, String> colorMatrix = new ColorMatrix<String, String>( matrix );
+        MatrixDisplay<String, String> display = new MatrixDisplay<String, String>( colorMatrix );
+        display.setLabelsVisible( true );
+
+        boolean fail = false;
+        try {
+            File tempfile = File.createTempFile( "testOuputStream", ".png" );
+            System.err.println( "Saved to: " + tempfile );
+            OutputStream stream = new FileOutputStream( tempfile );
+            display.saveImageToPng( colorMatrix, stream, true, false, true );
+        } catch ( IOException e ) {
+            fail = true;
+            e.printStackTrace();
+        } finally {
+            assertFalse( fail );
+        }
     }
 
 }

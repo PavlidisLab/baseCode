@@ -19,17 +19,20 @@
 
 package ubic.basecode.math.distribution;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 /**
  * @author Paul
  * @version $Id$
  */
-public class UniformDensityComputerTest extends TestCase {
+public class UniformDensityComputerTest {
 
     /**
      * Test method for {@link ubic.basecode.math.distribution.UniformDensityComputer#density(double)}.
      */
+    @Test
     public void testDensity() {
         UniformDensityComputer u = new UniformDensityComputer( 0, 10 );
         double actual = u.density( 0.4 );

@@ -17,7 +17,7 @@
  *
  */
 package ubic.basecode.ontology.model;
- 
+
 import com.hp.hpl.jena.ontology.Restriction;
 
 /**
@@ -32,8 +32,8 @@ public class OntologyDatatypeRestrictionImpl extends OntologyRestrictionImpl imp
     private static final long serialVersionUID = 1L;
     Class<?> type;
 
-    public OntologyDatatypeRestrictionImpl( Restriction resource  ) {
-        super( resource  );
+    public OntologyDatatypeRestrictionImpl( Restriction resource ) {
+        super( resource );
         assert restrictionOn != null;
         this.type = PropertyFactory.convertType( resource.getOnProperty().asDatatypeProperty() );
     }

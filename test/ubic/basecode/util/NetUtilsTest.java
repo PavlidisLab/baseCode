@@ -18,25 +18,29 @@
  */
 package ubic.basecode.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
-import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.junit.Test;
 
 /**
  * @author pavlidis
  * @version $Id$
  */
-public class NetUtilsTest extends TestCase {
+public class NetUtilsTest {
 
     private static Log log = LogFactory.getLog( NetUtilsTest.class.getName() );
 
+    @Test
     final public void testCheckForFile() throws Exception {
         FTPClient f;
         try {
@@ -51,6 +55,7 @@ public class NetUtilsTest extends TestCase {
 
     }
 
+    @Test
     final public void testDownloadFile() throws Exception {
         FTPClient f;
         try {
@@ -66,6 +71,7 @@ public class NetUtilsTest extends TestCase {
 
     }
 
+    @Test
     final public void testFtpFileSize() throws Exception {
         FTPClient f;
         try {
@@ -79,6 +85,7 @@ public class NetUtilsTest extends TestCase {
         assertEquals( expectedValue, actualValue, 100000 ); // don't really care if they change the file size....
     }
 
+    @Test
     final public void testFtpFileSizeDoesntExist() throws Exception {
         FTPClient f;
         try {

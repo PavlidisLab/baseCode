@@ -18,17 +18,32 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import cern.colt.function.DoubleFunction;
-import junit.framework.TestCase;
 
 /**
  * @author Paul
  * @version $Id$
  */
-public class RCDoubleMatrix1DTest extends TestCase {
+public class RCDoubleMatrix1DTest {
 
     RCDoubleMatrix1D tester;
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Before
+    public void setUp() throws Exception {
+        tester = new RCDoubleMatrix1D( new double[] { 1.0, 2.0, 3.0, Double.NaN, 5.0, 8.0 } );
+    }
+
+    @Test
     public void testAssign() {
         tester.assign( new DoubleFunction() {
             @Override
@@ -45,6 +60,7 @@ public class RCDoubleMatrix1DTest extends TestCase {
 
     }
 
+    @Test
     public void testAssignAr() {
         tester.assign( new double[] { 1.0, 2.0, 3.0, Double.NaN, 5.0, 8.0 } );
 
@@ -59,19 +75,9 @@ public class RCDoubleMatrix1DTest extends TestCase {
     /**
      * Test method for {@link ubic.basecode.dataStructure.matrix.RCDoubleMatrix1D#zSum()}.
      */
+    @Test
     public void testZSum() {
         assertEquals( 19.0, tester.zSum(), 0.00001 );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        tester = new RCDoubleMatrix1D( new double[] { 1.0, 2.0, 3.0, Double.NaN, 5.0, 8.0 } );
     }
 
 }

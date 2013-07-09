@@ -24,8 +24,7 @@ import java.io.InputStream;
 import junit.framework.TestCase;
 import ubic.basecode.dataStructure.matrix.StringMatrix;
 
-/** 
- * 
+/**
  * @author pavlidis
  * @version $Id$
  */
@@ -37,7 +36,7 @@ public class TestStringMatrixReader extends TestCase {
 
     public void testReadInputStreamColumnCount() {
         try {
-            matrix =   reader.read( is );
+            matrix = reader.read( is );
             int actualReturn = matrix.columns();
             int expectedReturn = 12;
             assertEquals( "return value", expectedReturn, actualReturn );
@@ -59,7 +58,7 @@ public class TestStringMatrixReader extends TestCase {
 
     public void testReadInputStreamGotRowName() {
         try {
-            matrix =   reader.read( is );
+            matrix = reader.read( is );
             boolean actualReturn = matrix.containsRowName( "gene1_at" ) && matrix.containsRowName( "AFFXgene30_at" );
             boolean expectedReturn = true;
             assertEquals( "return value", expectedReturn, actualReturn );
@@ -73,7 +72,7 @@ public class TestStringMatrixReader extends TestCase {
      */
     public void testReadInputStreamRowCount() {
         try {
-            matrix =reader.read( is );
+            matrix = reader.read( is );
             int actualReturn = matrix.rows();
             int expectedReturn = 30;
             assertEquals( "return value", expectedReturn, actualReturn );

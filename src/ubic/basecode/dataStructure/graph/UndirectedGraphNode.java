@@ -43,6 +43,7 @@ public class UndirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implement
 
     /*
      * (non-Javadoc)
+     * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override
@@ -57,6 +58,7 @@ public class UndirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implement
 
     /*
      * (non-Javadoc)
+     * 
      * @see ubic.basecode.dataStructure.graph.GraphNode#getGraph()
      */
     @Override

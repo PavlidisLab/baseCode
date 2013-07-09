@@ -18,6 +18,12 @@
  */
 package ubic.basecode.datafilter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
 /**
@@ -27,16 +33,28 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 public class TestRowLevelFilter extends AbstractTestFilter {
     RowLevelFilter<String, String> f = null;
 
+    /*
+     * @see TestCase#setUp()
+     */
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        f = new RowLevelFilter<String, String>();
+    }
+
+    @Test
     public final void testFilterBadFraction() {
         try {
             f.setLowCut( 110.3, true );
             f.filter( testdata );
             fail( "Should have gotten an exception" );
         } catch ( RuntimeException success ) {
-
+            // ok
         }
     }
 
+    @Test
     public final void testFilterFractionMaxRemoveHighAndLow() {
         f.setHighCut( 0.3, true );
         f.setLowCut( 100, false );
@@ -47,6 +65,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public final void testFilterFractionMaxRemoveHighAndLowBothFraction() {
         f.setHighCut( 0.3, true );
         f.setLowCut( 0.1, true );
@@ -58,6 +77,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public final void testFilterFractionMaxRemoveHighAndLowBothLevels() {
         f.setHighCut( 1000, false );
         f.setLowCut( 100, false );
@@ -68,6 +88,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public final void testFilterFractionMaxRemoveHighAndLowBothLevelsNegLow() {
         f.setHighCut( 1000, false );
         f.setLowCut( -100, false );
@@ -78,6 +99,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public final void testFilterFractionMaxRemoveHighAndLowBothLevelsNoNegRemove() {
         f.setHighCut( 1000, false );
         f.setLowCut( 100, false );
@@ -88,6 +110,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public final void testFilterFractionMaxRemoveNeg() {
         f.setLowCut( 0.6, true );
         f.setRemoveAllNegative( true ); // removes 3 of 30 rows. 27 * 0.6 =16.2,
@@ -98,6 +121,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public final void testFilterFractionMaxRemoveNegHigh() {
         f.setHighCut( 0.3, true );
         f.setRemoveAllNegative( true );
@@ -110,6 +134,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
     /*
      * Class under test for NamedMatrix filter(NamedMatrix)
      */
+    @Test
     public final void testFilterMax() {
         f.setLowCut( 100.0, false );
         f.setRemoveAllNegative( true ); // irrelevant.
@@ -120,6 +145,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public final void testFilterMaxFraction() {
         f.setLowCut( 0.3, true );
         f.setRemoveAllNegative( false );
@@ -129,6 +155,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public final void testFilterMaxFractionAll() {
         f.setLowCut( 1.0, true );
         f.setRemoveAllNegative( false );
@@ -138,6 +165,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public final void testFilterMaxFractionHigh() {
         f.setHighCut( 0.3, true );
         f.setRemoveAllNegative( false );
@@ -147,6 +175,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public final void testFilterMaxFractionNone() {
         f.setLowCut( 0.0, true );
         f.setRemoveAllNegative( false );
@@ -156,6 +185,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public final void testFilterMaxFractionNoneRemoveNeg() {
         f.setLowCut( 0.0, true );
         f.setRemoveAllNegative( true );
@@ -165,6 +195,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public final void testFilterMaxHigh() {
         f.setHighCut( 1000.0, false );
         f.setRemoveAllNegative( true ); // irrelevant.
@@ -175,6 +206,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public final void testFilterMaxTooHigh() {
         f.setLowCut( 100000000.0, false );
         f.setRemoveAllNegative( true ); // irrelevant.
@@ -185,6 +217,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public final void testFilterMean() {
         f.setLowCut( 100.0, false );
         f.setRemoveAllNegative( true );
@@ -195,6 +228,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public final void testFilterMeanHigh() {
         f.setHighCut( 1000.0, false );
         f.setRemoveAllNegative( true );
@@ -211,6 +245,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
      * length(which(apply(mm, 1, median) > 100))
      * </pre>
      */
+    @Test
     public final void testFilterMedian() {
         f.setLowCut( 100.0, false );
         f.setRemoveAllNegative( true ); // irrelevant
@@ -228,6 +263,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
      * 
      * </pre>
      */
+    @Test
     public final void testFilterMedianHigh() {
         f.setHighCut( 1000.0, false );
         f.setRemoveAllNegative( true ); // irrelevant
@@ -238,6 +274,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public final void testFilterMin() {
         f.setLowCut( 100.0, false );
         f.setRemoveAllNegative( true );
@@ -248,6 +285,7 @@ public class TestRowLevelFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public final void testFilterMinHigh() {
         f.setHighCut( 1000.0, false );
         f.setRemoveAllNegative( true );
@@ -258,26 +296,10 @@ public class TestRowLevelFilter extends AbstractTestFilter {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public final void testFilterNoFilter() {
         DoubleMatrix<String, String> filtered = f.filter( testdata );
         assertEquals( "return value", testdata, filtered );
-    }
-
-    /*
-     * @see TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        f = new RowLevelFilter<String, String>();
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
 }

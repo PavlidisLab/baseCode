@@ -14,7 +14,8 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -24,7 +25,6 @@ import org.junit.Test;
 
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.io.reader.TestDoubleMatrixReader;
-
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;

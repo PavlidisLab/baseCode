@@ -18,18 +18,21 @@
  */
 package ubic.basecode.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author luke
  */
-public class BatchIteratorTest extends TestCase {
+public class BatchIteratorTest {
     private static final Collection<String> items = Arrays.asList( new String[] { "alpha", "beta", "gamma", "delta",
             "epsilon", "zeta", "eta", "theta", "iota", "kappa", "lambda", "mu", "nu", "xi", "omicron", "pi", "rho",
             "sigma", "tau", "upsilon", "phi", "chi", "psi", "omega" } );
@@ -37,6 +40,7 @@ public class BatchIteratorTest extends TestCase {
     /**
      * Test method for {@link ca.elmonline.util.BatchIterator#batches(java.util.Collection, int)}.
      */
+    @Test
     public void testBatches() {
         int batchCount = 0;
         for ( Collection<String> batch : BatchIterator.batches( items, 10 ) ) {
@@ -51,6 +55,7 @@ public class BatchIteratorTest extends TestCase {
     /**
      * Test method for {@link ca.elmonline.util.BatchIterator#BatchIterator(java.util.Collection, int)}.
      */
+    @Test
     public void testBatchIterator() {
         Collection<String> batch;
         BatchIterator<String> iterator = new BatchIterator<String>( items, 10 );
@@ -65,10 +70,12 @@ public class BatchIteratorTest extends TestCase {
             batch = iterator.next();
             fail( "NoSuchElementException not thrown" );
         } catch ( NoSuchElementException e ) {
+            // ok
         }
     }
 
     @SuppressWarnings("unused")
+    @Test
     public void testConcurrentModificationException() {
         Collection<String> modifiableItems = new ArrayList<String>( items );
         try {
@@ -77,6 +84,7 @@ public class BatchIteratorTest extends TestCase {
             }
             fail( "ConcurrentModificationException not thrown" );
         } catch ( ConcurrentModificationException e ) {
+            // ok
         }
     }
 }

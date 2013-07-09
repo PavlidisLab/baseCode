@@ -18,18 +18,33 @@
  */
 package ubic.basecode.io.reader;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.io.InputStream;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class TestMapReader extends TestCase {
+public class TestMapReader {
     private MapReader mapReader = null;
 
+    @Before
+    public void setUp() throws Exception {
+        mapReader = new MapReader();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        mapReader = null;
+    }
+
+    @Test
     public void testRead() throws IOException {
         InputStream m = TestMapReader.class.getResourceAsStream( "/data/testmap.txt" );
         int expectedReturn = 100;
@@ -37,23 +52,12 @@ public class TestMapReader extends TestCase {
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 
+    @Test
     public void testReadNoHeader() throws IOException {
         InputStream m = TestMapReader.class.getResourceAsStream( "/data/testmap.txt" );
         int expectedReturn = 101;
         int actualReturn = mapReader.read( m ).size(); // file has header
         assertEquals( "return value", expectedReturn, actualReturn );
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        mapReader = new MapReader();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        mapReader = null;
-        super.tearDown();
     }
 
 }

@@ -29,6 +29,8 @@ public class OntologyTermSimple extends OntologyTermImpl {
 
     private String term;
     private String uri;
+    private boolean obsolete;
+    private String description = "";
 
     public OntologyTermSimple( OntClass resource ) {
         super( resource );
@@ -41,6 +43,12 @@ public class OntologyTermSimple extends OntologyTermImpl {
         this.term = term;
     }
 
+    public OntologyTermSimple( String uri, String term, String description, boolean isObsolete ) {
+        this( uri, term );
+        this.description = description;
+        this.obsolete = isObsolete;
+    }
+
     @Override
     public Collection<OntologyTerm> getChildren( boolean direct ) {
         throw new UnsupportedOperationException( "Use a OntologyTermImpl" );
@@ -48,7 +56,7 @@ public class OntologyTermSimple extends OntologyTermImpl {
 
     @Override
     public String getComment() {
-        return "";
+        return this.description;
     }
 
     @Override
@@ -113,7 +121,7 @@ public class OntologyTermSimple extends OntologyTermImpl {
 
     @Override
     public boolean isTermObsolete() {
-        throw new UnsupportedOperationException( "Use a OntologyTermImpl" );
+        return obsolete;
     }
 
 }
