@@ -1232,6 +1232,7 @@ public class LeastSquaresFit {
      */
     private void wlsf() {
 
+        checkForMissingValues();
         Algebra solver = new Algebra();
 
         /*

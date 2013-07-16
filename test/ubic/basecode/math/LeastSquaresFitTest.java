@@ -982,4 +982,40 @@ public class LeastSquaresFitTest {
             assertEquals( expectedFitted[i], fit.getFitted().get( 0, i ), 0.00001 );
         }
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void testVectorWeightedRegressWithMissing() throws Exception {
+
+        DoubleMatrixReader f = new DoubleMatrixReader();
+        DoubleMatrix<String, String> testMatrix = f.read( this.getClass().getResourceAsStream(
+                "/data/example.madata.withmissing.small.txt" ) );
+        DoubleMatrix1D libSize = MatrixStats.colSums( testMatrix );
+        MatrixStats.convertToLog2Cpm( testMatrix, libSize );
+
+        StringMatrixReader of = new StringMatrixReader();
+        StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
+                "/data/example.metadata.small.txt" ) );
+        DesignMatrix designMatrix = new DesignMatrix( sampleInfo );
+        DoubleMatrix2D weights = new DenseDoubleMatrix2D( testMatrix.asArray() );
+        weights.assign( Functions.inv );
+
+        LeastSquaresFit fit = new LeastSquaresFit( designMatrix, testMatrix, weights );
+        assertTrue( fit.isHasMissing() );
+
+        DoubleMatrix2D coefficients = fit.getCoefficients();
+        DoubleMatrix2D residuals = fit.getResiduals();
+
+        assertEquals( 15.339801, coefficients.get( 0, 0 ), 0.0001 );
+        assertEquals( -0.024058, coefficients.get( 1, 1 ), 0.0001 );
+        assertEquals( -0.059586, coefficients.get( 2, 18 ), 0.0001 );
+
+        assertEquals( -0.073732, residuals.get( 0, 0 ), 0.0001 );
+        assertEquals( -0.064656, residuals.get( 1, 1 ), 0.0001 );
+        assertEquals( -0.085214, residuals.get( 18, 8 ), 0.0001 );
+        assertTrue( Double.isNaN( residuals.get( 4, 2 ) ) );
+
+    }
 }
