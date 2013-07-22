@@ -58,7 +58,7 @@ public class AnnotatorClient {
         String ontologiesId = "";
 
         for ( Long id : ontologiesToUse ) {
-            ontologiesId = id + ",";
+            ontologiesId = ontologiesId + id + ",";
         }
 
         if ( ontologiesId.length() > 0 ) {

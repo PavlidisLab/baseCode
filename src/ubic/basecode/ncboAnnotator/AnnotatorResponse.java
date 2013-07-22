@@ -74,7 +74,7 @@ public class AnnotatorResponse implements Comparable<AnnotatorResponse> {
     public void setSearchQuery( String searchQuery ) {
         this.searchQuery = searchQuery;
     }
-    
+
     // term are ordered given priority to DOID terms
     // 1- exact match from DOID
     // 2- synonym from DOID
@@ -103,16 +103,12 @@ public class AnnotatorResponse implements Comparable<AnnotatorResponse> {
                     return -1;
                 }
             }
-        }
-        // hp
-        else if ( exactMatch || isSynonyme ) {
+        } else if ( exactMatch || isSynonyme ) {
             if ( diseaseCompare ) {
                 if ( exactMatchCompare || isSynonymeCompare ) {
                     return 1;
                 }
             }
-
-            // hp vs hp
             if ( exactMatch ) {
                 return -1;
             } else if ( isSynonyme && !exactMatchCompare ) {
@@ -136,7 +132,6 @@ public class AnnotatorResponse implements Comparable<AnnotatorResponse> {
         this.synonyms = synonyms;
     }
 
-    
     // this information is given as a long string with space and new lines, parse and add all synonyms
     public void addSynonyms( String line ) {
 
