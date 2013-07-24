@@ -18,22 +18,27 @@
  */
 package ubic.basecode.io.reader;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.io.InputStream;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
 import ubic.basecode.dataStructure.matrix.StringMatrix;
 
 /**
  * @author pavlidis
  * @version $Id$
  */
-public class TestStringMatrixReader extends TestCase {
+public class TestStringMatrixReader {
 
     InputStream is = null;
     StringMatrix<String, String> matrix = null;
     StringMatrixReader reader = null;
 
+    @Test
     public void testReadInputStreamColumnCount() {
         try {
             matrix = reader.read( is );
@@ -45,6 +50,7 @@ public class TestStringMatrixReader extends TestCase {
         }
     }
 
+    @Test
     public void testReadInputStreamGotColName() {
         try {
             matrix = reader.read( is );
@@ -56,6 +62,7 @@ public class TestStringMatrixReader extends TestCase {
         }
     }
 
+    @Test
     public void testReadInputStreamGotRowName() {
         try {
             matrix = reader.read( is );
@@ -70,6 +77,7 @@ public class TestStringMatrixReader extends TestCase {
     /*
      * Class under test for NamedMatrix read(InputStream)
      */
+    @Test
     public void testReadInputStreamRowCount() {
         try {
             matrix = reader.read( is );
@@ -84,19 +92,10 @@ public class TestStringMatrixReader extends TestCase {
     /*
      * @see TestCase#setUp()
      */
-    @Override
+    @Before
     protected void setUp() throws Exception {
-        super.setUp();
         reader = new StringMatrixReader();
         is = TestStringMatrixReader.class.getResourceAsStream( "/data/testdata.txt" );
-    }
-
-    /*
-     * @see TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
 }
