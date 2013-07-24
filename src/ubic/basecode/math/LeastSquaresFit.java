@@ -287,19 +287,24 @@ public class LeastSquaresFit {
      * 
      * @param vectorA Design
      * @param vectorB Data
-     * @param weights to be used in modifying the influence of the observations in vectorB.
+     * @param weights to be used in modifying the influence of the observations in vectorB. If null, will be ignored.
      */
     public LeastSquaresFit( DoubleMatrix2D A, DoubleMatrix2D b, final DoubleMatrix2D weights ) {
-
+        assert A != null;
+        assert b != null;
         assert A.rows() == b.columns();
         assert b.columns() == weights.columns();
-        assert b.rows() == weights.rows();
+        assert weights == null || b.rows() == weights.rows();
 
         this.A = A;
         this.b = b;
         this.weights = weights;
 
-        wlsf();
+        if ( weights == null ) {
+            lsf();
+        } else {
+            wlsf();
+        }
 
     }
 
