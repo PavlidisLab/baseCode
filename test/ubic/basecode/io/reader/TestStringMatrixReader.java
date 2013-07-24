@@ -93,7 +93,7 @@ public class TestStringMatrixReader {
      * @see TestCase#setUp()
      */
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         reader = new StringMatrixReader();
         is = TestStringMatrixReader.class.getResourceAsStream( "/data/testdata.txt" );
     }
