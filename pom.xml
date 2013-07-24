@@ -164,6 +164,7 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.7.5</version>
+			<scope>test</scope>
 		</dependency>
 		<!-- Be careful with versions of lucene -->
 		<!-- jena-text uses lucene 4.x.. Not ready for this. -->
