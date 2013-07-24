@@ -115,6 +115,11 @@ public class OntologyTermSimple extends OntologyTermImpl {
     }
 
     @Override
+    public boolean equals( Object obj ) {
+        return super.equals( obj );
+    }
+
+    @Override
     public boolean isRoot() {
         throw new UnsupportedOperationException( "Use a OntologyTermImpl" );
     }
