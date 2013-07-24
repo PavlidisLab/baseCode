@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -51,6 +52,17 @@ public class ExcelUtilTest {
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet spreadsheet = workbook.createSheet();
         ExcelUtil.setFormula( spreadsheet, 1, 1, "HYPERLINK(\"x\",\"x\")" );
+    }
+
+    @Test
+    public void testGetSet() {
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet spreadsheet = workbook.createSheet();
+        ExcelUtil.setValue( spreadsheet, 4, 5, 1.99 );
+        assertEquals( 1.99, Double.parseDouble( ExcelUtil.getValue( spreadsheet, 4, 5 ) ), 0.001 );
+
+        Set<String> vals = ExcelUtil.grabColumnValues( spreadsheet, 5, false, false );
+        assertEquals( 1, vals.size() );
     }
 
 }

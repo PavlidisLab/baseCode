@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;

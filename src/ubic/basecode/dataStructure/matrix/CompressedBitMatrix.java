@@ -39,18 +39,6 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
 
     private static final long serialVersionUID = 1775002416710933373L;
 
-    /**
-     * Count the number of one-bits of the passed-in <code>double</code> val.
-     * 
-     * @param val
-     * @return number of one-bits in val
-     */
-    static public int countBits( double val ) {
-        if ( val == 0.0 ) return 0;
-        long binVal = Double.doubleToRawLongBits( val );
-        return Long.bitCount( binVal );
-    }
-
     private FlexCompRowMatrix[] matrix;
 
     private int rows = 0, cols = 0;
@@ -58,11 +46,14 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
     private int totalBitsPerItem;
 
     /**
-     * Constructs a matrix with specified rows, columns, and total bits per element
+     * Constructs a matrix with specified rows, columns, and total bits per cell
+     * <p>
+     * Implementation note: this is created by maintaining one or more Double matrices; the Doubles are used as bit
+     * fields.
      * 
      * @param rows - number of rows in the matrix
      * @param cols - number of columns in the matrix
-     * @param totalBitsPerItem - the number of bits for each element
+     * @param totalBitsPerItem - the number of bits for each cell
      */
     public CompressedBitMatrix( int rows, int cols, int totalBitsPerItem ) {
         super();
@@ -78,17 +69,17 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
     }
 
     /**
-     * Count the number of one-bits at the specified element position
+     * Count the number of one-bits at the specified cell position
      * 
-     * @param rows
-     * @param cols
+     * @param r
+     * @param c
      * @return
      */
     public int bitCount( int r, int c ) {
         int bits = 0;
         if ( r > this.rows || c > this.cols ) return bits;
-        for ( FlexCompRowMatrix element : this.matrix ) {
-            double val = element.get( r, cols );
+        for ( FlexCompRowMatrix cell : this.matrix ) {
+            double val = cell.get( r, c );
             if ( val != 0 ) bits = bits + countBits( val );
         }
         return bits;
@@ -99,13 +90,22 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
         return this.cols;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.ObjectMatrix#get(int, int)
+     */
     @Override
     public double[] get( int row, int col ) {
-        throw new UnsupportedOperationException();
+        double[] a = new double[matrix.length];
+        for ( int i = 0; i < a.length; i++ ) {
+            a[i] = matrix[i].get( row, col );
+        }
+        return a;
     }
 
     /**
-     * Checks the bit of the specified element at the specified index.
+     * Checks the bit of the specified cell at the specified index.
      * 
      * @param row - matrix row
      * @param col - matrix column
@@ -113,32 +113,22 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
      * @return true if bit is 1, false if 0.
      */
     public boolean get( int row, int col, int index ) {
-        if ( index >= this.totalBitsPerItem || row > this.rows || col > this.cols )
+        if ( index >= this.totalBitsPerItem || row > this.rows || col > this.cols ) {
             throw new ArrayIndexOutOfBoundsException( "Attempt to access row=" + row + " col=" + col + " index="
                     + index );
+        }
         int num = ( int ) Math.floor( ( double ) index / CompressedBitMatrix.BITS_PER_ELEMENT );
         int bit_index = index % CompressedBitMatrix.BITS_PER_ELEMENT;
         long binVal = Double.doubleToRawLongBits( matrix[num].get( row, col ) );
         long res = binVal & CompressedBitMatrix.BIT1 << bit_index;
-        if ( res == 0 ) return false;
-        return true;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.NamedMatrix#get(java.lang.Object, java.lang.Object)
-     */
-    @SuppressWarnings("unused")
-    public double[] get( R row, C column ) {
-        throw new UnsupportedOperationException();
+        return res != 0;
     }
 
     /**
-     * Returns all of the bits for an element
+     * Returns all of the bits for a cell
      * 
-     * @param row - the element row
-     * @param col - the element column
+     * @param row - the cell row
+     * @param col - the cell column
      * @return all the bits encoded as an array of <code>longs</code>
      */
     public long[] getAllBits( int row, int col ) {
@@ -149,14 +139,19 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
     }
 
     /**
-     * Returns the total number of bits in a matrix element
+     * Returns the total number of bits in a matrix cell
      * 
-     * @return the number of bits per element
+     * @return the number of bits per cell
      */
     public int getBitNum() {
         return this.totalBitsPerItem;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.Matrix2D#getByKeys(java.lang.Object, java.lang.Object)
+     */
     @Override
     public double[] getByKeys( R r, C c ) {
         return this.get( getRowIndexByName( r ), getColIndexByName( c ) );
@@ -172,6 +167,11 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
         throw new UnsupportedOperationException();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ubic.basecode.dataStructure.matrix.Matrix2D#getEntry(int, int)
+     */
     @Override
     public double[] getEntry( int row, int column ) {
         return get( row, column );
@@ -189,12 +189,12 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
 
     /**
      * @param row
-     * @return - array of counts of one-bits for each element in the row.
+     * @return - array of counts of one-bits for each cell in the row.
      */
     public int[] getRowBitCount( int row ) {
         int[] bits = new int[columns()];
-        for ( FlexCompRowMatrix element : this.matrix ) {
-            SparseVector vector = element.getRow( row );
+        for ( FlexCompRowMatrix cell : this.matrix ) {
+            SparseVector vector = cell.getRow( row );
 
             /*
              * Sparse vector: has indices (>0 except for first position) saying where values are; data are the values.
@@ -220,31 +220,35 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
     }
 
     /**
-     * Counts the number of one-bits that are in common between the two specified elements; i.e. performs an AND
-     * operation on the two bit vectors and counts the remaining 1 bits.
+     * Counts the number of one-bits that are in common between the two specified cells; i.e. performs an AND operation
+     * on the two bit vectors and counts the remaining 1 bits.
      * 
-     * @param row1 - element 1 row
-     * @param col1 - element 1 column
-     * @param row2 - element 2 row
-     * @param col2 - element 2 column
+     * @param row1 - cell 1 row
+     * @param col1 - cell 1 column
+     * @param row2 - cell 2 row
+     * @param col2 - cell 2 column
      * @return number of bits in common
      */
     public int overlap( int row1, int col1, int row2, int col2 ) {
         int bits = 0;
-        for ( FlexCompRowMatrix element : this.matrix ) {
-            double val1 = element.get( row1, col1 );
-            double val2 = element.get( row2, col2 );
-            if ( val1 == 0 || val2 == 0 ) continue;
-            long binVal1 = Double.doubleToRawLongBits( val1 );
-            long binVal2 = Double.doubleToRawLongBits( val2 );
-            bits = bits + countBits( binVal1 & binVal2 );
+
+        double[] val1 = this.get( row1, col1 );
+        double[] val2 = this.get( row2, col2 );
+
+        assert val1.length == matrix.length;
+
+        for ( int i = 0; i < val1.length; i++ ) {
+            long binVal1 = Double.doubleToRawLongBits( val1[i] );
+            long binVal2 = Double.doubleToRawLongBits( val2[i] );
+            bits += Long.bitCount( binVal1 & binVal2 );
         }
+
         return bits;
     }
 
     public void reset( int r, int c ) {
-        for ( FlexCompRowMatrix element : this.matrix ) {
-            element.set( r, c, 0 );
+        for ( FlexCompRowMatrix cell : this.matrix ) {
+            cell.set( r, c, 0 );
         }
     }
 
@@ -259,7 +263,7 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
     }
 
     /**
-     * Set the matrix element to the specified bit vector
+     * Set the matrix cell to the specified bit vector
      * 
      * @param row
      * @param col
@@ -276,7 +280,7 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
     }
 
     /**
-     * Sets the bit of the specified element at the specified index to 1.
+     * Sets the bit of the specified cell at the specified index to 1.
      * 
      * @param row - matrix row
      * @param col - matrix column
@@ -288,11 +292,6 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
                     + index );
         }
 
-        if ( get( row, col, index ) ) {
-            // System.err.println( "Bit row=" + row + " col=" + col + " index=" + index + " is already set to 1" );
-            return;
-        }
-
         /*
          * We can only fit BITS_PER_ELEMENT values in each matrix cell. If num > 0, we have multiple 'stacked' matrices.
          */
@@ -302,16 +301,6 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
         long currentValue = Double.doubleToRawLongBits( matrix[num].get( row, col ) );
         double res = Double.longBitsToDouble( currentValue | CompressedBitMatrix.BIT1 << whichBitToSet );
         matrix[num].set( row, col, res );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.dataStructure.matrix.AbstractNamedMatrix#set(int, int, java.lang.Object)
-     */
-    @SuppressWarnings("unused")
-    public void set( int i, int j, Long val ) {
-        throw new UnsupportedOperationException();
     }
 
     /*
@@ -370,8 +359,8 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
             for ( int j = 0; j < this.cols; j++ ) {
                 if ( this.bitCount( i, j ) != 0 ) {
                     out.write( i + "\t" + j );
-                    for ( FlexCompRowMatrix element : this.matrix ) {
-                        long binVal = Double.doubleToRawLongBits( element.get( i, j ) );
+                    for ( FlexCompRowMatrix cell : this.matrix ) {
+                        long binVal = Double.doubleToRawLongBits( cell.get( i, j ) );
                         /* Long.parseLong( hexString, 16) to get it back; */
                         String hexString = Long.toHexString( binVal );
                         out.write( "\t" + hexString );
@@ -389,22 +378,55 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
      */
     public long totalBitCount() {
         long result = 0L;
-        for ( FlexCompRowMatrix element : this.matrix ) {
+        for ( FlexCompRowMatrix cell : this.matrix ) {
             for ( int j = 0; j < cols; j++ ) {
 
-                SparseVector vector = element.getRow( j );
+                SparseVector vector = cell.getRow( j );
 
                 /*
                  * Sparse vector: has indices (>0 except for first position) saying where values are; data are the
                  * values.
                  */
                 double[] data = vector.getData();
-                for ( double element2 : data ) {
-                    result += countBits( element2 );
+                for ( double cell2 : data ) {
+                    result += countBits( cell2 );
                 }
             }
         }
         return result;
+    }
+
+    public void unset( int row, int col, int index ) {
+        if ( index >= this.totalBitsPerItem || row > this.rows || col > this.cols ) {
+            throw new ArrayIndexOutOfBoundsException( "Attempt to access row=" + row + " col=" + col + " index="
+                    + index );
+        }
+
+        /*
+         * We can only fit BITS_PER_ELEMENT values in each matrix cell. If num > 0, we have multiple 'stacked' matrices.
+         */
+        int num = ( int ) Math.floor( ( double ) index / BITS_PER_ELEMENT );
+        assert num >= 0 && num < matrix.length;
+        int whichBitToSet = index % BITS_PER_ELEMENT;
+        long currentValue = Double.doubleToRawLongBits( matrix[num].get( row, col ) );
+
+        if ( ( currentValue & CompressedBitMatrix.BIT1 << whichBitToSet ) == 0 ) {
+            return;
+        }
+        double res = Double.longBitsToDouble( currentValue ^ CompressedBitMatrix.BIT1 << whichBitToSet );
+        matrix[num].set( row, col, res );
+    }
+
+    /**
+     * Count the number of one-bits of the passed-in <code>double</code> val.
+     * 
+     * @param val
+     * @return number of one-bits in val
+     */
+    private int countBits( double val ) {
+        if ( val == 0.0 ) return 0;
+        long binVal = Double.doubleToRawLongBits( val );
+        return Long.bitCount( binVal );
     }
 
 }

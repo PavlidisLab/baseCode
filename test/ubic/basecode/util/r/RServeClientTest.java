@@ -26,7 +26,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -144,9 +144,9 @@ public class RServeClientTest extends TestCase {
             return;
         }
         String actualValue = rc.stringEval( "R.version.string" );
-        String expectedValue = "R version 2";
+        String expectedValue = "R version 3";
 
-        assertTrue( "rc.eval() return version " + actualValue + ", expected something starting with R version 2",
+        assertTrue( "rc.eval() return version " + actualValue + ", expected something starting with R version 3",
                 actualValue.startsWith( expectedValue ) );
     }
 

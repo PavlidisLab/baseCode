@@ -34,7 +34,7 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 
 /**
- * TODO Document Me
+ * Utilities for dealign with Microsoft Excel spreadsheets as implemented in commons-poi.
  * 
  * @author lfrench
  * @version $Id$
@@ -71,8 +71,8 @@ public class ExcelUtil {
 
         if ( cell.getCellType() == Cell.CELL_TYPE_STRING ) return cell.getRichStringCellValue().getString();
         if ( cell.getCellType() == Cell.CELL_TYPE_NUMERIC ) {
-            // WARNING bad for doubles
-            return "" + cell.getNumericCellValue();
+            // WARNING not ideal for numbers.
+            return Double.toString( cell.getNumericCellValue() );
         }
         if ( cell.getCellType() == Cell.CELL_TYPE_FORMULA ) return cell.getCellFormula();
 
@@ -91,7 +91,7 @@ public class ExcelUtil {
     }
 
     /**
-     * Gets all the strings from a column, possibly exlcuding header and possibly triming and lowercasing
+     * Gets all the strings from a column, possibly excluding header and possibly trimming and lowercasing
      * 
      * @param sheet
      * @param column
@@ -122,27 +122,23 @@ public class ExcelUtil {
 
     /**
      * @param sheet
-     * @param column
-     * @param header
-     * @param clean
+     * @param column the index of the column to get
+     * @param header if there is a header row to be skipped
+     * @param clean lower case
      * @param f
      * @return
      */
     public static List<String> grabColumnValuesList( HSSFSheet sheet, int column, boolean header, boolean clean,
             SpreadSheetFilter f ) {
         List<String> result = new LinkedList<String>();
-        int row;
-        if ( header )
-            row = 0; // header is row = 0
-        else
-            row = -1;
 
-        while ( true ) {
-            row++;
-            String term = ExcelUtil.getValue( sheet, row, column );
-            if ( term == null ) break;
+        int rows = sheet.getLastRowNum() + 1;
+        for ( int i = 0; i < rows; i++ ) {
+            if ( header && i == 0 ) continue;
+            String term = ExcelUtil.getValue( sheet, i, column );
+            if ( term == null ) continue;
 
-            if ( f.accept( sheet, row ) ) {
+            if ( f.accept( sheet, i ) ) {
                 term = term.trim();
                 if ( clean ) term = term.toLowerCase();
                 result.add( term );

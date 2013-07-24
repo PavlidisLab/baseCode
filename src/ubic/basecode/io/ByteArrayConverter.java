@@ -27,7 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 import cern.colt.list.ByteArrayList;
 import cern.colt.list.DoubleArrayList;

@@ -255,7 +255,7 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
      * @see basecode.dataStructure.NamedMatrix#numMissing()
      */
     @Override
-    public int numMissing() {
+    public final int numMissing() {
         int count = 0;
         int n = this.rows();
         int m = this.columns();

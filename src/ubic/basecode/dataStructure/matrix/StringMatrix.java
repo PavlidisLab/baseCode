@@ -18,7 +18,7 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import cern.colt.matrix.ObjectMatrix1D;
 import cern.colt.matrix.impl.DenseObjectMatrix2D;

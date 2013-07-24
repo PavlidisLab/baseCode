@@ -26,11 +26,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.math.MathException;
-import org.apache.commons.math.distribution.FDistribution;
-import org.apache.commons.math.distribution.FDistributionImpl;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.math3.distribution.FDistribution;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPDouble;
 import org.rosuda.REngine.REXPMismatchException;
@@ -394,12 +392,10 @@ public class LinearModelSummary implements Serializable {
         if ( numeratorDof == null || denominatorDof == null || numeratorDof == 0 || denominatorDof == 0 )
             return Double.NaN;
 
-        FDistribution f = new FDistributionImpl( numeratorDof, denominatorDof );
-        try {
-            return 1.0 - f.cumulativeProbability( this.getF() );
-        } catch ( MathException e ) {
-            return Double.NaN;
-        }
+        FDistribution f = new FDistribution( numeratorDof, denominatorDof );
+
+        return 1.0 - f.cumulativeProbability( this.getF() );
+
     }
 
     /**

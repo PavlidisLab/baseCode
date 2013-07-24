@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Collection;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import au.com.bytecode.opencsv.CSVReader;
 

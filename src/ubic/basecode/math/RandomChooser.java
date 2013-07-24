@@ -40,7 +40,8 @@ public class RandomChooser {
      * Fill randomvals with random numbers from sourcedata, without replacement.
      * 
      * @param sourcedata Data to be randomly selected
-     * @param deck an array pre-filled with integers from 0 to max, but they don't have to be in order.
+     * @param deck an array pre-filled with integers from 0 to max, but they don't have to be in order (just an
+     *        optimization so we don't have to generate this multiple times)
      * @param numNeeded how many values we need.
      */
     public static double[] chooserandom( Double[] sourcedata, int[] deck, int numNeeded ) {

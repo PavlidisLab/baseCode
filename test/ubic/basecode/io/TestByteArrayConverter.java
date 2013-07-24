@@ -24,7 +24,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

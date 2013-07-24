@@ -130,7 +130,7 @@ public class OntologyLookupImpl implements OntologyLookup {
         String toFetch = URL_BASE + "/virtual/ontology/" + ontologyId + "?conceptid=" + urlencode( uri )
                 + "&norelations=1&apikey=" + API_KEY;
         String xml = this.ncboFetch( toFetch );
-        log.info( xml );
+        // log.info( xml );
 
         Collection<String> results = new ArrayList<String>();
 

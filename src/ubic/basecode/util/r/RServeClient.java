@@ -24,11 +24,11 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConfigurationUtils;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.configuration.io.FileHandler;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.rosuda.REngine.REXP;
@@ -67,9 +67,12 @@ public class RServeClient extends AbstractRClient {
     protected static String findRserveCommand() throws ConfigurationException {
         URL userSpecificConfigFileLocation = ConfigurationUtils.locate( "local.properties" );
 
-        Configuration userConfig = null;
+        PropertiesConfiguration userConfig = null;
         if ( userSpecificConfigFileLocation != null ) {
-            userConfig = new PropertiesConfiguration( userSpecificConfigFileLocation );
+            userConfig = new PropertiesConfiguration();
+            FileHandler handler = new FileHandler( userConfig );
+            handler.setFileName( "local.properties" );
+            handler.load();
         }
         String rserveExecutable = null;
         if ( userConfig != null ) {

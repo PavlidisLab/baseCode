@@ -26,14 +26,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.math.ArgumentOutsideDomainException;
-import org.apache.commons.math.MathException;
-import org.apache.commons.math.analysis.interpolation.LinearInterpolator;
-import org.apache.commons.math.analysis.interpolation.LoessInterpolator;
-import org.apache.commons.math.analysis.polynomials.PolynomialSplineFunction;
+import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
+import org.apache.commons.math3.analysis.interpolation.LoessInterpolator;
+import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
+import org.apache.commons.math3.exception.OutOfRangeException;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import cern.colt.function.IntIntDoubleFunction;
@@ -109,7 +108,7 @@ public class MeanVarianceEstimator {
                 } else {
                     yInterpolate[i] = fun.value( xInterpolate[i] );
                 }
-            } catch ( ArgumentOutsideDomainException e ) {
+            } catch ( OutOfRangeException e ) {
                 // this shouldn't happen anymore
                 log.error( "Error occured while approximating values", e );
                 yInterpolate[i] = Double.NaN;
@@ -254,20 +253,16 @@ public class MeanVarianceEstimator {
         // loess(c(1:5),c(1:5)^2,f=0.5,iter=3)
         // Note: we start to loose some precision here in comparison with R's loess
         DoubleMatrix2D loessFit = new DenseDoubleMatrix2D( xyChecked.rows(), xyChecked.columns() );
-        try {
-            // fit a loess curve
-            LoessInterpolator loessInterpolator = new LoessInterpolator( MeanVarianceEstimator.BANDWIDTH,
-                    MeanVarianceEstimator.ROBUSTNESS_ITERS );
+        // try {
+        // fit a loess curve
+        LoessInterpolator loessInterpolator = new LoessInterpolator( MeanVarianceEstimator.BANDWIDTH,
+                MeanVarianceEstimator.ROBUSTNESS_ITERS );
 
-            double[] loessY = loessInterpolator.smooth( xyChecked.viewColumn( 0 ).toArray(), xyChecked.viewColumn( 1 )
-                    .toArray() );
+        double[] loessY = loessInterpolator.smooth( xyChecked.viewColumn( 0 ).toArray(), xyChecked.viewColumn( 1 )
+                .toArray() );
 
-            loessFit.viewColumn( 0 ).assign( xyChecked.viewColumn( 0 ) );
-            loessFit.viewColumn( 1 ).assign( loessY );
-        } catch ( MathException e ) {
-            log.error( "Error occured while performing a loess fit", e );
-            loessFit = null;
-        }
+        loessFit.viewColumn( 0 ).assign( xyChecked.viewColumn( 0 ) );
+        loessFit.viewColumn( 1 ).assign( loessY );
 
         return loessFit;
     }

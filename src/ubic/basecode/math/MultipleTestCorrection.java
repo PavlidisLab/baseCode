@@ -42,7 +42,8 @@ public class MultipleTestCorrection {
 
     /**
      * @param pvalues
-     * @return false discovery rates computed using the method of Benjamini and Hochberg
+     * @return false discovery rates (FDR) computed using the method of Benjamini and Hochberg. The order is the same as
+     *         the original pvalues (that is, each value fdr[i] corresponds to the pvaluesp[i].
      */
     public static DoubleArrayList benjaminiHochberg( DoubleArrayList pvalues ) {
         int nump = pvalues.size();
@@ -76,9 +77,10 @@ public class MultipleTestCorrection {
     }
 
     /**
-     * @param pvalues; can contain missing values or invalid pvalues (outside range [0-1]), which are ingored.
-     * @return false discovery rates computed using the method of Benjamini and Hochberg; or null if they could not be
-     *         computed.
+     * @param pvalues; can contain missing values or invalid pvalues (outside range [0-1]), which are ignored.
+     * @return false discovery rates (FDRs) computed using the method of Benjamini and Hochberg; or null if they could
+     *         not be computed. The order is the same as the original pvalues (that is, each value fdr[i] corresponds to
+     *         the pvaluesp[i].
      */
     public static DoubleMatrix1D benjaminiHochberg( DoubleMatrix1D pvalues ) {
         double[] qvalues = new double[pvalues.size()];

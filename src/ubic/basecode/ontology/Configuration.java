@@ -24,6 +24,7 @@ import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.SystemConfiguration;
+import org.apache.commons.configuration.io.FileHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -61,17 +62,29 @@ public class Configuration {
 
         try {
             // purely for backwards compatibility, if the user hasn't set up ontology.properties.
-            config.addConfiguration( new PropertiesConfiguration( "Gemma.properties" ) );
+            PropertiesConfiguration pc = new PropertiesConfiguration();
+            FileHandler handler = new FileHandler( pc );
+            handler.setFileName( "Gemma.properties" );
+            handler.load();
+            config.addConfiguration( pc );
         } catch ( ConfigurationException e ) {
         }
 
         try {
-            config.addConfiguration( new PropertiesConfiguration( USER_CONFIGURATION ) );
+            PropertiesConfiguration pc = new PropertiesConfiguration();
+            FileHandler handler = new FileHandler( pc );
+            handler.setFileName( USER_CONFIGURATION );
+            handler.load();
+            config.addConfiguration( pc );
         } catch ( ConfigurationException e ) {
         }
 
         try {
-            config.addConfiguration( new PropertiesConfiguration( DEFAULT_CONFIGURATION ) );
+            PropertiesConfiguration pc = new PropertiesConfiguration();
+            FileHandler handler = new FileHandler( pc );
+            handler.setFileName( DEFAULT_CONFIGURATION );
+            handler.load();
+            config.addConfiguration( pc );
         } catch ( ConfigurationException e ) {
             log.error( DEFAULT_CONFIGURATION + " is missing, ontology loading may fail" );
         }

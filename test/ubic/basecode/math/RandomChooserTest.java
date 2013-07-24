@@ -55,6 +55,18 @@ public class RandomChooserTest {
         }
     }
 
+    @Test
+    public void testChooseRandomDeck() {
+        int[] v = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        Double[] e = new Double[] { 0d, 1d, 2d, 3d, 4d, 5d, 6d, 7d };
+        double[] result = RandomChooser.chooserandom( e, v, 4 );
+        double[] expected = new double[] { 5.0, 3.0, 1.0, 0.0 };
+        assertEquals( expected.length, result.length );
+        for ( int i = 0; i < result.length; i++ ) {
+            assertEquals( expected[i], result[i], 0.0001 );
+        }
+    }
+
     /**
      * Test method for {@link ubic.basecode.math.RandomChooser#chooserandomWrep(int[], int, int)} .
      */

@@ -25,8 +25,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.math.distribution.FDistribution;
-import org.apache.commons.math.distribution.FDistributionImpl;
+import org.apache.commons.math3.distribution.FDistribution;
 import org.junit.Test;
 
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix1D;
@@ -93,7 +92,7 @@ public class LeastSquaresFitTest {
         assertEquals( 1, a.getMainEffectDof( "Value" ).intValue() );
         assertEquals( 6, a.getResidualDf().intValue() );
 
-        FDistribution fd = new FDistributionImpl( 1, 6 );
+        FDistribution fd = new FDistribution( 1, 6 );
         double p = 1.0 - fd.cumulativeProbability( 0.1495 );
         assertEquals( 0.7123, p, 0.0001 );
         assertEquals( 0.7123, a.getMainEffectP( "Value" ), 0.0001 );

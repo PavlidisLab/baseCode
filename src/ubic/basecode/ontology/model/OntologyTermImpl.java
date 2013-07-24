@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 
 import com.hp.hpl.jena.ontology.AllValuesFromRestriction;

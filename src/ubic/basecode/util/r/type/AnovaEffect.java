@@ -21,7 +21,7 @@ package ubic.basecode.util.r.type;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Represents one row of an ANOVA table

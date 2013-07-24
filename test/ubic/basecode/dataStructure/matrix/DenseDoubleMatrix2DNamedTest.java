@@ -246,6 +246,7 @@ public class DenseDoubleMatrix2DNamedTest {
         for ( int i = 0; i < testMatrix.columns(); i++ ) {
             List<String> sortByColumnAbsoluteValues = testMatrix.sortByColumnAbsoluteValues( i, false );
             Double last = 0.0;
+            assertTrue( !sortByColumnAbsoluteValues.isEmpty() );
             for ( String string : sortByColumnAbsoluteValues ) {
                 Double d = testMatrix.getRowByName( string )[i];
                 assertNotNull( d );
@@ -259,6 +260,8 @@ public class DenseDoubleMatrix2DNamedTest {
         for ( int i = 0; i < testMatrix.columns(); i++ ) {
             double last = Double.MAX_VALUE;
             List<String> sortByColumnAbsoluteValues = testMatrix.sortByColumnAbsoluteValues( i, true );
+            assertTrue( !sortByColumnAbsoluteValues.isEmpty() );
+
             for ( String string : sortByColumnAbsoluteValues ) {
                 double d = testMatrix.getRowByName( string )[i];
 

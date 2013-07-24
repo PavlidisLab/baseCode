@@ -40,10 +40,10 @@ public class OntologyLookupTest {
 
     @Test
     public void testMatch() {
-        // OntologyLookup ol = new OntologyLookupImpl();
-        // Collection<OntologyTerm> matches = ol.match( "O80-O84.9", 1 );
-        // assertTrue( !matches.isEmpty() );
-        // assertEquals( 1, matches.size() );
+        OntologyLookup ol = new OntologyLookupImpl();
+        Collection<OntologyTerm> matches = ol.match( "O80-O84.9", 1 );
+        assertTrue( !matches.isEmpty() );
+        assertEquals( 1, matches.size() );
     }
 
 }

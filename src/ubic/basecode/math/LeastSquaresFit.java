@@ -26,15 +26,13 @@ import java.util.TreeSet;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.Matrices;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.math.MathException;
-import org.apache.commons.math.distribution.FDistribution;
-import org.apache.commons.math.distribution.FDistributionImpl;
-import org.apache.commons.math.distribution.TDistribution;
-import org.apache.commons.math.distribution.TDistributionImpl;
+import org.apache.commons.math3.distribution.FDistribution;
+import org.apache.commons.math3.distribution.TDistribution;
+import org.apache.commons.math3.exception.NotStrictlyPositiveException;
 import org.netlib.lapack.LAPACK;
 import org.netlib.util.intW;
 
@@ -765,7 +763,7 @@ public class LeastSquaresFit {
         }
 
         DoubleMatrix1D tval = est.copy().assign( se, Functions.div );
-        TDistribution tdist = new TDistributionImpl( rdf );
+        TDistribution tdist = new TDistribution( rdf );
 
         int j = 0;
         for ( int ti = 0; ti < coef.size(); ti++ ) {
@@ -790,12 +788,9 @@ public class LeastSquaresFit {
             coeffMat.set( ti, 1, se.get( j ) );
             coeffMat.set( ti, 2, tval.get( j ) );
 
-            try {
-                double pval = 2.0 * ( 1.0 - tdist.cumulativeProbability( Math.abs( tval.get( j ) ) ) );
-                coeffMat.set( ti, 3, pval );
-            } catch ( MathException e ) {
-                coeffMat.set( ti, 3, Double.NaN );
-            }
+            double pval = 2.0 * ( 1.0 - tdist.cumulativeProbability( Math.abs( tval.get( j ) ) ) );
+            coeffMat.set( ti, 3, pval );
+
             j++;
 
         }
@@ -958,9 +953,9 @@ public class LeastSquaresFit {
 
                 fStats.set( i, j, fStats.get( i, j ) / denominator.get( i ) );
                 try {
-                    FDistribution pf = new FDistributionImpl( ndof, rdof );
+                    FDistribution pf = new FDistribution( ndof, rdof );
                     pvalues.set( i, j, 1.0 - pf.cumulativeProbability( fStats.get( i, j ) ) );
-                } catch ( MathException e ) {
+                } catch ( NotStrictlyPositiveException e ) {
                     if ( timesWarned < 10 ) {
                         log.warn( "Pvalue could not be computed for F=" + fStats.get( i, j ) + "; denominator was="
                                 + denominator.get( i ) + "; Error: " + e.getMessage()
