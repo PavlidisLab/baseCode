@@ -32,13 +32,13 @@ public class UndirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implement
 
     public UndirectedGraphNode( K key ) {
         super( key );
-        // neighbors = new HashSet();
+        // neighbors = new HashSet(); // FIXME why not?
     }
 
     public UndirectedGraphNode( K key, V value, Graph<UndirectedGraphNode<K, V>, K, V> graph ) {
         super( key, value );
         this.graph = graph;
-        neighbors = new HashSet<UndirectedGraphNode<K, V>>();
+        this.neighbors = new HashSet<UndirectedGraphNode<K, V>>();
     }
 
     /*
@@ -67,6 +67,7 @@ public class UndirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implement
     }
 
     public int numNeighbors() {
+        if ( neighbors == null ) return 0; // shouldn't happen, see default constructor.
         return neighbors.size();
     }
 
