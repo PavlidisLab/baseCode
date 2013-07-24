@@ -186,9 +186,10 @@ public class ByteArrayConverter {
         for ( int rownum = 0; rownum < numRows; rownum++ ) {
 
             int offset = rownum * bytesPerRow;
-            for ( int i = 0; i < bytesPerRow; i++ ) {
-                row[i] = barray[i + offset];
-            }
+            System.arraycopy( barray, offset, row, 0,bytesPerRow);
+            // for ( int i = 0; i < bytesPerRow; i++ ) {
+            // row[i] = barray[i + offset];
+            // }
 
             answer[rownum] = byteArrayToDoubles( row );
         }

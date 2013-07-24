@@ -90,9 +90,7 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
     public V[] getRow( int row ) {
         Object[] ro = viewRow( row ).toArray();
         V[] result = ( V[] ) new Object[columns()]; // this is how they do it in ArrayList
-        for ( int i = 0; i < columns(); i++ ) {
-            result[i] = ( V ) ro[i];
-        }
+        System.arraycopy( ro, 0, result, 0, ro.length );
         return result;
     }
 
