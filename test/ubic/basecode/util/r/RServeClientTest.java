@@ -144,9 +144,9 @@ public class RServeClientTest extends TestCase {
             return;
         }
         String actualValue = rc.stringEval( "R.version.string" );
-        String expectedValue = "R version 3";
+        String expectedValue = "R version";
 
-        assertTrue( "rc.eval() return version " + actualValue + ", expected something starting with R version 3",
+        assertTrue( "rc.eval() return version " + actualValue + ", expected something starting with R version",
                 actualValue.startsWith( expectedValue ) );
     }
 
