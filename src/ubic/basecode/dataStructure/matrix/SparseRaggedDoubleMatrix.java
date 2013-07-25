@@ -329,6 +329,11 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     }
 
     @Override
+    public int size() {
+        return this.rows() * this.columns();
+    }
+
+    @Override
     public DoubleMatrix<R, C> subsetColumns( List<C> c ) {
         throw new UnsupportedOperationException();
     }
@@ -370,6 +375,11 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public DoubleMatrix1D viewColumn( int column ) {
+        return new RCDoubleMatrix1D( this.getColumn( column ) );
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -378,16 +388,6 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     @Override
     public DoubleMatrix1D viewRow( int i ) {
         return new RCDoubleMatrix1D( this.getRow( i ) );
-    }
-
-    @Override
-    public int size() {
-        return this.rows() * this.columns();
-    }
-
-    @Override
-    public DoubleMatrix1D viewColumn( int column ) {
-        return new RCDoubleMatrix1D( this.getColumn( column ) );
     }
 
 }

@@ -139,6 +139,7 @@ public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implement
     /**
      * @return
      */
+    @Override
     public int size() {
         return matrix.size();
     }

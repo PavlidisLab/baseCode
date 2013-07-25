@@ -148,6 +148,7 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements 
     /**
      * @return
      */
+    @Override
     public int size() {
         return matrix.size();
     }

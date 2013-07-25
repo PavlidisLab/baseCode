@@ -131,6 +131,7 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
     /**
      * @return
      */
+    @Override
     public int size() {
         return matrix.size();
     }

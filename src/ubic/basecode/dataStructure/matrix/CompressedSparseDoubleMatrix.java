@@ -281,6 +281,7 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     /**
      * @return
      */
+    @Override
     public int size() {
         return matrix.numColumns() * matrix.numRows();
     }
@@ -355,6 +356,7 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * @param column
      * @return
      */
+    @Override
     public DoubleMatrix1D viewColumn( int column ) {
         double[] oneColumn = new double[this.rows()];
         for ( int i = 0; i < matrix.numRows(); i++ )

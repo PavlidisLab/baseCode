@@ -27,8 +27,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import cern.colt.matrix.DoubleMatrix1D;
-
 /**
  * @author pavlidis
  * @version $Id$
