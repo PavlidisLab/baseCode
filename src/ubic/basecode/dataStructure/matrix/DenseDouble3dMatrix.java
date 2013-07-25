@@ -70,8 +70,8 @@ public class DenseDouble3dMatrix<R, C, S> extends DoubleMatrix3D<R, C, S> {
     public Double[][] getColObj( int col ) {
         Double[][] colObj = new Double[slices()][rows()];
         for ( int i = 0; i < slices(); i++ ) {
-            for ( int j = 0; j < rows(); i++ ) {
-                colObj[i][j] = new Double( matrix.get( i, j, col ) );
+            for ( int j = 0; j < rows(); j++ ) {
+                colObj[i][j] = matrix.get( i, j, col );
             }
         }
         return colObj;
@@ -104,7 +104,7 @@ public class DenseDouble3dMatrix<R, C, S> extends DoubleMatrix3D<R, C, S> {
     public Double[][] getRowObj( int row ) {
         Double[][] rowObj = new Double[slices()][columns()];
         for ( int i = 0; i < slices(); i++ ) {
-            for ( int j = 0; j < columns(); i++ ) {
+            for ( int j = 0; j < columns(); j++ ) {
                 rowObj[i][j] = new Double( matrix.get( i, row, j ) );
             }
         }

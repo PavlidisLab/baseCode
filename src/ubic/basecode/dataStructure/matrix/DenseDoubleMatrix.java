@@ -268,6 +268,7 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * @return int
      * @see AbstractMatrix2D#size()
      */
+    @Override
     public int size() {
         return matrix.size();
     }
@@ -357,6 +358,7 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * @param column int
      * @return cern.colt.matrix.DoubleMatrix1D
      */
+    @Override
     public DoubleMatrix1D viewColumn( int column ) {
         return matrix.viewColumn( column );
     }

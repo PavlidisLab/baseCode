@@ -48,6 +48,7 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     public CompressedSparseDoubleMatrix( double[][] mat ) {
         super();
         matrix = new FlexCompRowMatrix( new DenseMatrix( mat ) );
+        matrix.compact();
     }
 
     /**
@@ -57,6 +58,7 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     public CompressedSparseDoubleMatrix( int rows, int cols ) {
         super();
         matrix = new FlexCompRowMatrix( rows, cols );
+        matrix.compact();
     }
 
     /**
@@ -191,6 +193,7 @@ public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         double[] data = vector.getData();
         int[] indices = vector.getIndex();
         double[] values = new double[columns()];
+        assert data.length == indices.length;
         for ( int j = 0; j < data.length; j++ ) {
             if ( indices[j] == 0 && j > 0 ) break;
             values[indices[j]] = data[j];

@@ -113,13 +113,6 @@ public class SparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     }
 
     /**
-     * @param minNonZeros
-     */
-    public void ensureCapacity( int minNonZeros ) {
-        matrix.ensureCapacity( minNonZeros );
-    }
-
-    /**
      * @param row
      * @param column
      * @return
@@ -282,6 +275,7 @@ public class SparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     /**
      * @return
      */
+    @Override
     public int size() {
         return matrix.size();
     }
@@ -359,6 +353,7 @@ public class SparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
      * @param column
      * @return
      */
+    @Override
     public DoubleMatrix1D viewColumn( int column ) {
         return matrix.viewColumn( column );
     }

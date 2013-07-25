@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
+import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +37,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public class TestSparseRaggedDoubleMatrix2DNamed {
+public class SparseRaggedDoubleMatrixTest {
     InputStream is = null;
     InputStream isa = null;
     SparseRaggedDoubleMatrix<String, String> matrix = null;
@@ -99,6 +100,24 @@ public class TestSparseRaggedDoubleMatrix2DNamed {
         DoubleMatrix<String, String> rowRange = matrix.getRowRange( 1, 2 );
         assertEquals( 3, rowRange.columns() );
         assertEquals( 2, rowRange.rows() );
+    }
+
+    @Test
+    public void testAddrow() {
+        DoubleMatrix1D m = new RCDoubleMatrix1D( new double[] { 0.3, 0.0, 0.8 } );
+        matrix.addRow( "newrow", m );
+        assertEquals( 4, matrix.rows() );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSubsetRowsFail() {
+        matrix.subsetRows( Arrays.asList( new String[] { "foo" } ) );
+    }
+
+    @Test
+    public void testSubsetRows() {
+        DoubleMatrix<String, String> subsetRows = matrix.subsetRows( Arrays.asList( new String[] { "1" } ) );
+        assertEquals( 1, subsetRows.rows() );
     }
 
     @Test

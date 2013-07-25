@@ -247,6 +247,11 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         data[x].set( y, value );
     }
 
+    @Override
+    public int size() {
+        return this.data.length * this.data[0].size();
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -325,6 +330,11 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
 
     }
 
+    @Override
+    public DoubleMatrix1D viewColumn( int column ) {
+        return new DenseDoubleMatrix1D( this.getColumn( column ) );
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -334,5 +344,4 @@ public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     public DoubleMatrix1D viewRow( int j ) {
         return new DenseDoubleMatrix1D( data[j].elements() );
     }
-
 }

@@ -33,9 +33,9 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @author Paul
  * @version $Id$
  */
-public class SparseDoubleMatrix2DNamedTest {
+public class SparseDoubleMatrixTest {
 
-    double[][] testData = { { 1, 2, 3, 4 }, { 11, 12, 13, 14 }, { 21, Double.NaN, 23, 24 } };
+    double[][] testArray = { { 1, 2, 3, 4 }, { 11, 12, 13, 14 }, { 21, Double.NaN, 23, 24 } };
     SparseDoubleMatrix<String, String> testM;
     DoubleMatrix<String, String> testMatrix;
 
@@ -45,7 +45,7 @@ public class SparseDoubleMatrix2DNamedTest {
         SparseDoubleMatrixReader f = new SparseDoubleMatrixReader();
         testMatrix = f.read( this.getClass().getResourceAsStream( "/data/adjacencylist-testmatrix.txt" ) );
         assert testMatrix instanceof SparseDoubleMatrix<?, ?> : "Got a " + testMatrix.getClass().getName();
-        testM = new SparseDoubleMatrix<String, String>( testData );
+        testM = new SparseDoubleMatrix<String, String>( testArray );
         testM.setRowNames( java.util.Arrays.asList( new String[] { "a", "b", "c" } ) );
         testM.setColumnNames( java.util.Arrays.asList( new String[] { "w", "x", "y", "z" } ) );
     }
@@ -61,12 +61,12 @@ public class SparseDoubleMatrix2DNamedTest {
     @Test
     public void testCopy() {
         DoubleMatrix<String, String> actual = testM.copy();
-        for ( int i = 0; i < testData.length; i++ ) {
+        for ( int i = 0; i < testArray.length; i++ ) {
             assertEquals( testM.getRowName( i ), actual.getRowName( i ) );
-            int len = testData[i].length;
+            int len = testArray[i].length;
             for ( int j = 0; j < len; j++ ) {
                 assertEquals( testM.getColName( j ), actual.getColName( j ) );
-                assertEquals( testData[i][j], actual.get( i, j ), 0.0001 );
+                assertEquals( testArray[i][j], actual.get( i, j ), 0.0001 );
             }
         }
 
@@ -240,10 +240,10 @@ public class SparseDoubleMatrix2DNamedTest {
     @Test
     public void testToArray() {
         double[][] actual = testM.asArray();
-        for ( int i = 0; i < testData.length; i++ ) {
-            int len = testData[i].length;
+        for ( int i = 0; i < testArray.length; i++ ) {
+            int len = testArray[i].length;
             for ( int j = 0; j < len; j++ ) {
-                assertEquals( testData[i][j], actual[i][j], 0.00001 );
+                assertEquals( testArray[i][j], actual[i][j], 0.00001 );
             }
         }
 

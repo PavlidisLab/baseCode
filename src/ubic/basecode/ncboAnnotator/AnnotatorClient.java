@@ -1,5 +1,5 @@
 /*
- * The Gemma project
+ * The baseCode project
  * 
  * Copyright (c) 2013 University of British Columbia
  * 
@@ -33,7 +33,7 @@ import ubic.basecode.ontology.Configuration;
 
 /**
  * This should behave the same as the web service from this link : http://bioportal.bioontology.org/annotator
- **/
+ */
 public class AnnotatorClient {
 
     private static String ANNOTATOR_URL = "http://rest.bioontology.org/obs/annotator";

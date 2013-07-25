@@ -206,4 +206,6 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
      * @return
      */
     public abstract DoubleMatrix1D viewRow( int j );
+
+    public abstract DoubleMatrix1D viewColumn( int column );
 }

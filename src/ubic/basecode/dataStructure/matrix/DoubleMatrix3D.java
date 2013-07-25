@@ -100,16 +100,15 @@ public abstract class DoubleMatrix3D<R, C, S> extends AbstractMatrix3D<R, C, S, 
         int rows = this.rows();
         int columns = this.columns();
         StringBuffer buf = new StringBuffer();
+        buf.append( "Slice\tRow" );
+        for ( int j = 0; j < columns; j++ ) {
+            buf.append( "\t" + this.getColName( j ) );
+        }
+        buf.append( "\n" );
         for ( int i = 0; i < slices; i++ ) {
-            buf.append( "Slice\t" + getSliceName( i ) );
-            buf.append( "Row\\Col" );
-            for ( int j = 0; j < columns; j++ ) {
-                buf.append( "\t" + this.getColName( j ) );
-            }
-            buf.append( "\n" );
             for ( int k = 0; k < rows; k++ ) {
 
-                buf.append( this.getRowName( k ) );
+                buf.append( getSliceName( i ) + "\t" + this.getRowName( k ) );
                 for ( int j = 0; j < columns; j++ ) {
                     buf.append( "\t" + this.get( i, k, j ) );
                 }

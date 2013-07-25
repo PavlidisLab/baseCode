@@ -27,6 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import cern.colt.matrix.DoubleMatrix1D;
+
 /**
  * @author pavlidis
  * @version $Id$
@@ -332,6 +334,8 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
             this.setRowName( rowName, i );
         }
     }
+
+    public abstract int size();
 
     protected void checkColRange( int startCol, int endCol ) {
         if ( startCol < 0 || startCol > rows() - 1 || startCol >= endCol ) {

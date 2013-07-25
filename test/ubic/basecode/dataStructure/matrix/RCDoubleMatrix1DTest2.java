@@ -29,7 +29,7 @@ import cern.colt.matrix.impl.DenseDoubleMatrix1D;
  * @author pavlidis
  * @version $Id$
  */
-public class TestRCDoubleMatrix1D {
+public class RCDoubleMatrix1DTest2 {
 
     RCDoubleMatrix1D a;
     RCDoubleMatrix1D b;
@@ -50,13 +50,6 @@ public class TestRCDoubleMatrix1D {
 
         DoubleArrayList vb = new DoubleArrayList( new double[] { 5, 3, 2, 1 } );
         IntArrayList inb = new IntArrayList( new int[] { 0, 1, 2, 3 } );
-
-        // DoubleArrayList vc = new DoubleArrayList( new double[] {
-        // 5, 3, 2, 1
-        // } );
-        // IntArrayList inc = new IntArrayList( new int[] {
-        // 0, 1, 2, 3
-        // } );
 
         a = new RCDoubleMatrix1D( ina, va );
         b = new RCDoubleMatrix1D( inb, vb );

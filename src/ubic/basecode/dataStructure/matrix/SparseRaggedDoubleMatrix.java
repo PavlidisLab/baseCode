@@ -352,7 +352,8 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
 
             for ( int j = 0; j < this.columns(); j++ ) {
                 if ( i == currentRow ) {
-                    returnval.setColumnName( this.getColName( j ), j );
+                    C colname = this.getColName( j );
+                    if ( colname != null ) returnval.setColumnName( colname, j );
                 }
                 returnval.set( currentRow, j, this.get( i, j ) );
             }
@@ -377,6 +378,16 @@ public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
     @Override
     public DoubleMatrix1D viewRow( int i ) {
         return new RCDoubleMatrix1D( this.getRow( i ) );
+    }
+
+    @Override
+    public int size() {
+        return this.rows() * this.columns();
+    }
+
+    @Override
+    public DoubleMatrix1D viewColumn( int column ) {
+        return new RCDoubleMatrix1D( this.getColumn( column ) );
     }
 
 }

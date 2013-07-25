@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import cern.colt.matrix.DoubleMatrix1D;
+
 import no.uib.cipr.matrix.sparse.FlexCompRowMatrix;
 import no.uib.cipr.matrix.sparse.SparseVector;
 
@@ -311,6 +313,11 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
     @Override
     public void setByKeys( R r, C c, double[] v ) {
         this.set( getRowIndexByName( r ), getColIndexByName( c ), v );
+    }
+
+    @Override
+    public int size() {
+        return this.rows() * this.columns();
     }
 
     @Override

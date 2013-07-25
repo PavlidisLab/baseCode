@@ -79,7 +79,7 @@ public class SparseRaggedMatrixReader extends DoubleMatrixReader {
             int index = Integer.parseInt( tok.nextToken() ) - offset;
             int amount = Integer.parseInt( tok.nextToken() );
 
-            if ( index % 500 == 0 ) {
+            if ( index > 0 && index % 5000 == 0 ) {
                 log.info( "loading  " + index + "th entry" );
             }
 

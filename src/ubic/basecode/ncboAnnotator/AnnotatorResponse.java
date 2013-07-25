@@ -1,5 +1,5 @@
 /*
- * The Gemma project
+ * The baseCode project
  * 
  * Copyright (c) 2013 University of British Columbia
  * 
@@ -18,7 +18,7 @@ import java.util.HashSet;
 
 /**
  * This represents an Ontology terms returned by the AnnotatorClient
- **/
+ */
 public class AnnotatorResponse implements Comparable<AnnotatorResponse> {
 
     private Integer score = 0;
