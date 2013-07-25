@@ -122,20 +122,6 @@ public class SparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         return matrix.get( row, column );
     }
 
-    /**
-     * Return a copy of a given column.
-     * 
-     * @param col int
-     * @return double[]
-     */
-    public double[] getCol( int col ) {
-        double[] result = new double[rows()];
-        for ( int i = 0; i < rows(); i++ ) {
-            result[i] = get( i, col );
-        }
-        return result;
-    }
-
     @Override
     public Double[] getColObj( int col ) {
         Double[] result = new Double[rows()];

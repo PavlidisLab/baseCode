@@ -161,16 +161,18 @@ public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements 
         super.checkColRange( startCol, endCol );
         ObjectMatrix<R, C, String> result = new StringMatrix<R, C>( numRow, numCol );
         int r = 0;
-        for ( int i = startRow; i < endRow; i++ ) {
+        for ( int i = startRow; i <= endRow; i++ ) {
             int c = 0;
-            for ( int j = startCol; j < endCol; j++ ) {
+            result.setRowName( this.getRowName( i ), r );
+            for ( int j = startCol; j <= endCol; j++ ) {
+                if ( r == 0 ) {
+                    result.setColumnName( this.getColName( j ), c );
+                }
                 result.set( r, c++, this.get( i, j ) );
             }
             r++;
         }
-        /*
-         * FIXME set up the row/column names.
-         */
+
         return result;
 
     }

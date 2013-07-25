@@ -22,6 +22,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -230,6 +232,20 @@ public class SparseDoubleMatrixTest {
         testM.set( 2, 2, 666.0 );
         double[] actual = testM.getRow( 2 );
         assertEquals( 666.0, actual[2], 0.00001 );
+    }
+
+    @Test
+    public void testSubsetRows() {
+        DoubleMatrix<String, String> subset = testMatrix.subsetRows( Arrays.asList( new String[] { "1", "3" } ) );
+        assertEquals( 2, subset.rows() );
+        assertEquals( 3, subset.columns() );
+    }
+
+    @Test
+    public void testSubsetCols() {
+        DoubleMatrix<String, String> subset = testMatrix.subsetColumns( Arrays.asList( new String[] { "2", "1" } ) );
+        assertEquals( 3, subset.rows() );
+        assertEquals( 2, subset.columns() );
     }
 
     @Test
