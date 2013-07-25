@@ -36,11 +36,12 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
  */
 public class StringToStringSetMap extends HashMap<String, Set<String>> {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * @param input
+     * @return
+     */
     public static DoubleMatrix<String, String> setMapToMatrix( StringToStringSetMap input ) {
         DoubleMatrix<String, String> resultMatrix = new DenseDoubleMatrix<String, String>( input.keySet().size(), input
                 .getSeenValues().size() );

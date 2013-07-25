@@ -5,22 +5,15 @@ import java.util.Map;
 
 /**
  * Similar to ubic.gemma.util.CountingMap. Except instead it adds the values of the keys.
+ * 
+ * @author ?
+ * @version $Id$
  */
 public class DoubleAddingMap<K> extends HashMap<K, Double> {
 
     private static final long serialVersionUID = 2;
 
-    public static void main( String args[] ) {
-        DoubleAddingMap<String> test = new DoubleAddingMap<String>();
-        test.addPut( "A", .5 );
-        test.addPut( "A", .5 );
-        test.addPut( "B", 22d );
-        System.out.println( test.addPut( "A", .5 ) );
-        System.out.println( test.toString() );
-        test.addPutAll( test );
-        System.out.println( test.addPut( "A", .5 ) );
-        System.out.println( test.toString() );
-    }
+   
 
     /**
      * adds the current value to the value of this key. If the current value is null then value becomes the d parameter.

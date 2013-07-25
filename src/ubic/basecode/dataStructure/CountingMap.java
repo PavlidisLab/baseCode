@@ -28,6 +28,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Convenience Map that has a count as the value for each key. Calling increment(K key) increases the count for
+ * <em>key</em>.
+ * <p>
+ * This replaces the idiom of map.containsKey(k) ? map.put(k, map.get(k) + 1) : map.put(k, 0);
+ * 
  * @author luke
  * @version $Id$
  * @param <K>
