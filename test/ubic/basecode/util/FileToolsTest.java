@@ -20,6 +20,7 @@ package ubic.basecode.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -33,6 +34,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
@@ -157,6 +159,56 @@ public class FileToolsTest {
         assertTrue( !FileTools.cleanForFileName( "foo   ;/crud" ).contains( " " ) );
         assertEquals( "foo_bar_crud", FileTools.cleanForFileName( "#foo/   bar'''\"\"/crud" ) );
 
+    }
+
+    @Test
+    public void testGetLines() throws Exception {
+        List<String> lines = FileTools
+                .getLines( new File( this.getClass().getResource( "/data/testdata.txt" ).toURI() ) );
+        assertEquals( 31, lines.size() );
+        File tmp = File.createTempFile( "junk.", ".txt" );
+        FileTools.stringsToFile( lines, tmp );
+        lines = FileTools.getLines( tmp );
+        assertEquals( 31, lines.size() );
+    }
+
+    @Test
+    public void testGetCompressedFile() throws Exception {
+        InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile( new File( this.getClass()
+                .getResource( "/data/testdata.gz" ).toURI() ).getAbsolutePath() );
+        assertNotNull( is );
+    }
+
+    @Test
+    public void testGetCompressedFileZip() throws Exception {
+        InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile( new File( this.getClass()
+                .getResource( "/data/multtest.test.zip" ).toURI() ).getAbsolutePath() );
+        assertNotNull( is );
+    }
+
+    @Test
+    public void testResourcetoPath() throws Exception {
+        assertNotNull( FileTools.resourceToPath( "/data/multtest.test.zip" ) );
+    }
+
+    @Test
+    public void testgetStringListFromFile() throws Exception {
+        List<String> strings = FileTools.getStringListFromFile( new File( FileTools
+                .resourceToPath( "/data/stringlisttest.txt" ) ) );
+        assertEquals( 6, strings.size() );
+    }
+
+    @Test
+    public void testListDirectoryFiles() throws Exception {
+        Collection<File> files = FileTools.listDirectoryFiles( new File( FileTools.resourceToPath( "/data/" ) ) );
+        assertTrue( !files.isEmpty() );
+        boolean found = false;
+        for ( File file : files ) {
+            if ( file.getAbsolutePath().contains( "multtest.test.zip" ) ) {
+                found = true;
+            }
+        }
+        assertTrue( found );
     }
 
     @Test

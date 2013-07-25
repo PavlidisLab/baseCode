@@ -142,6 +142,12 @@ public class TestDescriptiveWithMissing {
     }
 
     @Test
+    public void testMad() {
+        double actualReturn = DescriptiveWithMissing.mad( data1missing );
+        assertEquals( 1.0, actualReturn, Double.MIN_VALUE );
+    }
+
+    @Test
     public void testMax() {
         double expectedReturn = Descriptive.max( data1Nomissing );
         double actualReturn = DescriptiveWithMissing.max( data1missing );

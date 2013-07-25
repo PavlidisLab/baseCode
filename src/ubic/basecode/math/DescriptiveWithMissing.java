@@ -372,16 +372,18 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @return the median absolute deviation from the median.
      */
     public static double mad( DoubleArrayList dat ) {
-        double median = median( dat );
+        DoubleArrayList copy = removeMissing( dat.copy() );
 
-        DoubleArrayList devsum = new DoubleArrayList( dat.size() );
-        for ( int i = 0; i < dat.size(); i++ ) {
-            double v = dat.getQuick( i );
-            if ( Double.isNaN( v ) ) continue;
+        double median = median( copy );
+
+        DoubleArrayList devsum = new DoubleArrayList( copy.size() );
+        for ( int i = 0; i < copy.size(); i++ ) {
+            double v = copy.getQuick( i );
             devsum.add( Math.abs( v - median ) );
         }
 
-        return median( devsum );
+        devsum.sort();
+        return Descriptive.median( devsum );
     }
 
     public static double max( DoubleArrayList input ) {
@@ -509,11 +511,11 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
     /**
      * Returns the median. Missing values are ignored entirely.
      * 
-     * @param data the data sequence
+     * @param data the data sequence, does not have to be sorted.
      * @return double
      */
-    public static double median( DoubleArrayList sortedData ) {
-        return DescriptiveWithMissing.quantile( sortedData, 0.5 );
+    public static double median( DoubleArrayList data ) {
+        return DescriptiveWithMissing.quantile( data, 0.5 );
     }
 
     public static double min( DoubleArrayList input ) {
@@ -571,7 +573,7 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * of data elements are less than <tt>elem</tt>. Missing values are ignored. The quantile need not necessarily be
      * contained in the data sequence, it can be a linear interpolation.
      * 
-     * @param data the data sequence
+     * @param data the data sequence, does not have to be sorted.
      * @param phi the percentage; must satisfy <tt>0 &lt;= phi &lt;= 1</tt>.
      * @todo possibly implement so a copy is not made.
      * @return double
