@@ -139,14 +139,14 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
     /**
      * @param key Object
      * @param newParentKey Object
-     * @throws IllegalStateException
+     * @throws IllegalArgumentException if the new parent isn't already in the graph.
      */
     public void addParentTo( K key, K newParentKey ) throws IllegalStateException {
         assert key != null;
         assert newParentKey != null;
 
         if ( !items.containsKey( newParentKey ) ) {
-            throw new IllegalStateException( "Attempt to add as parent a node that is not in the graph: "
+            throw new IllegalArgumentException( "Attempt to add as parent a node that is not in the graph: "
                     + newParentKey );
         }
 
@@ -189,15 +189,13 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
     }
 
     /**
-     * @param user_defined
-     * @param classID
+     * @param leaf the key for the node. If it is not leaf, nothing will happen.
      */
     public void deleteLeaf( K leaf ) {
         assert leaf != null;
         DirectedGraphNode<K, V> leafNode = this.get( leaf );
         if ( leafNode == null ) {
-            log.debug( "Graph does not contain node for key=" + leaf );
-            return;
+            throw new IllegalArgumentException( "No such node" );
         }
 
         if ( !leafNode.isLeaf() ) {
@@ -333,7 +331,8 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      */
     public JTree treeView() {
         if ( treeView == null ) {
-            return this.treeView( DefaultMutableTreeNode.class );
+            throw new IllegalStateException(
+                    "You must call treeview(Class<? extends DefaultMutableTreeNode> nodeClass ) first" );
         }
         return treeView;
     }
@@ -341,7 +340,8 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
     /**
      * Generate a JTree corresponding to this graph.
      * 
-     * @param nodeClass The class to be used for TreeNodes. Defaults to DefaultMutableTreeNode.
+     * @param nodeClass The class to be used for TreeNodes. Must provide a constructor that takes a DirectedGraphNode
+     *        (the root)
      * @return javax.swing.JTree
      */
     public JTree treeView( Class<? extends DefaultMutableTreeNode> nodeClass ) {
@@ -361,11 +361,16 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
             treeView = new JTree( dtm );
 
         } catch ( Exception e ) {
-            log.error( e, e );
+            throw new RuntimeException( e );
         }
         return treeView;
     }
 
+    /**
+     * @param startJTreeNode
+     * @param startNode
+     * @param constructor
+     */
     private void addJTreeNode( DefaultMutableTreeNode startJTreeNode, DirectedGraphNode<K, V> startNode,
             Constructor<DefaultMutableTreeNode> constructor ) {
         if ( startJTreeNode == null ) return;

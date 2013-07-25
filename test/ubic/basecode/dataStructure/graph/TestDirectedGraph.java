@@ -19,11 +19,16 @@
 package ubic.basecode.dataStructure.graph;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -91,6 +96,54 @@ public class TestDirectedGraph {
     }
 
     @Test
+    public void testAddChild() {
+        testGraph.addChildTo( "c", "f" );
+        assertNotNull( testGraph.get( "f" ) );
+    }
+
+    @Test
+    public void testAddParent() {
+        testGraph.addParentTo( "c", "f" );
+        assertNotNull( testGraph.get( "f" ) );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDeleteLeafFail() {
+        testGraph.deleteLeaf( "dddd" );
+    }
+
+    @Test
+    public void testDeleteLeaf1() {
+        testGraph.deleteLeaf( "f" ); // leaf.
+        assertTrue( !testGraph.containsKey( "f" ) );
+    }
+
+    @Test
+    public void testDeleteLeafNotLeaf() {
+        testGraph.deleteLeaf( "c" ); // not a leaf
+        assertTrue( testGraph.containsKey( "c" ) );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddChildFail() {
+        testGraph.addChildTo( "c", "mm" );
+        assertNotNull( testGraph.get( "mm" ) );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddParentFail() {
+        testGraph.addParentTo( "c", "m" );
+        assertNotNull( testGraph.get( "m" ) );
+    }
+
+    @Test
+    public void testTreeView() {
+        JTree treeView = testGraph.treeView( DNV.class );
+        assertNotNull( treeView );
+        assertNotNull( treeView.getCellRenderer() );
+    }
+
+    @Test
     public void testTopoSort() {
         testGraph.topoSort();
         List<DirectedGraphNode<String, String>> nodes = new ArrayList<DirectedGraphNode<String, String>>( testGraph
@@ -113,4 +166,10 @@ public class TestDirectedGraph {
         assertEquals( "return", expectedReturn, actualReturn );
     }
 
+}
+
+class DNV extends DefaultMutableTreeNode {
+    public DNV( DirectedGraphNode<String, String> root ) {
+        super( root );
+    }
 }
