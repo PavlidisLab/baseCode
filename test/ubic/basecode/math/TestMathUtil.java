@@ -35,6 +35,12 @@ public class TestMathUtil {
     }
 
     @Test
+    public void testMax() {
+        assertEquals( 1000, MathUtil.max( new double[] { 1d, 2d, 3d, 1000d, 4d, 5d, 6d, 7d, 9d, 10d } ),
+                Double.MIN_VALUE );
+    }
+
+    @Test
     public void testSumArray() {
         int actualReturn = MathUtil.sumArray( new int[] { 1, 2, 3, 4 } );
         int expectedReturn = 10;

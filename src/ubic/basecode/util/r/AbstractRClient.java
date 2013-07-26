@@ -626,7 +626,7 @@ public abstract class AbstractRClient implements RClient {
             if ( StringUtils.isNotBlank( userLibPath ) ) {
                 voidEval( ".libPaths(" + userLibPath + ")" );
             }
-            List<String> libPaths = stringListEval( ".libPaths()" );
+            // List<String> libPaths = stringListEval( ".libPaths()" );
 
             List<String> libraries = stringListEval( "installed.packages()[,1]" );
             if ( !libraries.contains( libraryName ) ) {

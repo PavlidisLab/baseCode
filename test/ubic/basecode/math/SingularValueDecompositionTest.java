@@ -14,6 +14,7 @@
  */
 package ubic.basecode.math;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
@@ -38,6 +39,17 @@ public class SingularValueDecompositionTest {
         SingularValueDecomposition<String, String> svd = new SingularValueDecomposition<String, String>( testdata );
         assertNotNull( svd.getU() );
         assertNotNull( svd.getSingularValues() );
+        assertEquals( testdata.columns(), svd.getSingularValues().length );
+
+        assertNotNull( svd.getS() );
+        assertNotNull( svd.getV() );
+        assertNotNull( svd.cond() );
+
+        assertEquals( testdata.rows(), svd.getU().rows() );
+        assertEquals( testdata.columns(), svd.getU().columns() );
+        assertEquals( testdata.columns(), svd.getV().rows() );
+        assertEquals( testdata.columns(), svd.getV().columns() );
+
     }
 
 }

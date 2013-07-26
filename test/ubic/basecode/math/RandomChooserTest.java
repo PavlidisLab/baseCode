@@ -19,6 +19,7 @@
 package ubic.basecode.math;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +30,8 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import ubic.basecode.dataStructure.CountingMap;
+
 /**
  * @author paul
  * @version $Id$
@@ -37,21 +40,56 @@ public class RandomChooserTest {
 
     @Before
     public void setUp() throws Exception {
-
-        // Note that this does not make algorithm 100% reproducible across all
-        // java/platform versions.
         RandomChooser.init( 0 );
     }
 
     @Test
     public void testChooseRandomDeck() {
-        int[] v = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-        Double[] e = new Double[] { 0d, 1d, 2d, 3d, 4d, 5d, 6d, 7d };
-        double[] result = RandomChooser.chooserandom( e, v, 4 );
-        double[] expected = new double[] { 5.0, 3.0, 1.0, 0.0 };
+        double[] e = new double[] { 0d, 1d, 2d, 3d, 4d, 5d, 6d, 7d };
+        double[] result = RandomChooser.chooserandom( e, 4 );
+        double[] expected = new double[] { 5.0, 7.0, 3.0, 0.0 };
         assertEquals( expected.length, result.length );
         for ( int i = 0; i < result.length; i++ ) {
             assertEquals( expected[i], result[i], 0.0001 );
+        }
+
+        // check uniformity; each number should appear approx 1000 times: 10000 trials * 0.01 * 10 = 1000.
+        CountingMap<Double> map = new CountingMap<Double>();
+        for ( int i = 0; i < 10000; i++ ) {
+            result = RandomChooser.chooserandom( e, 4 );
+            for ( double r : result ) {
+                map.increment( r );
+            }
+        }
+
+        // this is not completely safe ...
+        for ( Double k : map.keySet() ) {
+            assertTrue( "got " + map.get( k ), Math.abs( 5000 - map.get( k ) ) < 500 );
+        }
+    }
+
+    @Test
+    public void testChooserandomInts() throws Exception {
+
+        int[] deck = { 0, 1, 2, 3, 4, 5, 6, 7 };
+        int[] expected = { 5, 7, 3, 0 };
+        int[] result = RandomChooser.chooserandom( deck, 4 );
+        for ( int i = 0; i < result.length; i++ ) {
+            assertEquals( expected[i], result[i], 0.0001 );
+        }
+
+        // check uniformity; each number should appear approx 1000 times: 10000 trials * 0.01 * 10 = 1000.
+        CountingMap<Double> map = new CountingMap<Double>();
+        for ( int i = 0; i < 10000; i++ ) {
+            result = RandomChooser.chooserandom( deck, 4 );
+            for ( double r : result ) {
+                map.increment( r );
+            }
+        }
+
+        // this is not completely safe ...
+        for ( Double k : map.keySet() ) {
+            assertTrue( "got " + map.get( k ), Math.abs( 5000 - map.get( k ) ) < 500 );
         }
     }
 
@@ -59,11 +97,25 @@ public class RandomChooserTest {
      * Test method for {@link ubic.basecode.math.RandomChooser#chooserandom(int[], boolean[], int, int)} .
      */
     @Test
-    public void testChooserandomIntArrayBooleanArrayIntInt() {
+    public void testChooserandomInt() {
         int[] result = RandomChooser.chooserandom( 100, 10 );
-        int[] expected = { 60, 48, 29, 47, 15, 53, 91, 61, 19, 54 };
+        int[] expected = { 26, 95, 75, 93, 72, 67, 59, 21, 22, 8 };
         for ( int i = 0; i < result.length; i++ ) {
             assertEquals( expected[i], result[i] );
+        }
+
+        // check uniformity; each number should appear approx 1000 times: 10000 trials * 0.01 * 10 = 1000.
+        CountingMap<Integer> map = new CountingMap<Integer>();
+        for ( int i = 0; i < 10000; i++ ) {
+            result = RandomChooser.chooserandom( 100, 10 );
+            for ( int r : result ) {
+                map.increment( r );
+            }
+        }
+
+        // this is not completely safe ...
+        for ( Integer k : map.keySet() ) {
+            assertTrue( "got " + map.get( k ), Math.abs( 1000 - map.get( k ) ) < 100 );
         }
     }
 

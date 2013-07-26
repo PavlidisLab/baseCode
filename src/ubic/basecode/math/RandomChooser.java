@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.commons.math3.random.RandomDataGenerator;
+import org.apache.commons.math3.random.Well19937c;
+
 /**
  * Fill arrays with random values
  * 
@@ -35,28 +38,38 @@ import java.util.Set;
 public class RandomChooser {
 
     private static Random generator = new Random();
+    private static RandomDataGenerator dataGenerator = new RandomDataGenerator();
 
     /**
-     * Fill randomvals with random numbers from sourcedata, without replacement.
+     * Random numbers from sourcedata, without replacement.
      * 
      * @param sourcedata Data to be randomly selected
      * @param deck an array pre-filled with integers from 0 to max, but they don't have to be in order (just an
      *        optimization so we don't have to generate this multiple times)
-     * @param numNeeded how many values we need.
+     * @param k how many values we need.
      */
-    public static double[] chooserandom( Double[] sourcedata, int[] deck, int numNeeded ) {
-        if ( numNeeded <= 0 ) throw new IllegalArgumentException( "numNeeded must be greater than zero" );
-        int rand, i, temp;
-        int sourceSize = sourcedata.length;
-        double[] result = new double[numNeeded];
-        for ( i = 0; i < numNeeded; i++ ) {
-            rand = generator.nextInt( sourceSize - i ) + i; // a value between i and max.
-            temp = deck[rand];
-            deck[rand] = deck[i];
-            deck[i] = temp;
-            result[i] = sourcedata[temp];
+    public static double[] chooserandom( double[] sourcedata, int k ) {
+        if ( k <= 0 ) throw new IllegalArgumentException( "numNeeded must be greater than zero" );
+
+        int len = sourcedata.length;
+        int[] index = dataGenerator.nextPermutation( len, k );
+        double[] result = new double[k];
+        for ( int i = 0; i < k; i++ ) {
+            result[i] = sourcedata[index[i]];
         }
         return result;
+        //
+        // int rand, i, temp;
+        // int sourceSize = sourcedata.length;
+        // double[] result = new double[numNeeded];
+        // for ( i = 0; i < numNeeded; i++ ) {
+        // rand = generator.nextInt( sourceSize - i ) + i; // a value between i and max.
+        // temp = deck[rand];
+        // deck[rand] = deck[i];
+        // deck[i] = temp;
+        // result[i] = sourcedata[temp];
+        // }
+        // return result;
     }
 
     /**
@@ -66,67 +79,34 @@ public class RandomChooser {
      * @param n how many to choose
      */
     public static int[] chooserandom( int max, int n ) {
-        if ( n > max ) {
-            throw new IllegalArgumentException(
-                    "n must be less than or equal to max (and should be much smaller, actually)" );
-        }
-        // Initialize a boolean vector to keep track of which values have been used already
-        int[] result = new int[n];
-        boolean[] recLog = new boolean[max];
-        for ( int i = 0; i < max; i++ ) {
-            recLog[i] = false;
-        }
-
-        int numgot = 0;
-        while ( numgot < n ) { /* numgot is the index of the last gotten item */
-            int newnum = generator.nextInt( max );
-            if ( !recLog[newnum] ) {
-                result[numgot] = newnum;
-                recLog[newnum] = true;
-                numgot++;
-            }
-        }
-
-        return result;
-
+        return dataGenerator.nextPermutation( max, n );
     }
 
     /**
-     * choose n random integers from 0 to max without repeating
+     * choose k random integers from 0 to max (exclusive) without repeating
      * 
-     * @param randomnums answers go here.
-     * @param deck an array pre-filled with integers from 0 to max, but they don't have to be in order.
-     * @param max how many values we need.
-     * @param n int
+     * @param deck an array pre-filled with integers from 0 to max, but they don't have to be in order. Provided to
+     *        avoid recomputing in iterative computations.
+     * @param k how many to choose
      */
-    public static void chooserandom( int[] randomnums, int[] deck, int max, int n ) {
-        for ( int i = 0; i < n; i++ ) {
-            int rand = generator.nextInt( max - i ) + i; // a value between i and max.
-            randomnums[i] = deck[rand];
-            deck[rand] = deck[i];
-            deck[i] = randomnums[i];
+    public static int[] chooserandom( int[] deck, int k ) {
+        int len = deck.length;
+        int[] index = dataGenerator.nextPermutation( len, k );
+        int[] result = new int[k];
+        for ( int i = 0; i < k; i++ ) {
+            result[i] = deck[index[i]];
         }
+        return result;
     }
 
     /**
-     * @param sourcedata
-     * @param deck
-     * @param numNeeded
-     * @return
+     * @param source
+     * @param n
+     * @return sample without replacement
+     * @see RandomDataGenerator.nextSample
      */
-    public static List<? extends Object> chooserandom( List<? extends Object> sourcedata, int[] deck, int numNeeded ) {
-        if ( numNeeded <= 0 ) throw new IllegalArgumentException( "numNeeded must be greater than zero" );
-        int rand, i, temp;
-        int sourceSize = sourcedata.size();
-        Object[] result = new Object[numNeeded];
-        for ( i = 0; i < numNeeded; i++ ) {
-            rand = generator.nextInt( sourceSize - i ) + i; // a value between i and max.
-            temp = deck[rand];
-            deck[rand] = deck[i];
-            deck[i] = temp;
-            result[i] = sourcedata.get( temp );
-        }
-        return Arrays.asList( result );
+    public static List<? extends Object> chooserandom( List<? extends Object> source, int n ) {
+        return Arrays.asList( dataGenerator.nextSample( source, n ) );
     }
 
     /**
@@ -180,6 +160,7 @@ public class RandomChooser {
      */
     public static void init( long seed ) {
         generator = new Random( seed );
+        dataGenerator = new RandomDataGenerator( new Well19937c( seed ) );
     }
 
     private RandomChooser() { /* block instantiation */
