@@ -14,7 +14,7 @@
  */
 package ubic.basecode.ontology.providers;
 
-import ubic.basecode.ontology.Configuration;
+import ubic.basecode.util.Configuration;
 
 /**
  * @author paul

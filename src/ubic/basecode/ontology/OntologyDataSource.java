@@ -25,6 +25,8 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import ubic.basecode.util.Configuration;
+
 import com.hp.hpl.jena.sdb.sql.SDBConnection;
 
 /**

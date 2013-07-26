@@ -59,6 +59,7 @@ public class JRIClient extends AbstractRClient {
             throw new RuntimeException( "JRI could not be initilized" );
         } catch ( UnsatisfiedLinkError e ) {
             // oh well...
+            log.warn( e + " " + System.getProperty( "java.library.path" ) );
         }
     }
 
@@ -120,6 +121,11 @@ public class JRIClient extends AbstractRClient {
         } catch ( REngineException e ) {
             throw new RuntimeException( e );
         }
+    }
+
+    @Override
+    public void disconnect() {
+        // noop
     }
 
     @Override

@@ -29,7 +29,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import ubic.basecode.ontology.Configuration;
+import ubic.basecode.util.Configuration;
 
 /**
  * This should behave the same as the web service from this link : http://bioportal.bioontology.org/annotator

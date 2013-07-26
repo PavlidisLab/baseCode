@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.ontology;
+package ubic.basecode.util;
 
 import java.util.Iterator;
 
@@ -29,7 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Configuration of ontology services.
+ * Configuration of ontology services and other things.
  * 
  * @author paul
  * @version $Id$
@@ -103,10 +103,18 @@ public class Configuration {
 
     }
 
+    /**
+     * @param key
+     * @return
+     */
     public static boolean getBoolean( String key ) {
         return config.getBoolean( key, false );
     }
 
+    /**
+     * @param key
+     * @return
+     */
     public static String getString( String key ) {
         return config.getString( key );
     }

@@ -50,6 +50,8 @@ import org.rosuda.REngine.RList;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrixImpl;
+import ubic.basecode.util.ConfigUtils;
+import ubic.basecode.util.Configuration;
 import ubic.basecode.util.r.type.HTest;
 import ubic.basecode.util.r.type.LinearModelSummary;
 import ubic.basecode.util.r.type.OneWayAnovaResult;
@@ -618,6 +620,13 @@ public abstract class AbstractRClient implements RClient {
     @Override
     public boolean loadLibrary( String libraryName ) {
         try {
+
+            String userLibPath = Configuration.getString( "basecode.rlibpath" );
+            if ( StringUtils.isNotBlank( userLibPath ) ) {
+                voidEval( ".libPaths(" + userLibPath + ")" );
+            }
+            List<String> libPaths = stringListEval( ".libPaths()" );
+
             List<String> libraries = stringListEval( "installed.packages()[,1]" );
             if ( !libraries.contains( libraryName ) ) {
                 return false;
@@ -967,5 +976,7 @@ public abstract class AbstractRClient implements RClient {
         String dimcmd = "dimnames(" + matrixVarName + ")<-list(" + rowNameVar + ", " + colNameVar + ")";
         this.voidEval( dimcmd );
     }
+
+    public abstract void disconnect();
 
 }

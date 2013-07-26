@@ -34,13 +34,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jena.larq.IndexLARQ;
 
-import ubic.basecode.ontology.Configuration;
 import ubic.basecode.ontology.OntologyLoader;
 import ubic.basecode.ontology.model.OntologyIndividual;
 import ubic.basecode.ontology.model.OntologyResource;
 import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.search.OntologyIndexer;
 import ubic.basecode.ontology.search.OntologySearch;
+import ubic.basecode.util.Configuration;
 
 import com.hp.hpl.jena.ontology.OntModel;
 

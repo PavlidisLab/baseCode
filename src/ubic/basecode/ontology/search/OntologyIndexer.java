@@ -37,7 +37,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
-import ubic.basecode.ontology.Configuration;
+import ubic.basecode.util.Configuration;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.StmtIterator;

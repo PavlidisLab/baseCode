@@ -19,7 +19,7 @@
 
 package ubic.basecode.ontology.providers;
 
-import ubic.basecode.ontology.Configuration;
+import ubic.basecode.util.Configuration;
 
 /**
  * See http://www.obofoundry.org/cgi-bin/detail.cgi?id=cell

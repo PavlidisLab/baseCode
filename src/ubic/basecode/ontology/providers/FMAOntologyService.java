@@ -19,7 +19,7 @@
 
 package ubic.basecode.ontology.providers;
 
-import ubic.basecode.ontology.Configuration;
+import ubic.basecode.util.Configuration;
 
 /**
  * Holds a copy of the FMA Ontology on disk. This gets loaded on startup.

@@ -51,6 +51,7 @@ import org.xml.sax.SAXException;
 
 import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.model.OntologyTermSimple;
+import ubic.basecode.util.Configuration;
 
 /**
  * Implementation of OntologyLookup using NCBO web services.
