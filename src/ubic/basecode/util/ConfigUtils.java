@@ -33,16 +33,14 @@ import org.apache.commons.configuration.io.FileHandler;
 public class ConfigUtils {
 
     /**
-     * @param name
+     * @param file
      * @return
-     * @throws ConfigurationException
      */
-    public static PropertiesConfiguration loadConfig( String name ) throws ConfigurationException {
-        PropertiesConfiguration pc = new PropertiesConfiguration();
-        FileHandler handler = new FileHandler( pc );
-        handler.setFileName( name );
-        handler.load();
-        return pc;
+    public static FileBasedConfigurationBuilder<PropertiesConfiguration> getConfigBuilder( File file ) {
+        FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
+                PropertiesConfiguration.class );
+        builder.configure( new FileBasedBuilderParametersImpl().setFile( file ) );
+        return builder;
     }
 
     /**
@@ -53,17 +51,6 @@ public class ConfigUtils {
         FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
                 PropertiesConfiguration.class );
         builder.configure( new FileBasedBuilderParametersImpl().setFileName( name ) );
-        return builder;
-    }
-
-    /**
-     * @param file
-     * @return
-     */
-    public static FileBasedConfigurationBuilder<PropertiesConfiguration> getConfigBuilder( File file ) {
-        FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
-                PropertiesConfiguration.class );
-        builder.configure( new FileBasedBuilderParametersImpl().setFile( file ) );
         return builder;
     }
 
@@ -93,6 +80,19 @@ public class ConfigUtils {
         PropertiesConfiguration pc = new PropertiesConfiguration();
         FileHandler handler = new FileHandler( pc );
         handler.setFile( file );
+        handler.load();
+        return pc;
+    }
+
+    /**
+     * @param name
+     * @return
+     * @throws ConfigurationException
+     */
+    public static PropertiesConfiguration loadConfig( String name ) throws ConfigurationException {
+        PropertiesConfiguration pc = new PropertiesConfiguration();
+        FileHandler handler = new FileHandler( pc );
+        handler.setFileName( name );
         handler.load();
         return pc;
     }

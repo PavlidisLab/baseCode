@@ -18,7 +18,6 @@
  */
 package ubic.basecode.ontology.model;
 
-
 import com.hp.hpl.jena.enhanced.EnhGraph;
 import com.hp.hpl.jena.enhanced.GraphPersonality;
 import com.hp.hpl.jena.ontology.Individual;

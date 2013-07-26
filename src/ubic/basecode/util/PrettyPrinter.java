@@ -46,36 +46,7 @@ public class PrettyPrinter {
      */
     private static final int MAX_TO_SHOW = 10;
 
-    private PrettyPrinter() {
-    }
-
     protected static final Log log = LogFactory.getLog( PrettyPrinter.class );
-
-    /**
-     * Format an array of integers for printing.
-     * 
-     * @param ints
-     * @return
-     */
-    public static String print( int[] ints ) {
-        if ( ints == null || ints.length == 0 ) return "(empty)";
-        StringBuffer buf = new StringBuffer();
-        for ( int i : ints ) {
-            buf.append( i + " " );
-        }
-        buf.append( "\n" );
-        return buf.toString();
-    }
-
-    /**
-     * Print out a collection of objects in a relatively pleasing format.
-     * 
-     * @param beans Collection of beans.
-     * @return String representing the objects.
-     */
-    public static String print( Object[] objects ) {
-        return print( Arrays.asList( objects ) );
-    }
 
     /**
      * Print out a collection of beans in a relatively pleasing format.
@@ -106,6 +77,22 @@ public class PrettyPrinter {
     }
 
     /**
+     * Format an array of integers for printing.
+     * 
+     * @param ints
+     * @return
+     */
+    public static String print( int[] ints ) {
+        if ( ints == null || ints.length == 0 ) return "(empty)";
+        StringBuffer buf = new StringBuffer();
+        for ( int i : ints ) {
+            buf.append( i + " " );
+        }
+        buf.append( "\n" );
+        return buf.toString();
+    }
+
+    /**
      * Pretty-print a single bean. Beans that are not part of this project are ignored.
      * 
      * @param gemmaObj
@@ -128,16 +115,13 @@ public class PrettyPrinter {
     }
 
     /**
-     * @param buf
-     * @param gemmaObj
-     * @throws IntrospectionException
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
+     * Print out a collection of objects in a relatively pleasing format.
+     * 
+     * @param beans Collection of beans.
+     * @return String representing the objects.
      */
-    private static void print( StringBuffer buf, Object gemmaObj ) throws IntrospectionException,
-            IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-        print( buf, gemmaObj, 0 );
+    public static String print( Object[] objects ) {
+        return print( Arrays.asList( objects ) );
     }
 
     /**
@@ -157,6 +141,19 @@ public class PrettyPrinter {
                 break;
             }
         }
+    }
+
+    /**
+     * @param buf
+     * @param gemmaObj
+     * @throws IntrospectionException
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     */
+    private static void print( StringBuffer buf, Object gemmaObj ) throws IntrospectionException,
+            IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+        print( buf, gemmaObj, 0 );
     }
 
     /**
@@ -209,5 +206,8 @@ public class PrettyPrinter {
                     + ( o == null ? "---" : o ) + "\n" );
             print( buf, o, level );
         }
+    }
+
+    private PrettyPrinter() {
     }
 }

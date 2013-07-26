@@ -31,6 +31,17 @@ import org.junit.Test;
 public class ExcelUtilTest {
 
     @Test
+    public void testGetSet() {
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet spreadsheet = workbook.createSheet();
+        ExcelUtil.setValue( spreadsheet, 4, 5, 1.99 );
+        assertEquals( 1.99, Double.parseDouble( ExcelUtil.getValue( spreadsheet, 4, 5 ) ), 0.001 );
+
+        Set<String> vals = ExcelUtil.grabColumnValues( spreadsheet, 5, false, false );
+        assertEquals( 1, vals.size() );
+    }
+
+    @Test
     public void testGetSheetFromFile() throws Exception {
         String f = new File( this.getClass().getResource( "/data/matrix-testing.xls" ).toURI() ).getAbsolutePath();
         String s = "range,variance, normalized";
@@ -52,17 +63,6 @@ public class ExcelUtilTest {
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet spreadsheet = workbook.createSheet();
         ExcelUtil.setFormula( spreadsheet, 1, 1, "HYPERLINK(\"x\",\"x\")" );
-    }
-
-    @Test
-    public void testGetSet() {
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet spreadsheet = workbook.createSheet();
-        ExcelUtil.setValue( spreadsheet, 4, 5, 1.99 );
-        assertEquals( 1.99, Double.parseDouble( ExcelUtil.getValue( spreadsheet, 4, 5 ) ), 0.001 );
-
-        Set<String> vals = ExcelUtil.grabColumnValues( spreadsheet, 5, false, false );
-        assertEquals( 1, vals.size() );
     }
 
 }

@@ -43,36 +43,19 @@ public class AnnotatorResponse implements Comparable<AnnotatorResponse> {
         this.ontologyUsed = ontologyUsed;
     }
 
-    public Integer getScore() {
-        return score;
-    }
+    // this information is given as a long string with space and new lines, parse and add all synonyms
+    public void addSynonyms( String line ) {
 
-    public void setScore( Integer score ) {
-        this.score = score;
-    }
+        String[] tokens = line.split( "\n" );
 
-    public String getValue() {
-        return value;
-    }
+        for ( String token : tokens ) {
 
-    public void setValue( String value ) {
-        this.value = value;
-    }
+            token = token.trim();
 
-    public String getValueUri() {
-        return valueUri;
-    }
-
-    public void setValueUri( String valueUri ) {
-        this.valueUri = valueUri;
-    }
-
-    public String getSearchQuery() {
-        return searchQuery;
-    }
-
-    public void setSearchQuery( String searchQuery ) {
-        this.searchQuery = searchQuery;
+            if ( !token.isEmpty() ) {
+                this.synonyms.add( token );
+            }
+        }
     }
 
     // term are ordered given priority to DOID terms
@@ -119,78 +102,6 @@ public class AnnotatorResponse implements Comparable<AnnotatorResponse> {
     }
 
     @Override
-    public String toString() {
-        return "AnnotatorResponse [score=" + score + ", value=" + value + ", valueUri=" + valueUri + ", searchQuery="
-                + searchQuery + "]";
-    }
-
-    public HashSet<String> getSynonyms() {
-        return synonyms;
-    }
-
-    public void setSynonyms( HashSet<String> synonyms ) {
-        this.synonyms = synonyms;
-    }
-
-    // this information is given as a long string with space and new lines, parse and add all synonyms
-    public void addSynonyms( String line ) {
-
-        String[] tokens = line.split( "\n" );
-
-        for ( String token : tokens ) {
-
-            token = token.trim();
-
-            if ( !token.isEmpty() ) {
-                this.synonyms.add( token );
-            }
-        }
-    }
-
-    public boolean isSynonym() {
-        return synonym;
-    }
-
-    public boolean isDiseaseUsed() {
-        if ( ontologyUsed.equalsIgnoreCase( "DOID" ) ) {
-            return true;
-        }
-        return false;
-    }
-
-    public void setSynonym( boolean synonym ) {
-        this.synonym = synonym;
-    }
-
-    public boolean isExactMatch() {
-
-        if ( this.value.equalsIgnoreCase( this.searchQuery ) ) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public String getOntologyUsed() {
-        return ontologyUsed;
-    }
-
-    public void setOntologyUsed( String ontologyUsed ) {
-        this.ontologyUsed = ontologyUsed;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ( ( ontologyUsed == null ) ? 0 : ontologyUsed.hashCode() );
-        result = prime * result + ( ( score == null ) ? 0 : score.hashCode() );
-        result = prime * result + ( ( searchQuery == null ) ? 0 : searchQuery.hashCode() );
-        result = prime * result + ( ( valueUri == null ) ? 0 : valueUri.hashCode() );
-        return result;
-    }
-
-    @Override
     public boolean equals( Object obj ) {
         if ( this == obj ) return true;
         if ( obj == null ) return false;
@@ -209,6 +120,95 @@ public class AnnotatorResponse implements Comparable<AnnotatorResponse> {
             if ( other.valueUri != null ) return false;
         } else if ( !valueUri.equals( other.valueUri ) ) return false;
         return true;
+    }
+
+    public String getOntologyUsed() {
+        return ontologyUsed;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public String getSearchQuery() {
+        return searchQuery;
+    }
+
+    public HashSet<String> getSynonyms() {
+        return synonyms;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getValueUri() {
+        return valueUri;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ( ( ontologyUsed == null ) ? 0 : ontologyUsed.hashCode() );
+        result = prime * result + ( ( score == null ) ? 0 : score.hashCode() );
+        result = prime * result + ( ( searchQuery == null ) ? 0 : searchQuery.hashCode() );
+        result = prime * result + ( ( valueUri == null ) ? 0 : valueUri.hashCode() );
+        return result;
+    }
+
+    public boolean isDiseaseUsed() {
+        if ( ontologyUsed.equalsIgnoreCase( "DOID" ) ) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isExactMatch() {
+
+        if ( this.value.equalsIgnoreCase( this.searchQuery ) ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isSynonym() {
+        return synonym;
+    }
+
+    public void setOntologyUsed( String ontologyUsed ) {
+        this.ontologyUsed = ontologyUsed;
+    }
+
+    public void setScore( Integer score ) {
+        this.score = score;
+    }
+
+    public void setSearchQuery( String searchQuery ) {
+        this.searchQuery = searchQuery;
+    }
+
+    public void setSynonym( boolean synonym ) {
+        this.synonym = synonym;
+    }
+
+    public void setSynonyms( HashSet<String> synonyms ) {
+        this.synonyms = synonyms;
+    }
+
+    public void setValue( String value ) {
+        this.value = value;
+    }
+
+    public void setValueUri( String valueUri ) {
+        this.valueUri = valueUri;
+    }
+
+    @Override
+    public String toString() {
+        return "AnnotatorResponse [score=" + score + ", value=" + value + ", valueUri=" + valueUri + ", searchQuery="
+                + searchQuery + "]";
     }
 
 }

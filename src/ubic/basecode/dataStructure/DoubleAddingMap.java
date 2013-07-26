@@ -13,8 +13,6 @@ public class DoubleAddingMap<K> extends HashMap<K, Double> {
 
     private static final long serialVersionUID = 2;
 
-   
-
     /**
      * adds the current value to the value of this key. If the current value is null then value becomes the d parameter.
      * 

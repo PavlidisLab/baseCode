@@ -23,9 +23,9 @@ import java.util.List;
 
 import org.junit.Test;
 
+import ubic.basecode.io.reader.DoubleMatrixReader;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
-import ubic.basecode.io.reader.DoubleMatrixReader;
 
 /**
  * TODO Document Me
@@ -114,16 +114,6 @@ public abstract class AbstractDoubleMatrixTest {
     @Test(expected = IllegalArgumentException.class)
     public void testGetColByNameNull() {
         testM.getColumnByName( null );
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetRowByNameFail() {
-        testM.getRowByName( "nnnn" );
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetRowByNameNull() {
-        testM.getRowByName( null );
     }
 
     /*
@@ -228,6 +218,16 @@ public abstract class AbstractDoubleMatrixTest {
         assertEquals( 12.0, actual[1], 0.000001 );
         assertEquals( 13.0, actual[2], 0.000001 );
         assertEquals( 14.0, actual[3], 0.000001 );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetRowByNameFail() {
+        testM.getRowByName( "nnnn" );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetRowByNameNull() {
+        testM.getRowByName( null );
     }
 
     /*

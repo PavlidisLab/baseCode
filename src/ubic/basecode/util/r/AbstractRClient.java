@@ -50,7 +50,6 @@ import org.rosuda.REngine.RList;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrixImpl;
-import ubic.basecode.util.ConfigUtils;
 import ubic.basecode.util.Configuration;
 import ubic.basecode.util.r.type.HTest;
 import ubic.basecode.util.r.type.LinearModelSummary;
@@ -371,6 +370,8 @@ public abstract class AbstractRClient implements RClient {
         }
 
     }
+
+    public abstract void disconnect();
 
     /*
      * (non-Javadoc)
@@ -976,7 +977,5 @@ public abstract class AbstractRClient implements RClient {
         String dimcmd = "dimnames(" + matrixVarName + ")<-list(" + rowNameVar + ", " + colNameVar + ")";
         this.voidEval( dimcmd );
     }
-
-    public abstract void disconnect();
 
 }

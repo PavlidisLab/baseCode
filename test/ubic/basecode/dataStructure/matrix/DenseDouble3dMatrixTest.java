@@ -14,7 +14,7 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,14 +50,6 @@ public class DenseDouble3dMatrixTest {
     }
 
     @Test
-    public void testtostring() {
-        String result = m3.toString();
-        assertEquals( "Slice\tRow\tcol1\tcol2\n" + "Slice1\trow1\t1.0\t2.0\n" + "Slice1\trow2\t3.0\t4.0\n"
-                + "Slice2\trow1\t5.0\t6.0\n" + "Slice2\trow2\t7.0\t8.0\n", result );
-        System.err.println( result );
-    }
-
-    @Test
     public void testgetcolobj() {
         Double[][] r = m3.getColObj( 1 );
         assertEquals( 2, r.length );
@@ -79,6 +71,14 @@ public class DenseDouble3dMatrixTest {
         assertEquals( 6, r[1][1], 0.001 );
         assertEquals( 5, r[1][0], 0.001 );
         assertEquals( 1, r[0][0], 0.001 );
+    }
+
+    @Test
+    public void testtostring() {
+        String result = m3.toString();
+        assertEquals( "Slice\tRow\tcol1\tcol2\n" + "Slice1\trow1\t1.0\t2.0\n" + "Slice1\trow2\t3.0\t4.0\n"
+                + "Slice2\trow1\t5.0\t6.0\n" + "Slice2\trow2\t7.0\t8.0\n", result );
+        System.err.println( result );
     }
 
 }

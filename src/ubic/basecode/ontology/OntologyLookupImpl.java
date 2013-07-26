@@ -147,7 +147,7 @@ public class OntologyLookupImpl implements OntologyLookup {
             for ( int i = 0; i < synonyms.getLength(); i++ ) {
                 String syn = synonyms.item( i ).getTextContent();
 
-                log.info( syn );
+                // log.info( syn );
                 results.add( syn );
             }
 
@@ -293,7 +293,7 @@ public class OntologyLookupImpl implements OntologyLookup {
             IOException {
         String versionFetch = URL_BASE + "/ontologies?apikey=" + API_KEY;
         String xml = ncboFetch( versionFetch );
-        log.info( xml );
+        // / log.info( xml );
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.parse( new InputSource( new StringReader( xml ) ) );
         XPathFactory xf = XPathFactory.newInstance();

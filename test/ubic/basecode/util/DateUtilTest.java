@@ -20,37 +20,15 @@ package ubic.basecode.util;
 
 import java.util.Date;
 
-import org.apache.commons.lang3.time.DateUtils;
-
 import junit.framework.TestCase;
+
+import org.apache.commons.lang3.time.DateUtils;
 
 /**
  * @author pavlidis
  * @version $Id$
  */
 public class DateUtilTest extends TestCase {
-
-    public void testgetRelativeDateDayago() {
-
-        Date now = new Date();
-
-        Date expectedValue = DateUtils.addDays( now, -1 );
-        Date actualValue = DateUtil.getRelativeDate( now, "-1d" );
-
-        assertEquals( expectedValue, actualValue );
-
-    }
-
-    public void testgetRelativeTomorrow() {
-
-        Date now = new Date();
-
-        Date expectedValue = DateUtils.addDays( now, 1 );
-        Date actualValue = DateUtil.getRelativeDate( now, "1d" );
-
-        assertEquals( expectedValue, actualValue );
-
-    }
 
     public void testgetRelative5yearsago() {
 
@@ -69,6 +47,28 @@ public class DateUtilTest extends TestCase {
 
         Date expectedValue = DateUtils.addYears( now, 5 );
         Date actualValue = DateUtil.getRelativeDate( now, "+5y" );
+
+        assertEquals( expectedValue, actualValue );
+
+    }
+
+    public void testgetRelativeDateDayago() {
+
+        Date now = new Date();
+
+        Date expectedValue = DateUtils.addDays( now, -1 );
+        Date actualValue = DateUtil.getRelativeDate( now, "-1d" );
+
+        assertEquals( expectedValue, actualValue );
+
+    }
+
+    public void testgetRelativeTomorrow() {
+
+        Date now = new Date();
+
+        Date expectedValue = DateUtils.addDays( now, 1 );
+        Date actualValue = DateUtil.getRelativeDate( now, "1d" );
 
         assertEquals( expectedValue, actualValue );
 

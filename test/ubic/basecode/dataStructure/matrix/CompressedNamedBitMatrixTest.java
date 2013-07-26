@@ -32,30 +32,6 @@ import org.junit.Test;
  */
 public class CompressedNamedBitMatrixTest {
 
-    @Test
-    public void testGetRowBitCount() {
-        int[] rowBitCount = mat.getRowBitCount( 1 );
-        assertEquals( 0, rowBitCount[0] );
-        assertEquals( 2, rowBitCount[1] );
-        assertEquals( 1, mat.getRowBitCount( 0 )[0] );
-        assertEquals( 1, mat.getRowBitCount( 0 )[1] );
-    }
-
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
-    public final void testOutOfBounds() {
-        mat.set( 1929393, 1, 1 );
-    }
-
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
-    public final void testOutOfBounds2() {
-        mat.set( 0, 1, 100 );
-    }
-
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
-    public final void testGetOutOfBounds() {
-        mat.get( 0, 1, 100 );
-    }
-
     CompressedBitMatrix<String, String> mat;
 
     @Before
@@ -68,43 +44,12 @@ public class CompressedNamedBitMatrixTest {
     }
 
     @Test
-    public final void testGet() {
-        assertTrue( mat.get( 1, 1, 1 ) );
-        assertTrue( mat.get( 1, 1, 0 ) );
-        assertTrue( !mat.get( 1, 0, 0 ) );
-        assertTrue( !mat.get( 1, 0, 1 ) );
-
-        mat.set( 0, 0, 1 );
-        assertTrue( mat.get( 0, 0, 1 ) );
-        mat.unset( 0, 0, 1 );
-        assertTrue( !mat.get( 0, 0, 1 ) );
-
-        mat.unset( 0, 0, 1 );
-        assertTrue( !mat.get( 0, 0, 1 ) );
-
-        mat.set( 0, 0, 1 );
-        assertTrue( mat.get( 0, 0, 1 ) );
-    }
-
-    @Test
     public final void testBitCount() {
 
         int v = mat.bitCount( 0, 0 );
         assertEquals( 1, v );
         v = mat.bitCount( 1, 1 );
         assertEquals( 2, v );
-    }
-
-    @Test
-    public final void testOverlap() {
-        assertEquals( 1, mat.overlap( 0, 0, 1, 1 ) );
-    }
-
-    @Test
-    public final void testTotalBitCount() {
-        long actualValue = mat.totalBitCount();
-        long expectedValue = 4; // number of 'sets' we called on different locations.
-        assertEquals( expectedValue, actualValue );
     }
 
     @Test
@@ -132,6 +77,61 @@ public class CompressedNamedBitMatrixTest {
         assertTrue( f.length() > 0 );
         f.delete();
 
+    }
+
+    @Test
+    public final void testGet() {
+        assertTrue( mat.get( 1, 1, 1 ) );
+        assertTrue( mat.get( 1, 1, 0 ) );
+        assertTrue( !mat.get( 1, 0, 0 ) );
+        assertTrue( !mat.get( 1, 0, 1 ) );
+
+        mat.set( 0, 0, 1 );
+        assertTrue( mat.get( 0, 0, 1 ) );
+        mat.unset( 0, 0, 1 );
+        assertTrue( !mat.get( 0, 0, 1 ) );
+
+        mat.unset( 0, 0, 1 );
+        assertTrue( !mat.get( 0, 0, 1 ) );
+
+        mat.set( 0, 0, 1 );
+        assertTrue( mat.get( 0, 0, 1 ) );
+    }
+
+    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    public final void testGetOutOfBounds() {
+        mat.get( 0, 1, 100 );
+    }
+
+    @Test
+    public void testGetRowBitCount() {
+        int[] rowBitCount = mat.getRowBitCount( 1 );
+        assertEquals( 0, rowBitCount[0] );
+        assertEquals( 2, rowBitCount[1] );
+        assertEquals( 1, mat.getRowBitCount( 0 )[0] );
+        assertEquals( 1, mat.getRowBitCount( 0 )[1] );
+    }
+
+    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    public final void testOutOfBounds() {
+        mat.set( 1929393, 1, 1 );
+    }
+
+    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    public final void testOutOfBounds2() {
+        mat.set( 0, 1, 100 );
+    }
+
+    @Test
+    public final void testOverlap() {
+        assertEquals( 1, mat.overlap( 0, 0, 1, 1 ) );
+    }
+
+    @Test
+    public final void testTotalBitCount() {
+        long actualValue = mat.totalBitCount();
+        long expectedValue = 4; // number of 'sets' we called on different locations.
+        assertEquals( expectedValue, actualValue );
     }
 
 }

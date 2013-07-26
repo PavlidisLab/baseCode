@@ -235,10 +235,8 @@ public class SparseDoubleMatrixTest {
     }
 
     @Test
-    public void testSubsetRows() {
-        DoubleMatrix<String, String> subset = testMatrix.subsetRows( Arrays.asList( new String[] { "1", "3" } ) );
-        assertEquals( 2, subset.rows() );
-        assertEquals( 3, subset.columns() );
+    public void testSize() {
+        assertEquals( 12, testM.size() );
     }
 
     @Test
@@ -249,8 +247,10 @@ public class SparseDoubleMatrixTest {
     }
 
     @Test
-    public void testSize() {
-        assertEquals( 12, testM.size() );
+    public void testSubsetRows() {
+        DoubleMatrix<String, String> subset = testMatrix.subsetRows( Arrays.asList( new String[] { "1", "3" } ) );
+        assertEquals( 2, subset.rows() );
+        assertEquals( 3, subset.columns() );
     }
 
     @Test

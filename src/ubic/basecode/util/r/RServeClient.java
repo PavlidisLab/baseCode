@@ -201,6 +201,7 @@ public class RServeClient extends AbstractRClient {
         return connect( true );
     }
 
+    @Override
     public void disconnect() {
         if ( connection != null && connection.isConnected() ) connection.close();
         connection = null;

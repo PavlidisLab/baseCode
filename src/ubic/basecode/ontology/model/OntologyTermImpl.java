@@ -20,7 +20,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.ObjectUtils;
 
-
 import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;

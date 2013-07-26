@@ -14,7 +14,8 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,11 +37,10 @@ public class StringMatrixTest {
     }
 
     @Test
-    public void testToString() {
-        String a = sm.toString();
-        assertTrue( a
-                .startsWith( "label\tsample1\tsample2\tsample3\tsample4\tsample5\tsample6\tsample7\tsample8\tsample9\tsample10\tsample11\tsample12\n"
-                        + "gene1_at\t94.2\t227.7\t308.3\t48.8\t170.1\t154.3\t160.4\t106.2\t40.7\t22.5\t184.4\t98.9\n" ) );
+    public void testGetColObj() {
+        String[] colObj = sm.getColObj( 3 );
+        assertEquals( "213.6", colObj[3] );
+        assertEquals( 30, colObj.length );
     }
 
     @Test
@@ -52,10 +52,11 @@ public class StringMatrixTest {
     }
 
     @Test
-    public void testGetColObj() {
-        String[] colObj = sm.getColObj( 3 );
-        assertEquals( "213.6", colObj[3] );
-        assertEquals( 30, colObj.length );
+    public void testToString() {
+        String a = sm.toString();
+        assertTrue( a
+                .startsWith( "label\tsample1\tsample2\tsample3\tsample4\tsample5\tsample6\tsample7\tsample8\tsample9\tsample10\tsample11\tsample12\n"
+                        + "gene1_at\t94.2\t227.7\t308.3\t48.8\t170.1\t154.3\t160.4\t106.2\t40.7\t22.5\t184.4\t98.9\n" ) );
     }
 
 }

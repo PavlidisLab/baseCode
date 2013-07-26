@@ -14,7 +14,9 @@
  */
 package ubic.basecode.dataStructure.params;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
@@ -26,6 +28,14 @@ import org.junit.Test;
  */
 public class ParamGrabberTest {
 
+    @SuppressWarnings("unused")
+    class Foo {
+        private String k = "k";
+        private String u = "u";
+        private boolean m = true;
+        private double v = 1.01;
+    }
+
     @Test
     public void test() {
         Foo fo = new Foo();
@@ -34,13 +44,5 @@ public class ParamGrabberTest {
         assertNull( params.get( "dkdk" ) );
         assertEquals( "1.01", params.get( "v" ) );
         assertTrue( Boolean.parseBoolean( params.get( "m" ) ) );
-    }
-
-    @SuppressWarnings("unused")
-    class Foo {
-        private String k = "k";
-        private String u = "u";
-        private boolean m = true;
-        private double v = 1.01;
     }
 }

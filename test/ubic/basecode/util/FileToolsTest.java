@@ -162,56 +162,6 @@ public class FileToolsTest {
     }
 
     @Test
-    public void testGetLines() throws Exception {
-        List<String> lines = FileTools
-                .getLines( new File( this.getClass().getResource( "/data/testdata.txt" ).toURI() ) );
-        assertEquals( 31, lines.size() );
-        File tmp = File.createTempFile( "junk.", ".txt" );
-        FileTools.stringsToFile( lines, tmp );
-        lines = FileTools.getLines( tmp );
-        assertEquals( 31, lines.size() );
-    }
-
-    @Test
-    public void testGetCompressedFile() throws Exception {
-        InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile( new File( this.getClass()
-                .getResource( "/data/testdata.gz" ).toURI() ).getAbsolutePath() );
-        assertNotNull( is );
-    }
-
-    @Test
-    public void testGetCompressedFileZip() throws Exception {
-        InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile( new File( this.getClass()
-                .getResource( "/data/multtest.test.zip" ).toURI() ).getAbsolutePath() );
-        assertNotNull( is );
-    }
-
-    @Test
-    public void testResourcetoPath() throws Exception {
-        assertNotNull( FileTools.resourceToPath( "/data/multtest.test.zip" ) );
-    }
-
-    @Test
-    public void testgetStringListFromFile() throws Exception {
-        List<String> strings = FileTools.getStringListFromFile( new File( FileTools
-                .resourceToPath( "/data/stringlisttest.txt" ) ) );
-        assertEquals( 6, strings.size() );
-    }
-
-    @Test
-    public void testListDirectoryFiles() throws Exception {
-        Collection<File> files = FileTools.listDirectoryFiles( new File( FileTools.resourceToPath( "/data/" ) ) );
-        assertTrue( !files.isEmpty() );
-        boolean found = false;
-        for ( File file : files ) {
-            if ( file.getAbsolutePath().contains( "multtest.test.zip" ) ) {
-                found = true;
-            }
-        }
-        assertTrue( found );
-    }
-
-    @Test
     public void testCleanFileNameErr() {
         try {
             FileTools.cleanForFileName( "   " );
@@ -315,6 +265,20 @@ public class FileToolsTest {
         assertEquals( 2, numDeleted );
     }
 
+    @Test
+    public void testGetCompressedFile() throws Exception {
+        InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile( new File( this.getClass()
+                .getResource( "/data/testdata.gz" ).toURI() ).getAbsolutePath() );
+        assertNotNull( is );
+    }
+
+    @Test
+    public void testGetCompressedFileZip() throws Exception {
+        InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile( new File( this.getClass()
+                .getResource( "/data/multtest.test.zip" ).toURI() ).getAbsolutePath() );
+        assertNotNull( is );
+    }
+
     /*
      * Test method for 'basecode.util.FileTools.getExtension(String)'
      */
@@ -330,6 +294,24 @@ public class FileToolsTest {
     public void testGetInputStreamFromPlainOrCompressedFile() throws Exception {
         InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile( plain.getPath() );
         assertTrue( is != null && is.available() > 0 );
+    }
+
+    @Test
+    public void testGetLines() throws Exception {
+        List<String> lines = FileTools
+                .getLines( new File( this.getClass().getResource( "/data/testdata.txt" ).toURI() ) );
+        assertEquals( 31, lines.size() );
+        File tmp = File.createTempFile( "junk.", ".txt" );
+        FileTools.stringsToFile( lines, tmp );
+        lines = FileTools.getLines( tmp );
+        assertEquals( 31, lines.size() );
+    }
+
+    @Test
+    public void testgetStringListFromFile() throws Exception {
+        List<String> strings = FileTools.getStringListFromFile( new File( FileTools
+                .resourceToPath( "/data/stringlisttest.txt" ) ) );
+        assertEquals( 6, strings.size() );
     }
 
     /*
@@ -388,6 +370,24 @@ public class FileToolsTest {
     @Test
     public void testIsZipped() {
         assertFalse( FileTools.isZipped( plain.getPath() ) );
+    }
+
+    @Test
+    public void testListDirectoryFiles() throws Exception {
+        Collection<File> files = FileTools.listDirectoryFiles( new File( FileTools.resourceToPath( "/data/" ) ) );
+        assertTrue( !files.isEmpty() );
+        boolean found = false;
+        for ( File file : files ) {
+            if ( file.getAbsolutePath().contains( "multtest.test.zip" ) ) {
+                found = true;
+            }
+        }
+        assertTrue( found );
+    }
+
+    @Test
+    public void testResourcetoPath() throws Exception {
+        assertNotNull( FileTools.resourceToPath( "/data/multtest.test.zip" ) );
     }
 
     /*

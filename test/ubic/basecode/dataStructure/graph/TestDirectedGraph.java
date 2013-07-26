@@ -88,17 +88,15 @@ public class TestDirectedGraph {
     }
 
     @Test
-    public void testGetChildren() {
-        DirectedGraphNode<String, String> n = testGraph.get( "c" );
-        String actualReturn = n.getChildGraph().toString();
-        String expectedReturn = "cee.\n\tdee.\n\teee.\n\teff.\n";
-        assertEquals( "return", expectedReturn, actualReturn );
-    }
-
-    @Test
     public void testAddChild() {
         testGraph.addChildTo( "c", "f" );
         assertNotNull( testGraph.get( "f" ) );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddChildFail() {
+        testGraph.addChildTo( "c", "mm" );
+        assertNotNull( testGraph.get( "mm" ) );
     }
 
     @Test
@@ -108,8 +106,9 @@ public class TestDirectedGraph {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testDeleteLeafFail() {
-        testGraph.deleteLeaf( "dddd" );
+    public void testAddParentFail() {
+        testGraph.addParentTo( "c", "m" );
+        assertNotNull( testGraph.get( "m" ) );
     }
 
     @Test
@@ -118,29 +117,23 @@ public class TestDirectedGraph {
         assertTrue( !testGraph.containsKey( "f" ) );
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testDeleteLeafFail() {
+        testGraph.deleteLeaf( "dddd" );
+    }
+
     @Test
     public void testDeleteLeafNotLeaf() {
         testGraph.deleteLeaf( "c" ); // not a leaf
         assertTrue( testGraph.containsKey( "c" ) );
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testAddChildFail() {
-        testGraph.addChildTo( "c", "mm" );
-        assertNotNull( testGraph.get( "mm" ) );
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testAddParentFail() {
-        testGraph.addParentTo( "c", "m" );
-        assertNotNull( testGraph.get( "m" ) );
-    }
-
     @Test
-    public void testTreeView() {
-        JTree treeView = testGraph.treeView( DNV.class );
-        assertNotNull( treeView );
-        assertNotNull( treeView.getCellRenderer() );
+    public void testGetChildren() {
+        DirectedGraphNode<String, String> n = testGraph.get( "c" );
+        String actualReturn = n.getChildGraph().toString();
+        String expectedReturn = "cee.\n\tdee.\n\teee.\n\teff.\n";
+        assertEquals( "return", expectedReturn, actualReturn );
     }
 
     @Test
@@ -164,6 +157,13 @@ public class TestDirectedGraph {
         String expectedReturn = "aaa.\n\tbee.\n\tcee.\n\t\tdee.\n\t\teee.\n\t\teff.\n";
         String actualReturn = testGraph.toString();
         assertEquals( "return", expectedReturn, actualReturn );
+    }
+
+    @Test
+    public void testTreeView() {
+        JTree treeView = testGraph.treeView( DNV.class );
+        assertNotNull( treeView );
+        assertNotNull( treeView.getCellRenderer() );
     }
 
 }

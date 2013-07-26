@@ -38,6 +38,15 @@ public class TestStringMatrixReader {
     StringMatrix<String, String> matrix = null;
     StringMatrixReader reader = null;
 
+    /*
+     * @see TestCase#setUp()
+     */
+    @Before
+    public void setUp() throws Exception {
+        reader = new StringMatrixReader();
+        is = TestStringMatrixReader.class.getResourceAsStream( "/data/testdata.txt" );
+    }
+
     @Test
     public void testReadInputStreamColumnCount() {
         try {
@@ -87,15 +96,6 @@ public class TestStringMatrixReader {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-    }
-
-    /*
-     * @see TestCase#setUp()
-     */
-    @Before
-    public void setUp() throws Exception {
-        reader = new StringMatrixReader();
-        is = TestStringMatrixReader.class.getResourceAsStream( "/data/testdata.txt" );
     }
 
 }

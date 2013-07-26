@@ -43,18 +43,6 @@ public class RandomChooserTest {
         RandomChooser.init( 0 );
     }
 
-    /**
-     * Test method for {@link ubic.basecode.math.RandomChooser#chooserandom(int[], boolean[], int, int)} .
-     */
-    @Test
-    public void testChooserandomIntArrayBooleanArrayIntInt() {
-        int[] result = RandomChooser.chooserandom( 100, 10 );
-        int[] expected = { 60, 48, 29, 47, 15, 53, 91, 61, 19, 54 };
-        for ( int i = 0; i < result.length; i++ ) {
-            assertEquals( expected[i], result[i] );
-        }
-    }
-
     @Test
     public void testChooseRandomDeck() {
         int[] v = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -64,6 +52,18 @@ public class RandomChooserTest {
         assertEquals( expected.length, result.length );
         for ( int i = 0; i < result.length; i++ ) {
             assertEquals( expected[i], result[i], 0.0001 );
+        }
+    }
+
+    /**
+     * Test method for {@link ubic.basecode.math.RandomChooser#chooserandom(int[], boolean[], int, int)} .
+     */
+    @Test
+    public void testChooserandomIntArrayBooleanArrayIntInt() {
+        int[] result = RandomChooser.chooserandom( 100, 10 );
+        int[] expected = { 60, 48, 29, 47, 15, 53, 91, 61, 19, 54 };
+        for ( int i = 0; i < result.length; i++ ) {
+            assertEquals( expected[i], result[i] );
         }
     }
 

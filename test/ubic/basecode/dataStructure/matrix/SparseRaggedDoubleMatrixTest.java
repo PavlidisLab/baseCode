@@ -55,6 +55,13 @@ public class SparseRaggedDoubleMatrixTest {
     }
 
     @Test
+    public void testAddrow() {
+        DoubleMatrix1D m = new RCDoubleMatrix1D( new double[] { 0.3, 0.0, 0.8 } );
+        matrix.addRow( "newrow", m );
+        assertEquals( 4, matrix.rows() );
+    }
+
+    @Test
     public void testColumns() {
         int actualReturn = matrix.columns();
         int expectedReturn = 3;
@@ -103,15 +110,12 @@ public class SparseRaggedDoubleMatrixTest {
     }
 
     @Test
-    public void testAddrow() {
-        DoubleMatrix1D m = new RCDoubleMatrix1D( new double[] { 0.3, 0.0, 0.8 } );
-        matrix.addRow( "newrow", m );
-        assertEquals( 4, matrix.rows() );
-    }
+    public void testRows() {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testSubsetRowsFail() {
-        matrix.subsetRows( Arrays.asList( new String[] { "foo" } ) );
+        int actualReturn = matrix.rows();
+        int expectedReturn = 3;
+
+        assertEquals( "return value", expectedReturn, actualReturn );
     }
 
     @Test
@@ -120,13 +124,9 @@ public class SparseRaggedDoubleMatrixTest {
         assertEquals( 1, subsetRows.rows() );
     }
 
-    @Test
-    public void testRows() {
-
-        int actualReturn = matrix.rows();
-        int expectedReturn = 3;
-
-        assertEquals( "return value", expectedReturn, actualReturn );
+    @Test(expected = IllegalArgumentException.class)
+    public void testSubsetRowsFail() {
+        matrix.subsetRows( Arrays.asList( new String[] { "foo" } ) );
     }
 
 }

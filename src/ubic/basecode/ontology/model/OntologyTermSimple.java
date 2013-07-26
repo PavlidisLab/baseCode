@@ -50,6 +50,11 @@ public class OntologyTermSimple extends OntologyTermImpl {
     }
 
     @Override
+    public boolean equals( Object obj ) {
+        return super.equals( obj );
+    }
+
+    @Override
     public Collection<OntologyTerm> getChildren( boolean direct ) {
         throw new UnsupportedOperationException( "Use a OntologyTermImpl" );
     }
@@ -112,11 +117,6 @@ public class OntologyTermSimple extends OntologyTermImpl {
             return this.getUri().hashCode();
         }
         return this.getTerm().hashCode();
-    }
-
-    @Override
-    public boolean equals( Object obj ) {
-        return super.equals( obj );
     }
 
     @Override

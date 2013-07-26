@@ -21,7 +21,6 @@ package ubic.basecode.ontology.model;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-
 /**
  * @author pavlidis
  * @version $Id$

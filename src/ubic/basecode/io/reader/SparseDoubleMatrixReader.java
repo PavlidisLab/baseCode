@@ -193,7 +193,7 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
             returnVal.setRowName( new Integer( k ).toString(), k - 1 );
 
             index = ff.nextInt(); // "item 1 has 2 edges"
-            log.info( index );
+            // log.info( index );
             amount = ff.nextInt();
 
             if ( index % 500 == 0 ) {
