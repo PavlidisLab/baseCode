@@ -26,8 +26,6 @@ import cern.colt.function.DoubleFunction;
 import cern.colt.function.DoubleProcedure;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
-import cern.colt.matrix.DoubleMatrix2D;
-import cern.colt.matrix.linalg.Algebra;
 import cern.jet.math.Functions;
 
 /**
@@ -155,30 +153,6 @@ public class MatrixStats {
         result.setColumnNames( data.getRowNames() );
 
         return result;
-    }
-
-    /**
-     * Normalize a count matrix in place to be a transition matrix. Assumes that the values are defined as "bigger is
-     * better"
-     * 
-     * @param matrixToNormalize
-     */
-    public static <R, C> void countsNormalize( DoubleMatrix<R, C> matrixToNormalize ) {
-
-        final double min = MatrixStats.min( matrixToNormalize );
-        DoubleFunction f = new DoubleFunction() {
-            @Override
-            public double apply( double value ) {
-                return value - min + 1;
-            }
-        };
-
-        for ( int j = 0; j < matrixToNormalize.rows(); j++ ) { // do each row in turn ...
-            DoubleMatrix1D row = matrixToNormalize.viewRow( j );
-            row.assign( f );
-            double sum = row.zSum();
-            row.assign( Functions.div( sum ) );
-        }
     }
 
     /**
@@ -341,18 +315,6 @@ public class MatrixStats {
     }
 
     /**
-     * @param matrix
-     * @return
-     */
-    public static DoubleMatrix2D pseudoinverse( DoubleMatrix2D matrix ) {
-        Algebra solver = new Algebra();
-        DoubleMatrix2D tDes = solver.transpose( matrix );
-        DoubleMatrix2D mult = solver.mult( tDes, matrix );
-        DoubleMatrix2D invXXT = solver.inverse( mult );
-        return solver.mult( invXXT, tDes );
-    }
-
-    /**
      * Normalize a matrix in place to be a transition matrix. Assumes that values operate such that small values like p
      * values represent closer distances, and the values are probabilities.
      * <p>
@@ -441,7 +403,6 @@ public class MatrixStats {
      * @param matrix
      */
     public static <R, C> void unLogTransform( DoubleMatrix<R, C> matrix ) {
-
         for ( int j = 0; j < matrix.rows(); j++ ) {
             DoubleMatrix1D row = matrix.viewRow( j );
             for ( int i = 0; i < row.size(); i++ ) {

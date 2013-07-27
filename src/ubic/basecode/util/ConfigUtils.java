@@ -143,8 +143,8 @@ public class ConfigUtils {
         }
         try {
             return new File( location.toURI() );
-        } catch ( URISyntaxException e ) {
-            throw new ConfigurationException( "Couldn't map url to a uri" );
+        } catch ( Exception e ) {
+            throw new ConfigurationException( "Couldn't map url to a uri: " + name );
         }
     }
 }
