@@ -365,12 +365,15 @@ public class TestDescriptiveWithMissing {
 
     @Test
     public void testKurtosis() throws Exception {
-
+        DescriptiveWithMissing.kurtosis(
+                DescriptiveWithMissing.moment( data1missing, 4, DescriptiveWithMissing.mean( data1missing ) ),
+                DescriptiveWithMissing.standardDeviation( DescriptiveWithMissing.variance( data1missing ) ) );
     }
 
     @Test
     public void testKurtosisList() throws Exception {
-
+        DescriptiveWithMissing.kurtosis( data1missing, DescriptiveWithMissing.mean( data1missing ),
+                DescriptiveWithMissing.standardDeviation( DescriptiveWithMissing.variance( data1missing ) ) );
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -389,7 +392,7 @@ public class TestDescriptiveWithMissing {
 
     @Test
     public void testQuantiles() throws Exception {
-
+        DescriptiveWithMissing.quantile( data1missing, 0.5 );
     }
 
     @Test
@@ -401,12 +404,14 @@ public class TestDescriptiveWithMissing {
 
     @Test
     public void testSampleSkew() throws Exception {
-
+        DescriptiveWithMissing.sampleSkew( data1missing, DescriptiveWithMissing.mean( data1missing ),
+                DescriptiveWithMissing.sampleVariance( data1missing, DescriptiveWithMissing.mean( data1missing ) ) );
     }
 
     @Test
     public void testSampleStandardDeviation() throws Exception {
-
+        DescriptiveWithMissing.sampleStandardDeviation( data1missing.size(),
+                DescriptiveWithMissing.sampleVariance( data1missing, DescriptiveWithMissing.mean( data1missing ) ) );
     }
 
     @Test
@@ -417,22 +422,38 @@ public class TestDescriptiveWithMissing {
     }
 
     @Test
-    public void testSubOfInversions() throws Exception {
-
+    public void testSumOfInversions() throws Exception {
+        assertEquals( Descriptive.sumOfInversions( data1Nomissing, 0, 4 ),
+                DescriptiveWithMissing.sumOfInversions( data1missing, 0, 5 ), 0.001 );
     }
 
     @Test
-    public void testSubOfPowers() throws Exception {
-
+    public void testSumOfPowers() throws Exception {
+        assertEquals( Descriptive.sumOfPowers( data1Nomissing, 5 ),
+                DescriptiveWithMissing.sumOfPowers( data1missing, 5 ), 0.001 );
     }
 
     @Test
     public void testSumOfSquaredDeviations() throws Exception {
-
+        assertEquals(
+                Descriptive.sumOfSquaredDeviations(
+                        data1Nomissing.size(),
+                        Descriptive.variance( data1Nomissing.size(), Descriptive.sum( data1Nomissing ),
+                                Descriptive.sumOfSquares( data1Nomissing ) ) ),
+                DescriptiveWithMissing.sumOfSquaredDeviations( data1missing ), 0.001 );
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testWinsorizedMean() throws Exception {
+        DoubleArrayList copy1 = data1missing.copy();
+        copy1.sort();
 
+        DoubleArrayList copy2 = data1Nomissing.copy();
+        copy2.sort();
+
+        double winsorizedMean = DescriptiveWithMissing.winsorizedMean( copy1, DescriptiveWithMissing.mean( data1missing ), 0, 4 );
+        // assertEquals( Descriptive.winsorizedMean( copy2, Descriptive.sum( data1Nomissing ), 0, 4 ),
+        // winsorizedMean,
+        // 0.0001 );
     }
 }

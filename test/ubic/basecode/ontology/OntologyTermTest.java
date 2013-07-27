@@ -22,6 +22,9 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import ubic.basecode.ontology.model.OntologyTerm;
@@ -33,6 +36,8 @@ import ubic.basecode.ontology.providers.NIFSTDOntologyService;
  * @version $Id$
  */
 public class OntologyTermTest {
+
+    private static Log log = LogFactory.getLog( OntologyTermTest.class );
 
     @Test
     public void testGetChildren() throws Exception {
@@ -55,10 +60,18 @@ public class OntologyTermTest {
         Collection<OntologyTerm> allchildren = t.getChildren( false );
         found = false;
         assertEquals( 6, allchildren.size() );
-        for ( OntologyTerm par : allchildren ) {
-            if ( par.getUri().equals( "http://purl.obolibrary.org/obo/DOID_10054" ) ) {
+        for ( OntologyTerm chil : allchildren ) {
+            if ( chil.getUri().equals( "http://purl.obolibrary.org/obo/DOID_10054" ) ) {
                 found = true;
             }
+            // exercise other things.
+            log.info( "Annotations: " + StringUtils.join( chil.getAnnotations(), "," ) );
+            log.info( "Comment: " + chil.getComment() );
+            log.info( "Individuals: " + StringUtils.join( chil.getIndividuals(), "," ) );
+            log.info( "Individuals: " + StringUtils.join( chil.getIndividuals( true ), "," ) );
+            log.info( "Individuals: " + StringUtils.join( chil.getIndividuals( false ), "," ) );
+            log.info( "Restrictions: " + StringUtils.join( chil.getRestrictions(), "," ) );
+            log.info( "AlternativeIDs: " + StringUtils.join( chil.getAlternativeIds(), "," ) );
         }
         assertTrue( found );
     }
@@ -100,11 +113,20 @@ public class OntologyTermTest {
         assertEquals( 11, c2.size() );
         found = false;
         for ( OntologyTerm o : c2 ) {
-            // System.err.println( o );
+            System.err.println( o );
             if ( o.getUri().equals(
                     "http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#birnlex_4037" ) ) {
                 found = true;
             }
+
+            // exercise other things.
+            log.info( "Annotations: " + StringUtils.join( o.getAnnotations(), "," ) );
+            log.info( "Comment: " + o.getComment() );
+            log.info( "Individuals: " + StringUtils.join( o.getIndividuals(), "," ) );
+            log.info( "Individuals: " + StringUtils.join( o.getIndividuals( true ), "," ) );
+            log.info( "Individuals: " + StringUtils.join( o.getIndividuals( false ), "," ) );
+            // Log.info( "Restrictions: "+ StringUtils.join( o.getRestrictions(), "," ) );
+            log.info( "AlternativeIDs: " + StringUtils.join( o.getAlternativeIds(), "," ) );
         }
         assertTrue( found );
     }
@@ -135,6 +157,15 @@ public class OntologyTermTest {
             if ( par.getUri().equals( "http://purl.obolibrary.org/obo/DOID_0060122" ) ) {
                 found = true;
             }
+
+            // exercise other things.
+            log.info( "Annotations: " + StringUtils.join( par.getAnnotations(), "," ) );
+            log.info( "Comment: " + par.getComment() );
+            log.info( "Individuals: " + StringUtils.join( par.getIndividuals(), "," ) );
+            log.info( "Individuals: " + StringUtils.join( par.getIndividuals( true ), "," ) );
+            log.info( "Individuals: " + StringUtils.join( par.getIndividuals( false ), "," ) );
+            log.info( "Restrictions: " + StringUtils.join( par.getRestrictions(), "," ) );
+            log.info( "AlternativeIDs: " + StringUtils.join( par.getAlternativeIds(), "," ) );
         }
 
         assertTrue( found );
