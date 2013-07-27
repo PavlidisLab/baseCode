@@ -20,6 +20,8 @@ import java.io.File;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,46 +31,8 @@ import org.junit.Test;
  */
 public class ConfigUtilsTest {
 
-    private String tmpPath;
     private String testConfigPath;
-
-    @Test
-    public void testGetConfigBuilderFile() throws Exception {
-        FileBasedConfigurationBuilder<PropertiesConfiguration> config = ConfigUtils.getConfigBuilder( new File(
-                testConfigPath ) );
-        assertNotNull( config );
-    }
-
-    @Test
-    public void testGetConfigBuilderString() throws Exception {
-        FileBasedConfigurationBuilder<PropertiesConfiguration> config = ConfigUtils.getConfigBuilder( testConfigPath );
-        assertNotNull( config );
-    }
-
-    @Test
-    public void testGetConfigBuilderURL() throws Exception {
-        FileBasedConfigurationBuilder<PropertiesConfiguration> config = ConfigUtils.getConfigBuilder( new File(
-                testConfigPath ).toURI().toURL() );
-        assertNotNull( config );
-    }
-
-    @Test
-    public void testLoadConfigFile() throws Exception {
-        PropertiesConfiguration config = ConfigUtils.loadConfig( new File( testConfigPath ) );
-        assertNotNull( config );
-    }
-
-    @Test
-    public void testLoadConfigString() throws Exception {
-        PropertiesConfiguration config = ConfigUtils.loadConfig( testConfigPath );
-        assertNotNull( config );
-    }
-
-    @Test
-    public void testLoadConfigURL() throws Exception {
-        PropertiesConfiguration config = ConfigUtils.loadConfig( new File( testConfigPath ).toURI().toURL() );
-        assertNotNull( config );
-    }
+    private String tmpPath;
 
     @Before
     public void setup() throws Exception {
@@ -81,6 +45,18 @@ public class ConfigUtilsTest {
         assertTrue( !f.exists() );
     }
 
+    @After
+    public void tearDown() throws Exception {
+        new File( tmpPath ).delete();
+    }
+
+    @Test
+    public void testGetConfigBuilderFile() throws Exception {
+        FileBasedConfigurationBuilder<PropertiesConfiguration> config = ConfigUtils.getConfigBuilder( new File(
+                testConfigPath ) );
+        assertNotNull( config );
+    }
+
     @Test
     public void testGetConfigBuilderFileNew() throws Exception {
         FileBasedConfigurationBuilder<PropertiesConfiguration> config = ConfigUtils
@@ -89,8 +65,21 @@ public class ConfigUtilsTest {
     }
 
     @Test
+    public void testGetConfigBuilderString() throws Exception {
+        FileBasedConfigurationBuilder<PropertiesConfiguration> config = ConfigUtils.getConfigBuilder( testConfigPath );
+        assertNotNull( config );
+    }
+
+    @Test
     public void testGetConfigBuilderStringNew() throws Exception {
         FileBasedConfigurationBuilder<PropertiesConfiguration> config = ConfigUtils.getConfigBuilder( tmpPath );
+        assertNotNull( config );
+    }
+
+    @Test
+    public void testGetConfigBuilderURL() throws Exception {
+        FileBasedConfigurationBuilder<PropertiesConfiguration> config = ConfigUtils.getConfigBuilder( new File(
+                testConfigPath ).toURI().toURL() );
         assertNotNull( config );
     }
 
@@ -102,8 +91,20 @@ public class ConfigUtilsTest {
     }
 
     @Test
+    public void testLoadConfigFile() throws Exception {
+        PropertiesConfiguration config = ConfigUtils.loadConfig( new File( testConfigPath ) );
+        assertNotNull( config );
+    }
+
+    @Test
     public void testLoadConfigFileNew() throws Exception {
         PropertiesConfiguration config = ConfigUtils.loadConfig( new File( tmpPath ) );
+        assertNotNull( config );
+    }
+
+    @Test
+    public void testLoadConfigString() throws Exception {
+        PropertiesConfiguration config = ConfigUtils.loadConfig( testConfigPath );
         assertNotNull( config );
     }
 
@@ -116,6 +117,15 @@ public class ConfigUtilsTest {
     @Test
     public void testLoadConfigStringNewName() throws Exception {
         PropertiesConfiguration config = ConfigUtils.loadConfig( "testtemp.properties" );
+        assertNotNull( config );
+        config.setProperty( "foo", "bar" );
+        assertEquals( "bar", config.getProperty( "foo" ) );
+        new File( FileUtils.getUserDirectory(), "testtemp.properties" ).delete();
+    }
+
+    @Test
+    public void testLoadConfigURL() throws Exception {
+        PropertiesConfiguration config = ConfigUtils.loadConfig( new File( testConfigPath ).toURI().toURL() );
         assertNotNull( config );
     }
 
