@@ -114,7 +114,35 @@ public class TestMatrixStats {
         DoubleMatrix<String, String> expectedReturn = f.read( AbstractTestFilter.class
                 .getResourceAsStream( "/data/correlation-matrix-testoutput.txt" ) );
 
-        assertEquals( true, RegressionTesting.closeEnough( expectedReturn, actualReturn, 0.001 ) );
+        assertTrue( RegressionTesting.closeEnough( expectedReturn, actualReturn, 0.001 ) );
+
+    }
+
+    @Test
+    public final void testCorrelationMatrixThreshold() throws Exception {
+        double threshold = 0.5;
+        DoubleMatrix<String, String> actualReturn = MatrixStats.correlationMatrix( testdata, threshold );
+        DoubleMatrixReader f = new DoubleMatrixReader();
+        DoubleMatrix<String, String> expectedReturn = f.read( AbstractTestFilter.class
+                .getResourceAsStream( "/data/correlation-matrix-testoutput.txt" ) );
+        for ( int i = 0; i < expectedReturn.rows(); i++ ) {
+
+            for ( int j = 0; j < expectedReturn.columns(); j++ ) {
+
+                if ( i == j ) {
+                    expectedReturn.set( i, j, Double.NaN );
+                    continue;
+                }
+
+                double v = Math.abs( expectedReturn.get( i, j ) );
+                if ( v <= threshold ) {
+                    expectedReturn.set( i, j, Double.NaN );
+                }
+            }
+        }
+
+        assertTrue( RegressionTesting.closeEnough( expectedReturn, actualReturn, 0.001 ) );
+
     }
 
     @Test

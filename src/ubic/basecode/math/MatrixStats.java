@@ -129,20 +129,25 @@ public class MatrixStats {
 
     /**
      * @param data DenseDoubleMatrix2DNamed
-     * @param threshold only correlations with absolute values above this level are stored.
-     * @return a sparse symmetric matrix that has the rows and columns set to be the names of the rows of the input.
+     * @param threshold only correlations with absolute values above this level are stored (others are Double.NaN)
+     * @return a sparse symmetric matrix that has the rows and columns set to be the names of the rows of the input. The
+     *         diagonal is set to Double.NaN
      */
     public static <R, C> SparseDoubleMatrix<R, R> correlationMatrix( DoubleMatrix<R, C> data, double threshold ) {
         SparseDoubleMatrix<R, R> result = new SparseDoubleMatrix<R, R>( data.rows(), data.rows() );
 
         for ( int i = 0; i < data.rows(); i++ ) {
             DoubleArrayList irow = new DoubleArrayList( data.getRow( i ) );
+            result.set( i, i, Double.NaN );
             for ( int j = i + 1; j < data.rows(); j++ ) {
                 DoubleArrayList jrow = new DoubleArrayList( data.getRow( j ) );
                 double c = DescriptiveWithMissing.correlation( irow, jrow );
                 if ( Math.abs( c ) > threshold ) {
                     result.set( i, j, c );
                     result.set( j, i, c );
+                } else {
+                    result.set( i, j, Double.NaN );
+                    result.set( j, i, Double.NaN );
                 }
             }
         }
