@@ -51,89 +51,65 @@ public class PrettyPrinter {
     /**
      * Print out a collection of beans in a relatively pleasing format.
      * 
+     * @param packages collection of Strings for inclusion of classes for printing. E.g. "ubic.gemma" would print all
+     *        classes in the ubic.gemma package (including subpackages). If empty, everything gets printed.
      * @param beans Collection of beans.
      * @return String representing the objects.
      */
-    public static String print( Collection<Object> beans ) {
+    public static String print( Collection<String> packages, Collection<Object> beans ) {
         StringBuffer buf = new StringBuffer();
         try {
             for ( Iterator<Object> iter = beans.iterator(); iter.hasNext(); ) {
                 Object gemmaObj = iter.next();
 
                 if ( gemmaObj == null ) log.error( "Null object in collection" );
-                print( buf, gemmaObj );
+                print( packages, buf, gemmaObj );
 
             }
-        } catch ( IntrospectionException e ) {
-            log.error( e, e );
-        } catch ( IllegalArgumentException e ) {
-            log.error( e, e );
-        } catch ( IllegalAccessException e ) {
-            log.error( e, e );
-        } catch ( InvocationTargetException e ) {
-            log.error( e, e );
+        } catch ( Exception e ) {
+            // just carry on.
         }
-        return buf.toString();
-    }
-
-    /**
-     * Format an array of integers for printing.
-     * 
-     * @param ints
-     * @return
-     */
-    public static String print( int[] ints ) {
-        if ( ints == null || ints.length == 0 ) return "(empty)";
-        StringBuffer buf = new StringBuffer();
-        for ( int i : ints ) {
-            buf.append( i + " " );
-        }
-        buf.append( "\n" );
         return buf.toString();
     }
 
     /**
      * Pretty-print a single bean. Beans that are not part of this project are ignored.
      * 
-     * @param gemmaObj
+     * @param packages collection of Strings for inclusion of classes for printing. E.g. "ubic.gemma" would print all
+     *        classes in the ubic.gemma package (including subpackages). If empty, everything gets printed.
+     * @param object
      * @return String representing the object.
      */
-    public static String print( Object gemmaObj ) {
+    public static String print( Collection<String> packages, Object object ) {
         StringBuffer buf = new StringBuffer();
-        try {
-            print( buf, gemmaObj );
-        } catch ( IllegalArgumentException e ) {
-            log.error( e, e );
-        } catch ( IntrospectionException e ) {
-            log.error( e, e );
-        } catch ( IllegalAccessException e ) {
-            log.error( e, e );
-        } catch ( InvocationTargetException e ) {
-            log.error( e, e );
-        }
+
+        print( packages, buf, object );
+
         return buf.toString();
     }
 
     /**
      * Print out a collection of objects in a relatively pleasing format.
      * 
+     * @param packages collection of Strings for inclusion of classes for printing. E.g. "ubic.gemma" would print all
+     *        classes in the ubic.gemma package (including subpackages). If empty, everything gets printed.
      * @param beans Collection of beans.
      * @return String representing the objects.
      */
-    public static String print( Object[] objects ) {
-        return print( Arrays.asList( objects ) );
+    public static String print( Collection<String> packages, Object[] objects ) {
+        return print( packages, Arrays.asList( objects ) );
     }
 
     /**
+     * @param packages
      * @param buf
      * @param gemmeCollection
      * @param level
      */
-    private static void print( StringBuffer buf, Collection<?> gemmaCollection, int level )
-            throws IllegalArgumentException, IntrospectionException, IllegalAccessException, InvocationTargetException {
+    private static void print( Collection<String> packages, StringBuffer buf, Collection<?> gemmaCollection, int level ) {
         int i = 0;
         for ( Object gemmaObj : gemmaCollection ) {
-            print( buf, gemmaObj, level );
+            print( packages, buf, gemmaObj, level );
             i++;
             if ( i >= MAX_TO_SHOW ) {
                 buf.append( "..." + ( gemmaCollection.size() - MAX_TO_SHOW ) + " more "
@@ -151,9 +127,8 @@ public class PrettyPrinter {
      * @throws IllegalAccessException
      * @throws InvocationTargetException
      */
-    private static void print( StringBuffer buf, Object gemmaObj ) throws IntrospectionException,
-            IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-        print( buf, gemmaObj, 0 );
+    private static void print( Collection<String> packages, StringBuffer buf, Object gemmaObj ) {
+        print( packages, buf, gemmaObj, 0 );
     }
 
     /**
@@ -163,24 +138,31 @@ public class PrettyPrinter {
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      * @throws IntrospectionException
+     * @param packages collection of Strings for inclusion of classes for printing. E.g. "ubic.gemma" would print all
+     *        classes in the ubic.gemma package (including subpackages). If empty, everything gets printed.
      * @param buf
      * @param gemmaObj
      * @param level Used to track indents.
      */
-    private static void print( StringBuffer buf, Object bean, int level ) throws IntrospectionException,
-            IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+    private static void print( Collection<String> packages, StringBuffer buf, Object bean, int level ) {
 
         if ( bean == null ) return;
-        Class<?> gemmaClass = bean.getClass();
+        Class<?> clazz = bean.getClass();
 
         if ( bean instanceof Collection ) {
-            print( buf, ( Collection<?> ) bean, ++level );
+            print( packages, buf, ( Collection<?> ) bean, ++level );
             return;
         }
 
-        if ( !gemmaClass.getName().startsWith( "ubic.gemma" ) ) return;
-
-        BeanInfo bif = Introspector.getBeanInfo( gemmaClass );
+        if ( !include( packages, clazz ) ) {
+            return;
+        }
+        BeanInfo bif;
+        try {
+            bif = Introspector.getBeanInfo( clazz );
+        } catch ( Exception e ) {
+            return;
+        }
         PropertyDescriptor[] props = bif.getPropertyDescriptors();
 
         StringBuffer indent = new StringBuffer();
@@ -193,7 +175,12 @@ public class PrettyPrinter {
         for ( int i = 0; i < props.length; i++ ) {
             PropertyDescriptor prop = props[i];
 
-            Object o = prop.getReadMethod().invoke( bean, new Object[] {} );
+            Object o;
+            try {
+                o = prop.getReadMethod().invoke( bean, new Object[] {} );
+            } catch ( Exception e ) {
+                continue;
+            }
 
             if ( prop.getDisplayName().equals( "class" ) ) continue; // everybody has it.
             if ( prop.getDisplayName().equals( "mutable" ) ) continue; // shows up in the enums, just clutter.
@@ -204,8 +191,18 @@ public class PrettyPrinter {
             first = false;
             buf.append( indent + "   " + bean.getClass().getSimpleName() + "." + prop.getName() + ": "
                     + ( o == null ? "---" : o ) + "\n" );
-            print( buf, o, level );
+            print( packages, buf, o, level );
         }
+    }
+
+    private static boolean include( Collection<String> packages, Class<?> clazz ) {
+        if ( packages == null || packages.isEmpty() ) return true;
+
+        for ( String string : packages ) {
+            if ( clazz.getName().startsWith( string ) ) return true;
+        }
+        return false;
+
     }
 
     private PrettyPrinter() {

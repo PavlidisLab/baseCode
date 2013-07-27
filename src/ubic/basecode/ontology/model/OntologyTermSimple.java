@@ -19,18 +19,18 @@ import java.util.Collection;
 import com.hp.hpl.jena.ontology.OntClass;
 
 /**
- * A light-weight version of OntologyTerms. Mostly useful for testing. Only supports a subset of the functionalith of
- * OntologyTermImpl (namely, it is missing the inference components)
+ * A light-weight version of OntologyTerms. Only supports a subset of the functionality of OntologyTermImpl (namely, it
+ * is missing the inference components)
  * 
  * @author Paul
  * @version $Id$
  */
 public class OntologyTermSimple extends OntologyTermImpl {
 
+    private String description = "";
+    private boolean obsolete;
     private String term;
     private String uri;
-    private boolean obsolete;
-    private String description = "";
 
     public OntologyTermSimple( OntClass resource ) {
         super( resource );
@@ -52,6 +52,16 @@ public class OntologyTermSimple extends OntologyTermImpl {
     @Override
     public boolean equals( Object obj ) {
         return super.equals( obj );
+    }
+
+    @Override
+    public Collection<String> getAlternativeIds() {
+        throw new UnsupportedOperationException( "Use a OntologyTermImpl" );
+    }
+
+    @Override
+    public Collection<AnnotationProperty> getAnnotations() {
+        throw new UnsupportedOperationException( "Use a OntologyTermImpl" );
     }
 
     @Override
