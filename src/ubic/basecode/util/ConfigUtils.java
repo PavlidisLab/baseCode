@@ -57,16 +57,8 @@ public class ConfigUtils {
      */
     public static FileBasedConfigurationBuilder<PropertiesConfiguration> getConfigBuilder( String name )
             throws ConfigurationException {
-        FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
-                PropertiesConfiguration.class );
         File f = locateConfig( name );
-        try {
-            FileTools.touch( f );
-        } catch ( IOException e ) {
-            throw new ConfigurationException( "Couldn't create the file: " + e.getMessage() );
-        }
-        builder.configure( new FileBasedBuilderParametersImpl().setFile( f ) );
-        return builder;
+        return getConfigBuilder( f );
     }
 
     /**
@@ -76,19 +68,14 @@ public class ConfigUtils {
      */
     public static FileBasedConfigurationBuilder<PropertiesConfiguration> getConfigBuilder( URL url )
             throws ConfigurationException {
-        FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
-                PropertiesConfiguration.class );
+        File file;
         try {
-            File file = new File( url.toURI() );
-            builder.configure( new FileBasedBuilderParametersImpl().setFile( file ) );
-            FileTools.touch( file );
-
+            file = new File( url.toURI() );
+            return getConfigBuilder( file );
         } catch ( URISyntaxException e ) {
             throw new ConfigurationException( "Couldn't map url to a uri" );
-        } catch ( IOException e ) {
-            throw new ConfigurationException( "Couldn't create the file: " + e.getMessage() );
         }
-        return builder;
+
     }
 
     /**
@@ -130,19 +117,13 @@ public class ConfigUtils {
      * @throws ConfigurationException
      */
     public static PropertiesConfiguration loadConfig( URL url ) throws ConfigurationException {
-        PropertiesConfiguration pc = new PropertiesConfiguration();
-        FileHandler handler = new FileHandler( pc );
+
         try {
             File file = new File( url.toURI() );
-            FileTools.touch( file );
-            handler.setFile( file );
+            return loadConfig( file );
         } catch ( URISyntaxException e ) {
             throw new ConfigurationException( "Couldn't map url to a uri" );
-        } catch ( IOException e ) {
-            throw new ConfigurationException( "Couldn't create the file: " + e.getMessage() );
         }
-        handler.load();
-        return pc;
     }
 
     /**

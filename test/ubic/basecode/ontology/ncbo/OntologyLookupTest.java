@@ -1,5 +1,5 @@
 /*
- * The Gemma project
+ * The baseCode project
  * 
  * Copyright (c) 2013 University of British Columbia
  * 
@@ -12,30 +12,40 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package ubic.basecode.ncboAnnotator;
+package ubic.basecode.ontology.ncbo;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
-import java.util.HashSet;
 
 import org.junit.Test;
+
+import ubic.basecode.ontology.model.OntologyTerm;
+import ubic.basecode.ontology.ncbo.OntologyLookup;
+import ubic.basecode.ontology.ncbo.OntologyLookupImpl;
 
 /**
  * @author Paul
  * @version $Id$
  */
-public class AnnotatorClientTest {
+public class OntologyLookupTest {
+
+    // private static OntologyLookup ol = new OntologyLookupImpl();
+
+    //
+    // @Test
+    // public void testGetSynonyms() {
+    // Collection<String> synonyms = ol.getSynonyms( "http://sig.uw.edu/fma#Intestine" );
+    //
+    // }
 
     @Test
-    public void test() throws Exception {
-
-        Collection<Long> ontologiesToUse = new HashSet<Long>();
-        ontologiesToUse.add( 1009l );
-        ontologiesToUse.add( 1125l );
-        AnnotatorClient client = new AnnotatorClient( ontologiesToUse );
-        Collection<AnnotatorResponse> results = client.findTerm( "cancer" );
-        assertTrue( results.size() > 0 );
+    public void testMatch() {
+        OntologyLookup ol = new OntologyLookupImpl();
+        Collection<OntologyTerm> matches = ol.match( "O80-O84.9", 1 );
+        assertTrue( !matches.isEmpty() );
+        assertEquals( 1, matches.size() );
     }
 
 }

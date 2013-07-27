@@ -12,7 +12,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package ubic.basecode.ncboAnnotator;
+package ubic.basecode.ontology.ncbo;
 
 import java.io.StringReader;
 import java.util.Collection;
@@ -39,7 +39,6 @@ public class AnnotatorClient {
     private static String ANNOTATOR_URL = "http://rest.bioontology.org/obs/annotator";
 
     // this API_KEY needs to be added to basecode.properties
-    // The value I used in my configuration file is : ncbo.api.key=68835db8-b142-4c7d-9509-3c843849ad67
     private static String API_KEY = Configuration.getString( "ncbo.api.key" );
 
     private static String ONTOLOGY_USED = "";
@@ -49,8 +48,9 @@ public class AnnotatorClient {
      * 
      * @param ontologiesToUse a list of id representing what Ontology to use
      */
-    // must let it know what Ontology to search
     public AnnotatorClient( Collection<Long> ontologiesToUse ) {
+
+        // must let it know what Ontology to search
         // 1009 is disease ontology
         // 1125 is hp ontology
         // TODO unsure how to use string (ontology name) rather that number

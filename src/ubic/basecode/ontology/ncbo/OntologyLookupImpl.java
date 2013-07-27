@@ -17,7 +17,7 @@
  *
  */
 
-package ubic.basecode.ontology;
+package ubic.basecode.ontology.ncbo;
 
 import java.io.IOException;
 import java.io.StringReader;

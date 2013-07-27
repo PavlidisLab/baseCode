@@ -55,6 +55,7 @@ public class ConfigUtilsTest {
         FileBasedConfigurationBuilder<PropertiesConfiguration> config = ConfigUtils.getConfigBuilder( new File(
                 testConfigPath ) );
         assertNotNull( config );
+        assertEquals( "bar", config.getConfiguration().getProperty( "foo" ) );
     }
 
     @Test
@@ -62,12 +63,17 @@ public class ConfigUtilsTest {
         FileBasedConfigurationBuilder<PropertiesConfiguration> config = ConfigUtils
                 .getConfigBuilder( new File( tmpPath ) );
         assertNotNull( config );
+        config.getConfiguration().setProperty( "foo", "bar" );
+        assertEquals( "bar", config.getConfiguration().getProperty( "foo" ) );
+
     }
 
     @Test
     public void testGetConfigBuilderString() throws Exception {
         FileBasedConfigurationBuilder<PropertiesConfiguration> config = ConfigUtils.getConfigBuilder( testConfigPath );
         assertNotNull( config );
+        assertEquals( "bar", config.getConfiguration().getProperty( "foo" ) );
+
     }
 
     @Test
@@ -94,12 +100,16 @@ public class ConfigUtilsTest {
     public void testLoadConfigFile() throws Exception {
         PropertiesConfiguration config = ConfigUtils.loadConfig( new File( testConfigPath ) );
         assertNotNull( config );
+        assertEquals( "bar", config.getProperty( "foo" ) );
     }
 
     @Test
     public void testLoadConfigFileNew() throws Exception {
         PropertiesConfiguration config = ConfigUtils.loadConfig( new File( tmpPath ) );
         assertNotNull( config );
+
+        config.setProperty( "foo", "bar" );
+        assertEquals( "bar", config.getProperty( "foo" ) );
     }
 
     @Test
@@ -112,6 +122,8 @@ public class ConfigUtilsTest {
     public void testLoadConfigStringNew() throws Exception {
         PropertiesConfiguration config = ConfigUtils.loadConfig( tmpPath );
         assertNotNull( config );
+        config.setProperty( "foo", "bar" );
+        assertEquals( "bar", config.getProperty( "foo" ) );
     }
 
     @Test
@@ -133,6 +145,8 @@ public class ConfigUtilsTest {
     public void testLoadConfigURLNew() throws Exception {
         PropertiesConfiguration config = ConfigUtils.loadConfig( new File( tmpPath ).toURI().toURL() );
         assertNotNull( config );
+        config.setProperty( "foo", "bar" );
+        assertEquals( "bar", config.getProperty( "foo" ) );
     }
 
 }
