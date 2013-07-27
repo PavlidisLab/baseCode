@@ -443,7 +443,6 @@ public class TestDescriptiveWithMissing {
                 DescriptiveWithMissing.sumOfSquaredDeviations( data1missing ), 0.001 );
     }
 
-    @Test(expected = UnsupportedOperationException.class)
     public void testWinsorizedMean() throws Exception {
         DoubleArrayList copy1 = data1missing.copy();
         copy1.sort();
@@ -451,9 +450,9 @@ public class TestDescriptiveWithMissing {
         DoubleArrayList copy2 = data1Nomissing.copy();
         copy2.sort();
 
-        double winsorizedMean = DescriptiveWithMissing.winsorizedMean( copy1, DescriptiveWithMissing.mean( data1missing ), 0, 4 );
-        // assertEquals( Descriptive.winsorizedMean( copy2, Descriptive.sum( data1Nomissing ), 0, 4 ),
-        // winsorizedMean,
-        // 0.0001 );
+        double winsorizedMean = DescriptiveWithMissing.winsorizedMean( copy1,
+                DescriptiveWithMissing.mean( data1missing ), 2, 2 );
+        assertEquals( Descriptive.winsorizedMean( copy2, Descriptive.sum( data1Nomissing ), 2, 2 ), winsorizedMean,
+                0.0001 );
     }
 }

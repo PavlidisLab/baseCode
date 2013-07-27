@@ -15,10 +15,12 @@
 package ubic.basecode.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.ConfigurationUtils;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.builder.FileBasedBuilderParametersImpl;
 import org.apache.commons.configuration.builder.FileBasedConfigurationBuilder;
@@ -36,7 +38,13 @@ public class ConfigUtils {
      * @param file
      * @return
      */
-    public static FileBasedConfigurationBuilder<PropertiesConfiguration> getConfigBuilder( File file ) {
+    public static FileBasedConfigurationBuilder<PropertiesConfiguration> getConfigBuilder( File file )
+            throws ConfigurationException {
+        try {
+            FileTools.touch( file );
+        } catch ( IOException e ) {
+            throw new ConfigurationException( "Couldn't create the file: " + e.getMessage() );
+        }
         FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
                 PropertiesConfiguration.class );
         builder.configure( new FileBasedBuilderParametersImpl().setFile( file ) );
@@ -44,13 +52,20 @@ public class ConfigUtils {
     }
 
     /**
-     * @param name
+     * @param name If the file does not exist, attempts to create it in the user's home directory.
      * @return
      */
-    public static FileBasedConfigurationBuilder<PropertiesConfiguration> getConfigBuilder( String name ) {
+    public static FileBasedConfigurationBuilder<PropertiesConfiguration> getConfigBuilder( String name )
+            throws ConfigurationException {
         FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
                 PropertiesConfiguration.class );
-        builder.configure( new FileBasedBuilderParametersImpl().setFileName( name ) );
+        File f = locateConfig( name );
+        try {
+            FileTools.touch( f );
+        } catch ( IOException e ) {
+            throw new ConfigurationException( "Couldn't create the file: " + e.getMessage() );
+        }
+        builder.configure( new FileBasedBuilderParametersImpl().setFile( f ) );
         return builder;
     }
 
@@ -64,9 +79,14 @@ public class ConfigUtils {
         FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
                 PropertiesConfiguration.class );
         try {
-            builder.configure( new FileBasedBuilderParametersImpl().setFile( new File( url.toURI() ) ) );
+            File file = new File( url.toURI() );
+            builder.configure( new FileBasedBuilderParametersImpl().setFile( file ) );
+            FileTools.touch( file );
+
         } catch ( URISyntaxException e ) {
             throw new ConfigurationException( "Couldn't map url to a uri" );
+        } catch ( IOException e ) {
+            throw new ConfigurationException( "Couldn't create the file: " + e.getMessage() );
         }
         return builder;
     }
@@ -77,6 +97,11 @@ public class ConfigUtils {
      * @throws ConfigurationException
      */
     public static PropertiesConfiguration loadConfig( File file ) throws ConfigurationException {
+        try {
+            FileTools.touch( file );
+        } catch ( IOException e ) {
+            throw new ConfigurationException( "Couldn't create the file: " + e.getMessage() );
+        }
         PropertiesConfiguration pc = new PropertiesConfiguration();
         FileHandler handler = new FileHandler( pc );
         handler.setFile( file );
@@ -85,16 +110,18 @@ public class ConfigUtils {
     }
 
     /**
-     * @param name
+     * @param name If the file does not exist, attempts to create it in the user's home directory.
      * @return
      * @throws ConfigurationException
      */
     public static PropertiesConfiguration loadConfig( String name ) throws ConfigurationException {
-        PropertiesConfiguration pc = new PropertiesConfiguration();
-        FileHandler handler = new FileHandler( pc );
-        handler.setFileName( name );
-        handler.load();
-        return pc;
+
+        /*
+         * We have to locate it, if it's not a path.
+         */
+        File f = locateConfig( name );
+
+        return loadConfig( f );
     }
 
     /**
@@ -106,11 +133,37 @@ public class ConfigUtils {
         PropertiesConfiguration pc = new PropertiesConfiguration();
         FileHandler handler = new FileHandler( pc );
         try {
-            handler.setFile( new File( url.toURI() ) );
+            File file = new File( url.toURI() );
+            FileTools.touch( file );
+            handler.setFile( file );
         } catch ( URISyntaxException e ) {
             throw new ConfigurationException( "Couldn't map url to a uri" );
+        } catch ( IOException e ) {
+            throw new ConfigurationException( "Couldn't create the file: " + e.getMessage() );
         }
         handler.load();
         return pc;
+    }
+
+    /**
+     * @param name
+     * @return
+     * @throws ConfigurationException
+     */
+    private static File locateConfig( String name ) throws ConfigurationException {
+        File f;
+        URL location = ConfigurationUtils.locate( name );
+        if ( location == null ) {
+            f = new File( name );
+            if ( f.isAbsolute() ) {
+                return f;
+            }
+            return new File( org.apache.commons.io.FileUtils.getUserDirectory(), name );
+        }
+        try {
+            return new File( location.toURI() );
+        } catch ( URISyntaxException e ) {
+            throw new ConfigurationException( "Couldn't map url to a uri" );
+        }
     }
 }

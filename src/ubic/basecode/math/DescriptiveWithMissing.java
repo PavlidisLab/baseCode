@@ -292,12 +292,29 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
     }
 
     /**
-     * <b>Not supported. </b>
+     * Incrementally maintains and updates minimum, maximum, sum and sum of squares of a data sequence.
+     * <p>
+     * Assume we have already recorded some data sequence elements and know their minimum, maximum, sum and sum of
+     * squares. Assume further, we are to record some more elements and to derive updated values of minimum, maximum,
+     * sum and sum of squares. This method computes those updated values without needing to know the already recorded
+     * elements. This is interesting for interactive online monitoring and/or applications that cannot keep the entire
+     * huge data sequence in memory.
      * 
-     * @param data DoubleArrayList
-     * @param from int
-     * @param to int
-     * @param inOut double[]
+     * @param data the additional elements to be incorporated into min, max, etc.
+     * @param from the index of the first element within <tt>data</tt> to consider.
+     * @param to the index of the last element within <tt>data</tt> to consider. The method incorporates elements
+     *        <tt>data[from], ..., data[to]</tt>.
+     * @param inOut the old values in the following format:
+     *        <ul>
+     *        <li><tt>inOut[0]</tt> is the old minimum. <li><tt>inOut[1]</tt> is the old maximum. <li><tt>inOut[2]</tt>
+     *        is the old sum. <li><tt>inOut[3]</tt> is the old sum of squares.
+     *        </ul>
+     *        If no data sequence elements have so far been recorded set the values as follows
+     *        <ul>
+     *        <li><tt>inOut[0] = Double.POSITIVE_INFINITY</tt> as the old minimum. <li><tt>inOut[1] =
+     *        Double.NEGATIVE_INFINITY</tt> as the old maximum. <li><tt>inOut[2] = 0.0</tt> as the old sum. <li><tt>
+     *        inOut[3] = 0.0</tt> as the old sum of squares.
+     *        </ul>
      */
     public static void incrementalUpdate( DoubleArrayList data, int from, int to, double[] inOut ) {
         throw new UnsupportedOperationException( "incrementalUpdate not supported with missing values" );
@@ -1094,16 +1111,18 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
     }
 
     /**
-     * <b>Not supported. </b>
+     * Returns the winsorized mean of a sorted data sequence.
      * 
-     * @param sortedData DoubleArrayList
-     * @param mean double
-     * @param left int
-     * @param right int
+     * @param sortedData DoubleArrayList, must already be sorted ascending
+     * @param mean the mean of the (full) sorted data sequence.
+     * @param left the number of leading elements to trim. Refers to the number of elements to trim
+     *        <em>excluding any missing values</em>
+     * @param right the number of trailing elements to trim <em>excluding any missing values</em>
      * @return double
      */
     public static double winsorizedMean( DoubleArrayList sortedData, double mean, int left, int right ) {
-        throw new UnsupportedOperationException( "winsorizedMean not supported with missing values" );
+        DoubleArrayList sdm = removeMissing( sortedData );
+        return Descriptive.winsorizedMean( sdm, mean( sdm ), left, right );
     }
 
     /* private methods */

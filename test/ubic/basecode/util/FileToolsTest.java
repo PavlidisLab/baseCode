@@ -415,6 +415,19 @@ public class FileToolsTest {
     }
 
     @Test
+    public void testTouch() throws Exception {
+
+        String p = plain.getAbsolutePath();
+        plain.delete();
+
+        File f = new File( p );
+        FileTools.touch( f );
+        assertTrue( f.exists() );
+        FileTools.touch( f );
+        assertTrue( f.exists() );
+    }
+
+    @Test
     public void testUnGzipFile() throws Exception {
         String result = FileTools.unGzipFile( compressed.getAbsolutePath() );
         Reader r = new FileReader( new File( result ) );

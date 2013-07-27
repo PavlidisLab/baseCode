@@ -34,6 +34,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -55,20 +56,19 @@ import org.apache.commons.logging.LogFactory;
  * @version $Id$
  */
 public class FileTools {
-    // default values
-    protected final static String PNG_EXTENSION = ".png";
-    protected final static String TXT_EXTENSION = ".txt";
+    private final static String PNG_EXTENSION = ".png";
+    private final static String TXT_EXTENSION = ".txt";
 
     public final static String DEFAULT_DATA_EXTENSION = TXT_EXTENSION;
     public final static String DEFAULT_IMAGE_EXTENSION = PNG_EXTENSION;
+
     public final static String DEFAULT_XML_EXTENSION = ".xml";
     protected final static String[] DATA_EXTENSIONS = { TXT_EXTENSION, ".TXT", "txt.gz", "txt.zip", "txt.gzip" };
     protected final static String GIF_EXTENSION = ".gif";
-
     protected final static String[] IMAGE_EXTENSIONS = { PNG_EXTENSION, GIF_EXTENSION, "PNG", "GIF", "JPEG", "JPG" };
-
     protected final static String[] XML_EXTENSIONS = { ".XML", ".RDF-XML", ".rdf-xml.gz", ".rdf-xml.zip", ".xml.zip",
             ".xml.gz" };
+
     private static Log log = LogFactory.getLog( FileTools.class.getName() );
 
     /**
@@ -576,6 +576,21 @@ public class FileTools {
         }
         return false;
 
+    }
+
+    /**
+     * Create or update the modification date of the given file. If the file does not exist, create it.
+     * 
+     * @param f
+     * @throws IOException
+     */
+    public static void touch( File f ) throws IOException {
+        if ( !f.exists() ) {
+            FileWriter w = new FileWriter( f );
+            w.append( "" );
+            w.close();
+        }
+        f.setLastModified( new Date().getTime() );
     }
 
     /**
