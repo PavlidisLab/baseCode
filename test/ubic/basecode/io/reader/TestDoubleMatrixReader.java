@@ -20,10 +20,11 @@ package ubic.basecode.io.reader;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.zip.ZipInputStream;
 
 import org.junit.After;
@@ -31,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.util.FileTools;
 
 /**
  * @author pavlidis
@@ -96,6 +98,45 @@ public class TestDoubleMatrixReader {
     }
 
     @Test
+    public void testReadChooseRows() throws Exception {
+        String fn = FileTools.resourceToPath( "/data/testdatamissing.txt" );
+        Collection<String> wanted = new HashSet<String>();
+        wanted.add( "gene11_at" );
+        wanted.add( "dadadad" );
+        wanted.add( "gene6_at" );
+        wanted.add( "gene6_at" );
+        wanted.add( "gene7_at" );
+        wanted.add( "AFFXgene30_at" );
+        matrix = reader.read( fn, wanted );
+        int actualReturn = matrix.columns();
+        int expectedReturn = 12;
+        assertEquals( expectedReturn, actualReturn );
+    }
+
+    @Test(expected = IOException.class)
+    public void testReadBad() throws Exception {
+        String fn = FileTools.resourceToPath( "/data/testdatamissingbad.txt" );
+        reader.read( fn );
+    }
+
+    @Test
+    public void testReadChooseRowsSkipcols() throws Exception {
+        String fn = FileTools.resourceToPath( "/data/testdatamissing.txt" );
+        Collection<String> wanted = new HashSet<String>();
+        wanted.add( "gene11_at" );
+        wanted.add( "dadadad" );
+        wanted.add( "gene6_at" );
+        wanted.add( "gene6_at" );
+        wanted.add( "gene7_at" );
+        wanted.add( "AFFXgene30_at" );
+        matrix = reader.read( fn, wanted, 4 );
+        int actualReturn = matrix.columns();
+        int expectedReturn = 8;
+        assertEquals( expectedReturn, actualReturn );
+
+    }
+
+    @Test
     public void testReadInputStreamGotColName() throws Exception {
         matrix = reader.read( is );
         boolean actualReturn = matrix.containsColumnName( "sample1" ) && matrix.containsColumnName( "sample12" );
@@ -132,14 +173,9 @@ public class TestDoubleMatrixReader {
 
     }
 
-    @Test
-    public void testReadInputStreamMissingBad() {
-        try {
-            matrix = reader.read( ismb );
-            fail( "Should have gotten an IO error" );
-        } catch ( IOException e ) {
-            //
-        }
+    @Test(expected = IOException.class)
+    public void testReadInputStreamMissingBad() throws Exception {
+        matrix = reader.read( ismb );
     }
 
     @Test

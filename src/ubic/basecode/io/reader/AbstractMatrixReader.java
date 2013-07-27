@@ -60,7 +60,7 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
          * Read past comments.
          */
         while ( ( header = dis.readLine() ) != null ) {
-            if ( header.startsWith( "#" ) || header.startsWith( "!" ) ) {
+            if ( header.startsWith( "#" ) || header.startsWith( "!" ) || StringUtils.isBlank( header ) ) {
                 continue;
             }
             break;
