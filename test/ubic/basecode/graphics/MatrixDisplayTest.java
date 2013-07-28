@@ -22,15 +22,12 @@ import static org.junit.Assert.assertFalse;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.DebugGraphics;
 
 import org.apache.poi.hssf.usermodel.DummyGraphics2d;
 import org.junit.After;

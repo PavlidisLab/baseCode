@@ -41,7 +41,6 @@ public class DateUtil {
 
     private static Log log = LogFactory.getLog( DateUtil.class );
     private static String datePattern = "MM/dd/yyyy";
-    private static String timePattern = "HH:mm";
 
     // ~ Methods ================================================================
 
@@ -54,32 +53,6 @@ public class DateUtil {
      */
     public static final String convertDateToString( Date aDate ) {
         return getDateTime( datePattern, aDate );
-    }
-
-    /**
-     * This method converts a String to a date using the datePattern
-     * 
-     * @param strDate the date to convert (in format MM/dd/yyyy)
-     * @return a date object
-     * @throws ParseException
-     */
-    public static Date convertStringToDate( String strDate ) throws ParseException {
-        Date aDate = null;
-
-        try {
-            if ( log.isDebugEnabled() ) {
-                log.debug( "converting date with pattern: " + datePattern );
-            }
-
-            aDate = convertStringToDate( datePattern, strDate );
-        } catch ( ParseException pe ) {
-            log.error( "Could not convert '" + strDate + "' to a date, throwing exception" );
-            pe.printStackTrace();
-            throw new ParseException( pe.getMessage(), pe.getErrorOffset() );
-
-        }
-
-        return aDate;
     }
 
     /**
@@ -173,16 +146,6 @@ public class DateUtil {
                     + ", please use something like -7d or -8h" );
         }
 
-    }
-
-    /**
-     * This method returns the current date time in the format: MM/dd/yyyy HH:MM a
-     * 
-     * @param theTime the current time
-     * @return the current date/time
-     */
-    public static String getTimeNow( Date theTime ) {
-        return getDateTime( timePattern, theTime );
     }
 
 }
