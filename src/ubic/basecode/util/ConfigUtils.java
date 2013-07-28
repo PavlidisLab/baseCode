@@ -25,6 +25,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.builder.FileBasedBuilderParametersImpl;
 import org.apache.commons.configuration.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration.io.FileHandler;
+import org.apache.commons.io.FileUtils;
 
 /**
  * Convenience methods for loading configurations
@@ -40,10 +41,12 @@ public class ConfigUtils {
      */
     public static FileBasedConfigurationBuilder<PropertiesConfiguration> getConfigBuilder( File file )
             throws ConfigurationException {
-        try {
-            FileTools.touch( file );
-        } catch ( IOException e ) {
-            throw new ConfigurationException( "Couldn't create the file: " + e.getMessage() );
+        if ( !file.exists() ) {
+            try {
+                FileTools.touch( file );
+            } catch ( IOException e ) {
+                throw new ConfigurationException( "Couldn't create the file: " + e.getMessage() );
+            }
         }
         FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
                 PropertiesConfiguration.class );
@@ -84,10 +87,12 @@ public class ConfigUtils {
      * @throws ConfigurationException
      */
     public static PropertiesConfiguration loadConfig( File file ) throws ConfigurationException {
-        try {
-            FileTools.touch( file );
-        } catch ( IOException e ) {
-            throw new ConfigurationException( "Couldn't create the file: " + e.getMessage() );
+        if ( !file.exists() ) {
+            try {
+                FileTools.touch( file );
+            } catch ( IOException e ) {
+                throw new ConfigurationException( "Couldn't create the file: " + e.getMessage() );
+            }
         }
         PropertiesConfiguration pc = new PropertiesConfiguration();
         FileHandler handler = new FileHandler( pc );
@@ -109,6 +114,23 @@ public class ConfigUtils {
         File f = locateConfig( name );
 
         return loadConfig( f );
+    }
+
+    /**
+     * @param name the classpath location, such as "project.properties" in the base package, or
+     *        org/foo/project.properties.
+     * @return
+     * @throws ConfigurationException
+     */
+    public static PropertiesConfiguration loadClasspathConfig( String name ) throws ConfigurationException {
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        if ( loader != null ) {
+            URL url = loader.getResource( name );
+            if ( url != null ) {
+                return loadConfig( url );
+            }
+        }
+        throw new ConfigurationException( "Could not load from classpath: " + name );
     }
 
     /**
@@ -139,7 +161,7 @@ public class ConfigUtils {
             if ( f.isAbsolute() ) {
                 return f;
             }
-            return new File( org.apache.commons.io.FileUtils.getUserDirectory(), name );
+            return new File( FileUtils.getUserDirectory(), name );
         }
         try {
             return new File( location.toURI() );
