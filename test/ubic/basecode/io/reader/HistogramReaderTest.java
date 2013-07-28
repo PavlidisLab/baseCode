@@ -14,12 +14,11 @@
  */
 package ubic.basecode.io.reader;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import hep.aida.ref.Histogram1D;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
-import hep.aida.ref.Histogram1D;
 
 import org.junit.Test;
 
