@@ -97,12 +97,33 @@ public class TestDoubleMatrixReader {
 
     }
 
+    @Test(expected = IOException.class)
+    public void testBadFileName() throws Exception {
+        String fn = FileTools.resourceToPath( "/data/testdata.txt" ) + "jalikj;lkj;";
+        matrix = reader.read( fn );
+    }
+
+    @Test(expected = IOException.class)
+    public void testReadChooseRowsBadfileName() throws Exception {
+        String fn = FileTools.resourceToPath( "/data/testdata.txt" ) + "jalikj;lkj;";
+        Collection<String> wanted = new HashSet<String>();
+        wanted.add( "gene11_at" );
+        wanted.add( "dadadad" );
+        wanted.add( "gene6_at" );
+        wanted.add( "gene6_at" );
+        wanted.add( "gene7_at" );
+        wanted.add( "AFFXgene30_at" );
+        matrix = reader.read( fn, wanted );
+        int actualReturn = matrix.columns();
+        int expectedReturn = 12;
+        assertEquals( expectedReturn, actualReturn );
+    }
+
     @Test
     public void testReadChooseRows() throws Exception {
         String fn = FileTools.resourceToPath( "/data/testdatamissing.txt" );
         Collection<String> wanted = new HashSet<String>();
         wanted.add( "gene11_at" );
-        wanted.add( "dadadad" );
         wanted.add( "gene6_at" );
         wanted.add( "gene6_at" );
         wanted.add( "gene7_at" );

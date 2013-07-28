@@ -20,9 +20,7 @@ package ubic.basecode.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -185,25 +183,6 @@ public class DateUtil {
      */
     public static String getTimeNow( Date theTime ) {
         return getDateTime( timePattern, theTime );
-    }
-
-    /**
-     * This method returns the current date in the format: MM/dd/yyyy
-     * 
-     * @return the current date
-     * @throws ParseException
-     */
-    public static Calendar getToday() throws ParseException {
-        Date today = new Date();
-        SimpleDateFormat df = new SimpleDateFormat( datePattern );
-
-        // This seems like quite a hack (date -> string -> date),
-        // but it works ;-)
-        String todayAsString = df.format( today );
-        Calendar cal = new GregorianCalendar();
-        cal.setTime( convertStringToDate( todayAsString ) );
-
-        return cal;
     }
 
 }

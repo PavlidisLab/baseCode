@@ -342,6 +342,10 @@ public class MatrixDisplay<R, C> extends JPanel {
         m_unstandardizedMatrix.setColorMap( colorMap );
     }
 
+    /**
+     * @param min
+     * @param max
+     */
     public void setDisplayRange( double min, double max ) {
         colorMatrix.setDisplayRange( min, max );
     }

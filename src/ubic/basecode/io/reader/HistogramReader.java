@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Reads histograms stored in flat files
  * 
@@ -54,22 +56,25 @@ public class HistogramReader {
     public Histogram1D read1D() throws IOException {
         int numHeaderLines = 1; // ignore the column header
         Map<Double, Integer> binCountMap = new HashMap<Double, Integer>();
-        Double min = new Double( Double.POSITIVE_INFINITY );
-        Double max = new Double( Double.NEGATIVE_INFINITY );
+        double min = Double.POSITIVE_INFINITY;
+        double max = Double.NEGATIVE_INFINITY;
         while ( in.ready() ) {
             String line = in.readLine();
-            if ( line == null ) break;
+            if ( StringUtils.isBlank( line ) ) continue;
             if ( line.startsWith( "#" ) || numHeaderLines-- > 0 ) continue;
             String fields[] = line.split( "\t" );
             Double bin = Double.valueOf( fields[0] );
             Integer count = Integer.valueOf( fields[1] );
             binCountMap.put( bin, count );
-            if ( bin.compareTo( min ) < 0 ) min = bin;
-            if ( bin.compareTo( max ) > 0 ) max = bin;
+            if ( bin < min ) {
+                min = bin;
+            } else if ( bin > max ) {
+                max = bin;
+            }
         }
         int numBins = binCountMap.keySet().size();
 
-        Histogram1D hist = new Histogram1D( title, numBins, min.doubleValue(), max.doubleValue() );
+        Histogram1D hist = new Histogram1D( title, numBins, min, max );
         for ( Entry<Double, Integer> element : binCountMap.entrySet() ) {
             Entry<Double, Integer> entry = element;
             Double bin = entry.getKey();

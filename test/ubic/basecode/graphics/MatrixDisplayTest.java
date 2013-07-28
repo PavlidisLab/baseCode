@@ -20,6 +20,9 @@ package ubic.basecode.graphics;
 
 import static org.junit.Assert.assertFalse;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,6 +30,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.DebugGraphics;
+
+import org.apache.poi.hssf.usermodel.DummyGraphics2d;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -123,7 +129,7 @@ public class MatrixDisplayTest {
         ColorMatrix<String, String> colorMatrix = new ColorMatrix<String, String>( matrix );
         MatrixDisplay<String, String> display = new MatrixDisplay<String, String>( colorMatrix );
         display.setLabelsVisible( true );
-
+        display.setScaleBarVisible( true );
         boolean fail = false;
         try {
             display.saveImage( tmp.getAbsolutePath() );
@@ -133,6 +139,8 @@ public class MatrixDisplayTest {
         } finally {
             assertFalse( fail );
         }
+
+        display.paintComponent( new DummyGraphics2d() );
     }
 
     /**
@@ -154,6 +162,36 @@ public class MatrixDisplayTest {
             System.err.println( "Saved to: " + tempfile );
             OutputStream stream = new FileOutputStream( tempfile );
             display.saveImageToPng( colorMatrix, stream, true, false, true );
+        } catch ( IOException e ) {
+            fail = true;
+            e.printStackTrace();
+        } finally {
+            assertFalse( fail );
+        }
+    }
+
+    /**
+     * 
+     *
+     */
+    @Test
+    public void testWriteOutAsPNG2() {
+        DoubleMatrix<String, String> matrix = new DenseDoubleMatrix<String, String>( array );
+        matrix.setRowNames( rowNames );
+        matrix.setColumnNames( colNames );
+        ColorMatrix<String, String> colorMatrix = new ColorMatrix<String, String>( matrix );
+        MatrixDisplay<String, String> display = new MatrixDisplay<String, String>( colorMatrix );
+        display.setColorMap( new Color[] { Color.RED, Color.BLACK, Color.red, Color.YELLOW } );
+        display.setStandardizedEnabled( true );
+        display.setLabelsVisible( true );
+        display.setCellSize( new Dimension( 5, 6 ) );
+
+        boolean fail = false;
+        try {
+            File tempfile = File.createTempFile( "testOuputStream", ".png" );
+            System.err.println( "Saved to: " + tempfile );
+            OutputStream stream = new FileOutputStream( tempfile );
+            display.saveImageToPng( colorMatrix, stream, true, true, false );
         } catch ( IOException e ) {
             fail = true;
             e.printStackTrace();

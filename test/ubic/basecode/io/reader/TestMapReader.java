@@ -27,6 +27,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import ubic.basecode.util.FileTools;
+
 /**
  * @author Paul Pavlidis
  * @version $Id$
@@ -57,6 +59,14 @@ public class TestMapReader {
         InputStream m = TestMapReader.class.getResourceAsStream( "/data/testmap.txt" );
         int expectedReturn = 101;
         int actualReturn = mapReader.read( m ).size(); // file has header
+        assertEquals( "return value", expectedReturn, actualReturn );
+    }
+
+    @Test
+    public void testReadNoHeaderFile() throws Exception {
+        String f = FileTools.resourceToPath( "/data/testmap.txt" );
+        int expectedReturn = 101;
+        int actualReturn = mapReader.read( f ).size(); // file has header
         assertEquals( "return value", expectedReturn, actualReturn );
     }
 

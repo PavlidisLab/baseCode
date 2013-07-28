@@ -272,6 +272,12 @@ public class ColorMatrix<A, B> implements Cloneable {
         }
     }
 
+    /**
+     * @param row
+     * @param column
+     * @param newColor
+     * @throws ArrayIndexOutOfBoundsException
+     */
     public void setColor( int row, int column, Color newColor ) throws ArrayIndexOutOfBoundsException {
 
         rowRangeCheck( row );
@@ -295,9 +301,9 @@ public class ColorMatrix<A, B> implements Cloneable {
         mapValuesToColors();
     }
 
-    //
-    // Standardized display range
-    //
+    /**
+     * Standardized display range
+     */
     public void setDisplayRange( double min, double max ) {
 
         displayMin = min;
@@ -306,6 +312,9 @@ public class ColorMatrix<A, B> implements Cloneable {
         mapValuesToColors();
     }
 
+    /**
+     * @param rowKeys
+     */
     public void setRowKeys( int[] rowKeys ) {
         m_rowKeys = rowKeys;
     }
