@@ -76,7 +76,7 @@ public class ConfigUtils {
             file = new File( url.toURI() );
             return getConfigBuilder( file );
         } catch ( URISyntaxException e ) {
-            throw new ConfigurationException( "Couldn't map url to a uri" );
+            throw new ConfigurationException( "Couldn't map url to a uri: " + url );
         }
 
     }
@@ -124,13 +124,17 @@ public class ConfigUtils {
      */
     public static PropertiesConfiguration loadClasspathConfig( String name ) throws ConfigurationException {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        if ( loader != null ) {
-            URL url = loader.getResource( name );
-            if ( url != null ) {
-                return loadConfig( url );
-            }
+
+        URL url = loader.getResource( name );
+        if ( url == null ) {
+            throw new ConfigurationException( "Couldn't locate: " + name );
         }
-        throw new ConfigurationException( "Could not load from classpath: " + name );
+
+        PropertiesConfiguration pc = new PropertiesConfiguration();
+        FileHandler handler = new FileHandler( pc );
+        handler.setURL( url );
+        handler.load();
+        return pc;
     }
 
     /**
@@ -144,7 +148,7 @@ public class ConfigUtils {
             File file = new File( url.toURI() );
             return loadConfig( file );
         } catch ( Exception e ) {
-            throw new ConfigurationException( "Couldn't map url to a uri" );
+            throw new ConfigurationException( "Couldn't map url to a uri: " + url );
         }
     }
 
