@@ -85,11 +85,11 @@ public abstract class AbstractOntologyService {
                 return;
             }
 
-            log.info( "Loading " + ontologyName + " Ontology..." );
+            log.info( "Loading " + getOntologyName() + " Ontology..." );
             StopWatch loadTime = new StopWatch();
             loadTime.start();
 
-            OntModel model = getModel(); // can be slow part.
+            model = getModel(); // can be slow part.
             assert model != null;
 
             try {
@@ -111,11 +111,11 @@ public abstract class AbstractOntologyService {
                  * this?
                  */
 
-                loadTermsInNameSpace( ontology_URL, model );
+                loadTermsInNameSpace( getOntologyUrl(), model );
 
                 if ( loadTime.getTime() > 5000 ) {
-                    log.info( ontology_URL + "  loaded, total of " + terms.size() + " items in " + loadTime.getTime()
-                            / 1000 + "s" );
+                    log.info( getOntologyName() + "  loaded, total of " + terms.size() + " items in "
+                            + loadTime.getTime() / 1000 + "s" );
                 }
 
                 cacheReady.set( true );
@@ -125,7 +125,8 @@ public abstract class AbstractOntologyService {
                 loadTime.stop();
 
                 if ( loadTime.getTime() > 5000 ) {
-                    log.info( "Finished loading ontology " + ontologyName + " in " + loadTime.getTime() / 1000 + "s" );
+                    log.info( "Finished loading ontology " + getOntologyName() + " in " + loadTime.getTime() / 1000
+                            + "s" );
                 }
 
             } catch ( Exception e ) {
@@ -133,7 +134,7 @@ public abstract class AbstractOntologyService {
                 isInitialized.set( false );
                 // isInitializationThreadRunning.set( false );
             } finally {
-                releaseModel( model );
+                // no-op
             }
         }
 
@@ -145,36 +146,34 @@ public abstract class AbstractOntologyService {
     protected static final Log log = LogFactory.getLog( AbstractOntologyService.class );
 
     protected AtomicBoolean cacheReady = new AtomicBoolean( false );
+
     protected IndexLARQ index;
 
     protected AtomicBoolean indexReady = new AtomicBoolean( false );
     protected Map<String, OntologyIndividual> individuals;
+
     protected OntologyInitializationThread initializationThread;
-
     protected AtomicBoolean isInitialized = new AtomicBoolean( false );
-    protected AtomicBoolean modelReady = new AtomicBoolean( false );
-    protected String ontology_URL;
+    protected OntModel model = null;
 
-    protected String ontologyName;
+    protected AtomicBoolean modelReady = new AtomicBoolean( false );
 
     protected Map<String, OntologyTerm> terms;
-
-    // private boolean enabled = false;
 
     /**
      * 
      */
     public AbstractOntologyService() {
         super();
-        ontology_URL = getOntologyUrl();
-        ontologyName = getOntologyName();
 
         initializationThread = new OntologyInitializationThread( false );
-        initializationThread.setName( ontologyName + "_load_thread" );
+        initializationThread.setName( getOntologyName() + "_load_thread" );
         // To prevent VM from waiting on this thread to shutdown (if shutting down).
         initializationThread.setDaemon( true );
 
     }
+
+    // private boolean enabled = false;
 
     /**
      * Do not do this except before re-indexing.
@@ -196,11 +195,9 @@ public abstract class AbstractOntologyService {
 
         assert index != null : "attempt to search " + this.getOntologyName() + " when index is null";
 
-        OntModel model = getModel();
+        OntModel m = getModel();
 
-        Collection<OntologyIndividual> indis = OntologySearch.matchIndividuals( model, index, search );
-
-        releaseModel( model );
+        Collection<OntologyIndividual> indis = OntologySearch.matchIndividuals( m, index, search );
 
         return indis;
     }
@@ -220,11 +217,9 @@ public abstract class AbstractOntologyService {
 
         assert index != null : "attempt to search " + this.getOntologyName() + " when index is null";
 
-        OntModel model = getModel();
+        OntModel m = getModel();
 
-        Collection<OntologyResource> results = OntologySearch.matchResources( model, index, searchString );
-
-        releaseModel( model );
+        Collection<OntologyResource> results = OntologySearch.matchResources( m, index, searchString );
 
         return results;
     }
@@ -243,11 +238,9 @@ public abstract class AbstractOntologyService {
 
         assert index != null : "attempt to search " + this.getOntologyName() + " when index is null";
 
-        OntModel model = getModel();
+        OntModel m = getModel();
 
-        Collection<OntologyTerm> matches = OntologySearch.matchClasses( model, index, search );
-
-        releaseModel( model );
+        Collection<OntologyTerm> matches = OntologySearch.matchClasses( m, index, search );
 
         return matches;
     }
@@ -256,20 +249,6 @@ public abstract class AbstractOntologyService {
         if ( terms == null ) return null;
         return new HashSet<String>( terms.keySet() );
     }
-
-    // /**
-    // * @param matches
-    // * @return
-    // */
-    // private Collection<OntologyTerm> removeObsoleteTerms( Collection<OntologyTerm> matches ) {
-    // Collection<OntologyTerm> filteredResults = new HashSet<OntologyTerm>();
-    // for ( OntologyTerm ot : matches ) {
-    // if ( !ot.isTermObsolete() ) {
-    // filteredResults.add( ot );
-    // }
-    // }
-    // return filteredResults;
-    // }
 
     /**
      * Looks through both Terms and Individuals for a OntologyResource that has a uri matching the uri given. If no
@@ -288,6 +267,20 @@ public abstract class AbstractOntologyService {
 
         return resource;
     }
+
+    // /**
+    // * @param matches
+    // * @return
+    // */
+    // private Collection<OntologyTerm> removeObsoleteTerms( Collection<OntologyTerm> matches ) {
+    // Collection<OntologyTerm> filteredResults = new HashSet<OntologyTerm>();
+    // for ( OntologyTerm ot : matches ) {
+    // if ( !ot.isTermObsolete() ) {
+    // filteredResults.add( ot );
+    // }
+    // }
+    // return filteredResults;
+    // }
 
     /**
      * Looks for a OntologyTerm that has the match in URI given
@@ -337,14 +330,14 @@ public abstract class AbstractOntologyService {
     public void index( boolean force ) {
         StopWatch timer = new StopWatch();
         timer.start();
-        log.info( "Preparing index for " + ontologyName );
-        OntModel model = getModel();
-        assert model != null;
+        log.info( "Preparing index for " + getOntologyName() );
+        OntModel m = getModel();
+        assert m != null;
 
-        index = OntologyIndexer.indexOntology( ontologyName, model, force );
+        index = OntologyIndexer.indexOntology( getOntologyName(), m, force );
 
         if ( timer.getTime() > 5000 ) {
-            log.info( "Done Loading Index for " + ontologyName + " Ontology in " + timer.getTime() / 1000 + "s" );
+            log.info( "Done Loading Index for " + getOntologyName() + " Ontology in " + timer.getTime() / 1000 + "s" );
         }
 
     }
@@ -354,7 +347,7 @@ public abstract class AbstractOntologyService {
      */
     public boolean isEnabled() {
         if ( isOntologyLoaded() ) return true; // could have forced, without setting config
-        String configParameter = "load." + ontologyName;
+        String configParameter = "load." + getOntologyName();
         return Configuration.getBoolean( configParameter );
     }
 
@@ -372,19 +365,19 @@ public abstract class AbstractOntologyService {
         assert initializationThread != null;
         synchronized ( initializationThread ) {
             if ( initializationThread.isAlive() ) {
-                log.warn( ontology_URL + " initialization is already running, not restarting." );
+                log.warn( getOntologyName() + " initialization is already running, not restarting." );
                 return;
             } else if ( initializationThread.isInterrupted() ) {
-                log.warn( ontology_URL + " initialization was interrupted, not restarting." );
+                log.warn( getOntologyName() + " initialization was interrupted, not restarting." );
                 return;
             } else if ( !initializationThread.getState().equals( State.NEW ) ) {
-                log.warn( ontology_URL + " initialization was not ready to run: state="
+                log.warn( getOntologyName() + " initialization was not ready to run: state="
                         + initializationThread.getState() + ", not restarting." );
                 return;
             }
 
             if ( !force && this.isOntologyLoaded() ) {
-                log.warn( ontology_URL + " is already loaded, and force=false, not restarting" );
+                log.warn( getOntologyName() + " is already loaded, and force=false, not restarting" );
                 return;
             }
 
@@ -392,15 +385,15 @@ public abstract class AbstractOntologyService {
 
             // If loading ontologies is disabled in the configuration, return
             if ( !force && !loadOntology ) {
-                log.debug( "Loading " + ontologyName + " is disabled (force=" + force + ", " + "Configuration load."
-                        + ontologyName + "=" + loadOntology + ")" );
+                log.debug( "Loading " + getOntologyName() + " is disabled (force=" + force + ", "
+                        + "Configuration load." + getOntologyName() + "=" + loadOntology + ")" );
                 return;
             }
 
             // Detect configuration problems.
-            if ( StringUtils.isBlank( this.ontology_URL ) ) {
-                log.error( "URL not defined, ontology cannot be loaded (" + this.getClass().getSimpleName() + ")" );
-                return;
+            if ( StringUtils.isBlank( this.getOntologyUrl() ) ) {
+                throw new IllegalStateException( "URL not defined, ontology cannot be loaded ("
+                        + this.getClass().getSimpleName() + ")" );
             }
 
             // This thread indexes ontology and creates local cache for uri->ontology terms mappings.
@@ -436,7 +429,12 @@ public abstract class AbstractOntologyService {
         }
     }
 
-    protected abstract OntModel getModel();
+    protected synchronized OntModel getModel() {
+        if ( model == null ) {
+            model = loadModel();
+        }
+        return model;
+    }
 
     /**
      * The simple name of the ontology. Used for indexing purposes. (ie this will determine the name of the underlying
@@ -461,7 +459,7 @@ public abstract class AbstractOntologyService {
      * @return
      * @throws IOException
      */
-    protected abstract OntModel loadModel( String url );
+    protected abstract OntModel loadModel();
 
     /**
      * @param url
@@ -472,7 +470,5 @@ public abstract class AbstractOntologyService {
         Collection<OntologyResource> t = OntologyLoader.initialize( url, m );
         addTerms( t );
     }
-
-    protected abstract void releaseModel( OntModel m );
 
 }

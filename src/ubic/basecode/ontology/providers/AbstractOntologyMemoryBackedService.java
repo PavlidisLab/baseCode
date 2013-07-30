@@ -31,7 +31,6 @@ import com.hp.hpl.jena.ontology.OntModelSpec;
  * @version $Id$
  */
 public abstract class AbstractOntologyMemoryBackedService extends AbstractOntologyService {
-    private OntModel model = null;
 
     /**
      * For testing! Overrides normal way of loading the ontology.
@@ -41,7 +40,7 @@ public abstract class AbstractOntologyMemoryBackedService extends AbstractOntolo
      */
     public synchronized void loadTermsInNameSpace( InputStream is ) {
         if ( initializationThread.isAlive() ) {
-            log.warn( ontology_URL + " initialization is already running, trying to cancel ..." );
+            log.warn( this.getOntologyName() + " initialization is already running, trying to cancel ..." );
             initializationThread.cancel();
 
             // wait for the thread to die.
@@ -72,11 +71,11 @@ public abstract class AbstractOntologyMemoryBackedService extends AbstractOntolo
         if ( this.terms != null ) this.terms.clear();
         if ( this.individuals != null ) this.individuals.clear();
 
-        model = OntologyLoader.loadMemoryModel( is, this.ontology_URL, OntModelSpec.OWL_MEM );
+        model = OntologyLoader.loadMemoryModel( is, this.getOntologyUrl(), OntModelSpec.OWL_MEM );
 
-        index = OntologyIndexer.indexOntology( ontologyName, model, true );
+        index = OntologyIndexer.indexOntology( getOntologyName(), model, true );
 
-        addTerms( OntologyLoader.initialize( this.ontology_URL, model ) );
+        addTerms( OntologyLoader.initialize( this.getOntologyUrl(), model ) );
 
         assert index != null;
 
@@ -88,21 +87,8 @@ public abstract class AbstractOntologyMemoryBackedService extends AbstractOntolo
     }
 
     @Override
-    protected synchronized OntModel getModel() {
-        if ( model == null ) {
-            model = loadModel( this.getOntologyUrl() );
-        }
-        return model;
-    }
-
-    @Override
-    protected synchronized OntModel loadModel( String url ) {
-        return OntologyLoader.loadMemoryModel( url );
-    }
-
-    @Override
-    protected synchronized void releaseModel( OntModel m ) {
-        // do nothing
+    protected synchronized OntModel loadModel() {
+        return OntologyLoader.loadMemoryModel( this.getOntologyUrl() );
     }
 
 }

@@ -19,8 +19,6 @@
 package ubic.basecode.ontology;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,7 +28,6 @@ import java.net.URLConnection;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,15 +58,6 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 public class OntologyLoader {
     private static Log log = LogFactory.getLog( OntologyLoader.class );
     private static final int MAX_LOAD_TRIES = 3;
-
-    /**
-     * @return
-     */
-    public static Model getRDBMaker() {
-        PersistentOntology po = new PersistentOntology();
-
-        return po.getRDBMaker();
-    }
 
     /**
      * @param url
@@ -136,15 +124,6 @@ public class OntologyLoader {
         }
         log.debug( "Loaded " + count + " individuals" );
         return result;
-    }
-
-    /**
-     * Added to allow loading of files
-     */
-    public static OntModel loadFromFile( File file, String base ) throws IOException {
-        OntModel model = getRDBModel( base );
-        model.read( new FileInputStream( file ), base );
-        return model;
     }
 
     /**
@@ -233,18 +212,6 @@ public class OntologyLoader {
     }
 
     /**
-     * Load a model backed by a persistent store. This type of model is much slower than memory models but uses much
-     * less memory.
-     * 
-     * @param url
-     * @param force model to be loaded into the database, even if it already exists there.
-     * @return
-     */
-    public static OntModel loadPersistentModel( String url, boolean force ) {
-        return persistModelIfNecessary( url, force );
-    }
-
-    /**
      * Get model that is entirely in memory with default OntModelSpec.OWL_MEM_RDFS_INF.
      * 
      * @param url
@@ -270,54 +237,4 @@ public class OntologyLoader {
         return ModelFactory.createOntologyModel( spec, base );
     }
 
-    /**
-     * Get model backed by persistent store.
-     * 
-     * @param url
-     * @return
-     */
-    private static OntModel getRDBModel( String url ) {
-        StopWatch timer = new StopWatch();
-        timer.start();
-        if ( StringUtils.isBlank( url ) ) {
-            throw new IllegalArgumentException( "OWL URL must not be blank" );
-        }
-        OntModelSpec spec = new OntModelSpec( OntModelSpec.OWL_DL_MEM_TRANS_INF );
-
-        Model base = getRDBMaker();
-
-        if ( url != null ) {
-            base = base.read( url );
-        }
-
-        try {
-            return ModelFactory.createOntologyModel( spec, base );
-        } finally {
-            if ( timer.getTime() > 100 ) {
-                log.debug( "Load model: " + timer.getTime() + "ms" );
-            }
-        }
-
-    }
-
-    /**
-     * @param url
-     * @param force
-     * @return
-     */
-    private static OntModel persistModelIfNecessary( String url, boolean force ) {
-        log.debug( "Getting model ..." );
-        OntModel model = getRDBModel( url );
-        if ( model.isEmpty() ) {
-            log.info( url + ": New ontology, loading..." );
-            model.read( url );
-        } else if ( force ) {
-            log.info( url + ": Reloading..." );
-            model.read( url );
-        } else {
-            log.debug( url + ": Ontology already exists in persistent store" );
-        }
-
-        return model;
-    }
 }

@@ -39,6 +39,8 @@ public class ObiServiceTest {
     public void testLoadAndSearch() throws Exception {
         ObiService m = new ObiService();
         m.startInitializationThread( true );
+        m.startInitializationThread( true );
+        m.startInitializationThread( true );
         int i = 0;
         while ( !m.isOntologyLoaded() ) {
 
