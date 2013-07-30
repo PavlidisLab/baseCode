@@ -29,6 +29,8 @@ import ubic.basecode.io.ByteArrayConverter;
  */
 public class SQLUtils {
 
+    private static ByteArrayConverter bac = new ByteArrayConverter();
+
     /**
      * Convert a java.sql.Blob array to a string
      * 
@@ -38,7 +40,6 @@ public class SQLUtils {
      */
     public static String blobToString( Blob exonStarts ) throws SQLException {
         byte[] bytes = exonStarts.getBytes( 1L, ( int ) exonStarts.length() );
-        ByteArrayConverter bac = new ByteArrayConverter();
         return bac.byteArrayToAsciiString( bytes );
     }
 }
