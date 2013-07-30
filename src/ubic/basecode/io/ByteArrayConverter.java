@@ -33,13 +33,13 @@ import cern.colt.list.ByteArrayList;
 import cern.colt.list.DoubleArrayList;
 
 /**
- * Class to convert byte arrays (e.g., Blobs) to and from other types of arrays.
+ * Class to convert byte arrays (e.g., Blobs) to and from other types of arrays. TODO these could be static methods.
  * 
  * @author Kiran Keshav
  * @author Paul Pavlidis
  * @version $Id$
  */
-public class ByteArrayConverter {
+public final class ByteArrayConverter {
 
     // sizes are in bytes.
 
