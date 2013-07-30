@@ -18,17 +18,12 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
-import cern.colt.matrix.ObjectMatrix1D;
-
 /**
  * @author pavlidis
  * @version $Id$
  */
 public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implements PrimitiveMatrix<R, C, Integer> {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -8413796057024940237L;
     private ObjectMatrixImpl<R, C, Integer> matrix;
 
@@ -87,7 +82,12 @@ public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implement
     }
 
     public Integer[] getRow( int row ) {
-        return ( Integer[] ) viewRow( row ).toArray();
+        Integer[] result = new Integer[columns()];
+        for ( int i = 0; i < columns(); i++ ) {
+            result[i] = get( i, row );
+        }
+        return result;
+
     }
 
     @Override
@@ -147,7 +147,8 @@ public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implement
     /**
      * @return java.lang.Integer
      */
-    public String toInteger() {
+    @Override
+    public String toString() {
         StringBuffer buf = new StringBuffer();
         buf.append( "label" );
         for ( int i = 0; i < columns(); i++ ) {
@@ -163,22 +164,6 @@ public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implement
             buf.append( "\n" );
         }
         return buf.toString();
-    }
-
-    /**
-     * @param column
-     * @return
-     */
-    public ObjectMatrix1D viewColumn( int column ) {
-        return matrix.viewColumn( column );
-    }
-
-    /**
-     * @param row
-     * @return
-     */
-    public ObjectMatrix1D viewRow( int row ) {
-        return matrix.viewRow( row );
     }
 
 }
