@@ -37,7 +37,7 @@ import ubic.basecode.util.Configuration;
 public class AnnotatorClient {
 
     public static final Long HP_ONTOLOGY = 1125l;
-    public static final Long DOID_ONTOLOGY = 1125l;
+    public static final Long DOID_ONTOLOGY = 1009l;
 
     private static String ANNOTATOR_URL = "http://rest.bioontology.org/obs/annotator";
 
