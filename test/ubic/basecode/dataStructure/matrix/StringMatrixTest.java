@@ -17,6 +17,9 @@ package ubic.basecode.dataStructure.matrix;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,6 +52,15 @@ public class StringMatrixTest {
         assertEquals( 4, subset.rows() );
         assertEquals( 5, subset.columns() );
         assertEquals( "40689.1", subset.get( 3, 1 ) );
+    }
+
+    @Test
+    public void testSubsetColumns() {
+        List<String> cols = Arrays.asList( new String[] { "sample3", "sample6", "sample7" } );
+        ObjectMatrix<String, String, String> subset = sm.subsetColumns( cols );
+        assertEquals( 30, subset.rows() );
+        assertEquals( 3, subset.columns() );
+        assertEquals( "878.4", subset.get( 3, 1 ) );
     }
 
     @Test

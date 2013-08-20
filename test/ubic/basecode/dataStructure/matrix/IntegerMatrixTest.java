@@ -1,10 +1,29 @@
+/*
+ * The baseCode project
+ * 
+ * Copyright (c) 2013 University of British Columbia
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package ubic.basecode.dataStructure.matrix;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * @author Paul
+ * @version $Id$
+ */
 public class IntegerMatrixTest {
     IntegerMatrix<String, String> mat;
 
@@ -20,11 +39,6 @@ public class IntegerMatrixTest {
                 mat.set( i, j, i * j );
             }
         }
-    }
-
-    @Test
-    public void testSize() {
-        assertEquals( 10 * 20, mat.size() );
     }
 
     @Test
@@ -105,6 +119,11 @@ public class IntegerMatrixTest {
     public void testSetObj() {
         mat.set( 4, 2, new Integer( 95090 ) );
         assertEquals( new Integer( 95090 ), mat.get( 4, 2 ) );
+    }
+
+    @Test
+    public void testSize() {
+        assertEquals( 10 * 20, mat.size() );
     }
 
     @Test
