@@ -23,8 +23,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.distribution.FDistribution;
 import org.junit.Test;
 
@@ -49,9 +47,6 @@ import cern.jet.math.Functions;
  * @version $Id$
  */
 public class LeastSquaresFitTest {
-
-    @SuppressWarnings("unused")
-    private static Log log = LogFactory.getLog( LeastSquaresFitTest.class );
 
     /**
      * @throws Exception

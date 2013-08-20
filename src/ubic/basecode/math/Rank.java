@@ -25,9 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
 import cern.colt.list.ObjectArrayList;
@@ -39,8 +36,6 @@ import cern.colt.list.ObjectArrayList;
  * @version $Id$
  */
 public class Rank {
-
-    private static Log log = LogFactory.getLog( Rank.class );
 
     /**
      * Return a permutation which puts the array in sorted order. In other words, the values returned indicate the
@@ -115,7 +110,6 @@ public class Rank {
      */
     public static DoubleArrayList rankTransform( DoubleArrayList array, boolean descending ) {
         if ( array == null ) {
-            log.error( "Array was null" );
             return null;
         }
 

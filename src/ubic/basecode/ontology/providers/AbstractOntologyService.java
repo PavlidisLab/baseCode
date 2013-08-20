@@ -30,9 +30,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jena.larq.IndexLARQ;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ubic.basecode.ontology.OntologyLoader;
 import ubic.basecode.ontology.model.OntologyIndividual;
@@ -130,7 +130,7 @@ public abstract class AbstractOntologyService {
                 }
 
             } catch ( Exception e ) {
-                log.error( e, e );
+                log.error( e.getMessage(), e );
                 isInitialized.set( false );
                 // isInitializationThreadRunning.set( false );
             } finally {
@@ -143,7 +143,7 @@ public abstract class AbstractOntologyService {
         }
     }
 
-    protected static final Log log = LogFactory.getLog( AbstractOntologyService.class );
+    protected static Logger log = LoggerFactory.getLogger( AbstractOntologyService.class );
 
     protected AtomicBoolean cacheReady = new AtomicBoolean( false );
 

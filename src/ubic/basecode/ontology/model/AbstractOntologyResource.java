@@ -18,8 +18,8 @@
  */
 package ubic.basecode.ontology.model;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author pavlidis
@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public abstract class AbstractOntologyResource implements OntologyResource {
 
-    protected static Log log = LogFactory.getLog( OntologyPropertyImpl.class.getName() );
+    protected static Logger log = LoggerFactory.getLogger( AbstractOntologyResource.class );
 
     private static final long serialVersionUID = 1L;
 

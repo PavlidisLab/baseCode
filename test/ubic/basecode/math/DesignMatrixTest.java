@@ -17,8 +17,6 @@ package ubic.basecode.math;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
@@ -32,9 +30,6 @@ import ubic.basecode.io.reader.StringMatrixReader;
  * @version $Id$
  */
 public class DesignMatrixTest {
-
-    @SuppressWarnings("unused")
-    private static Log log = LogFactory.getLog( DesignMatrixTest.class );
 
     /**
      * This matrix is singular.

@@ -34,8 +34,6 @@ import org.apache.commons.collections.functors.StringValueTransformer;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPDouble;
 import org.rosuda.REngine.REXPFactor;
@@ -46,6 +44,8 @@ import org.rosuda.REngine.REXPLogical;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REXPString;
 import org.rosuda.REngine.RList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrix;
@@ -64,7 +64,7 @@ import ubic.basecode.util.r.type.TwoWayAnovaResult;
  */
 public abstract class AbstractRClient implements RClient {
 
-    private static Log log = LogFactory.getLog( AbstractRClient.class.getName() );
+    protected static Logger log = LoggerFactory.getLogger( AbstractRClient.class );
 
     /**
      * @param ob

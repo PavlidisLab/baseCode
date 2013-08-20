@@ -16,8 +16,8 @@ package ubic.basecode.math;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix1D;
 import cern.colt.list.IntArrayList;
@@ -35,9 +35,9 @@ import cern.jet.math.Functions;
  */
 public class QRDecompositionPivoting {
 
-    private static Log log = LogFactory.getLog( QRDecompositionPivoting.class );
+    private static Logger log = LoggerFactory.getLogger( QRDecompositionPivoting.class );
 
-    DoubleMatrix1D originalNorms;
+    private DoubleMatrix1D originalNorms;
 
     private int[] jpvt;
 
@@ -177,7 +177,7 @@ public class QRDecompositionPivoting {
                         qraux.set( j, qraux.getQuick( j ) * Math.sqrt( t ) );
                     }
                 }
-                if ( log.isDebugEnabled() ) log.debug( qraux );
+                if ( log.isDebugEnabled() ) log.debug( qraux.toString() );
 
             }
 

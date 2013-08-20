@@ -19,8 +19,8 @@
 
 package ubic.basecode.util.r;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Get a connection to R, somehow (if possible).
@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class RConnectionFactory {
 
-    private static Log log = LogFactory.getLog( RConnectionFactory.class.getName() );
+    private static Logger log = LoggerFactory.getLogger( RConnectionFactory.class );
 
     /**
      * Get connection; if Rserve is used, connect to localhost.

@@ -21,9 +21,6 @@ package ubic.basecode.dataStructure.graph;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import ubic.basecode.dataStructure.Visitable;
 
 /**
@@ -31,8 +28,6 @@ import ubic.basecode.dataStructure.Visitable;
  * @version $Id$
  */
 public abstract class AbstractGraph<R extends GraphNode<K, V>, K, V> implements Graph<R, K, V> {
-
-    private static Log log = LogFactory.getLog( AbstractGraph.class.getName() );
 
     public AbstractGraph() {
     }
@@ -103,7 +98,6 @@ public abstract class AbstractGraph<R extends GraphNode<K, V>, K, V> implements 
     public void unmarkAll() {
         for ( K item : getItems().keySet() ) {
             if ( !( item instanceof Visitable ) ) {
-                log.debug( "Got " + item.getClass().getName() );
                 break;
             }
             ( ( Visitable ) item ).unMark();

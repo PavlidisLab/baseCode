@@ -25,8 +25,8 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.SystemConfiguration;
 import org.apache.commons.configuration.io.FileHandler;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Configuration of ontology services and other things.
@@ -43,7 +43,7 @@ public class Configuration {
      */
     private static final String DEFAULT_CONFIGURATION = "ontology.properties";
 
-    private static Log log = LogFactory.getLog( Configuration.class );
+    private static Logger log = LoggerFactory.getLogger( Configuration.class );
 
     /**
      * The name of the file users can use to customize.

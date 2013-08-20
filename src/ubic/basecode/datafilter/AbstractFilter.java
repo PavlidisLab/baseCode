@@ -20,8 +20,8 @@ package ubic.basecode.datafilter;
 
 import java.lang.reflect.Constructor;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ubic.basecode.dataStructure.matrix.Matrix2D;
 
@@ -33,7 +33,7 @@ import ubic.basecode.dataStructure.matrix.Matrix2D;
  */
 public abstract class AbstractFilter<M extends Matrix2D<R, C, V>, R, C, V> implements Filter<M, R, C, V> {
 
-    protected static final Log log = LogFactory.getLog( AbstractFilter.class );
+    protected static final Logger log = LoggerFactory.getLogger( AbstractFilter.class );
 
     @SuppressWarnings("unchecked")
     protected M getOutputMatrix( M data, int numRows, int numCols ) {

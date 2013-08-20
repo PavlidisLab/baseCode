@@ -19,8 +19,8 @@
 package ubic.basecode.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Paul Pavlidis
@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class StatusDebugLogger implements StatusViewer {
 
-    protected static final Log log = LogFactory.getLog( StatusDebugLogger.class );
+    private static Logger log = LoggerFactory.getLogger( StatusDebugLogger.class );
 
     @Override
     public void clear() {
@@ -56,7 +56,7 @@ public class StatusDebugLogger implements StatusViewer {
 
     @Override
     public void showError( Throwable e ) {
-        log.error( e, e );
+        log.error( e.getMessage(), e );
     }
 
     @Override

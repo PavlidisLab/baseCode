@@ -21,8 +21,6 @@ package ubic.basecode.io.excel;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
@@ -33,7 +31,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
  * @version $Id$
  */
 public class CreateSpreadSheet {
-    protected static Log log = LogFactory.getLog( CreateSpreadSheet.class );
 
     protected String filename;
     protected SpreadSheetSchema schema;

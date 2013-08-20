@@ -18,9 +18,6 @@
  */
 package ubic.basecode.math;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import cern.colt.list.DoubleArrayList;
 import cern.jet.stat.Descriptive;
 
@@ -48,8 +45,6 @@ import cern.jet.stat.Descriptive;
  * @version $Id$
  */
 public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
-
-    private static Log log = LogFactory.getLog( DescriptiveWithMissing.class.getName() );
 
     /**
      * <b>Not supported. </b>
@@ -112,7 +107,6 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
             ax = sx / numused;
             return ( sxy - sx * ay ) / Math.sqrt( ( sxx - sx * ax ) * ( syy - sy * ay ) );
         }
-        log.debug( "Could not compute correlation" );
         return Double.NaN; // signifies that it could not be calculated.
     }
 

@@ -32,8 +32,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.graphics.text.Util;
@@ -47,8 +45,6 @@ import ubic.basecode.graphics.text.Util;
 public class MatrixDisplay<R, C> extends JPanel {
 
     private static final int DEFAULT_SCALE_BAR_WIDTH = 100;
-
-    private final static Log log = LogFactory.getLog( MatrixDisplay.class );
 
     private static final long serialVersionUID = -8078532270193813539L;
 
@@ -293,9 +289,10 @@ public class MatrixDisplay<R, C> extends JPanel {
      * @param stream
      * @param showLabels
      * @param standardize
+     * @throws IOException
      */
     public void saveImageToPng( ColorMatrix<R, C> matrix, OutputStream stream, boolean showLabels,
-            boolean showScalebar, boolean standardize ) {
+            boolean showScalebar, boolean standardize ) throws IOException {
 
         boolean wasScalebarShown = m_isShowScale;
         if ( !wasScalebarShown ) {
@@ -311,18 +308,20 @@ public class MatrixDisplay<R, C> extends JPanel {
             initSize();
         }
 
-        writeToPng( matrix, stream, showLabels, showScalebar );
+        try {
+            writeToPng( matrix, stream, showLabels, showScalebar );
+        } finally {
+            // Restore state: make the image as it was before
+            if ( !wereLabelsShown ) {
+                // Labels weren't visible to begin with, so hide them
+                setLabelsVisible( false );
+                initSize();
+            }
 
-        // Restore state: make the image as it was before
-        if ( !wereLabelsShown ) {
-            // Labels weren't visible to begin with, so hide them
-            setLabelsVisible( false );
-            initSize();
-        }
-
-        if ( !wasScalebarShown ) {
-            setScaleBarVisible( false );
-            initSize();
+            if ( !wasScalebarShown ) {
+                setScaleBarVisible( false );
+                initSize();
+            }
         }
     } // end saveImage
 
@@ -405,7 +404,8 @@ public class MatrixDisplay<R, C> extends JPanel {
      * @param showLabels
      * @param showScalebar
      */
-    public void writeToPng( ColorMatrix<R, C> matrix, OutputStream stream, boolean showLabels, boolean showScalebar ) {
+    public void writeToPng( ColorMatrix<R, C> matrix, OutputStream stream, boolean showLabels, boolean showScalebar )
+            throws IOException {
         // Draw the image to a buffer
         boolean oldLabelSate = this.m_isShowLabels;
         if ( !oldLabelSate ) {
@@ -427,11 +427,8 @@ public class MatrixDisplay<R, C> extends JPanel {
         }
 
         // Write the buffered image to the output steam.
-        try {
-            ImageIO.write( m_image, "png", stream );
-        } catch ( IOException e ) {
-            log.error( "Error writing image to output stream.  Stacktrace is: " + e.toString() );
-        }
+
+        ImageIO.write( m_image, "png", stream );
 
         this.setLabelsVisible( oldLabelSate );
     }
@@ -632,7 +629,6 @@ public class MatrixDisplay<R, C> extends JPanel {
         int desiredScaleBarLength = ( int ) Math.min( DEFAULT_SCALE_BAR_WIDTH, d.getWidth() );
 
         if ( desiredScaleBarLength < 10 ) {
-            log.warn( "Can't draw a scale bar that small: " + desiredScaleBarLength );
             return;
         }
 

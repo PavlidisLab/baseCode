@@ -16,9 +16,9 @@ package ubic.basecode.math;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.StringMatrix;
@@ -32,7 +32,7 @@ import cern.jet.math.Functions;
 
 public class QRDecompositionTest {
     @SuppressWarnings("unused")
-    private static Log log = LogFactory.getLog( QRDecompositionTest.class );
+    private static Logger log = LoggerFactory.getLogger( QRDecompositionTest.class );
     Algebra solver = new Algebra();
 
     /**

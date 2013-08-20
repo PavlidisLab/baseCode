@@ -19,9 +19,9 @@ import static org.junit.Assert.fail;
 
 import java.util.Collection;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ubic.basecode.ontology.model.OntologyIndividual;
 import ubic.basecode.ontology.model.OntologyResource;
@@ -33,7 +33,7 @@ import ubic.basecode.ontology.model.OntologyTerm;
  */
 public class ObiServiceTest {
 
-    private static Log log = LogFactory.getLog( ObiServiceTest.class );
+    private static Logger log = LoggerFactory.getLogger( ObiServiceTest.class );
 
     @Test
     public void testLoadAndSearch() throws Exception {

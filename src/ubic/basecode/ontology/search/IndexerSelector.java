@@ -21,8 +21,8 @@ package ubic.basecode.ontology.search;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -40,8 +40,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  */
 public class IndexerSelector implements Selector {
 
-    private static Log log = LogFactory.getLog( IndexerSelector.class );
-
+    private static Logger log = LoggerFactory.getLogger( IndexerSelector.class );
     private final Collection<String> unwantedForIndexing;
 
     public IndexerSelector() {

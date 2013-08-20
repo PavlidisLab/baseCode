@@ -40,10 +40,10 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.fluent.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -67,7 +67,7 @@ import ubic.basecode.util.Configuration;
  */
 public class OntologyLookupImpl implements OntologyLookup {
 
-    private static Log log = LogFactory.getLog( OntologyLookupImpl.class );
+    private static Logger log = LoggerFactory.getLogger( OntologyLookupImpl.class );
 
     private static String URL_BASE = "http://rest.bioontology.org/bioportal";
 
@@ -265,7 +265,7 @@ public class OntologyLookupImpl implements OntologyLookup {
                 URL ou;
 
                 ou = new URI( onturi ).toURL();
-                log.info( ou );
+                log.info( ou.toString() );
                 String p = onturi.replaceAll( "(?<=.+\\/).+", "" );
                 log.info( p );
                 url2OntologyId.put( p, id );

@@ -21,8 +21,6 @@ package ubic.basecode.util.r;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REngine;
@@ -44,8 +42,6 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrixFactory;
 public class JRIClient extends AbstractRClient {
 
     private static REngine connection = null;
-
-    private static Log log = LogFactory.getLog( JRIClient.class.getName() );
 
     static {
         try {
@@ -275,7 +271,7 @@ public class JRIClient extends AbstractRClient {
         } else {
             log.debug( "No column names" );
         }
-        if ( log.isDebugEnabled() ) log.debug( resultObject );
+        if ( log.isDebugEnabled() ) log.debug( resultObject.toString() );
     }
 
 }

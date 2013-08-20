@@ -30,10 +30,10 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.rosuda.REngine.REXP;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
@@ -52,7 +52,8 @@ import ubic.basecode.util.r.type.TwoWayAnovaResult;
  * @version $Id$
  */
 public abstract class AbstractRClientTest {
-    static Log log = LogFactory.getLog( AbstractRClientTest.class.getName() );
+
+    protected static Logger log = LoggerFactory.getLogger( AbstractRClientTest.class );
     boolean connected = true;
     AbstractRClient rc = null;
     double[] test1 = new double[] { -1.2241396, -0.6794486, -0.8475404, -0.4119554, -2.1980083 };

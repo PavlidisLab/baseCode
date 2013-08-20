@@ -25,11 +25,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.SocketException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author pavlidis
@@ -37,7 +37,7 @@ import org.apache.commons.net.ftp.FTPReply;
  */
 public class NetUtils {
 
-    private static Log log = LogFactory.getLog( NetUtils.class.getName() );
+    private static Logger log = LoggerFactory.getLogger( NetUtils.class );
 
     /**
      * determine if a file exists on the remote server.

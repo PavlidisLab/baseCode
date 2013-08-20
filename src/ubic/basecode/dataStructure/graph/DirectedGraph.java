@@ -36,8 +36,8 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A graph that contains DirectedGraphNodes. It can be cyclic. Small unconnected parts of the graph will be ignored for
@@ -48,7 +48,8 @@ import org.apache.commons.logging.LogFactory;
  * @version $Id$
  */
 public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, K, V> {
-    private static Log log = LogFactory.getLog( DirectedGraph.class.getName() );
+
+    private static Logger log = LoggerFactory.getLogger( DirectedGraph.class );
     protected DefaultTreeModel dtm;
     protected Map<K, DirectedGraphNode<K, V>> items;
 
@@ -383,7 +384,7 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
                 try {
                     newJTreeNode = constructor.newInstance( new Object[] { nextNode } );
                 } catch ( Exception e ) {
-                    log.error( e, e );
+                    log.error( e.getMessage(), e );
                 }
                 startJTreeNode.add( newJTreeNode );
                 nextNode.mark();

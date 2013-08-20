@@ -46,8 +46,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author keshav
@@ -69,7 +69,7 @@ public class FileTools {
     protected final static String[] XML_EXTENSIONS = { ".XML", ".RDF-XML", ".rdf-xml.gz", ".rdf-xml.zip", ".xml.zip",
             ".xml.gz" };
 
-    private static Log log = LogFactory.getLog( FileTools.class.getName() );
+    private static Logger log = LoggerFactory.getLogger( FileTools.class );
 
     /**
      * @param filename

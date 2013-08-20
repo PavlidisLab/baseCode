@@ -20,9 +20,6 @@ package ubic.basecode.math;
 
 import java.util.ArrayList;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
@@ -37,8 +34,6 @@ import cern.colt.matrix.impl.DenseDoubleMatrix1D;
  * @version $Id$
  */
 public class MultipleTestCorrection {
-
-    private static Log log = LogFactory.getLog( MultipleTestCorrection.class );
 
     /**
      * @param pvalues
@@ -96,7 +91,6 @@ public class MultipleTestCorrection {
         }
 
         if ( pvaluesList.isEmpty() ) {
-            log.error( "No pvalues were valid numbers, returning null qvalues" );
             return null;
         }
 

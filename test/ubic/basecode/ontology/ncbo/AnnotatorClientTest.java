@@ -21,9 +21,6 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
-import ubic.basecode.ontology.ncbo.AnnotatorClient;
-import ubic.basecode.ontology.ncbo.AnnotatorResponse;
-
 /**
  * @author Paul
  * @version $Id$

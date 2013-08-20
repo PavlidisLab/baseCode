@@ -22,8 +22,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jena.larq.IndexBuilderSubject;
 import org.apache.jena.larq.IndexLARQ;
 import org.apache.lucene.analysis.Analyzer;
@@ -36,6 +34,8 @@ import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ubic.basecode.util.Configuration;
 
@@ -48,7 +48,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
  */
 public class OntologyIndexer {
 
-    private static Log log = LogFactory.getLog( OntologyIndexer.class.getName() );
+    private static Logger log = LoggerFactory.getLogger( OntologyIndexer.class );
 
     /**
      * @param name

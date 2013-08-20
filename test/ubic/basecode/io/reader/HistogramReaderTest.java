@@ -31,16 +31,16 @@ import ubic.basecode.util.FileTools;
 public class HistogramReaderTest {
 
     @Test
-    public void testHistogramReaderString() throws Exception {
-        String f = FileTools.resourceToPath( "/data/0240991490.degreeDist.txt" );
-        Histogram1D hist = new HistogramReader( f ).read1D();
+    public void testHistogramReaderIs() throws Exception {
+        InputStream f = this.getClass().getResourceAsStream( "/data/0240991490.degreeDist.txt" );
+        Histogram1D hist = new HistogramReader( new InputStreamReader( f ), "title" ).read1D();
         assertEquals( 1, hist.binHeight( 4 ), 0.000000 );
     }
 
     @Test
-    public void testHistogramReaderIs() throws Exception {
-        InputStream f = this.getClass().getResourceAsStream( "/data/0240991490.degreeDist.txt" );
-        Histogram1D hist = new HistogramReader( new InputStreamReader( f ), "title" ).read1D();
+    public void testHistogramReaderString() throws Exception {
+        String f = FileTools.resourceToPath( "/data/0240991490.degreeDist.txt" );
+        Histogram1D hist = new HistogramReader( f ).read1D();
         assertEquals( 1, hist.binHeight( 4 ), 0.000000 );
     }
 

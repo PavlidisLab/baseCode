@@ -266,9 +266,6 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
             K j = it.next();
             DirectedGraphNode<K, V> k = getGraph().get( j );
             if ( k == null ) {
-                if ( log.isDebugEnabled() ) {
-                    log.debug( "Pruned child " + j + " from " + this );
-                }
                 it.remove();
             }
         }
@@ -277,9 +274,6 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
             K j = it.next();
             DirectedGraphNode<K, V> k = getGraph().get( j );
             if ( k == null ) {
-                if ( log.isDebugEnabled() ) {
-                    log.debug( "Pruned parent " + j + " from " + this );
-                }
                 it.remove();
             }
         }

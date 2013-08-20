@@ -22,8 +22,6 @@ import java.util.Collection;
 import org.junit.Test;
 
 import ubic.basecode.ontology.model.OntologyTerm;
-import ubic.basecode.ontology.ncbo.OntologyLookup;
-import ubic.basecode.ontology.ncbo.OntologyLookupImpl;
 
 /**
  * @author Paul

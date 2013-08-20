@@ -29,8 +29,8 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ubic.basecode.ontology.model.OntologyIndividual;
 import ubic.basecode.ontology.model.OntologyIndividualImpl;
@@ -56,7 +56,8 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
  * @version $Id$
  */
 public class OntologyLoader {
-    private static Log log = LogFactory.getLog( OntologyLoader.class );
+
+    private static Logger log = LoggerFactory.getLogger( OntologyLoader.class );
     private static final int MAX_LOAD_TRIES = 3;
 
     /**
@@ -197,7 +198,7 @@ public class OntologyLoader {
                     try {
                         s.close();
                     } catch ( IOException e ) {
-                        log.error( e, e );
+                        log.error( e.getMessage(), e );
                     }
                 }
             }

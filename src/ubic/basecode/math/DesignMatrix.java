@@ -25,8 +25,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
@@ -50,8 +50,7 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
  */
 public class DesignMatrix {
 
-    private static Log log = LogFactory.getLog( DesignMatrix.class );
-
+    private static Logger log = LoggerFactory.getLogger( DesignMatrix.class );
     /**
      * 
      */

@@ -21,16 +21,12 @@ package ubic.basecode.io.excel;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * This class is to determine what information is put in the spreadsheet and its column position
  * 
  * @author lfrench
  */
 public class SpreadSheetSchema {
-    protected Log log = LogFactory.getLog( SpreadSheetSchema.class );
     protected Map<String, Integer> positions;
 
     // ?geoLabel ?description ?CUI ?SUI ?mapping ?phrase ?mentionLabel

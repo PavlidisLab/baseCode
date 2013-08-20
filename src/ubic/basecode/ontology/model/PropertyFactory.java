@@ -18,9 +18,6 @@
  */
 package ubic.basecode.ontology.model;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
@@ -31,14 +28,12 @@ import com.hp.hpl.jena.ontology.OntResource;
  */
 public class PropertyFactory {
 
-    private static Log log = LogFactory.getLog( PropertyFactory.class.getName() );
-
     /**
      * Convert a Jena property.
      * 
      * @param property
      * @param source
-     * @return
+     * @return new property or null if it could not be converted.
      */
     public static ubic.basecode.ontology.model.OntologyProperty asProperty( OntProperty property ) {
 
@@ -47,7 +42,6 @@ public class PropertyFactory {
         } else if ( property.isDatatypeProperty() ) {
             return new DatatypePropertyImpl( property.asDatatypeProperty() );
         } else {
-            log.warn( "Sorry, can't convert " + property.getClass().getName() + ": " + property );
             return null;
         }
 
@@ -61,7 +55,6 @@ public class PropertyFactory {
             String uri = range.getURI();
 
             if ( uri == null ) {
-                log.warn( "Can't get type for " + resource + " with range " + range );
                 type = java.lang.String.class;
             } else if ( uri.equals( "http://www.w3.org/2001/XMLSchema#&xsd;string" ) ) {
                 type = java.lang.String.class;

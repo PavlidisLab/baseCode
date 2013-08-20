@@ -29,10 +29,10 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jena.larq.IndexLARQ;
 import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ubic.basecode.ontology.model.OntologyIndividual;
 import ubic.basecode.ontology.model.OntologyIndividualImpl;
@@ -58,7 +58,7 @@ public class OntologySearch {
     // OntologyTerms don't contain them anyway
     private final static char[] INVALID_CHARS = { ':', '(', ')', '?', '^', '[', ']', '{', '}', '!', '~', '"', '\'' };
 
-    private static Log log = LogFactory.getLog( OntologySearch.class.getName() );
+    private static Logger log = LoggerFactory.getLogger( OntologySearch.class );
 
     /**
      * Find classes that match the query string. Obsolete terms are not returned.
@@ -91,11 +91,11 @@ public class OntologySearch {
                     OntologyTermImpl impl2 = new OntologyTermImpl( cl );
                     if ( impl2.isTermObsolete() ) continue;
                     results.add( impl2 );
-                    if ( log.isDebugEnabled() ) log.debug( impl2 );
+                    if ( log.isDebugEnabled() ) log.debug( impl2.toString() );
                 } catch ( ARQException e ) {
                     throw new RuntimeException( e.getCause() );
                 } catch ( JenaException e ) {
-                    log.error( e, e );
+                    log.error( e.getMessage(), e );
                     throw new RuntimeException( e.getCause() );
                 } catch ( Exception e ) {
                     log.error( e.getMessage(), e );
@@ -154,7 +154,7 @@ public class OntologySearch {
                     Individual cl = r.as( Individual.class );
                     OntologyIndividual impl2 = new OntologyIndividualImpl( cl );
                     results.add( impl2 );
-                    if ( log.isDebugEnabled() ) log.debug( impl2 );
+                    if ( log.isDebugEnabled() ) log.debug( impl2.toString() );
                 } catch ( ARQException e ) {
                     throw new RuntimeException( e.getCause() );
                 } catch ( JenaException je ) {
@@ -234,11 +234,11 @@ public class OntologySearch {
                     OntClass cl = r.as( OntClass.class );
                     OntologyTermImpl impl2 = new OntologyTermImpl( cl );
                     results.add( impl2 );
-                    if ( log.isDebugEnabled() ) log.debug( impl2 );
+                    if ( log.isDebugEnabled() ) log.debug( impl2.toString() );
                 } catch ( JenaException e ) {
                     throw new RuntimeException( e.getCause() );
                 } catch ( Exception e ) {
-                    log.error( e, e );
+                    log.error( e.getMessage(), e );
                 }
             } else if ( r.isResource() ) {
                 try {
@@ -253,7 +253,7 @@ public class OntologySearch {
                     Individual cl = r.as( Individual.class );
                     OntologyIndividual impl2 = new OntologyIndividualImpl( cl );
                     results.add( impl2 );
-                    if ( log.isDebugEnabled() ) log.debug( impl2 );
+                    if ( log.isDebugEnabled() ) log.debug( impl2.toString() );
                 } catch ( JenaException e ) {
                     throw new RuntimeException( e.getCause() );
                 } catch ( Exception e ) {

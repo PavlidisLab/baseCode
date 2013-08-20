@@ -18,9 +18,6 @@
  */
 package ubic.basecode.dataStructure.graph;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import ubic.basecode.dataStructure.Visitable;
 
 /**
@@ -28,7 +25,6 @@ import ubic.basecode.dataStructure.Visitable;
  * @version $Id$
  */
 public abstract class AbstractGraphNode<K, V> extends Visitable implements GraphNode<K, V> {
-    protected static Log log = LogFactory.getLog( GraphNode.class );
     protected V item;
     protected K key;
     protected boolean visited = false;

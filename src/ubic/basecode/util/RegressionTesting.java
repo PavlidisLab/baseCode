@@ -33,8 +33,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import cern.colt.list.DoubleArrayList;
@@ -49,7 +49,7 @@ import cern.colt.matrix.DoubleMatrix2D;
  */
 public class RegressionTesting {
 
-    private static Log log = LogFactory.getLog( RegressionTesting.class.getName() );
+    private static Logger log = LoggerFactory.getLogger( RegressionTesting.class );
 
     /**
      * @param a expected

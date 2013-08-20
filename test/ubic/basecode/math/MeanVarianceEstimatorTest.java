@@ -18,8 +18,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
@@ -36,9 +34,6 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
  * @version $Id$
  */
 public class MeanVarianceEstimatorTest {
-
-    @SuppressWarnings("unused")
-    private static Log log = LogFactory.getLog( MeanVarianceEstimatorTest.class );
 
     /**
      * Tests two things: 1. Input data's X values are not sorted 2. Interpolated X values are outside the domain.

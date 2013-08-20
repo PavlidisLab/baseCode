@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
 import org.apache.commons.math3.analysis.interpolation.LoessInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
@@ -63,8 +61,6 @@ public class MeanVarianceEstimator {
      * Default number of loess robustness iterations
      */
     public static final int ROBUSTNESS_ITERS = 3;
-
-    private static Log log = LogFactory.getLog( MeanVarianceEstimator.class );
 
     /**
      * Similar implementation of R's stats.approxfun(..., rule = 2) where values outside the interval ['min(x)',
@@ -110,7 +106,6 @@ public class MeanVarianceEstimator {
                 }
             } catch ( OutOfRangeException e ) {
                 // this shouldn't happen anymore
-                log.error( "Error occured while approximating values", e );
                 yInterpolate[i] = Double.NaN;
             }
         }

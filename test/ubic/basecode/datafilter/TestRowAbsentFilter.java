@@ -21,11 +21,11 @@ package ubic.basecode.datafilter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.StringMatrix;
@@ -39,7 +39,7 @@ import ubic.basecode.io.reader.StringMatrixReader;
  */
 public class TestRowAbsentFilter extends AbstractTestFilter {
 
-    private static Log log = LogFactory.getLog( TestRowAbsentFilter.class.getName() );
+    private static Logger log = LoggerFactory.getLogger( TestRowAbsentFilter.class );
 
     RowAbsentFilter<DoubleMatrix<String, String>, String, String, Double> fd = new RowAbsentFilter<DoubleMatrix<String, String>, String, String, Double>();
 

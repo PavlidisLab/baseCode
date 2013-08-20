@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cern.colt.list.DoubleArrayList;
 import cern.jet.math.Arithmetic;
@@ -52,7 +52,7 @@ public class Wilcoxon {
      */
     private static long LIMIT_FOR_APPROXIMATION = 100000L;
 
-    private static Log log = LogFactory.getLog( Wilcoxon.class.getName() );
+    private static Logger log = LoggerFactory.getLogger( Wilcoxon.class );
 
     /**
      * Convenience method that computes a p-value using input of two double arrays. They must not contain missing values

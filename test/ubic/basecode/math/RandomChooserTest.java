@@ -68,31 +68,6 @@ public class RandomChooserTest {
         }
     }
 
-    @Test
-    public void testChooserandomInts() throws Exception {
-
-        int[] deck = { 0, 1, 2, 3, 4, 5, 6, 7 };
-        int[] expected = { 5, 7, 3, 0 };
-        int[] result = RandomChooser.chooserandom( deck, 4 );
-        for ( int i = 0; i < result.length; i++ ) {
-            assertEquals( expected[i], result[i], 0.0001 );
-        }
-
-        // check uniformity; each number should appear approx 1000 times: 10000 trials * 0.01 * 10 = 1000.
-        CountingMap<Double> map = new CountingMap<Double>();
-        for ( int i = 0; i < 10000; i++ ) {
-            result = RandomChooser.chooserandom( deck, 4 );
-            for ( double r : result ) {
-                map.increment( r );
-            }
-        }
-
-        // this is not completely safe ...
-        for ( Double k : map.keySet() ) {
-            assertTrue( "got " + map.get( k ), Math.abs( 5000 - map.get( k ) ) < 500 );
-        }
-    }
-
     /**
      * Test method for {@link ubic.basecode.math.RandomChooser#chooserandom(int[], boolean[], int, int)} .
      */
@@ -116,6 +91,31 @@ public class RandomChooserTest {
         // this is not completely safe ...
         for ( Integer k : map.keySet() ) {
             assertTrue( "got " + map.get( k ), Math.abs( 1000 - map.get( k ) ) < 100 );
+        }
+    }
+
+    @Test
+    public void testChooserandomInts() throws Exception {
+
+        int[] deck = { 0, 1, 2, 3, 4, 5, 6, 7 };
+        int[] expected = { 5, 7, 3, 0 };
+        int[] result = RandomChooser.chooserandom( deck, 4 );
+        for ( int i = 0; i < result.length; i++ ) {
+            assertEquals( expected[i], result[i], 0.0001 );
+        }
+
+        // check uniformity; each number should appear approx 1000 times: 10000 trials * 0.01 * 10 = 1000.
+        CountingMap<Double> map = new CountingMap<Double>();
+        for ( int i = 0; i < 10000; i++ ) {
+            result = RandomChooser.chooserandom( deck, 4 );
+            for ( double r : result ) {
+                map.increment( r );
+            }
+        }
+
+        // this is not completely safe ...
+        for ( Double k : map.keySet() ) {
+            assertTrue( "got " + map.get( k ), Math.abs( 5000 - map.get( k ) ) < 500 );
         }
     }
 

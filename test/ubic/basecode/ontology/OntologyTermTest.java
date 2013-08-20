@@ -23,9 +23,9 @@ import java.util.Collection;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.providers.DiseaseOntologyService;
@@ -37,7 +37,7 @@ import ubic.basecode.ontology.providers.NIFSTDOntologyService;
  */
 public class OntologyTermTest {
 
-    private static Log log = LogFactory.getLog( OntologyTermTest.class );
+    private static Logger log = LoggerFactory.getLogger( OntologyTermTest.class );
 
     @Test
     public void testGetChildren() throws Exception {

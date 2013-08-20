@@ -22,8 +22,6 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jena.larq.IndexLARQ;
 import org.junit.Test;
 
@@ -40,8 +38,6 @@ import com.hp.hpl.jena.ontology.OntModelSpec;
  * @version $Id$
  */
 public class OntologySearchTest {
-
-    private static Log log = LogFactory.getLog( OntologySearchTest.class );
 
     @Test
     public final void testIndexing() throws Exception {
@@ -77,23 +73,24 @@ public class OntologySearchTest {
         IndexLARQ index = OntologyIndexer.indexOntology( "NIFTEST", model, true );
 
         Collection<OntologyTerm> name = OntologySearch.matchClasses( model, index, "Organ" );
-        for ( OntologyTerm ontologyTerm : name ) {
-            log.debug( ontologyTerm );
-        }
+        // for ( OntologyTerm ontologyTerm : name ) {
+        // log.debug( ontologyTerm.toString() );
+        // }
         // should get : Organ, Human Tissue and Organ Resource for Research, United Network for Organ Sharing
         assertEquals( 3, name.size() );
 
         name = OntologySearch.matchClasses( model, index, "Anatomical entity" );
-        for ( OntologyTerm ontologyTerm : name ) {
-            log.debug( ontologyTerm );
-        }
+        // for ( OntologyTerm ontologyTerm : name ) {
+        // log.debug( ontologyTerm.toString() );
+        // }
         assertEquals( 1, name.size() );
 
         name = OntologySearch.matchClasses( model, index, "liver" ); // this is an "example" that we want to avoid
                                                                      // leading to "Organ".
-        for ( OntologyTerm ontologyTerm : name ) {
-            log.debug( ontologyTerm );
-        }
+
+        // for ( OntologyTerm ontologyTerm : name ) {
+        // log.debug( ontologyTerm.toString() );
+        // }
         assertEquals( 0, name.size() );
 
         index.close();

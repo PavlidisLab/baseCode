@@ -27,8 +27,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Very simple class to produce String versions of beans and other objects.
@@ -46,7 +46,7 @@ public class PrettyPrinter {
      */
     private static final int MAX_TO_SHOW = 10;
 
-    protected static final Log log = LogFactory.getLog( PrettyPrinter.class );
+    private static Logger log = LoggerFactory.getLogger( PrettyPrinter.class );
 
     /**
      * Print out a collection of beans in a relatively pleasing format.
@@ -98,6 +98,16 @@ public class PrettyPrinter {
      */
     public static String print( Collection<String> packages, Object[] objects ) {
         return print( packages, Arrays.asList( objects ) );
+    }
+
+    private static boolean include( Collection<String> packages, Class<?> clazz ) {
+        if ( packages == null || packages.isEmpty() ) return true;
+
+        for ( String string : packages ) {
+            if ( clazz.getName().startsWith( string ) ) return true;
+        }
+        return false;
+
     }
 
     /**
@@ -193,16 +203,6 @@ public class PrettyPrinter {
                     + ( o == null ? "---" : o ) + "\n" );
             print( packages, buf, o, level );
         }
-    }
-
-    private static boolean include( Collection<String> packages, Class<?> clazz ) {
-        if ( packages == null || packages.isEmpty() ) return true;
-
-        for ( String string : packages ) {
-            if ( clazz.getName().startsWith( string ) ) return true;
-        }
-        return false;
-
     }
 
     private PrettyPrinter() {

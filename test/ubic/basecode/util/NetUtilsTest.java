@@ -26,11 +26,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author pavlidis
@@ -38,7 +38,7 @@ import org.junit.Test;
  */
 public class NetUtilsTest {
 
-    private static Log log = LogFactory.getLog( NetUtilsTest.class.getName() );
+    private static Logger log = LoggerFactory.getLogger( NetUtilsTest.class );
 
     @Test
     final public void testCheckForFile() throws Exception {

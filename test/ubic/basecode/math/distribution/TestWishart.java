@@ -2,8 +2,6 @@ package ubic.basecode.math.distribution;
 
 import static org.junit.Assert.assertTrue;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,8 +15,6 @@ import cern.jet.random.engine.MersenneTwister;
  * @version $Id$
  */
 public class TestWishart {
-
-    private static Log log = LogFactory.getLog( TestWishart.class.getName() );
 
     DoubleMatrix2D cov;
     Wishart t1;
@@ -39,7 +35,6 @@ public class TestWishart {
     @Test
     public void testNextDoubleMatrix() {
         DoubleMatrix2D actualReturn = t1.nextDoubleMatrix();
-        log.debug( actualReturn );
         DoubleMatrix2D expectedReturn = new DenseDoubleMatrix2D( new double[][] { { 1.426553, 4.848117 },
                 { 4.848117, 16.9009 } } );
         assertTrue( RegressionTesting.closeEnough( expectedReturn, actualReturn, 0.0001 ) );

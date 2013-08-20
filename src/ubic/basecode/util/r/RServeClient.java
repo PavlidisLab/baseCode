@@ -29,8 +29,6 @@ import org.apache.commons.configuration.ConfigurationUtils;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.io.FileHandler;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REngineException;
@@ -46,8 +44,6 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
  * @version $Id$
  */
 public class RServeClient extends AbstractRClient {
-
-    final static Log log = LogFactory.getLog( RServeClient.class );
 
     /**
      * 

@@ -16,9 +16,9 @@ package ubic.basecode.util;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author pavlidis
@@ -26,7 +26,7 @@ import org.junit.Test;
  */
 public class TestStringUtil {
 
-    private static Log log = LogFactory.getLog( TestStringUtil.class.getName() );
+    private static Logger log = LoggerFactory.getLogger( TestStringUtil.class );
 
     // simple case
     @Test

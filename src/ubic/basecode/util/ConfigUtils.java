@@ -82,6 +82,27 @@ public class ConfigUtils {
     }
 
     /**
+     * @param name the classpath location, such as "project.properties" in the base package, or
+     *        org/foo/project.properties.
+     * @return
+     * @throws ConfigurationException
+     */
+    public static PropertiesConfiguration loadClasspathConfig( String name ) throws ConfigurationException {
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+
+        URL url = loader.getResource( name );
+        if ( url == null ) {
+            throw new ConfigurationException( "Couldn't locate: " + name );
+        }
+
+        PropertiesConfiguration pc = new PropertiesConfiguration();
+        FileHandler handler = new FileHandler( pc );
+        handler.setURL( url );
+        handler.load();
+        return pc;
+    }
+
+    /**
      * @param file
      * @return
      * @throws ConfigurationException
@@ -113,28 +134,14 @@ public class ConfigUtils {
          */
         File f = locateConfig( name );
 
-        return loadConfig( f );
-    }
-
-    /**
-     * @param name the classpath location, such as "project.properties" in the base package, or
-     *        org/foo/project.properties.
-     * @return
-     * @throws ConfigurationException
-     */
-    public static PropertiesConfiguration loadClasspathConfig( String name ) throws ConfigurationException {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-
-        URL url = loader.getResource( name );
-        if ( url == null ) {
-            throw new ConfigurationException( "Couldn't locate: " + name );
+        if ( f == null ) {
+            /*
+             * Try again from the classpath?
+             */
+            return loadClasspathConfig( name );
         }
 
-        PropertiesConfiguration pc = new PropertiesConfiguration();
-        FileHandler handler = new FileHandler( pc );
-        handler.setURL( url );
-        handler.load();
-        return pc;
+        return loadConfig( f );
     }
 
     /**

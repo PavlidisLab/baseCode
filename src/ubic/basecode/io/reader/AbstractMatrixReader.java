@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ubic.basecode.dataStructure.matrix.Matrix2D;
 
@@ -38,7 +38,7 @@ import ubic.basecode.dataStructure.matrix.Matrix2D;
  */
 public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>, V> {
 
-    protected static final Log log = LogFactory.getLog( AbstractMatrixReader.class );
+    protected static Logger log = LoggerFactory.getLogger( AbstractMatrixReader.class );
 
     public abstract M read( InputStream stream ) throws IOException;
 
@@ -112,11 +112,6 @@ public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>
             columnNumber++;
 
             previousToken = s;
-        }
-
-        // return columnNumber - 1;
-        if ( headerVec.size() == 0 ) {
-            log.warn( "No headings found" );
         }
 
         return headerVec;

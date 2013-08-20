@@ -25,8 +25,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Date Utility Class This is used to convert Strings to Dates and Timestamps. In part adapted from Appfuse
@@ -39,7 +37,6 @@ import org.apache.commons.logging.LogFactory;
 public class DateUtil {
     // ~ Static fields/initializers =============================================
 
-    private static Log log = LogFactory.getLog( DateUtil.class );
     private static String datePattern = "MM/dd/yyyy";
 
     // ~ Methods ================================================================
@@ -69,10 +66,6 @@ public class DateUtil {
         Date date = null;
         df = new SimpleDateFormat( aMask );
 
-        if ( log.isDebugEnabled() ) {
-            log.debug( "converting '" + strDate + "' to date with mask '" + aMask + "'" );
-        }
-
         try {
             date = df.parse( strDate );
         } catch ( ParseException pe ) {
@@ -94,14 +87,12 @@ public class DateUtil {
         SimpleDateFormat df = null;
         String returnValue = "";
 
-        if ( aDate == null ) {
-            log.error( "aDate is null!" );
-        } else {
+        if ( aDate != null ) {
             df = new SimpleDateFormat( aMask );
             returnValue = df.format( aDate );
         }
 
-        return ( returnValue );
+        return returnValue;
     }
 
     /**
