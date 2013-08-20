@@ -21,6 +21,7 @@ package ubic.basecode.dataStructure.matrix;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 import no.uib.cipr.matrix.sparse.FlexCompRowMatrix;
 import no.uib.cipr.matrix.sparse.SparseVector;
@@ -338,6 +339,32 @@ public class CompressedBitMatrix<R, C> extends AbstractMatrix<R, C, double[]> im
          */
         return result;
 
+    }
+
+    /**
+     * @param columns
+     * @return
+     */
+    @Override
+    public ObjectMatrix<R, C, double[]> subsetColumns( List<C> columns ) {
+        CompressedBitMatrix<R, C> returnval = new CompressedBitMatrix<R, C>( this.rows(), columns.size(),
+                this.totalBitsPerItem );
+        returnval.setRowNames( this.getRowNames() );
+        for ( int i = 0; i < this.rows(); i++ ) {
+            int currentColumn = 0;
+            for ( C c : columns ) {
+                int j = this.getColIndexByName( c );
+
+                returnval.set( i, currentColumn, this.get( i, j ) );
+
+                if ( i == 0 ) {
+                    returnval.setColumnName( c, currentColumn );
+                }
+                currentColumn++;
+
+            }
+        }
+        return returnval;
     }
 
     /**

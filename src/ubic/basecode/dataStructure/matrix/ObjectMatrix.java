@@ -18,6 +18,8 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
+import java.util.List;
+
 /**
  * @author Paul
  * @version $Id$
@@ -38,4 +40,10 @@ public interface ObjectMatrix<R, C, V> extends Matrix2D<R, C, V> {
      * @return
      */
     public ObjectMatrix<R, C, V> subset( int startRow, int startCol, int numRow, int numCol );
+
+    /**
+     * @param columns
+     * @return
+     */
+    public ObjectMatrix<R, C, V> subsetColumns( List<C> columns );
 }

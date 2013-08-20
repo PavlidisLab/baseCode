@@ -18,9 +18,6 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import cern.colt.matrix.DoubleMatrix2D;
 
 /**
@@ -33,7 +30,6 @@ import cern.colt.matrix.DoubleMatrix2D;
  * @param <S> Slice label type
  */
 public abstract class DoubleMatrix3D<R, C, S> extends AbstractMatrix3D<R, C, S, Double> {
-    protected static Log log = LogFactory.getLog( DoubleMatrix.class.getName() );
     protected static final int MAX_ROWS_TO_PRINT = 20;
     protected static final int MAX_SLICES_TO_PRINT = 10;
 

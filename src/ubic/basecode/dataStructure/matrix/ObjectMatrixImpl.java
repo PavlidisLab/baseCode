@@ -18,6 +18,8 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
+import java.util.List;
+
 import cern.colt.matrix.ObjectMatrix1D;
 import cern.colt.matrix.impl.DenseObjectMatrix2D;
 
@@ -35,6 +37,33 @@ public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implement
     public ObjectMatrixImpl( int x, int y ) {
         super();
         matrix = new DenseObjectMatrix2D( x, y );
+    }
+
+    /**
+     * @param columns
+     * @return
+     */
+    @Override
+    public ObjectMatrixImpl<R, C, V> subsetColumns( List<C> columns ) {
+        ObjectMatrixImpl<R, C, V> returnval = new ObjectMatrixImpl<R, C, V>( this.rows(), columns.size() );
+        returnval.setRowNames( this.getRowNames() );
+        for ( int i = 0; i < this.rows(); i++ ) {
+            int currentColumn = 0;
+            for ( C c : columns ) {
+                int j = this.getColIndexByName( c );
+
+                returnval.set( i, currentColumn, this.get( i, j ) );
+
+                if ( i == 0 ) {
+                    returnval.setColumnName( c, currentColumn );
+                }
+
+                currentColumn++;
+
+            }
+
+        }
+        return returnval;
     }
 
     /**

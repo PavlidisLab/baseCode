@@ -23,9 +23,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 
@@ -36,8 +33,6 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @version $Id$
  */
 public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> implements PrimitiveMatrix<R, C, Double> {
-
-    protected static Log log = LogFactory.getLog( DoubleMatrix.class.getName() );
 
     private static final long serialVersionUID = 1L;
 

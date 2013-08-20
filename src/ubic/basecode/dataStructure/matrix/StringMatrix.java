@@ -18,6 +18,8 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 
 import cern.colt.matrix.ObjectMatrix1D;
@@ -30,6 +32,31 @@ import cern.colt.matrix.impl.DenseObjectMatrix2D;
  * @version $Id$
  */
 public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements ObjectMatrix<R, C, String> {
+
+    /**
+     * @param columns
+     * @return
+     */
+    @Override
+    public ObjectMatrix<R, C, String> subsetColumns( List<C> columns ) {
+        StringMatrix<R, C> returnval = new StringMatrix<R, C>( this.rows(), columns.size() );
+        returnval.setRowNames( this.getRowNames() );
+        for ( int i = 0; i < this.rows(); i++ ) {
+            int currentColumn = 0;
+            for ( C c : columns ) {
+                int j = this.getColIndexByName( c );
+
+                returnval.set( i, currentColumn, this.get( i, j ) );
+
+                if ( i == 0 ) {
+                    returnval.setColumnName( c, currentColumn );
+                }
+                currentColumn++;
+
+            }
+        }
+        return returnval;
+    }
 
     /**
      * 
