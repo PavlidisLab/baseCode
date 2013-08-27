@@ -23,6 +23,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
+import org.jfree.util.Log;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -125,10 +126,12 @@ public class AnnotatorClient {
 
                 // a number identify what ontology the results is from
                 // TODO might need to add some or find better way to do this
-                if ( localOntologyId.equalsIgnoreCase( "50173" ) ) {
+                if ( localOntologyId.equalsIgnoreCase( "50390" ) ) {
                     ontologyUsed = "HP";
                 } else if ( localOntologyId.equalsIgnoreCase( "50310" ) ) {
                     ontologyUsed = "DOID";
+                } else {
+                    Log.error( "using the localOntologyId can find the ontology Used, if not DOID or HP, please add/update AnnotatorClient" );
                 }
 
                 // score given
