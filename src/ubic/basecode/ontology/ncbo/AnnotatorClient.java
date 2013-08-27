@@ -23,7 +23,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
-import org.jfree.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -46,6 +47,8 @@ public class AnnotatorClient {
     private static String API_KEY = Configuration.getString( "ncbo.api.key" );
 
     private static String ONTOLOGY_USED = "";
+
+    private Logger log = LoggerFactory.getLogger( AnnotatorClient.class );
 
     /**
      * Create the Annotator Client
@@ -131,7 +134,7 @@ public class AnnotatorClient {
                 } else if ( localOntologyId.equalsIgnoreCase( "50310" ) ) {
                     ontologyUsed = "DOID";
                 } else {
-                    Log.error( "using the localOntologyId can find the ontology Used, if not DOID or HP, please add/update AnnotatorClient" );
+                    log.warn( "using the localOntologyId can find the ontology Used, if not DOID or HP, please add/update AnnotatorClient" );
                 }
 
                 // score given
