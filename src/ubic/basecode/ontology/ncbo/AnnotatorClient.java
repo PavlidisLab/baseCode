@@ -21,6 +21,7 @@ import java.util.TreeSet;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
 import org.slf4j.Logger;
@@ -164,7 +165,8 @@ public class AnnotatorClient {
             }
 
         } catch ( Exception e ) {
-            e.printStackTrace();
+            log.error( "term: '" + term + "'" );
+            log.error( ExceptionUtils.getStackTrace( e ) );
         }
         return responsesFound;
     }
