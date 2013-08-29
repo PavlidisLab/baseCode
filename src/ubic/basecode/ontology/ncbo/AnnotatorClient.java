@@ -22,8 +22,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -41,6 +44,8 @@ public class AnnotatorClient {
 
     public static final Long HP_ONTOLOGY = 1125l;
     public static final Long DOID_ONTOLOGY = 1009l;
+    public static final Long OMIM_ONTOLOGY = 1348l;
+    public static final Long MESH_ONTOLOGY = 3019l;
 
     private static String ANNOTATOR_URL = "http://rest.bioontology.org/obs/annotator";
 
@@ -49,31 +54,31 @@ public class AnnotatorClient {
 
     private static String ONTOLOGY_USED = "";
 
-    private Logger log = LoggerFactory.getLogger( AnnotatorClient.class );
+    private static Logger log = LoggerFactory.getLogger( AnnotatorClient.class );
 
     /**
      * Create the Annotator Client
      * 
      * @param ontologiesToUse a list of id representing what Ontology to use
      */
-    public AnnotatorClient( Collection<Long> ontologiesToUse ) {
+    public AnnotatorClient( Collection<Long> ontologiesId ) {
 
         // must let it know what Ontology to search
         // 1009 is disease ontology
         // 1125 is hp ontology
         // TODO unsure how to use string (ontology name) rather that number
 
-        String ontologiesId = "";
+        String ontologiesIdString = "";
 
-        for ( Long id : ontologiesToUse ) {
-            ontologiesId = ontologiesId + id + ",";
+        for ( Long id : ontologiesId ) {
+            ontologiesIdString = ontologiesIdString + id + ",";
         }
 
-        if ( ontologiesId.length() > 0 ) {
+        if ( ontologiesIdString.length() > 0 ) {
             // take out last ,
-            ontologiesId.substring( 0, ontologiesId.length() - 1 );
+            ontologiesIdString.substring( 0, ontologiesIdString.length() - 1 );
         }
-        ONTOLOGY_USED = ontologiesId;
+        ONTOLOGY_USED = ontologiesIdString;
     }
 
     /**
@@ -130,11 +135,13 @@ public class AnnotatorClient {
 
                 // a number identify what ontology the results is from
                 // TODO might need to add some or find better way to do this
-                if ( localOntologyId.equalsIgnoreCase( "50390" ) ) {
+                // also the hp changed values before not sure why
+                if ( localOntologyId.equalsIgnoreCase( "50579" ) ) {
                     ontologyUsed = "HP";
                 } else if ( localOntologyId.equalsIgnoreCase( "50310" ) ) {
                     ontologyUsed = "DOID";
                 } else {
+                    log.warn( "localOntologyId: " + localOntologyId + "  term: " + term );
                     log.warn( "using the localOntologyId can find the ontology Used, if not DOID or HP, please add/update AnnotatorClient" );
                 }
 
@@ -182,16 +189,50 @@ public class AnnotatorClient {
         return newTxt;
     }
 
-    // These are the setting PP used before, DO only
-    // method.addParameter("withDefaultStopWords","true"); // default is false
-    // method.addParameter("ontologiesToExpand", "1009");
-    // method.addParameter("ontologiesToKeepInResult", "1009");
-    // method.addParameter("isVirtualOntologyId", "true"); // default is false, true is recommended
-    // method.addParameter("levelMax", "10"); // expand to root, 10 is enough.
-    // method.addParameter("mappingTypes", "null"); //null, Automatic, Manual
-    // method.addParameter("textToAnnotate", text);
-    // method.addParameter("format", "tabDelimited"); //Options are 'text', 'xml', 'tabDelimited'
-    // method.addParameter("apikey", "7b14e900-1ba2-4e58-ac21-c5c4c74e7ece") // Paul's
-    // PostMethod method = new PostMethod( annotatorUrl );
+    /**
+     * return the label associated with an conceptid
+     * 
+     * @param ontologyId what virtual ontology to use
+     * @param identifier the identifier, example : DOID_7(DOID),C535334(MESH),105500(OMIM)
+     * @return the label for that term, example : ABCD syndrome
+     */
+    public static String findLabelUsingIdentifier( Long ontologyId, String identifier ) {
+        try {
+            String url = "http://rest.bioontology.org/bioportal/virtual/ontology/" + ontologyId + "?conceptid="
+                    + identifier + "&apikey=" + API_KEY;
+
+            DefaultHttpClient httpclient = new DefaultHttpClient();
+            HttpGet httpGet = new HttpGet( url );
+            HttpResponse response = httpclient.execute( httpGet );
+
+            // term was not found
+            if ( response.getStatusLine().getStatusCode() == 404 ) {
+                throw new Exception( "404 returned, the term Used: " + identifier + " was not found" );
+            }
+
+            return findLabel( response );
+        } catch ( Exception e ) {
+            log.error( "meshId: '" + identifier + "'" );
+            log.error( ExceptionUtils.getStackTrace( e ) );
+            return null;
+        }
+    }
+
+    /**
+     * using the response return the label associated with the request
+     * 
+     * @param termUsed the term we are looking for
+     * @param the url to call
+     * @return the label for that term
+     */
+    private static String findLabel( HttpResponse response ) throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse( response.getEntity().getContent() );
+        NodeList nodes = document.getElementsByTagName( "classBean" );
+        String labelName = ( ( Element ) nodes.item( 0 ) ).getElementsByTagName( "label" ).item( 0 ).getTextContent();
+
+        return labelName;
+    }
 
 }
