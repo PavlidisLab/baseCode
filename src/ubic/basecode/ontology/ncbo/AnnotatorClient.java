@@ -21,6 +21,7 @@ import java.util.TreeSet;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Form;
@@ -62,23 +63,9 @@ public class AnnotatorClient {
      * @param ontologiesToUse a list of id representing what Ontology to use
      */
     public AnnotatorClient( Collection<Long> ontologiesId ) {
-
         // must let it know what Ontology to search
-        // 1009 is disease ontology
-        // 1125 is hp ontology
         // TODO unsure how to use string (ontology name) rather that number
-
-        String ontologiesIdString = "";
-
-        for ( Long id : ontologiesId ) {
-            ontologiesIdString = ontologiesIdString + id + ",";
-        }
-
-        if ( ontologiesIdString.length() > 0 ) {
-            // take out last ,
-            ontologiesIdString.substring( 0, ontologiesIdString.length() - 1 );
-        }
-        ONTOLOGY_USED = ontologiesIdString;
+        ONTOLOGY_USED = StringUtils.removeEnd( StringUtils.join( ontologiesId, "," ), "," );
     }
 
     /**
@@ -96,7 +83,7 @@ public class AnnotatorClient {
         // 2- synonym from DOID
         // 3- exact match from other resources
         // 4- synonym from other resources
-        // 5 - other results
+        // 5- other results
         // to change this rewrite own compareTo method to define required order
         Collection<AnnotatorResponse> responsesFound = new TreeSet<AnnotatorResponse>();
 
@@ -220,10 +207,6 @@ public class AnnotatorClient {
 
     /**
      * using the response return the label associated with the request
-     * 
-     * @param termUsed the term we are looking for
-     * @param the url to call
-     * @return the label for that term
      */
     private static String findLabel( HttpResponse response ) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
