@@ -3,7 +3,6 @@ package ubic.basecode.ontology.ncbo;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -38,7 +37,7 @@ public class OmimAnnotatorClient {
      * @param omimIds the omimIds we want to find the publication
      * @param mimToPubmeds the results, pass by reference for multiple calls, limit of size 10
      */
-    public static HashMap<Long, Collection<Long>> findLinkedPublications( Set<Long> omimIds,
+    public static HashMap<Long, Collection<Long>> findLinkedPublications( Collection<Long> omimIds,
             HashMap<Long, Collection<Long>> mimToPubmeds ) throws InterruptedException {
 
         if ( omimIds.size() > 10 || omimIds.isEmpty() ) {

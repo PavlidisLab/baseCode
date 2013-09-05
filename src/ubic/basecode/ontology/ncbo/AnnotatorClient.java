@@ -15,6 +15,7 @@
 package ubic.basecode.ontology.ncbo;
 
 import java.io.StringReader;
+import java.net.SocketTimeoutException;
 import java.util.Collection;
 import java.util.TreeSet;
 
@@ -73,8 +74,43 @@ public class AnnotatorClient {
      * 
      * @param term the description of the term
      * @return Collection<AnnotatorResponse> the answers found by the nbco annotator
+     * @throws Exception
      */
     public Collection<AnnotatorResponse> findTerm( String term ) {
+
+        // retry 4 times, if the request is hanging, this works better, could hang before for 3 minutes
+        Collection<AnnotatorResponse> annotatorResponses = new TreeSet<AnnotatorResponse>();
+        try {
+            annotatorResponses = findTerm( term, 2000 );
+        } catch ( SocketTimeoutException e1 ) {
+            log.info( "retrying 1: calling the api again" );
+            try {
+                annotatorResponses = findTerm( term, 3000 );
+            } catch ( SocketTimeoutException e2 ) {
+                log.info( "retrying 2: calling the api again" );
+                try {
+                    annotatorResponses = findTerm( term, 4000 );
+                } catch ( SocketTimeoutException e3 ) {
+                    log.info( "retrying 3: calling the api again" );
+                    try {
+                        annotatorResponses = findTerm( term, 5000 );
+                    } catch ( SocketTimeoutException e4 ) {
+                        log.error( "giving up: request hanging" );
+                    }
+                }
+            }
+        }
+        return annotatorResponses;
+    }
+
+    /**
+     * for a specific term description return a Collection of ontology terms found
+     * 
+     * @param term the description of the term
+     * @return Collection<AnnotatorResponse> the answers found by the nbco annotator
+     * @throws Exception
+     */
+    private Collection<AnnotatorResponse> findTerm( String term, Integer socketTimeout ) throws SocketTimeoutException {
 
         String searchTerm = removeSpecificCharacters( term );
 
@@ -98,6 +134,11 @@ public class AnnotatorClient {
                             .add( "filterNumber", "true" ).add( "isTopWordsCaseSensitive", "false" )
                             .add( "mintermSize", "3" ).add( "scored", "true" ).add( "withSynonyms", "true" )
                             .add( "ontologiesToExpand", "" ).add( "apikey", API_KEY ).build() );
+
+            // we dont want it to hang forever, if they have a problem (bad gateway can hang for 5 minutes)
+            request.socketTimeout( socketTimeout );
+
+            log.info( "Sending request to the ncbo annotator: " + term );
 
             // Execute the POST method
             String contents = request.execute().returnContent().asString();
@@ -158,9 +199,14 @@ public class AnnotatorClient {
                 responsesFound.add( annotatorResponse );
             }
 
-        } catch ( Exception e ) {
+        }
+
+        catch ( Exception e ) {
             log.error( "term: '" + term + "'" );
             log.error( ExceptionUtils.getStackTrace( e ) );
+            if ( e instanceof SocketTimeoutException ) {
+                throw ( SocketTimeoutException ) e;
+            }
         }
         return responsesFound;
     }
