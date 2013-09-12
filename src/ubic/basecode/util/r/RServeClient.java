@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.ConfigurationUtils;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.io.FileHandler;
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +37,7 @@ import org.rosuda.REngine.Rserve.RserveException;
 
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.util.ConfigUtils;
 
 /**
  * @author pavlidis
@@ -61,7 +61,7 @@ public class RServeClient extends AbstractRClient {
      * @throws ConfigurationException
      */
     protected static String findRserveCommand() throws ConfigurationException {
-        URL userSpecificConfigFileLocation = ConfigurationUtils.locate( "local.properties" );
+        URL userSpecificConfigFileLocation = ConfigUtils.locate( "local.properties" );
 
         PropertiesConfiguration userConfig = null;
         if ( userSpecificConfigFileLocation != null ) {
