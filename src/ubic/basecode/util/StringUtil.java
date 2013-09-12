@@ -136,4 +136,32 @@ public class StringUtil {
         return shortest;
     }
 
+    /**
+     * Made by Nicolas
+     * 
+     * @param a line in a file cvs format
+     * @return the same line but in tsv format
+     */
+    public static String cvs2tsv( String line ) {
+
+        StringBuffer newLine = new StringBuffer( line );
+
+        boolean change = true;
+
+        for ( int position = 0; position < newLine.length(); position++ ) {
+
+            if ( newLine.charAt( position ) == ',' && change ) {
+                newLine.setCharAt( position, '\t' );
+            } else if ( newLine.charAt( position ) == '"' ) {
+
+                if ( change ) {
+                    change = false;
+                } else {
+                    change = true;
+                }
+            }
+        }
+        return newLine.toString().replaceAll( "\"", "" );
+    }
+
 }
