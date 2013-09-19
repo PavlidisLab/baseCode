@@ -201,6 +201,29 @@ public class OntologySearchTest {
         index.close();
     }
 
+    @Test
+    public final void testOmitDefinitions4() throws Exception {
+        InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream( "/data/NIF-GrossAnatomy.owl.gz" ) );
+
+        OntModel model = OntologyLoader.loadMemoryModel( is, "NIFAN_TEST2", OntModelSpec.OWL_MEM_TRANS_INF );
+        is.close();
+
+        IndexLARQ index = OntologyIndexer.indexOntology( "NIFAN_TEST2", model, true );
+
+        // positive control
+        Collection<OntologyTerm> searchResults = OntologySearch.matchClasses( model, index, "eye" );
+        assertTrue( "Should have found something for 'eye'", !searchResults.isEmpty() );
+
+        // this is a "definition" that we want to avoid leading to "brain"
+        searchResults = OntologySearch.matchClasses( model, index, "muscle" );
+        for ( OntologyTerm ontologyTerm : searchResults ) {
+            fail( "Should not have found " + ontologyTerm.toString() + " for 'muscle'" );
+        }
+        assertEquals( 0, searchResults.size() );
+
+        index.close();
+    }
+
     /**
      * @throws Exception
      */

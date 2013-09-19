@@ -60,7 +60,7 @@ public class IndexerSelector implements Selector {
         unwantedForIndexing.add( "http://www.w3.org/2004/02/skos/core#example" );
         unwantedForIndexing.add( "http://www.w3.org/2004/02/skos/core#editorialNote" );
         unwantedForIndexing.add( "http://www.w3.org/2004/02/skos/core#historyNote" );
-
+        unwantedForIndexing.add( "http://www.w3.org/2004/02/skos/core#definition" );
         unwantedForIndexing.add( "http://neurolex.org/wiki/Special:URIResolver/Property-3AExample" );
         unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/definition" );
         unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/bioportal_provenance" );
