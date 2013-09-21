@@ -78,11 +78,12 @@ public abstract class AbstractOntologyMemoryBackedService extends AbstractOntolo
         addTerms( OntologyLoader.initialize( this.getOntologyUrl(), model ) );
 
         assert index != null;
-
-        indexReady.set( true );
-        cacheReady.set( true );
-        modelReady.set( true );
-        isInitialized.set( true );
+        synchronized ( isInitialized ) {
+            indexReady.set( true );
+            cacheReady.set( true );
+            modelReady.set( true );
+            isInitialized.set( true );
+        }
         log.info( this.getClass().getSimpleName() + " ready" );
     }
 
