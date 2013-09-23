@@ -181,9 +181,9 @@ public class OntologyLoader {
                 BufferedReader buf = new BufferedReader( new InputStreamReader( s ) );
 
                 model.read( buf, url );
-                if ( timer.getTime() > 100 ) {
-                    log.debug( "Load model: " + timer.getTime() + "ms" );
-                }
+
+                log.info( "Load model: " + timer.getTime() + "ms" );
+
                 s.close();
                 break;
             } catch ( MalformedURLException e ) {
