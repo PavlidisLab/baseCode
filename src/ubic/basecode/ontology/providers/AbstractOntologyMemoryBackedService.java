@@ -39,6 +39,13 @@ public abstract class AbstractOntologyMemoryBackedService extends AbstractOntolo
      * @throws IOException
      */
     public synchronized void loadTermsInNameSpace( InputStream is ) {
+        synchronized ( isInitialized ) {
+            this.indexReady.set( false );
+            this.modelReady.set( false );
+            this.isInitialized.set( false );
+            this.cacheReady.set( false );
+        }
+
         if ( initializationThread.isAlive() ) {
             log.warn( this.getOntologyName() + " initialization is already running, trying to cancel ..." );
             initializationThread.cancel();
@@ -64,10 +71,6 @@ public abstract class AbstractOntologyMemoryBackedService extends AbstractOntolo
             }
         }
 
-        this.indexReady.set( false );
-        this.modelReady.set( false );
-        this.isInitialized.set( false );
-        this.cacheReady.set( false );
         if ( this.terms != null ) this.terms.clear();
         if ( this.individuals != null ) this.individuals.clear();
 
