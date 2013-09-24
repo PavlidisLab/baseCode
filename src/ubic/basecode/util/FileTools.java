@@ -305,7 +305,10 @@ public class FileTools {
             ZipFile f = new ZipFile( fileName );
             ZipEntry entry = f.entries().nextElement();
 
-            if ( entry == null ) throw new IOException( "No zip entries" );
+            if ( entry == null ) {
+                f.close();
+                throw new IOException( "No zip entries" );
+            }
 
             if ( f.entries().hasMoreElements() ) {
                 log.debug( "ZIP archive has more then one file, reading the first one." );
