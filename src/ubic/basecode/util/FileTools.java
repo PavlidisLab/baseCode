@@ -304,6 +304,7 @@ public class FileTools {
             log.debug( "Reading from zipped file" );
             ZipFile f = new ZipFile( fileName );
             ZipEntry entry = f.entries().nextElement();
+            f.close();
             if ( entry == null ) throw new IOException( "No zip entries" );
 
             if ( f.entries().hasMoreElements() ) {
