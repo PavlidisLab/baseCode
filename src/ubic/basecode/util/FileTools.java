@@ -315,7 +315,6 @@ public class FileTools {
             }
 
             i = f.getInputStream( entry );
-            f.close();
         } else if ( FileTools.isGZipped( fileName ) ) {
             log.debug( "Reading from gzipped file" );
             i = new GZIPInputStream( new FileInputStream( fileName ) );
