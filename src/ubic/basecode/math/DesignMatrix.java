@@ -496,6 +496,7 @@ public class DesignMatrix {
                 }
 
                 String contrastingValue = "";
+                assert tmp != null;
                 for ( int j = 0; j < tmp.rows(); j++ ) {
                     boolean isBaseline = !factorValues.get( j ).equals( level );
                     if ( !isBaseline ) {
