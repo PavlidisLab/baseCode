@@ -69,7 +69,7 @@ public class DoublePoint {
      */
     @Override
     public String toString() {
-        return x + "\t" + y;
+        return String.format( "%.2g\t%.2g", x, y );
     }
 
 }
