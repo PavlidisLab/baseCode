@@ -20,6 +20,7 @@ package ubic.basecode.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -137,6 +138,23 @@ public class DateUtil {
                     + ", please use something like -7d or -8h" );
         }
 
+    }
+
+    /**
+     * return today date as a String
+     * 
+     * @param boolean changes character '\' to '-', (used to write files)
+     * @return String today date
+     */
+    public static String getTodayDate( boolean changeDateformat ) {
+
+        String todayDate = convertDateToString( Calendar.getInstance().getTime() );
+
+        // changes character '\' to '-', (used to write files)
+        if ( changeDateformat ) {
+            todayDate = todayDate.replaceAll( "/", "-" );
+        }
+        return todayDate;
     }
 
 }
