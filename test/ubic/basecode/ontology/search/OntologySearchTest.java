@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.jena.larq.IndexLARQ;
 import org.junit.Test;
 
 import ubic.basecode.ontology.OntologyLoader;
@@ -44,7 +43,7 @@ public class OntologySearchTest {
         InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream( "/data/mged.owl.gz" ) );
         OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test", OntModelSpec.OWL_MEM_TRANS_INF );
 
-        IndexLARQ index = OntologyIndexer.indexOntology( "MGEDTEST", model, true );
+        SearchIndex index = OntologyIndexer.indexOntology( "MGEDTEST", model, true );
 
         Collection<OntologyTerm> name = OntologySearch.matchClasses( model, index, "Bedding" );
 
@@ -70,7 +69,7 @@ public class OntologySearchTest {
         OntModel model = OntologyLoader.loadMemoryModel( is, "NIFTEST", OntModelSpec.OWL_MEM_TRANS_INF );
         is.close();
 
-        IndexLARQ index = OntologyIndexer.indexOntology( "NIFTEST", model, true );
+        SearchIndex index = OntologyIndexer.indexOntology( "NIFTEST", model, true );
 
         Collection<OntologyTerm> name = OntologySearch.matchClasses( model, index, "Organ" );
         // for ( OntologyTerm ontologyTerm : name ) {
@@ -107,7 +106,7 @@ public class OntologySearchTest {
         OntModel model = OntologyLoader.loadMemoryModel( is, "EFTEST", OntModelSpec.OWL_MEM_TRANS_INF );
         is.close();
 
-        IndexLARQ index = OntologyIndexer.indexOntology( "EFTEST", model, true );
+        SearchIndex index = OntologyIndexer.indexOntology( "EFTEST", model, true );
 
         // positive control
         Collection<OntologyTerm> searchResults = OntologySearch.matchClasses( model, index, "monocyte" );
@@ -130,7 +129,7 @@ public class OntologySearchTest {
         OntModel model = OntologyLoader.loadMemoryModel( is, "DO_TEST", OntModelSpec.OWL_MEM_TRANS_INF );
         is.close();
 
-        IndexLARQ index = OntologyIndexer.indexOntology( "DO_TEST", model, true );
+        SearchIndex index = OntologyIndexer.indexOntology( "DO_TEST", model, true );
 
         // positive control
         Collection<OntologyTerm> searchResults = OntologySearch.matchClasses( model, index, "acute leukemia" );
@@ -152,7 +151,7 @@ public class OntologySearchTest {
         OntModel model = OntologyLoader.loadMemoryModel( is, "NIFORG_TEST", OntModelSpec.OWL_MEM_TRANS_INF );
         is.close();
 
-        IndexLARQ index = OntologyIndexer.indexOntology( "NIFORG_TEST", model, true );
+        SearchIndex index = OntologyIndexer.indexOntology( "NIFORG_TEST", model, true );
 
         // positive control
         Collection<OntologyTerm> searchResults = OntologySearch.matchClasses( model, index, "Mammal" );
@@ -185,7 +184,7 @@ public class OntologySearchTest {
         InputStream is = this.getClass().getResourceAsStream( "/data/obi.test.owl.xml" );
         OntModel model = OntologyLoader.loadMemoryModel( is, "OBI_TEST", OntModelSpec.OWL_MEM_TRANS_INF );
 
-        IndexLARQ index = OntologyIndexer.indexOntology( "OBI_TEST", model, true );
+        SearchIndex index = OntologyIndexer.indexOntology( "OBI_TEST", model, true );
 
         // positive control
         Collection<OntologyTerm> searchResults = OntologySearch.matchClasses( model, index, "irradiation" );
@@ -208,7 +207,7 @@ public class OntologySearchTest {
         OntModel model = OntologyLoader.loadMemoryModel( is, "NIFAN_TEST2", OntModelSpec.OWL_MEM_TRANS_INF );
         is.close();
 
-        IndexLARQ index = OntologyIndexer.indexOntology( "NIFAN_TEST2", model, true );
+        SearchIndex index = OntologyIndexer.indexOntology( "NIFAN_TEST2", model, true );
 
         // positive control
         Collection<OntologyTerm> searchResults = OntologySearch.matchClasses( model, index, "eye" );
@@ -232,7 +231,7 @@ public class OntologySearchTest {
         InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream( "/data/mged.owl.gz" ) );
         OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test", OntModelSpec.OWL_MEM_TRANS_INF );
 
-        IndexLARQ index = OntologyIndexer.indexOntology( "MGEDTEST", model, true );
+        SearchIndex index = OntologyIndexer.indexOntology( "MGEDTEST", model, true );
         index.close();
 
         // now load it off disk

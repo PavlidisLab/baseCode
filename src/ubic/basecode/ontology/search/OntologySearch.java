@@ -29,7 +29,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.jena.larq.IndexLARQ;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +67,7 @@ public class OntologySearch {
      * @param queryString
      * @return Collection of OntologyTerm objects
      */
-    public static Collection<OntologyTerm> matchClasses( OntModel model, IndexLARQ index, String queryString ) {
+    public static Collection<OntologyTerm> matchClasses( OntModel model, SearchIndex index, String queryString ) {
 
         Set<OntologyTerm> results = new HashSet<OntologyTerm>();
         NodeIterator iterator = runSearch( index, queryString );
@@ -114,7 +113,7 @@ public class OntologySearch {
      * @param queryString
      * @return Collection of OntologyTerm objects
      */
-    public static Collection<OntologyIndividual> matchIndividuals( OntModel model, IndexLARQ index, String queryString ) {
+    public static Collection<OntologyIndividual> matchIndividuals( OntModel model, SearchIndex index, String queryString ) {
 
         Set<OntologyIndividual> results = new HashSet<OntologyIndividual>();
         NodeIterator iterator = null;
@@ -188,7 +187,7 @@ public class OntologySearch {
      * @param queryString
      * @return Collection of OntologyResource objects
      */
-    public static Collection<OntologyResource> matchResources( OntModel model, IndexLARQ index, String queryString ) {
+    public static Collection<OntologyResource> matchResources( OntModel model, SearchIndex index, String queryString ) {
 
         Set<OntologyResource> results = new HashSet<OntologyResource>();
         NodeIterator iterator = null;
@@ -293,7 +292,7 @@ public class OntologySearch {
      * @param queryString
      * @return
      */
-    private static NodeIterator runSearch( IndexLARQ index, String queryString ) {
+    private static NodeIterator runSearch( SearchIndex index, String queryString ) {
         String strippedQuery = StringUtils.strip( queryString );
 
         if ( StringUtils.isBlank( strippedQuery ) ) {

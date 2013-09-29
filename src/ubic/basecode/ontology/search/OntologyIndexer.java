@@ -23,7 +23,6 @@ import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.larq.IndexBuilderSubject;
-import org.apache.jena.larq.IndexLARQ;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -54,7 +53,7 @@ public class OntologyIndexer {
      * @param name
      * @return indexlarq with default analyzer (English)
      */
-    public static IndexLARQ getSubjectIndex( String name ) {
+    public static SearchIndex getSubjectIndex( String name ) {
         Analyzer analyzer = new EnglishAnalyzer( Version.LUCENE_36 );
         return getSubjectIndex( name, analyzer );
     }
@@ -64,7 +63,7 @@ public class OntologyIndexer {
      * @param model
      * @return
      */
-    public static IndexLARQ indexOntology( String name, OntModel model ) {
+    public static SearchIndex indexOntology( String name, OntModel model ) {
         return indexOntology( name, model, false );
     }
 
@@ -76,7 +75,7 @@ public class OntologyIndexer {
      * @param force if true, the index will be redone
      * @return
      */
-    public static IndexLARQ indexOntology( String name, OntModel model, boolean force ) {
+    public static SearchIndex indexOntology( String name, OntModel model, boolean force ) {
 
         if ( force ) {
             return index( name, model );
@@ -113,7 +112,7 @@ public class OntologyIndexer {
      * @param analyzer
      * @return
      */
-    private static IndexLARQ getSubjectIndex( String name, Analyzer analyzer ) {
+    private static SearchIndex getSubjectIndex( String name, Analyzer analyzer ) {
         log.debug( "Loading index: " + name );
         File indexdir = getIndexPath( name );
         File indexdirstd = getIndexPath( name + ".std" );
@@ -130,7 +129,7 @@ public class OntologyIndexer {
             IndexReader reader = IndexReader.open( directory );
             IndexReader readerstd = IndexReader.open( directorystd );
             MultiReader r = new MultiReader( reader, readerstd );
-            return new IndexLARQ( r, analyzer );
+            return new SearchIndex( r, analyzer );
 
         } catch ( IOException e ) {
             throw new RuntimeException( e );
@@ -146,7 +145,7 @@ public class OntologyIndexer {
      * @param model
      * @return
      */
-    private static IndexLARQ index( String name, OntModel model ) {
+    private static synchronized SearchIndex index( String name, OntModel model ) {
 
         File indexdir = getIndexPath( name );
 
@@ -175,7 +174,7 @@ public class OntologyIndexer {
             MultiReader r = new MultiReader( IndexReader.open( dir ), IndexReader.open( dirstd ) );
 
             // workaround to get the EnglishAnalyzer.
-            IndexLARQ index = new IndexLARQ( r, new EnglishAnalyzer( Version.LUCENE_36 ) );
+            SearchIndex index = new SearchIndex( r, new EnglishAnalyzer( Version.LUCENE_36 ) );
             // larqSubjectBuilder.getIndex(); // always returns a StandardAnalyazer
             assert index.getLuceneQueryParser().getAnalyzer() instanceof EnglishAnalyzer;
             return index;

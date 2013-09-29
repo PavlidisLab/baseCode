@@ -28,9 +28,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.jena.larq.IndexLARQ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +40,7 @@ import ubic.basecode.ontology.model.OntologyResource;
 import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.search.OntologyIndexer;
 import ubic.basecode.ontology.search.OntologySearch;
+import ubic.basecode.ontology.search.SearchIndex;
 import ubic.basecode.util.Configuration;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -147,7 +148,7 @@ public abstract class AbstractOntologyService {
 
     protected AtomicBoolean cacheReady = new AtomicBoolean( false );
 
-    protected IndexLARQ index;
+    protected SearchIndex index;
 
     protected AtomicBoolean indexReady = new AtomicBoolean( false );
     protected Map<String, OntologyIndividual> individuals;
@@ -167,7 +168,7 @@ public abstract class AbstractOntologyService {
         super();
 
         initializationThread = new OntologyInitializationThread( false );
-        initializationThread.setName( getOntologyName() + "_load_thread" );
+        initializationThread.setName( getOntologyName() + "_load_thread_" + RandomStringUtils.randomAlphanumeric( 5 ) );
         // To prevent VM from waiting on this thread to shutdown (if shutting down).
         initializationThread.setDaemon( true );
 
