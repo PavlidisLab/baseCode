@@ -310,6 +310,10 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
                 if ( parentOntologyTerm.getLocalName().equalsIgnoreCase( "ObsoleteClass" ) ) {
                     return true;
                 }
+                if ( parentOntologyTerm.getUri().equalsIgnoreCase(
+                        "http://bioontology.org/projects/ontologies/birnlex#_birnlex_retired_class" ) ) {
+                    return true;
+                }
             }
         }
 
