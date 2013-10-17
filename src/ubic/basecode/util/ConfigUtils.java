@@ -23,8 +23,8 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.builder.FileBasedBuilderParametersImpl;
 import org.apache.commons.configuration.builder.FileBasedConfigurationBuilder;
-import org.apache.commons.configuration.io.DefaultFileSystem;
 import org.apache.commons.configuration.io.FileHandler;
+import org.apache.commons.configuration.io.FileLocator;
 import org.apache.commons.configuration.io.FileLocatorUtils;
 import org.apache.commons.io.FileUtils;
 
@@ -167,7 +167,8 @@ public class ConfigUtils {
      */
     private static File locateConfig( String name ) throws ConfigurationException {
         File f;
-        URL location = FileLocatorUtils.locate( new DefaultFileSystem(), null, name );
+        FileLocator fl = FileLocatorUtils.fileLocator().fileName( name ).create();
+        URL location = FileLocatorUtils.locate( fl );
         if ( location == null ) {
             f = new File( name );
             if ( f.isAbsolute() ) {
@@ -183,6 +184,7 @@ public class ConfigUtils {
     }
 
     public static URL locate( String name ) {
-        return FileLocatorUtils.locate( new DefaultFileSystem(), null, name );
+        FileLocator fl = FileLocatorUtils.fileLocator().fileName( name ).create();
+        return FileLocatorUtils.locate( fl );
     }
 }
