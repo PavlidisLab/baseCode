@@ -176,6 +176,12 @@ public class OntologySearchTest {
         }
         assertEquals( 0, searchResults.size() );
 
+        searchResults = OntologySearch.matchClasses( model, index, "birnlex_2" );
+        for ( OntologyTerm ontologyTerm : searchResults ) {
+            fail( "Should not have found " + ontologyTerm.toString() + " for 'birnlex_2'" );
+        }
+        assertEquals( 0, searchResults.size() );
+
         index.close();
     }
 

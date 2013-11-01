@@ -303,19 +303,24 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
         Collection<OntologyTerm> parentsOntologyTerm = getParents( false );
 
-        if ( parentsOntologyTerm.size() == 1 ) {
+        // this limit of 1 was because obsolete terms are connected right to the root. But ... not guaranteed.
+        // / if ( parentsOntologyTerm.size() == 1 ) {
 
-            for ( OntologyTerm parentOntologyTerm : parentsOntologyTerm ) {
+        for ( OntologyTerm parentOntologyTerm : parentsOntologyTerm ) {
 
-                if ( parentOntologyTerm.getLocalName().equalsIgnoreCase( "ObsoleteClass" ) ) {
-                    return true;
-                }
-                if ( parentOntologyTerm.getUri().equalsIgnoreCase(
-                        "http://bioontology.org/projects/ontologies/birnlex#_birnlex_retired_class" ) ) {
-                    return true;
-                }
+            if ( parentOntologyTerm.getLocalName().equalsIgnoreCase( "ObsoleteClass" ) ) {
+                return true;
+            }
+            if ( parentOntologyTerm.getUri().equalsIgnoreCase(
+                    "http://bioontology.org/projects/ontologies/birnlex#_birnlex_retired_class" )
+                    || parentOntologyTerm
+                            .getUri()
+                            .equalsIgnoreCase(
+                                    "http://ontology.neuinfo.org/NIF/Backend/BIRNLex_annotation_properties.owl#_birnlex_retired_class" ) ) {
+                return true;
             }
         }
+        // }
 
         StmtIterator iterator = ontResource.listProperties();
         // this is a little slow because we have to go through all statements for the term.
