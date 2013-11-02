@@ -17,6 +17,7 @@ package ubic.basecode.ontology.ncbo;
 import java.io.StringReader;
 import java.net.SocketTimeoutException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.TreeSet;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -140,13 +141,16 @@ public class AnnotatorClient {
 
             log.info( "Sending request to the ncbo annotator: " + term );
 
-            // Execute the POST method
+            // Execute the POST method, the xml result returned
             String contents = request.execute().returnContent().asString();
 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             InputSource is = new InputSource( new StringReader( contents ) );
             Document document = builder.parse( is );
+
+            // localOntology id ---> Name
+            HashMap<String, String> localOntologyIdToName = findMappingLocalIdToOntology( document );
 
             NodeList nodes = document.getElementsByTagName( "annotationBean" );
 
@@ -159,19 +163,7 @@ public class AnnotatorClient {
 
                 // this id represents the ontology used
                 String localOntologyId = eElement.getElementsByTagName( "localOntologyId" ).item( 0 ).getTextContent();
-                String ontologyUsed = "";
-
-                // a number identify what ontology the results is from
-                // TODO might need to add some or find better way to do this
-                // also the hp changed values before not sure why
-                if ( localOntologyId.equalsIgnoreCase( "50579" ) ) {
-                    ontologyUsed = "HP";
-                } else if ( localOntologyId.equalsIgnoreCase( "50310" ) ) {
-                    ontologyUsed = "DOID";
-                } else {
-                    log.warn( "localOntologyId: " + localOntologyId + "  term: " + term );
-                    log.warn( "using the localOntologyId can find the ontology Used, if not DOID or HP, please add/update AnnotatorClient" );
-                }
+                String ontologyUsed = localOntologyIdToName.get( localOntologyId );
 
                 // score given
                 Integer score = Integer.valueOf( eElement.getElementsByTagName( "score" ).item( 0 ).getTextContent() );
@@ -220,6 +212,26 @@ public class AnnotatorClient {
         newTxt = newTxt.replaceAll( "\\?", "" );
 
         return newTxt;
+    }
+
+    // this is useful to find what ontology the term is from
+    private HashMap<String, String> findMappingLocalIdToOntology( Document document ) {
+        // localOntology id ---> Name
+        HashMap<String, String> localOntologyIdToName = new HashMap<String, String>();
+
+        // find the Ontology used
+        NodeList nodes = document.getElementsByTagName( "ontologyUsedBean" );
+        for ( int temp = 0; temp < nodes.getLength(); temp++ ) {
+
+            Node nNode = nodes.item( temp );
+
+            Element eElement = ( Element ) nNode;
+
+            String localOntologyId = eElement.getElementsByTagName( "localOntologyId" ).item( 0 ).getTextContent();
+            String ontologyName = eElement.getElementsByTagName( "name" ).item( 0 ).getTextContent();
+            localOntologyIdToName.put( localOntologyId, ontologyName );
+        }
+        return localOntologyIdToName;
     }
 
     /**

@@ -158,7 +158,7 @@ public class AnnotatorResponse implements Comparable<AnnotatorResponse> {
     }
 
     public boolean isDiseaseUsed() {
-        if ( ontologyUsed.equalsIgnoreCase( "DOID" ) ) {
+        if ( ontologyUsed.equalsIgnoreCase( "Human Disease Ontology" ) ) {
             return true;
         }
         return false;
