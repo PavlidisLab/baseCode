@@ -232,6 +232,7 @@ public class OntologySearch {
 
                     OntClass cl = r.as( OntClass.class );
                     OntologyTermImpl impl2 = new OntologyTermImpl( cl );
+                    if ( impl2.isTermObsolete() ) continue;
                     results.add( impl2 );
                     if ( log.isDebugEnabled() ) log.debug( impl2.toString() );
                 } catch ( JenaException e ) {
