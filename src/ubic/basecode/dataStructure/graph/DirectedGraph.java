@@ -196,7 +196,7 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
         assert leaf != null;
         DirectedGraphNode<K, V> leafNode = this.get( leaf );
         if ( leafNode == null ) {
-            throw new IllegalArgumentException( "No such node" );
+            throw new IllegalArgumentException( "No such node: " + leaf );
         }
 
         if ( !leafNode.isLeaf() ) {
