@@ -161,7 +161,7 @@ public abstract class AbstractOntologyService {
 
     protected Map<String, OntologyTerm> terms;
 
-    private Map<String, Collection<OntologyTerm>> alternativeIDs = new HashMap<String, Collection<OntologyTerm>>();
+    private Map<String, OntologyTerm> alternativeIDs = new HashMap<String, OntologyTerm>();
 
     /**
      * 
@@ -474,9 +474,7 @@ public abstract class AbstractOntologyService {
         addTerms( t );
     }
 
-    public Collection<OntologyTerm> findUsingAlternativeId( String alternativeId ) {
-
-        Collection<OntologyTerm> termsFound = new HashSet<OntologyTerm>();
+    public OntologyTerm findUsingAlternativeId( String alternativeId ) {
 
         if ( alternativeIDs.isEmpty() ) {
             log.info( "init search by alternativeID" );
@@ -484,10 +482,10 @@ public abstract class AbstractOntologyService {
         }
 
         if ( alternativeIDs.get( alternativeId ) != null ) {
-            termsFound = alternativeIDs.get( alternativeId );
+            return alternativeIDs.get( alternativeId );
         }
 
-        return termsFound;
+        return null;
     }
 
     /*
@@ -511,35 +509,14 @@ public abstract class AbstractOntologyService {
         // for all Ontology terms that exist in the tree
         for ( OntologyTerm ontologyTerm : terms.values() ) {
 
-            // this is the first way
             for ( String alternativeId : ontologyTerm.getAlternativeIds() ) {
-
-                // this one adds it using the found alternative ID example ( HP:0001453 )
-                Collection<OntologyTerm> ontologyTermsSet = new HashSet<OntologyTerm>();
-
-                if ( alternativeIDs.get( alternativeId ) != null ) {
-                    ontologyTermsSet = alternativeIDs.get( alternativeId );
-                }
-                ontologyTermsSet.add( ontologyTerm );
-                alternativeIDs.put( alternativeId, ontologyTermsSet );
-            }
-
-            // this is the second way, tries to use valueUri
-            for ( String alternativeId : ontologyTerm.getAlternativeIds() ) {
+                // first way
+                alternativeIDs.put( alternativeId, ontologyTerm );
 
                 String alternativeIdModified = alternativeId.replace( ':', '_' );
 
-                // lets make the valueUri term and check if it exists
-                String alternativeUri = baseOntologyUri + alternativeIdModified;
-
-                // this one adds it using the found alternative ID example ( HP:0001453 )
-                Collection<OntologyTerm> ontologyTermsSet = new HashSet<OntologyTerm>();
-
-                if ( alternativeIDs.get( alternativeUri ) != null ) {
-                    ontologyTermsSet = alternativeIDs.get( alternativeUri );
-                }
-                ontologyTermsSet.add( ontologyTerm );
-                alternativeIDs.put( alternativeUri, ontologyTermsSet );
+                // second way
+                alternativeIDs.put( baseOntologyUri + alternativeIdModified, ontologyTerm );
             }
         }
     }
