@@ -484,7 +484,7 @@ public abstract class AbstractOntologyService {
         }
 
         if ( alternativeIDs.get( alternativeId ) != null ) {
-            return alternativeIDs.get( alternativeId );
+            termsFound = alternativeIDs.get( alternativeId );
         }
 
         return termsFound;
