@@ -161,6 +161,8 @@ public abstract class AbstractOntologyService {
 
     protected Map<String, OntologyTerm> terms;
 
+    private Map<String, Collection<OntologyTerm>> alternativeIDs = new HashMap<String, Collection<OntologyTerm>>();
+
     /**
      * 
      */
@@ -470,6 +472,76 @@ public abstract class AbstractOntologyService {
     protected void loadTermsInNameSpace( String url, OntModel m ) {
         Collection<OntologyResource> t = OntologyLoader.initialize( url, m );
         addTerms( t );
+    }
+
+    public Collection<OntologyTerm> findUsingAlternativeId( String alternativeId ) {
+
+        Collection<OntologyTerm> termsFound = new HashSet<OntologyTerm>();
+
+        if ( alternativeIDs.isEmpty() ) {
+            log.info( "init search by alternativeID" );
+            initSearchByAlternativeId();
+        }
+
+        if ( alternativeIDs.get( alternativeId ) != null ) {
+            return alternativeIDs.get( alternativeId );
+        }
+
+        return termsFound;
+    }
+
+    /*
+     * this add alternative id in 2 ways
+     * 
+     * Example :
+     * 
+     * http://purl.obolibrary.org/obo/HP_0000005 with alternative id : HP:0001453
+     * 
+     * by default way use in file 1- HP:0001453 -----> http://purl.obolibrary.org/obo/HP_0000005
+     * 
+     * trying to use the value uri 2- http://purl.obolibrary.org/obo/HP_0001453 ----->
+     * http://purl.obolibrary.org/obo/HP_0000005
+     */
+    private void initSearchByAlternativeId() {
+
+        // lets find the baseUrl, to change to valueUri
+        String randomUri = terms.values().iterator().next().getUri();
+        String baseOntologyUri = randomUri.substring( 0, randomUri.lastIndexOf( "/" ) + 1 );
+
+        // for all Ontology terms that exist in the tree
+        for ( OntologyTerm ontologyTerm : terms.values() ) {
+
+            // this is the first way
+            for ( String alternativeId : ontologyTerm.getAlternativeIds() ) {
+
+                // this one adds it using the found alternative ID example ( HP:0001453 )
+                Collection<OntologyTerm> ontologyTermsSet = new HashSet<OntologyTerm>();
+
+                if ( alternativeIDs.get( alternativeId ) != null ) {
+                    ontologyTermsSet = alternativeIDs.get( alternativeId );
+                }
+                ontologyTermsSet.add( ontologyTerm );
+                alternativeIDs.put( alternativeId, ontologyTermsSet );
+            }
+
+            // this is the second way, tries to use valueUri
+            for ( String alternativeId : ontologyTerm.getAlternativeIds() ) {
+
+                String alternativeIdModified = alternativeId.replace( ':', '_' );
+
+                // lets make the valueUri term and check if it exists
+                String alternativeUri = baseOntologyUri + alternativeIdModified;
+
+                // this one adds it using the found alternative ID example ( HP:0001453 )
+                Collection<OntologyTerm> ontologyTermsSet = new HashSet<OntologyTerm>();
+
+                if ( alternativeIDs.get( alternativeUri ) != null ) {
+                    ontologyTermsSet = alternativeIDs.get( alternativeUri );
+                }
+                ontologyTermsSet.add( ontologyTerm );
+                alternativeIDs.put( alternativeUri, ontologyTermsSet );
+            }
+        }
     }
 
 }
