@@ -292,7 +292,7 @@ public class LeastSquaresFit {
         assert A != null;
         assert b != null;
         assert A.rows() == b.columns();
-        assert b.columns() == weights.columns();
+        assert weights == null || b.columns() == weights.columns();
         assert weights == null || b.rows() == weights.rows();
 
         this.A = A;
