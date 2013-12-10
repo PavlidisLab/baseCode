@@ -37,7 +37,6 @@ public class MedicOntologyService extends AbstractOntologyMemoryBackedService {
 
     @Override
     protected String getOntologyUrl() {
-        // TODO Auto-generated method stub
         return MEDIC_ONTOLOGY_FILE;
     }
 

@@ -164,6 +164,13 @@ public class AnnotatorResponse implements Comparable<AnnotatorResponse> {
         return false;
     }
 
+    public boolean isHpUsed() {
+        if ( ontologyUsed.equalsIgnoreCase( "Human Phenotype Ontology" ) ) {
+            return true;
+        }
+        return false;
+    }
+
     public boolean isExactMatch() {
 
         if ( this.value.equalsIgnoreCase( this.searchQuery ) ) {
@@ -209,6 +216,35 @@ public class AnnotatorResponse implements Comparable<AnnotatorResponse> {
     public String toString() {
         return "AnnotatorResponse [score=" + score + ", value=" + value + ", valueUri=" + valueUri + ", searchQuery="
                 + searchQuery + "]";
+    }
+
+    // method used by Phenocarta
+    public String findCondition( boolean modifiedSearch ) {
+
+        String condition = null;
+
+        if ( isDiseaseUsed() ) {
+
+            if ( isExactMatch() ) {
+                condition = "A) Found Exact With Disease Annotator";
+
+            } else if ( isSynonym() ) {
+                condition = "B) Found Synonym With Disease Annotator Synonym";
+            }
+        } else if ( isHpUsed() ) {
+
+            if ( isExactMatch() ) {
+                condition = "C) Found Exact With HP Annotator";
+            } else if ( isSynonym() ) {
+                condition = "D) Found Synonym With HP Annotator Synonym";
+            }
+        }
+
+        if ( condition != null && modifiedSearch ) {
+            condition = condition + " modified search ";
+        }
+
+        return condition;
     }
 
 }
