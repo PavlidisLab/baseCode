@@ -14,70 +14,66 @@
  */
 package ubic.basecode.ontology.ncbo;
 
-import java.util.HashSet;
-
 /**
  * This represents an Ontology terms returned by the AnnotatorClient
  */
 public class AnnotatorResponse implements Comparable<AnnotatorResponse> {
 
-    private Integer score = 0;
-    private String value = "";
     private String valueUri = "";
-    private boolean synonym = false;
-
-    // search query used to find this results
-    private String searchQuery = "";
-    // ontology where the result was found
+    private String matchType = "";
+    private String txtMatched = "";
+    private Integer indexFrom = null;
+    private Integer indexTo = null;
     private String ontologyUsed = "";
+    private String searchQueryUsed = "";
 
-    // list of synonyms associated with this valueUri
-    private HashSet<String> synonyms = new HashSet<String>();
+    private boolean exactSynonym = false;
+    private boolean exactMatch = false;
 
-    public AnnotatorResponse( Integer score, String value, String valueUri, String searchQuery, String ontologyUsed ) {
+    public AnnotatorResponse( String valueUri, String matchType, String txtMatched, Integer indexFrom, Integer indexTo,
+            String ontologyUsed, String searchQueryUsed ) {
         super();
-        this.score = score;
-        this.value = value;
         this.valueUri = valueUri;
-        this.searchQuery = searchQuery;
+        this.matchType = matchType;
+        this.txtMatched = txtMatched;
+        this.indexFrom = indexFrom;
+        this.indexTo = indexTo;
         this.ontologyUsed = ontologyUsed;
-    }
+        this.searchQueryUsed = searchQueryUsed;
 
-    // this information is given as a long string with space and new lines, parse and add all synonyms
-    public void addSynonyms( String line ) {
+        if ( indexFrom.equals( 1 ) && indexTo.equals( searchQueryUsed.length() ) ) {
 
-        String[] tokens = line.split( "\n" );
-
-        for ( String token : tokens ) {
-
-            token = token.trim();
-
-            if ( !token.isEmpty() ) {
-                this.synonyms.add( token );
+            if ( matchType.equals( "SYN" ) ) {
+                exactSynonym = true;
+            } else {
+                exactMatch = true;
             }
+
         }
+
     }
 
-    // term are ordered given priority to DOID terms
-    // 1- exact match from DOID
-    // 2- synonym from DOID
-    // 3- exact match from other resources
-    // 4- synonym from other resources
-    // 5 - other results
-    // to change this rewrite own compareTo method to define required order
+    @Override
+    public String toString() {
+        return "AnnotatorResponse [valueUri=" + valueUri + ", matchType=" + matchType + ", txtMatched=" + txtMatched
+                + ", indexFrom=" + indexFrom + ", indexTo=" + indexTo + ", ontologyUsed=" + ontologyUsed
+                + ", searchQueryUsed=" + searchQueryUsed + ", exactSynonym=" + exactSynonym + ", exactMatch="
+                + exactMatch + "]";
+    }
+
     @Override
     public int compareTo( AnnotatorResponse annotatorResponse ) {
 
-        boolean exactMatch = isExactMatch();
+        boolean exactMatchFound = exactMatch;
         boolean exactMatchCompare = annotatorResponse.isExactMatch();
-        boolean isSynonyme = isSynonym();
-        boolean isSynonymeCompare = annotatorResponse.isSynonym();
+        boolean isSynonyme = exactSynonym;
+        boolean isSynonymeCompare = annotatorResponse.isExactSynonym();
         boolean diseaseOntology = isDiseaseUsed();
         boolean diseaseCompare = annotatorResponse.isDiseaseUsed();
 
         if ( diseaseOntology ) {
 
-            if ( exactMatch ) {
+            if ( exactMatchFound ) {
                 return -1;
             } else if ( isSynonyme ) {
                 if ( !diseaseCompare ) {
@@ -86,13 +82,13 @@ public class AnnotatorResponse implements Comparable<AnnotatorResponse> {
                     return -1;
                 }
             }
-        } else if ( exactMatch || isSynonyme ) {
+        } else if ( exactMatchFound || isSynonyme ) {
             if ( diseaseCompare ) {
                 if ( exactMatchCompare || isSynonymeCompare ) {
                     return 1;
                 }
             }
-            if ( exactMatch ) {
+            if ( exactMatchFound ) {
                 return -1;
             } else if ( isSynonyme && !exactMatchCompare ) {
                 return -1;
@@ -101,121 +97,134 @@ public class AnnotatorResponse implements Comparable<AnnotatorResponse> {
         return 1;
     }
 
-    @Override
-    public boolean equals( Object obj ) {
-        if ( this == obj ) return true;
-        if ( obj == null ) return false;
-        if ( getClass() != obj.getClass() ) return false;
-        AnnotatorResponse other = ( AnnotatorResponse ) obj;
-        if ( ontologyUsed == null ) {
-            if ( other.ontologyUsed != null ) return false;
-        } else if ( !ontologyUsed.equals( other.ontologyUsed ) ) return false;
-        if ( score == null ) {
-            if ( other.score != null ) return false;
-        } else if ( !score.equals( other.score ) ) return false;
-        if ( searchQuery == null ) {
-            if ( other.searchQuery != null ) return false;
-        } else if ( !searchQuery.equals( other.searchQuery ) ) return false;
-        if ( valueUri == null ) {
-            if ( other.valueUri != null ) return false;
-        } else if ( !valueUri.equals( other.valueUri ) ) return false;
-        return true;
-    }
-
-    public String getOntologyUsed() {
-        return ontologyUsed;
-    }
-
-    public Integer getScore() {
-        return score;
-    }
-
-    public String getSearchQuery() {
-        return searchQuery;
-    }
-
-    public HashSet<String> getSynonyms() {
-        return synonyms;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public String getValueUri() {
-        return valueUri;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ( ( ontologyUsed == null ) ? 0 : ontologyUsed.hashCode() );
-        result = prime * result + ( ( score == null ) ? 0 : score.hashCode() );
-        result = prime * result + ( ( searchQuery == null ) ? 0 : searchQuery.hashCode() );
-        result = prime * result + ( ( valueUri == null ) ? 0 : valueUri.hashCode() );
-        return result;
-    }
-
     public boolean isDiseaseUsed() {
-        if ( ontologyUsed.equalsIgnoreCase( "Human Disease Ontology" ) ) {
+        if ( ontologyUsed.equalsIgnoreCase( AnnotatorClient.DOID_ONTOLOGY ) ) {
             return true;
         }
         return false;
     }
 
     public boolean isHpUsed() {
-        if ( ontologyUsed.equalsIgnoreCase( "Human Phenotype Ontology" ) ) {
+        if ( ontologyUsed.equalsIgnoreCase( AnnotatorClient.HP_ONTOLOGY ) ) {
             return true;
         }
         return false;
     }
 
-    public boolean isExactMatch() {
-
-        if ( this.value.equalsIgnoreCase( this.searchQuery ) ) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean isSynonym() {
-        return synonym;
-    }
-
-    public void setOntologyUsed( String ontologyUsed ) {
-        this.ontologyUsed = ontologyUsed;
-    }
-
-    public void setScore( Integer score ) {
-        this.score = score;
-    }
-
-    public void setSearchQuery( String searchQuery ) {
-        this.searchQuery = searchQuery;
-    }
-
-    public void setSynonym( boolean synonym ) {
-        this.synonym = synonym;
-    }
-
-    public void setSynonyms( HashSet<String> synonyms ) {
-        this.synonyms = synonyms;
-    }
-
-    public void setValue( String value ) {
-        this.value = value;
+    public String getValueUri() {
+        return valueUri;
     }
 
     public void setValueUri( String valueUri ) {
         this.valueUri = valueUri;
     }
 
+    public String getMatchType() {
+        return matchType;
+    }
+
+    public void setMatchType( String matchType ) {
+        this.matchType = matchType;
+    }
+
+    public String getTxtMatched() {
+        return txtMatched;
+    }
+
+    public void setTxtMatched( String txtMatched ) {
+        this.txtMatched = txtMatched;
+    }
+
+    public Integer getIndexFrom() {
+        return indexFrom;
+    }
+
+    public void setIndexFrom( Integer indexFrom ) {
+        this.indexFrom = indexFrom;
+    }
+
+    public Integer getIndexTo() {
+        return indexTo;
+    }
+
+    public void setIndexTo( Integer indexTo ) {
+        this.indexTo = indexTo;
+    }
+
+    public String getOntologyUsed() {
+        return ontologyUsed;
+    }
+
+    public void setOntologyUsed( String ontologyUsed ) {
+        this.ontologyUsed = ontologyUsed;
+    }
+
+    public String getSearchQueryUsed() {
+        return searchQueryUsed;
+    }
+
+    public void setSearchQueryUsed( String searchQueryUsed ) {
+        this.searchQueryUsed = searchQueryUsed;
+    }
+
+    public boolean isExactSynonym() {
+        return exactSynonym;
+    }
+
+    public void setExactSynonym( boolean exactSynonym ) {
+        this.exactSynonym = exactSynonym;
+    }
+
+    public boolean isExactMatch() {
+        return exactMatch;
+    }
+
+    public void setExactMatch( boolean exactMatch ) {
+        this.exactMatch = exactMatch;
+    }
+
     @Override
-    public String toString() {
-        return "AnnotatorResponse [score=" + score + ", value=" + value + ", valueUri=" + valueUri + ", searchQuery="
-                + searchQuery + "]";
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ( ( indexFrom == null ) ? 0 : indexFrom.hashCode() );
+        result = prime * result + ( ( indexTo == null ) ? 0 : indexTo.hashCode() );
+        result = prime * result + ( ( matchType == null ) ? 0 : matchType.hashCode() );
+        result = prime * result + ( ( ontologyUsed == null ) ? 0 : ontologyUsed.hashCode() );
+        result = prime * result + ( ( searchQueryUsed == null ) ? 0 : searchQueryUsed.hashCode() );
+        result = prime * result + ( ( txtMatched == null ) ? 0 : txtMatched.hashCode() );
+        result = prime * result + ( ( valueUri == null ) ? 0 : valueUri.hashCode() );
+        return result;
+    }
+
+    @Override
+    public boolean equals( Object obj ) {
+        if ( this == obj ) return true;
+        if ( obj == null ) return false;
+        if ( getClass() != obj.getClass() ) return false;
+        AnnotatorResponse other = ( AnnotatorResponse ) obj;
+        if ( indexFrom == null ) {
+            if ( other.indexFrom != null ) return false;
+        } else if ( !indexFrom.equals( other.indexFrom ) ) return false;
+        if ( indexTo == null ) {
+            if ( other.indexTo != null ) return false;
+        } else if ( !indexTo.equals( other.indexTo ) ) return false;
+        if ( matchType == null ) {
+            if ( other.matchType != null ) return false;
+        } else if ( !matchType.equals( other.matchType ) ) return false;
+        if ( ontologyUsed == null ) {
+            if ( other.ontologyUsed != null ) return false;
+        } else if ( !ontologyUsed.equals( other.ontologyUsed ) ) return false;
+        if ( searchQueryUsed == null ) {
+            if ( other.searchQueryUsed != null ) return false;
+        } else if ( !searchQueryUsed.equals( other.searchQueryUsed ) ) return false;
+        if ( txtMatched == null ) {
+            if ( other.txtMatched != null ) return false;
+        } else if ( !txtMatched.equals( other.txtMatched ) ) return false;
+        if ( valueUri == null ) {
+            if ( other.valueUri != null ) return false;
+        } else if ( !valueUri.equals( other.valueUri ) ) return false;
+        return true;
     }
 
     // method used by Phenocarta
@@ -228,14 +237,14 @@ public class AnnotatorResponse implements Comparable<AnnotatorResponse> {
             if ( isExactMatch() ) {
                 condition = "A) Found Exact With Disease Annotator";
 
-            } else if ( isSynonym() ) {
+            } else if ( isExactSynonym() ) {
                 condition = "B) Found Synonym With Disease Annotator Synonym";
             }
         } else if ( isHpUsed() ) {
 
             if ( isExactMatch() ) {
                 condition = "C) Found Exact With HP Annotator";
-            } else if ( isSynonym() ) {
+            } else if ( isExactSynonym() ) {
                 condition = "D) Found Synonym With HP Annotator Synonym";
             }
         }

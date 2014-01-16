@@ -17,7 +17,6 @@ package ubic.basecode.ontology.ncbo;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
-import java.util.HashSet;
 
 import org.junit.Test;
 
@@ -29,12 +28,7 @@ public class AnnotatorClientTest {
 
     @Test
     public void test() throws Exception {
-
-        Collection<Long> ontologiesToUse = new HashSet<Long>();
-        ontologiesToUse.add( 1009l );
-        ontologiesToUse.add( 1125l );
-        AnnotatorClient client = new AnnotatorClient( ontologiesToUse );
-        Collection<AnnotatorResponse> results = client.findTerm( "cancer" );
+        Collection<AnnotatorResponse> results = AnnotatorClient.findTerm( "cancer" );
         assertTrue( results.size() > 0 );
     }
 
