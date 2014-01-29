@@ -175,23 +175,27 @@ public class StringUtil {
      * @return return false if something strange was found in an evidence description
      */
     public static boolean containsValidCharacter( String description ) {
+        
+        if ( description != null ) {
+            
+            for ( int i = 0; i < description.length(); i++ ) {
 
-        for ( int i = 0; i < description.length(); i++ ) {
+                Character cha = description.charAt( i );
 
-            Character cha = description.charAt( i );
+                if ( !( isLatinLetter( cha ) || Character.isDigit( cha ) || cha == '=' || cha == ',' || cha == '('
+                        || cha == ')' || cha == '\'' || Character.isWhitespace( cha ) || cha == '/' || cha == '?'
+                        || cha == '+' || cha == ':' || cha == '-' || cha == '<' || cha == '>' || cha == '"'
+                        || cha == '%' || cha == '.' || cha == '*' || cha == '[' || cha == ']' || cha == ';'
+                        || cha == '_' || cha == '\\' || cha == '|' || cha == '&' || cha == '^' || cha == '#'
+                        || cha == '{' || cha == '}' || cha == '!' || cha == '~' || cha == '@' || cha == '—'
+                        || cha == '×' || cha == '–' || cha == ' ' ) ) {
 
-            if ( !( isLatinLetter( cha ) || Character.isDigit( cha ) || cha == '=' || cha == ',' || cha == '('
-                    || cha == ')' || cha == '\'' || Character.isWhitespace( cha ) || cha == '/' || cha == '?'
-                    || cha == '+' || cha == ':' || cha == '-' || cha == '<' || cha == '>' || cha == '"' || cha == '%'
-                    || cha == '.' || cha == '*' || cha == '[' || cha == ']' || cha == ';' || cha == '_' || cha == '\\'
-                    || cha == '|' || cha == '&' || cha == '^' || cha == '#' || cha == '{' || cha == '}' || cha == '!'
-                    || cha == '~' || cha == '@' || cha == '—' || cha == '×' || cha == '–' || cha == ' ' ) ) {
+                    // new cha to be added, special Öö≤≥âμ etc... TODO and check later if found
 
-                // new cha to be added, special Öö≤≥âμ etc... TODO and check later if found
+                    log.warn( "Illegal character found: " + cha + " found on description: " + description );
 
-                log.warn( "Illegal character found: " + cha + " found on description: " + description );
-
-                return false;
+                    return false;
+                }
             }
         }
         return true;
