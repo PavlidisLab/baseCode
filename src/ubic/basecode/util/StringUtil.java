@@ -187,7 +187,9 @@ public class StringUtil {
                     || cha == '|' || cha == '&' || cha == '^' || cha == '#' || cha == '{' || cha == '}' || cha == '!'
                     || cha == '~' || cha == '@' || cha == '—' || cha == '×' || cha == '–' || cha == ' ' ) ) {
 
-                log.error( "Illegal character found: " + cha + " found on description: " + description );
+                // new cha to be added, special Öö≤≥âμ etc... TODO and check later if found
+
+                log.warn( "Illegal character found: " + cha + " found on description: " + description );
 
                 return false;
             }
