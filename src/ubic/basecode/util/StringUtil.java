@@ -23,6 +23,8 @@ import java.io.StringReader;
 import java.util.Collection;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -31,6 +33,8 @@ import au.com.bytecode.opencsv.CSVReader;
  * @version $Id$
  */
 public class StringUtil {
+
+    private static final Logger log = LoggerFactory.getLogger( StringUtil.class );
 
     /**
      * @param appendee The string to be added to
@@ -162,6 +166,37 @@ public class StringUtil {
             }
         }
         return newLine.toString().replaceAll( "\"", "" );
+    }
+
+    /**
+     * Checks a string to find strange character, used by phenocarta to check evidence description
+     * 
+     * @param the string to check
+     * @return return false if something strange was found in an evidence description
+     */
+    public static boolean containsValidCharacter( String description ) {
+
+        for ( int i = 0; i < description.length(); i++ ) {
+
+            Character cha = description.charAt( i );
+
+            if ( !( isLatinLetter( cha ) || Character.isDigit( cha ) || cha == '=' || cha == ',' || cha == '('
+                    || cha == ')' || cha == '\'' || Character.isWhitespace( cha ) || cha == '/' || cha == '?'
+                    || cha == '+' || cha == ':' || cha == '-' || cha == '<' || cha == '>' || cha == '"' || cha == '%'
+                    || cha == '.' || cha == '*' || cha == '[' || cha == ']' || cha == ';' || cha == '_' || cha == '\\'
+                    || cha == '|' || cha == '&' || cha == '^' || cha == '#' || cha == '{' || cha == '}' || cha == '!'
+                    || cha == '~' || cha == '@' || cha == '—' || cha == '×' || cha == '–' || cha == ' ' ) ) {
+
+                log.error( "Illegal character found: " + cha + " found on description: " + description );
+
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean isLatinLetter( char c ) {
+        return ( c >= 'A' && c <= 'Z' ) || ( c >= 'a' && c <= 'z' );
     }
 
 }
