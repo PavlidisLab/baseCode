@@ -205,7 +205,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
      * @param fileName
      * @param wantedRowNames if null, takes all rows
      * @param numberOfColumnsToSkip how many columns to skip -- not counting the first column. So if you set this to 4,
-     *        the first four data columns will be skipped.
+     *        the first four data columns will be skipped. If you set it to zero, only the first column will be skipped.
      * @return
      * @throws IOException
      */
