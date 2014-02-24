@@ -85,7 +85,7 @@ public class LeastSquaresFit {
     private DoubleMatrix2D b;
 
     /**
-     * Model fix coefficients (the x in Ax=b)
+     * Model fit coefficients (the x in Ax=b)
      */
     private DoubleMatrix2D coefficients = null;
 
