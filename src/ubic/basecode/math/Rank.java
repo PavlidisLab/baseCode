@@ -166,14 +166,15 @@ public class Rank {
     }
 
     /**
-     * Rank transform a map, where the values are numerical (java.lang.Double) values we wish to rank. Ties are broken
-     * as for the other methods. Ranks are zero-based
+     * Rank transform a map, where the values are Comparable values we wish to rank. Ties are broken as for the other
+     * methods. Ranks are zero-based
      * <p>
      * Missing values are sorted in their natural order, which means they end up all at one end (at the high ('bad')
      * end)
      * 
      * @param m java.util.Map with keys Objects, values Doubles.
-     * @return A java.util.Map keys=old keys, values=java.lang.Integer rank of the key.
+     * @return A java.util.Map keys=old keys, values=java.lang.Double rank of the key. Non-integer values mean tie
+     *         splits.
      */
     public static <K> Map<K, Double> rankTransform( Map<K, ? extends Comparable<?>> m ) {
         return rankTransform( m, false );
@@ -188,7 +189,8 @@ public class Rank {
      * @param <K>
      * @param m
      * @param desc if true, the lowest (first) rank will be for the highest value.
-     * @return
+     * @return A java.util.Map keys=old keys, values=java.lang.Double rank of the key. Non-integer values mean tie
+     *         splits.
      */
     public static <K> Map<K, Double> rankTransform( Map<K, ? extends Comparable<?>> m, boolean desc ) {
 
@@ -312,7 +314,8 @@ public class Rank {
      * @param m
      * @param desc
      * @param values this gets sorted.
-     * @return
+     * @return A java.util.Map keys=old keys, values=java.lang.Double rank of the key. Non-integer values mean tie
+     *         splits.
      */
     @SuppressWarnings("unchecked")
     private static <K> Map<K, Double> rankTransform( Map<K, ? extends Comparable<?>> m, boolean desc,

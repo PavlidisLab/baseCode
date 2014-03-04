@@ -200,6 +200,19 @@ public class CountingMap<K> implements Map<K, Integer> {
         return map.keySet();
     }
 
+    /**
+     * @return
+     */
+    public int max() {
+        int r = 0;
+        for ( Integer i : map.values() ) {
+            if ( i > r ) {
+                r = i;
+            }
+        }
+        return r;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -271,17 +284,6 @@ public class CountingMap<K> implements Map<K, Integer> {
         return keys;
     }
 
-    /**
-     * Returns the sum of all counts in the map.
-     */
-    public int summation() {
-        int summation = 0;
-        for ( int value : map.values() ) {
-            summation += value;
-        }
-        return summation;
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder( "[" );
@@ -292,6 +294,17 @@ public class CountingMap<K> implements Map<K, Integer> {
             first = false;
         }
         return sb.toString() + "]";
+    }
+
+    /**
+     * Returns the sum of all counts in the map.
+     */
+    public int total() {
+        int summation = 0;
+        for ( int value : map.values() ) {
+            summation += value;
+        }
+        return summation;
     }
 
     /*

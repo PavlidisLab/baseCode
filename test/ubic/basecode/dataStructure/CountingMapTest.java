@@ -103,6 +103,6 @@ public class CountingMapTest {
         map.increment( KEY_4 );
         map.increment( KEY_4 );
         map.increment( KEY_4 );
-        assertEquals( map.summation(), 8 );
+        assertEquals( map.total(), 8 );
     }
 }
