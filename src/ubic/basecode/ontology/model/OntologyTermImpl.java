@@ -308,11 +308,13 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
         for ( OntologyTerm parentOntologyTerm : parentsOntologyTerm ) {
 
-            if ( parentOntologyTerm.getLocalName().equalsIgnoreCase( "ObsoleteClass" ) ) {
+            if ( parentOntologyTerm.getLocalName() != null
+                    && parentOntologyTerm.getLocalName().equalsIgnoreCase( "ObsoleteClass" ) ) {
                 return true;
             }
-            if ( parentOntologyTerm.getUri().equalsIgnoreCase(
-                    "http://bioontology.org/projects/ontologies/birnlex#_birnlex_retired_class" )
+            if ( parentOntologyTerm.getUri() != null
+                    && parentOntologyTerm.getUri().equalsIgnoreCase(
+                            "http://bioontology.org/projects/ontologies/birnlex#_birnlex_retired_class" )
                     || parentOntologyTerm
                             .getUri()
                             .equalsIgnoreCase(
@@ -326,6 +328,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
         // this is a little slow because we have to go through all statements for the term.
         while ( iterator.hasNext() ) {
             Statement state = iterator.next();
+            if ( state.getPredicate() == null ) continue;
             OntResource res = state.getPredicate().as( OntResource.class );
             if ( res.isAnnotationProperty() ) {
                 com.hp.hpl.jena.ontology.AnnotationProperty p = res.asAnnotationProperty();

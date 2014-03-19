@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
@@ -94,10 +95,9 @@ public class OntologySearch {
                 } catch ( ARQException e ) {
                     throw new RuntimeException( e.getCause() );
                 } catch ( JenaException e ) {
-                    log.error( e.getMessage(), e );
                     throw new RuntimeException( e.getCause() );
                 } catch ( Exception e ) {
-                    log.error( e.getMessage(), e );
+                    log.error( ExceptionUtils.getStackTrace( e ), e );
                 }
             }
 
@@ -169,7 +169,7 @@ public class OntologySearch {
                     }
 
                 } catch ( Exception e ) {
-                    log.error( e.getMessage(), e );
+                    log.error( ExceptionUtils.getStackTrace( e ), e );
                 }
             }
 
@@ -257,7 +257,7 @@ public class OntologySearch {
                 } catch ( JenaException e ) {
                     throw new RuntimeException( e.getCause() );
                 } catch ( Exception e ) {
-                    log.error( e.getMessage(), e );
+                    log.error( ExceptionUtils.getStackTrace( e ), e );
                 }
             } else if ( log.isDebugEnabled() ) log.debug( "This search term not included in the results: " + r );
 
