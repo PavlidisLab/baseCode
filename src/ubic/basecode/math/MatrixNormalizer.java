@@ -88,8 +88,9 @@ public class MatrixNormalizer<R, C> {
                 double rank = ranks.get( j ).get( i ) - 1.0;
 
                 int intrank = ( int ) Math.floor( rank );
+
                 Double value = null;
-                if ( rank - intrank > 0.4 ) {
+                if ( rank - intrank > 0.4 && intrank > 0 ) {
                     // cope with tied ranks. 0.4 is the threshold R uses.
                     value = ( rowMeans.get( intrank ) + rowMeans.get( intrank - 1 ) ) / 2.0;
                 } else {
