@@ -315,7 +315,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
             // debug code.
             if ( parentOntologyTerm.getUri() == null ) {
-                log.warn( "URI for " + parentOntologyTerm + " was null" );
+                // log.warn( "URI for " + parentOntologyTerm + " was null" ); // not a problem.
                 continue;
             }
 
