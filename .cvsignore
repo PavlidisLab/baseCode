@@ -41,3 +41,6 @@ cobertura.ser
 .externalToolBuilders
 .deployment
 release.properties
+.idea
+out
+baseCode.iml
