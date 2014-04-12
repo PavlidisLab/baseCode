@@ -30,6 +30,10 @@ public interface OntologyTerm extends OntologyResource {
 
     public Collection<AnnotationProperty> getAnnotations();
 
+    /**
+     * @param direct return only the immediate children; if false, return all of them down to the leaves.
+     * @return
+     */
     public Collection<OntologyTerm> getChildren( boolean direct );
 
     public String getComment();
