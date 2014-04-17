@@ -159,7 +159,7 @@ public abstract class AbstractOntologyService {
 
     protected AtomicBoolean modelReady = new AtomicBoolean( false );
 
-    protected Map<String, OntologyTerm> terms;
+    protected Map<String, OntologyTerm> terms = null;
 
     private Map<String, OntologyTerm> alternativeIDs = new HashMap<String, OntologyTerm>();
 
@@ -293,7 +293,7 @@ public abstract class AbstractOntologyService {
      */
     public OntologyTerm getTerm( String uri ) {
 
-        if ( ( uri == null ) || ( !isInitialized.get() ) ) return null;
+        if ( ( uri == null ) || ( !isInitialized.get() ) || terms == null ) return null;
 
         OntologyTerm term = terms.get( uri );
 
