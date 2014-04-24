@@ -271,20 +271,6 @@ public abstract class AbstractOntologyService {
         return resource;
     }
 
-    // /**
-    // * @param matches
-    // * @return
-    // */
-    // private Collection<OntologyTerm> removeObsoleteTerms( Collection<OntologyTerm> matches ) {
-    // Collection<OntologyTerm> filteredResults = new HashSet<OntologyTerm>();
-    // for ( OntologyTerm ot : matches ) {
-    // if ( !ot.isTermObsolete() ) {
-    // filteredResults.add( ot );
-    // }
-    // }
-    // return filteredResults;
-    // }
-
     /**
      * Looks for a OntologyTerm that has the match in URI given
      * 
@@ -293,7 +279,9 @@ public abstract class AbstractOntologyService {
      */
     public OntologyTerm getTerm( String uri ) {
 
-        if ( ( uri == null ) || ( !isInitialized.get() ) || terms == null ) return null;
+        if ( !isInitialized.get() || terms == null ) return null;
+
+        if ( uri == null ) throw new IllegalArgumentException( "URI cannot be null" );
 
         OntologyTerm term = terms.get( uri );
 
