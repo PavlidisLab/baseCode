@@ -18,6 +18,7 @@
  */
 package ubic.basecode.util;
 
+import java.math.BigInteger;
 import java.sql.Blob;
 import java.sql.SQLException;
 
@@ -41,5 +42,15 @@ public class SQLUtils {
     public static String blobToString( Blob exonStarts ) throws SQLException {
         byte[] bytes = exonStarts.getBytes( 1L, ( int ) exonStarts.length() );
         return bac.byteArrayToAsciiString( bytes );
+    }
+
+    public static Long asId( Object o ) {
+        if ( o == null ) return null;
+        if ( o instanceof BigInteger ) {
+            return ( ( BigInteger ) o ).longValue();
+        } else if ( o instanceof Long ) {
+            return ( Long ) o;
+        }
+        throw new IllegalArgumentException( "Cannot figure out how to turn object to an id: " + o.getClass().getName() );
     }
 }
