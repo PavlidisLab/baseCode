@@ -21,6 +21,7 @@ package ubic.basecode.io;
 import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.zip.ZipInputStream;
 
@@ -95,8 +96,9 @@ public class TestByteArrayConverter {
         bac = new ByteArrayConverter();
         sc = new StringConverter();
 
-        ZipInputStream is = new ZipInputStream(
-                TestByteArrayConverter.class.getResourceAsStream( "/data/melanoma_and_sarcomaMAS5.zip" ) );
+        InputStream in = TestByteArrayConverter.class.getResourceAsStream( "/data/melanoma_and_sarcomaMAS5.zip" );
+        assert in != null;
+        ZipInputStream is = new ZipInputStream( in );
 
         is.getNextEntry();
 
@@ -114,10 +116,6 @@ public class TestByteArrayConverter {
         }
 
         longDoubleString = buf.toString();
-
-        if ( longDoubleString == null ) {
-            throw new IllegalStateException( "Couldn't setup string" );
-        }
 
         wholeBunchOfDoubles = sc.stringToDoubles( longDoubleString );
         br.close();

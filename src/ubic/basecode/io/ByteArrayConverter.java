@@ -24,6 +24,11 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,13 +68,7 @@ public final class ByteArrayConverter {
      */
     private static final int BOOL_SIZE = 1; // erm...this seems to work.
 
-    private static final int CHAR_SIZE = 2;
-
     private static final int DOUBLE_SIZE = 8;
-
-    private static final int INT_SIZE = 4;
-
-    private static final int LONG_SIZE = 8;
 
     /**
      * @param boolarray
@@ -116,22 +115,25 @@ public final class ByteArrayConverter {
         int i = 0;
 
         try {
-            while ( true ) {
+            while ( dis.available() > 0 ) {
                 iarray[i] = dis.readBoolean();
                 i++;
             }
+            return iarray;
+
         } catch ( IOException e ) {
-            // do nothing.
+            throw new RuntimeException( e );
+        } finally {
+            try {
+                dis.close();
+                bis.close();
+
+            } catch ( IOException e ) {
+                throw new RuntimeException( e );
+
+            }
         }
 
-        try {
-            dis.close();
-            bis.close();
-        } catch ( IOException e1 ) {
-            throw new RuntimeException( "Conversion error", e1 );
-        }
-
-        return iarray;
     }
 
     /**
@@ -140,28 +142,12 @@ public final class ByteArrayConverter {
      */
     public char[] byteArrayToChars( byte[] barray ) {
         if ( barray == null ) return null;
-        ByteArrayInputStream bis = new ByteArrayInputStream( barray );
-        DataInputStream dis = new DataInputStream( bis );
-        char[] carray = new char[barray.length / CHAR_SIZE];
 
-        int i = 0;
-        try {
-            while ( true ) {
-                carray[i] = dis.readChar();
-                i++;
-            }
-        } catch ( IOException e ) {
-            // do nothing.
-        }
+        CharBuffer buf = ByteBuffer.wrap( barray ).asCharBuffer();
+        char[] array = new char[buf.remaining()];
+        buf.get( array );
+        return array;
 
-        try {
-            dis.close();
-            bis.close();
-        } catch ( IOException e ) {
-            throw new RuntimeException( "Conversion error", e );
-        }
-
-        return carray;
     }
 
     /**
@@ -202,26 +188,13 @@ public final class ByteArrayConverter {
      */
     public double[] byteArrayToDoubles( byte[] barray ) {
         if ( barray == null ) return null;
-        ByteArrayInputStream bis = new ByteArrayInputStream( barray );
-        DataInputStream dis = new DataInputStream( bis );
 
-        double[] darray = new double[barray.length / DOUBLE_SIZE];
-        int i = 0;
-        try {
-            while ( true ) {
-                darray[i] = dis.readDouble();
-                i++;
-            }
-        } catch ( IOException e ) {
-            // do nothing.
-        }
+        DoubleBuffer buf = ByteBuffer.wrap( barray ).asDoubleBuffer();
+        double[] array = new double[buf.remaining()];
+        buf.get( array );
 
-        try {
-            bis.close();
-        } catch ( IOException e1 ) {
-            throw new RuntimeException( "Conversion error", e1 );
-        }
-        return darray;
+        return array;
+
     }
 
     /**
@@ -230,28 +203,13 @@ public final class ByteArrayConverter {
      */
     public int[] byteArrayToInts( byte[] barray ) {
         if ( barray == null ) return null;
-        ByteArrayInputStream bis = new ByteArrayInputStream( barray );
-        DataInputStream dis = new DataInputStream( bis );
-        int[] iarray = new int[barray.length / INT_SIZE];
-        int i = 0;
 
-        try {
-            while ( true ) {
-                iarray[i] = dis.readInt();
-                i++;
-            }
-        } catch ( IOException e ) {
-            // do nothing.
-        }
+        IntBuffer intBuf = ByteBuffer.wrap( barray ).asIntBuffer();
+        int[] array = new int[intBuf.remaining()];
+        intBuf.get( array );
 
-        try {
-            dis.close();
-            bis.close();
-        } catch ( IOException e1 ) {
-            throw new RuntimeException( "Conversion error", e1 );
-        }
+        return array;
 
-        return iarray;
     }
 
     /**
@@ -260,28 +218,12 @@ public final class ByteArrayConverter {
      */
     public long[] byteArrayToLongs( byte[] barray ) {
         if ( barray == null ) return null;
-        ByteArrayInputStream bis = new ByteArrayInputStream( barray );
-        DataInputStream dis = new DataInputStream( bis );
-        long[] iarray = new long[barray.length / LONG_SIZE];
-        int i = 0;
 
-        try {
-            while ( true ) {
-                iarray[i] = dis.readLong();
-                i++;
-            }
-        } catch ( IOException e ) {
-            // do nothing.
-        }
+        LongBuffer buf = ByteBuffer.wrap( barray ).asLongBuffer();
+        long[] array = new long[buf.remaining()];
+        buf.get( array );
 
-        try {
-            dis.close();
-            bis.close();
-        } catch ( IOException e1 ) {
-            throw new RuntimeException( "Conversion error", e1 );
-        }
-
-        return iarray;
+        return array;
     }
 
     /**
