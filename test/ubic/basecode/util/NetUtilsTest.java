@@ -50,7 +50,7 @@ public class NetUtilsTest {
             return;
         }
 
-        long checkForFile = NetUtils.checkForFile( f, "genomes/README" );
+        long checkForFile = NetUtils.checkForFile( f, "genomes/README.txt" );
         assertTrue( checkForFile > 0 );
 
     }
@@ -66,7 +66,7 @@ public class NetUtilsTest {
         }
 
         File temp = File.createTempFile( "ftptest", "txt" );
-        NetUtils.ftpDownloadFile( f, "genomes/README", temp, false );
+        NetUtils.ftpDownloadFile( f, "genomes/README.txt", temp, false );
         assertTrue( temp.canRead() );
 
     }
