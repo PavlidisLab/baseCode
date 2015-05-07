@@ -236,7 +236,9 @@ public class OntologySearch {
                     results.add( impl2 );
                     if ( log.isDebugEnabled() ) log.debug( impl2.toString() );
                 } catch ( JenaException e ) {
-                    throw new RuntimeException( e.getCause() );
+                    // these are completely uninformative exceptions at the moment.
+                    log.error( e.getMessage(), e );
+                    // throw new RuntimeException( e.getCause() );
                 } catch ( Exception e ) {
                     log.error( e.getMessage(), e );
                 }
@@ -255,7 +257,9 @@ public class OntologySearch {
                     results.add( impl2 );
                     if ( log.isDebugEnabled() ) log.debug( impl2.toString() );
                 } catch ( JenaException e ) {
-                    throw new RuntimeException( e.getCause() );
+                    // these are completely uninformative exceptions at the moment.
+                    log.error( e.getMessage(), e );
+                    // throw new RuntimeException( e.getCause() );
                 } catch ( Exception e ) {
                     log.error( ExceptionUtils.getStackTrace( e ), e );
                 }
