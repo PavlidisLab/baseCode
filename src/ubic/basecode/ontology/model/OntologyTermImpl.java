@@ -21,6 +21,7 @@ import java.util.Set;
 import org.apache.commons.lang3.ObjectUtils;
 
 import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
+import com.hp.hpl.jena.ontology.ConversionException;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntProperty;
@@ -425,9 +426,12 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
                 Restriction restriction = c.asRestriction();
 
-                OntProperty onProperty = restriction.getOnProperty();
-
-                if ( !onProperty.getURI().equals( "http://www.obofoundry.org/ro/ro.owl#has_proper_part" ) ) {
+                try {
+                    OntProperty onProperty = restriction.getOnProperty();
+                    if ( !onProperty.getURI().equals( "http://www.obofoundry.org/ro/ro.owl#has_proper_part" ) ) {
+                        continue;
+                    }
+                } catch ( ConversionException e ) {
                     continue;
                 }
 
