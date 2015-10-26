@@ -21,6 +21,7 @@ package ubic.basecode.util;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,7 +29,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.time.DateUtils;
 
 /**
- * Date Utility Class This is used to convert Strings to Dates and Timestamps. In part adapted from Appfuse
+ * Date Utility Class
  * 
  * @author pavlidis
  * @author <a href="mailto:matt@raibledesigns.com">Matt Raible</a> Modified by <a href="mailto:dan@getrolling.com">Dan
@@ -157,4 +158,25 @@ public class DateUtil {
         return todayDate;
     }
 
+    /**
+     * Compute the number of seconds spanned by the given dates. If no or a single date is provided, returns 0.
+     * 
+     * @param dates
+     * @return
+     */
+    public static long numberOfSecondsBetweenDates( Collection<Date> dates ) {
+        if ( dates == null ) throw new IllegalArgumentException();
+        if ( dates.size() < 2 ) return 0;
+        // dates we are sure are safe...
+        Date max = DateUtils.setYears( new Date(), 1000 );
+        Date min = DateUtils.addYears( new Date(), 1000 );
+        for ( Date d : dates ) {
+            if ( d.before( min ) ) {
+                min = d;
+            } else if ( d.after( max ) ) {
+                max = d;
+            }
+        }
+        return Math.round( ( max.getTime() - min.getTime() ) / 1000.00 );
+    }
 }
