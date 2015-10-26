@@ -18,7 +18,9 @@
  */
 package ubic.basecode.util;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 
 import junit.framework.TestCase;
 
@@ -71,6 +73,28 @@ public class DateUtilTest extends TestCase {
         Date actualValue = DateUtil.getRelativeDate( now, "1d" );
 
         assertEquals( expectedValue, actualValue );
+
+    }
+
+    public void testRange() {
+
+        Collection<Date> ds = new HashSet<Date>();
+        Date now = new Date();
+        ds.add( now );
+        ds.add( DateUtils.addSeconds( now, -100 ) );
+        ds.add( DateUtils.addSeconds( now, 200 ) );
+
+        assertEquals( 300L, DateUtil.numberOfSecondsBetweenDates( ds ) );
+
+    }
+
+    public void testRangeBad() {
+
+        Collection<Date> ds = new HashSet<Date>();
+        Date now = new Date();
+        ds.add( now );
+
+        assertEquals( 0L, DateUtil.numberOfSecondsBetweenDates( ds ) );
 
     }
 }

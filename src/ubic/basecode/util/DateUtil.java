@@ -168,7 +168,7 @@ public class DateUtil {
         if ( dates == null ) throw new IllegalArgumentException();
         if ( dates.size() < 2 ) return 0;
         // dates we are sure are safe...
-        Date max = DateUtils.setYears( new Date(), 1000 );
+        Date max = DateUtils.addYears( new Date(), -1000 );
         Date min = DateUtils.addYears( new Date(), 1000 );
         for ( Date d : dates ) {
             if ( d.before( min ) ) {
