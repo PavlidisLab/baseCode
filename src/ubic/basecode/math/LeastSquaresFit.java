@@ -72,11 +72,15 @@ public class LeastSquaresFit {
      */
     private DoubleMatrix2D A;
 
-    /*
+    /**
      * Lists which factors (terms) are associated with which columns of the design matrix; 0 indicates the intercept.
+     * Used for ANOVA
      */
     private List<Integer> assign = new ArrayList<Integer>();
 
+    /**
+     * Row-specific assign values, for use when there are missing values; Used for ANOVA
+     */
     private List<List<Integer>> assigns = new ArrayList<List<Integer>>();
 
     /**
@@ -449,7 +453,7 @@ public class LeastSquaresFit {
         DoubleMatrix2D dof = new DenseDoubleMatrix2D( effects.rows(), facs.size() + 1 );
         dof.assign( 0.0 );
         ssq.assign( 0.0 );
-        List<Integer> assignToUse = assign;
+        List<Integer> assignToUse = assign; // if has missing values, this will get swapped.
 
         for ( int i = 0; i < ssq.rows(); i++ ) {
 
@@ -466,6 +470,7 @@ public class LeastSquaresFit {
             dof.set( i, facs.size(), rdof );
 
             if ( !assigns.isEmpty() ) {
+                // when missing values are present we end up here.
                 assignToUse = assigns.get( i );
             }
 
@@ -1029,6 +1034,10 @@ public class LeastSquaresFit {
             double[][] rawResult = new double[b.rows()][];
             for ( int i = 0; i < b.rows(); i++ ) {
                 DoubleMatrix1D row = b.viewRow( i );
+                if ( row.size() < 3 ) { // don't bother.
+                    rawResult[i] = new double[A.columns()];
+                    continue;
+                }
                 DoubleMatrix1D withoutMissing = ordinaryLeastSquaresWithMissing( row, A );
                 if ( withoutMissing == null ) {
                     rawResult[i] = new double[A.columns()];
@@ -1072,7 +1081,7 @@ public class LeastSquaresFit {
         Algebra solver = new Algebra();
         List<Double> ywithoutMissingList = new ArrayList<Double>( y.size() );
         int size = y.size();
-
+        boolean hasAssign = !this.assign.isEmpty();
         int countNonMissing = 0;
         for ( int i = 0; i < size; i++ ) {
             double v = y.getQuick( i );
@@ -1090,7 +1099,7 @@ public class LeastSquaresFit {
             log.debug( "Not enough non-missing values" );
             this.qrs.add( null );
             this.residualDofs.add( countNonMissing - des.columns() );
-            this.assigns.add( new ArrayList<Integer>() );
+            if ( hasAssign ) this.assigns.add( new ArrayList<Integer>() );
             // this.pivotIndicesList.add( new Integer[] {} );
             return re;
         }
@@ -1125,7 +1134,7 @@ public class LeastSquaresFit {
             re.assign( Double.NaN );
             this.qrs.add( null );
             this.residualDofs.add( countNonMissing - des.columns() );
-            this.assigns.add( new ArrayList<Integer>() );
+            if ( hasAssign ) this.assigns.add( new ArrayList<Integer>() );
             // this.pivotIndicesList.add( new Integer[] {} );
             return re;
         }
@@ -1167,15 +1176,16 @@ public class LeastSquaresFit {
                     // leave it as NaN.
                     continue;
                 }
-                assignForRow.add( this.assign.get( i ) );
+
+                if ( hasAssign ) assignForRow.add( this.assign.get( i ) );
                 assert k < col.size();
                 result.set( i, col.get( k ) );
                 k++;
             }
-            assigns.add( assignForRow );
+            if ( hasAssign ) assigns.add( assignForRow );
             return result;
         }
-        assigns.add( this.assign );
+        if ( hasAssign ) assigns.add( this.assign );
         return coefs.viewColumn( 0 );
 
     }
