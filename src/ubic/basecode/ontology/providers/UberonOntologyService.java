@@ -38,7 +38,7 @@ public class UberonOntologyService extends AbstractOntologyMemoryBackedService {
      */
     @Override
     protected String getOntologyName() {
-        return "uberon";
+        return "uberonOntology";
     }
 
     /*
