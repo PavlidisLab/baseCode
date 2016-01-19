@@ -18,7 +18,7 @@
 		<connection>scm:cvs:ext:@otto.pavlab.chibi.ubc.ca:/cvs:baseCode</connection>
 		<developerConnection>scm:cvs:ext:@otto.pavlab.chibi.ubc.ca:/cvs:baseCode</developerConnection>
 		<url>http://www.chibi.ubc.ca/faculty/pavlidis/fisheye/browse/pavlab/baseCode</url>
-	  <tag>baseCode-1_0_15</tag>
+	  <tag>baseCode-1_0_16</tag>
   </scm>
 	<issueManagement>
 		<system>Bugzilla</system>
