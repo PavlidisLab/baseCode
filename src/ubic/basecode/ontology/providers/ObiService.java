@@ -36,7 +36,7 @@ public class ObiService extends AbstractOntologyMemoryBackedService {
      */
     @Override
     protected String getOntologyName() {
-        return "obi";
+        return "obiOntology";
     }
 
     /*
