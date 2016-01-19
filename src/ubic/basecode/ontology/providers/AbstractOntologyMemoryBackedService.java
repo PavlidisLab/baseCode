@@ -92,6 +92,9 @@ public abstract class AbstractOntologyMemoryBackedService extends AbstractOntolo
 
     @Override
     protected synchronized OntModel loadModel() {
+        /*
+         * FIXME: configure to use a cache if the url is not available.
+         */
         return OntologyLoader.loadMemoryModel( this.getOntologyUrl() );
     }
 

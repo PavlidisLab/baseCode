@@ -22,7 +22,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Collection;
@@ -132,8 +131,8 @@ public class OntologyLoader {
      * 
      * @param is
      * @param url, used as a key
+     * @param spec
      * @return
-     * @throws IOException
      */
     public static OntModel loadMemoryModel( InputStream is, String url, OntModelSpec spec ) {
         OntModel model = getMemoryModel( url, spec );
@@ -142,16 +141,23 @@ public class OntologyLoader {
     }
 
     /**
-     * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
+     * Load an ontology into memory. Use this type of model when fast access is critical and memory is available. Uses
+     * OWL_MEM_TRANS_INF
      * 
      * @param url
      * @return
-     * @throws IOException
      */
     public static OntModel loadMemoryModel( String url ) {
         return loadMemoryModel( url, OntModelSpec.OWL_MEM_TRANS_INF );
     }
 
+    /**
+     * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
+     * 
+     * @param url
+     * @param spec e.g. OWL_MEM_TRANS_INF
+     * @return
+     */
     public static OntModel loadMemoryModel( String url, OntModelSpec spec ) {
         StopWatch timer = new StopWatch();
         timer.start();
@@ -186,8 +192,6 @@ public class OntologyLoader {
 
                 s.close();
                 break;
-            } catch ( MalformedURLException e ) {
-                throw new RuntimeException( e );
             } catch ( IOException e ) {
                 // try to recover.
                 lastException = e;
