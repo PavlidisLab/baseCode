@@ -19,7 +19,7 @@
 		<developerConnection>scm:cvs:ext:@otto.pavlab.chibi.ubc.ca:/cvs:baseCode</developerConnection>
 		<url>http://www.chibi.ubc.ca/faculty/pavlidis/fisheye/browse/pavlab/baseCode</url>
 	  <tag>baseCode-1_0_16</tag>
-  </scm>
+	</scm>
 	<issueManagement>
 		<system>Bugzilla</system>
 		<url>
@@ -89,7 +89,7 @@
 		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
-			<!--  special private build of snapshot until 2.0 is released officially -->
+			<!-- special private build of snapshot until 2.0 is released officially -->
 			<version>2.0-RCT</version>
 			<exclusions>
 				<exclusion>
@@ -383,17 +383,26 @@
 							</configuration>
 						</plugin>
 						<plugin>
-							<groupId>org.codehaus.mojo</groupId>
-							<artifactId>changelog-maven-plugin</artifactId>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-changes-plugin</artifactId>
+							<version>2.11</version>
+							<reportSets>
+								<reportSet>
+									<reports>
+										<report>changes-report</report>
+									</reports>
+								</reportSet>
+							</reportSets>
 						</plugin>
-
 						<plugin>
-							<groupId>org.codehaus.mojo</groupId>
-							<artifactId>jxr-maven-plugin</artifactId>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-jxr-plugin</artifactId>
+							<version>2.5</version>
 						</plugin>
 						<plugin>
 							<groupId>org.codehaus.mojo</groupId>
 							<artifactId>taglist-maven-plugin</artifactId>
+							<version>2.4</version>
 						</plugin>
 						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
