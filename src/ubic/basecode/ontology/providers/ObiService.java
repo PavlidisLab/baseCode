@@ -27,7 +27,7 @@ import ubic.basecode.util.Configuration;
  */
 public class ObiService extends AbstractOntologyMemoryBackedService {
 
-    private static final String ONTOLOGY_URL = "url.obi";
+    private static final String ONTOLOGY_URL = "url.obiOntology";
 
     /*
      * (non-Javadoc)
