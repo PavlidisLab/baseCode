@@ -76,15 +76,15 @@ public class DateUtilTest extends TestCase {
 
     }
 
-    public void testRange() {
+    public void testRange() throws Exception {
 
         Collection<Date> ds = new HashSet<Date>();
         Date now = new Date();
         ds.add( now );
-        ds.add( DateUtils.addSeconds( now, -100 ) );
-        ds.add( DateUtils.addSeconds( now, 200 ) );
+        ds.add( DateUtils.addSeconds( now, -1 ) );
+        ds.add( DateUtils.addSeconds( now, 2 ) );
 
-        assertEquals( 300L, DateUtil.numberOfSecondsBetweenDates( ds ) );
+        assertEquals( 3L, DateUtil.numberOfSecondsBetweenDates( ds ) );
 
     }
 
