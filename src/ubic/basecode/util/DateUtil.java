@@ -159,8 +159,7 @@ public class DateUtil {
     }
 
     /**
-     * Compute the number of seconds spanned by the given dates. If no or a single date is provided, returns 0. This is
-     * designed to work with "recent" dates (last 50 years).
+     * Compute the number of seconds spanned by the given dates. If no or a single date is provided, returns 0.
      * 
      * @param dates
      * @return
@@ -169,12 +168,14 @@ public class DateUtil {
         if ( dates == null ) throw new IllegalArgumentException();
         if ( dates.size() < 2 ) return 0;
         // dates we are sure are safe...
-        Date max = DateUtils.addYears( new Date(), -50 );
-        Date min = DateUtils.addYears( new Date(), 1000 );
+        Date max = DateUtils.addYears( new Date(), -500 );
+        Date min = DateUtils.addYears( new Date(), 500 );
         for ( Date d : dates ) {
             if ( d.before( min ) ) {
                 min = d;
-            } else if ( d.after( max ) ) {
+            }
+
+            if ( d.after( max ) ) {
                 max = d;
             }
         }
