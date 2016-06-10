@@ -10,8 +10,8 @@
 	<![CDATA[Data structures, math and statistics tools, and utilities that are often needed across projects.]]>
 	</description>
 	<organization>
-		<name>UBC Centre for High-throughput Biology</name>
-		<url>http://www.chibi.ubc.ca/</url>
+		<name>UBC Michael Smith Laboratories</name>
+		<url>http://www.msl.ubc.ca/</url>
 	</organization>
 	<packaging>jar</packaging>
 	<scm>
@@ -312,8 +312,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.5.1</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 			<plugin>
