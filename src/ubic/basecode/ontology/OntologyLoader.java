@@ -238,7 +238,8 @@ public class OntologyLoader {
         ModelMaker maker = ModelFactory.createMemModelMaker();
         Model base = maker.createModel( url, false );
         spec.setImportModelMaker( maker );
-
+        spec.getDocumentManager().setProcessImports(false);
+        
         return ModelFactory.createOntologyModel( spec, base );
     }
 
