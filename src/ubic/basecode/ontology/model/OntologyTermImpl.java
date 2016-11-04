@@ -467,46 +467,56 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
         ExtendedIterator<OntClass> iterator = ontResource.listSuperClasses( true );
 
         while ( iterator.hasNext() ) {
-            OntClass c = iterator.next();
-            if ( USE_PROPER_PART_RESTRICTIONS && c.isRestriction() ) {
-                Restriction restriction = c.asRestriction();
 
-                OntProperty onProperty = restriction.getOnProperty();
+            try {
+                OntClass c = iterator.next();
 
-                if ( !onProperty.getURI().equals( "http://www.obofoundry.org/ro/ro.owl#proper_part_of" ) ) {
-                    continue;
-                }
+                if ( USE_PROPER_PART_RESTRICTIONS && c.isRestriction() ) {
+                    Restriction restriction = c.asRestriction();
 
-                Resource r = getRestrictionValue( restriction );
+                    OntProperty onProperty = restriction.getOnProperty();
 
-                if ( r == null ) continue;
+                    assert onProperty != null;
 
-                assert r != null;
-                if ( log.isDebugEnabled() ) log.debug( " Some from:" + r + " " + onProperty.getURI() );
+                    // We ignore this... hack.
+                    if ( !onProperty.getURI().equals( "http://www.obofoundry.org/ro/ro.owl#proper_part_of" ) ) {
+                        continue;
+                    }
 
-                OntologyTerm parent = fromOntClass( ( OntClass ) r );
+                    Resource r = getRestrictionValue( restriction );
 
-                if ( REJECT_PARENT_URI.contains( parent.getUri() ) ) continue;
+                    if ( r == null ) continue;
 
-                // avoid endless regression
-                if ( !work.contains( parent ) ) {
-                    work.add( parent );
-                    if ( !direct ) ( ( OntologyTermImpl ) parent ).getParents( direct, work );
-                }
+                    assert r != null;
+                    if ( log.isDebugEnabled() ) log.debug( " Some from:" + r + " " + onProperty.getURI() );
 
-            } else {
-                // not a restriction.
-                OntologyTerm parent = this.fromOntClass( c );
+                    OntologyTerm parent = fromOntClass( ( OntClass ) r );
 
-                if ( REJECT_PARENT_URI.contains( parent.getUri() ) ) continue;
+                    if ( REJECT_PARENT_URI.contains( parent.getUri() ) ) continue;
 
-                if ( !work.contains( parent ) ) {
-                    work.add( parent );
-                    if ( !direct ) {
-                        // recurse.
-                        ( ( OntologyTermImpl ) parent ).getParents( direct, work );
+                    // avoid endless regression
+                    if ( !work.contains( parent ) ) {
+                        work.add( parent );
+                        if ( !direct ) ( ( OntologyTermImpl ) parent ).getParents( direct, work );
+                    }
+
+                } else {
+                    // not a restriction.
+                    OntologyTerm parent = this.fromOntClass( c );
+
+                    if ( REJECT_PARENT_URI.contains( parent.getUri() ) ) continue;
+
+                    if ( !work.contains( parent ) ) {
+                        work.add( parent );
+                        if ( !direct ) {
+                            // recurse.
+                            ( ( OntologyTermImpl ) parent ).getParents( direct, work );
+                        }
                     }
                 }
+            } catch ( ConversionException e ) {
+                if ( log.isDebugEnabled() ) log.debug( e.getMessage() );
+                continue;
             }
 
         }
