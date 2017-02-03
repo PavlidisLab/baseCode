@@ -238,9 +238,11 @@ public class OntologyLoader {
         ModelMaker maker = ModelFactory.createMemModelMaker();
         Model base = maker.createModel( url, false );
         spec.setImportModelMaker( maker );
-        spec.getDocumentManager().setProcessImports(false);
-        
-        return ModelFactory.createOntologyModel( spec, base );
+        spec.getDocumentManager().setProcessImports( false );
+
+        OntModel model = ModelFactory.createOntologyModel( spec, base );
+        model.setStrictMode( false ); // fix for owl2 files
+        return model;
     }
 
 }
