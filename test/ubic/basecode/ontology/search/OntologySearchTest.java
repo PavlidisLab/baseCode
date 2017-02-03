@@ -47,13 +47,13 @@ public class OntologySearchTest {
 
         Collection<OntologyTerm> name = OntologySearch.matchClasses( model, index, "Bedding" );
 
-        assertEquals( 1, name.size() );
+        assertEquals( 2, name.size() );
         index.close();
 
         index = OntologyIndexer.indexOntology( "MGEDTEST", model, true );
         name = OntologySearch.matchClasses( model, index, "Bedding" );
 
-        assertEquals( 1, name.size() );
+        assertEquals( 2, name.size() );
         index.close();
     }
 
