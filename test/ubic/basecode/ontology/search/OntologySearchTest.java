@@ -244,18 +244,18 @@ public class OntologySearchTest {
         index = OntologyIndexer.getSubjectIndex( "MGEDTEST" );
 
         Collection<OntologyTerm> name = OntologySearch.matchClasses( model, index, "bedding" );
-        assertEquals( 1, name.size() );
+        assertEquals( 2, name.size() );
 
         // test wildcard. Works with stemmed term, wild card doesn't do anything
         name = OntologySearch.matchClasses( model, index, "bed*" );
-        assertEquals( 1, name.size() );
+        assertEquals( 2, name.size() );
 
         // stemmed term.
         name = OntologySearch.matchClasses( model, index, "bed" );
-        assertEquals( 1, name.size() );
+        assertEquals( 2, name.size() );
 
         name = OntologySearch.matchClasses( model, index, "beddin*" );
-        assertEquals( 1, name.size() );
+        assertEquals( 2, name.size() );
         index.close();
     }
 
