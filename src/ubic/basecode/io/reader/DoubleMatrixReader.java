@@ -87,6 +87,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
      * @return matrix
      * @throws IOException
      */
+    @SuppressWarnings("resource")
     public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames,
             boolean createEmptyRows, int skipColumns, int maxRows ) throws IOException {
 
@@ -129,7 +130,6 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
                 if ( wantedRowsFound.size() >= wantedRowNames.size() ) {
                     assert wantedRowsFound.containsAll( wantedRowNames );
                     log.info( "Found all rows needed" );
-                    dis.close();
                     return createMatrix( MTemp, rowNames, colNames );
                 }
 
@@ -193,15 +193,14 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
      */
+    @SuppressWarnings("resource")
     public DoubleMatrix<String, String> read( String filename, Collection<String> wantedRowNames ) throws IOException {
         File infile = new File( filename );
         if ( !infile.exists() || !infile.canRead() ) {
             throw new IOException( "Could not read from file " + filename );
         }
         InputStream stream = FileTools.getInputStreamFromPlainOrCompressedFile( filename );
-        DoubleMatrix<String, String> dm = read( stream, wantedRowNames, -1 );
-        stream.close();
-        return dm;
+        return read( stream, wantedRowNames, -1 );
     } // end read
 
     /**
@@ -212,6 +211,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
      * @return
      * @throws IOException
      */
+    @SuppressWarnings("resource")
     public DoubleMatrix<String, String> read( String fileName, Collection<String> wantedRowNames,
             int numberOfColumnsToSkip ) throws IOException {
         File infile = new File( fileName );
@@ -219,9 +219,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
             throw new IOException( "Could not read from file " + fileName );
         }
         InputStream stream = FileTools.getInputStreamFromPlainOrCompressedFile( fileName );
-        DoubleMatrix<String, String> dm = read( stream, wantedRowNames, true, numberOfColumnsToSkip, -1 );
-        stream.close();
-        return dm;
+        return read( stream, wantedRowNames, true, numberOfColumnsToSkip, -1 );
     }
 
     @Override

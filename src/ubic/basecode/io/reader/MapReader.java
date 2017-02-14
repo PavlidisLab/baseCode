@@ -96,9 +96,7 @@ public class MapReader {
             throw new IllegalArgumentException( "Could not read from " + filename );
         }
         InputStream stream = FileTools.getInputStreamFromPlainOrCompressedFile( filename );
-        Map<String, String> map = read( stream, hasHeader );
-        stream.close();
-        return map;
+        return read( stream, hasHeader );
 
     }
 }
