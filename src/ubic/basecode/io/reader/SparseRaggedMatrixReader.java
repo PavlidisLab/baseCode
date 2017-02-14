@@ -28,16 +28,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrix;
-import ubic.basecode.dataStructure.matrix.RCDoubleMatrix1D;
-import ubic.basecode.dataStructure.matrix.SparseRaggedDoubleMatrix;
-import ubic.basecode.util.FileTools;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
 import cern.colt.map.OpenIntDoubleHashMap;
 import cern.colt.map.OpenIntIntHashMap;
 import cern.colt.map.OpenIntObjectHashMap;
 import cern.colt.matrix.DoubleMatrix1D;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.dataStructure.matrix.RCDoubleMatrix1D;
+import ubic.basecode.dataStructure.matrix.SparseRaggedDoubleMatrix;
+import ubic.basecode.util.FileTools;
 
 /**
  * Best data structure for reading really big, really sparse matrices when a matrix represetation is needed. This uses a
@@ -100,7 +100,7 @@ public class SparseRaggedMatrixReader extends DoubleMatrixReader {
      *         <pre>
      * item1 item2 weight
      * item1 item5 weight
-     * </pre>
+     *         </pre>
      *         <p>
      *         IMPORTANT: By definition the resulting matrix is square and symmetric, even if the symmetric edges are
      *         not explicitly listed.
@@ -108,7 +108,8 @@ public class SparseRaggedMatrixReader extends DoubleMatrixReader {
      * @param stream
      * @return
      */
-    public DoubleMatrix<String, String> readFromAdjList( InputStream stream ) throws NumberFormatException, IOException {
+    public DoubleMatrix<String, String> readFromAdjList( InputStream stream )
+            throws NumberFormatException, IOException {
         Set<String> itemNames = new HashSet<String>();
         Map<String, OpenIntDoubleHashMap> rows = new HashMap<String, OpenIntDoubleHashMap>();
 
@@ -216,7 +217,6 @@ public class SparseRaggedMatrixReader extends DoubleMatrixReader {
      * 
      *                                       item1 item2 weight
      *                                       item1 item5 weight
-     * 
      * </pre>
      * <p>
      * IMPORTANT: By definition the resulting matrix is square and symmetric, even if the symmetric edges are not
@@ -230,7 +230,9 @@ public class SparseRaggedMatrixReader extends DoubleMatrixReader {
             throw new IOException( "Could not read from file " + fileName );
         }
         InputStream stream = FileTools.getInputStreamFromPlainOrCompressedFile( fileName );
-        return readFromAdjList( stream );
+        DoubleMatrix<String, String> dm = readFromAdjList( stream );
+        stream.close();
+        return dm;
     }
 
     /**

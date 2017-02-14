@@ -76,6 +76,7 @@ public class StringMatrixReader extends AbstractMatrixReader<StringMatrix<String
 
             String rowName = st.nextToken();
             if ( StringUtils.isBlank( rowName ) ) {
+                dis.close();
                 throw new IOException( "Missing values not allowed for row labels" );
             }
             rowNames.add( rowName );
@@ -110,6 +111,7 @@ public class StringMatrixReader extends AbstractMatrixReader<StringMatrix<String
             }
             MTemp.add( rowTemp );
             if ( rowTemp.size() > numHeadings ) {
+                dis.close();
                 throw new IOException( "Warning: too many values (" + rowTemp.size() + ") in row " + rowNumber
                         + " (based on headings count of " + numHeadings + ")" );
             }
@@ -164,7 +166,9 @@ public class StringMatrixReader extends AbstractMatrixReader<StringMatrix<String
             throw new IllegalArgumentException( "Could not read from " + filename );
         }
         InputStream stream = FileTools.getInputStreamFromPlainOrCompressedFile( filename );
-        return read( stream, maxRows, numColumnsToSkip );
+        StringMatrix<String, String> sm = read( stream, maxRows, numColumnsToSkip );
+        stream.close();
+        return sm;
     }
 
 }

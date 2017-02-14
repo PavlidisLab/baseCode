@@ -207,6 +207,8 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
                 int ind = index;
 
                 if ( ind > dim || ind < 1 ) {
+                    ff.close();
+                    dis.close();
                     throw new IllegalStateException( "Illegal value " + ind + " found in index list for item " + k );
                 }
                 rowind[i] = ind;

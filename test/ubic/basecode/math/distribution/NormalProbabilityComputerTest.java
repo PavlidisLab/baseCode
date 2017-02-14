@@ -29,7 +29,6 @@ import org.junit.Test;
  */
 public class NormalProbabilityComputerTest {
 
-    @SuppressWarnings("unused")
     @Test
     public void testInvalidVariance() {
         try {

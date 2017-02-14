@@ -23,11 +23,11 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 
-import ubic.basecode.io.reader.DoubleMatrixReader;
-import ubic.basecode.io.reader.TestDoubleMatrixReader;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
+import ubic.basecode.io.reader.DoubleMatrixReader;
+import ubic.basecode.io.reader.TestDoubleMatrixReader;
 
 /**
  * @author Paul
@@ -44,6 +44,7 @@ public class MatrixUtilTest {
 
         InputStream is = TestDoubleMatrixReader.class.getResourceAsStream( "/data/testdatamissing.txt" );
         testData = new DenseDoubleMatrix2D( reader.read( is ).asDoubles() );
+        is.close();
     }
 
     @Test
@@ -64,8 +65,8 @@ public class MatrixUtilTest {
         DoubleMatrix2D square = A.mult( testData, A.transpose( testData ) );
         assertEquals( square.rows(), square.columns() );
         assertEquals( 3, MatrixUtil.selectColumnsAndRows( square, Arrays.asList( new Integer[] { 2, 3, 4 } ) ).rows() );
-        assertEquals( 3, MatrixUtil.selectColumnsAndRows( square, Arrays.asList( new Integer[] { 2, 3, 4 } ) )
-                .columns() );
+        assertEquals( 3,
+                MatrixUtil.selectColumnsAndRows( square, Arrays.asList( new Integer[] { 2, 3, 4 } ) ).columns() );
 
     }
 

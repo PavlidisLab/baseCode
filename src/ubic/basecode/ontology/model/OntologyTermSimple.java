@@ -27,6 +27,10 @@ import com.hp.hpl.jena.ontology.OntClass;
  */
 public class OntologyTermSimple extends OntologyTermImpl {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -2589717267279872909L;
     private String description = "";
     private boolean obsolete;
     private String term;

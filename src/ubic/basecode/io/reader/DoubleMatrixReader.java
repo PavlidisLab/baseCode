@@ -34,10 +34,10 @@ import java.util.Vector;
 
 import org.apache.commons.lang3.StringUtils;
 
+import cern.colt.list.DoubleArrayList;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixFactory;
 import ubic.basecode.util.FileTools;
-import cern.colt.list.DoubleArrayList;
 
 /**
  * Reader for {@link basecode.dataStructure.matrix.DoubleMatrix}. Lines beginning with "#" or "!" will be ignored.
@@ -129,6 +129,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
                 if ( wantedRowsFound.size() >= wantedRowNames.size() ) {
                     assert wantedRowsFound.containsAll( wantedRowNames );
                     log.info( "Found all rows needed" );
+                    dis.close();
                     return createMatrix( MTemp, rowNames, colNames );
                 }
 
@@ -198,7 +199,9 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
             throw new IOException( "Could not read from file " + filename );
         }
         InputStream stream = FileTools.getInputStreamFromPlainOrCompressedFile( filename );
-        return read( stream, wantedRowNames, -1 );
+        DoubleMatrix<String, String> dm = read( stream, wantedRowNames, -1 );
+        stream.close();
+        return dm;
     } // end read
 
     /**
@@ -216,7 +219,9 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
             throw new IOException( "Could not read from file " + fileName );
         }
         InputStream stream = FileTools.getInputStreamFromPlainOrCompressedFile( fileName );
-        return read( stream, wantedRowNames, true, numberOfColumnsToSkip, -1 );
+        DoubleMatrix<String, String> dm = read( stream, wantedRowNames, true, numberOfColumnsToSkip, -1 );
+        stream.close();
+        return dm;
     }
 
     @Override
@@ -334,8 +339,8 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
                 // First field is the row label.
 
                 if ( missing ) {
-                    throw new IOException( "Missing values not allowed for row labels ("
-                            + StringUtils.abbreviate( row, 20 ) + ")" );
+                    throw new IOException(
+                            "Missing values not allowed for row labels (" + StringUtils.abbreviate( row, 20 ) + ")" );
                 }
 
                 currentRowName = tok;

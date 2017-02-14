@@ -169,6 +169,11 @@ public class TestDirectedGraph {
 }
 
 class DNV extends DefaultMutableTreeNode {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6905248972154300623L;
+
     public DNV( DirectedGraphNode<String, String> root ) {
         super( root );
     }

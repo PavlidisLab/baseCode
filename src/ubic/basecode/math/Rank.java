@@ -57,6 +57,7 @@ public class Rank {
         ranks.sort();
 
         for ( int i = 0; i < size; i++ ) {
+            @SuppressWarnings("unchecked")
             RankData<Double> rd = ( RankData<Double> ) ranks.getQuick( i );
             result.setQuick( i, rd.getIndex() );
         }
