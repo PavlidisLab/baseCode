@@ -57,7 +57,6 @@ public class MatrixWriterTest {
         InputStream is = TestStringMatrixReader.class.getResourceAsStream( "/data/testdata.txt" );
         matrix = reader.read( is );
         w = new StringWriter();
-        is.close();
     }
 
     @Test

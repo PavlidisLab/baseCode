@@ -191,7 +191,6 @@ public class FileToolsTest {
         assertEquals( "Output file had the wrong size", expected, actual );
         inout.close();
         testout.delete();
-        output.close();
     }
 
     @Test
@@ -268,18 +267,16 @@ public class FileToolsTest {
 
     @Test
     public void testGetCompressedFile() throws Exception {
-        InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile(
-                new File( this.getClass().getResource( "/data/testdata.gz" ).toURI() ).getAbsolutePath() );
+        InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile( new File( this.getClass()
+                .getResource( "/data/testdata.gz" ).toURI() ).getAbsolutePath() );
         assertNotNull( is );
-        is.close();
     }
 
     @Test
     public void testGetCompressedFileZip() throws Exception {
-        InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile(
-                new File( this.getClass().getResource( "/data/multtest.test.zip" ).toURI() ).getAbsolutePath() );
+        InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile( new File( this.getClass()
+                .getResource( "/data/multtest.test.zip" ).toURI() ).getAbsolutePath() );
         assertNotNull( is );
-        is.close();
     }
 
     /*
@@ -297,7 +294,6 @@ public class FileToolsTest {
     public void testGetInputStreamFromPlainOrCompressedFile() throws Exception {
         InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile( plain.getPath() );
         assertTrue( is != null && is.available() > 0 );
-        is.close();
     }
 
     @Test
@@ -313,8 +309,8 @@ public class FileToolsTest {
 
     @Test
     public void testgetStringListFromFile() throws Exception {
-        List<String> strings = FileTools
-                .getStringListFromFile( new File( FileTools.resourceToPath( "/data/stringlisttest.txt" ) ) );
+        List<String> strings = FileTools.getStringListFromFile( new File( FileTools
+                .resourceToPath( "/data/stringlisttest.txt" ) ) );
         assertEquals( 6, strings.size() );
     }
 
@@ -438,7 +434,6 @@ public class FileToolsTest {
         char[] buf = new char[1024];
         int j = r.read( buf );
         assertEquals( "unexpected character count", 13, j );
-        r.close();
     }
 
     @Test

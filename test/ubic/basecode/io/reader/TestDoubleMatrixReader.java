@@ -96,7 +96,6 @@ public class TestDoubleMatrixReader {
 
         assertEquals( 12, matrix.getColNames().size() );
         assertEquals( 12, matrix.columns() );
-        nis.close();
 
     }
 
@@ -208,7 +207,6 @@ public class TestDoubleMatrixReader {
         int expectedReturn = 173;
         assertEquals( 25, matrix.getRow( 3 ).length );
         assertEquals( expectedReturn, actualReturn );
-        isl.close();
 
     }
 

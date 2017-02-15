@@ -47,7 +47,6 @@ public class ExcelUtil {
      * @return
      * @throws IOException
      */
-    @SuppressWarnings("resource")
     public static HSSFSheet getSheetFromFile( String filename, String sheetName ) throws IOException {
         POIFSFileSystem fs = new POIFSFileSystem( new FileInputStream( filename ) );
         HSSFWorkbook wb = new HSSFWorkbook( fs );

@@ -36,10 +36,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
-import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
 /**
  * Tools to help make regression testing easier, but also useful for other purposes.
@@ -271,9 +271,7 @@ public class RegressionTesting {
      */
     public static String readTestResultFromFile( String fileName ) throws IOException {
         InputStream is = new FileInputStream( fileName );
-        String result = readTestResult( is );
-        is.close();
-        return result;
+        return readTestResult( is );
     }
 
     /**
@@ -293,8 +291,7 @@ public class RegressionTesting {
 
     public static void writeTestResult( String result, String fileName ) throws IOException {
 
-        BufferedWriter buf = new BufferedWriter(
-                new OutputStreamWriter( new FileOutputStream( new File( fileName ) ) ) );
+        BufferedWriter buf = new BufferedWriter( new OutputStreamWriter( new FileOutputStream( new File( fileName ) ) ) );
         BufferedReader resultBuf = new BufferedReader( new StringReader( result ) );
 
         String line = null;

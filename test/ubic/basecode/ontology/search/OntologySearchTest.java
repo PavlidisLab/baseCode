@@ -24,11 +24,11 @@ import java.util.zip.GZIPInputStream;
 
 import org.junit.Test;
 
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-
 import ubic.basecode.ontology.OntologyLoader;
 import ubic.basecode.ontology.model.OntologyTerm;
+
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 
 /**
  * Most of these tests were moved over from Gemma.
@@ -204,7 +204,6 @@ public class OntologySearchTest {
         assertEquals( 0, searchResults.size() );
 
         index.close();
-        is.close();
     }
 
     @Test

@@ -345,7 +345,6 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      *        (the root)
      * @return javax.swing.JTree
      */
-    @SuppressWarnings("unchecked")
     public JTree treeView( Class<? extends DefaultMutableTreeNode> nodeClass ) {
         log.debug( "Constructing tree view of graph" );
         DirectedGraphNode<K, V> root = getRoot();

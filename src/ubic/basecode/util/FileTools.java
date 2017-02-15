@@ -76,8 +76,7 @@ public class FileTools {
      * @return the new filename with the added extension, but does not modify the <code>filename</code> parameter.
      */
     public static String addDataExtension( String filename ) {
-        return ( filename + ( FileTools.DEFAULT_DATA_EXTENSION.startsWith( "." ) ? "" : "." )
-                + FileTools.DEFAULT_DATA_EXTENSION );
+        return ( filename + ( FileTools.DEFAULT_DATA_EXTENSION.startsWith( "." ) ? "" : "." ) + FileTools.DEFAULT_DATA_EXTENSION );
     }
 
     /**
@@ -85,8 +84,7 @@ public class FileTools {
      * @return the new filename with the added extension, but does not modify the <code>filename</code> parameter.
      */
     public static String addImageExtension( String filename ) {
-        return ( filename + ( FileTools.DEFAULT_IMAGE_EXTENSION.startsWith( "." ) ? "" : "." )
-                + FileTools.DEFAULT_IMAGE_EXTENSION );
+        return ( filename + ( FileTools.DEFAULT_IMAGE_EXTENSION.startsWith( "." ) ? "" : "." ) + FileTools.DEFAULT_IMAGE_EXTENSION );
     }
 
     /**
@@ -186,8 +184,6 @@ public class FileTools {
         InputStream is = FileTools.getInputStreamFromPlainOrCompressedFile( sourcePath );
 
         copy( is, out );
-        is.close();
-        out.close();
         return outputFile;
     }
 
@@ -298,8 +294,8 @@ public class FileTools {
      * @throws IOException
      * @throws FileNotFoundException
      */
-    public static InputStream getInputStreamFromPlainOrCompressedFile( String fileName )
-            throws IOException, FileNotFoundException {
+    public static InputStream getInputStreamFromPlainOrCompressedFile( String fileName ) throws IOException,
+            FileNotFoundException {
         if ( !FileTools.testFile( fileName ) ) {
             throw new IOException( "Could not read from " + fileName );
         }
@@ -319,7 +315,6 @@ public class FileTools {
             }
 
             i = f.getInputStream( entry );
-            f.close();
         } else if ( FileTools.isGZipped( fileName ) ) {
             log.debug( "Reading from gzipped file" );
             i = new GZIPInputStream( new FileInputStream( fileName ) );
@@ -653,11 +648,8 @@ public class FileTools {
 
                 result.add( out );
                 log.debug( outputFileTitle );
-
-                is.close();
-                os.close();
             }
-            f.close();
+
         } catch ( IOException e ) {
             throw new RuntimeException( e );
         }

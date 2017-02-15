@@ -34,10 +34,10 @@ import java.util.Vector;
 
 import org.apache.commons.lang3.StringUtils;
 
-import cern.colt.list.DoubleArrayList;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixFactory;
 import ubic.basecode.util.FileTools;
+import cern.colt.list.DoubleArrayList;
 
 /**
  * Reader for {@link basecode.dataStructure.matrix.DoubleMatrix}. Lines beginning with "#" or "!" will be ignored.
@@ -337,8 +337,8 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
                 // First field is the row label.
 
                 if ( missing ) {
-                    throw new IOException(
-                            "Missing values not allowed for row labels (" + StringUtils.abbreviate( row, 20 ) + ")" );
+                    throw new IOException( "Missing values not allowed for row labels ("
+                            + StringUtils.abbreviate( row, 20 ) + ")" );
                 }
 
                 currentRowName = tok;

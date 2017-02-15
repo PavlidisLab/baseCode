@@ -23,7 +23,6 @@ import java.io.StringReader;
 import java.util.Collection;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,16 +113,9 @@ public class StringUtil {
         CSVReader reader = new CSVReader( new StringReader( line ) );
 
         try {
-            String[] next = reader.readNext();
-            return next;
+            return reader.readNext();
         } catch ( IOException e ) {
             throw new RuntimeException( e );
-        } finally {
-            try {
-                reader.close();
-            } catch ( IOException e ) {
-                Log.error( "Closing reader failed" );
-            }
         }
     }
 
@@ -183,9 +175,9 @@ public class StringUtil {
      * @return return false if something strange was found in an evidence description
      */
     public static boolean containsValidCharacter( String description ) {
-
+        
         if ( description != null ) {
-
+            
             for ( int i = 0; i < description.length(); i++ ) {
 
                 Character cha = description.charAt( i );

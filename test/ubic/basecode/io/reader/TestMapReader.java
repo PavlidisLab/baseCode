@@ -52,7 +52,6 @@ public class TestMapReader {
         int expectedReturn = 100;
         int actualReturn = mapReader.read( m, true ).size(); // file has header
         assertEquals( "return value", expectedReturn, actualReturn );
-        m.close();
     }
 
     @Test
@@ -61,7 +60,6 @@ public class TestMapReader {
         int expectedReturn = 101;
         int actualReturn = mapReader.read( m ).size(); // file has header
         assertEquals( "return value", expectedReturn, actualReturn );
-        m.close();
     }
 
     @Test
