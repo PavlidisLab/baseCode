@@ -110,6 +110,7 @@ public class StringUtil {
      */
     public static String[] csvSplit( String line ) {
 
+        @SuppressWarnings("resource")
         CSVReader reader = new CSVReader( new StringReader( line ) );
 
         try {
@@ -175,9 +176,9 @@ public class StringUtil {
      * @return return false if something strange was found in an evidence description
      */
     public static boolean containsValidCharacter( String description ) {
-        
+
         if ( description != null ) {
-            
+
             for ( int i = 0; i < description.length(); i++ ) {
 
                 Character cha = description.charAt( i );

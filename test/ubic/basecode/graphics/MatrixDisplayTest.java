@@ -157,6 +157,7 @@ public class MatrixDisplayTest {
         try {
             File tempfile = File.createTempFile( "testOuputStream", ".png" );
             System.err.println( "Saved to: " + tempfile );
+            @SuppressWarnings("resource")
             OutputStream stream = new FileOutputStream( tempfile );
             display.saveImageToPng( colorMatrix, stream, true, false, true );
         } catch ( IOException e ) {
@@ -187,6 +188,7 @@ public class MatrixDisplayTest {
         try {
             File tempfile = File.createTempFile( "testOuputStream", ".png" );
             System.err.println( "Saved to: " + tempfile );
+            @SuppressWarnings("resource")
             OutputStream stream = new FileOutputStream( tempfile );
             display.saveImageToPng( colorMatrix, stream, true, true, false );
         } catch ( IOException e ) {

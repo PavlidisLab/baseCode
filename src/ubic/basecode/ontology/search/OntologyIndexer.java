@@ -36,10 +36,10 @@ import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ubic.basecode.util.Configuration;
-
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+
+import ubic.basecode.util.Configuration;
 
 /**
  * @author pavlidis
@@ -53,6 +53,7 @@ public class OntologyIndexer {
      * @param name
      * @return indexlarq with default analyzer (English)
      */
+    @SuppressWarnings("resource")
     public static SearchIndex getSubjectIndex( String name ) {
         Analyzer analyzer = new EnglishAnalyzer( Version.LUCENE_36 );
         return getSubjectIndex( name, analyzer );
@@ -112,6 +113,7 @@ public class OntologyIndexer {
      * @param analyzer
      * @return
      */
+    @SuppressWarnings("resource")
     private static SearchIndex getSubjectIndex( String name, Analyzer analyzer ) {
         log.debug( "Loading index: " + name );
         File indexdir = getIndexPath( name );
@@ -145,6 +147,7 @@ public class OntologyIndexer {
      * @param model
      * @return
      */
+    @SuppressWarnings("resource")
     private static synchronized SearchIndex index( String name, OntModel model ) {
 
         File indexdir = getIndexPath( name );
@@ -186,6 +189,7 @@ public class OntologyIndexer {
     /**
      * We need to also analyze using the Standard analyzer, which doesn't do stemming and allows wildcard.
      */
+    @SuppressWarnings("resource")
     private static Directory indexStd( String name, OntModel model ) throws IOException {
 
         File file = getIndexPath( name + ".std" );

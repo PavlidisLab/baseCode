@@ -50,6 +50,7 @@ public class SearchIndex extends IndexLARQ {
         super( r, a );
     }
 
+    @SuppressWarnings("resource")
     @Override
     public Iterator<HitLARQ> search( String queryString ) {
         try {

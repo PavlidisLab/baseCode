@@ -90,6 +90,7 @@ public class MapReader {
      * @return Map from the file.
      * @throws IOException
      */
+    @SuppressWarnings("resource")
     public Map<String, String> read( String filename, boolean hasHeader ) throws IOException {
         File infile = new File( filename );
         if ( !infile.exists() || !infile.canRead() ) {

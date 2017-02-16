@@ -139,8 +139,8 @@ public class TestDirectedGraph {
     @Test
     public void testTopoSort() {
         testGraph.topoSort();
-        List<DirectedGraphNode<String, String>> nodes = new ArrayList<DirectedGraphNode<String, String>>( testGraph
-                .getItems().values() );
+        List<DirectedGraphNode<String, String>> nodes = new ArrayList<DirectedGraphNode<String, String>>(
+                testGraph.getItems().values() );
         Collections.sort( nodes );
         StringBuffer buf = new StringBuffer();
         for ( Iterator<DirectedGraphNode<String, String>> it = nodes.iterator(); it.hasNext(); ) {
@@ -169,6 +169,11 @@ public class TestDirectedGraph {
 }
 
 class DNV extends DefaultMutableTreeNode {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6905248972154300623L;
+
     public DNV( DirectedGraphNode<String, String> root ) {
         super( root );
     }

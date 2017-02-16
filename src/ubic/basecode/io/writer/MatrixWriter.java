@@ -70,6 +70,7 @@ public class MatrixWriter<R, C> {
         this( fileName, formatter, DEFAULT_SEP );
     }
 
+    @SuppressWarnings("resource")
     public MatrixWriter( String fileName, Format formatter, String sep ) throws IOException {
         this( new BufferedWriter( new FileWriter( fileName ) ), formatter, sep );
     }

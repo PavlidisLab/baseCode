@@ -108,7 +108,7 @@ public class MultipleTestCorrection {
         int k = 0;
         for ( int i = 0; i < qvalues.length; i++ ) {
             Double pvalue = pvalues.get( i );
-            if ( pvalue == null || pvalue < 0.0 || pvalue > 1.0 || Double.isNaN( pvalue ) ) {
+            if ( pvalue < 0.0 || pvalue > 1.0 || Double.isNaN( pvalue ) ) {
                 qvalues[i] = Double.NaN;
             } else {
                 qvalues[i] = r.get( k );
