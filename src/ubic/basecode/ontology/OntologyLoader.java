@@ -19,6 +19,10 @@
 package ubic.basecode.ontology;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,17 +31,10 @@ import java.net.URLConnection;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ubic.basecode.ontology.model.OntologyIndividual;
-import ubic.basecode.ontology.model.OntologyIndividualImpl;
-import ubic.basecode.ontology.model.OntologyProperty;
-import ubic.basecode.ontology.model.OntologyResource;
-import ubic.basecode.ontology.model.OntologyTerm;
-import ubic.basecode.ontology.model.OntologyTermImpl;
-import ubic.basecode.ontology.model.PropertyFactory;
 
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -47,6 +44,15 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.ModelMaker;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+
+import ubic.basecode.ontology.model.OntologyIndividual;
+import ubic.basecode.ontology.model.OntologyIndividualImpl;
+import ubic.basecode.ontology.model.OntologyProperty;
+import ubic.basecode.ontology.model.OntologyResource;
+import ubic.basecode.ontology.model.OntologyTerm;
+import ubic.basecode.ontology.model.OntologyTermImpl;
+import ubic.basecode.ontology.model.PropertyFactory;
+import ubic.basecode.util.Configuration;
 
 /**
  * Reads ontologies from OWL resources
@@ -152,13 +158,37 @@ public class OntologyLoader {
     }
 
     /**
+     * Load an ontology into memory. Use this type of model when fast access is critical and memory is available. Uses
+     * OWL_MEM_TRANS_INF
+     * If load from URL fails, attempt to load from disk cache under @cacheName.
+     * 
+     * @param url
+     * @return
+     */
+    public static OntModel loadMemoryModel( String url, String cacheName ) {
+        return loadMemoryModel( url, OntModelSpec.OWL_MEM_TRANS_INF, cacheName );
+    }
+
+    /**
      * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
      * 
      * @param url
-     * @param spec e.g. OWL_MEM_TRANS_INF
      * @return
      */
     public static OntModel loadMemoryModel( String url, OntModelSpec spec ) {
+        return loadMemoryModel( url, spec, null );
+    }
+
+    /**
+     * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
+     * If load from URL fails, attempt to load from disk cache under @cacheName.
+     * 
+     * @param url
+     * @param spec e.g. OWL_MEM_TRANS_INF
+     * @param cacheName unique name of this ontology, will be used to load from disk in case of failed url connection
+     * @return
+     */
+    public static OntModel loadMemoryModel( String url, OntModelSpec spec, String cacheName ) {
         StopWatch timer = new StopWatch();
         timer.start();
         OntModel model = getMemoryModel( url, spec );
@@ -166,7 +196,6 @@ public class OntologyLoader {
 
         int tries = 0;
 
-        Throwable lastException = null;
         while ( tries < MAX_LOAD_TRIES ) {
             try {
 
@@ -174,15 +203,15 @@ public class OntologyLoader {
 
                 // help ensure mis-configured web servers aren't causing trouble.
                 urlc.setRequestProperty( "Accept", "application/rdf+xml" );
-                urlc.connect();
-
-                s = urlc.getInputStream();
 
                 if ( tries > 0 ) {
                     log.info( "Retrying loading of " + url + " [" + tries + "/" + MAX_LOAD_TRIES + " of max tries" );
                 } else {
                     log.info( "Loading ontology from " + url );
                 }
+
+                urlc.connect();
+                s = urlc.getInputStream();
 
                 BufferedReader buf = new BufferedReader( new InputStreamReader( s ) );
 
@@ -191,10 +220,10 @@ public class OntologyLoader {
                 log.info( "Load model: " + timer.getTime() + "ms" );
 
                 s.close();
+
                 break;
             } catch ( IOException e ) {
                 // try to recover.
-                lastException = e;
                 log.error( e + " retrying?" );
                 tries++;
             } finally {
@@ -208,11 +237,89 @@ public class OntologyLoader {
             }
         }
 
-        if ( lastException != null ) {
-            throw new RuntimeException( lastException );
+        if ( cacheName != null ) {
+
+            File f = getDiskCachePath( cacheName );
+
+            if ( model.isEmpty() ) {
+                // Attempt to load from disk cache
+
+                if ( f == null ) {
+                    throw new RuntimeException(
+                            "Ontology cache directory required to load from disk: ontology.cache.dir" );
+                }
+
+                if ( f.exists() && !f.isDirectory() ) {
+                    BufferedReader buf = null;
+                    FileReader fr = null;
+                    try {
+                        fr = new FileReader( f );
+                        buf = new BufferedReader( fr );
+
+                        model.read( buf, url );
+                        log.info( "Load model from disk: " + timer.getTime() + "ms" );
+
+                    } catch ( IOException e ) {
+                        log.error( e.getMessage(), e );
+                    } finally {
+                        try {
+                            if ( buf != null ) {
+                                buf.close();
+                            }
+                            if ( fr != null ) {
+                                fr.close();
+                            }
+                        } catch ( IOException ex ) {
+                            log.error( ex.getMessage(), ex );
+                        }
+                    }
+                } else {
+                    throw new RuntimeException(
+                            "Ontology failed load from URL (" + url + ") and disk cache does not exist: " + cacheName );
+                }
+            } else {
+                // Model was succesfully loaded into memory from URL with given cacheName
+                // Save cache to disk
+                log.info( "Caching ontology to disk: " + cacheName );
+                if ( f != null ) {
+                    BufferedWriter buf = null;
+                    FileWriter fw = null;
+                    try {
+                        f.getParentFile().mkdirs();
+                        f.createNewFile();
+                        fw = new FileWriter( f );
+                        buf = new BufferedWriter( fw );
+
+                        timer.stop();
+                        timer.reset();
+                        timer.start();
+                        model.write( buf );
+                        log.info( "Saved model cache to disk: " + timer.getTime() + "ms" );
+
+                    } catch ( IOException e ) {
+                        log.error( e.getMessage(), e );
+                    } finally {
+                        try {
+                            if ( buf != null ) {
+                                buf.close();
+                            }
+                            if ( fw != null ) {
+                                fw.close();
+                            }
+                        } catch ( IOException ex ) {
+                            log.error( ex.getMessage(), ex );
+                        }
+                    }
+
+                } else {
+                    log.warn( "Ontology cache directory required to save to disk: ontology.cache.dir" );
+                }
+            }
+
         }
 
-        assert model != null;
+        assert !model.isEmpty();
+
         return model;
     }
 
@@ -243,6 +350,24 @@ public class OntologyLoader {
         OntModel model = ModelFactory.createOntologyModel( spec, base );
         model.setStrictMode( false ); // fix for owl2 files
         return model;
+    }
+
+    /**
+     * @param name
+     * @return
+     */
+    static File getDiskCachePath( String name ) {
+        String ontologyDir = Configuration.getString( "ontology.cache.dir" ); // e.g., /something/gemmaData/ontologyCache
+        if ( StringUtils.isBlank( ontologyDir ) ) {
+            return null;
+        }
+
+        assert ontologyDir != null;
+
+        String path = ontologyDir + File.separator + "ontology" + File.separator + name;
+
+        File indexdir = new File( path );
+        return indexdir;
     }
 
 }

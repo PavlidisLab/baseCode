@@ -19,7 +19,7 @@ import ubic.basecode.ontology.OntologyLoader;
 import com.hp.hpl.jena.ontology.OntModel;
 
 /**
- * A way to create ad hoc ontology services (in memory)
+ * A way to create ad hoc ontology services (in memory) for testing
  * 
  * @author Paul
  * @version $Id$
@@ -28,10 +28,18 @@ public class GenericOntologyService extends AbstractOntologyService {
 
     private String url;
     private String name;
+    private boolean cache;
 
     public GenericOntologyService( String name, String url ) {
         this.name = name;
         this.url = url;
+        this.cache = false;
+    }
+
+    public GenericOntologyService( String name, String url, boolean cache ) {
+        this.name = name;
+        this.url = url;
+        this.cache = cache;
     }
 
     @Override
@@ -46,7 +54,7 @@ public class GenericOntologyService extends AbstractOntologyService {
 
     @Override
     protected OntModel loadModel() {
-        return OntologyLoader.loadMemoryModel( this.getOntologyUrl() );
+        return OntologyLoader.loadMemoryModel( this.getOntologyUrl(), this.cache ? this.name : null );
     }
 
 }
