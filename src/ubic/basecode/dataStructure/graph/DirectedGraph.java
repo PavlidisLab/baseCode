@@ -147,8 +147,8 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
         assert newParentKey != null;
 
         if ( !items.containsKey( newParentKey ) ) {
-            throw new IllegalArgumentException( "Attempt to add as parent a node that is not in the graph: "
-                    + newParentKey );
+            throw new IllegalArgumentException(
+                    "Attempt to add as parent a node that is not in the graph: " + newParentKey );
         }
 
         if ( items.containsKey( key ) ) {
@@ -301,8 +301,8 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
         }
 
         if ( counter != items.size() ) {
-            throw new IllegalStateException( "Graph contains a cycle? " + counter + " items found, " + items.size()
-                    + " expected" );
+            throw new IllegalStateException(
+                    "Graph contains a cycle? " + counter + " items found, " + items.size() + " expected" );
         }
 
     }
@@ -345,6 +345,7 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
      *        (the root)
      * @return javax.swing.JTree
      */
+    @SuppressWarnings("unchecked")
     public JTree treeView( Class<? extends DefaultMutableTreeNode> nodeClass ) {
         log.debug( "Constructing tree view of graph" );
         DirectedGraphNode<K, V> root = getRoot();
@@ -352,8 +353,8 @@ public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, 
         DefaultMutableTreeNode top = null;
         treeView = null;
         try {
-            constructor = ( Constructor<DefaultMutableTreeNode> ) nodeClass.getConstructor( new Class[] { root
-                    .getClass() } );
+            constructor = ( Constructor<DefaultMutableTreeNode> ) nodeClass
+                    .getConstructor( new Class[] { root.getClass() } );
             top = constructor.newInstance( new Object[] { root } );
             log.debug( "Starting tree with: " + top.getClass().getName() );
             root.mark();

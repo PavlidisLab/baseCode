@@ -76,7 +76,8 @@ public class FileTools {
      * @return the new filename with the added extension, but does not modify the <code>filename</code> parameter.
      */
     public static String addDataExtension( String filename ) {
-        return ( filename + ( FileTools.DEFAULT_DATA_EXTENSION.startsWith( "." ) ? "" : "." ) + FileTools.DEFAULT_DATA_EXTENSION );
+        return ( filename + ( FileTools.DEFAULT_DATA_EXTENSION.startsWith( "." ) ? "" : "." )
+                + FileTools.DEFAULT_DATA_EXTENSION );
     }
 
     /**
@@ -84,7 +85,8 @@ public class FileTools {
      * @return the new filename with the added extension, but does not modify the <code>filename</code> parameter.
      */
     public static String addImageExtension( String filename ) {
-        return ( filename + ( FileTools.DEFAULT_IMAGE_EXTENSION.startsWith( "." ) ? "" : "." ) + FileTools.DEFAULT_IMAGE_EXTENSION );
+        return ( filename + ( FileTools.DEFAULT_IMAGE_EXTENSION.startsWith( "." ) ? "" : "." )
+                + FileTools.DEFAULT_IMAGE_EXTENSION );
     }
 
     /**
@@ -164,6 +166,7 @@ public class FileTools {
      * @throws FileNotFoundException
      * @throws IOException
      */
+    @SuppressWarnings("resource")
     public static File copyPlainOrCompressedFile( final String sourcePath, String outputFilePath )
             throws FileNotFoundException, IOException {
         File sourceFile = new File( sourcePath );
@@ -294,8 +297,9 @@ public class FileTools {
      * @throws IOException
      * @throws FileNotFoundException
      */
-    public static InputStream getInputStreamFromPlainOrCompressedFile( String fileName ) throws IOException,
-            FileNotFoundException {
+    @SuppressWarnings("resource")
+    public static InputStream getInputStreamFromPlainOrCompressedFile( String fileName )
+            throws IOException, FileNotFoundException {
         if ( !FileTools.testFile( fileName ) ) {
             throw new IOException( "Could not read from " + fileName );
         }
@@ -624,6 +628,7 @@ public class FileTools {
      * @return Collection of File objects
      * @throws IOException
      */
+    @SuppressWarnings("resource")
     public static Collection<File> unZipFiles( final String seekFile ) throws IOException {
 
         if ( !isZipped( seekFile ) ) {

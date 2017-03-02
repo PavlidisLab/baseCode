@@ -118,4 +118,12 @@ public class Configuration {
     public static String getString( String key ) {
         return config.getString( key );
     }
+
+    /**
+     * @param key
+     * @return
+     */
+    public static void setString( String key, Object value ) {
+        config.setProperty( key, value );
+    }
 }

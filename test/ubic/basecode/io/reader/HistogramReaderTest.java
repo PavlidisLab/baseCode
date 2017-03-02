@@ -15,13 +15,13 @@
 package ubic.basecode.io.reader;
 
 import static org.junit.Assert.assertEquals;
-import hep.aida.ref.Histogram1D;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.junit.Test;
 
+import hep.aida.ref.Histogram1D;
 import ubic.basecode.util.FileTools;
 
 /**
@@ -33,6 +33,7 @@ public class HistogramReaderTest {
     @Test
     public void testHistogramReaderIs() throws Exception {
         InputStream f = this.getClass().getResourceAsStream( "/data/0240991490.degreeDist.txt" );
+        @SuppressWarnings("resource")
         Histogram1D hist = new HistogramReader( new InputStreamReader( f ), "title" ).read1D();
         assertEquals( 1, hist.binHeight( 4 ), 0.000000 );
     }

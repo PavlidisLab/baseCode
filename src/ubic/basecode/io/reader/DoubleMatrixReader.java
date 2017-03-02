@@ -87,6 +87,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
      * @return matrix
      * @throws IOException
      */
+    @SuppressWarnings("resource")
     public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames,
             boolean createEmptyRows, int skipColumns, int maxRows ) throws IOException {
 
@@ -192,6 +193,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
      * @return NamedMatrix object constructed from the data file
      * @throws IOException
      */
+    @SuppressWarnings("resource")
     public DoubleMatrix<String, String> read( String filename, Collection<String> wantedRowNames ) throws IOException {
         File infile = new File( filename );
         if ( !infile.exists() || !infile.canRead() ) {
@@ -209,6 +211,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
      * @return
      * @throws IOException
      */
+    @SuppressWarnings("resource")
     public DoubleMatrix<String, String> read( String fileName, Collection<String> wantedRowNames,
             int numberOfColumnsToSkip ) throws IOException {
         File infile = new File( fileName );

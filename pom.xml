@@ -4,7 +4,7 @@
 	<name>baseCode</name>
 	<groupId>baseCode</groupId>
 	<artifactId>baseCode</artifactId>
-	<version>1.0.17</version>
+	<version>1.0.18</version>
 	<inceptionYear>2003</inceptionYear>
 	<description>
 	<![CDATA[Data structures, math and statistics tools, and utilities that are often needed across projects.]]>
@@ -526,19 +526,6 @@
 			<id>apache.plugin.snapshots</id>
 			<name>Apache Development Repository</name>
 			<url>http://cvs.apache.org/maven-snapshot-repository</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>mojo</id>
-			<name>Mojo</name>
-			<url>http://snapshots.maven.codehaus.org/maven2/</url>
-			<layout>default</layout>
 			<releases>
 				<enabled>false</enabled>
 			</releases>

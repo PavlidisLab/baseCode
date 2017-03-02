@@ -352,6 +352,10 @@ public abstract class AbstractOntologyService {
         return isInitialized.get();
     }
 
+    public boolean isInitializationThreadAlive() {
+        return initializationThread.isAlive();
+    }
+
     public void startInitializationThread( boolean force ) {
         assert initializationThread != null;
         synchronized ( initializationThread ) {

@@ -14,14 +14,7 @@
  */
 package ubic.basecode.ontology.ncbo;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Collection;
-
 import org.junit.Test;
-
-import ubic.basecode.ontology.model.OntologyTerm;
 
 /**
  * @author Paul
@@ -40,10 +33,10 @@ public class OntologyLookupTest {
 
     @Test
     public void testMatch() {
-//        OntologyLookup ol = new OntologyLookupImpl();
-//        Collection<OntologyTerm> matches = ol.match( "O80-O84.9", 1 );
-//        assertTrue( !matches.isEmpty() );
-//        assertEquals( 1, matches.size() );
+        // OntologyLookup ol = new OntologyLookupImpl();
+        // Collection<OntologyTerm> matches = ol.match( "O80-O84.9", 1 );
+        // assertTrue( !matches.isEmpty() );
+        // assertEquals( 1, matches.size() );
     }
 
 }

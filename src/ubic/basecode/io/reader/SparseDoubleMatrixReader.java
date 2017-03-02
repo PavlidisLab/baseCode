@@ -174,6 +174,7 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
      * @return
      * @throws IOException
      */
+    @SuppressWarnings("resource")
     public DoubleMatrix<String, String> readJW( InputStream stream ) throws IOException {
 
         BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
@@ -207,6 +208,7 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
                 int ind = index;
 
                 if ( ind > dim || ind < 1 ) {
+                    ff.close();
                     throw new IllegalStateException( "Illegal value " + ind + " found in index list for item " + k );
                 }
                 rowind[i] = ind;

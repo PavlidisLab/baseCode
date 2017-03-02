@@ -24,11 +24,11 @@ import java.util.zip.GZIPInputStream;
 
 import org.junit.Test;
 
-import ubic.basecode.ontology.OntologyLoader;
-import ubic.basecode.ontology.model.OntologyTerm;
-
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
+
+import ubic.basecode.ontology.OntologyLoader;
+import ubic.basecode.ontology.model.OntologyTerm;
 
 /**
  * Most of these tests were moved over from Gemma.
@@ -47,13 +47,13 @@ public class OntologySearchTest {
 
         Collection<OntologyTerm> name = OntologySearch.matchClasses( model, index, "Bedding" );
 
-        assertEquals( 1, name.size() );
+        assertEquals( 2, name.size() );
         index.close();
 
         index = OntologyIndexer.indexOntology( "MGEDTEST", model, true );
         name = OntologySearch.matchClasses( model, index, "Bedding" );
 
-        assertEquals( 1, name.size() );
+        assertEquals( 2, name.size() );
         index.close();
     }
 
@@ -204,6 +204,7 @@ public class OntologySearchTest {
         assertEquals( 0, searchResults.size() );
 
         index.close();
+        is.close();
     }
 
     @Test
@@ -244,18 +245,18 @@ public class OntologySearchTest {
         index = OntologyIndexer.getSubjectIndex( "MGEDTEST" );
 
         Collection<OntologyTerm> name = OntologySearch.matchClasses( model, index, "bedding" );
-        assertEquals( 1, name.size() );
+        assertEquals( 2, name.size() );
 
         // test wildcard. Works with stemmed term, wild card doesn't do anything
         name = OntologySearch.matchClasses( model, index, "bed*" );
-        assertEquals( 1, name.size() );
+        assertEquals( 2, name.size() );
 
         // stemmed term.
         name = OntologySearch.matchClasses( model, index, "bed" );
-        assertEquals( 1, name.size() );
+        assertEquals( 2, name.size() );
 
         name = OntologySearch.matchClasses( model, index, "beddin*" );
-        assertEquals( 1, name.size() );
+        assertEquals( 2, name.size() );
         index.close();
     }
 

@@ -96,6 +96,7 @@ public class TestDoubleMatrixReader {
 
         assertEquals( 12, matrix.getColNames().size() );
         assertEquals( 12, matrix.columns() );
+        nis.close();
 
     }
 
@@ -201,6 +202,7 @@ public class TestDoubleMatrixReader {
 
     @Test
     public void testReadInputStreamMissingSpaces() throws Exception {
+        @SuppressWarnings("resource")
         InputStream isl = this.getClass().getResourceAsStream( "/data/luo-prostate.sample.txt" );
         matrix = reader.read( isl );
         int actualReturn = matrix.rows();

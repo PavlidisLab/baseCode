@@ -53,6 +53,7 @@ public class StringMatrixReader extends AbstractMatrixReader<StringMatrix<String
      * @return
      * @throws IOException
      */
+    @SuppressWarnings("resource")
     public StringMatrix<String, String> read( InputStream stream, int maxRows, int numColumnsToSkip )
             throws IOException {
         StringMatrix<String, String> matrix = null;
@@ -158,6 +159,7 @@ public class StringMatrixReader extends AbstractMatrixReader<StringMatrix<String
      * @return
      * @throws IOException
      */
+    @SuppressWarnings("resource")
     public StringMatrix<String, String> read( String filename, int maxRows, int numColumnsToSkip ) throws IOException {
         File infile = new File( filename );
         if ( !infile.exists() || !infile.canRead() ) {

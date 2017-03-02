@@ -32,7 +32,6 @@ import org.apache.commons.math3.analysis.interpolation.LoessInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 import org.apache.commons.math3.exception.OutOfRangeException;
 
-import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import cern.colt.function.IntIntDoubleFunction;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
@@ -42,23 +41,25 @@ import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
 import cern.jet.stat.Descriptive;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
 /**
  * Estimate mean-variance relationship and use this to compute weights for least squares fitting. R's limma.voom()
- * Charity Law and Gordon Smyth. Running voom() on data matrices with NaNs are not currently supported.
+ * Charity Law and Gordon Smyth. See Law et al.
+ * {@link http://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29} Running voom() on data matrices with
+ * NaNs is not currently supported.
  * 
  * @author ptan
- * @version $Id$
  */
 public class MeanVarianceEstimator {
 
     /**
-     * Default loess span
+     * Default loess span (Note: this was set to 0.5; 0.3 is more reasonable)
      */
     public static final double BANDWIDTH = 0.5;
 
     /**
-     * Default number of loess robustness iterations
+     * Default number of loess robustness iterations; 0 is probably fine.
      */
     public static final int ROBUSTNESS_ITERS = 3;
 
@@ -232,7 +233,7 @@ public class MeanVarianceEstimator {
 
         DoubleMatrix1D sx = xy.viewColumn( 0 );
         DoubleMatrix1D sy = xy.viewColumn( 1 );
-        Map<Double, Double> map = new TreeMap<Double, Double>();
+        Map<Double, Double> map = new TreeMap<>();
         for ( int i = 0; i < sx.size(); i++ ) {
             if ( Double.isNaN( sx.get( i ) ) || Double.isInfinite( sx.get( i ) ) || Double.isNaN( sy.get( i ) )
                     || Double.isInfinite( sy.get( i ) ) ) {
@@ -253,8 +254,8 @@ public class MeanVarianceEstimator {
         LoessInterpolator loessInterpolator = new LoessInterpolator( MeanVarianceEstimator.BANDWIDTH,
                 MeanVarianceEstimator.ROBUSTNESS_ITERS );
 
-        double[] loessY = loessInterpolator.smooth( xyChecked.viewColumn( 0 ).toArray(), xyChecked.viewColumn( 1 )
-                .toArray() );
+        double[] loessY = loessInterpolator.smooth( xyChecked.viewColumn( 0 ).toArray(),
+                xyChecked.viewColumn( 1 ).toArray() );
 
         loessFit.viewColumn( 0 ).assign( xyChecked.viewColumn( 0 ) );
         loessFit.viewColumn( 1 ).assign( loessY );
@@ -263,7 +264,12 @@ public class MeanVarianceEstimator {
     }
 
     /**
-     * Performs row-wise mean (x) and variance (y) and performs a loess fit. Handles missing data.
+     * Performs row-wise mean (x) and variance (y) and performs a loess fit. Note this lowess fit is different than the
+     * one we use with voom, which is fit to the quarter-root variances (as per Smythe; tends to be more symmetric).
+     * Handles missing data.
+     * <p>
+     * FIXME I'm not sure the lowess fits are useful since we don't use them for analysis, and they are suboptimal being
+     * fit to the variance rather than the quarter-root variance.
      */
     private void mv() {
         assert this.E != null;
@@ -284,15 +290,18 @@ public class MeanVarianceEstimator {
         this.meanVariance.viewColumn( 0 ).assign( Amean );
         this.meanVariance.viewColumn( 1 ).assign( variance );
 
-        // fit a loess curve
+        /*
+         * fit a loess curve.
+         */
         this.loess = loessFit( this.meanVariance );
     }
 
     /**
-     * Performs the heavy duty work of calculating the weights. Throws an "IllegalArgumentException" if there are
-     * missing values. See Bug 3383.
+     * Performs the heavy duty work of calculating the weights. See Law et al.
+     * {@link http://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29}
      * 
      * @param designMatrix
+     * @throws IllegalArgumentException if there are missing values.
      */
     private void voom( DoubleMatrix2D designMatrix ) {
         assert designMatrix != null;
@@ -347,7 +356,7 @@ public class MeanVarianceEstimator {
             assert dof != 0;
             sy.assign( chain( sqrt, div( dof ) ) );
         }
-        sy.assign( sqrt );
+        sy.assign( sqrt ); // we're fitting the quarter-root variances.
 
         // only accepts array in strictly increasing order (drop duplicates)
         // so combine sx and sy and sort
@@ -414,8 +423,8 @@ public class MeanVarianceEstimator {
             }
         }
         assert fit != null;
-        double[] yInterpolate = MeanVarianceEstimator.approx( fit.viewColumn( 0 ).toArray(), fit.viewColumn( 1 )
-                .toArray(), xInterpolate );
+        double[] yInterpolate = MeanVarianceEstimator.approx( fit.viewColumn( 0 ).toArray(),
+                fit.viewColumn( 1 ).toArray(), xInterpolate );
 
         // 1D to 2D
         idx = 0;

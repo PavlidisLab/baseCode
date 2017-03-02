@@ -225,6 +225,7 @@ public class SparseRaggedMatrixReader extends DoubleMatrixReader {
      * @param name of file
      * @return
      */
+    @SuppressWarnings("resource")
     public DoubleMatrix<String, String> readFromAdjList( String fileName ) throws IOException {
         if ( !FileTools.testFile( fileName ) ) {
             throw new IOException( "Could not read from file " + fileName );
