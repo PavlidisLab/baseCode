@@ -17,15 +17,15 @@ package ubic.basecode.ontology;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
-import java.util.Collection;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ubic.basecode.ontology.model.OntologyTerm;
-import ubic.basecode.ontology.providers.GenericOntologyService;
 import ubic.basecode.util.Configuration;
 
 /**
@@ -51,18 +51,7 @@ public class OntologyLoaderTest {
     }
 
     @Test
-    public void testGenericOntologyServiceMem() throws Exception {
-        URL resource = this.getClass().getResource( dataResource );
-
-        GenericOntologyService s = createService( "foo", resource.toString(), false );
-
-        Collection<OntologyTerm> r = s.findTerm( "Mouse" );
-        assertTrue( !r.isEmpty() );
-
-    }
-
-    @Test
-    public void testCacheOntologyToDisk() throws Exception {
+    public void testHasChanged() throws Exception {
         String name = "fooTEST1234";
 
         File f = OntologyLoader.getDiskCachePath( name );
@@ -70,46 +59,32 @@ public class OntologyLoaderTest {
             f.delete();
         }
 
-        assertTrue( !f.exists() );
-
-        URL resource = this.getClass().getResource( dataResource );
-        GenericOntologyService s = createService( name, resource.toString(), true );
-
-        Collection<OntologyTerm> r = s.findTerm( "Mouse" );
-        assertTrue( !r.isEmpty() );
-
-        // Check if cache was created
-        assertTrue( f.exists() );
-        assertTrue( f.length() != 0 );
-
-        // Recreate OntologyService using this cache file
-        s = createService( name, "/data/NONEXISTENT_RESOURCE", true );
-
-        r = s.findTerm( "Mouse" );
-        assertTrue( !r.isEmpty() );
-
-        // Recreate OntologyService with bad URL and no cache
-        s = createService( "NO_CACHE_WITH_THIS_NAME", "/data/NONEXISTENT_RESOURCE", true );
-
-        r = s.findTerm( "Mouse" );
-        assertTrue( r.isEmpty() );
-
-    }
-
-    private GenericOntologyService createService( String name, String resourceURL, boolean cache ) throws Exception {
-
-        GenericOntologyService s = new GenericOntologyService( name, resourceURL, cache );
-
-        s.startInitializationThread( true );
-        int i = 0;
-        while ( s.isInitializationThreadAlive() && !s.isOntologyLoaded() ) {
-            Thread.sleep( 1000 );
-            if ( ++i > 100 ) {
-                break;
-            }
+        File oldFile = OntologyLoader.getOldDiskCachePath( name );
+        if ( oldFile.exists() ) {
+            oldFile.delete();
         }
 
-        return s;
+        assertTrue( !f.exists() );
+        assertTrue( !oldFile.exists() );
+
+        URL resource = this.getClass().getResource( dataResource );
+        try (InputStream in = resource.openStream();) {
+            Files.copy( in, f.toPath(), StandardCopyOption.REPLACE_EXISTING );
+        }
+
+        try (InputStream in = resource.openStream();) {
+            Files.copy( in, oldFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
+        }
+
+        assertTrue( !OntologyLoader.hasChanged( name ) );
+
+        // Now if the dataResource has changed
+        resource = this.getClass().getResource( "/data/nif.organism.test.owl-off-by-one.xml" );
+        try (InputStream in = resource.openStream();) {
+            Files.copy( in, f.toPath(), StandardCopyOption.REPLACE_EXISTING );
+        }
+        assertTrue( OntologyLoader.hasChanged( name ) );
+
     }
 
 }
