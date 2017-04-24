@@ -34,6 +34,8 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.ontology.OntModel;
+
 import ubic.basecode.ontology.OntologyLoader;
 import ubic.basecode.ontology.model.OntologyIndividual;
 import ubic.basecode.ontology.model.OntologyResource;
@@ -42,8 +44,6 @@ import ubic.basecode.ontology.search.OntologyIndexer;
 import ubic.basecode.ontology.search.OntologySearch;
 import ubic.basecode.ontology.search.SearchIndex;
 import ubic.basecode.util.Configuration;
-
-import com.hp.hpl.jena.ontology.OntModel;
 
 /**
  * @author kelsey
@@ -75,6 +75,10 @@ public abstract class AbstractOntologyService {
             return forceReindexing;
         }
 
+        private void cleanup() {
+            OntologyLoader.deleteOldCache( getOntologyName() );
+        }
+
         @Override
         public void run() {
 
@@ -95,10 +99,13 @@ public abstract class AbstractOntologyService {
 
             try {
 
+                //Checks if the current ontology has changed since it was last loaded.
+                boolean changed = OntologyLoader.hasChanged( getOntologyName() );
+
                 /*
                  * Indexing will be slow the first time (can take hours for large ontologies).
                  */
-                index( forceReindexing );
+                index( forceReindexing || changed );
 
                 indexReady.set( true );
 
@@ -118,6 +125,8 @@ public abstract class AbstractOntologyService {
                     log.info( getOntologyName() + "  loaded, total of " + terms.size() + " items in "
                             + loadTime.getTime() / 1000 + "s" );
                 }
+
+                cleanup();
 
                 cacheReady.set( true );
 
