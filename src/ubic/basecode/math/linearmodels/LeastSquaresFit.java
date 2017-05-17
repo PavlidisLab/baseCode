@@ -58,12 +58,18 @@ import ubic.basecode.util.r.type.AnovaEffect;
  * <p>
  * Data with missing values is handled but is less memory efficient and somewhat slower. The main cost is that when
  * there are no missing values, a single QR decomposition can be performed.
+ * 
  *
  * @author paul
  */
 public class LeastSquaresFit {
 
     private static Logger log = LoggerFactory.getLogger( LeastSquaresFit.class );
+
+    /**
+     * For ebayes
+     */
+    boolean hasBeenShrunken = false;
 
     /**
      * The (raw) design matrix
@@ -91,10 +97,7 @@ public class LeastSquaresFit {
      */
     private DoubleMatrix2D coefficients = null;
 
-    /**
-     * cor.matrix <- cov2cor(object$cov.coefficients)
-     */
-    private DoubleMatrix2D covCoefficients = null;
+    private DoubleMatrix2D contrasts;
 
     /**
      * Original design matrix, if provided or generated from constructor arguments.
@@ -110,11 +113,6 @@ public class LeastSquaresFit {
      * Fitted values
      */
     private DoubleMatrix2D fitted;
-
-    /**
-     * For ebayes
-     */
-    boolean hasBeenShrunken = false;
 
     /**
      * True if model includes intercept
@@ -138,57 +136,6 @@ public class LeastSquaresFit {
      */
     private Map<BitVector, QRDecomposition> qrs = new HashMap<>();
 
-    /**
-     * Map of row indices to values-present key.
-     */
-    private Map<Integer, BitVector> valuesPresentMap = new HashMap<>();
-
-    /**
-     * Get the QR decomposition to use for data row given. If it has not yet been computed/cached return null
-     * 
-     * @param row
-     * @return QR or null if the row wasn't usable. If there are no missing values, this returns the global qr.
-     */
-    private QRDecomposition getQR( Integer row ) {
-        if ( !this.hasMissing ) {
-            return this.qr;
-        }
-        BitVector key = valuesPresentMap.get( row );
-        if ( key == null ) return null;
-        return qrs.get( key );
-    }
-
-    /**
-     * 
-     * @param valuesPresent
-     * @return appropriate cached QR, or null
-     */
-    private QRDecomposition getQR( BitVector valuesPresent ) {
-        return qrs.get( valuesPresent );
-    }
-
-    /**
-     * Cache a QR. Only important if missing values are present, otherwise we use the "global" QR.
-     * 
-     * @param row cannot be null; indicates the index into the datamatrix rows.
-     * @param valuesPresent if null, this is taken to mean the row wasn't usable.
-     * @param newQR can be null, if valuePresent is null
-     */
-    private void addQR( Integer row, BitVector valuesPresent, QRDecomposition newQR ) {
-
-        assert row != null;
-
-        if ( valuesPresent == null ) {
-            valuesPresentMap.put( row, null );
-        }
-
-        QRDecomposition cachedQr = qrs.get( valuesPresent );
-        if ( cachedQr == null ) {
-            qrs.put( valuesPresent, newQR );
-        }
-        valuesPresentMap.put( row, valuesPresent );
-    }
-
     private int residualDof;
 
     /**
@@ -202,19 +149,24 @@ public class LeastSquaresFit {
     private DoubleMatrix2D residuals = null;
 
     /**
-     * Map of data rows to sdUnscaled (a la limma) Use of treemap: probably not necessary.
-     */
-    private Map<Integer, DoubleMatrix1D> stdevUnscaled = new TreeMap<>();
-
-    /**
      * Optional, but useful
      */
     private List<String> rowNames;
 
     /**
+     * Map of data rows to sdUnscaled (a la limma) Use of treemap: probably not necessary.
+     */
+    private Map<Integer, DoubleMatrix1D> stdevUnscaled = new TreeMap<>();
+
+    /**
      * Names of the factors (terms)
      */
     private List<String> terms;
+
+    /**
+     * Map of row indices to values-present key.
+     */
+    private Map<Integer, BitVector> valuesPresentMap = new HashMap<>();
 
     /**
      * ebayes per-item variance estimates (if computed, null otherwise)
@@ -230,8 +182,6 @@ public class LeastSquaresFit {
      * For weighted regression
      */
     private DoubleMatrix2D weights = null;
-
-    private DoubleMatrix2D contrasts;
 
     /**
      * Preferred interface if you want control over how the design is set up.
@@ -462,258 +412,6 @@ public class LeastSquaresFit {
     }
 
     /**
-     * 
-     * In limma this gets called when we subset a fit to look at certain coefficients: the F statistics get recomputed.
-     * If it's just one coefficient, F = tstat^2. Otherwise it's a bit more complicated, based on the covariance of the
-     * design matrix
-     * 
-     * ===================
-     * limma docs:
-     * 
-     * The functions described here are called by decideTests. Most users should use decideTests rather than using these
-     * functions directly.
-     * 
-     * These functions implement multiple testing procedures for determining whether each statistic in a matrix of
-     * t-statistics should be considered significantly different from zero. Rows of tstat correspond to genes and
-     * columns to coefficients or contrasts.
-     * 
-     * FStat computes the gene-wise F-statistics for testing all the contrasts equal to zero. It is equivalent to
-     * classifyTestsF with fstat.only=TRUE.
-     * 
-     * 
-     * classifyTestsF uses a nested F-test approach giving particular attention to correctly classifying genes which
-     * have two or more significant t-statistics, i.e., are differential expressed under two or more conditions. For
-     * each row of tstat, the overall F-statistics is constructed from the t-statistics as for FStat. At least one
-     * constrast will be classified as significant if and only if the overall F-statistic is significant. If the overall
-     * F-statistic is significant, then the function makes a best choice as to which t-statistics contributed to this
-     * result. The methodology is based on the principle that any t-statistic should be called significant if the F-test
-     * is still significant for that row when all the larger t-statistics are set to the same absolute size as the
-     * t-statistic in question.
-     * 
-     * cor.matrix is the same as the correlation matrix of the coefficients from which the t-statistics are calculated.
-     * If cor.matrix is not specified, then it is calculated from design and contrasts if at least design is specified
-     * or else defaults to the identity matrix. In terms of design and contrasts, cor.matrix is obtained by
-     * standardizing the matrix
-     * 
-     * t(contrasts) %*% solve(t(design) %*% design) %*% contrasts
-     * 
-     * to a correlation matrix.
-     * ===================================================
-     * 
-     */
-    public void classifyTestsF( boolean fStatOnly /* TODO add lists of coefficients to examine */ ) {
-
-        /*
-         * * tstat <- as.matrix(object$t)
-         */
-
-        /*
-         * * if(missing(df) && !is.null(object$df.prior) && !is.null(object$df.residual)) df <-
-         * object$df.prior+object$df.residual
-         */
-
-        /*
-         * cor.matrix <- cov2cor(object$cov.coefficients) // but only for the coefficients we are looking at.
-         */
-
-        /*
-         * # cor.matrix is estimated correlation matrix of the coefficients
-         * # and also the estimated covariance matrix of the t-statistics
-         * if(is.null(cor.matrix)) {
-         * r <- ntests
-         * Q <- diag(r)/sqrt(r)
-         * } else {
-         * E <- eigen(cor.matrix,symmetric=TRUE)
-         * r <- sum(E$values/E$values[1] > 1e-8)
-         * Q <- .matvec( E$vectors[,1:r], 1/sqrt(E$values[1:r]))/sqrt(r)
-         * }
-         */
-        // r is the number of estimable coefficients - out of the ones we selected.
-        // Q is the eigenvectors of the coefficient correlation matrix (the .matvec is just rescaling them)
-
-        /*
-         * # Return overall moderated F-statistic only
-         * if(fstat.only) {
-         * fstat <- drop( (tstat %*% Q)^2 %*% array(1,c(r,1)) )
-         * attr(fstat,"df1") <- r
-         * attr(fstat,"df2") <- df
-         * return(fstat)
-         * }
-         */
-        if ( fStatOnly ) {
-
-        }
-
-        /*
-         * # Return TestResults matrix
-         * qF <- qf(p.value, r, df, lower.tail=FALSE)
-         * if(length(qF)==1) qF <- rep(qF,ngenes)
-         * result <- matrix(0,ngenes,ntests,dimnames=dimnames(tstat))
-         * for (i in 1:ngenes) {
-         * x <- tstat[i,]
-         * if(any(is.na(x)))
-         * result[i,] <- NA
-         * else
-         * if( crossprod(crossprod(Q,x)) > qF[i] ) {
-         * ord <- order(abs(x),decreasing=TRUE)
-         * result[i,ord[1]] <- sign(x[ord[1]])
-         * for (j in 2:ntests) {
-         * bigger <- ord[1:(j-1)]
-         * x[bigger] <- sign(x[bigger]) * abs(x[ord[j]])
-         * if( crossprod(crossprod(Q,x)) > qF[i] )
-         * result[i,ord[j]] <- sign(x[ord[j]])
-         * else
-         * break
-         * }
-         * }
-         * }
-         */
-
-        // according to Smyth:
-        //  you can conduct Anova-style F-tests using limma simply by specifying a range of coefficients
-        // to topTable(), as discussed in the User's Guide.
-        // Though this is not described in the user guide.
-    }
-
-    /**
-     * =========================
-     * Limma docs:
-     * The function re-orientates the fitted model object from the coefficients of the original design matrix to any
-     * set of contrasts of the original coefficients. The coefficients, unscaled standard deviations and correlation
-     * matrix are re-calculated in terms of the contrasts.
-     * 
-     * The idea of this function is to fit a full-rank model using lmFit or equivalent, then use contrasts.fit to
-     * obtain coefficients and standard errors for any number of contrasts of the coefficients of the original
-     * model. Unlike the design matrix input to lmFit, which normally has one column for each treatment in the
-     * experiment, the matrix contrasts may have any number of columns and these are not required to be linearly
-     * independent. Methods of assessing differential expression, such as eBayes or classifyTestsF, can then be
-     * applied to fitted model object.
-     * 
-     * The coefficients argument provides a simpler way to specify the contrasts matrix when
-     * the desired contrasts are just a subset of the original coefficients.
-     * 
-     * Warning. For efficiency reasons, this function does not re-factorize the design matrix for each probe. A
-     * consequence is that, if the design matrix is non-orthogonal and the original fit included quality weights or
-     * missing values, then the unscaled standard deviations produced by this function are approximate rather than
-     * exact. The approximation is usually acceptable. The results are always exact if the original fit was a oneway
-     * model.
-     * ==========================
-     * 
-     * After this is run, eBayes can be run, then decideTests (classifyTestsF)
-     * 
-     * @param contr contrast matrix
-     */
-    public void contrastsFit( DoubleMatrix2D contr ) {
-
-        this.contrasts = contr;
-
-        // fig$cov.coefficients - unscaled
-        DoubleMatrix2D XtXi = qr.chol2inv();
-        DoubleMatrix2D cormatrix = MatrixStats.cov2cor( XtXi );
-
-        // FIXME assuming no missing values. Assuming all coefficients are estimable.
-        // to address that we would have to do this
-        //        * # If design matrix was singular, reduce to estimable coefficients
-        //        * r <- nrow(cormatrix)
-        //        * if(r < ncoef) {
-        //        * if(is.null(fit$pivot)) stop("cor.coef not full rank but pivot column not found in fit")
-        //        * est <- fit$pivot[1:r]
-        //        * if(any(contrasts[-est,]!=0)) stop("trying to take contrast of non-estimable coefficient")
-        //        * contrasts <- contrasts[est,,drop=FALSE]
-        //        * fit$coefficients <- fit$coefficients[,est,drop=FALSE]
-        //        * fit$stdev.unscaled <- fit$stdev.unscaled[,est,drop=FALSE]
-        //        * ncoef <- r
-
-        // if the correlation matrix has no non-zero off-diagonal elements.
-        //   if (length(cormatrix) < 2) {
-        //       orthog <- TRUE
-        //    } else {
-        //       ...
-        //    }
-        boolean orthog = true;
-        if ( cormatrix.rows() > 1 ) {
-            //            orthog <- all(abs(cormatrix[lower.tri(cormatrix)]) < 
-            //              1e-14)
-            for ( int m = 1; m < cormatrix.rows(); m++ ) {
-                for ( int n = 0; n < m; n++ ) {
-                    if ( Math.abs( cormatrix.get( m, n ) ) > 1.0e-14 ) {
-                        orthog = false;
-                        break;
-                    }
-                }
-            }
-        }
-
-        //  ngenes <- NROW(fit$stdev.unscaled)
-        int ngenes = this.stdevUnscaled.size();
-
-        // fit$coefficients <- fit$coefficients %*% contrasts 
-        this.coefficients = this.coefficients.zMult( contr, null );
-
-        //  R <- chol(fit$cov.coefficients)
-        DoubleMatrix2D R = new CholeskyDecomposition( XtXi ).getL(); // could get with QR->R
-
-        // fit$cov.coefficients <- crossprod(R %*% contrasts)
-        DoubleMatrix2D Rxc = R.zMult( contr, null );
-        this.covCoefficients = Rxc.viewDice().zMult( Rxc, null );
-
-        /*
-         * We're going to update the stdev.unscaled
-         */
-        if ( orthog ) {
-            log.info( "Design is orthogonal" );
-            //            fit$stdev.unscaled <- sqrt(fit$stdev.unscaled^2 %*% 
-            //                    contrasts^2)
-            DoubleMatrix2D contrastsSquared = contrasts.copy().assign( Functions.square );
-            for ( int i = 0; i < ngenes; i++ ) {
-                this.stdevUnscaled.get( i ).copy().assign( Functions.square );
-            }
-
-        } else {
-            log.info( "Design is non-orthogonal" );
-
-            // Compute the contrast correlation matrix
-
-            // R <- chol(cormatrix)
-            R = new CholeskyDecomposition( cormatrix ).getL(); // could get with QR->R
-
-            //  ncont <- NCOL(contrasts)
-            int ncont = contr.columns();
-
-            //   U <- matrix(1,ngenes,ncont,dimnames=list(rownames(fit$stdev.unscaled),colnames(contrasts)))
-            DoubleMatrix2D U = new DenseDoubleMatrix2D( ngenes, ncont );
-            U.assign( 1.0 );
-
-            // o <- array(1,c(1,ncoef))
-            DenseDoubleMatrix2D o = new DenseDoubleMatrix2D( 1, this.coefficients.columns() );
-            o.assign( 1.0 );
-
-            //  for (i in 1:ngenes) {
-            //             ...
-            //  }
-            for ( int i = 0; i < ngenes; i++ ) {
-                // RUC <- R %*% .vecmat(fit$stdev.unscaled[i,],contrasts)
-                // multiply each row of (a copy of) contrasts by the stdevunscaled
-                DoubleMatrix1D stdu = this.stdevUnscaled.get( i );
-                DoubleMatrix2D cc = contr.copy();
-                for ( int k = 0; k < cc.rows(); k++ ) {
-                    cc.viewRow( k ).assign( Functions.mult( stdu.get( k ) ) );
-                }
-                // also take care of squaring RUC values.
-                DoubleMatrix2D RUC = R.copy().zMult( cc, null ).assign( Functions.square );
-
-                //  U[i,] <- sqrt(o %*% RUC^2) // sqrt rowsumsquared of RUC 
-                DoubleMatrix2D Ui = o.copy().zMult( RUC, null );
-
-                //  fit$stdev.unscaled <- U
-                this.stdevUnscaled.put( i, Ui.viewRow( 0 ) );
-            }
-
-        }
-
-    }
-
-    /**
      * The matrix of coefficients x for Ax = b (parameter estimates). Each column represents one fitted model (e.g., one
      * gene); there is a row for each parameter.
      * 
@@ -838,6 +536,28 @@ public class LeastSquaresFit {
      */
     public List<LinearModelSummary> summarize() {
         return this.summarize( false );
+    }
+
+    /**
+     * @param anova if true, ANOVA will be computed
+     * @return
+     */
+    public List<LinearModelSummary> summarize( boolean anova ) {
+        List<LinearModelSummary> lmsresults = new ArrayList<>();
+
+        List<GenericAnovaResult> anovas = null;
+        if ( anova ) {
+            anovas = this.anova();
+        }
+
+        for ( int i = 0; i < this.coefficients.columns(); i++ ) {
+            LinearModelSummary lms = summarize( i );
+            lms.setAnova( anovas != null ? anovas.get( i ) : null );
+            lmsresults.add( lms );
+
+        }
+
+        return lmsresults;
     }
 
     /**
@@ -1112,25 +832,11 @@ public class LeastSquaresFit {
                 .removeMissing( MatrixUtil.diagonal( XtXi ).assign( Functions.mult( resvar ) )
                         .assign( Functions.sqrt ) ); // wasteful...
 
-        //  This should ALWAYS be false
-        //  if ( est.size() != sdUnscaled.size() ) {
-        //   if ( !hasWarned ) {
-        //        log.warn( "T statistics could not be computed because of missing values (singularity?) " + i
-        //                + this.diagnosis( qrd ) );
-        //        log.warn( "Data for this row:\n" + this.b.viewRow( i ) );
-        //        log.warn( "Additional warnings suppressed" );
-        //          hasWarned = true;
-        //    }
-        //            return new LinearModelSummary( key, ArrayUtils.toObject( coef.toArray() ),
-        //                    ArrayUtils.toObject( resid.toArray() ), terms,
-        //                    summaryTable, null, null, 0.0, 0.0, 0.0, 0, 0, null, 0.0, this.hasBeenShrunken );
-        //     }
         DoubleMatrix1D tstats;
         TDistribution tdist;
         if ( this.hasBeenShrunken ) {
             /*
-             * 
-             * # moderated t-statistic
+             * moderated t-statistic
              * out$t <- coefficients / stdev.unscaled / sqrt(out$s2.post)
              */
             tstats = estCoef.copy().assign( sdUnscaled, Functions.div ).assign(
@@ -1146,11 +852,6 @@ public class LeastSquaresFit {
 
             double dfTotal = rdf + this.dfPrior;
 
-            //            double dfPooled = new DenseDoubleMatrix1D(
-            //                    ArrayUtils.toPrimitive( residualDofs.toArray( new Double[] {} ) ) )
-            //                            .aggregate( Functions.plus, Functions.identity );
-
-            //            dfTotal = Math.min( dfPooled, dfTotal ); // this is totally a corner case.
             assert !Double.isNaN( dfTotal );
             tdist = new TDistribution( dfTotal );
         } else {
@@ -1218,17 +919,13 @@ public class LeastSquaresFit {
         // AKA Qty (first rank elements)
         DoubleMatrix1D effects = qrd.effects( this.b.viewRow( i ) );
 
-        // FIXME if we need the *full* effects (Qty) vector, need to add a method to QR.
-
         // sigma is the estimated sd of the parameters. In limma, fit$sigma <- sqrt(mean(fit$effects[-(1:fit$rank)]^2)
         // first p elements are associated with the coefficients; same as residuals (QQty) / resid dof.
         double sigma = Math
                 .sqrt( resid.copy().assign( Functions.square ).aggregate( Functions.plus, Functions.identity )
                         / ( resid.size() - rank ) );
-        //        double sigma = Math.sqrt( effects.copy().viewPart( rank, effects.size() - rank ).assign( Functions.square )
-        //                .aggregate( Functions.plus, Functions.identity ) / ( effects.size() - rank ) );
 
-        // fixme: use ebayes values for df, sigma, fstatistic
+        // NOTE that not all the information stored in the summary is likely to be important.
         LinearModelSummary lms = new LinearModelSummary( key, ArrayUtils.toObject( allCoef.toArray() ),
                 ArrayUtils.toObject( resid
                         .toArray() ),
@@ -1257,6 +954,28 @@ public class LeastSquaresFit {
     }
 
     /**
+     * Cache a QR. Only important if missing values are present, otherwise we use the "global" QR.
+     * 
+     * @param row cannot be null; indicates the index into the datamatrix rows.
+     * @param valuesPresent if null, this is taken to mean the row wasn't usable.
+     * @param newQR can be null, if valuePresent is null
+     */
+    private void addQR( Integer row, BitVector valuesPresent, QRDecomposition newQR ) {
+
+        assert row != null;
+
+        if ( valuesPresent == null ) {
+            valuesPresentMap.put( row, null );
+        }
+
+        QRDecomposition cachedQr = qrs.get( valuesPresent );
+        if ( cachedQr == null ) {
+            qrs.put( valuesPresent, newQR );
+        }
+        valuesPresentMap.put( row, valuesPresent );
+    }
+
+    /**
      *
      */
     private void checkForMissingValues() {
@@ -1269,6 +988,120 @@ public class LeastSquaresFit {
                 }
             }
         }
+    }
+
+    /**
+     * Warning: not implemented.
+     * 
+     * In limma this gets called when we subset a fit to look at certain coefficients: the F statistics get recomputed.
+     * If it's just one coefficient, F = tstat^2. Otherwise it's a bit more complicated.
+     * 
+     * ===================
+     * limma docs:
+     * 
+     * The functions described here are called by decideTests. Most users should use decideTests rather than using these
+     * functions directly.
+     * 
+     * These functions implement multiple testing procedures for determining whether each statistic in a matrix of
+     * t-statistics should be considered significantly different from zero. Rows of tstat correspond to genes and
+     * columns to coefficients or contrasts.
+     * 
+     * FStat computes the gene-wise F-statistics for testing all the contrasts equal to zero. It is equivalent to
+     * classifyTestsF with fstat.only=TRUE.
+     * 
+     * 
+     * classifyTestsF uses a nested F-test approach giving particular attention to correctly classifying genes which
+     * have two or more significant t-statistics, i.e., are differential expressed under two or more conditions. For
+     * each row of tstat, the overall F-statistics is constructed from the t-statistics as for FStat. At least one
+     * constrast will be classified as significant if and only if the overall F-statistic is significant. If the overall
+     * F-statistic is significant, then the function makes a best choice as to which t-statistics contributed to this
+     * result. The methodology is based on the principle that any t-statistic should be called significant if the F-test
+     * is still significant for that row when all the larger t-statistics are set to the same absolute size as the
+     * t-statistic in question.
+     * 
+     * cor.matrix is the same as the correlation matrix of the coefficients from which the t-statistics are calculated.
+     * If cor.matrix is not specified, then it is calculated from design and contrasts if at least design is specified
+     * or else defaults to the identity matrix. In terms of design and contrasts, cor.matrix is obtained by
+     * standardizing the matrix
+     * 
+     * t(contrasts) %*% solve(t(design) %*% design) %*% contrasts
+     * 
+     * to a correlation matrix.
+     * ===================================================
+     * 
+     */
+    private void classifyTestsF( boolean fStatOnly /* TODO add lists of coefficients to examine */ ) {
+
+        /*
+         * * tstat <- as.matrix(object$t)
+         */
+
+        /*
+         * * if(missing(df) && !is.null(object$df.prior) && !is.null(object$df.residual)) df <-
+         * object$df.prior+object$df.residual
+         */
+
+        /*
+         * cor.matrix <- cov2cor(object$cov.coefficients) // but only for the coefficients we are looking at.
+         */
+
+        /*
+         * # cor.matrix is estimated correlation matrix of the coefficients
+         * # and also the estimated covariance matrix of the t-statistics
+         * if(is.null(cor.matrix)) {
+         * r <- ntests
+         * Q <- diag(r)/sqrt(r)
+         * } else {
+         * E <- eigen(cor.matrix,symmetric=TRUE)
+         * r <- sum(E$values/E$values[1] > 1e-8)
+         * Q <- .matvec( E$vectors[,1:r], 1/sqrt(E$values[1:r]))/sqrt(r)
+         * }
+         */
+        // r is the number of estimable coefficients - out of the ones we selected.
+        // Q is the eigenvectors of the coefficient correlation matrix (the .matvec is just rescaling them)
+
+        /*
+         * # Return overall moderated F-statistic only
+         * if(fstat.only) {
+         * fstat <- drop( (tstat %*% Q)^2 %*% array(1,c(r,1)) )
+         * attr(fstat,"df1") <- r
+         * attr(fstat,"df2") <- df
+         * return(fstat)
+         * }
+         */
+        if ( fStatOnly ) {
+
+        }
+
+        /*
+         * # Return TestResults matrix
+         * qF <- qf(p.value, r, df, lower.tail=FALSE)
+         * if(length(qF)==1) qF <- rep(qF,ngenes)
+         * result <- matrix(0,ngenes,ntests,dimnames=dimnames(tstat))
+         * for (i in 1:ngenes) {
+         * x <- tstat[i,]
+         * if(any(is.na(x)))
+         * result[i,] <- NA
+         * else
+         * if( crossprod(crossprod(Q,x)) > qF[i] ) {
+         * ord <- order(abs(x),decreasing=TRUE)
+         * result[i,ord[1]] <- sign(x[ord[1]])
+         * for (j in 2:ntests) {
+         * bigger <- ord[1:(j-1)]
+         * x[bigger] <- sign(x[bigger]) * abs(x[ord[j]])
+         * if( crossprod(crossprod(Q,x)) > qF[i] )
+         * result[i,ord[j]] <- sign(x[ord[j]])
+         * else
+         * break
+         * }
+         * }
+         * }
+         */
+
+        // according to Smyth:
+        //  you can conduct Anova-style F-tests using limma simply by specifying a range of coefficients
+        // to topTable(), as discussed in the User's Guide.
+        // Though this is not described in the user guide.
     }
 
     /**
@@ -1398,6 +1231,145 @@ public class LeastSquaresFit {
     }
 
     /**
+     * Warning: not implemented.
+     * =========================
+     * Limma docs:
+     * The function re-orientates the fitted model object from the coefficients of the original design matrix to any
+     * set of contrasts of the original coefficients. The coefficients, unscaled standard deviations and correlation
+     * matrix are re-calculated in terms of the contrasts.
+     * 
+     * The idea of this function is to fit a full-rank model using lmFit or equivalent, then use contrasts.fit to
+     * obtain coefficients and standard errors for any number of contrasts of the coefficients of the original
+     * model. Unlike the design matrix input to lmFit, which normally has one column for each treatment in the
+     * experiment, the matrix contrasts may have any number of columns and these are not required to be linearly
+     * independent. Methods of assessing differential expression, such as eBayes or classifyTestsF, can then be
+     * applied to fitted model object.
+     * 
+     * The coefficients argument provides a simpler way to specify the contrasts matrix when
+     * the desired contrasts are just a subset of the original coefficients.
+     * 
+     * Warning. For efficiency reasons, this function does not re-factorize the design matrix for each probe. A
+     * consequence is that, if the design matrix is non-orthogonal and the original fit included quality weights or
+     * missing values, then the unscaled standard deviations produced by this function are approximate rather than
+     * exact. The approximation is usually acceptable. The results are always exact if the original fit was a oneway
+     * model.
+     * ==========================
+     * 
+     * After this is run, eBayes can be run, then decideTests (classifyTestsF)
+     * 
+     * @param contr contrast matrix
+     */
+    private void contrastsFit( DoubleMatrix2D contr ) {
+
+        this.contrasts = contr;
+
+        // fig$cov.coefficients - unscaled
+        DoubleMatrix2D XtXi = qr.chol2inv();
+        DoubleMatrix2D cormatrix = MatrixStats.cov2cor( XtXi );
+
+        // FIXME assuming no missing values. Assuming all coefficients are estimable.
+        // to address that we would have to do this
+        //        * # If design matrix was singular, reduce to estimable coefficients
+        //        * r <- nrow(cormatrix)
+        //        * if(r < ncoef) {
+        //        * if(is.null(fit$pivot)) stop("cor.coef not full rank but pivot column not found in fit")
+        //        * est <- fit$pivot[1:r]
+        //        * if(any(contrasts[-est,]!=0)) stop("trying to take contrast of non-estimable coefficient")
+        //        * contrasts <- contrasts[est,,drop=FALSE]
+        //        * fit$coefficients <- fit$coefficients[,est,drop=FALSE]
+        //        * fit$stdev.unscaled <- fit$stdev.unscaled[,est,drop=FALSE]
+        //        * ncoef <- r
+
+        // if the correlation matrix has no non-zero off-diagonal elements.
+        //   if (length(cormatrix) < 2) {
+        //       orthog <- TRUE
+        //    } else {
+        //       ...
+        //    }
+        boolean orthog = true;
+        if ( cormatrix.rows() > 1 ) {
+            //            orthog <- all(abs(cormatrix[lower.tri(cormatrix)]) < 
+            //              1e-14)
+            for ( int m = 1; m < cormatrix.rows(); m++ ) {
+                for ( int n = 0; n < m; n++ ) {
+                    if ( Math.abs( cormatrix.get( m, n ) ) > 1.0e-14 ) {
+                        orthog = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+        //  ngenes <- NROW(fit$stdev.unscaled)
+        int ngenes = this.stdevUnscaled.size();
+
+        // fit$coefficients <- fit$coefficients %*% contrasts 
+        this.coefficients = this.coefficients.zMult( contr, null );
+
+        //  R <- chol(fit$cov.coefficients)
+        DoubleMatrix2D R = new CholeskyDecomposition( XtXi ).getL(); // could get with QR->R
+
+        // fit$cov.coefficients <- crossprod(R %*% contrasts)
+        DoubleMatrix2D Rxc = R.zMult( contr, null );
+        DoubleMatrix2D covCoefficients = Rxc.viewDice().zMult( Rxc, null );
+
+        /*
+         * We're going to update the stdev.unscaled
+         */
+        if ( orthog ) {
+            log.info( "Design is orthogonal" );
+            //            fit$stdev.unscaled <- sqrt(fit$stdev.unscaled^2 %*% 
+            //                    contrasts^2)
+            DoubleMatrix2D contrastsSquared = contrasts.copy().assign( Functions.square );
+            for ( int i = 0; i < ngenes; i++ ) {
+                this.stdevUnscaled.get( i ).copy().assign( Functions.square );
+            }
+
+        } else {
+            log.info( "Design is non-orthogonal" );
+
+            // Compute the contrast correlation matrix
+
+            // R <- chol(cormatrix)
+            R = new CholeskyDecomposition( cormatrix ).getL(); // could get with QR->R
+
+            //  ncont <- NCOL(contrasts)
+            int ncont = contr.columns();
+
+            //   U <- matrix(1,ngenes,ncont,dimnames=list(rownames(fit$stdev.unscaled),colnames(contrasts)))
+            DoubleMatrix2D U = new DenseDoubleMatrix2D( ngenes, ncont );
+            U.assign( 1.0 );
+
+            // o <- array(1,c(1,ncoef))
+            DenseDoubleMatrix2D o = new DenseDoubleMatrix2D( 1, this.coefficients.columns() );
+            o.assign( 1.0 );
+
+            //  for (i in 1:ngenes) {
+            //             ...
+            //  }
+            for ( int i = 0; i < ngenes; i++ ) {
+                // RUC <- R %*% .vecmat(fit$stdev.unscaled[i,],contrasts)
+                // multiply each row of (a copy of) contrasts by the stdevunscaled
+                DoubleMatrix1D stdu = this.stdevUnscaled.get( i );
+                DoubleMatrix2D cc = contr.copy();
+                for ( int k = 0; k < cc.rows(); k++ ) {
+                    cc.viewRow( k ).assign( Functions.mult( stdu.get( k ) ) );
+                }
+                // also take care of squaring RUC values.
+                DoubleMatrix2D RUC = R.copy().zMult( cc, null ).assign( Functions.square );
+
+                //  U[i,] <- sqrt(o %*% RUC^2) // sqrt rowsumsquared of RUC 
+                DoubleMatrix2D Ui = o.copy().zMult( RUC, null );
+
+                //  fit$stdev.unscaled <- U
+                this.stdevUnscaled.put( i, Ui.viewRow( 0 ) );
+            }
+
+        }
+
+    }
+
+    /**
      * @param qrd
      * @return
      */
@@ -1426,6 +1398,30 @@ public class LeastSquaresFit {
             return;
         }
         wlsf();
+    }
+
+    /**
+     * 
+     * @param valuesPresent
+     * @return appropriate cached QR, or null
+     */
+    private QRDecomposition getQR( BitVector valuesPresent ) {
+        return qrs.get( valuesPresent );
+    }
+
+    /**
+     * Get the QR decomposition to use for data row given. If it has not yet been computed/cached return null
+     * 
+     * @param row
+     * @return QR or null if the row wasn't usable. If there are no missing values, this returns the global qr.
+     */
+    private QRDecomposition getQR( Integer row ) {
+        if ( !this.hasMissing ) {
+            return this.qr;
+        }
+        BitVector key = valuesPresentMap.get( row );
+        if ( key == null ) return null;
+        return qrs.get( key );
     }
 
     /**
@@ -1611,28 +1607,6 @@ public class LeastSquaresFit {
         if ( hasAssign ) assigns.add( this.assign );
         return coefs.viewColumn( 0 );
 
-    }
-
-    /**
-     * @param anova if true, ANOVA will be computed
-     * @return
-     */
-    public List<LinearModelSummary> summarize( boolean anova ) {
-        List<LinearModelSummary> lmsresults = new ArrayList<>();
-
-        List<GenericAnovaResult> anovas = null;
-        if ( anova ) {
-            anovas = this.anova();
-        }
-
-        for ( int i = 0; i < this.coefficients.columns(); i++ ) {
-            LinearModelSummary lms = summarize( i );
-            lms.setAnova( anovas != null ? anovas.get( i ) : null );
-            lmsresults.add( lms );
-
-        }
-
-        return lmsresults;
     }
 
     /**

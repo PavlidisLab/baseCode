@@ -34,14 +34,15 @@ import ubic.basecode.math.SpecFunc;
  * Smyth, G. K. (2004). Linear models and empirical Bayes methods for assessing differential expression in microarray
  * experiments. Statistical Applications in Genetics and Molecular Biology Volume 3, Issue 1, Article 3.
  * <p>
- * TODO does not handle missing values.
+ * Important: does not handle missing values in the original data.
  * 
  * @author paul
  */
 public class ModeratedTstat {
 
     /**
-     * 
+     * Does essentially the same thing as limma::ebayes. However: does not handle missing values; it assumes a single
+     * value of residual degrees of freedom.
      * 
      * @param fit which will be modified
      */
@@ -68,12 +69,12 @@ public class ModeratedTstat {
      * TODO deal with missing/bad values.
      * TODO support covariate?
      */
-    public static double[] fitFDist( DoubleMatrix1D x, double df1 ) {
+    protected static double[] fitFDist( DoubleMatrix1D x, double df1 ) {
 
         // stay away from zero valuess
         x = x.copy().assign( Functions.max( 1e-5 ) );
-        //  z <- log(x)
-        //        e <- z-digamma(df1/2)+log(df1/2)
+        // z <- log(x)
+        // e <- z-digamma(df1/2)+log(df1/2)
         DoubleMatrix1D e = x.copy().assign( Functions.log ).assign( Functions.minus( Gamma.digamma( df1 / 2.0 ) ) )
                 .assign( Functions.plus( Math.log( df1 / 2.0 ) ) );
 
@@ -90,8 +91,9 @@ public class ModeratedTstat {
         double s20;
         if ( evar > 0 ) {
             // df2 <- 2*trigammaInverse(evar)
-            // s20 <- exp(emean+digamma(df2/2)-log(df2/2)) 
             df2 = 2 * SpecFunc.trigammaInverse( evar );
+
+            // s20 <- exp(emean+digamma(df2/2)-log(df2/2)) 
             s20 = Math.exp( emean + Gamma.digamma( df2 / 2.0 ) - Math.log( df2 / 2.0 ) );
 
         } else {
@@ -111,7 +113,7 @@ public class ModeratedTstat {
      * @param fit will be updated with new info; call fit.summarize() to get updated pvalues etc.
      * @return varPost for testing mostly
      */
-    public static DoubleMatrix1D squeezeVar( DoubleMatrix1D var, double df, LeastSquaresFit fit ) {
+    protected static DoubleMatrix1D squeezeVar( DoubleMatrix1D var, double df, LeastSquaresFit fit ) {
 
         double[] ffit = fitFDist( var, df );
         double dfPrior = ffit[1];
@@ -140,7 +142,6 @@ public class ModeratedTstat {
                     .assign( Functions.plus( dfPrior * varPrior ) ).assign( Functions.div( df + dfPrior ) );
 
         }
-        //
         throw new IllegalStateException( "not implemented case of infinite dof" );
     }
 
