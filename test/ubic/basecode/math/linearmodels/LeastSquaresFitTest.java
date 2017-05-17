@@ -1163,7 +1163,9 @@ public class LeastSquaresFitTest {
     }
 
     /**
-     * Multiple levels per factor.
+     * Tests limma-like functionality
+     * 
+     * Multiple levels per factor, unbalanced design
      * 
      * @throws Exception
      */
@@ -1186,26 +1188,23 @@ public class LeastSquaresFitTest {
 
         //  System.err.println( designMatrix );
         List<LinearModelSummary> sums = fit.summarize( true );
-        // our default is treatment contrasts.
-        //   System.err.println( fit.getCoefficients().viewColumn( 0 ) );
-
-        //   System.err.println( sums.get( 0 ) );
 
         ModeratedTstat.ebayes( fit );
 
         /////////////
         //  System.err.println( "------- After ebayes ------" );
         sums = fit.summarize( true );
-        // our default is treatment contrasts. In that case, the intercept is the group mean value for the first baseline samples.
-        //  System.err.println( fit.getCoefficients().viewColumn( 0 ) );
-
-        //  System.err.println( sums.get( 0 ) );
 
         // fit3$sigma[1]
         assertEquals( 0.34927, sums.get( 0 ).getSigma(), 0.0001 );
-        assertEquals( 1.3859, sums.get( 0 ).getPriorDof(), 0.01 ); // we get 4.479999 or something.
+        assertEquals( 1.3859, sums.get( 0 ).getPriorDof(), 0.01 );
     }
 
+    /**
+     * Tests limma-like functionality. Balanced 2x2 design
+     * 
+     * @throws Exception
+     */
     @Test
     public void testEstrogen() throws Exception {
         DoubleMatrixReader f = new DoubleMatrixReader();
@@ -1242,11 +1241,6 @@ public class LeastSquaresFitTest {
         ModeratedTstat.ebayes( fit );
         sums = fit.summarize( true );
         LinearModelSummary x = sums.get( 0 );
-
-        // our default is treatment contrasts 
-        //  System.err.println( fit.getCoefficients().viewColumn( 0 ) );
-
-        //  System.err.println( x );
 
         assertEquals( 0.0765, x.getSigma(), 0.0001 );
         assertEquals( 4.48, x.getPriorDof(), 0.01 ); // we get 4.479999 or something.
