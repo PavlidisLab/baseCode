@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.math3.distribution.FDistribution;
 import org.junit.Test;
@@ -1200,15 +1201,16 @@ public class LeastSquaresFitTest {
 
         System.err.println( sums.get( 0 ) );
 
-        assertEquals( 0.34417, sums.get( 0 ).getSigma(), 0.0001 );
+        // fit3$sigma[1]
+        assertEquals( 0.34927, sums.get( 0 ).getSigma(), 0.0001 );
         assertEquals( 1.3859, sums.get( 0 ).getPriorDof(), 0.01 ); // we get 4.479999 or something.
     }
 
     @Test
     public void testEstrogen() throws Exception {
         DoubleMatrixReader f = new DoubleMatrixReader();
-        DoubleMatrix<String, String> testMatrix = f.read( this.getClass().getResourceAsStream(
-                "/data/estrogen.data.txt" ) );
+        DoubleMatrix<String, String> testMatrix = f.read( new GZIPInputStream( this.getClass().getResourceAsStream(
+                "/data/estrogen.data.txt.gz" ) ) );
 
         StringMatrixReader of = new StringMatrixReader();
         StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
@@ -1242,9 +1244,9 @@ public class LeastSquaresFitTest {
         LinearModelSummary x = sums.get( 0 );
 
         // our default is treatment contrasts 
-        System.err.println( fit.getCoefficients().viewColumn( 0 ) );
+        //  System.err.println( fit.getCoefficients().viewColumn( 0 ) );
 
-        System.err.println( x );
+        //  System.err.println( x );
 
         assertEquals( 0.0765, x.getSigma(), 0.0001 );
         assertEquals( 4.48, x.getPriorDof(), 0.01 ); // we get 4.479999 or something.
