@@ -1170,8 +1170,8 @@ public class LeastSquaresFitTest {
     @Test
     public void testNHBE() throws Exception {
         DoubleMatrixReader f = new DoubleMatrixReader();
-        DoubleMatrix<String, String> testMatrix = f.read( this.getClass().getResourceAsStream(
-                "/data/NHBE_transcriptome_data.txt" ) );
+        DoubleMatrix<String, String> testMatrix = f.read( new GZIPInputStream( this.getClass().getResourceAsStream(
+                "/data/NHBE_transcriptome_data.txt.gz" ) ) );
 
         StringMatrixReader of = new StringMatrixReader();
         StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
@@ -1184,22 +1184,22 @@ public class LeastSquaresFitTest {
 
         LeastSquaresFit fit = new LeastSquaresFit( designMatrix, testMatrix );
 
-        System.err.println( designMatrix );
+        //  System.err.println( designMatrix );
         List<LinearModelSummary> sums = fit.summarize( true );
         // our default is treatment contrasts.
-        System.err.println( fit.getCoefficients().viewColumn( 0 ) );
+        //   System.err.println( fit.getCoefficients().viewColumn( 0 ) );
 
-        System.err.println( sums.get( 0 ) );
+        //   System.err.println( sums.get( 0 ) );
 
         ModeratedTstat.ebayes( fit );
 
         /////////////
-        System.err.println( "------- After ebayes ------" );
+        //  System.err.println( "------- After ebayes ------" );
         sums = fit.summarize( true );
         // our default is treatment contrasts. In that case, the intercept is the group mean value for the first baseline samples.
-        System.err.println( fit.getCoefficients().viewColumn( 0 ) );
+        //  System.err.println( fit.getCoefficients().viewColumn( 0 ) );
 
-        System.err.println( sums.get( 0 ) );
+        //  System.err.println( sums.get( 0 ) );
 
         // fit3$sigma[1]
         assertEquals( 0.34927, sums.get( 0 ).getSigma(), 0.0001 );
