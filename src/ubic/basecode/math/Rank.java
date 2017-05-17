@@ -51,7 +51,7 @@ public class Rank {
 
         ObjectArrayList ranks = new ObjectArrayList( size );
         for ( int i = 0; i < size; i++ ) {
-            RankData<Double> rd = new RankData<Double>( i, array.get( i ) );
+            RankData<Double> rd = new RankData<>( i, array.get( i ) );
             ranks.add( rd );
         }
         ranks.sort();

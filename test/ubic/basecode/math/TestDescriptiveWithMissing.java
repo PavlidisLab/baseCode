@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2006 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -54,7 +54,8 @@ public class TestDescriptiveWithMissing {
         data2missing = new DoubleArrayList( new double[] { Double.NaN, Double.NaN, 3.0, Double.NaN, 3.5, 4.0,
                 Double.NaN } );
 
-        data1missingNotInOrder = new DoubleArrayList( new double[] { 1.0, Double.NaN, 3.0, 4.0, 6.0, 5.0, Double.NaN } );
+        data1missingNotInOrder = new DoubleArrayList(
+                new double[] { 1.0, Double.NaN, 3.0, 4.0, 6.0, 5.0, Double.NaN } );
 
         data3shortmissing = new DoubleArrayList( new double[] { Double.NaN, Double.NaN, 3.0, Double.NaN } );
 

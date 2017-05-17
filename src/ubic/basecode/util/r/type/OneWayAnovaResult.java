@@ -59,7 +59,7 @@ public class OneWayAnovaResult extends AnovaResult {
 
             this.df = dfs[0];
 
-            this.residualDf = dfs[1];
+            this.residualDf = new Integer( dfs[1] ).doubleValue();
 
             double[] fs = rAnovaTable.asList().at( "F value" ).asDoubles();
 
@@ -72,8 +72,8 @@ public class OneWayAnovaResult extends AnovaResult {
     }
 
     /* *//**
-     * @param linearModelSummary
-     */
+          * @param linearModelSummary
+          */
     /*
      * public OneWayAnovaResult( LinearModelSummary linearModelSummary ) { this.factorName =
      * linearModelSummary.getFactorNames().iterator().next(); this.pval = linearModelSummary.getP( this.factorName );

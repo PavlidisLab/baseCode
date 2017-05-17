@@ -22,7 +22,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import cern.colt.list.DoubleArrayList;
+import cern.colt.matrix.DoubleFactory2D;
+import cern.colt.matrix.DoubleMatrix1D;
+import cern.colt.matrix.DoubleMatrix2D;
+import cern.colt.matrix.linalg.Algebra;
+import cern.jet.math.Functions;
 import cern.jet.stat.Descriptive;
+import ubic.basecode.dataStructure.matrix.MatrixUtil;
 
 /**
  * Miscellaneous functions used for statistical analysis. Some are optimized or specialized versions of methods that can
@@ -33,9 +39,9 @@ import cern.jet.stat.Descriptive;
  * @see <a href="http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/cern/jet/stat/package-summary.html">cern.jet.stat
  *      </a>
  * @author Paul Pavlidis
- * @version $Id$
  */
 public class Stats {
+
 
     /**
      * Convert an array into a cumulative density function (CDF). This assumes that the input contains counts
@@ -191,12 +197,13 @@ public class Stats {
 
     /**
      * @param array
-     * @return number of distinct values in the array, within a small constant. Double.NaN is counted as a distinct
+     * @param tolerance a small constant
+     * @return number of distinct values in the array, within tolerance. Double.NaN is counted as a distinct
      *         value.
      */
     public static Integer numberofDistinctValues( DoubleArrayList array, double tolerance ) {
 
-        Set<Double> distinct = new HashSet<Double>();
+        Set<Double> distinct = new HashSet<>();
         int r = 1;
         if ( tolerance > 0.0 ) {
             r = ( int ) Math.ceil( 1.0 / tolerance );

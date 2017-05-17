@@ -25,7 +25,6 @@ import org.rosuda.REngine.REXPMismatchException;
  * Represents a two-way ANOVA table
  * 
  * @author paul
- * @version $Id$
  */
 public class TwoWayAnovaResult extends AnovaResult {
 
@@ -86,9 +85,9 @@ public class TwoWayAnovaResult extends AnovaResult {
             this.mainEffectBDf = dfs[1];
             if ( dfs.length == 4 ) {
                 this.interactionDf = dfs[2];
-                this.residualDf = dfs[3];
+                this.residualDf = new Integer( dfs[3] ).doubleValue();
             } else {
-                this.residualDf = dfs[2];
+                this.residualDf = new Integer( dfs[2] ).doubleValue();
             }
 
             double[] fs = rAnovaTable.asList().at( "F value" ).asDoubles();

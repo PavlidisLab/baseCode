@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2006 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,6 +23,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.util.RegressionTesting;
 import cern.colt.list.DoubleArrayList;
 
@@ -166,5 +168,7 @@ public class TestStats {
         double actualReturn = Stats.range( data1Nomissing );
         assertEquals( expectedReturn, actualReturn, 1e-5 );
     }
+
+  
 
 }

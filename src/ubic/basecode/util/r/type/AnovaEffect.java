@@ -33,7 +33,7 @@ public class AnovaEffect implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer degreesOfFreedom = null;
+    private Double degreesOfFreedom = null;
 
     private String effectName = null;
 
@@ -56,7 +56,7 @@ public class AnovaEffect implements Serializable {
      * @param ssQ
      * @param isInteraction
      */
-    public AnovaEffect( String effectName, Double pValue, Double fStatistic, Integer degreesOfFreedom, Double ssQ,
+    public AnovaEffect( String effectName, Double pValue, Double fStatistic, Double degreesOfFreedom, Double ssQ,
             boolean isInteraction ) {
         super();
         this.effectName = effectName;
@@ -71,7 +71,7 @@ public class AnovaEffect implements Serializable {
     /**
      * @return the degreesOfFreedom
      */
-    public Integer getDegreesOfFreedom() {
+    public Double getDegreesOfFreedom() {
         return degreesOfFreedom;
     }
 
@@ -121,7 +121,7 @@ public class AnovaEffect implements Serializable {
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append( StringUtils.rightPad( StringUtils.abbreviate( getEffectName(), 10 ), 10 ) + "\t" );
-        buf.append( getDegreesOfFreedom() + "\t" );
+        buf.append( String.format( "%.2f", getDegreesOfFreedom() ) + "\t" );
         buf.append( String.format( "%.4f", getSsQ() ) + "\t" );
         buf.append( String.format( "%.4f", getMeanSq() ) + "\t" );
 

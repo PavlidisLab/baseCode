@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2007 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,11 +28,11 @@ import org.junit.Test;
  * <p>
  * OR (where the first argument is n, second is S (rounded off)
  * <p>
- * 
+ *
  * <pre>
  * 1-.C(&quot;prho&quot;,as.integer(10),as.double(4),double(1),integer(1),as.logical(FALSE),PACKAGE=&quot;stats&quot;)[[3]]
  * </pre>
- * 
+ *
  * @author paul
  * @version $Id$
  */
@@ -66,7 +66,8 @@ public class CorrelationStatsTest {
         assertEquals( 0.180, CorrelationStats.correlationForPvalue( 1.0 - 0.691, 10 ), 0.01 );
         assertEquals( 0.127, CorrelationStats.correlationForPvalue( CorrelationStats.pvalue( 0.127, 20 ), 20 ), 0.01 );
         assertEquals( 0.227, CorrelationStats.correlationForPvalue( CorrelationStats.pvalue( 0.227, 20 ), 20 ), 0.01 );
-        assertEquals( 0.0127, CorrelationStats.correlationForPvalue( CorrelationStats.pvalue( 0.0127, 20 ), 20 ), 0.01 );
+        assertEquals( 0.0127, CorrelationStats.correlationForPvalue( CorrelationStats.pvalue( 0.0127, 20 ), 20 ),
+                0.01 );
         assertEquals( 0.00127, CorrelationStats.correlationForPvalue( CorrelationStats.pvalue( 0.00127, 20 ), 20 ),
                 0.01 );
         assertEquals( 0.0, CorrelationStats.correlationForPvalue( 1.0, 20 ), 0.01 );

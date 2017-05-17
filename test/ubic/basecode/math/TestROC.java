@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2006 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -43,7 +43,7 @@ public class TestROC {
     public void setUp() throws Exception {
 
         // set up the ranks of the positives
-        ranksOfPositives = new Vector<Double>();
+        ranksOfPositives = new Vector<>();
         ranksOfPositives.add( 1.0 );
         ranksOfPositives.add( 4.0 );
         ranksOfPositives.add( 6.0 );
@@ -70,7 +70,7 @@ public class TestROC {
     @Test
     public void testBig() {
         int totalSize = 450000;
-        List<Double> x = new LinkedList<Double>();
+        List<Double> x = new LinkedList<>();
         for ( int i = 0; i < 200000; i++ ) {
             x.add( ( int ) ( Math.random() * 300000 ) + 1d );
         }

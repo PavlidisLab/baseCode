@@ -41,9 +41,9 @@ import ubic.basecode.dataStructure.matrix.ObjectMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrixImpl;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.math.Constants;
+import ubic.basecode.math.linearmodels.LinearModelSummary;
 import ubic.basecode.util.RegressionTesting;
 import ubic.basecode.util.r.type.HTest;
-import ubic.basecode.util.r.type.LinearModelSummary;
 import ubic.basecode.util.r.type.OneWayAnovaResult;
 import ubic.basecode.util.r.type.TwoWayAnovaResult;
 

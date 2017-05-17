@@ -26,7 +26,7 @@ import org.rosuda.REngine.REXP;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrix;
-import ubic.basecode.util.r.type.LinearModelSummary;
+import ubic.basecode.math.linearmodels.LinearModelSummary;
 import ubic.basecode.util.r.type.OneWayAnovaResult;
 import ubic.basecode.util.r.type.TwoWayAnovaResult;
 

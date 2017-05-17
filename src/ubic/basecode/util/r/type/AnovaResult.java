@@ -20,11 +20,10 @@ package ubic.basecode.util.r.type;
 
 /**
  * @author paul
- * @version $Id$
  */
 public abstract class AnovaResult {
 
-    protected Integer residualDf = null;
+    protected Double residualDf = null;
 
     private Object key = null;
 
@@ -50,7 +49,7 @@ public abstract class AnovaResult {
     /**
      * @return the residualDf
      */
-    public Integer getResidualDf() {
+    public Double getResidualDf() {
         return residualDf;
     }
 
