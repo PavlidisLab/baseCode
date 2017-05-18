@@ -921,7 +921,8 @@ public class LeastSquaresFit {
                 .sqrt( resid.copy().assign( Functions.square ).aggregate( Functions.plus, Functions.identity )
                         / ( resid.size() - rank ) );
 
-        // NOTE that not all the information stored in the summary is likely to be important/used, while other information is probably still needed.
+        // NOTE that not all the information stored in the summary is likely to be important/used, 
+        // while other information is probably still needed.
         LinearModelSummary lms = new LinearModelSummary( key, ArrayUtils.toObject( allCoef.toArray() ),
                 ArrayUtils.toObject( resid
                         .toArray() ),
