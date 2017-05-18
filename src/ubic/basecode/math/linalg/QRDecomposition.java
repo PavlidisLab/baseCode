@@ -234,13 +234,12 @@ public class QRDecomposition {
         // Inefficient due to getting Q explicitly
         return solver.mult( solver.transpose( this.getQ() ), MatrixUtil.removeMissing( y ) ).viewPart( 0, this.rank );
 
+        // Could do it this way, but QR.toArray() makes a copy...
         //        double[] qty = new double[y.size()];
         //        double[] junk = new double[y.size()];
-        //        // FIXME inefficint as QR.toArray makes copy.
         //        ubic.basecode.math.linalg.Dqrsl.dqrsl_j( QR.toArray(), QR.rows(), QR.columns(), qraux.toArray(), y.toArray(),
         //                junk, qty,
-        //                junk, junk, junk, 1000 );
-        //
+        //                junk, junk, junk, 1000 ); 
         //        return new DenseDoubleMatrix1D( qty );
     }
 
@@ -546,138 +545,3 @@ public class QRDecomposition {
     }
 
 }
-
-// Exploring some alternative ways of computing QR
-//    private void qrLinpack( final DoubleMatrix2D A, boolean pivoting ) {
-//        double[][] x = A.toArray();
-//        this.QR = A.copy();
-//        this.n = A.rows();
-//        this.p = A.columns();
-//        this.Rdiag = A.like1D( p );
-//        this.pivoting = pivoting;
-//
-//        int nrows = A.rows();
-//        jpvt = new int[p];
-//        if ( pivoting ) {
-//            for ( int i = 0; i < p; i++ ) {
-//                jpvt[i] = i + 1;
-//            }
-//        }
-//
-//        DoubleMatrix1D originalNorms;
-//        originalNorms = new DenseDoubleMatrix1D( p ); // "work" in linpack
-//        qraux = new DenseDoubleMatrix1D( p );
-//        for ( int i = 0; i < p; i++ ) {
-//            DoubleMatrix1D col = QR.viewColumn( i );
-//            double norm2 = 0;
-//            for ( int r = 0; r < n; r++ ) {
-//                norm2 = hypot( norm2, col.getQuick( r ) );
-//            }
-//            qraux.set( i, norm2 );
-//            originalNorms.set( i, norm2 == 0.0 ? 1.0 : norm2 );
-//        }
-//
-//        double[] qrr = qraux.toArray();
-//        double[] on = originalNorms.toArray();
-// R uses dqrdc2, so this seemed like a good idea.
-/*
- * R: The QR decomposition of the matrix as computed by LINPACK(*) or LAPACK. The components in the returned value
- * correspond directly to the values returned by DQRDC(2)/DGEQP3/ZGEQP3. ... In the (default) LINPACK case (LAPACK =
- * FALSE), qr() uses a modified version of LINPACK's DQRDC, called ‘dqrdc2’. It differs by using the tolerance tol
- * for a pivoting strategy which moves columns with near-zero 2-norm to the right-hand edge of the x matrix. This
- * strategy means that sequential one degree-of-freedom effects can be computed in a natural way.
- */
-//        ubic.basecode.math.QR.dqrdc_j( x, nrows, p, qrr, jpvt, on, pivoting ? 1 : 0 );
-//        this.rank = p; // wrong
-//        this.qraux = new DenseDoubleMatrix1D( qrr );
-//        this.QR = new DenseDoubleMatrix2D( x );
-//        this.Rdiag = MatrixUtil.diagonal( QR );
-//    }
-
-//    private void qrLapack( final DoubleMatrix2D A, boolean pivoting ) {
-//        // LAPACK want 1-D arrays, just annoying. 
-/*
- * In R this is an option, but it notes
- * "Using LAPACK (including in the complex case) uses column pivoting and does not attempt to detect rank-deficient matrices"
- */
-//        //  LAPACK.getInstance().sgeqp3( n, p, x, n, jpvt, qrr, work, lwork, result );
-//
-//    }
-
-/*
- * For ls: Could make this work by manipulating QR directly rather than computing Q: I had trouble getting it to
- * work (probably due to
- * pivoting), though the Fortran dqrsl is pretty simple (!). dqrsl also computes the effects (qty) In R, qr.coef
- * calls qr_coef_real (LAPACK; see r-source/blob/master/src/modules/lapack/Lapack.c)
- */
-
-// int nx = B.columns();
-// DoubleMatrix2D X = B.copy(); // gets modified.
-
-//
-// for ( int i = 0; i < nx; i++ ) {
-// DoubleMatrix1D y = X.viewColumn( i );
-//
-// int ju = Math.min( k, n - 1 );
-//
-// log.info( "START: " + y );
-//
-// // inner loop: dqrsl on each column.
-// for ( int jj = 1; jj <= ju; jj++ ) {
-//
-// int jm1 = k - jj;
-//
-// if ( QR.get( jm1, jm1 ) == 0.0 ) {
-// throw new IllegalStateException( "Something wrong with QR, non-pivotal column found at index < k: "
-// + jm1 );
-// }
-//
-// y.set( jm1, y.get( jm1 ) / QR.get( jm1, jm1 ) );
-//
-// if ( jm1 != 0 ) {
-// double t = -y.get( jm1 );
-// Blas_j.colvaxpy_j( jm1, t, QR, y, 0, jm1 );
-//
-// // DoubleMatrix1D colQR = QR.viewColumn( jm1 ).viewPart( 0, jm1 + 1 );
-// // y.viewPart( 0, jm1 + 1 ).assign( colQR, Functions.plusMult( t ) );
-// }
-// log.info( jm1 + ": " + y );
-// }
-//
-// // for ( int jj = 0; jj < ju; jj++ ) {
-// // int jm1 = k - jj - 1;
-// // if ( QR.get( jm1, jm1 ) == 0.0 ) {
-// // //
-// // throw new IllegalStateException();
-// // }
-// //
-// // y.set( jm1, y.get( jm1 ) / QR.get( jm1, jm1 ) );
-// //
-// // // if ( jm1 != 0 ) {
-// // double t = -y.get( jm1 );
-// // DoubleMatrix1D colQR = QR.viewColumn( jm1 ).viewPart( 0, jm1 );
-// // y.viewPart( 0, jm1 ).assign( colQR, Functions.plusMult( t ) );
-// // // }
-// //
-// // log.info( jm1 + " ---> " + y );
-// // }
-//
-// }
-//
-// DoubleMatrix2D result = X.viewPart( 0, 0, p, nx );
-//
-// // zero out unused components.
-// if ( k < p ) {
-// for ( int i = k; k < p; k++ ) {
-// for ( int j = 0; j < nx; j++ ) {
-// result.setQuick( i, j, 0.0 );
-// }
-// }
-// }
-//
-// /*
-// * Return to the original order
-// */
-// X = X.viewSelection( this.jpvt, null );
-//
-// return result;

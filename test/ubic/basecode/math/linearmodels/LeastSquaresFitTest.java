@@ -1187,17 +1187,21 @@ public class LeastSquaresFitTest {
         LeastSquaresFit fit = new LeastSquaresFit( designMatrix, testMatrix );
 
         //  System.err.println( designMatrix );
-        List<LinearModelSummary> sums = fit.summarize( true );
+        //   List<LinearModelSummary> sums = fit.summarize( true );
 
         ModeratedTstat.ebayes( fit );
 
         /////////////
         //  System.err.println( "------- After ebayes ------" );
-        sums = fit.summarize( true );
+        List<LinearModelSummary> sums = fit.summarize( true );
 
         // fit3$sigma[1]
         assertEquals( 0.34927, sums.get( 0 ).getSigma(), 0.0001 );
         assertEquals( 1.3859, sums.get( 0 ).getPriorDof(), 0.01 );
+        
+        /*
+         * TODO: add more tests here.
+         */
     }
 
     /**
