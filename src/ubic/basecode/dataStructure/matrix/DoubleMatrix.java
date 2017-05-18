@@ -158,8 +158,11 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
         int columns = this.columns();
         StringBuffer buf = new StringBuffer();
         int stop = 0;
-        buf.append( "# " + rows + "x" + columns + " matrix: showing up to " + MAX_ROWS_TO_PRINT + " rows\n" );
-        buf.append( "label" );
+        buf.append( "# " + rows + "x" + columns + " matrix" );
+        if ( rows > MAX_ROWS_TO_PRINT ) {
+            buf.append( ": showing up to " + MAX_ROWS_TO_PRINT + " rows" );
+        }
+        buf.append( "\nlabel" );
 
         for ( int i = 0; i < columns; i++ ) {
             if ( this.hasColNames() ) {

@@ -21,21 +21,24 @@ package ubic.basecode.math;
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix1D;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.dataStructure.matrix.MatrixUtil;
 import ubic.basecode.dataStructure.matrix.SparseDoubleMatrix;
 import cern.colt.function.DoubleFunction;
 import cern.colt.function.DoubleProcedure;
 import cern.colt.list.DoubleArrayList;
+import cern.colt.matrix.DoubleFactory2D;
 import cern.colt.matrix.DoubleMatrix1D;
+import cern.colt.matrix.DoubleMatrix2D;
+import cern.colt.matrix.linalg.Algebra;
 import cern.jet.math.Functions;
 
 /**
  * @author pavlidis
- * @version $Id$
  */
 public class MatrixStats {
 
     /**
-     * Calculates the library size by performing colSums(data). NaN values are omitted from calculations.
+     * NaN values are omitted from calculations.
      * 
      * @param <R>
      * @param <C>
@@ -71,6 +74,7 @@ public class MatrixStats {
     /**
      * Convert the matrix to log2 counts per million. Equivalent to <code>t(log2(t(counts+0.5)/(lib.size+1)*1e6))</code>
      * in R.
+     * FIXME not a good place for this method as it is RNA-seq-related.
      * 
      * @param matrix
      * @param librarySize if null, it will default to <code>colSums(matrix)</code>.
@@ -104,7 +108,7 @@ public class MatrixStats {
      * @return a symmetric matrix that has the rows and columns set to be the names of the rows of the input.
      */
     public static <R, C> DoubleMatrix<R, R> correlationMatrix( DoubleMatrix<R, C> data ) {
-        DoubleMatrix<R, R> result = new DenseDoubleMatrix<R, R>( data.rows(), data.rows() );
+        DoubleMatrix<R, R> result = new DenseDoubleMatrix<>( data.rows(), data.rows() );
 
         for ( int i = 0; i < data.rows(); i++ ) {
             DoubleArrayList irow = new DoubleArrayList( data.getRow( i ) );
@@ -132,7 +136,7 @@ public class MatrixStats {
      *         diagonal is set to Double.NaN
      */
     public static <R, C> SparseDoubleMatrix<R, R> correlationMatrix( DoubleMatrix<R, C> data, double threshold ) {
-        SparseDoubleMatrix<R, R> result = new SparseDoubleMatrix<R, R>( data.rows(), data.rows() );
+        SparseDoubleMatrix<R, R> result = new SparseDoubleMatrix<>( data.rows(), data.rows() );
 
         for ( int i = 0; i < data.rows(); i++ ) {
             DoubleArrayList irow = new DoubleArrayList( data.getRow( i ) );
@@ -166,7 +170,7 @@ public class MatrixStats {
         int ITERS = 5;
         for ( int i = 0; i < ITERS; i++ ) {
             // scale columns, then rows.
-            newMatrix = standardize( standardize( newMatrix.transpose() /* columns */).transpose() /* rows */);
+            newMatrix = standardize( standardize( newMatrix.transpose() /* columns */ ).transpose() /* rows */ );
         }
 
         /*
@@ -370,7 +374,7 @@ public class MatrixStats {
      * @return
      */
     public static <R, C> DoubleMatrix<R, C> standardize( DoubleMatrix<R, C> matrix ) {
-        DoubleMatrix<R, C> newMatrix = new DenseDoubleMatrix<R, C>( matrix.rows(), matrix.columns() );
+        DoubleMatrix<R, C> newMatrix = new DenseDoubleMatrix<>( matrix.rows(), matrix.columns() );
         newMatrix.setRowNames( matrix.getRowNames() );
         newMatrix.setColumnNames( matrix.getColNames() );
         for ( int i = 0; i < matrix.rows(); i++ ) {
@@ -384,7 +388,8 @@ public class MatrixStats {
             if ( Math.abs( DescriptiveWithMissing.mean( li ) ) > 0.001 ) {
                 throw new IllegalStateException( "NOT CENTERED" );
             }
-            if ( Math.abs( DescriptiveWithMissing.sampleVariance( li, DescriptiveWithMissing.mean( li ) ) - 1.0 ) > 0.001 ) {
+            if ( Math.abs(
+                    DescriptiveWithMissing.sampleVariance( li, DescriptiveWithMissing.mean( li ) ) - 1.0 ) > 0.001 ) {
                 throw new IllegalStateException( "NOT SCALED" );
             }
 
@@ -393,6 +398,22 @@ public class MatrixStats {
             }
         }
         return newMatrix;
+    }
+
+    /**
+     * Scale a covariance matrix to the corresponding correlation matrix.
+     * 
+     * @param cov a symmetric matrix of covariances
+     * @return
+     */
+    public static DoubleMatrix2D cov2cor( DoubleMatrix2D cov ) {
+        assert cov.rows() == cov.columns();
+        DoubleMatrix1D v = MatrixUtil.diagonal( cov ).assign( Functions.sqrt ).assign( Functions.inv );
+        Algebra solver = new Algebra();
+        DoubleFactory2D f = DoubleFactory2D.sparse;
+        DoubleMatrix2D vd = f.diagonal( v );
+        DoubleMatrix2D cormatrix = solver.mult( solver.mult( vd, cov ), vd );
+        return cormatrix;
     }
 
     /**

@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2006 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,12 +19,14 @@
 package ubic.basecode.math;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import ubic.basecode.util.RegressionTesting;
+
 /**
  * @author pavlidis
- * @version $Id$
  */
 public class TestSpecFunc {
 
@@ -76,6 +78,19 @@ public class TestSpecFunc {
         double expectedReturn = 0.0009644643;
         double actualReturn = SpecFunc.dhyper( 2, 20, 100, 50 );
         assertEquals( expectedReturn, actualReturn, 1e-5 );
+    }
+
+    @Test
+    public void testTrigammaInverse() {
+
+        cern.colt.matrix.impl.DenseDoubleMatrix1D x = new cern.colt.matrix.impl.DenseDoubleMatrix1D(
+                new double[] { 1.0, 2.0, 3.0 } );
+
+        // options(digits = 20);limma::trigammaInverse(c(1,2,3))
+        double[] expected = new double[] { 1.42625512021507883098, 0.87666407746426022740, 0.67547810528137008923 };
+
+        double[] actual = SpecFunc.trigammaInverse( x ).toArray();
+        assertTrue( RegressionTesting.closeEnough( actual, expected, 1e-10 ) );
     }
 
 }

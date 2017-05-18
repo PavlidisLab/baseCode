@@ -18,7 +18,13 @@
  */
 package ubic.basecode.math;
 
-import cern.jet.stat.Gamma;
+import org.apache.commons.math3.special.Gamma;
+
+import cern.colt.function.DoubleFunction;
+import cern.colt.matrix.DoubleMatrix1D;
+import cern.colt.matrix.impl.DenseDoubleMatrix1D;
+import cern.jet.math.Functions;
+import net.sourceforge.jdistlib.math.PolyGamma;
 
 /**
  * Assorted special functions, primarily concerning probability distributions. For cumBinomial use
@@ -28,12 +34,15 @@ import cern.jet.stat.Gamma;
  * 
  * @see <a href="http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/cern/jet/stat/Gamma.html">cern.jet.stat.gamma </a>
  * @see <a
- *      href="http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/cern/jet/math/Arithmetic.html">cern.jet.math.arithmetic
+ *      href=
+ *      "http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/cern/jet/math/Arithmetic.html">cern.jet.math.arithmetic
  *      </a>
  * @author Paul Pavlidis
  * @version $Id$
  */
 public class SpecFunc {
+
+    private static final double SMALL = 1e-8;
 
     /**
      * See dbinom_raw.
@@ -132,6 +141,62 @@ public class SpecFunc {
     }
 
     /**
+     * @param x
+     * @return
+     */
+    public static double trigammaInverse( double x ) {
+        return trigammaInverse( new DenseDoubleMatrix1D( new double[] { x } ) ).get( 0 );
+    }
+
+    /**
+     * Ported from limma
+     * 
+     * @param x
+     * @return
+     */
+    public static DoubleMatrix1D trigammaInverse( DoubleMatrix1D x ) {
+
+        if ( x == null || x.size() == 0 )
+            return null;
+
+        // missing values are special cases TODO
+
+        // y = 0.5 + 1 /x
+        DenseDoubleMatrix1D y = ( DenseDoubleMatrix1D ) x.copy();
+        double LB = 0.5;
+        y.assign( Functions.inv ).assign( Functions.plus( LB ) );
+
+        double iter = 0;
+        do {
+
+            DoubleMatrix1D tri = y.copy().assign(
+                    new DoubleFunction() {
+                        @Override
+                        public final double apply( double a ) {
+                            return Gamma.trigamma( a );
+                        }
+                    } );
+
+            DoubleMatrix1D tri2 = tri.copy();
+            DoubleMatrix1D dif = tri.assign( x, Functions.div ).assign( Functions.neg )
+                    .assign( Functions.plus( 1.0 ) ).assign( tri2, Functions.mult )
+                    .assign( new DenseDoubleMatrix1D( PolyGamma.psigamma( y.toArray(), 2 ) ), Functions.div );
+
+            // update y
+            y.assign( dif, Functions.plus );
+
+            // max(-dif/y)
+            double max = y.copy().assign( Functions.inv ).assign( dif, Functions.mult ).assign( Functions.neg )
+                    .aggregate( Functions.max, Functions.identity );
+            if ( max < SMALL ) break;
+
+        } while ( ++iter < 50 ); // FIXME warn
+
+        return y;
+
+    }
+
+    /**
      * Ported from bd0.c in R source.
      * <p>
      * Evaluates the "deviance part"
@@ -164,7 +229,7 @@ public class SpecFunc {
                 ej *= v;
                 s1 = s + ej / ( ( j << 1 ) + 1 );
                 if ( s1 == s ) /* last term was effectively 0 */
-                return ( s1 );
+                    return ( s1 );
                 s = s1;
             }
         }
@@ -279,37 +344,37 @@ public class SpecFunc {
          * error for 0, 0.5, 1.0, 1.5, ..., 14.5, 15.0.
          */
         double[] sferr_halves = new double[] { 0.0, /* n=0 - wrong, place holder only */
-        0.1534264097200273452913848, /* 0.5 */
-        0.0810614667953272582196702, /* 1.0 */
-        0.0548141210519176538961390, /* 1.5 */
-        0.0413406959554092940938221, /* 2.0 */
-        0.03316287351993628748511048, /* 2.5 */
-        0.02767792568499833914878929, /* 3.0 */
-        0.02374616365629749597132920, /* 3.5 */
-        0.02079067210376509311152277, /* 4.0 */
-        0.01848845053267318523077934, /* 4.5 */
-        0.01664469118982119216319487, /* 5.0 */
-        0.01513497322191737887351255, /* 5.5 */
-        0.01387612882307074799874573, /* 6.0 */
-        0.01281046524292022692424986, /* 6.5 */
-        0.01189670994589177009505572, /* 7.0 */
-        0.01110455975820691732662991, /* 7.5 */
-        0.010411265261972096497478567, /* 8.0 */
-        0.009799416126158803298389475, /* 8.5 */
-        0.009255462182712732917728637, /* 9.0 */
-        0.008768700134139385462952823, /* 9.5 */
-        0.008330563433362871256469318, /* 10.0 */
-        0.007934114564314020547248100, /* 10.5 */
-        0.007573675487951840794972024, /* 11.0 */
-        0.007244554301320383179543912, /* 11.5 */
-        0.006942840107209529865664152, /* 12.0 */
-        0.006665247032707682442354394, /* 12.5 */
-        0.006408994188004207068439631, /* 13.0 */
-        0.006171712263039457647532867, /* 13.5 */
-        0.005951370112758847735624416, /* 14.0 */
-        0.005746216513010115682023589, /* 14.5 */
-        0.005554733551962801371038690
-        /* 15.0 */
+                0.1534264097200273452913848, /* 0.5 */
+                0.0810614667953272582196702, /* 1.0 */
+                0.0548141210519176538961390, /* 1.5 */
+                0.0413406959554092940938221, /* 2.0 */
+                0.03316287351993628748511048, /* 2.5 */
+                0.02767792568499833914878929, /* 3.0 */
+                0.02374616365629749597132920, /* 3.5 */
+                0.02079067210376509311152277, /* 4.0 */
+                0.01848845053267318523077934, /* 4.5 */
+                0.01664469118982119216319487, /* 5.0 */
+                0.01513497322191737887351255, /* 5.5 */
+                0.01387612882307074799874573, /* 6.0 */
+                0.01281046524292022692424986, /* 6.5 */
+                0.01189670994589177009505572, /* 7.0 */
+                0.01110455975820691732662991, /* 7.5 */
+                0.010411265261972096497478567, /* 8.0 */
+                0.009799416126158803298389475, /* 8.5 */
+                0.009255462182712732917728637, /* 9.0 */
+                0.008768700134139385462952823, /* 9.5 */
+                0.008330563433362871256469318, /* 10.0 */
+                0.007934114564314020547248100, /* 10.5 */
+                0.007573675487951840794972024, /* 11.0 */
+                0.007244554301320383179543912, /* 11.5 */
+                0.006942840107209529865664152, /* 12.0 */
+                0.006665247032707682442354394, /* 12.5 */
+                0.006408994188004207068439631, /* 13.0 */
+                0.006171712263039457647532867, /* 13.5 */
+                0.005951370112758847735624416, /* 14.0 */
+                0.005746216513010115682023589, /* 14.5 */
+                0.005554733551962801371038690
+                /* 15.0 */
         };
 
         double nn;

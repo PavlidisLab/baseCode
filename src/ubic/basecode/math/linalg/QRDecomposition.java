@@ -12,39 +12,39 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package ubic.basecode.math;
+package ubic.basecode.math.linalg;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.netlib.lapack.LAPACK;
+import org.netlib.util.intW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix1D;
+import ubic.basecode.dataStructure.matrix.MatrixUtil;
 import cern.colt.list.IntArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
+import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
 import cern.jet.math.Functions;
+import no.uib.cipr.matrix.DenseMatrix;
+import no.uib.cipr.matrix.Matrices;
 
 /**
  * QR with pivoting. See http://www.netlib.org/lapack/lug/node42.html and http://www.netlib.org/lapack/lug/node27.html,
- * and Golub and VanLoan, section 5.5.6+
+ * and Golub and VanLoan, section 5.5.6+. Designed to mimic the way R does this by default.
  * 
  * @author paul
- * @version $Id$
  */
-public class QRDecompositionPivoting {
+public class QRDecomposition {
 
-    private static Logger log = LoggerFactory.getLogger( QRDecompositionPivoting.class );
+    private static Logger log = LoggerFactory.getLogger( QRDecomposition.class );
 
-    private DoubleMatrix1D originalNorms;
+    private DenseDoubleMatrix2D chol2inv;
 
     private int[] jpvt;
-
-    /**
-     * Rank
-     */
-    private int k = 0;
 
     /**
      * Rows in input
@@ -56,10 +56,27 @@ public class QRDecompositionPivoting {
      */
     private int p;
 
+    /**
+     * If pivoting was used.
+     */
     private boolean pivoting = true;
 
+    /**
+     * Contains the compact QR: R in the upper triangle, Q is recoverable from the lower part. FIXME if we have to
+     * access this as a raw array the DoubleMatrix2D API is inefficient.
+     */
     private DoubleMatrix2D QR;
+
+    /**
+     * Auxiliary information used to contsruct Q from the economy-sized QR.
+     */
     private DoubleMatrix1D qraux;
+
+    /**
+     * Rank
+     */
+    private int rank = 0;
+
     /**
      * Diagonal of R
      */
@@ -73,15 +90,17 @@ public class QRDecompositionPivoting {
     /**
      * @param A the matrix to decompose, pivoting will be used.
      */
-    public QRDecompositionPivoting( final DoubleMatrix2D A ) {
+    public QRDecomposition( final DoubleMatrix2D A ) {
         this( A, true );
     }
 
     /**
+     * Construct the QR decomposition of A. With pivoting = true, this reproduces quite closely the behaviour of R qr().
+     * 
      * @param A the matrix to decompose
      * @param pivoting set to false to obtain standard QR behaviour.
      */
-    public QRDecompositionPivoting( final DoubleMatrix2D A, boolean pivoting ) {
+    public QRDecomposition( final DoubleMatrix2D A, boolean pivoting ) {
         // Initialize.
         this.QR = A.copy();
         this.n = A.rows();
@@ -96,6 +115,7 @@ public class QRDecompositionPivoting {
         }
 
         // initialization. We always compute qraux here.
+        DoubleMatrix1D originalNorms;
         originalNorms = new DenseDoubleMatrix1D( p ); // "work" in linpack
         qraux = new DenseDoubleMatrix1D( p );
         for ( int i = 0; i < p; i++ ) {
@@ -116,15 +136,17 @@ public class QRDecompositionPivoting {
             QRcolumnsPart[v] = QR.viewColumn( v ).viewPart( v, n - v ); // upper triangle.
         }
 
-        k = p;
+        rank = p;
 
         // Main loop.
         for ( int v = 0; v < p; v++ ) {
 
             /*
-             * Rotate columns until we find one with a non-negligible norm.
+             * Rotate columns until we find one with a non-negligible norm. This is the pivoting strategy used in
+             * dqrdc2, which puts small columns to the right. See R documentation for qr and
+             * https://svn.r-project.org/R/trunk/src/appl/dqrdc2.f
              */
-            while ( pivoting && v < k && qraux.get( v ) < originalNorms.get( v ) * tolerance ) {
+            while ( pivoting && v < rank && qraux.get( v ) < originalNorms.get( v ) * tolerance ) {
                 log.debug( "Rotating " + v );
                 rotate( QR, originalNorms, v );
             }
@@ -186,10 +208,53 @@ public class QRDecompositionPivoting {
             QR.setQuick( v, v, -nrm );
             Rdiag.setQuick( v, -nrm );
         }
-        k = Math.min( k, n );
-        if ( log.isInfoEnabled() ) {
-            // log.info( diagnose( originalNorms ) );
-        }
+        rank = Math.min( rank, n );
+    }
+
+    /**
+     * Used for computing standard errors of parameter estimates for least squares; copies functionality of R chol2inv.
+     * 
+     * @return
+     */
+    public DoubleMatrix2D chol2inv() {
+        // using "size" in dpotri doesn't work right.
+        return dpotri( this.getR().viewPart( 0, 0, this.rank, this.rank ) );
+    }
+
+    /**
+     * Compute effects matrix Q'y (as in Rb = Q'y). Returns only
+     * the aspect associated with the parameters - the first <tt>rank</tt> elements.
+     * 
+     * @param y vector Missing values are ignored, otherwise assumed to be of the right size
+     * @return vector of effects - these are the projections of y into Q column space
+     */
+    public DoubleMatrix1D effects( DoubleMatrix1D y ) {
+
+        Algebra solver = new Algebra();
+        // Inefficient due to getting Q explicitly
+        return solver.mult( solver.transpose( this.getQ() ), MatrixUtil.removeMissing( y ) ).viewPart( 0, this.rank );
+
+        // Could do it this way, but QR.toArray() makes a copy...
+        //        double[] qty = new double[y.size()];
+        //        double[] junk = new double[y.size()];
+        //        ubic.basecode.math.linalg.Dqrsl.dqrsl_j( QR.toArray(), QR.rows(), QR.columns(), qraux.toArray(), y.toArray(),
+        //                junk, qty,
+        //                junk, junk, junk, 1000 ); 
+        //        return new DenseDoubleMatrix1D( qty );
+    }
+
+    /**
+     * Compute effects matrix Q'y (as in Rb = Q'y) Returns only the aspect associated with the parameters - the first
+     * <tt>rank</tt> elements.
+     * 
+     * @param y matrix of data, assumed to be of right size, missing values are not supported
+     * @return matrix of effects - these are the projections of y's columns into Q column subspace associated with the
+     *         parameters,
+     *         so values are "effects" each basis vector on the data
+     */
+    public DoubleMatrix2D effects( DoubleMatrix2D y ) {
+        Algebra solver = new Algebra();
+        return solver.mult( solver.transpose( this.getQ() ), y );
     }
 
     /**
@@ -200,9 +265,9 @@ public class QRDecompositionPivoting {
     }
 
     /**
-     * Generates and returns the (economy-sized) orthogonal factor <tt>Q</tt>.
+     * Generates and returns the (economy-sized - first <tt>p</tt> columns only) orthogonal factor <tt>Q</tt>.
      * 
-     * @return <tt>Q</tt>
+     * @return first <tt>p</tt> columns of <tt>Q</tt>
      */
     public DoubleMatrix2D getQ() {
 
@@ -271,7 +336,7 @@ public class QRDecompositionPivoting {
      * @return rank
      */
     public int getRank() {
-        return k;
+        return rank;
     }
 
     public double getTolerance() {
@@ -284,28 +349,29 @@ public class QRDecompositionPivoting {
      * @return true if <tt>R</tt>, and hence <tt>A</tt>, has full rank.
      */
     public boolean hasFullRank() {
-        return k == p;
+        return rank == p;
     }
 
     /**
-     * @return true if pivoting was used
+     * @return true if pivoting was used (just whether it was set; not whether any actual pivoting happened)
      */
     public boolean isPivoting() {
         return pivoting;
     }
 
     /**
-     * Least squares solution of <tt>A*X = B</tt>; <tt>returns X</tt>.
+     * Least squares solution of <tt>A*X = y</tt>; <tt>returns X</tt> using the stored QR decomposition of A.
      * 
-     * @param B A matrix with as many rows as <tt>A</tt> and any number of columns.
+     * @param y A matrix with as many rows as <tt>A</tt> and any number of columns. Least squares is fit for each column
+     *        of y.
      * @return <tt>X</tt> that minimizes the two norm of <tt>Q*R*X - B</tt>.
-     * @exception IllegalArgumentException if <tt>B.rows() != A.rows()</tt>.
+     * @exception IllegalArgumentException if <tt>y.rows() != A.rows()</tt>.
      * @exception IllegalArgumentException if <tt>!this.hasFullRank()</tt> (<tt>A</tt> is rank deficient). However,
      *            rank-deficient cases are handled by pivoting, so if you are using pivoting you should not see this
      *            happening.
      */
-    public DoubleMatrix2D solve( DoubleMatrix2D B ) {
-        if ( B.rows() != n ) {
+    public DoubleMatrix2D solve( DoubleMatrix2D y ) {
+        if ( y.rows() != n ) {
             throw new IllegalArgumentException( "Matrix row dimensions must agree." );
         }
 
@@ -313,115 +379,49 @@ public class QRDecompositionPivoting {
             throw new IllegalArgumentException( "Matrix is rank deficient; try using pivoting" );
         }
 
-        Algebra solver = new Algebra();
         /*
-         * FIXME direct computation of of Q can be avoided by manipulation of the compact QR instead. But this is so
-         * much easier to understand ...
+         * Direct computation of Q'y can be avoided by manipulation of the compact QR instead (see dqrsl).
+         * 
          */
-        DoubleMatrix2D r1 = solver.mult( solver.transpose( this.getQ() ), B ).viewPart( 0, 0, k, B.columns() );
+        DoubleMatrix2D qTy = effects( y ); // will be modified by this call.
 
-        // Solve R*X = Y; backsubstitution
-        for ( int k1 = k - 1; k1 >= 0; k1-- ) {
+        // Solve R*X = Y => X = RinvY; backsubstitution
+        for ( int k1 = rank - 1; k1 >= 0; k1-- ) {
 
-            for ( int j = 0; j < B.columns(); j++ ) {
-                r1.setQuick( k1, j, r1.getQuick( k1, j ) / Rdiag.getQuick( k1 ) );
+            for ( int j = 0; j < y.columns(); j++ ) {
+                qTy.setQuick( k1, j, qTy.getQuick( k1, j ) / Rdiag.getQuick( k1 ) );
             }
             for ( int i = 0; i < k1; i++ ) {
                 // sum up to the parameter we've done.
-                for ( int j = 0; j < B.columns(); j++ ) {
-                    r1.setQuick( i, j, r1.getQuick( i, j ) - r1.getQuick( k1, j ) * QR.getQuick( i, k1 ) );
+                for ( int j = 0; j < y.columns(); j++ ) {
+                    qTy.setQuick( i, j, qTy.getQuick( i, j ) - qTy.getQuick( k1, j ) * QR.getQuick( i, k1 ) );
                 }
             }
         }
 
         /*
-         * Pad r1 back out to the full length p, and in the right original order
+         * Drop coefficients we couldn't estimate. These will always be at the end, even if we pivoted ??????
          */
-        DoubleMatrix2D r = r1.like( p, B.columns() );
-        r.assign( Double.NaN );
-        for ( int i = 0; i < r1.rows(); i++ ) {
-            int piv = jpvt[i];
-            for ( int j = 0; j < r1.columns(); j++ ) {
-                r.setQuick( piv, j, r1.getQuick( i, j ) );
+        if ( this.rank < this.p ) {
+            for ( int i = rank; i < this.p; i++ ) {
+                qTy.viewRow( i ).assign( Double.NaN );
             }
         }
-        return r;
 
         /*
-         * To make this work by manipulating QR directly: I had trouble getting it to work, though the Fortran dqrsl is
-         * pretty simple (!).
+         * Pad r1 back out to the full length p, and (if pivoted) in the right original order using jpvt
          */
+        DoubleMatrix2D coeff = qTy.like( p, y.columns() );
+        coeff.assign( Double.NaN );
+        for ( int i = 0; i < qTy.rows(); i++ ) {
+            int piv = jpvt[i]; // where the value should go.
+            for ( int j = 0; j < qTy.columns(); j++ ) {
+                coeff.setQuick( piv, j, qTy.getQuick( i, j ) );
+            }
+        }
 
-        // int nx = B.columns();
-        // DoubleMatrix2D X = B.copy(); // gets modified.
+        return coeff;
 
-        //
-        // for ( int i = 0; i < nx; i++ ) {
-        // DoubleMatrix1D y = X.viewColumn( i );
-        //
-        // int ju = Math.min( k, n - 1 );
-        //
-        // log.info( "START: " + y );
-        //
-        // // inner loop: dqrsl on each column.
-        // for ( int jj = 1; jj <= ju; jj++ ) {
-        //
-        // int jm1 = k - jj;
-        //
-        // if ( QR.get( jm1, jm1 ) == 0.0 ) {
-        // throw new IllegalStateException( "Something wrong with QR, non-pivotal column found at index < k: "
-        // + jm1 );
-        // }
-        //
-        // y.set( jm1, y.get( jm1 ) / QR.get( jm1, jm1 ) );
-        //
-        // if ( jm1 != 0 ) {
-        // double t = -y.get( jm1 );
-        // Blas_j.colvaxpy_j( jm1, t, QR, y, 0, jm1 );
-        //
-        // // DoubleMatrix1D colQR = QR.viewColumn( jm1 ).viewPart( 0, jm1 + 1 );
-        // // y.viewPart( 0, jm1 + 1 ).assign( colQR, Functions.plusMult( t ) );
-        // }
-        // log.info( jm1 + ": " + y );
-        // }
-        //
-        // // for ( int jj = 0; jj < ju; jj++ ) {
-        // // int jm1 = k - jj - 1;
-        // // if ( QR.get( jm1, jm1 ) == 0.0 ) {
-        // // //
-        // // throw new IllegalStateException();
-        // // }
-        // //
-        // // y.set( jm1, y.get( jm1 ) / QR.get( jm1, jm1 ) );
-        // //
-        // // // if ( jm1 != 0 ) {
-        // // double t = -y.get( jm1 );
-        // // DoubleMatrix1D colQR = QR.viewColumn( jm1 ).viewPart( 0, jm1 );
-        // // y.viewPart( 0, jm1 ).assign( colQR, Functions.plusMult( t ) );
-        // // // }
-        // //
-        // // log.info( jm1 + " ---> " + y );
-        // // }
-        //
-        // }
-        //
-        // DoubleMatrix2D result = X.viewPart( 0, 0, p, nx );
-        //
-        // // zero out unused components.
-        // if ( k < p ) {
-        // for ( int i = k; k < p; k++ ) {
-        // for ( int j = 0; j < nx; j++ ) {
-        // result.setQuick( i, j, 0.0 );
-        // }
-        // }
-        // }
-        //
-        // /*
-        // * Return to the original order
-        // */
-        // X = X.viewSelection( this.jpvt, null );
-        //
-        // return result;
     }
 
     /**
@@ -437,7 +437,7 @@ public class QRDecompositionPivoting {
         buf.append( "QRDecomposition(A) \n" );
         buf.append( "-----------------------------------------------------------------\n" );
 
-        buf.append( "rank = " + k );
+        buf.append( "rank = " + rank );
 
         buf.append( "\n\nQ = " );
         try {
@@ -460,8 +460,8 @@ public class QRDecompositionPivoting {
 
     protected String diagnose() {
         StringBuilder buf = new StringBuilder();
-        buf.append( "Rank = " + k + "\n" );
-        buf.append( "Work: " + originalNorms + "\n" );
+        buf.append( "Rank = " + rank + "\n" );
+        //  buf.append( "Work: " + originalNorms + "\n" );
         buf.append( "Qraux: " + qraux + "\n" );
         buf.append( "Pivot indices: " + StringUtils.join( ArrayUtils.toObject( jpvt ), "  " ) + "\n" );
         return buf.toString();
@@ -474,6 +474,27 @@ public class QRDecompositionPivoting {
      */
     protected DoubleMatrix2D getQR() {
         return QR;
+    }
+
+    /**
+     * Mimics functionality of chol2inv from R (which just calls LAPACK::dpotri)
+     *
+     * @param x upper triangular matrix (from qr)
+     * @return symmetric matrix X'X^-1
+     */
+    private DoubleMatrix2D dpotri( DoubleMatrix2D x ) {
+
+        if ( this.chol2inv != null ) return this.chol2inv;
+
+        DenseMatrix denseMatrix = new DenseMatrix( x.copy().toArray() );
+        intW status = new intW( 0 );
+        LAPACK.getInstance().dpotri( "U", x.columns(), denseMatrix.getData(), x.columns(), status );
+        if ( status.val != 0 ) {
+            throw new IllegalStateException( "Could not invert matrix" );
+        }
+
+        this.chol2inv = new DenseDoubleMatrix2D( Matrices.getArray( denseMatrix ) );
+        return this.chol2inv;
     }
 
     /**
@@ -520,6 +541,7 @@ public class QRDecompositionPivoting {
         jpvt[p - 1] = i;
         qraux.set( p - 1, t );
         work.set( p - 1, w0 );
-        k = k - 1;
+        rank = rank - 1;
     }
+
 }

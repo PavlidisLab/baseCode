@@ -1,9 +1,9 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2006 University of British Columbia
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -34,7 +34,9 @@ import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.util.RegressionTesting;
 import cern.colt.function.DoubleProcedure;
 import cern.colt.matrix.DoubleMatrix1D;
+import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
+import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import cern.jet.math.Functions;
 
 /**
@@ -64,7 +66,7 @@ public class TestMatrixStats {
 
     @Test
     public void testColSumsWithMissing() throws Exception {
-        DoubleMatrix<String, String> counts = new DenseDoubleMatrix<String, String>( new double[][] {
+        DoubleMatrix<String, String> counts = new DenseDoubleMatrix<>( new double[][] {
                 { 1, 2, Double.NaN }, { 4, 5, 6 } } );
         DoubleMatrix1D expected = new DenseDoubleMatrix1D( new double[] { 5, 7, 6 } );
         DoubleMatrix1D actual = MatrixStats.colSums( counts );
@@ -147,12 +149,12 @@ public class TestMatrixStats {
 
     @Test
     public void testCountsPerMillionWithMissing() throws Exception {
-        DoubleMatrix<String, String> counts = new DenseDoubleMatrix<String, String>( new double[][] {
+        DoubleMatrix<String, String> counts = new DenseDoubleMatrix<>( new double[][] {
                 { 1, 2, Double.NaN }, { 4, 5, 6 } } );
         DoubleMatrix1D libSize = MatrixStats.colSums( counts );
         MatrixStats.convertToLog2Cpm( counts, libSize );
         DoubleMatrix<String, String> actual = counts;
-        DoubleMatrix<String, String> expected = new DenseDoubleMatrix<String, String>( new double[][] {
+        DoubleMatrix<String, String> expected = new DenseDoubleMatrix<>( new double[][] {
                 { 17.93157, 18.2535, Double.NaN }, { 19.51653, 19.3910, 19.82465 } } );
 
         for ( int i = 0; i < expected.rows(); i++ ) {
@@ -231,7 +233,7 @@ public class TestMatrixStats {
     @Test
     public final void testRbfNormalize() {
         double[][] actual = { { 0.001, 0.2, 0.13, 0.4 }, { 0.11, 0.12, 0.00013, 0.14 }, { 0.21, 0.0001, 0.99, 0.24 } };
-        DenseDoubleMatrix<String, String> av = new DenseDoubleMatrix<String, String>( actual );
+        DenseDoubleMatrix<String, String> av = new DenseDoubleMatrix<>( actual );
         MatrixStats.rbfNormalize( av, 1 );
         double[][] expected = { { 0.2968, 0.2432, 0.2609, 0.1991 }, { 0.2453, 0.2429, 0.2738, 0.2381 },
                 { 0.273, 0.3368, 0.1252, 0.265 } };
@@ -271,5 +273,24 @@ public class TestMatrixStats {
                 return true;
             }
         } );
+    }
+
+    @Test
+    public final void testCov2Cor() throws Exception {
+        //        x<-matrix(rnorm(100),10,10)
+        //         write.table(file="cov.txt", cov(x), sep='\t', quote=F)
+        //         write.table(file="cor.txt", cov2cor(cov(x)), sep='\t', quote=F)
+        DoubleMatrixReader f = new DoubleMatrixReader();
+        DoubleMatrix<String, String> cov = f.read( this.getClass().getResourceAsStream( "/data/cov.txt" ) );
+
+        DoubleMatrix2D covm = new DenseDoubleMatrix2D( cov.asDoubles() );
+        DoubleMatrix2D actual = MatrixStats.cov2cor( covm );
+        DoubleMatrix<String, String> expected = f.read( this.getClass().getResourceAsStream( "/data/cor.txt" ) );
+
+        assertEquals( expected.rows(), actual.rows() );
+        for ( int i = 0; i < actual.rows(); i++ ) {
+            RegressionTesting.closeEnough( expected.asArray()[i], actual.toArray()[i], 0.00001 );
+        }
+
     }
 }

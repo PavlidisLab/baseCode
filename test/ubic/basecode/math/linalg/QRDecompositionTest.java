@@ -12,7 +12,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package ubic.basecode.math;
+package ubic.basecode.math.linalg;
 
 import static org.junit.Assert.assertEquals;
 
@@ -24,6 +24,8 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.StringMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.io.reader.StringMatrixReader;
+import ubic.basecode.math.linalg.QRDecomposition;
+import ubic.basecode.math.linearmodels.DesignMatrix;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
@@ -56,7 +58,24 @@ public class QRDecompositionTest {
         DoubleMatrix<String, String> matrix = d.getMatrix();
         assertEquals( 9, matrix.columns() );
 
-        QRDecompositionPivoting qrlrs = new QRDecompositionPivoting( new DenseDoubleMatrix2D( matrix.asArray() ) );
+        QRDecomposition qrlrs = new QRDecomposition( new DenseDoubleMatrix2D( matrix.asArray() ) );
+
+        /*
+         * qr(matrix(c(1,0,0,0,0,0,0,0,0,
+         * 1,0,0,0,0,0,0,0,0,
+         * 1,0,0,0,1,0,0,0,0,
+         * 1,0,0,0,1,0,0,0,0,
+         * 1,1,0,0,0,1,0,0,0,
+         * 1,1,0,0,0,1,0,0,0,
+         * 1,1,0,0,0,1,0,0,0,
+         * 1,0,1,0,0,0,1,0,0,
+         * 1,0,1,0,0,0,0,1,0,
+         * 1,0,1,0,1,0,0,0,0,
+         * 1,0,1,0,1,0,0,0,0,
+         * 1,0,0,1,1,0,0,0,0,
+         * 1,0,0,1,1,0,0,0,0,
+         * 1,0,0,1,0,0,0,0,1), byrow=T, 14,9))
+         */
 
         DoubleMatrix2D r = qrlrs.getR();
         // log.info( r );
@@ -130,8 +149,8 @@ public class QRDecompositionTest {
         DoubleMatrix<String, String> matrix = d.getMatrix();
         assertEquals( 9, matrix.columns() );
 
-        QRDecompositionPivoting qrlrs = new QRDecompositionPivoting( new DenseDoubleMatrix2D( matrix.asArray() ), false );
-        qrlrs.getQ();
+        QRDecomposition qrlrs = new QRDecomposition( new DenseDoubleMatrix2D( matrix.asArray() ), false );
+        //   DoubleMatrix2D q = qrlrs.getQ();
         DoubleMatrix2D r = qrlrs.getR();
 
         assertEquals( -3.741657, r.get( 0, 0 ), 0.001 );
@@ -153,12 +172,12 @@ public class QRDecompositionTest {
 
         DoubleMatrixReader of = new DoubleMatrixReader();
         DoubleMatrix<String, String> d = of.read( this.getClass().getResourceAsStream( "/data/lmtest3.des.txt" ) );
-        QRDecompositionPivoting qrlrs = null;
+        QRDecomposition qrlrs = null;
         DoubleMatrix2D qr = null;
 
         // this is ok if we only have 1's and 0's
         assertEquals( 9, d.columns() );
-        qrlrs = new QRDecompositionPivoting( new DenseDoubleMatrix2D( d.asArray() ) );
+        qrlrs = new QRDecomposition( new DenseDoubleMatrix2D( d.asArray() ) );
         qr = qrlrs.getQR();
         assertEquals( -3.741657, qr.get( 0, 0 ), 0.001 );
         assertEquals( 0.0, qr.get( 8, 8 ), 0.001 );
@@ -169,7 +188,7 @@ public class QRDecompositionTest {
         assertEquals( 9, d.columns() );
         DoubleMatrix2D d2 = new DenseDoubleMatrix2D( d.asArray() );
         d2.assign( Functions.mult( 2 ) );
-        qrlrs = new QRDecompositionPivoting( d2 );
+        qrlrs = new QRDecomposition( d2 );
         qr = qrlrs.getQR();
         assertEquals( -7.483315, qr.get( 0, 0 ), 0.001 );
         assertEquals( 0.0, qr.get( 8, 8 ), 0.001 );
@@ -191,7 +210,7 @@ public class QRDecompositionTest {
         DoubleMatrix<String, String> d = of.read( this.getClass().getResourceAsStream( "/data/lmtest3.des.txt" ) );
 
         assertEquals( 9, d.columns() );
-        QRDecompositionPivoting qrlrs = new QRDecompositionPivoting( new DenseDoubleMatrix2D( d.asArray() ) );
+        QRDecomposition qrlrs = new QRDecomposition( new DenseDoubleMatrix2D( d.asArray() ) );
         qrlrs.getQ();
         DoubleMatrix2D r = qrlrs.getR();
 
@@ -213,9 +232,6 @@ public class QRDecompositionTest {
         assertEquals( -0.001596204, qr.get( 10, 3 ), 0.001 );
         assertEquals( -0.563532716, qr.get( 11, 3 ), 0.001 );
         assertEquals( -0.2886751, qr.get( 10, 4 ), 0.001 ); // R gets +2.8...
-        // assertEquals( -3.151748e-01, qr.get( 10, 5 ), 0.001 );
-        // assertEquals( -2.886751e-01, qr.get( 9, 6 ), 0.001 );
-        // assertEquals( -2.886751e-01, qr.get( 9, 8 ), 0.001 );
 
         DoubleMatrix2D q = qrlrs.getQ();
         // log.info( q );
@@ -233,7 +249,7 @@ public class QRDecompositionTest {
         assertEquals( -5.000000e-01, q.get( 0, 5 ), 0.001 );
         assertEquals( 0, q.get( 0, 6 ), 0.001 );
         assertEquals( 0, q.get( 0, 7 ), 0.001 );
-        // / assertEquals( -1.462024e-01, q.get( 0, 8 ), 0.001 );
+
         DoubleMatrixReader f = new DoubleMatrixReader();
         DoubleMatrix<String, String> testMatrix = f
                 .read( this.getClass().getResourceAsStream( "/data/lmtest2.dat.txt" ) );

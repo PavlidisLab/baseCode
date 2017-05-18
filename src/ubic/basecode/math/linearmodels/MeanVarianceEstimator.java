@@ -12,7 +12,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package ubic.basecode.math;
+package ubic.basecode.math.linearmodels;
 
 import static cern.jet.math.Functions.chain;
 import static cern.jet.math.Functions.div;
@@ -42,12 +42,15 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
 import cern.jet.stat.Descriptive;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import ubic.basecode.math.DescriptiveWithMissing;
+import ubic.basecode.math.linalg.QRDecomposition;
 
 /**
  * Estimate mean-variance relationship and use this to compute weights for least squares fitting. R's limma.voom()
  * Charity Law and Gordon Smyth. See Law et al.
- * {@link http://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29} Running voom() on data matrices with
- * NaNs is not currently supported.
+ * {@link http://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29}
+ * <p>
+ * Running voom() on data matrices with NaNs is not currently supported.
  * 
  * @author ptan
  */
@@ -72,7 +75,7 @@ public class MeanVarianceEstimator {
      * @param xInterpolate the set of x values to interpolate
      * @return yInterpolate the interpolated set of y values
      */
-    public static double[] approx( double[] x, double[] y, double[] xInterpolate ) {
+    protected static double[] approx( double[] x, double[] y, double[] xInterpolate ) {
 
         assert x != null;
         assert y != null;
@@ -247,7 +250,7 @@ public class MeanVarianceEstimator {
 
         // in R:
         // loess(c(1:5),c(1:5)^2,f=0.5,iter=3)
-        // Note: we start to loose some precision here in comparison with R's loess
+        // Note: we start to loose some precision here in comparison with R's loess FIXME why? does it matter?
         DoubleMatrix2D loessFit = new DenseDoubleMatrix2D( xyChecked.rows(), xyChecked.columns() );
         // try {
         // fit a loess curve
@@ -367,7 +370,7 @@ public class MeanVarianceEstimator {
 
         // quarterroot fitted counts
         DoubleMatrix2D fittedValues = null;
-        QRDecompositionPivoting qr = new QRDecompositionPivoting( A );
+        QRDecomposition qr = new QRDecomposition( A );
         DoubleMatrix2D coeff = lsf.getCoefficients();
 
         if ( qr.getRank() < A.columns() ) {
