@@ -136,13 +136,12 @@ public class ModeratedTstat {
         double varPrior = fit[0];
         double dfPrior = fit[1];
 
-        if ( Double.isFinite( df ) ) {
-
-            return var.copy().assign( Functions.mult( df ) )
-                    .assign( Functions.plus( dfPrior * varPrior ) ).assign( Functions.div( df + dfPrior ) );
-
+        if ( Double.isInfinite( df ) ) {
+            throw new IllegalStateException( "not implemented case of infinite dof" );
         }
-        throw new IllegalStateException( "not implemented case of infinite dof" );
+        return var.copy().assign( Functions.mult( df ) )
+                .assign( Functions.plus( dfPrior * varPrior ) ).assign( Functions.div( df + dfPrior ) );
+
     }
 
 }
