@@ -27,6 +27,7 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.math3.distribution.FDistribution;
 import org.apache.commons.math3.distribution.TDistribution;
 import org.apache.commons.math3.exception.NotStrictlyPositiveException;
@@ -546,12 +547,17 @@ public class LeastSquaresFit {
             anovas = this.anova();
         }
 
+        StopWatch timer = new StopWatch();
+        timer.start();
         for ( int i = 0; i < this.coefficients.columns(); i++ ) {
             LinearModelSummary lms = summarize( i );
             lms.setAnova( anovas != null ? anovas.get( i ) : null );
             lmsresults.add( lms );
-
+            if ( timer.getTime() > 1000 && i > 0 && i % 1000 == 0 ) {
+                log.info( "Summarized " + i );
+            }
         }
+        log.info( "Summzarized " + this.coefficients.columns() + " results" );
 
         return lmsresults;
     }

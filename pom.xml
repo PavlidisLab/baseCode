@@ -167,11 +167,11 @@
 			<version>1.7.5</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+		<!--java 8 only <dependency>
 			<groupId>net.sourceforge.jdistlib</groupId>
 			<artifactId>jdistlib</artifactId>
-			<version>0.4.5</version>
-		</dependency>
+			<version>0.4.5</version> 
+		</dependency>-->
 		<!-- Be careful with versions of lucene -->
 		<!-- jena-text uses lucene 4.x.. Not ready for this. -->
 		<!-- <dependency> <groupId>org.apache.jena</groupId> <artifactId>jena-text</artifactId> <version>1.0.0-SNAPSHOT</version> 
