@@ -549,6 +549,7 @@ public class LeastSquaresFit {
 
         StopWatch timer = new StopWatch();
         timer.start();
+        log.info( "Summarizing" );
         for ( int i = 0; i < this.coefficients.columns(); i++ ) {
             LinearModelSummary lms = summarize( i );
             lms.setAnova( anovas != null ? anovas.get( i ) : null );
@@ -987,6 +988,7 @@ public class LeastSquaresFit {
                 double v = b.get( i, j );
                 if ( Double.isNaN( v ) || Double.isInfinite( v ) ) {
                     this.hasMissing = true;
+                    log.info( "Data has missing values" );
                     break;
                 }
             }

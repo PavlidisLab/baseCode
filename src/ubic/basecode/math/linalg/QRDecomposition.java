@@ -88,6 +88,11 @@ public class QRDecomposition {
     private double tolerance = 1e-7;
 
     /**
+     * 
+     */
+    private DoubleMatrix2D Qcached = null;
+
+    /**
      * @param A the matrix to decompose, pivoting will be used.
      */
     public QRDecomposition( final DoubleMatrix2D A ) {
@@ -271,6 +276,9 @@ public class QRDecomposition {
      */
     public DoubleMatrix2D getQ() {
 
+        // For efficienty we do this... but really we should avoid directly getting Q.
+        if ( this.Qcached != null ) return Qcached;
+
         DoubleMatrix2D Q = QR.like();
 
         for ( int i = 0; i < Q.columns(); i++ ) {
@@ -300,7 +308,7 @@ public class QRDecomposition {
                 QR.set( j, j, temp );
             }
         }
-
+        this.Qcached = Q;
         return Q;
 
     }
