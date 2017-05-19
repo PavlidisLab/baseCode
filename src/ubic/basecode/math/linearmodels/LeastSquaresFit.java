@@ -554,7 +554,7 @@ public class LeastSquaresFit {
             LinearModelSummary lms = summarize( i );
             lms.setAnova( anovas != null ? anovas.get( i ) : null );
             lmsresults.add( lms );
-            if ( timer.getTime() > 1000 && i > 0 && i % 1000 == 0 ) {
+            if ( timer.getTime() > 10000 && i > 0 && i % 10000 == 0 ) {
                 log.info( "Summarized " + i );
             }
         }
