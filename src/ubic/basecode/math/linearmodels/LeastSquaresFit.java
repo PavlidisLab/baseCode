@@ -992,6 +992,7 @@ public class LeastSquaresFit {
                     break;
                 }
             }
+            if ( this.hasMissing ) break;
         }
     }
 
