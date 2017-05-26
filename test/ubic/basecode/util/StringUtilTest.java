@@ -34,7 +34,7 @@ public class StringUtilTest {
 
     @Test
     public void testCommonPrefix() {
-        Collection<String> test = new HashSet<String>();
+        Collection<String> test = new HashSet<>();
         test.add( "aadaab" );
         test.add( "aaaaab" );
         test.add( "aabaab" );
@@ -45,7 +45,7 @@ public class StringUtilTest {
 
     @Test
     public void testCommonPrefixNone() {
-        Collection<String> test = new HashSet<String>();
+        Collection<String> test = new HashSet<>();
         test.add( "aadaac" );
         test.add( "daaaaab" );
         test.add( "aabaab" );
@@ -56,7 +56,7 @@ public class StringUtilTest {
 
     @Test
     public void testCommonSuffix() {
-        Collection<String> test = new HashSet<String>();
+        Collection<String> test = new HashSet<>();
         test.add( "aadaab" );
         test.add( "aaaaab" );
         test.add( "aabaab" );
@@ -67,13 +67,31 @@ public class StringUtilTest {
 
     @Test
     public void testCommonSuffixNone() {
-        Collection<String> test = new HashSet<String>();
+        Collection<String> test = new HashSet<>();
         test.add( "aaabf" );
         test.add( "ab" );
         test.add( "aaaab" );
         test.add( "aaaacb" );
         String suf = StringUtil.commonSuffix( test );
         assertEquals( null, suf );
+    }
+
+    @Test
+    public void testMakeRnames() {
+        String actual = StringUtil.makeValidForR( "f33oo dd . [f] a" );
+        assertEquals( "f33oo.dd.f.a", actual );
+        
+        actual = StringUtil.makeValidForR( ".f33oo" );
+        assertEquals( ".f33oo", actual );
+        
+        actual = StringUtil.makeValidForR( "...f33oo" );
+        assertEquals( ".f33oo", actual );
+
+        actual = StringUtil.makeValidForR( "1foo dd . [f] a" );
+        assertEquals( "X1foo.dd.f.a", actual );
+       
+        actual = StringUtil.makeValidForR( ".1foo dd . [f] a" );
+        assertEquals( "X.1foo.dd.f.a", actual );
     }
 
 }

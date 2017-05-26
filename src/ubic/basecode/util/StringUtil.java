@@ -30,7 +30,6 @@ import au.com.bytecode.opencsv.CSVReader;
 
 /**
  * @author pavlidis
- * @version $Id$
  */
 public class StringUtil {
 
@@ -104,6 +103,40 @@ public class StringUtil {
     }
 
     /**
+     * Checks a string to find "strange" character, used by phenocarta to check evidence description
+     * 
+     * @param the string to check
+     * @return return false if something strange was found 
+     * @author Nicolas?
+     */
+    public static boolean containsValidCharacter( String s ) {
+
+        if ( s != null ) {
+
+            for ( int i = 0; i < s.length(); i++ ) {
+
+                Character cha = s.charAt( i );
+
+                if ( !( isLatinLetter( cha ) || Character.isDigit( cha ) || cha == '=' || cha == ',' || cha == '('
+                        || cha == ')' || cha == '\'' || Character.isWhitespace( cha ) || cha == '/' || cha == '?'
+                        || cha == '+' || cha == ':' || cha == '-' || cha == '<' || cha == '>' || cha == '"'
+                        || cha == '%' || cha == '.' || cha == '*' || cha == '[' || cha == ']' || cha == ';'
+                        || cha == '_' || cha == '\\' || cha == '|' || cha == '&' || cha == '^' || cha == '#'
+                        || cha == '{' || cha == '}' || cha == '!' || cha == '~' || cha == '@' || cha == '—'
+                        || cha == '×' || cha == '–' || cha == ' ' ) ) {
+
+                    // new cha to be added, special Öö≤≥âμ etc... TODO and check later if found
+
+                    log.warn( "Illegal character found: " + cha + " found on description: " + s );
+
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
      * @param numFields
      * @param line
      * @return
@@ -118,27 +151,6 @@ public class StringUtil {
         } catch ( IOException e ) {
             throw new RuntimeException( e );
         }
-    }
-
-    /**
-     * @param stringi
-     * @param stringj
-     * @return
-     */
-    public static Long twoStringHashKey( String stringi, String stringj ) {
-        // use arbitrary but consistent method for ordering.
-        if ( stringi.hashCode() < stringj.hashCode() ) {
-            return new Long( stringi.hashCode() | ( long ) stringj.hashCode() << 32 );
-        }
-        return new Long( stringj.hashCode() | ( long ) stringi.hashCode() << 32 );
-    }
-
-    private static String shortestString( Collection<String> strings ) {
-        String shortest = null;
-        for ( String string : strings ) {
-            if ( shortest == null || string.length() < shortest.length() ) shortest = string;
-        }
-        return shortest;
     }
 
     /**
@@ -169,41 +181,50 @@ public class StringUtil {
         return newLine.toString().replaceAll( "\"", "" );
     }
 
-    /**
-     * Checks a string to find strange character, used by phenocarta to check evidence description
-     * 
-     * @param the string to check
-     * @return return false if something strange was found in an evidence description
-     */
-    public static boolean containsValidCharacter( String description ) {
-
-        if ( description != null ) {
-
-            for ( int i = 0; i < description.length(); i++ ) {
-
-                Character cha = description.charAt( i );
-
-                if ( !( isLatinLetter( cha ) || Character.isDigit( cha ) || cha == '=' || cha == ',' || cha == '('
-                        || cha == ')' || cha == '\'' || Character.isWhitespace( cha ) || cha == '/' || cha == '?'
-                        || cha == '+' || cha == ':' || cha == '-' || cha == '<' || cha == '>' || cha == '"'
-                        || cha == '%' || cha == '.' || cha == '*' || cha == '[' || cha == ']' || cha == ';'
-                        || cha == '_' || cha == '\\' || cha == '|' || cha == '&' || cha == '^' || cha == '#'
-                        || cha == '{' || cha == '}' || cha == '!' || cha == '~' || cha == '@' || cha == '—'
-                        || cha == '×' || cha == '–' || cha == ' ' ) ) {
-
-                    // new cha to be added, special Öö≤≥âμ etc... TODO and check later if found
-
-                    log.warn( "Illegal character found: " + cha + " found on description: " + description );
-
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     public static boolean isLatinLetter( char c ) {
         return ( c >= 'A' && c <= 'Z' ) || ( c >= 'a' && c <= 'z' );
+    }
+
+    /**
+     * Mimics the make.names method in R (character.c) to make valid variables names; we use this for column headers in
+     * some output files. This doesn't give the exact sames results as R; we avoid repeated '.'.
+     * 
+     * @param s
+     * @return modified string
+     * @author paul
+     */
+    public static String makeValidForR( String s ) {
+
+        // If string starts with a digit or "." and then a digit, prepend an X.
+        if ( s.matches( "^\\.?[0-9].+" ) ) {
+            s = "X" + s;
+        }
+
+        // TODO: check for reserved words. https://stat.ethz.ch/R-manual/R-devel/library/base/html/Reserved.html
+
+        // no dashes or white space or other punctuation. '.' is okay and so is "_", now.
+        return s.replaceAll( "[\\W]+", "." );
+    }
+
+    /**
+     * @param stringi
+     * @param stringj
+     * @return
+     */
+    public static Long twoStringHashKey( String stringi, String stringj ) {
+        // use arbitrary but consistent method for ordering.
+        if ( stringi.hashCode() < stringj.hashCode() ) {
+            return new Long( stringi.hashCode() | ( long ) stringj.hashCode() << 32 );
+        }
+        return new Long( stringj.hashCode() | ( long ) stringi.hashCode() << 32 );
+    }
+
+    private static String shortestString( Collection<String> strings ) {
+        String shortest = null;
+        for ( String string : strings ) {
+            if ( shortest == null || string.length() < shortest.length() ) shortest = string;
+        }
+        return shortest;
     }
 
 }
