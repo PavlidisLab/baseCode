@@ -20,7 +20,6 @@ package ubic.basecode.dataStructure.matrix;
 
 /**
  * @author pavlidis
- * @version $Id$
  */
 public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implements PrimitiveMatrix<R, C, Integer> {
 
@@ -29,7 +28,7 @@ public class IntegerMatrix<R, C> extends AbstractMatrix<R, C, Integer> implement
 
     public IntegerMatrix( int x, int y ) {
         super();
-        matrix = new ObjectMatrixImpl<R, C, Integer>( x, y );
+        matrix = new ObjectMatrixImpl<>( x, y );
     }
 
     /**

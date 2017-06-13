@@ -988,7 +988,7 @@ public class LeastSquaresFit {
                 double v = b.get( i, j );
                 if ( Double.isNaN( v ) || Double.isInfinite( v ) ) {
                     this.hasMissing = true;
-                    log.info( "Data has missing values" );
+                    log.info( "Data has missing values (at row=" + (i+1) + " column=" + (j+1) );
                     break;
                 }
             }

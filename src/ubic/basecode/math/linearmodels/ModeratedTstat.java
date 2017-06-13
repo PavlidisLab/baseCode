@@ -48,16 +48,23 @@ public class ModeratedTstat {
      */
     public static void ebayes( LeastSquaresFit fit ) {
 
+        if ( fit.isHasMissing() ) {
+            throw new UnsupportedOperationException( "Ebayes not supported yet for data with missing values" );
+        }
+
         List<LinearModelSummary> summaries = fit.summarize();
         DoubleMatrix1D sigmas = new DenseDoubleMatrix1D( new double[summaries.size()] );
         int i = 0;
         Integer dof = 0;
+        // corner case can get nulls, example: GSE10778 
         for ( LinearModelSummary lms : summaries ) {
+            assert lms.getSigma() != null;
+
             sigmas.set( i, lms.getSigma() );
-            // Double[] stdevUnscaled = lms.getStdevUnscaled();
             Integer residualDof = lms.getResidualDof();
             dof = residualDof;
             i++;
+
         }
 
         //  need to handle a vector of dofs, really (missing values). or at least check it's constant
