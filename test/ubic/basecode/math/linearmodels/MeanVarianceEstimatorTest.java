@@ -1,18 +1,18 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2011 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package ubic.basecode.math;
+package ubic.basecode.math.linearmodels;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -25,6 +25,8 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.StringMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.io.reader.StringMatrixReader;
+import ubic.basecode.math.MatrixStats;
+import ubic.basecode.math.linearmodels.DesignMatrix;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
@@ -37,7 +39,7 @@ public class MeanVarianceEstimatorTest {
 
     /**
      * Tests two things: 1. Input data's X values are not sorted 2. Interpolated X values are outside the domain.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -62,7 +64,7 @@ public class MeanVarianceEstimatorTest {
 
     /**
      * Duplicate row
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -76,7 +78,7 @@ public class MeanVarianceEstimatorTest {
                 "/data/lmtest11.des.txt" ) );
 
         // add a duplicate entry with a different row id but similar expression levels
-        DoubleMatrix<String, String> duplMatrix = new DenseDoubleMatrix<String, String>( testMatrix.asDoubles() );
+        DoubleMatrix<String, String> duplMatrix = new DenseDoubleMatrix<>( testMatrix.asDoubles() );
         duplMatrix.viewRow( 1 ).assign( duplMatrix.viewRow( 0 ) );
         DoubleMatrix1D libSize = MatrixStats.colSums( duplMatrix );
         MatrixStats.convertToLog2Cpm( duplMatrix, libSize );
@@ -97,7 +99,7 @@ public class MeanVarianceEstimatorTest {
 
     /**
      * Test calculation of weights for LeastSquaresFitting
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -128,7 +130,7 @@ public class MeanVarianceEstimatorTest {
 
     /**
      * Data has missing values, no Design matrix provided so plot a generic mean-variance plot
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -138,7 +140,7 @@ public class MeanVarianceEstimatorTest {
                 { Double.NaN, 0, 7, Double.NaN, 8 }, { Double.NaN, 9, -0.3, 0.5, Double.NaN },
                 { Double.NaN, 3, -0.3, -0.1, Double.NaN },
                 { Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN } };
-        DoubleMatrix<String, String> data = new DenseDoubleMatrix<String, String>( dataPrimitive );
+        DoubleMatrix<String, String> data = new DenseDoubleMatrix<>( dataPrimitive );
         DoubleMatrix1D libSize = MatrixStats.colSums( data );
         MatrixStats.convertToLog2Cpm( data, libSize );
         MeanVarianceEstimator est = new MeanVarianceEstimator( new DenseDoubleMatrix2D( data.asArray() ) );
@@ -163,7 +165,7 @@ public class MeanVarianceEstimatorTest {
 
     /**
      * Data has missing values, no Design matrix provided so plot a generic mean-variance plot
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -171,7 +173,7 @@ public class MeanVarianceEstimatorTest {
         DoubleMatrixReader f = new DoubleMatrixReader();
         DoubleMatrix<String, String> testMatrix = f.read( this.getClass().getResourceAsStream(
                 "/data/example.madata.withmissing.small.txt" ) );
-        DoubleMatrix<String, String> data = new DenseDoubleMatrix<String, String>( testMatrix.asDoubles() );
+        DoubleMatrix<String, String> data = new DenseDoubleMatrix<>( testMatrix.asDoubles() );
         DoubleMatrix1D libSize = MatrixStats.colSums( data );
         MatrixStats.convertToLog2Cpm( data, libSize );
         MeanVarianceEstimator est = new MeanVarianceEstimator( new DenseDoubleMatrix2D( data.asArray() ) );
@@ -199,7 +201,7 @@ public class MeanVarianceEstimatorTest {
 
     /**
      * Data has missing values and a Design matrix is also provided as well. Bug 3478.
-     * 
+     *
      * @throws Exception
      */
     @Test

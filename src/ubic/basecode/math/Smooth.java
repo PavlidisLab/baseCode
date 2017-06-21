@@ -23,7 +23,6 @@ import cern.colt.matrix.DoubleMatrix1D;
  * Methods for moving averages etc.
  * 
  * @author paul
- * @version $Id$
  */
 public class Smooth {
 
@@ -36,7 +35,7 @@ public class Smooth {
      */
     public static DoubleMatrix1D movingAverage( DoubleMatrix1D m, int windowSize ) {
 
-        Queue<Double> window = new LinkedList<Double>();
+        Queue<Double> window = new LinkedList<>();
 
         double sum = 0.0;
 

@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2006 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -44,7 +44,7 @@ public class TestRank {
     @Before
     public void setUp() throws Exception {
         testdata = new DoubleArrayList( new double[] { 10.0, 11.0, 12.0, 13.0, 114.0, 5.0 } );
-        testmap = new HashMap<String, Double>();
+        testmap = new HashMap<>();
         testmap.put( "Ten", new Double( 10.0 ) );
         testmap.put( "Eleven", new Double( 11.0 ) );
         testmap.put( "Twelve", new Double( 12.0 ) );
@@ -99,7 +99,7 @@ public class TestRank {
     public void testRankTransformMap() {
 
         Map<String, Double> actualReturn = Rank.rankTransform( testmap );
-        Map<String, Double> expectedReturn = new HashMap<String, Double>();
+        Map<String, Double> expectedReturn = new HashMap<>();
         expectedReturn.put( "Ten", 1.0 );
         expectedReturn.put( "Eleven", 2.0 );
         expectedReturn.put( "Twelve", 3.0 );
@@ -112,7 +112,7 @@ public class TestRank {
     @Test
     public void testRankTransformMapDesc() {
         Map<String, Double> actualReturn = Rank.rankTransform( testmap, true );
-        Map<String, Double> expectedReturn = new HashMap<String, Double>();
+        Map<String, Double> expectedReturn = new HashMap<>();
         expectedReturn.put( "Ten", 4.0 );
         expectedReturn.put( "Eleven", 3.0 );
         expectedReturn.put( "Twelve", 2.0 );

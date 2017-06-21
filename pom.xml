@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<name>baseCode</name>
 	<groupId>baseCode</groupId>
 	<artifactId>baseCode</artifactId>
-	<version>1.0.19</version>
+	<version>1.0.20</version>
 	<inceptionYear>2003</inceptionYear>
 	<description>
 	<![CDATA[Data structures, math and statistics tools, and utilities that are often needed across projects.]]>
@@ -17,8 +18,7 @@
 	<scm>
 		<connection>scm:cvs:ext:@otto.pavlab.chibi.ubc.ca:/cvs:baseCode</connection>
 		<developerConnection>scm:cvs:ext:@otto.pavlab.chibi.ubc.ca:/cvs:baseCode</developerConnection>
-		<url>http://www.chibi.ubc.ca/faculty/pavlidis/fisheye/browse/pavlab/baseCode</url>
-	  <tag>baseCode-1_0_16</tag>
+		<tag>baseCode-1_0_16</tag>
 	</scm>
 	<issueManagement>
 		<system>Bugzilla</system>
@@ -167,6 +167,11 @@
 			<version>1.7.5</version>
 			<scope>test</scope>
 		</dependency>
+		<!--java 8 only <dependency>
+			<groupId>net.sourceforge.jdistlib</groupId>
+			<artifactId>jdistlib</artifactId>
+			<version>0.4.5</version> 
+		</dependency>-->
 		<!-- Be careful with versions of lucene -->
 		<!-- jena-text uses lucene 4.x.. Not ready for this. -->
 		<!-- <dependency> <groupId>org.apache.jena</groupId> <artifactId>jena-text</artifactId> <version>1.0.0-SNAPSHOT</version> 

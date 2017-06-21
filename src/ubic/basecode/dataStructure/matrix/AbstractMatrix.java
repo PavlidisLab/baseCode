@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2006 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,7 +29,6 @@ import java.util.Map;
 
 /**
  * @author pavlidis
- * @version $Id$
  */
 public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java.io.Serializable {
 
@@ -46,21 +45,21 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
     private List<R> rowNames;
 
     /**
-     * 
-     *  
+     *
+     *
      */
     public AbstractMatrix() {
-        rowMap = new LinkedHashMap<R, Integer>(); // contains a map of each row name to index
+        rowMap = new LinkedHashMap<>(); // contains a map of each row name to index
         // of the row.
-        colMap = new LinkedHashMap<C, Integer>();
-        rowNames = new ArrayList<R>();
-        colNames = new ArrayList<C>();
+        colMap = new LinkedHashMap<>();
+        rowNames = new ArrayList<>();
+        colNames = new ArrayList<>();
     }
 
     /**
      * Add a column name when we don't care what the index will be. The index will be set by the method. This is useful
      * for when we need to set up a matrix before we know how many column or rows there are.
-     * 
+     *
      * @param s
      */
     @Override
@@ -83,7 +82,7 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
     /**
      * Add a row name when we don't care what the index will be. The index will be set by the method. This is useful for
      * when we need to set up a matrix before we know how many column or rows there are.
-     * 
+     *
      * @param s
      */
     public final void addRowName( R s ) {
@@ -102,7 +101,7 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.dataStructure.matrix.Matrix2D#asDoubles()
      */
     @Override
@@ -150,7 +149,7 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.dataStructure.matrix.Matrix2D#assign(java.lang.Object)
      */
     @Override
@@ -195,7 +194,7 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.dataStructure.matrix.Matrix2D#getColNames()
      */
     @Override
@@ -239,6 +238,24 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
         return colNames.size() > 0;
     }
 
+    /**
+     * Test for the presence of missing values (null, or in the case of numbers, NaN)
+     *
+     * @return
+     */
+    public boolean hasMissingValues() {
+        int n = this.rows();
+        int m = this.columns();
+        for ( int i = 0; i < n; i++ ) {
+
+            for ( int j = 0; j < m; j++ ) {
+                if ( isMissing( i, j ) ) return true;
+
+            }
+        }
+        return false;
+    }
+
     @Override
     public final boolean hasRow( R r ) {
         return this.rowMap.containsKey( r );
@@ -251,7 +268,7 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see basecode.dataStructure.NamedMatrix#numMissing()
      */
     @Override
@@ -301,7 +318,7 @@ public abstract class AbstractMatrix<R, C, V> implements Matrix2D<R, C, V>, java
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see basecode.dataStructure.NamedMatrix#addRowName(java.lang.String, int)
      */
     @Override

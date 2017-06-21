@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2010 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,7 @@
  *
  */
 
-package ubic.basecode.util.r.type;
+package ubic.basecode.math.linearmodels;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -31,11 +31,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
 
+import ubic.basecode.util.r.type.AnovaEffect;
+import ubic.basecode.util.r.type.AnovaResult;
+
 /**
- * A generic parse of an R ANOVA table, including interactions.
- * 
+ * A generic representation of an R-style ANOVA table, including interactions.
+ *
  * @author paul
- * @version $Id$
  */
 public class GenericAnovaResult extends AnovaResult implements Serializable {
 
@@ -44,8 +46,11 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
      */
     private static class InteractionFactor {
 
+        // used only in hashcode; not a great idea
+        private static final String SEPARATOR = "_x_x_";
+
         // Treeset - keep them sorted to be consistent across instances.
-        private Set<String> factorNames = new TreeSet<String>();
+        private Set<String> factorNames = new TreeSet<>();
 
         public InteractionFactor( String... factorNames ) {
             for ( String f : factorNames ) {
@@ -55,7 +60,7 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Object#equals(java.lang.Object)
          */
         @Override
@@ -70,23 +75,20 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Object#hashCode()
          */
         @Override
         public int hashCode() {
-            return StringUtils.join( factorNames, "_x_x_" ).hashCode();
+            return StringUtils.join( factorNames, SEPARATOR ).hashCode();
         }
     }
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
 
-    Map<InteractionFactor, AnovaEffect> interactionEffects = new HashMap<InteractionFactor, AnovaEffect>();
+    private Map<InteractionFactor, AnovaEffect> interactionEffects = new HashMap<>();
 
-    Map<String, AnovaEffect> mainEffects = new LinkedHashMap<String, AnovaEffect>();
+    private Map<String, AnovaEffect> mainEffects = new LinkedHashMap<>();
 
     private AnovaEffect residual;
 
@@ -104,7 +106,6 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
                 this.residualDf = ae.getDegreesOfFreedom();
                 this.residual = ae;
             } else {
-
                 mainEffects.put( termLabel, ae );
             }
         }
@@ -119,7 +120,7 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
 
             String[] names = rAnovaTable.getAttribute( "row.names" ).asStrings();
             double[] pvs = rAnovaTable.asList().at( "Pr(>F)" ).asDoubles();
-            int[] dfs = rAnovaTable.asList().at( "Df" ).asIntegers();
+            double[] dfs = rAnovaTable.asList().at( "Df" ).asDoubles();
             double[] fs = rAnovaTable.asList().at( "F value" ).asDoubles();
 
             double[] ssq = rAnovaTable.asList().at( "Sum Sq" ).asDoubles();
@@ -141,6 +142,16 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
             throw new RuntimeException( e );
         }
 
+    }
+
+    public Double getInteractionEffectF() {
+        if ( interactionEffects.size() > 1 ) {
+            throw new IllegalArgumentException( "Must specify which interaction" );
+        }
+        if ( interactionEffects.isEmpty() ) {
+            return null;
+        }
+        return interactionEffects.values().iterator().next().getFStatistic();
     }
 
     public Double getInteractionEffectP() {
@@ -168,7 +179,7 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
         return interactionEffects.get( interactionFactor ).getPValue();
     }
 
-    public Integer getMainEffectDof( String factorName ) {
+    public Double getMainEffectDof( String factorName ) {
         if ( mainEffects.get( factorName ) == null ) {
             return null;
         }

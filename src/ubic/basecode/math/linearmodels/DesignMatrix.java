@@ -1,18 +1,18 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2011 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package ubic.basecode.math;
+package ubic.basecode.math.linearmodels;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +32,6 @@ import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrix;
 import ubic.basecode.dataStructure.matrix.StringMatrix;
-import ubic.basecode.util.r.type.LinearModelSummary;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 
@@ -44,7 +43,7 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
  * Baseline levels are initially determined by the order in which factor levels appear. You can re-level using the
  * setBaseline method.
  * <p>
- * 
+ *
  * @author paul
  * @version $Id$
  */
@@ -52,35 +51,35 @@ public class DesignMatrix {
 
     private static Logger log = LoggerFactory.getLogger( DesignMatrix.class );
     /**
-     * 
+     *
      */
-    private List<Integer> assign = new ArrayList<Integer>();
+    private List<Integer> assign = new ArrayList<>();
 
     /**
      * Names of factors for which at least some coefficients were dropped.
      */
-    private final Set<String> droppedFactors = new HashSet<String>();
+    private final Set<String> droppedFactors = new HashSet<>();
 
     private boolean hasIntercept = false;
 
-    private final Set<String[]> interactions = new LinkedHashSet<String[]>();
+    private final Set<String[]> interactions = new LinkedHashSet<>();
 
     /**
      * Only applied for categorical factors.
      */
-    private final Map<String, List<String>> levelsForFactors = new LinkedHashMap<String, List<String>>();
+    private final Map<String, List<String>> levelsForFactors = new LinkedHashMap<>();
 
     private DoubleMatrix<String, String> matrix;
 
     /**
      * Store which terms show up in which columns of the design
      */
-    private Map<String, List<Integer>> terms = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> terms = new LinkedHashMap<>();
 
     /**
      * Saved version of the original factors provided.
      */
-    private final Map<String, List<Object>> valuesForFactors = new LinkedHashMap<String, List<Object>>();
+    private final Map<String, List<Object>> valuesForFactors = new LinkedHashMap<>();
 
     /**
      * @param factor in form of Doubles or Strings. Any other types will yield errors.
@@ -108,13 +107,33 @@ public class DesignMatrix {
 
     }
 
+    /**
+     * In limma, the contrasts are built by referring to the coefficients by name, which isn't what we want.
+     * 
+     * 
+     * @return
+     */
+    public DoubleMatrix2D makeContrasts() {
+        /*
+         * Limma: This function expresses contrasts between a set of parameters as a numeric matrix. The parameters are
+         * usually
+         * the coefficients from a linear model fit, so the matrix specifies which comparisons between the coefficients
+         * are to be extracted from the fit. The output from this function is usually used as input to contrasts.fit.
+         * The contrasts can be specified either as expressions using ... or as a character vector through contrasts.
+         * (Trying to specify contrasts both ways will cause an error.)
+         * 
+         * 
+         */
+        throw new RuntimeException();
+    }
+
     public DesignMatrix( StringMatrix<String, String> sampleInfo ) {
         this( sampleInfo, true );
     }
 
     /**
      * Append additional factors/covariates to this
-     * 
+     *
      * @param sampleInfo
      */
     public void add( ObjectMatrix<String, String, Object> sampleInfo ) {
@@ -139,7 +158,7 @@ public class DesignMatrix {
                     + " terms: " + StringUtils.join( this.terms.keySet(), "," ) );
         }
 
-        List<String> iterms = new ArrayList<String>();
+        List<String> iterms = new ArrayList<>();
         for ( String t : terms.keySet() ) {
             if ( t.equals( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME ) ) {
                 continue;
@@ -152,7 +171,7 @@ public class DesignMatrix {
 
     /**
      * This will not add the interaction unless all of the terms are already part of the design.
-     * 
+     *
      * @param interactionTerms
      */
     public void addInteraction( String... interactionTerms ) {
@@ -169,10 +188,10 @@ public class DesignMatrix {
 
         /*
          * Figure out which columns of the data we need to look at.
-         * 
+         *
          * If the factor is in >1 columns - we have to add two or more columns
          */
-        Collection<String> doneTerms = new HashSet<String>();
+        Collection<String> doneTerms = new HashSet<>();
 
         // the column where the interaction "goes"
         int interactionIndex = terms.size();
@@ -260,7 +279,7 @@ public class DesignMatrix {
     }
 
     public List<String> getTerms() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         result.addAll( terms.keySet() );
         return result;
     }
@@ -303,7 +322,7 @@ public class DesignMatrix {
         /*
          * Put the given level in the desired location; move the others along.
          */
-        List<String> releveled = new ArrayList<String>();
+        List<String> releveled = new ArrayList<>();
         releveled.add( oldValues.get( index ) );
         for ( int i = 0; i < oldValues.size(); i++ ) {
             if ( i == index ) continue;
@@ -350,7 +369,7 @@ public class DesignMatrix {
         }
 
         if ( !this.interactions.isEmpty() ) {
-            List<String[]> redoInteractionTerms = new ArrayList<String[]>();
+            List<String[]> redoInteractionTerms = new ArrayList<>();
             for ( String[] interactionTerms : interactions ) {
                 redoInteractionTerms.add( interactionTerms );
             }
@@ -366,7 +385,8 @@ public class DesignMatrix {
      * @param inputDesign
      * @return
      */
-    private DoubleMatrix<String, String> addContinuousCovariate( List<?> vec, DoubleMatrix<String, String> inputDesign ) {
+    private DoubleMatrix<String, String> addContinuousCovariate( List<?> vec,
+            DoubleMatrix<String, String> inputDesign ) {
         DoubleMatrix<String, String> tmp;
         /*
          * CONTINUOUS COVARIATE
@@ -380,7 +400,7 @@ public class DesignMatrix {
             int numberofColumns = inputDesign.columns() + 1;
             tmp = copyWithSpace( inputDesign, numberofColumns );
         } else {
-            tmp = new DenseDoubleMatrix<String, String>( vec.size(), 1 );
+            tmp = new DenseDoubleMatrix<>( vec.size(), 1 );
             tmp.assign( 0.0 );
         }
         int startcol = 0;
@@ -401,7 +421,7 @@ public class DesignMatrix {
      */
     private DoubleMatrix<String, String> addIntercept( int rows ) {
         DoubleMatrix<String, String> tmp;
-        tmp = new DenseDoubleMatrix<String, String>( rows, 1 );
+        tmp = new DenseDoubleMatrix<>( rows, 1 );
         tmp.addColumnName( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME );
         tmp.assign( 1.0 );
         this.assign.add( 0 );
@@ -413,7 +433,7 @@ public class DesignMatrix {
     /**
      * The primary method for actually setting up the design matrix. Redundant or constant columns are dropped (except
      * the intercept, if included)
-     * 
+     *
      * @param which column of the input matrix are we working on.
      * @param factorValues of doubles or strings.
      * @param inputDesign
@@ -460,7 +480,7 @@ public class DesignMatrix {
 
             tmp = inputDesign;
 
-            List<String> levelList = new ArrayList<String>();
+            List<String> levelList = new ArrayList<>();
             levelList.addAll( levels );
 
             int startcol = 0;
@@ -470,7 +490,7 @@ public class DesignMatrix {
 
             int currentColumn = startcol;
             int maxColumn = levels.size() + startcol - ( startUsed - 1 );
-            Collection<String> usedLevels = new HashSet<String>();
+            Collection<String> usedLevels = new HashSet<>();
             for ( int i = startcol; i < maxColumn; i++ ) {
 
                 // log.info( tmp );
@@ -491,7 +511,7 @@ public class DesignMatrix {
                 if ( tmp != null ) {
                     tmp = copyWithSpace( tmp, tmp.columns() + 1 );
                 } else {
-                    tmp = new DenseDoubleMatrix<String, String>( factorValues.size(), 1 );
+                    tmp = new DenseDoubleMatrix<>( factorValues.size(), 1 );
                     tmp.assign( 0.0 );
                 }
 
@@ -537,7 +557,7 @@ public class DesignMatrix {
 
     /**
      * Check if the column is redundant with a previous column
-     * 
+     *
      * @param tmp
      * @param column index of column to check.
      * @return true if a column with index < column is the same as the column at the given index.
@@ -562,14 +582,15 @@ public class DesignMatrix {
 
     /**
      * Add extra empty columns to a matrix, implemented by copying.
-     * 
+     *
      * @param inputDesign
      * @param numberofColumns how many to add.
      * @return
      */
-    private DoubleMatrix<String, String> copyWithSpace( DoubleMatrix<String, String> inputDesign, int numberofColumns ) {
+    private DoubleMatrix<String, String> copyWithSpace( DoubleMatrix<String, String> inputDesign,
+            int numberofColumns ) {
         DoubleMatrix<String, String> tmp;
-        tmp = new DenseDoubleMatrix<String, String>( inputDesign.rows(), numberofColumns );
+        tmp = new DenseDoubleMatrix<>( inputDesign.rows(), numberofColumns );
         tmp.assign( 0.0 );
 
         for ( int i = 0; i < inputDesign.rows(); i++ ) {
@@ -588,7 +609,7 @@ public class DesignMatrix {
 
     /**
      * Build a "standard" design matrix from a matrix of sample information.
-     * 
+     *
      * @param sampleInfo
      * @param intercept if true, an intercept term is included.
      * @return
@@ -632,11 +653,11 @@ public class DesignMatrix {
      * @return
      */
     private List<String> levels( String factorName, String[] vec ) {
-        Set<String> flevs = new LinkedHashSet<String>();
+        Set<String> flevs = new LinkedHashSet<>();
         for ( String v : vec ) {
             flevs.add( v );
         }
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for ( String fl : flevs ) {
             result.add( fl );
         }

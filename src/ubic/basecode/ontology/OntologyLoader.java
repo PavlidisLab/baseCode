@@ -228,15 +228,20 @@ public class OntologyLoader {
                 if ( cacheName != null ) {
                     // write tmp to disk
                     File tempFile = getTmpDiskCachePath( cacheName );
-                    tempFile.getParentFile().mkdirs();
-                    Files.copy( in, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
+                    if ( tempFile == null ) {
+                        reader = new InputStreamReader( in );
+                    } else {
+                        tempFile.getParentFile().mkdirs();
+                        Files.copy( in, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
+                        reader = new FileReader( tempFile );
+                    }
 
-                    reader = new FileReader( tempFile );
                 } else {
                     // Skip the cache
                     reader = new InputStreamReader( in );
                 }
 
+                assert reader != null;
                 try (BufferedReader buf = new BufferedReader( reader );) {
                     model.read( buf, url );
                 }
@@ -318,7 +323,8 @@ public class OntologyLoader {
             // in the worst case scenario.
             // In this case consider using NIO for higher-performance IO using Channels and Buffers.
             // Ex. Use a 4MB Memory-Mapped IO operation.
-            changed = !FileUtils.contentEquals( newFile, oldFile );
+            if ( newFile != null && oldFile != null )
+                changed = !FileUtils.contentEquals( newFile, oldFile );
         } catch ( IOException e ) {
             log.error( e.getMessage() );
         }
@@ -329,7 +335,9 @@ public class OntologyLoader {
 
     public static boolean deleteOldCache( String cacheName ) {
         File f = getOldDiskCachePath( cacheName );
-        return f.delete();
+        if ( f != null )
+            return f.delete();
+        return false;
     }
 
     /**

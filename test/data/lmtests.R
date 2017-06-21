@@ -1,5 +1,4 @@
 # R code for tests 
-# $Id$
 
 rm(list=ls())
 
@@ -19,6 +18,8 @@ G<-factor(saminfo$Geno)
 # t-test
 object<- lm(t(dat[1,]) ~  + factor(des[,"Type"]))
 summary(object)
+chol2inv(object$qr$qr, size=object$qr$rank)
+
 object<- lm(t(dat[11,]) ~  + factor(des[,"Type"]))
 summary(object)
 
@@ -169,6 +170,10 @@ summary(object)
 object<-lm(t(dat["probe_60",]) ~ factor3)
 object<-lm(t(dat["probe_21",]) ~ factor3)
 anova(object)
+
+# what we do is more like (for probe_60)
+lmFit(dat, model.matrix(~ factor3))
+o2$coefficients[58,,drop=F]
 
 
 # one sample t-test

@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.math;
+package ubic.basecode.math.linalg;
 
 import java.util.ArrayList;
 import java.util.List;

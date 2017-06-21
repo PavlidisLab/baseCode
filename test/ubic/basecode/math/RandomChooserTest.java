@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2008 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,7 +34,6 @@ import ubic.basecode.dataStructure.CountingMap;
 
 /**
  * @author paul
- * @version $Id$
  */
 public class RandomChooserTest {
 
@@ -54,7 +53,7 @@ public class RandomChooserTest {
         }
 
         // check uniformity; each number should appear approx 1000 times: 10000 trials * 0.01 * 10 = 1000.
-        CountingMap<Double> map = new CountingMap<Double>();
+        CountingMap<Double> map = new CountingMap<>();
         for ( int i = 0; i < 10000; i++ ) {
             result = RandomChooser.chooserandom( e, 4 );
             for ( double r : result ) {
@@ -80,7 +79,7 @@ public class RandomChooserTest {
         }
 
         // check uniformity; each number should appear approx 1000 times: 10000 trials * 0.01 * 10 = 1000.
-        CountingMap<Integer> map = new CountingMap<Integer>();
+        CountingMap<Integer> map = new CountingMap<>();
         for ( int i = 0; i < 10000; i++ ) {
             result = RandomChooser.chooserandom( 100, 10 );
             for ( int r : result ) {
@@ -105,7 +104,7 @@ public class RandomChooserTest {
         }
 
         // check uniformity; each number should appear approx 1000 times: 10000 trials * 0.01 * 10 = 1000.
-        CountingMap<Double> map = new CountingMap<Double>();
+        CountingMap<Double> map = new CountingMap<>();
         for ( int i = 0; i < 10000; i++ ) {
             result = RandomChooser.chooserandom( deck, 4 );
             for ( double r : result ) {
@@ -133,7 +132,7 @@ public class RandomChooserTest {
 
     @Test
     public void testRandomSubset() {
-        Collection<String> vals = new HashSet<String>();
+        Collection<String> vals = new HashSet<>();
         vals.add( "a" );
         vals.add( "b" );
         vals.add( "c" );
@@ -151,7 +150,7 @@ public class RandomChooserTest {
     /**
      * Check correctness of the sampling algorithm for choosing subsets of size 2. The average value should come out
      * close to k/2.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -172,12 +171,12 @@ public class RandomChooserTest {
     /**
      * Check correctness of the sampling algorithm for choosing subsets of size 2. The average value should come out
      * very close to k/2.
-     * 
+     *
      * @throws Exception
      */
     @Test
     public void testRepeatSubset() throws Exception {
-        List<Integer> k = new ArrayList<Integer>();
+        List<Integer> k = new ArrayList<>();
         int max = 1000;
         for ( int i = 0; i < max; i++ ) {
             k.add( i );
@@ -185,7 +184,7 @@ public class RandomChooserTest {
         double total = 0.0;
         int reps = 10000;
         for ( int j = 0; j < reps; j++ ) {
-            List<Integer> r = new ArrayList<Integer>( RandomChooser.chooseRandomSubset( 2, k ) );
+            List<Integer> r = new ArrayList<>( RandomChooser.chooseRandomSubset( 2, k ) );
             int m = r.get( 0 ) + r.get( 1 );
             total += m / 2.0;
         }
