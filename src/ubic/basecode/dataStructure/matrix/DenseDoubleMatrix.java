@@ -75,12 +75,14 @@ public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
         DoubleMatrix<R, C> returnval = new DenseDoubleMatrix<R, C>( this.rows(), this.columns() );
         for ( int i = 0, n = this.rows(); i < n; i++ ) {
             R rowName = this.getRowName( i );
-            assert rowName != null : "Row " + i + " has null name";
-            returnval.setRowName( rowName, i );
+            // Fine, if you don't want row names
+            if ( rowName != null )
+                returnval.setRowName( rowName, i );
             for ( int j = 0, m = this.columns(); j < m; j++ ) {
                 if ( i == 0 ) {
                     C colName = this.getColName( j );
-                    returnval.setColumnName( colName, j );
+                    if ( colName != null )
+                        returnval.setColumnName( colName, j );
                 }
                 returnval.set( i, j, this.get( i, j ) );
             }

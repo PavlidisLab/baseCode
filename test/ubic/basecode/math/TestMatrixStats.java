@@ -105,7 +105,7 @@ public class TestMatrixStats {
     @Test
     public final void testConvertToLog2Cpm() {
         double expectedReturn = 17.665;
-        MatrixStats.convertToLog2Cpm( testdata, null );
+        testdata = MatrixStats.convertToLog2Cpm( testdata, null );
         assertEquals( "return value", expectedReturn, testdata.get( 9, 3 ), 0.001 );
     }
 
@@ -152,8 +152,7 @@ public class TestMatrixStats {
         DoubleMatrix<String, String> counts = new DenseDoubleMatrix<>( new double[][] {
                 { 1, 2, Double.NaN }, { 4, 5, 6 } } );
         DoubleMatrix1D libSize = MatrixStats.colSums( counts );
-        MatrixStats.convertToLog2Cpm( counts, libSize );
-        DoubleMatrix<String, String> actual = counts;
+        DoubleMatrix<String, String> actual = MatrixStats.convertToLog2Cpm( counts, libSize );
         DoubleMatrix<String, String> expected = new DenseDoubleMatrix<>( new double[][] {
                 { 17.93157, 18.2535, Double.NaN }, { 19.51653, 19.3910, 19.82465 } } );
 
