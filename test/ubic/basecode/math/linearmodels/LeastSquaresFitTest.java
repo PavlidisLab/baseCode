@@ -20,13 +20,23 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.math3.distribution.FDistribution;
 import org.junit.Test;
 
+import cern.colt.list.DoubleArrayList;
+import cern.colt.matrix.DoubleMatrix1D;
+import cern.colt.matrix.DoubleMatrix2D;
+import cern.colt.matrix.impl.DenseDoubleMatrix2D;
+import cern.colt.matrix.linalg.Algebra;
+import cern.jet.math.Functions;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix1D;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrix;
@@ -34,18 +44,9 @@ import ubic.basecode.dataStructure.matrix.ObjectMatrixImpl;
 import ubic.basecode.dataStructure.matrix.StringMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.io.reader.StringMatrixReader;
+import ubic.basecode.io.writer.MatrixWriter;
 import ubic.basecode.math.DescriptiveWithMissing;
 import ubic.basecode.math.MatrixStats;
-import ubic.basecode.math.linearmodels.DesignMatrix;
-import ubic.basecode.math.linearmodels.GenericAnovaResult;
-import ubic.basecode.math.linearmodels.LeastSquaresFit;
-import ubic.basecode.math.linearmodels.LinearModelSummary;
-import cern.colt.list.DoubleArrayList;
-import cern.colt.matrix.DoubleMatrix1D;
-import cern.colt.matrix.DoubleMatrix2D;
-import cern.colt.matrix.impl.DenseDoubleMatrix2D;
-import cern.colt.matrix.linalg.Algebra;
-import cern.jet.math.Functions;
 
 /**
  * @author paul
@@ -460,7 +461,10 @@ public class LeastSquaresFitTest {
     }
 
     /**
-     * Test data with many missing values, two factors
+     * Weighted regression test - this is not RNA-seq. See lmtests.R
+     * 
+     * Note I simplified the design here; it was unnecessarily and unrealistically complex (and not full rank), which is
+     * asking for small deviations between implementations.
      *
      * @throws Exception
      */
@@ -476,27 +480,64 @@ public class LeastSquaresFitTest {
         StringMatrix<String, String> sampleInfo = of.read( this.getClass()
                 .getResourceAsStream( "/data/lmtest3.des.txt" ) );
 
-        DesignMatrix d = new DesignMatrix( sampleInfo, true );
+        // Only use the first three factors.
+        DesignMatrix d = new DesignMatrix( sampleInfo.subset( 0, 0, sampleInfo.rows(), 3 ), true );
 
-        // Coefficients not estimable: y$fact.8095fv_60796
-        // fit$rank < ncol(design)
         MeanVarianceEstimator est = new MeanVarianceEstimator( d, testMatrix, librarySize );
         DoubleMatrix2D w2D = est.getWeights();
-        LeastSquaresFit fit = new LeastSquaresFit( d.getDoubleMatrix(), est.getNormalizedValue(), w2D );
+
+        /*
+         * Sanity check that the data are the same as voom at this point
+         */
+        assertArrayEquals( est.getNormalizedValue().viewRow( 0 ).toArray(),
+                new double[] { 13.22800, 13.54942, 13.54428, 13.52836, 13.52976, 13.12780, 13.66840, 13.17538, 13.03166, 13.33140, 13.46173, 13.55641,
+                        13.29646, 13.25665 },
+                0.0001 );
+
+        /*
+         * Sanity check: without using weights.
+         */
+        LeastSquaresFit fitNoWeights = new LeastSquaresFit( d.getDoubleMatrix(), est.getNormalizedValue() ); // 
+        double[][] expectedWithoutUsingWeights = new double[][] {
+                { 13.4228, 0.0191908, -0.172757F } }; // , -0.109882, -0.143722, 0.0735711, Double.NaN, 0.221183, 0.0513939 
+        assertArrayEquals( expectedWithoutUsingWeights[0], fitNoWeights.getCoefficients().viewDice().toArray()[0], 0.00001 );
+
+        // Save weights for testing in R - ours are slighly different
+        //        DenseDoubleMatrix wwwww = new DenseDoubleMatrix<>( w2D.toArray() );
+        //        wwwww.setRowNames( testMatrix.getRowNames() );
+        //        wwwww.setColumnNames( testMatrix.getColNames() );
+        //        DecimalFormat formatter = ( DecimalFormat ) NumberFormat.getNumberInstance( Locale.US );
+        //        formatter.applyPattern( "0.00000000" );
+        //        MatrixWriter w = new MatrixWriter( "lmtest3.weights.txt", formatter );
+        //        w.writeMatrix( wwwww, true );
+
+        LeastSquaresFit fit = new LeastSquaresFit( d.getDoubleMatrix(), est.getNormalizedValue(), w2D ); // 
         DoubleMatrix2D actuals = fit.getCoefficients().viewDice();
 
-        // note: column 5 has 0's and 1's reversed compared to des.txt!
-        // so signs in column five from R's output have been reversed
+        /*
+         * Using our own weights doesn't change the results enough to match R lmw, but this test is based on our
+         * weights.
+         */
+
         int[] expectedIndices = new int[] { 0, 40, 80 };
         double[][] expected = new double[][] {
-                { 13.32, 0.1264, -0.1402, -0.1102, -0.1437, -0.07242, Double.NaN, 0.2211, 0.05124 },
-                { 13.08, 0.2029, 0.1464, 0.03702, 0.342, -0.09954, Double.NaN, 0.02198, 0.1536 },
-                { 13.4, 0.1718, 0.1385, 0.1185, -0.273, 0.0379, Double.NaN, -0.004468, 0.04201 } };
+                { 13.42296, 0.01970705, -0.16537498 },
+                { 13.15461, 0.12369928, 0.15955013 },
+                { 13.43850, 0.13351003, 0.02596311 } };
 
-        // FIXME why is precision here so low? ***Fails with delta = 0.01***
+        /* Here are the values we get using the weights as computed by voom */
+
+        /*
+         * X.Intercept. des2.fact.2125fv_17617 des2.fact.2125fv_17618
+         * A01157cds_s_at 13.42295 0.01970222 -0.16533082
+         * AA933181_at 13.15461 0.12370817 0.15953122
+         * AB003091_at 13.43851 0.13373402 0.02587323
+         */
+
         for ( int i = 0; i < expectedIndices.length; i++ ) {
-            assertArrayEquals( expected[i], actuals.viewRow( expectedIndices[i] ).toArray(), 0.1 );
+            assertArrayEquals( expected[i], actuals.viewRow( expectedIndices[i] ).toArray(), 0.0001 );
         }
+
     }
 
     /**
@@ -515,6 +556,10 @@ public class LeastSquaresFitTest {
         Algebra solver = new Algebra();
         des = solver.transpose( des );
         LeastSquaresFit fit = new LeastSquaresFit( des, dat, w );
+
+        /*
+         * TODO R code please
+         */
 
         // FIXME why is precision of these tests so low? It was 0.1! I changed it to 0.001
 

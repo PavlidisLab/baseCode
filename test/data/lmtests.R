@@ -342,17 +342,30 @@ fit$fitted.values
 # LeastSquaresFitTest.testMatrixWeightedMeanVariance
 library(limma)
 x<-read.csv(header=T,row.names=1,'lmtest2.dat.txt',sep='\t')
-design<-read.csv(header=T,row.names=1,'lmtest3.des.txt',sep='\t')
+design<-read.csv(header=T,row.names=1,'lmtest3.des.txt',sep='\t')[,1:3]
 design<-as.matrix(design)
 elist<-voom(x,design=design)
+voomweights<-elist$weights
 # these three calls should be similar
 fit<-lmFit(elist$E,design=design,weights=elist$weights)
 fitRow1<-lm.wfit(x=design,y=elist$E[1,],w=elist$weights[1,])
 q<-qr(design*sqrt(elist$weights[1,]))
-signif(coefficients(fit)[c(1,41,81),], 4)
-signif(coefficients(fitRow1), 4)
-signif(qr.coef(q,elist$E[1,]*sqrt(elist$weights[1,])),4)
 
+signif(coefficients(fit)[c(1,41,81),], 6)
+signif(coefficients(fitRow1), 6)
+signif(qr.coef(q,elist$E[1,]*sqrt(elist$weights[1,])), 6)
+# Our code gives *slightly* different weights (different lowess impl etc) but this makes little diff
+ourweights<-read.csv(header=T, row.names=1, 'lmtest3.weights.txt', sep='\t')
+elist$weights = as.matrix(ourweights)
+fit<-lmFit(elist$E,design=design,weights=elist$weights)
+signif(coefficients(fit)[c(1,41,81),], 6)
+
+# Sanity check: Instead try without weights to see where the root of the problem is (but data is normalized as per voom)
+fit<-lmFit(elist$E,design=design)
+signif(coefficients(fit)[c(1,41,81),], 6)
+
+
+##################################################
 # TestMathUtil.testApprox()
 k<-approxfun(x=c(9:0),y=1/c(1:10)^2, rule=2)
 k(c(9:0)+0.5)

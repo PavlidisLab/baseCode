@@ -57,7 +57,7 @@ import ubic.basecode.math.linalg.QRDecomposition;
 public class MeanVarianceEstimator {
 
     /**
-     * Default loess span (Note: this was set to 0.5; 0.3 is more reasonable)
+     * Default loess span (This is the default value used by limma-voom)
      */
     public static final double BANDWIDTH = 0.5;
 
