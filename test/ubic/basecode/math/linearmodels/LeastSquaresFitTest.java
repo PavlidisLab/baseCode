@@ -470,7 +470,7 @@ public class LeastSquaresFitTest {
         DoubleMatrix<String, String> testMatrix = f
                 .read( this.getClass().getResourceAsStream( "/data/lmtest2.dat.txt" ) );
         DoubleMatrix1D librarySize = MatrixStats.colSums( testMatrix );
-        MatrixStats.convertToLog2Cpm( testMatrix, librarySize );
+        testMatrix = MatrixStats.convertToLog2Cpm( testMatrix, librarySize );
 
         StringMatrixReader of = new StringMatrixReader();
         StringMatrix<String, String> sampleInfo = of.read( this.getClass()
@@ -1136,7 +1136,7 @@ public class LeastSquaresFitTest {
         DoubleMatrix<String, String> testMatrix = f.read( this.getClass().getResourceAsStream(
                 "/data/example.madata.withmissing.small.txt" ) );
         DoubleMatrix1D libSize = MatrixStats.colSums( testMatrix );
-        MatrixStats.convertToLog2Cpm( testMatrix, libSize );
+        testMatrix = MatrixStats.convertToLog2Cpm( testMatrix, libSize );
 
         StringMatrixReader of = new StringMatrixReader();
         StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
@@ -1198,7 +1198,7 @@ public class LeastSquaresFitTest {
         // fit3$sigma[1]
         assertEquals( 0.34927, sums.get( 0 ).getSigma(), 0.0001 );
         assertEquals( 1.3859, sums.get( 0 ).getPriorDof(), 0.01 );
-        
+
         /*
          * TODO: add more tests here.
          */

@@ -81,7 +81,7 @@ public class MeanVarianceEstimatorTest {
         DoubleMatrix<String, String> duplMatrix = new DenseDoubleMatrix<>( testMatrix.asDoubles() );
         duplMatrix.viewRow( 1 ).assign( duplMatrix.viewRow( 0 ) );
         DoubleMatrix1D libSize = MatrixStats.colSums( duplMatrix );
-        MatrixStats.convertToLog2Cpm( duplMatrix, libSize );
+        duplMatrix = MatrixStats.convertToLog2Cpm( duplMatrix, libSize );
 
         DesignMatrix d = new DesignMatrix( sampleInfo, true );
         MeanVarianceEstimator est = new MeanVarianceEstimator( d, duplMatrix, libSize );
@@ -108,7 +108,7 @@ public class MeanVarianceEstimatorTest {
         DoubleMatrix<String, String> testMatrix = f.read( this.getClass()
                 .getResourceAsStream( "/data/lmtest11.dat.txt" ) );
         DoubleMatrix1D libSize = MatrixStats.colSums( testMatrix );
-        MatrixStats.convertToLog2Cpm( testMatrix, libSize );
+        testMatrix = MatrixStats.convertToLog2Cpm( testMatrix, libSize );
 
         StringMatrixReader of = new StringMatrixReader();
         StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
@@ -142,7 +142,7 @@ public class MeanVarianceEstimatorTest {
                 { Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN } };
         DoubleMatrix<String, String> data = new DenseDoubleMatrix<>( dataPrimitive );
         DoubleMatrix1D libSize = MatrixStats.colSums( data );
-        MatrixStats.convertToLog2Cpm( data, libSize );
+        data = MatrixStats.convertToLog2Cpm( data, libSize );
         MeanVarianceEstimator est = new MeanVarianceEstimator( new DenseDoubleMatrix2D( data.asArray() ) );
         DoubleMatrix2D actuals = null;
 
@@ -175,7 +175,7 @@ public class MeanVarianceEstimatorTest {
                 "/data/example.madata.withmissing.small.txt" ) );
         DoubleMatrix<String, String> data = new DenseDoubleMatrix<>( testMatrix.asDoubles() );
         DoubleMatrix1D libSize = MatrixStats.colSums( data );
-        MatrixStats.convertToLog2Cpm( data, libSize );
+        data = MatrixStats.convertToLog2Cpm( data, libSize );
         MeanVarianceEstimator est = new MeanVarianceEstimator( new DenseDoubleMatrix2D( data.asArray() ) );
         DoubleMatrix2D actuals = null;
 
@@ -210,7 +210,7 @@ public class MeanVarianceEstimatorTest {
         DoubleMatrix<String, String> testMatrix = f.read( this.getClass().getResourceAsStream(
                 "/data/example.madata.withmissing.small.txt" ) );
         DoubleMatrix1D libSize = MatrixStats.colSums( testMatrix );
-        MatrixStats.convertToLog2Cpm( testMatrix, libSize );
+        testMatrix = MatrixStats.convertToLog2Cpm( testMatrix, libSize );
 
         StringMatrixReader of = new StringMatrixReader();
         StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(

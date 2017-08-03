@@ -72,14 +72,16 @@ public class MatrixStats {
     }
 
     /**
-     * Convert the matrix to log2 counts per million. Equivalent to <code>t(log2(t(counts+0.5)/(lib.size+1)*1e6))</code>
-     * in R.
-     * FIXME not a good place for this method as it is RNA-seq-related.
+     * Convert a count matrix to log2 counts per million. Equivalent to
+     * <code>t(log2(t(counts+0.5)/(lib.size+1)*1e6))</code>
+     * in R. (NOTE: originally this did the operation in place)
      * 
      * @param matrix
      * @param librarySize if null, it will default to <code>colSums(matrix)</code>.
+     * @return
+     * @return transformed matrix
      */
-    public static <R, C> void convertToLog2Cpm( DoubleMatrix<R, C> matrix, DoubleMatrix1D librarySize ) {
+    public static <R, C> DoubleMatrix<R, C> convertToLog2Cpm( DoubleMatrix<R, C> matrix, DoubleMatrix1D librarySize ) {
 
         if ( librarySize == null ) {
             librarySize = new DenseDoubleMatrix1D( matrix.columns() );
@@ -87,18 +89,20 @@ public class MatrixStats {
                 librarySize.set( i, DescriptiveWithMissing.sum( new DoubleArrayList( matrix.getColumn( i ) ) ) );
             }
         }
+        DoubleMatrix<R, C> newmatrix = matrix.copy();
+        assert librarySize.size() == newmatrix.columns();
 
-        assert librarySize.size() == matrix.columns();
-
-        for ( int j = 0; j < matrix.rows(); j++ ) {
-            DoubleMatrix1D row = matrix.viewRow( j );
+        for ( int j = 0; j < newmatrix.rows(); j++ ) {
+            DoubleMatrix1D row = newmatrix.viewRow( j );
             for ( int i = 0; i < row.size(); i++ ) {
-                double val = matrix.get( j, i );
+                double val = newmatrix.get( j, i );
                 val = ( val + 0.5 ) / ( librarySize.get( i ) + 1.0 ) * Math.pow( 10, 6 );
                 val = Math.log( val ) / Math.log( 2.0 );
-                matrix.set( j, i, val );
+                newmatrix.set( j, i, val );
             }
         }
+
+        return newmatrix;
     }
 
     /**
