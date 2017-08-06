@@ -280,8 +280,8 @@ public class LeastSquaresFitTest {
         assertEquals( 0.682, s.getContrastCoefficients().get( 1, 3 ), 0.001 ); // pvalue.
 
         Double[] effects = s.getEffects();
-        assertEquals( -11.58333, effects[0], 0.0001 );
-        assertEquals( 0.04999, effects[1], 0.0001 );
+        assertEquals( -11.58333, effects[0], 0.0001 ); // hm.
+        assertEquals( 0.04999, effects[1], 0.0001 ); //hm
 
         Double[] stdevUnscaled = s.getStdevUnscaled(); //
         assertEquals( 0.5, stdevUnscaled[0], 0.0001 );
@@ -291,6 +291,8 @@ public class LeastSquaresFitTest {
         assertEquals( 0.11673841331, sigma, 0.0001 );
 
         s = sums.get( "232018_at" );
+        assertEquals( -18.9866667, s.getEffects()[0], 0.0001 ); // hm.
+        assertEquals( 0.1714319, s.getEffects()[1], 0.0001 ); //hm
         assertEquals( 0.07879, s.getF(), 0.01 );
         assertEquals( 0.787, s.getP(), 0.001 );
         assertEquals( 6.2650, s.getContrastCoefficients().get( 0, 0 ), 0.001 );
@@ -456,86 +458,6 @@ public class LeastSquaresFitTest {
                 -0.01706794, -0.05318259, -0.56926585, -0.35107932 };
         for ( int i = 0; i < 9; i++ ) {
             assertEquals( expectedStudentizedResiduals[i], studentizedResiduals.viewRow( 0 ).get( i ), 0.001 );
-        }
-
-    }
-
-    /**
-     * Weighted regression test - this is not RNA-seq. See lmtests.R
-     * 
-     * Note I simplified the design here; it was unnecessarily and unrealistically complex (and not full rank), which is
-     * asking for small deviations between implementations.
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testMatrixWeightedMeanVariance() throws Exception {
-        DoubleMatrixReader f = new DoubleMatrixReader();
-        DoubleMatrix<String, String> testMatrix = f
-                .read( this.getClass().getResourceAsStream( "/data/lmtest2.dat.txt" ) );
-        DoubleMatrix1D librarySize = MatrixStats.colSums( testMatrix );
-        testMatrix = MatrixStats.convertToLog2Cpm( testMatrix, librarySize );
-
-        StringMatrixReader of = new StringMatrixReader();
-        StringMatrix<String, String> sampleInfo = of.read( this.getClass()
-                .getResourceAsStream( "/data/lmtest3.des.txt" ) );
-
-        // Only use the first three factors.
-        DesignMatrix d = new DesignMatrix( sampleInfo.subset( 0, 0, sampleInfo.rows(), 3 ), true );
-
-        MeanVarianceEstimator est = new MeanVarianceEstimator( d, testMatrix, librarySize );
-        DoubleMatrix2D w2D = est.getWeights();
-
-        /*
-         * Sanity check that the data are the same as voom at this point
-         */
-        assertArrayEquals( est.getNormalizedValue().viewRow( 0 ).toArray(),
-                new double[] { 13.22800, 13.54942, 13.54428, 13.52836, 13.52976, 13.12780, 13.66840, 13.17538, 13.03166, 13.33140, 13.46173, 13.55641,
-                        13.29646, 13.25665 },
-                0.0001 );
-
-        /*
-         * Sanity check: without using weights.
-         */
-        LeastSquaresFit fitNoWeights = new LeastSquaresFit( d.getDoubleMatrix(), est.getNormalizedValue() ); // 
-        double[][] expectedWithoutUsingWeights = new double[][] {
-                { 13.4228, 0.0191908, -0.172757F } }; // , -0.109882, -0.143722, 0.0735711, Double.NaN, 0.221183, 0.0513939 
-        assertArrayEquals( expectedWithoutUsingWeights[0], fitNoWeights.getCoefficients().viewDice().toArray()[0], 0.00001 );
-
-        // Save weights for testing in R - ours are slighly different
-        //        DenseDoubleMatrix wwwww = new DenseDoubleMatrix<>( w2D.toArray() );
-        //        wwwww.setRowNames( testMatrix.getRowNames() );
-        //        wwwww.setColumnNames( testMatrix.getColNames() );
-        //        DecimalFormat formatter = ( DecimalFormat ) NumberFormat.getNumberInstance( Locale.US );
-        //        formatter.applyPattern( "0.00000000" );
-        //        MatrixWriter w = new MatrixWriter( "lmtest3.weights.txt", formatter );
-        //        w.writeMatrix( wwwww, true );
-
-        LeastSquaresFit fit = new LeastSquaresFit( d.getDoubleMatrix(), est.getNormalizedValue(), w2D ); // 
-        DoubleMatrix2D actuals = fit.getCoefficients().viewDice();
-
-        /*
-         * Using our own weights doesn't change the results enough to match R lmw, but this test is based on our
-         * weights.
-         */
-
-        int[] expectedIndices = new int[] { 0, 40, 80 };
-        double[][] expected = new double[][] {
-                { 13.42296, 0.01970705, -0.16537498 },
-                { 13.15461, 0.12369928, 0.15955013 },
-                { 13.43850, 0.13351003, 0.02596311 } };
-
-        /* Here are the values we get using the weights as computed by voom */
-
-        /*
-         * X.Intercept. des2.fact.2125fv_17617 des2.fact.2125fv_17618
-         * A01157cds_s_at 13.42295 0.01970222 -0.16533082
-         * AA933181_at 13.15461 0.12370817 0.15953122
-         * AB003091_at 13.43851 0.13373402 0.02587323
-         */
-
-        for ( int i = 0; i < expectedIndices.length; i++ ) {
-            assertArrayEquals( expected[i], actuals.viewRow( expectedIndices[i] ).toArray(), 0.0001 );
         }
 
     }

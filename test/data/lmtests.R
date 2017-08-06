@@ -15,6 +15,13 @@ V<-factor(saminfo$Treat)
 B<-factor(saminfo$Batch)
 G<-factor(saminfo$Geno)
 
+# testLSFTwoLevels
+a<-lm(t(dat["1553129_at",]) ~ saminfo$Visit )
+effects(a)
+summary(a)
+anova(a)
+a<-lm(t(dat["232018_at",]) ~ saminfo$Visit )
+effects(a)
 # t-test
 object<- lm(t(dat[1,]) ~  + factor(des[,"Type"]))
 summary(object)
@@ -70,7 +77,6 @@ anova(object)
 
 # with missing values
 datm<-read.delim("example.madata.withmissing.small.txt", row.names=1  )
-
 # testLSFOneContinuousWithMissing3#
 object<-lm(t(datm[1,]) ~ saminfo$Value) 
 summary(object)
@@ -100,6 +106,11 @@ summary(object)
 anova(object)
 object$fitted
 anova(object)
+
+# For weighted version:
+library(limma)
+datm<-read.delim("example.madata.withmissing.small.txt", row.names=1  )
+voom(datm, model.matrix(saminfo)  ,lib.size=colSums(d))
 
 
 
@@ -339,31 +350,6 @@ coefficients(fit)
 residuals(fit)
 fit$fitted.values
 
-# LeastSquaresFitTest.testMatrixWeightedMeanVariance
-library(limma)
-x<-read.csv(header=T,row.names=1,'lmtest2.dat.txt',sep='\t')
-design<-read.csv(header=T,row.names=1,'lmtest3.des.txt',sep='\t')[,1:3]
-design<-as.matrix(design)
-elist<-voom(x,design=design)
-voomweights<-elist$weights
-# these three calls should be similar
-fit<-lmFit(elist$E,design=design,weights=elist$weights)
-fitRow1<-lm.wfit(x=design,y=elist$E[1,],w=elist$weights[1,])
-q<-qr(design*sqrt(elist$weights[1,]))
-
-signif(coefficients(fit)[c(1,41,81),], 6)
-signif(coefficients(fitRow1), 6)
-signif(qr.coef(q,elist$E[1,]*sqrt(elist$weights[1,])), 6)
-# Our code gives *slightly* different weights (different lowess impl etc) but this makes little diff
-ourweights<-read.csv(header=T, row.names=1, 'lmtest3.weights.txt', sep='\t')
-elist$weights = as.matrix(ourweights)
-fit<-lmFit(elist$E,design=design,weights=elist$weights)
-signif(coefficients(fit)[c(1,41,81),], 6)
-
-# Sanity check: Instead try without weights to see where the root of the problem is (but data is normalized as per voom)
-fit<-lmFit(elist$E,design=design)
-signif(coefficients(fit)[c(1,41,81),], 6)
-
 
 ##################################################
 # TestMathUtil.testApprox()
@@ -422,4 +408,3 @@ d<-data.frame(x=(rowMeans(x,na.rm=T)), y=(apply(x,1,stdVar)))
 l<-lowess(x=d$x, y=d$y, f=0.5, iter=3) # lowess doesn't handle missing values
 plot(x=d$x, y=d$y, pch=21, bg='black')
 lines(x=l$x, y=l$y, col='red')
-

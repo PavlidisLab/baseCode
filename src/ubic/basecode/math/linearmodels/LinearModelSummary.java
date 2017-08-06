@@ -99,10 +99,6 @@ public class LinearModelSummary implements Serializable {
 
     private Double sigma = null;
 
-    /**
-     * Unscaled standard deviations for the coefficient estimators in same order as coefficients. The standard errors
-     * are given by stdev.unscaled * sigma (a la limma)
-     */
     private Double[] stdevUnscaled;
 
     private Map<String, Collection<String>> term2CoefficientNames = new HashMap<>();
@@ -492,10 +488,19 @@ public class LinearModelSummary implements Serializable {
         return rSquared;
     }
 
+    /**
+     * Residual standard deviation
+     * 
+     * @return
+     */
     public Double getSigma() {
         return sigma;
     }
 
+    /**
+     * Unscaled standard deviations for the coefficient estimators in same order as coefficients. The standard errors
+     * are given by stdev.unscaled * sigma (a la limma)
+     */
     public Double[] getStdevUnscaled() {
         return stdevUnscaled;
     }

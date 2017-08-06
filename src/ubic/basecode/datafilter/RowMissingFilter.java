@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2006 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,15 +21,14 @@ package ubic.basecode.datafilter;
 import java.util.List;
 import java.util.Vector;
 
+import cern.colt.list.IntArrayList;
 import ubic.basecode.dataStructure.matrix.Matrix2D;
 import ubic.basecode.dataStructure.matrix.MatrixUtil;
-import cern.colt.list.IntArrayList;
 
 /**
  * Remove rows from a matrix that are missing too many points.
- * 
+ *
  * @author Paul Pavlidis
- * @version $Id$
  */
 public class RowMissingFilter<M extends Matrix2D<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
 
@@ -42,8 +41,8 @@ public class RowMissingFilter<M extends Matrix2D<R, C, V>, R, C, V> extends Abst
 
     @Override
     public M filter( M data ) {
-        List<V[]> MTemp = new Vector<V[]>();
-        List<R> rowNames = new Vector<R>();
+        List<V[]> MTemp = new Vector<>();
+        List<R> rowNames = new Vector<>();
         int numRows = data.rows();
         int numCols = data.columns();
         IntArrayList present = new IntArrayList( numRows );
@@ -117,8 +116,9 @@ public class RowMissingFilter<M extends Matrix2D<R, C, V>, R, C, V> extends Abst
         returnval.setColumnNames( data.getColNames() );
         returnval.setRowNames( rowNames );
 
-        log.info( "There are " + kept + " rows after removing rows which have fewer than " + minPresentCount
-                + " values (or fewer than " + ABSOLUTEMINPRESENT + ")" );
+        if ( kept < numRows )
+            log.info( "There are " + kept + " rows after removing rows which have fewer than " + Math.max( ABSOLUTEMINPRESENT, minPresentCount )
+                    + " values" );
 
         return returnval;
 
@@ -127,7 +127,7 @@ public class RowMissingFilter<M extends Matrix2D<R, C, V>, R, C, V> extends Abst
     /**
      * Set the maximum fraction of rows which will be removed from the data set. The default value is 0.3 Set it to 1.0
      * to remove this restriction.
-     * 
+     *
      * @param f double
      */
     public void setMaxFractionRemoved( double f ) {
@@ -140,7 +140,7 @@ public class RowMissingFilter<M extends Matrix2D<R, C, V>, R, C, V> extends Abst
      * Set the minimum number of values that must be present in each row. The default value is 5. This is always
      * overridden by a hard-coded value (currently 2) that must be present for a row to be kept; but this value is in
      * turn overridden by the maxfractionRemoved.
-     * 
+     *
      * @param m int
      */
     public void setMinPresentCount( int m ) {
