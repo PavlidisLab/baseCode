@@ -265,4 +265,12 @@ public class QRDecompositionTest {
         }
 
     }
+
+    @Test
+    public void test3() {
+
+        QRDecomposition qr = new QRDecomposition( new DenseDoubleMatrix2D( new double[][] { { 1, 0 }, { 1, 0 }, { 1, 1 }, { 1, 1 } } ) );
+        System.err.println( qr );
+
+    }
 }

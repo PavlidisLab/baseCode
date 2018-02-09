@@ -78,7 +78,7 @@ public class ModeratedTstatTest {
                 "/data/limmatest.fit.effects.txt" ) );
         double[] expEffects1 = expectedEffects.getRowByName( "Gene 1" );
 
-        Double[] effects = s.getEffects();
+        Double[] effects = ArrayUtils.subarray( s.getEffects(), 0, 2 );
         assertArrayEquals( ArrayUtils.subarray( expEffects1, 0, 2 ), ArrayUtils.toPrimitive( effects ), 1e-7 );
 
         Double[] stdevUnscaled = s.getStdevUnscaled(); //

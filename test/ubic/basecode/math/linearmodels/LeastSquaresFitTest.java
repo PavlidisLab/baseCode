@@ -20,13 +20,23 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.math3.distribution.FDistribution;
 import org.junit.Test;
 
+import cern.colt.list.DoubleArrayList;
+import cern.colt.matrix.DoubleMatrix1D;
+import cern.colt.matrix.DoubleMatrix2D;
+import cern.colt.matrix.impl.DenseDoubleMatrix2D;
+import cern.colt.matrix.linalg.Algebra;
+import cern.jet.math.Functions;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix1D;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrix;
@@ -34,18 +44,9 @@ import ubic.basecode.dataStructure.matrix.ObjectMatrixImpl;
 import ubic.basecode.dataStructure.matrix.StringMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.io.reader.StringMatrixReader;
+import ubic.basecode.io.writer.MatrixWriter;
 import ubic.basecode.math.DescriptiveWithMissing;
 import ubic.basecode.math.MatrixStats;
-import ubic.basecode.math.linearmodels.DesignMatrix;
-import ubic.basecode.math.linearmodels.GenericAnovaResult;
-import ubic.basecode.math.linearmodels.LeastSquaresFit;
-import ubic.basecode.math.linearmodels.LinearModelSummary;
-import cern.colt.list.DoubleArrayList;
-import cern.colt.matrix.DoubleMatrix1D;
-import cern.colt.matrix.DoubleMatrix2D;
-import cern.colt.matrix.impl.DenseDoubleMatrix2D;
-import cern.colt.matrix.linalg.Algebra;
-import cern.jet.math.Functions;
 
 /**
  * @author paul
@@ -279,8 +280,8 @@ public class LeastSquaresFitTest {
         assertEquals( 0.682, s.getContrastCoefficients().get( 1, 3 ), 0.001 ); // pvalue.
 
         Double[] effects = s.getEffects();
-        assertEquals( -11.58333, effects[0], 0.0001 );
-        assertEquals( 0.04999, effects[1], 0.0001 );
+        assertEquals( -11.58333, effects[0], 0.0001 ); // hm.
+        assertEquals( 0.04999, effects[1], 0.0001 ); //hm
 
         Double[] stdevUnscaled = s.getStdevUnscaled(); //
         assertEquals( 0.5, stdevUnscaled[0], 0.0001 );
@@ -290,6 +291,8 @@ public class LeastSquaresFitTest {
         assertEquals( 0.11673841331, sigma, 0.0001 );
 
         s = sums.get( "232018_at" );
+        assertEquals( -18.9866667, s.getEffects()[0], 0.0001 ); // hm.
+        assertEquals( 0.1714319, s.getEffects()[1], 0.0001 ); //hm
         assertEquals( 0.07879, s.getF(), 0.01 );
         assertEquals( 0.787, s.getP(), 0.001 );
         assertEquals( 6.2650, s.getContrastCoefficients().get( 0, 0 ), 0.001 );
@@ -460,46 +463,6 @@ public class LeastSquaresFitTest {
     }
 
     /**
-     * Test data with many missing values, two factors
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testMatrixWeightedMeanVariance() throws Exception {
-        DoubleMatrixReader f = new DoubleMatrixReader();
-        DoubleMatrix<String, String> testMatrix = f
-                .read( this.getClass().getResourceAsStream( "/data/lmtest2.dat.txt" ) );
-        DoubleMatrix1D librarySize = MatrixStats.colSums( testMatrix );
-        testMatrix = MatrixStats.convertToLog2Cpm( testMatrix, librarySize );
-
-        StringMatrixReader of = new StringMatrixReader();
-        StringMatrix<String, String> sampleInfo = of.read( this.getClass()
-                .getResourceAsStream( "/data/lmtest3.des.txt" ) );
-
-        DesignMatrix d = new DesignMatrix( sampleInfo, true );
-
-        // Coefficients not estimable: y$fact.8095fv_60796
-        // fit$rank < ncol(design)
-        MeanVarianceEstimator est = new MeanVarianceEstimator( d, testMatrix, librarySize );
-        DoubleMatrix2D w2D = est.getWeights();
-        LeastSquaresFit fit = new LeastSquaresFit( d.getDoubleMatrix(), est.getNormalizedValue(), w2D );
-        DoubleMatrix2D actuals = fit.getCoefficients().viewDice();
-
-        // note: column 5 has 0's and 1's reversed compared to des.txt!
-        // so signs in column five from R's output have been reversed
-        int[] expectedIndices = new int[] { 0, 40, 80 };
-        double[][] expected = new double[][] {
-                { 13.32, 0.1264, -0.1402, -0.1102, -0.1437, -0.07242, Double.NaN, 0.2211, 0.05124 },
-                { 13.08, 0.2029, 0.1464, 0.03702, 0.342, -0.09954, Double.NaN, 0.02198, 0.1536 },
-                { 13.4, 0.1718, 0.1385, 0.1185, -0.273, 0.0379, Double.NaN, -0.004468, 0.04201 } };
-
-        // FIXME why is precision here so low? ***Fails with delta = 0.01***
-        for ( int i = 0; i < expectedIndices.length; i++ ) {
-            assertArrayEquals( expected[i], actuals.viewRow( expectedIndices[i] ).toArray(), 0.1 );
-        }
-    }
-
-    /**
      * Weighted least squares test for 2D matrices
      *
      * @throws Exception
@@ -515,6 +478,10 @@ public class LeastSquaresFitTest {
         Algebra solver = new Algebra();
         des = solver.transpose( des );
         LeastSquaresFit fit = new LeastSquaresFit( des, dat, w );
+
+        /*
+         * TODO R code please
+         */
 
         // FIXME why is precision of these tests so low? It was 0.1! I changed it to 0.001
 

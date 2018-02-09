@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cern.colt.bitvector.BitVector;
+import cern.colt.function.DoubleDoubleFunction;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
@@ -127,11 +128,17 @@ public class LeastSquaresFit {
     private QRDecomposition qr = null;
 
     /**
-     * Used if we have missing values so QR might be different for each row (possible optimization to consider: only
-     * store set of variants that are actually used). The key is the bitvector representing the values present. DO NOT
+     * Used if we have missing values so QR might be different for each row. The key
+     * is the bitvector representing the values present. DO NOT
      * ACCESS DIRECTLY, use the getQR methods.
      */
     private Map<BitVector, QRDecomposition> qrs = new HashMap<>();
+
+    /**
+     * Used if we are using weighted regresion, so QR is different for each row. DO NOT
+     * ACCESS DIRECTLY, use the getQR methods.
+     */
+    private Map<Integer, QRDecomposition> qrsForWeighted = new HashMap<>();
 
     private int residualDof;
 
@@ -439,7 +446,7 @@ public class LeastSquaresFit {
     }
 
     /**
-     * @return externally studentized residuals.
+     * @return externally studentized residuals (assumes we have only one QR)
      */
     public DoubleMatrix2D getStudentizedResiduals() {
         int dof = this.residualDof - 1; // MINUS for external studentizing!!
@@ -455,7 +462,8 @@ public class LeastSquaresFit {
         /*
          * Diagnonal of the hat matrix at i (hi) is the squared norm of the ith row of Q
          */
-        DoubleMatrix2D q = qr.getQ();
+        DoubleMatrix2D q = this.getQR( 0 ).getQ();
+
         DoubleMatrix1D hatdiag = new DenseDoubleMatrix1D( residuals.columns() );
         for ( int j = 0; j < residuals.columns(); j++ ) {
             double hj = q.viewRow( j ).aggregate( Functions.plus, Functions.square );
@@ -605,11 +613,19 @@ public class LeastSquaresFit {
         /*
          * For ebayes, instead of this value (divided by rdof), we'll use the moderated sigma^2
          */
-        DoubleMatrix1D residualSumsOfSquares = MatrixUtil.multWithMissing( residuals.copy().assign( Functions.square ),
-                ones );
+        DoubleMatrix1D residualSumsOfSquares;
+
+        if ( this.weights == null ) {
+            residualSumsOfSquares = MatrixUtil.multWithMissing( residuals.copy().assign( Functions.square ),
+                    ones );
+        } else {
+            residualSumsOfSquares = MatrixUtil.multWithMissing(
+                    residuals.copy().assign( this.weights.copy().assign( Functions.sqrt ), Functions.mult ).assign( Functions.square ),
+                    ones );
+        }
 
         DoubleMatrix2D effects = null;
-        if ( this.hasMissing ) {
+        if ( this.hasMissing || this.weights != null ) {
             effects = new DenseDoubleMatrix2D( this.b.rows(), this.A.columns() );
             effects.assign( Double.NaN );
             for ( int i = 0; i < this.b.rows(); i++ ) {
@@ -627,10 +643,17 @@ public class LeastSquaresFit {
                  */
                 DoubleMatrix1D brow = b.viewRow( i );
                 DoubleMatrix1D browWithoutMissing = MatrixUtil.removeMissing( brow );
-                DoubleMatrix1D tqty = qrd.effects( browWithoutMissing );
 
-                // put values back so missingness is restored.
-                for ( int j = 0; j < tqty.size(); j++ ) {
+                DoubleMatrix1D tqty;
+                if ( weights != null ) {
+                    DoubleMatrix1D bw = browWithoutMissing.copy().assign( this.weights.copy().viewRow( i ).assign( Functions.sqrt ), Functions.mult );
+                    tqty = qrd.effects( bw );
+                } else {
+                    tqty = qrd.effects( browWithoutMissing );
+                }
+
+                // view just part we need; put values back so missingness is restored.
+                for ( int j = 0; j < qrd.getRank(); j++ ) {
                     effects.set( i, j, tqty.get( j ) );
                 }
             }
@@ -641,7 +664,7 @@ public class LeastSquaresFit {
         }
 
         /* this is t(Qfty), the effects associated with the parameters only! We already have the residuals. */
-        effects.assign( Functions.square );
+        effects.assign( Functions.square ); // because we're going to compute sums of squares.
 
         /*
          * Add up the ssr for the columns within each factor.
@@ -780,8 +803,20 @@ public class LeastSquaresFit {
         if ( rdf == 0 ) {
             return new LinearModelSummary( key );
         }
+
         DoubleMatrix1D resid = MatrixUtil.removeMissing( this.residuals.viewRow( i ) );
         DoubleMatrix1D f = MatrixUtil.removeMissing( fitted.viewRow( i ) );
+
+        DoubleMatrix1D rweights = null;
+        DoubleMatrix1D sqrtweights = null;
+        if ( this.weights != null ) {
+            rweights = this.weights.viewRow( i ).copy();
+            sqrtweights = rweights.copy().assign( Functions.sqrt );
+        } else {
+            rweights = new DenseDoubleMatrix1D( f.size() ).assign( 1.0 );
+            sqrtweights = rweights.copy();
+        }
+
         DoubleMatrix1D allCoef = coefficients.viewColumn( i ); // has NA for unestimated parameters.
         DoubleMatrix1D estCoef = MatrixUtil.removeMissing( allCoef ); // estimated parameters.
 
@@ -796,16 +831,45 @@ public class LeastSquaresFit {
         assert rdf == n - rank : "Rank was not correct, expected " + rdf + " but got Q rows=" + n + ", #Coef=" + rank
                 + diagnosis( qrd );
 
+        //        if (is.null(w)) {
+        //            mss <- if (attr(z$terms, "intercept"))
+        //                sum((f - mean(f))^2) else sum(f^2)
+        //            rss <- sum(r^2)
+        //        } else {
+        //            mss <- if (attr(z$terms, "intercept")) {
+        //                m <- sum(w * f /sum(w))
+        //                sum(w * (f - m)^2)
+        //            } else sum(w * f^2)
+        //            rss <- sum(w * r^2)
+        //            r <- sqrt(w) * r
+        //        }
         double mss;
-        if ( hasIntercept ) {
-            mss = f.copy().assign( Functions.minus( Descriptive.mean( new DoubleArrayList( f.toArray() ) ) ) )
-                    .assign( Functions.square ).aggregate( Functions.plus, Functions.identity );
+        if ( weights != null ) {
+            if ( hasIntercept ) {
+                //  m <- sum(w * f /sum(w))  
+                double m = f.copy().assign( Functions.div( rweights.zSum() ) ).assign( rweights, Functions.mult ).zSum();
+
+                mss = f.copy().assign( Functions.minus( m ) ).assign( Functions.square ).assign( rweights, Functions.mult ).zSum();
+            } else {
+                mss = f.copy().assign( Functions.square ).assign( rweights, Functions.mult ).zSum();
+            }
         } else {
-            mss = f.copy().assign( Functions.square ).aggregate( Functions.plus, Functions.identity );
+            if ( hasIntercept ) {
+                mss = f.copy().assign( Functions.minus( Descriptive.mean( new DoubleArrayList( f.toArray() ) ) ) )
+                        .assign( Functions.square ).zSum();
+            } else {
+                mss = f.copy().assign( Functions.square ).zSum();
+            }
         }
 
-        double rss = resid.copy().assign( Functions.square ).aggregate( Functions.plus, Functions.identity );
-        double resvar = rss / rdf;
+        if ( resid.size() != rweights.size() ) {
+            // fuck
+            throw new RuntimeException();
+        }
+        double rss = resid.copy().assign( Functions.square ).assign( rweights, Functions.mult ).zSum();
+        if ( weights != null ) resid = resid.copy().assign( sqrtweights, Functions.mult );
+
+        double resvar = rss / rdf; // sqrt of this is sigma.
 
         // matrix to hold the summary information.
         DoubleMatrix<String, String> summaryTable = DoubleMatrixFactory.dense( allCoef.size(), 4 );
@@ -815,25 +879,38 @@ public class LeastSquaresFit {
 
         // XtXi is (X'X)^-1; in R limma this is fit$cov.coefficients: "unscaled covariance matrix of the estimable coefficients"
 
-        /*
-         * 
-         * stdev.unscaled[,est] <- matrix(sqrt(diag(fit$cov.coefficients)),ngenes,fit$qr$rank,byrow = TRUE)
-         * fit$stdev.unscaled <- stdev.unscaled
-         */
         DoubleMatrix2D XtXi = qrd.chol2inv();
+
         // the diagonal has the (unscaled) variances s; NEGATIVE VALUES can occur when not of full rank...
         DoubleMatrix1D sdUnscaled = MatrixUtil.diagonal( XtXi ).assign( Functions.sqrt );
 
+        // in contrast the stdev.unscaled uses the gene-specific QR      
+        // //  stdev.unscaled[i,est] <- sqrt(diag(chol2inv(out$qr$qr,size=out$rank)))
+
         this.stdevUnscaled.put( i, sdUnscaled );
 
-        /*
-         * If we have a contrast matrix, then we would use Ct (XtX)inv C
-         * 
-         * If we have weights, we would use Ct (XtWX)inv C
-         */
         DoubleMatrix1D sdScaled = MatrixUtil
                 .removeMissing( MatrixUtil.diagonal( XtXi ).assign( Functions.mult( resvar ) )
                         .assign( Functions.sqrt ) ); // wasteful...
+
+        // AKA Qty
+
+        DoubleMatrix1D effects = qrd.effects( MatrixUtil.removeMissing( this.b.viewRow( i ) ).assign( sqrtweights, Functions.mult ) );
+
+        // sigma is the estimated sd of the parameters. In limma, fit$sigma <- sqrt(mean(fit$effects[-(1:fit$rank)]^2) 
+        // in lm.series, it's same: sigma[i] <- sqrt(mean(out$effects[-(1:out$rank)]^2))
+        // first p elements are associated with the coefficients; same as residuals (QQty) / resid dof.
+        //        double sigma = Math
+        //                .sqrt( resid.copy().assign( Functions.square ).aggregate( Functions.plus, Functions.identity )
+        //                        / ( resid.size() - rank ) );
+
+        // Based on effects
+        double sigma = Math.sqrt(
+                effects.copy().viewPart( rank, effects.size() - rank ).aggregate( Functions.plus, Functions.square ) / ( effects.size() - rank ) );
+
+        /*
+         * Finally ready to compute t-stats and finish up.
+         */
 
         DoubleMatrix1D tstats;
         TDistribution tdist;
@@ -905,7 +982,7 @@ public class LeastSquaresFit {
         if ( terms.size() > 1 || !hasIntercept ) {
             int dfint = hasIntercept ? 1 : 0;
             rsquared = mss / ( mss + rss );
-            adjRsquared = 1 - ( 1 - rsquared * ( ( n - dfint ) / ( double ) rdf ) );
+            adjRsquared = 1 - ( 1 - rsquared ) * ( ( n - dfint ) / ( double ) rdf );
 
             fstatistic = mss / ( rank - dfint ) / resvar;
 
@@ -918,15 +995,6 @@ public class LeastSquaresFit {
             rsquared = 0.0;
             adjRsquared = 0.0;
         }
-
-        // AKA Qty (first rank elements)
-        DoubleMatrix1D effects = qrd.effects( this.b.viewRow( i ) );
-
-        // sigma is the estimated sd of the parameters. In limma, fit$sigma <- sqrt(mean(fit$effects[-(1:fit$rank)]^2)
-        // first p elements are associated with the coefficients; same as residuals (QQty) / resid dof.
-        double sigma = Math
-                .sqrt( resid.copy().assign( Functions.square ).aggregate( Functions.plus, Functions.identity )
-                        / ( resid.size() - rank ) );
 
         // NOTE that not all the information stored in the summary is likely to be important/used, 
         // while other information is probably still needed.
@@ -958,13 +1026,23 @@ public class LeastSquaresFit {
     }
 
     /**
-     * Cache a QR. Only important if missing values are present, otherwise we use the "global" QR.
+     * Cache a QR. Only important if missing values are present or if using weights, otherwise we use the "global" QR.
      * 
      * @param row cannot be null; indicates the index into the datamatrix rows.
      * @param valuesPresent if null, this is taken to mean the row wasn't usable.
      * @param newQR can be null, if valuePresent is null
      */
     private void addQR( Integer row, BitVector valuesPresent, QRDecomposition newQR ) {
+
+        /*
+         * Use of weights takes precedence over missing values, in terms of how we store QRs. If we only have missing
+         * values, often we can get away with a small number of distinct QRs. With weights, we assume they are different
+         * for each data row.
+         */
+        if ( this.weights != null ) {
+            this.qrsForWeighted.put( row, newQR );
+            return;
+        }
 
         assert row != null;
 
@@ -988,7 +1066,7 @@ public class LeastSquaresFit {
                 double v = b.get( i, j );
                 if ( Double.isNaN( v ) || Double.isInfinite( v ) ) {
                     this.hasMissing = true;
-                    log.info( "Data has missing values (at row=" + (i+1) + " column=" + (j+1) );
+                    log.info( "Data has missing values (at row=" + ( i + 1 ) + " column=" + ( j + 1 ) );
                     break;
                 }
             }
@@ -1155,26 +1233,35 @@ public class LeastSquaresFit {
 
     /**
      * 
-     * @param valuesPresent
+     * @param valuesPresent - only if we have unweighted regression
      * @return appropriate cached QR, or null
      */
     private QRDecomposition getQR( BitVector valuesPresent ) {
+        assert this.weights == null;
         return qrs.get( valuesPresent );
     }
 
     /**
-     * Get the QR decomposition to use for data row given. If it has not yet been computed/cached return null
+     * Get the QR decomposition to use for data row given. If it has not yet been computed/cached return null.
      * 
      * @param row
-     * @return QR or null if the row wasn't usable. If there are no missing values, this returns the global qr.
+     * @return QR or null if the row wasn't usable. If there are no missing values and weights aren't used, this returns
+     *         the global qr. If there are only missing values, this returns the QR that matches the pattern of missing
+     *         values. If there are weights, a row-specific QR is returned.
      */
     private QRDecomposition getQR( Integer row ) {
-        if ( !this.hasMissing ) {
+        if ( !this.hasMissing && this.weights == null ) {
             return this.qr;
         }
+
+        if ( this.weights != null )
+            return qrsForWeighted.get( row );
+
+        assert this.hasMissing;
         BitVector key = valuesPresentMap.get( row );
         if ( key == null ) return null;
         return qrs.get( key );
+
     }
 
     /**
@@ -1308,7 +1395,10 @@ public class LeastSquaresFit {
         }
 
         QRDecomposition rqr = null;
-        if ( missing ) {
+        if ( this.weights != null ) {
+            rqr = new QRDecomposition( designWithoutMissing );
+            addQR( row, null, rqr );
+        } else if ( missing ) {
             rqr = this.getQR( bv );
             if ( rqr == null ) {
                 rqr = new QRDecomposition( designWithoutMissing );
@@ -1468,13 +1558,17 @@ public class LeastSquaresFit {
                 DoubleMatrix2D Aw = AwList.get( i );
                 DoubleMatrix2D bw2D = new DenseDoubleMatrix2D( 1, bw.size() );
                 bw2D.viewRow( 0 ).assign( bw );
-                this.qr = new QRDecomposition( Aw );
-                rawResult[i] = qr.solve( solver.transpose( bw2D ) ).viewColumn( 0 ).toArray();
-                this.residualDof = bw.size() - qr.getRank();
+                QRDecomposition wqr = new QRDecomposition( Aw );
+
+                // We keep all the QRs for later use.
+                this.addQR( i, null, wqr );
+
+                rawResult[i] = wqr.solve( solver.transpose( bw2D ) ).viewColumn( 0 ).toArray();
+                this.residualDof = bw.size() - wqr.getRank();
                 assert this.residualDof >= 0;
                 if ( residualDof == 0 ) {
                     throw new IllegalArgumentException( "No residual degrees of freedom to fit the model"
-                            + diagnosis( qr ) );
+                            + diagnosis( wqr ) );
                 }
             }
         }
