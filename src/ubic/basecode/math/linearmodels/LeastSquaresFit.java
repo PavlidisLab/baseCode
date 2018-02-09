@@ -446,7 +446,7 @@ public class LeastSquaresFit {
     }
 
     /**
-     * @return externally studentized residuals.
+     * @return externally studentized residuals (assumes we have only one QR)
      */
     public DoubleMatrix2D getStudentizedResiduals() {
         int dof = this.residualDof - 1; // MINUS for external studentizing!!
@@ -462,7 +462,8 @@ public class LeastSquaresFit {
         /*
          * Diagnonal of the hat matrix at i (hi) is the squared norm of the ith row of Q
          */
-        DoubleMatrix2D q = qr.getQ();
+        DoubleMatrix2D q = this.getQR( 0 ).getQ();
+
         DoubleMatrix1D hatdiag = new DenseDoubleMatrix1D( residuals.columns() );
         for ( int j = 0; j < residuals.columns(); j++ ) {
             double hj = q.viewRow( j ).aggregate( Functions.plus, Functions.square );

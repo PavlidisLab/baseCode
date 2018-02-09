@@ -154,7 +154,7 @@ public class RandomChooser {
     }
 
     /**
-     * Initialized the random number generator witha given seed.
+     * Initialized the random number generator with a given seed.
      * 
      * @param seed
      */
