@@ -35,7 +35,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * Used to limit which parts of ontologies get indexed for searching. This avoids indexing some parts of ontologies such
  * as "examples" and "definitions" but this is set up in a partly ontology-specific way (that is, hard-coded).
  * 
- * @author paul
+ * @author  paul
  * @version $Id$
  */
 public class IndexerSelector implements Selector {
@@ -44,7 +44,9 @@ public class IndexerSelector implements Selector {
     private final Collection<String> unwantedForIndexing;
 
     public IndexerSelector() {
-        // these are predicates that in general should not be useful for indexing
+        // these are predicates that in general should not be useful for indexing - 
+        // they bring in extra text that can cause false positives in searches
+
         unwantedForIndexing = new HashSet<String>();
         unwantedForIndexing.add( RDFS.comment.getURI() );
         unwantedForIndexing.add( RDFS.seeAlso.getURI() );
@@ -75,6 +77,8 @@ public class IndexerSelector implements Selector {
         unwantedForIndexing.add( "http://purl.obolibrary.org/obo/IAO_0000117" ); // term editor
         unwantedForIndexing.add( "http://purl.obolibrary.org/obo/IAO_0000114" ); // curation status.
         unwantedForIndexing.add( "http://purl.obolibrary.org/obo/IAO_0000232" ); // curator note.
+
+        // NIF-specific
         unwantedForIndexing
                 .add( "http://ontology.neuinfo.org/NIF/Backend/OBO_annotation_properties.owl#externallySourcedDefinition" );
         unwantedForIndexing
@@ -82,6 +86,14 @@ public class IndexerSelector implements Selector {
 
         unwantedForIndexing
                 .add( "http://ontology.neuinfo.org/NIF/Backend/BIRNLex_annotation_properties.owl#hasBirnlexCurator" );
+
+        // added 2018 for Uberon. There may be more.
+        // to check for more use urls like https://www.ebi.ac.uk/ols/ontologies/uberon/properties?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FUBPROP_0000008
+        unwantedForIndexing.add( "http://purl.obolibrary.org/obo/UBPROP_0000003" ); // homology notes
+        unwantedForIndexing.add( "http://purl.obolibrary.org/obo/UBPROP_0000001" ); // external definition
+        unwantedForIndexing.add( "http://purl.obolibrary.org/obo/UBPROP_0000008" ); // taxon notes
+        unwantedForIndexing.add( "http://purl.obolibrary.org/obo/UBPROP_0000005" ); // external comment
+        unwantedForIndexing.add( "http://purl.obolibrary.org/obo/UBPROP_0000011" ); // development notes
 
     }
 
