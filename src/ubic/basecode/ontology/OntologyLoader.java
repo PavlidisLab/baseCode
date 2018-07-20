@@ -379,11 +379,18 @@ public class OntologyLoader {
             return null;
         }
 
+        if (!new File(ontologyDir).exists()) {
+            new File(ontologyDir).mkdirs();
+        }
+        
         assert ontologyDir != null;
 
         String path = ontologyDir + File.separator + "ontology" + File.separator + name;
 
         File indexFile = new File( path );
+        
+       
+        
         return indexFile;
     }
 
