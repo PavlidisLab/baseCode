@@ -94,6 +94,7 @@ public class IndexerSelector implements Selector {
         unwantedForIndexing.add( "http://purl.obolibrary.org/obo/UBPROP_0000008" ); // taxon notes
         unwantedForIndexing.add( "http://purl.obolibrary.org/obo/UBPROP_0000005" ); // external comment
         unwantedForIndexing.add( "http://purl.obolibrary.org/obo/UBPROP_0000011" ); // development notes
+        unwantedForIndexing.add( "http://xmlns.com/foaf/0.1/depicted_by"); // not sure how often this comes up as a problem, but it does for one case
 
     }
 
