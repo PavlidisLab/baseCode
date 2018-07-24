@@ -22,13 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import cern.colt.list.DoubleArrayList;
-import cern.colt.matrix.DoubleFactory2D;
-import cern.colt.matrix.DoubleMatrix1D;
-import cern.colt.matrix.DoubleMatrix2D;
-import cern.colt.matrix.linalg.Algebra;
-import cern.jet.math.Functions;
 import cern.jet.stat.Descriptive;
-import ubic.basecode.dataStructure.matrix.MatrixUtil;
 
 /**
  * Miscellaneous functions used for statistical analysis. Some are optimized or specialized versions of methods that can
@@ -281,7 +275,7 @@ public class Stats {
      * @return double
      */
     public static double range( DoubleArrayList data ) {
-        return Descriptive.max( data ) - Descriptive.min( data );
+        return DescriptiveWithMissing.max( data ) - DescriptiveWithMissing.min( data );
     }
 
     private Stats() { /* block instantiation */
