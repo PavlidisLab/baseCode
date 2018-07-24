@@ -868,7 +868,7 @@ public class LeastSquaresFit {
             }
         }
 
-        double rss = resid.copy().assign( Functions.square ).assign( sqrtweights, Functions.mult ).zSum();
+        double rss = resid.copy().assign( Functions.square ).assign( rweights, Functions.mult ).zSum();
         if ( weights != null ) resid = resid.copy().assign( sqrtweights, Functions.mult );
 
         double resvar = rss / rdf; // sqrt of this is sigma.
