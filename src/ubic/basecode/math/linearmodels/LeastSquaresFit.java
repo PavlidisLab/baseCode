@@ -212,7 +212,7 @@ public class LeastSquaresFit {
      *
      * @param designMatrix
      * @param data
-     * @param weights to be used in modifying the influence of the observations in data.
+     * @param weights      to be used in modifying the influence of the observations in data.
      */
     public LeastSquaresFit( DesignMatrix designMatrix, DoubleMatrix<String, String> data,
             final DoubleMatrix2D weights ) {
@@ -235,7 +235,7 @@ public class LeastSquaresFit {
      *
      * @param designMatrix
      * @param data
-     * @param weights to be used in modifying the influence of the observations in vectorB.
+     * @param weights      to be used in modifying the influence of the observations in vectorB.
      */
     public LeastSquaresFit( DesignMatrix designMatrix, DoubleMatrix2D b, final DoubleMatrix2D weights ) {
 
@@ -318,8 +318,8 @@ public class LeastSquaresFit {
     /**
      * Weighted least squares fit between two matrices
      *
-     * @param A Design
-     * @param b Data
+     * @param A       Design
+     * @param b       Data
      * @param weights to be used in modifying the influence of the observations in b. If null, will be ignored.
      */
     public LeastSquaresFit( DoubleMatrix2D A, DoubleMatrix2D b, final DoubleMatrix2D weights ) {
@@ -339,7 +339,7 @@ public class LeastSquaresFit {
 
     /**
      * @param sample information that will be converted to a design matrix; intercept term is added.
-     * @param data Data matrix
+     * @param data   Data matrix
      */
     public LeastSquaresFit( ObjectMatrix<String, String, Object> sampleInfo, DenseDoubleMatrix2D data ) {
 
@@ -379,7 +379,7 @@ public class LeastSquaresFit {
      * NamedMatrix allows easier handling of the results.
      *
      * @param sample information that will be converted to a design matrix; intercept term is added.
-     * @param b Data matrix
+     * @param b      Data matrix
      */
     public LeastSquaresFit( ObjectMatrix<String, String, Object> design, DoubleMatrix<String, String> b ) {
         this.designMatrix = new DesignMatrix( design, true );
@@ -397,7 +397,7 @@ public class LeastSquaresFit {
      * NamedMatrix allows easier handling of the results.
      *
      * @param sample information that will be converted to a design matrix; intercept term is added.
-     * @param data Data matrix
+     * @param data   Data matrix
      */
     public LeastSquaresFit( ObjectMatrix<String, String, Object> design, DoubleMatrix<String, String> data,
             boolean interactions ) {
@@ -544,7 +544,7 @@ public class LeastSquaresFit {
     }
 
     /**
-     * @param anova if true, ANOVA will be computed
+     * @param  anova if true, ANOVA will be computed
      * @return
      */
     public List<LinearModelSummary> summarize( boolean anova ) {
@@ -572,9 +572,9 @@ public class LeastSquaresFit {
     }
 
     /**
-     * @param anova perform ANOVA, otherwise only basic summarization will be done. If ebayesUpdate has been run,
-     *        variance and degrees of freedom
-     *        estimated using the limma eBayes algorithm will be used.
+     * @param  anova perform ANOVA, otherwise only basic summarization will be done. If ebayesUpdate has been run,
+     *               variance and degrees of freedom
+     *               estimated using the limma eBayes algorithm will be used.
      * @return
      */
     public Map<String, LinearModelSummary> summarizeByKeys( boolean anova ) {
@@ -646,7 +646,9 @@ public class LeastSquaresFit {
 
                 DoubleMatrix1D tqty;
                 if ( weights != null ) {
-                    DoubleMatrix1D bw = browWithoutMissing.copy().assign( this.weights.copy().viewRow( i ).assign( Functions.sqrt ), Functions.mult );
+                    DoubleMatrix1D w = MatrixUtil.removeMissing( brow, this.weights.viewRow( i ).copy().assign( Functions.sqrt ) );
+                    assert w.size() == browWithoutMissing.size();
+                    DoubleMatrix1D bw = browWithoutMissing.copy().assign( w, Functions.mult );
                     tqty = qrd.effects( bw );
                 } else {
                     tqty = qrd.effects( browWithoutMissing );
@@ -773,7 +775,7 @@ public class LeastSquaresFit {
      *
      * Does not populate the ANOVA.
      *
-     * @param i index of the fit to summarize
+     * @param  i index of the fit to summarize
      * @return
      */
     protected LinearModelSummary summarize( int i ) {
@@ -810,7 +812,7 @@ public class LeastSquaresFit {
         DoubleMatrix1D rweights = null;
         DoubleMatrix1D sqrtweights = null;
         if ( this.weights != null ) {
-            rweights = this.weights.viewRow( i ).copy();
+            rweights = MatrixUtil.removeMissing( fitted.viewRow( i ), this.weights.viewRow( i ).copy() );
             sqrtweights = rweights.copy().assign( Functions.sqrt );
         } else {
             rweights = new DenseDoubleMatrix1D( f.size() ).assign( 1.0 );
@@ -844,7 +846,9 @@ public class LeastSquaresFit {
         //            r <- sqrt(w) * r
         //        }
         double mss;
+
         if ( weights != null ) {
+
             if ( hasIntercept ) {
                 //  m <- sum(w * f /sum(w))  
                 double m = f.copy().assign( Functions.div( rweights.zSum() ) ).assign( rweights, Functions.mult ).zSum();
@@ -853,6 +857,8 @@ public class LeastSquaresFit {
             } else {
                 mss = f.copy().assign( Functions.square ).assign( rweights, Functions.mult ).zSum();
             }
+
+            assert resid.size() == rweights.size();
         } else {
             if ( hasIntercept ) {
                 mss = f.copy().assign( Functions.minus( Descriptive.mean( new DoubleArrayList( f.toArray() ) ) ) )
@@ -862,11 +868,7 @@ public class LeastSquaresFit {
             }
         }
 
-        if ( resid.size() != rweights.size() ) {
-            // fuck
-            throw new RuntimeException();
-        }
-        double rss = resid.copy().assign( Functions.square ).assign( rweights, Functions.mult ).zSum();
+        double rss = resid.copy().assign( Functions.square ).assign( sqrtweights, Functions.mult ).zSum();
         if ( weights != null ) resid = resid.copy().assign( sqrtweights, Functions.mult );
 
         double resvar = rss / rdf; // sqrt of this is sigma.
@@ -1028,9 +1030,9 @@ public class LeastSquaresFit {
     /**
      * Cache a QR. Only important if missing values are present or if using weights, otherwise we use the "global" QR.
      * 
-     * @param row cannot be null; indicates the index into the datamatrix rows.
+     * @param row           cannot be null; indicates the index into the datamatrix rows.
      * @param valuesPresent if null, this is taken to mean the row wasn't usable.
-     * @param newQR can be null, if valuePresent is null
+     * @param newQR         can be null, if valuePresent is null
      */
     private void addQR( Integer row, BitVector valuesPresent, QRDecomposition newQR ) {
 
@@ -1082,9 +1084,9 @@ public class LeastSquaresFit {
      * <p>
      * NOTE Probably slow if we have to run this often; should cache re-used values.
      *
-     * @param design
-     * @param ypsize
-     * @param droppedColumns populated by this call
+     * @param  design
+     * @param  ypsize
+     * @param  droppedColumns populated by this call
      * @return
      */
     private DoubleMatrix2D cleanDesign( final DoubleMatrix2D design, int ypsize, List<Integer> droppedColumns ) {
@@ -1138,10 +1140,10 @@ public class LeastSquaresFit {
     /**
      * ANOVA f statistics etc.
      * 
-     * @param dof raw degrees of freedom
-     * @param fStats results will be stored here
+     * @param dof         raw degrees of freedom
+     * @param fStats      results will be stored here
      * @param denominator residual sums of squares / rdof
-     * @param pvalues results will be stored here
+     * @param pvalues     results will be stored here
      */
     private void computeStats( DoubleMatrix2D dof, DoubleMatrix2D fStats, DoubleMatrix1D denominator,
             DoubleMatrix2D pvalues ) {
@@ -1201,7 +1203,7 @@ public class LeastSquaresFit {
     }
 
     /**
-     * @param qrd
+     * @param  qrd
      * @return
      */
     private String diagnosis( QRDecomposition qrd ) {
@@ -1233,8 +1235,8 @@ public class LeastSquaresFit {
 
     /**
      * 
-     * @param valuesPresent - only if we have unweighted regression
-     * @return appropriate cached QR, or null
+     * @param  valuesPresent - only if we have unweighted regression
+     * @return               appropriate cached QR, or null
      */
     private QRDecomposition getQR( BitVector valuesPresent ) {
         assert this.weights == null;
@@ -1244,10 +1246,12 @@ public class LeastSquaresFit {
     /**
      * Get the QR decomposition to use for data row given. If it has not yet been computed/cached return null.
      * 
-     * @param row
-     * @return QR or null if the row wasn't usable. If there are no missing values and weights aren't used, this returns
-     *         the global qr. If there are only missing values, this returns the QR that matches the pattern of missing
-     *         values. If there are weights, a row-specific QR is returned.
+     * @param  row
+     * @return     QR or null if the row wasn't usable. If there are no missing values and weights aren't used, this
+     *             returns
+     *             the global qr. If there are only missing values, this returns the QR that matches the pattern of
+     *             missing
+     *             values. If there are weights, a row-specific QR is returned.
      */
     private QRDecomposition getQR( Integer row ) {
         if ( !this.hasMissing && this.weights == null ) {
@@ -1324,10 +1328,10 @@ public class LeastSquaresFit {
      * 
      * Has side effect of filling in this.qrs and this.residualDofs, so run this "in order".
      *
-     * @param row
-     * @param y the data to fit. For weighted ls, you must supply y*w
-     * @param des the design matrix. For weighted ls, you must supply des*w.
-     * @return the coefficients (a.k.a. x)
+     * @param  row
+     * @param  y   the data to fit. For weighted ls, you must supply y*w
+     * @param  des the design matrix. For weighted ls, you must supply des*w.
+     * @return     the coefficients (a.k.a. x)
      */
     private DoubleMatrix1D lsfWmissing( Integer row, DoubleMatrix1D y, DoubleMatrix2D des ) {
         Algebra solver = new Algebra();
@@ -1453,10 +1457,10 @@ public class LeastSquaresFit {
     }
 
     /**
-     * @param ssq
-     * @param dof
-     * @param fStats
-     * @param pvalues
+     * @param  ssq
+     * @param  dof
+     * @param  fStats
+     * @param  pvalues
      * @return
      */
     private List<GenericAnovaResult> summarizeAnova( DoubleMatrix2D ssq, DoubleMatrix2D dof, DoubleMatrix2D fStats,
