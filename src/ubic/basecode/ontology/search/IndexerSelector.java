@@ -35,8 +35,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * Used to limit which parts of ontologies get indexed for searching. This avoids indexing some parts of ontologies such
  * as "examples" and "definitions" but this is set up in a partly ontology-specific way (that is, hard-coded).
  * 
- * @author  paul
- * @version $Id$
+ * @author paul
  */
 public class IndexerSelector implements Selector {
 
@@ -47,7 +46,7 @@ public class IndexerSelector implements Selector {
         // these are predicates that in general should not be useful for indexing - 
         // they bring in extra text that can cause false positives in searches
 
-        unwantedForIndexing = new HashSet<String>();
+        unwantedForIndexing = new HashSet<>();
         unwantedForIndexing.add( RDFS.comment.getURI() );
         unwantedForIndexing.add( RDFS.seeAlso.getURI() );
         unwantedForIndexing.add( RDFS.isDefinedBy.getURI() );
@@ -94,8 +93,9 @@ public class IndexerSelector implements Selector {
         unwantedForIndexing.add( "http://purl.obolibrary.org/obo/UBPROP_0000008" ); // taxon notes
         unwantedForIndexing.add( "http://purl.obolibrary.org/obo/UBPROP_0000005" ); // external comment
         unwantedForIndexing.add( "http://purl.obolibrary.org/obo/UBPROP_0000011" ); // development notes
-        unwantedForIndexing.add( "http://xmlns.com/foaf/0.1/depicted_by"); // not sure how often this comes up as a problem, but it does for one case
-
+        unwantedForIndexing.add( "http://xmlns.com/foaf/0.1/depicted_by" ); // not sure how often this comes up as a problem, but it does for one case
+        
+        unwantedForIndexing.add( "http://purl.obolibrary.org/obo/CLO_0037275" ); // problematic cell line annotation as in "this is not a glioblastoma"
     }
 
     /*
