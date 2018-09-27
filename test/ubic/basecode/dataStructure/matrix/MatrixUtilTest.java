@@ -14,6 +14,7 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -23,6 +24,7 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 
+import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
@@ -30,7 +32,7 @@ import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.io.reader.TestDoubleMatrixReader;
 
 /**
- * @author Paul
+ * @author  Paul
  * @version $Id$
  */
 public class MatrixUtilTest {
@@ -83,6 +85,30 @@ public class MatrixUtilTest {
     @Test
     public void testSelectRows() {
         assertEquals( 3, MatrixUtil.selectRows( testData, Arrays.asList( new Integer[] { 2, 3, 4 } ) ).rows() );
+    }
+
+    @Test
+    public void testRemoveMissing1() {
+        DoubleMatrix1D v1 = testData.viewRow( 1 ); // first value is NaN
+        DoubleMatrix1D actual = MatrixUtil.removeMissing( v1 );
+        DoubleMatrix1D expected = new DenseDoubleMatrix1D(
+                new double[] { 172.5, 242.1, -8.8, 148.8, 190.3, 155.1, 205.3, 337.8, 276, -64.2, 295.4 } );
+
+        assertArrayEquals( expected.toArray(), actual.toArray(), 0.1 );
+
+    }
+
+    @Test
+    public void testRemoveMissing2() {
+        DoubleMatrix1D v1 = new DenseDoubleMatrix1D( new double[] { 1, 2, Double.NaN, 4, 5 } );
+
+        DoubleMatrix1D v2 = new DenseDoubleMatrix1D( new double[] { 11, 12, 13, 14, 15 } );
+
+        DoubleMatrix1D actual = MatrixUtil.removeMissing( v1, v2 );
+        DoubleMatrix1D expected = new DenseDoubleMatrix1D(
+                new double[] { 11, 12, 14, 15 } );
+
+        assertArrayEquals( expected.toArray(), actual.toArray(), 0.1 );
     }
 
 }

@@ -31,13 +31,12 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 
 /**
  * @author Paul
- * @version $Id$
  */
 public class MatrixUtil {
 
     /**
-     * @param d
-     * @return true if any of the values are very close to zero.
+     * @param  d
+     * @return   true if any of the values are very close to zero.
      */
     public static boolean containsNearlyZeros( DoubleMatrix1D d ) {
         for ( int i = 0; i < d.size(); i++ ) {
@@ -49,7 +48,7 @@ public class MatrixUtil {
     /**
      * Extract the diagonal from a matrix.
      * 
-     * @param matrix
+     * @param  matrix
      * @return
      */
     public static DoubleMatrix1D diagonal( DoubleMatrix2D matrix ) {
@@ -63,8 +62,8 @@ public class MatrixUtil {
     }
 
     /**
-     * @param n
-     * @param indexToDrop
+     * @param  n
+     * @param  indexToDrop
      * @return
      */
     public static DoubleMatrix2D dropColumn( DoubleMatrix2D n, int indexToDrop ) {
@@ -108,7 +107,7 @@ public class MatrixUtil {
     /**
      * Makes a copy
      * 
-     * @param list
+     * @param  list
      * @return
      */
     public static DoubleMatrix1D fromList( DoubleArrayList list ) {
@@ -120,12 +119,12 @@ public class MatrixUtil {
     }
 
     /**
-     * @param <R>
-     * @param <C>
-     * @param <V>
-     * @param matrix
-     * @param rowIndex
-     * @param colIndex
+     * @param           <R>
+     * @param           <C>
+     * @param           <V>
+     * @param  matrix
+     * @param  rowIndex
+     * @param  colIndex
      * @return
      */
     public static <R, C, V> V getObject( Matrix2D<R, C, V> matrix, int rowIndex, int colIndex ) {
@@ -139,11 +138,11 @@ public class MatrixUtil {
     }
 
     /**
-     * @param <R>
-     * @param <C>
-     * @param <V>
-     * @param matrix
-     * @param rowIndex
+     * @param           <R>
+     * @param           <C>
+     * @param           <V>
+     * @param  matrix
+     * @param  rowIndex
      * @return
      */
     public static <R, C, V> V[] getRow( Matrix2D<R, C, V> matrix, int rowIndex ) {
@@ -178,8 +177,8 @@ public class MatrixUtil {
     }
 
     /**
-     * @param a
-     * @param b
+     * @param  a
+     * @param  b
      * @return
      */
     public static DoubleMatrix1D multWithMissing( DoubleMatrix2D a, DoubleMatrix1D b ) {
@@ -212,8 +211,8 @@ public class MatrixUtil {
     /**
      * Multiple two matrices, tolerate missing values.
      * 
-     * @param a
-     * @param b
+     * @param  a
+     * @param  b
      * @return
      */
     public static DoubleMatrix2D multWithMissing( DoubleMatrix2D a, DoubleMatrix2D b ) {
@@ -245,7 +244,7 @@ public class MatrixUtil {
     }
 
     public static List<Integer> notNearlyZeroIndices( DoubleMatrix1D d ) {
-        List<Integer> result = new ArrayList<Integer>();
+        List<Integer> result = new ArrayList<>();
         for ( int i = 0; i < d.size(); i++ ) {
             if ( Math.abs( d.getQuick( i ) ) > Constants.SMALL ) result.add( i );
         }
@@ -253,8 +252,8 @@ public class MatrixUtil {
     }
 
     /**
-     * @param data
-     * @return a copy of the data with missing values removed (might be empty!)
+     * @param  data
+     * @return      a copy of the data with missing values removed (might be empty!)
      */
     public static DoubleMatrix1D removeMissing( DoubleMatrix1D data ) {
         int sizeWithoutMissingValues = sizeWithoutMissingValues( data );
@@ -265,6 +264,31 @@ public class MatrixUtil {
         int j = 0;
         for ( int i = 0; i < size; i++ ) {
             if ( Double.isNaN( elements[i] ) || Double.isInfinite( elements[i] ) ) {
+                continue;
+            }
+            r.set( j++, elements[i] );
+        }
+        return r;
+    }
+
+    /**
+     * Remove values from data corresponding to missing values in reference.
+     * 
+     * @param  reference
+     * @param  data
+     * @return
+     */
+    public static DoubleMatrix1D removeMissing( DoubleMatrix1D reference, DoubleMatrix1D data ) {
+        if ( data.size() != reference.size() ) throw new IllegalArgumentException( "Reference and data must have same size" );
+        int sizeWithoutMissingValues = sizeWithoutMissingValues( reference );
+        if ( sizeWithoutMissingValues == reference.size() ) return data; // no missing values.
+        DoubleMatrix1D r = new DenseDoubleMatrix1D( sizeWithoutMissingValues );
+        double[] elements = data.toArray();
+        double[] refels = reference.toArray();
+        int size = data.size();
+        int j = 0;
+        for ( int i = 0; i < size; i++ ) {
+            if ( Double.isNaN( refels[i] ) || Double.isInfinite( refels[i] ) ) {
                 continue;
             }
             r.set( j++, elements[i] );
@@ -301,8 +325,8 @@ public class MatrixUtil {
     }
 
     /**
-     * @param n square matrix
-     * @param selected
+     * @param  n        square matrix
+     * @param  selected
      * @return
      */
     public static DoubleMatrix2D selectColumnsAndRows( DoubleMatrix2D n, Collection<Integer> selected ) {
@@ -371,7 +395,7 @@ public class MatrixUtil {
     /**
      * Makes a copy
      * 
-     * @param vector
+     * @param  vector
      * @return
      */
     public static DoubleArrayList toList( DoubleMatrix1D vector ) {
