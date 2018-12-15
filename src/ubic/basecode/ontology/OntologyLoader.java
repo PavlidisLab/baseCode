@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
@@ -59,7 +60,7 @@ import ubic.basecode.util.Configuration;
 /**
  * Reads ontologies from OWL resources
  * 
- * @author paul
+ * @author  paul
  * @version $Id$
  */
 public class OntologyLoader {
@@ -70,13 +71,13 @@ public class OntologyLoader {
     private static final String TMP_CACHE_SUFFIX = ".tmp";
 
     /**
-     * @param url
-     * @param model
+     * @param  url
+     * @param  model
      * @return
      */
     public static Collection<OntologyResource> initialize( String url, OntModel model ) {
 
-        Collection<OntologyResource> result = new HashSet<OntologyResource>();
+        Collection<OntologyResource> result = new HashSet<>();
 
         ExtendedIterator<OntClass> classIt = model.listClasses();
         int count = 0;
@@ -139,9 +140,9 @@ public class OntologyLoader {
     /**
      * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
      * 
-     * @param is
-     * @param url, used as a key
-     * @param spec
+     * @param  is
+     * @param       url, used as a key
+     * @param  spec
      * @return
      */
     public static OntModel loadMemoryModel( InputStream is, String url, OntModelSpec spec ) {
@@ -154,7 +155,7 @@ public class OntologyLoader {
      * Load an ontology into memory. Use this type of model when fast access is critical and memory is available. Uses
      * OWL_MEM_TRANS_INF
      * 
-     * @param url
+     * @param  url
      * @return
      */
     public static OntModel loadMemoryModel( String url ) {
@@ -166,7 +167,7 @@ public class OntologyLoader {
      * OWL_MEM_TRANS_INF
      * If load from URL fails, attempt to load from disk cache under @cacheName.
      * 
-     * @param url
+     * @param  url
      * @return
      */
     public static OntModel loadMemoryModel( String url, String cacheName ) {
@@ -176,7 +177,7 @@ public class OntologyLoader {
     /**
      * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
      * 
-     * @param url
+     * @param  url
      * @return
      */
     public static OntModel loadMemoryModel( String url, OntModelSpec spec ) {
@@ -187,9 +188,9 @@ public class OntologyLoader {
      * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
      * If load from URL fails, attempt to load from disk cache under @cacheName.
      * 
-     * @param url
-     * @param spec e.g. OWL_MEM_TRANS_INF
-     * @param cacheName unique name of this ontology, will be used to load from disk in case of failed url connection
+     * @param  url
+     * @param  spec      e.g. OWL_MEM_TRANS_INF
+     * @param  cacheName unique name of this ontology, will be used to load from disk in case of failed url connection
      * @return
      */
     public static OntModel loadMemoryModel( String url, OntModelSpec spec, String cacheName ) {
@@ -205,14 +206,33 @@ public class OntologyLoader {
                 // help ensure mis-configured web servers aren't causing trouble.
                 urlc.setRequestProperty( "Accept", "application/rdf+xml" );
 
+                try {
+                    HttpURLConnection c = ( HttpURLConnection ) urlc;
+                    c.setInstanceFollowRedirects( true );
+                } catch ( ClassCastException e ) {
+                    // not via http, using a FileURLConnection.
+                }
+
                 if ( tries > 0 ) {
                     log.info( "Retrying connecting to " + url + " [" + tries + "/" + MAX_CONNECTION_TRIES
                             + " of max tries" );
                 } else {
-                    log.info( "Connecting to ontology from " + url );
+                    log.info( "Connecting to " + url );
                 }
 
                 urlc.connect(); // Will error here on bad URL
+
+                if ( urlc instanceof HttpURLConnection ) {
+                    String newUrl = urlc.getHeaderField( "Location" );
+
+                    if ( StringUtils.isNotBlank( newUrl ) ) {
+                        log.info( "Redirect to " + newUrl );
+                        urlc = new URL( newUrl ).openConnection();
+                        // help ensure mis-configured web servers aren't causing trouble.
+                        urlc.setRequestProperty( "Accept", "application/rdf+xml" );
+                        urlc.connect();
+                    }
+                }
 
                 break;
             } catch ( IOException e ) {
@@ -343,7 +363,7 @@ public class OntologyLoader {
     /**
      * Get model that is entirely in memory with default OntModelSpec.OWL_MEM_RDFS_INF.
      * 
-     * @param url
+     * @param  url
      * @return
      */
     static OntModel getMemoryModel( String url ) {
@@ -353,8 +373,8 @@ public class OntologyLoader {
     /**
      * Get model that is entirely in memory.
      * 
-     * @param url
-     * @param specification
+     * @param  url
+     * @param  specification
      * @return
      */
     static OntModel getMemoryModel( String url, OntModelSpec specification ) {
@@ -370,7 +390,7 @@ public class OntologyLoader {
     }
 
     /**
-     * @param name
+     * @param  name
      * @return
      */
     public static File getDiskCachePath( String name ) {
@@ -379,18 +399,16 @@ public class OntologyLoader {
             return null;
         }
 
-        if (!new File(ontologyDir).exists()) {
-            new File(ontologyDir).mkdirs();
+        if ( !new File( ontologyDir ).exists() ) {
+            new File( ontologyDir ).mkdirs();
         }
-        
+
         assert ontologyDir != null;
 
         String path = ontologyDir + File.separator + "ontology" + File.separator + name;
 
         File indexFile = new File( path );
-        
-       
-        
+
         return indexFile;
     }
 

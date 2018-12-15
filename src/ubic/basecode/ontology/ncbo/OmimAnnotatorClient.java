@@ -1,8 +1,8 @@
 package ubic.basecode.ontology.ncbo;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -21,7 +21,12 @@ import org.w3c.dom.NodeList;
 
 import ubic.basecode.util.Configuration;
 
-// to use the OMIM api
+/**
+ * to use the OMIM api
+ * TODO Document Me
+ * 
+ * @author Nicolas
+ */
 public class OmimAnnotatorClient {
 
     private static String OMIM_API_URL = "http://api.omim.org/api/entry";
@@ -34,11 +39,11 @@ public class OmimAnnotatorClient {
     /**
      * Giving a set of OMIM id return for each id its list of related publication
      * 
-     * @param omimIds the omimIds we want to find the publication
+     * @param omimIds      the omimIds we want to find the publication
      * @param mimToPubmeds the results, pass by reference for multiple calls, limit of size 10
      */
-    public static HashMap<Long, Collection<Long>> findLinkedPublications( Collection<Long> omimIds,
-            HashMap<Long, Collection<Long>> mimToPubmeds ) throws InterruptedException {
+    public static Map<Long, Collection<Long>> findLinkedPublications( Collection<Long> omimIds,
+            Map<Long, Collection<Long>> mimToPubmeds ) throws InterruptedException {
 
         if ( omimIds.size() > 10 || omimIds.isEmpty() ) {
             throw new IllegalArgumentException( "Size of the Omim ids must be between 1 and 10,  Size Found: "
@@ -74,8 +79,8 @@ public class OmimAnnotatorClient {
         }
     }
 
-    private static HashMap<Long, Collection<Long>> findPublications( HttpResponse response,
-            HashMap<Long, Collection<Long>> mimToPubmeds ) throws Exception {
+    private static Map<Long, Collection<Long>> findPublications( HttpResponse response,
+            Map<Long, Collection<Long>> mimToPubmeds ) throws Exception {
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -94,7 +99,7 @@ public class OmimAnnotatorClient {
                 Long pubmedID = new Long( eElement.getElementsByTagName( "pubmedID" ).item( 0 ).getTextContent() );
                 Long mimNumber = new Long( eElement.getElementsByTagName( "mimNumber" ).item( 0 ).getTextContent() );
 
-                Collection<Long> pubmeds = new HashSet<Long>();
+                Collection<Long> pubmeds = new HashSet<>();
 
                 if ( mimToPubmeds.get( mimNumber ) != null ) {
                     pubmeds = mimToPubmeds.get( mimNumber );

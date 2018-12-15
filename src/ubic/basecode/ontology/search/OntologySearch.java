@@ -1,8 +1,8 @@
 /*
  * The Gemma project
- * 
+ *
  * Copyright (c) 2007 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,12 +34,6 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ubic.basecode.ontology.model.OntologyIndividual;
-import ubic.basecode.ontology.model.OntologyIndividualImpl;
-import ubic.basecode.ontology.model.OntologyResource;
-import ubic.basecode.ontology.model.OntologyTerm;
-import ubic.basecode.ontology.model.OntologyTermImpl;
-
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -48,8 +42,14 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.shared.JenaException;
 import com.hp.hpl.jena.sparql.ARQException;
 
+import ubic.basecode.ontology.model.OntologyIndividual;
+import ubic.basecode.ontology.model.OntologyIndividualImpl;
+import ubic.basecode.ontology.model.OntologyResource;
+import ubic.basecode.ontology.model.OntologyTerm;
+import ubic.basecode.ontology.model.OntologyTermImpl;
+
 /**
- * @author pavlidis
+ * @author  pavlidis
  * @version $Id$
  */
 public class OntologySearch {
@@ -62,15 +62,15 @@ public class OntologySearch {
 
     /**
      * Find classes that match the query string. Obsolete terms are not returned.
-     * 
-     * @param model that goes with the index
-     * @param index to search
-     * @param queryString
-     * @return Collection of OntologyTerm objects
+     *
+     * @param  model       that goes with the index
+     * @param  index       to search
+     * @param  queryString
+     * @return             Collection of OntologyTerm objects
      */
     public static Collection<OntologyTerm> matchClasses( OntModel model, SearchIndex index, String queryString ) {
 
-        Set<OntologyTerm> results = new HashSet<OntologyTerm>();
+        Set<OntologyTerm> results = new HashSet<>();
         NodeIterator iterator = runSearch( index, queryString );
 
         while ( iterator != null && iterator.hasNext() ) {
@@ -107,15 +107,15 @@ public class OntologySearch {
 
     /**
      * Find individuals that match the query string
-     * 
-     * @param model that goes with the index
-     * @param index to search
-     * @param queryString
-     * @return Collection of OntologyTerm objects
+     *
+     * @param  model       that goes with the index
+     * @param  index       to search
+     * @param  queryString
+     * @return             Collection of OntologyTerm objects
      */
     public static Collection<OntologyIndividual> matchIndividuals( OntModel model, SearchIndex index, String queryString ) {
 
-        Set<OntologyIndividual> results = new HashSet<OntologyIndividual>();
+        Set<OntologyIndividual> results = new HashSet<>();
         NodeIterator iterator = null;
 
         queryString = queryString.trim();
@@ -181,15 +181,15 @@ public class OntologySearch {
     /**
      * Find OntologyIndividuals and OntologyTerms that match the query string. Search with a wildcard is attempted
      * whenever possible.
-     * 
-     * @param model that goes with the index
-     * @param index to search
-     * @param queryString
-     * @return Collection of OntologyResource objects
+     *
+     * @param  model       that goes with the index
+     * @param  index       to search
+     * @param  queryString
+     * @return             Collection of OntologyResource objects
      */
     public static Collection<OntologyResource> matchResources( OntModel model, SearchIndex index, String queryString ) {
 
-        Set<OntologyResource> results = new HashSet<OntologyResource>();
+        Set<OntologyResource> results = new HashSet<>();
         NodeIterator iterator = null;
 
         queryString = queryString.trim();
@@ -273,8 +273,8 @@ public class OntologySearch {
     /**
      * Will remove characters that jena is unable to parse. Will also escape and remove leading and trailing white space
      * (which also causes jena to die)
-     * 
-     * @param toStrip the string to clean
+     *
+     * @param  toStrip the string to clean
      * @return
      */
     public static String stripInvalidCharacters( String toStrip ) {
@@ -292,9 +292,9 @@ public class OntologySearch {
     }
 
     /**
-     * @param model
-     * @param index
-     * @param queryString
+     * @param  model
+     * @param  index
+     * @param  queryString
      * @return
      */
     private static NodeIterator runSearch( SearchIndex index, String queryString ) {
@@ -305,7 +305,7 @@ public class OntologySearch {
         }
 
         String query = queryString.replaceAll( " AND ", " " );
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         Matcher m = Pattern.compile( "([^\"]\\S*|\".+?\")\\s*" ).matcher( query );
         while ( m.find() ) {
             list.add( m.group( 1 ) );

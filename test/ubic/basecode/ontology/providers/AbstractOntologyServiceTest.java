@@ -108,7 +108,7 @@ public class AbstractOntologyServiceTest {
 
         GenericOntologyService s = new GenericOntologyService( name, resourceURL, cache );
 
-        s.startInitializationThread( true );
+        s.startInitializationThread( true, false );
         int i = 0;
         while ( s.isInitializationThreadAlive() && !s.isOntologyLoaded() ) {
             Thread.sleep( 1000 );

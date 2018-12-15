@@ -21,10 +21,9 @@ package ubic.basecode.ontology.providers;
 import ubic.basecode.util.Configuration;
 
 /**
- * Holds a copy of the OBO Disease Ontology.
+ * Holds a copy of the Disease Ontology.
  * 
  * @author klc
- * @version $Id$
  */
 public class DiseaseOntologyService extends AbstractOntologyMemoryBackedService {
 

@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.jena.larq.IndexBuilderSubject;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
@@ -42,7 +43,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import ubic.basecode.util.Configuration;
 
 /**
- * @author pavlidis
+ * @author  pavlidis
  * @version $Id$
  */
 public class OntologyIndexer {
@@ -50,8 +51,9 @@ public class OntologyIndexer {
     private static Logger log = LoggerFactory.getLogger( OntologyIndexer.class );
 
     /**
-     * @param name
-     * @return indexlarq with default analyzer (English)
+     * @param  name
+     * @return      indexlarq with default analyzer (English), or null if no index is available. DOES not create the
+     *              index if it doesn't exist.
      */
     @SuppressWarnings("resource")
     public static SearchIndex getSubjectIndex( String name ) {
@@ -60,8 +62,8 @@ public class OntologyIndexer {
     }
 
     /**
-     * @param name
-     * @param model
+     * @param  name
+     * @param  model
      * @return
      */
     public static SearchIndex indexOntology( String name, OntModel model ) {
@@ -69,12 +71,13 @@ public class OntologyIndexer {
     }
 
     /**
-     * Loads or creates an index from an existing OntModel. Any existing index will loaded unless force=true.
+     * Loads or creates an index from an existing OntModel. Any existing index will loaded unless force=true. It will be
+     * created if there isn't one already, or if force=true.
      * 
-     * @param name
-     * @param model
-     * @param force if true, the index will be redone
-     * @return
+     * @param  name
+     * @param  model
+     * @param  force
+     * @return       index
      */
     public static SearchIndex indexOntology( String name, OntModel model, boolean force ) {
 
@@ -82,16 +85,18 @@ public class OntologyIndexer {
             return index( name, model );
         }
 
-        try {
-            return getSubjectIndex( name );
-        } catch ( Exception e ) {
-            log.info( "Error loading index from disk, re-indexing " + name );
+        SearchIndex index = getSubjectIndex( name );
+        if ( index == null ) {
+            log.warn( "Index not found, or there was an error, re-indexing " + name );
             return index( name, model );
         }
+        log.info( "A valid index for " + name + " already exists, using" );
+
+        return index;
     }
 
     /**
-     * @param name
+     * @param  name
      * @return
      */
     private static File getIndexPath( String name ) {
@@ -109,9 +114,11 @@ public class OntologyIndexer {
     }
 
     /**
-     * @param name
-     * @param analyzer
-     * @return
+     * Find the search index (will not create it)
+     * 
+     * @param  name
+     * @param  analyzer
+     * @return          Index, or null if there is no index.
      */
     @SuppressWarnings("resource")
     private static SearchIndex getSubjectIndex( String name, Analyzer analyzer ) {
@@ -119,13 +126,15 @@ public class OntologyIndexer {
         File indexdir = getIndexPath( name );
         File indexdirstd = getIndexPath( name + ".std" );
         try {
+            // we do not put this in the try-with-open because we want these to *stay* open
             FSDirectory directory = FSDirectory.open( indexdir );
             FSDirectory directorystd = FSDirectory.open( indexdirstd );
+
             if ( !IndexReader.indexExists( directory ) ) {
-                throw new IllegalArgumentException( "No index with name " + indexdir );
+                return null;
             }
             if ( !IndexReader.indexExists( directorystd ) ) {
-                throw new IllegalArgumentException( "No index with name " + indexdirstd );
+                return null;
             }
 
             IndexReader reader = IndexReader.open( directory );
@@ -134,17 +143,18 @@ public class OntologyIndexer {
             return new SearchIndex( r, analyzer );
 
         } catch ( IOException e ) {
-            throw new RuntimeException( e );
+            log.warn( "Index for " + name + " could not be read: " + e.getMessage() );
+            return null;
         }
     }
 
     /**
      * Create an on-disk index from an existing OntModel. Any existing index will be deleted/overwritten.
      * 
-     * @see {@link http://jena.apache.org/documentation/larq/}
-     * @param datafile or uri
-     * @param name used to refer to this index later
-     * @param model
+     * @see             {@link http://jena.apache.org/documentation/larq/}
+     * @param  datafile or uri
+     * @param  name     used to refer to this index later
+     * @param  model
      * @return
      */
     @SuppressWarnings("resource")
@@ -153,8 +163,10 @@ public class OntologyIndexer {
         File indexdir = getIndexPath( name );
 
         try {
+            StopWatch timer = new StopWatch();
+            timer.start();
             FSDirectory dir = FSDirectory.open( indexdir );
-            log.info( "Index to: " + indexdir );
+            log.info( "Indexing " + name + " to: " + indexdir );
 
             /*
              * adjust the analyzer ...
@@ -180,9 +192,12 @@ public class OntologyIndexer {
             SearchIndex index = new SearchIndex( r, new EnglishAnalyzer( Version.LUCENE_36 ) );
             // larqSubjectBuilder.getIndex(); // always returns a StandardAnalyazer
             assert index.getLuceneQueryParser().getAnalyzer() instanceof EnglishAnalyzer;
+
+            log.info( "Done indexing of " + name + " in " + String.format( "%.2f", timer.getTime() / 1000.0 ) + "s" );
+
             return index;
         } catch ( IOException e ) {
-            throw new RuntimeException( e );
+            throw new RuntimeException( "Indexing failure for " + name, e );
         }
     }
 
