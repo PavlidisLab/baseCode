@@ -14,6 +14,8 @@
  */
 package ubic.basecode.ontology.ncbo;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
@@ -22,7 +24,6 @@ import org.junit.Test;
 
 /**
  * @author Paul
- * @version $Id$
  */
 public class AnnotatorClientTest {
 
@@ -31,5 +32,26 @@ public class AnnotatorClientTest {
         Collection<AnnotatorResponse> results = AnnotatorClient.findTerm( "cancer" );
         assertTrue( results.size() > 0 );
     }
+
+    @Test
+    public void testB() throws Exception {
+        String result = AnnotatorClient.findLabelForIdentifier( "MESH", "D010689" );
+        assertNotNull( result );
+        assertEquals( "phlebitis", result.toLowerCase() );
+    }
+
+    @Test
+    public void testC() throws Exception {
+        String result = AnnotatorClient.findLabelForIdentifier( "DOID", "DOID_8986" );
+        assertNotNull( result );
+        assertEquals( "narcolepsy", result.toLowerCase() );
+    }
+    //
+    //    @Test
+    //    public void testD() throws Exception {
+    //        String result = AnnotatorClient.findLabelForIdentifier( "MESH", "D000077192" );
+    //        assertNotNull( result );
+    //        assertEquals( "phlebitis", result.toLowerCase() );
+    //    }
 
 }

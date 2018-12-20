@@ -28,17 +28,18 @@ import com.hp.hpl.jena.ontology.OntModelSpec;
  * pool keeping only one instance of model in memory.
  * 
  * @author paul
- * @version $Id$
  */
 public abstract class AbstractOntologyMemoryBackedService extends AbstractOntologyService {
 
     /**
-     * For testing! Overrides normal way of loading the ontology.
+     * For testing! Overrides normal way of loading the ontology. This does not index the ontology unless 'force' is
+     * true (if there is an existing index, it will be used)
      * 
-     * @param is
+     * @param  is
+     * @param  forceIndex  initialize the index. Otherwise it will only be initialized if it doesn't exist.
      * @throws IOException
      */
-    public synchronized void loadTermsInNameSpace( InputStream is ) {
+    public synchronized void loadTermsInNameSpace( InputStream is, boolean forceIndex ) {
         synchronized ( isInitialized ) {
             this.indexReady.set( false );
             this.modelReady.set( false );
@@ -74,15 +75,16 @@ public abstract class AbstractOntologyMemoryBackedService extends AbstractOntolo
         if ( this.terms != null ) this.terms.clear();
         if ( this.individuals != null ) this.individuals.clear();
 
-        model = OntologyLoader.loadMemoryModel( is, this.getOntologyUrl(), OntModelSpec.OWL_MEM );
-
-        index = OntologyIndexer.indexOntology( getOntologyName(), model, true );
+        this.model = OntologyLoader.loadMemoryModel( is, this.getOntologyUrl(), OntModelSpec.OWL_MEM );
+        this.index = OntologyIndexer.getSubjectIndex( getOntologyName() );
+        if ( index == null || forceIndex ) {
+            this.index = OntologyIndexer.indexOntology( getOntologyName(), model, true /* force */ );
+        }
 
         addTerms( OntologyLoader.initialize( this.getOntologyUrl(), model ) );
 
-        assert index != null;
         synchronized ( isInitialized ) {
-            indexReady.set( true );
+            indexReady.set( this.index != null );
             cacheReady.set( true );
             modelReady.set( true );
             isInitialized.set( true );

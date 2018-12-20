@@ -15,6 +15,7 @@
 package ubic.basecode.ontology.search;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -33,7 +34,7 @@ import ubic.basecode.ontology.model.OntologyTerm;
 /**
  * Most of these tests were moved over from Gemma.
  * 
- * @author Paul
+ * @author  Paul
  * @version $Id$
  */
 public class OntologySearchTest {
@@ -238,11 +239,13 @@ public class OntologySearchTest {
         InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream( "/data/mged.owl.gz" ) );
         OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test", OntModelSpec.OWL_MEM_TRANS_INF );
 
-        SearchIndex index = OntologyIndexer.indexOntology( "MGEDTEST", model, true );
+        SearchIndex index = OntologyIndexer.indexOntology( "MGEDTEST", model, false );
         index.close();
 
         // now load it off disk
         index = OntologyIndexer.getSubjectIndex( "MGEDTEST" );
+
+        assertNotNull( index );
 
         Collection<OntologyTerm> name = OntologySearch.matchClasses( model, index, "bedding" );
         assertEquals( 2, name.size() );

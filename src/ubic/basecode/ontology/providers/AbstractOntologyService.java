@@ -1,8 +1,8 @@
 /*
  * The Gemma project
- * 
+ *
  * Copyright (c) 2007 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -47,7 +47,6 @@ import ubic.basecode.util.Configuration;
 
 /**
  * @author kelsey
- * @version $Id$
  */
 public abstract class AbstractOntologyService {
 
@@ -75,37 +74,34 @@ public abstract class AbstractOntologyService {
             return forceReindexing;
         }
 
-        private void cleanup() {
-            OntologyLoader.deleteOldCache( getOntologyName() );
-        }
-
         @Override
         public void run() {
 
-            terms = new HashMap<String, OntologyTerm>();
-            individuals = new HashMap<String, OntologyIndividual>();
+            terms = new HashMap<>();
+            individuals = new HashMap<>();
 
             if ( isCancelled() ) {
                 log.warn( "Cancelled initialization" );
                 return;
             }
 
-            log.info( "Loading " + getOntologyName() + " Ontology..." );
+            log.info( "Loading ontology: " + getOntologyName() + " from " + getOntologyUrl() + " ..." );
             StopWatch loadTime = new StopWatch();
             loadTime.start();
 
-            model = getModel(); // can be slow part.
+            model = getModel(); // can take a while.
             assert model != null;
 
             try {
 
                 //Checks if the current ontology has changed since it was last loaded.
                 boolean changed = OntologyLoader.hasChanged( getOntologyName() );
+                boolean indexExists = OntologyIndexer.getSubjectIndex( getOntologyName() ) != null;
 
                 /*
-                 * Indexing will be slow the first time (can take hours for large ontologies).
+                 * Indexing is slow, don't do it if we don't have to.
                  */
-                index( forceReindexing || changed );
+                index( forceReindexing || changed || !indexExists );
 
                 indexReady.set( true );
 
@@ -121,28 +117,19 @@ public abstract class AbstractOntologyService {
 
                 loadTermsInNameSpace( getOntologyUrl(), model );
 
-                if ( loadTime.getTime() > 5000 ) {
-                    log.info( getOntologyName() + "  loaded, total of " + terms.size() + " items in "
-                            + loadTime.getTime() / 1000 + "s" );
-                }
-
                 cleanup();
 
                 cacheReady.set( true );
 
                 isInitialized.set( true );
-                // isInitializationThreadRunning.set( false );
                 loadTime.stop();
 
-                if ( loadTime.getTime() > 5000 ) {
-                    log.info( "Finished loading ontology " + getOntologyName() + " in " + loadTime.getTime() / 1000
-                            + "s" );
-                }
+                log.info( "Finished loading " + getOntologyName() + " in " + String.format( "%.2f", loadTime.getTime() / 1000.0 )
+                        + "s" );
 
             } catch ( Exception e ) {
                 log.error( e.getMessage(), e );
                 isInitialized.set( false );
-                // isInitializationThreadRunning.set( false );
             } finally {
                 // no-op
             }
@@ -150,6 +137,10 @@ public abstract class AbstractOntologyService {
 
         public void setForceReindexing( boolean forceReindexing ) {
             this.forceReindexing = forceReindexing;
+        }
+
+        private void cleanup() {
+            OntologyLoader.deleteOldCache( getOntologyName() );
         }
     }
 
@@ -170,10 +161,10 @@ public abstract class AbstractOntologyService {
 
     protected Map<String, OntologyTerm> terms = null;
 
-    private Map<String, OntologyTerm> alternativeIDs = new HashMap<String, OntologyTerm>();
+    private Map<String, OntologyTerm> alternativeIDs = new HashMap<>();
 
     /**
-     * 
+     *
      */
     public AbstractOntologyService() {
         super();
@@ -197,15 +188,18 @@ public abstract class AbstractOntologyService {
 
     /**
      * Looks for any OntologyIndividuals that match the given search string.
-     * 
-     * @param search
+     *
+     * @param  search
      * @return
      */
     public Collection<OntologyIndividual> findIndividuals( String search ) {
 
         if ( !isOntologyLoaded() ) return null;
 
-        assert index != null : "attempt to search " + this.getOntologyName() + " when index is null";
+        if ( index == null ) {
+            log.warn( "attempt to search " + this.getOntologyName() + " when index is null" );
+            return null;
+        }
 
         OntModel m = getModel();
 
@@ -216,15 +210,16 @@ public abstract class AbstractOntologyService {
 
     /**
      * Looks for any OntologyIndividuals or ontologyTerms that match the given search string
-     * 
-     * @param search
-     * @return results, or an empty collection if the results are empty OR the ontology is not available to be searched.
+     *
+     * @param  search
+     * @return        results, or an empty collection if the results are empty OR the ontology is not available to be
+     *                searched.
      */
     public Collection<OntologyResource> findResources( String searchString ) {
 
         if ( !isOntologyLoaded() ) {
             log.warn( "Ontology is not ready: " + this.getClass() );
-            return new HashSet<OntologyResource>();
+            return new HashSet<>();
         }
 
         assert index != null : "attempt to search " + this.getOntologyName() + " when index is null";
@@ -238,13 +233,13 @@ public abstract class AbstractOntologyService {
 
     /**
      * Looks for any ontologyTerms that match the given search string. Obsolete terms are filtered out.
-     * 
-     * @param search
+     *
+     * @param  search
      * @return
      */
     public Collection<OntologyTerm> findTerm( String search ) {
 
-        if ( !isOntologyLoaded() ) return new HashSet<OntologyTerm>();
+        if ( !isOntologyLoaded() ) return new HashSet<>();
 
         if ( log.isDebugEnabled() ) log.debug( "Searching " + this.getOntologyName() + " for '" + search + "'" );
 
@@ -257,16 +252,30 @@ public abstract class AbstractOntologyService {
         return matches;
     }
 
+    public OntologyTerm findUsingAlternativeId( String alternativeId ) {
+
+        if ( alternativeIDs.isEmpty() ) {
+            log.info( "init search by alternativeID" );
+            initSearchByAlternativeId();
+        }
+
+        if ( alternativeIDs.get( alternativeId ) != null ) {
+            return alternativeIDs.get( alternativeId );
+        }
+
+        return null;
+    }
+
     public Set<String> getAllURIs() {
         if ( terms == null ) return null;
-        return new HashSet<String>( terms.keySet() );
+        return new HashSet<>( terms.keySet() );
     }
 
     /**
      * Looks through both Terms and Individuals for a OntologyResource that has a uri matching the uri given. If no
      * OntologyTerm is found only then will ontologyIndividuals be searched. returns null if nothing is found.
-     * 
-     * @param uri
+     *
+     * @param  uri
      * @return
      */
     public OntologyResource getResource( String uri ) {
@@ -282,8 +291,8 @@ public abstract class AbstractOntologyService {
 
     /**
      * Looks for a OntologyTerm that has the match in URI given
-     * 
-     * @param uri
+     *
+     * @param  uri
      * @return
      */
     public OntologyTerm getTerm( String uri ) {
@@ -298,7 +307,7 @@ public abstract class AbstractOntologyService {
     }
 
     /**
-     * @param uri
+     * @param  uri
      * @return
      */
     public Collection<OntologyIndividual> getTermIndividuals( String uri ) {
@@ -306,7 +315,7 @@ public abstract class AbstractOntologyService {
         if ( terms == null ) {
             log.warn( "No term for URI=" + uri + " in " + this.getOntologyName()
                     + " no terms loaded; make sure ontology is loaded and uri is valid" );
-            return new HashSet<OntologyIndividual>();
+            return new HashSet<>();
         }
 
         OntologyTerm term = terms.get( uri );
@@ -316,7 +325,7 @@ public abstract class AbstractOntologyService {
              */
             log.warn( "No term for URI=" + uri + " in " + this.getOntologyName()
                     + "; make sure ontology is loaded and uri is valid" );
-            return new HashSet<OntologyIndividual>();
+            return new HashSet<>();
         }
         return term.getIndividuals( true );
 
@@ -324,21 +333,16 @@ public abstract class AbstractOntologyService {
 
     /**
      * Create the search index.
-     * 
+     *
      * @param force
      */
     public void index( boolean force ) {
         StopWatch timer = new StopWatch();
         timer.start();
-        log.info( "Preparing index for " + getOntologyName() );
         OntModel m = getModel();
         assert m != null;
 
         index = OntologyIndexer.indexOntology( getOntologyName(), m, force );
-
-        if ( timer.getTime() > 5000 ) {
-            log.info( "Done Loading Index for " + getOntologyName() + " Ontology in " + timer.getTime() / 1000 + "s" );
-        }
 
     }
 
@@ -351,21 +355,28 @@ public abstract class AbstractOntologyService {
         return Configuration.getBoolean( configParameter );
     }
 
+    public boolean isInitializationThreadAlive() {
+        return initializationThread.isAlive();
+    }
+
     /**
-     * Used for determining if the Gene Ontology has finished loading into memory. Although calls like getParents,
+     * Used for determining if the Ontology has finished loading into memory. Although calls like getParents,
      * getChildren will still work (its much faster once the ontologies have been preloaded into memory.)
-     * 
+     *
      * @returns boolean
      */
     public boolean isOntologyLoaded() {
         return isInitialized.get();
     }
 
-    public boolean isInitializationThreadAlive() {
-        return initializationThread.isAlive();
-    }
-
-    public void startInitializationThread( boolean force ) {
+    /**
+     * 
+     * @param forceLoad
+     * @param forceIndexing If forceLoad is also true, indexing will be performed. If you know the index is
+     *                      up to date, there's no need to do it again. Normally indexing is only done if there is no
+     *                      index, or if the ontology has changed since last loaded.
+     */
+    public void startInitializationThread( boolean forceLoad, boolean forceIndexing ) {
         assert initializationThread != null;
         synchronized ( initializationThread ) {
             if ( initializationThread.isAlive() ) {
@@ -380,7 +391,7 @@ public abstract class AbstractOntologyService {
                 return;
             }
 
-            if ( !force && this.isOntologyLoaded() ) {
+            if ( !forceLoad && this.isOntologyLoaded() ) {
                 log.warn( getOntologyName() + " is already loaded, and force=false, not restarting" );
                 return;
             }
@@ -388,8 +399,8 @@ public abstract class AbstractOntologyService {
             boolean loadOntology = isEnabled();
 
             // If loading ontologies is disabled in the configuration, return
-            if ( !force && !loadOntology ) {
-                log.debug( "Loading " + getOntologyName() + " is disabled (force=" + force + ", "
+            if ( !forceLoad && !loadOntology ) {
+                log.debug( "Loading " + getOntologyName() + " is disabled (force=" + forceLoad + ", "
                         + "Configuration load." + getOntologyName() + "=" + loadOntology + ")" );
                 return;
             }
@@ -401,7 +412,11 @@ public abstract class AbstractOntologyService {
             }
 
             // This thread indexes ontology and creates local cache for uri->ontology terms mappings.
-            initializationThread.setForceReindexing( force );
+            if ( !forceIndexing ) {
+                log.info( getOntologyName() + " index will *not* be refreshed unless the ontology "
+                        + "has changed or the index is misssing" );
+            }
+            initializationThread.setForceReindexing( forceLoad && forceIndexing );
             initializationThread.start();
         }
     }
@@ -416,8 +431,8 @@ public abstract class AbstractOntologyService {
             return;
         }
 
-        if ( terms == null ) terms = new HashMap<String, OntologyTerm>();
-        if ( individuals == null ) individuals = new HashMap<String, OntologyIndividual>();
+        if ( terms == null ) terms = new HashMap<>();
+        if ( individuals == null ) individuals = new HashMap<>();
 
         int i = 0;
         for ( OntologyResource term : newTerms ) {
@@ -443,14 +458,14 @@ public abstract class AbstractOntologyService {
     /**
      * The simple name of the ontology. Used for indexing purposes. (ie this will determine the name of the underlying
      * index for searching the ontology)
-     * 
+     *
      * @return
      */
     protected abstract String getOntologyName();
 
     /**
      * Defines the location of the ontology eg: http://mged.sourceforge.net/ontologies/MGEDOntology.owl
-     * 
+     *
      * @return
      */
     protected abstract String getOntologyUrl();
@@ -458,16 +473,16 @@ public abstract class AbstractOntologyService {
     /**
      * Delegates the call as to load the model into memory or leave it on disk. Simply delegates to either
      * OntologyLoader.loadMemoryModel( url ); OR OntologyLoader.loadPersistentModel( url, spec );
-     * 
-     * @param url
+     *
+     * @param  url
      * @return
      * @throws IOException
      */
     protected abstract OntModel loadModel();
 
     /**
-     * @param url
-     * @param m
+     * @param  url
+     * @param  m
      * @throws IOException
      */
     protected void loadTermsInNameSpace( String url, OntModel m ) {
@@ -475,29 +490,15 @@ public abstract class AbstractOntologyService {
         addTerms( t );
     }
 
-    public OntologyTerm findUsingAlternativeId( String alternativeId ) {
-
-        if ( alternativeIDs.isEmpty() ) {
-            log.info( "init search by alternativeID" );
-            initSearchByAlternativeId();
-        }
-
-        if ( alternativeIDs.get( alternativeId ) != null ) {
-            return alternativeIDs.get( alternativeId );
-        }
-
-        return null;
-    }
-
     /*
      * this add alternative id in 2 ways
-     * 
+     *
      * Example :
-     * 
+     *
      * http://purl.obolibrary.org/obo/HP_0000005 with alternative id : HP:0001453
-     * 
+     *
      * by default way use in file 1- HP:0001453 -----> http://purl.obolibrary.org/obo/HP_0000005
-     * 
+     *
      * trying to use the value uri 2- http://purl.obolibrary.org/obo/HP_0001453 ----->
      * http://purl.obolibrary.org/obo/HP_0000005
      */

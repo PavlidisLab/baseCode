@@ -32,7 +32,7 @@ import ubic.basecode.ontology.providers.DiseaseOntologyService;
 import ubic.basecode.ontology.providers.NIFSTDOntologyService;
 
 /**
- * @author Paul
+ * @author  Paul
  * @version $Id$
  */
 public class OntologyTermTest {
@@ -44,7 +44,7 @@ public class OntologyTermTest {
         // DOID:4159
         DiseaseOntologyService s = new DiseaseOntologyService();
         InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream( "/data/doid.short.owl.gz" ) );
-        s.loadTermsInNameSpace( is );
+        s.loadTermsInNameSpace( is , false);
 
         OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/DOID_4159" );
         Collection<OntologyTerm> children = t.getChildren( true );
@@ -76,12 +76,17 @@ public class OntologyTermTest {
         assertTrue( found );
     }
 
+    /**
+     * FIXME this uses NIF, which we are no longer using actively - not a big deal since this just tests mechanics
+     * 
+     * @throws Exception
+     */
     @Test
     public void testGetChildrenHasProperPart() throws Exception {
         NIFSTDOntologyService s = new NIFSTDOntologyService();
         InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream(
                 "/data/NIF-GrossAnatomy.small.owl.xml.gz" ) );
-        s.loadTermsInNameSpace( is );
+        s.loadTermsInNameSpace( is, false );
 
         OntologyTerm t = s
                 .getTerm( "http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#birnlex_734" );
@@ -137,7 +142,7 @@ public class OntologyTermTest {
         DiseaseOntologyService s = new DiseaseOntologyService();
         InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream( "/data/doid.short.owl.gz" ) );
 
-        s.loadTermsInNameSpace( is );
+        s.loadTermsInNameSpace( is, false );
 
         /*
          * Note that this test uses the 'new style' URIs for DO, but at this writing we actually use purl.org not
@@ -178,7 +183,7 @@ public class OntologyTermTest {
         InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream(
                 "/data/NIF-GrossAnatomy.small.owl.xml.gz" ) );
         assertNotNull( is );
-        s.loadTermsInNameSpace( is );
+        s.loadTermsInNameSpace( is, false );
 
         // Mammillary princeps fasciculus: part of white matter, hypothalamus, etc.
         OntologyTerm t = s

@@ -50,41 +50,41 @@ public class OntologyLoaderTest {
         Configuration.setString( "ontology.cache.dir", prevDir );
     }
 
-    @Test
-    public void testHasChanged() throws Exception {
-        String name = "fooTEST1234";
-
-        File f = OntologyLoader.getDiskCachePath( name );
-        if ( f.exists() ) {
-            f.delete();
-        }
-
-        File oldFile = OntologyLoader.getOldDiskCachePath( name );
-        if ( oldFile.exists() ) {
-            oldFile.delete();
-        }
-
-        assertTrue( !f.exists() );
-        assertTrue( !oldFile.exists() );
-
-        URL resource = this.getClass().getResource( dataResource );
-        try (InputStream in = resource.openStream();) {
-            Files.copy( in, f.toPath(), StandardCopyOption.REPLACE_EXISTING );
-        }
-
-        try (InputStream in = resource.openStream();) {
-            Files.copy( in, oldFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
-        }
-
-        assertTrue( !OntologyLoader.hasChanged( name ) );
-
-        // Now if the dataResource has changed
-        resource = this.getClass().getResource( "/data/nif.organism.test.owl-off-by-one.xml" );
-        try (InputStream in = resource.openStream();) {
-            Files.copy( in, f.toPath(), StandardCopyOption.REPLACE_EXISTING );
-        }
-        assertTrue( OntologyLoader.hasChanged( name ) );
-
-    }
+//    @Test
+//    public void testHasChanged() throws Exception {
+//        String name = "fooTEST1234";
+//
+//        File f = OntologyLoader.getDiskCachePath( name );
+//        if ( f.exists() ) {
+//            f.delete();
+//        }
+//
+//        File oldFile = OntologyLoader.getOldDiskCachePath( name );
+//        if ( oldFile.exists() ) {
+//            oldFile.delete();
+//        }
+//
+//        assertTrue( !f.exists() );
+//        assertTrue( !oldFile.exists() );
+//
+//        URL resource = this.getClass().getResource( dataResource );
+//        try (InputStream in = resource.openStream();) {
+//            Files.copy( in, f.toPath(), StandardCopyOption.REPLACE_EXISTING );
+//        }
+//
+//        try (InputStream in = resource.openStream();) {
+//            Files.copy( in, oldFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
+//        }
+//
+//        assertTrue( !OntologyLoader.hasChanged( name ) );
+//
+//        // Now if the dataResource has changed
+//        resource = this.getClass().getResource( "/data/nif.organism.test.owl-off-by-one.xml" );
+//        try (InputStream in = resource.openStream();) {
+//            Files.copy( in, f.toPath(), StandardCopyOption.REPLACE_EXISTING );
+//        }
+//        assertTrue( OntologyLoader.hasChanged( name ) );
+//
+//    }
 
 }

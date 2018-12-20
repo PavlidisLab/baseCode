@@ -21,11 +21,22 @@ package ubic.basecode.ontology.providers;
 /**
  * MEDIC ONTOLOGY USED BY PHENOCARTA, its represents MESH terms as a tree so with can use the parent structure that a
  * normal mesh term doesnt have
+ * 
+ * MEDIC comes from the CTD folks. See http://ctd.mdibl.org/voc.go?type=disease. Unfortunately I do not know where our
+ * medic.owl file came from (PP)
+ * 
+ * @author Nicolas
  */
 public class MedicOntologyService extends AbstractOntologyMemoryBackedService {
 
+    /**
+     * FIXME this shouldn't be hard-coded like this, we should load it like any other ontology service.
+     */
     private static final String MEDIC_ONTOLOGY_FILE = "/data/loader/ontology/medic.owl";
 
+    /**
+     * Warning, this constructor initializes the ontology no matter what
+     */
     public MedicOntologyService() {
         loadMedicOntologyFromFile();
     }
@@ -40,8 +51,11 @@ public class MedicOntologyService extends AbstractOntologyMemoryBackedService {
         return MEDIC_ONTOLOGY_FILE;
     }
 
+    /**
+     * Warning, this uses a method intended only for tests.
+     */
     public void loadMedicOntologyFromFile() {
-        loadTermsInNameSpace( this.getClass().getResourceAsStream( MEDIC_ONTOLOGY_FILE ) );
+        loadTermsInNameSpace( this.getClass().getResourceAsStream( MEDIC_ONTOLOGY_FILE ), false );
     }
 
 }

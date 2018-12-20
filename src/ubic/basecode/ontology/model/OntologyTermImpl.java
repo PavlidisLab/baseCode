@@ -1,13 +1,13 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2013 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
@@ -38,18 +38,17 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 /**
  * Represents a class in an ontology
- * 
+ *
  * @author Paul
- * @version $Id$
  */
 public class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm {
 
     private static final String HAS_ALTERNATE_ID = "http://www.geneontology.org/formats/oboInOwl#hasAlternativeId";
     private static final String NOTHING = "http://www.w3.org/2002/07/owl#Nothing";
-    private static Set<String> REJECT_PARENT_URI = new HashSet<String>();
+    private static Set<String> REJECT_PARENT_URI = new HashSet<>();
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -95,7 +94,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
     @Override
     public Collection<String> getAlternativeIds() {
-        Collection<String> results = new HashSet<String>();
+        Collection<String> results = new HashSet<>();
 
         Property alternate = ResourceFactory.createProperty( HAS_ALTERNATE_ID );
         for ( StmtIterator it = this.ontResource.listProperties( alternate ); it.hasNext(); ) {
@@ -109,7 +108,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
     @Override
     public Collection<AnnotationProperty> getAnnotations() {
-        Collection<AnnotationProperty> annots = new HashSet<AnnotationProperty>();
+        Collection<AnnotationProperty> annots = new HashSet<>();
         StmtIterator iterator = ontResource.listProperties();
         // this is a little slow because we have to go through all statements for the term.
         while ( iterator.hasNext() ) {
@@ -126,14 +125,14 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
     @Override
     public Collection<OntologyTerm> getChildren( boolean direct ) {
-        Collection<OntologyTerm> result = new HashSet<OntologyTerm>();
+        Collection<OntologyTerm> result = new HashSet<>();
         getChildren( direct, result );
         return result;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.gemma.ontology.OntologyTerm#getComment()
      */
     @Override
@@ -144,7 +143,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.gemma.ontology.OntologyTerm#getIndividuals()
      */
     @Override
@@ -153,12 +152,12 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
     }
 
     /**
-     * @param direct
+     * @param  direct
      * @return
      */
     @Override
     public Collection<OntologyIndividual> getIndividuals( boolean direct ) {
-        Collection<OntologyIndividual> inds = new HashSet<OntologyIndividual>();
+        Collection<OntologyIndividual> inds = new HashSet<>();
         ExtendedIterator<? extends OntResource> iterator = this.ontResource.listInstances( direct );
         while ( iterator.hasNext() ) {
             Individual i = ( Individual ) iterator.next();
@@ -184,20 +183,20 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
     @Override
     public Collection<OntologyTerm> getParents( boolean direct ) {
-        Collection<OntologyTerm> result = new HashSet<OntologyTerm>();
+        Collection<OntologyTerm> result = new HashSet<>();
         this.getParents( direct, result );
         return result;
     }
 
     /**
-     * 
+     *
      */
     @Override
     public Collection<OntologyRestriction> getRestrictions() {
         /*
          * Remember that restrictions are superclasses.
          */
-        Collection<OntologyRestriction> result = new HashSet<OntologyRestriction>();
+        Collection<OntologyRestriction> result = new HashSet<>();
         ExtendedIterator<OntClass> iterator = ontResource.listSuperClasses( false );
         while ( iterator.hasNext() ) {
             OntClass c = iterator.next();
@@ -248,7 +247,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.gemma.analysis.ontology.OntologyTerm#getTerm()
      */
     @Override
@@ -286,7 +285,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.gemma.analysis.ontology.OntologyTerm#isRoot()
      */
     @Override
@@ -296,7 +295,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.ontology.model.OntologyTerm#isTermObsolete()
      */
     @Override

@@ -29,7 +29,6 @@ import ubic.basecode.ontology.model.OntologyTerm;
 
 /**
  * @author paul
- * @version $Id$
  */
 public class ObiServiceTest {
 
@@ -38,9 +37,9 @@ public class ObiServiceTest {
     @Test
     public void testLoadAndSearch() throws Exception {
         ObiService m = new ObiService();
-        m.startInitializationThread( true );
-        m.startInitializationThread( true );
-        m.startInitializationThread( true );
+        m.startInitializationThread( true, false );
+        m.startInitializationThread( true, false );
+        m.startInitializationThread( true, false );
         int i = 0;
         while ( !m.isOntologyLoaded() ) {
 

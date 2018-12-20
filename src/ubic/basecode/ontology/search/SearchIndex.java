@@ -37,7 +37,7 @@ import com.hp.hpl.jena.util.iterator.Map1Iterator;
 /**
  * Customization to deal with MultiReader and 'open' while indexing is going on ...? Might not be needed.
  * 
- * @author Paul
+ * @author  Paul
  * @version $Id$
  */
 public class SearchIndex extends IndexLARQ {
@@ -66,11 +66,11 @@ public class SearchIndex extends IndexLARQ {
                 }
             };
             Iterator<ScoreDoc> iterScoreDoc = Arrays.asList( topDocs.scoreDocs ).iterator();
-            Iterator<HitLARQ> iter = new Map1Iterator<ScoreDoc, HitLARQ>( converter, iterScoreDoc );
+            Iterator<HitLARQ> iter = new Map1Iterator<>( converter, iterScoreDoc );
 
             return iter;
         } catch ( Exception e ) {
-            throw new ARQLuceneException( "search", e );
+            throw new ARQLuceneException( "Error during search for '" + queryString + ";", e );
         }
     }
 
