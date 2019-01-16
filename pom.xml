@@ -15,32 +15,15 @@
 		<url>http://www.msl.ubc.ca/</url>
 	</organization>
 	<packaging>jar</packaging>
-	<scm>
-		<connection>scm:cvs:ext:@otto.pavlab.chibi.ubc.ca:/cvs:baseCode</connection>
-		<developerConnection>scm:cvs:ext:@otto.pavlab.chibi.ubc.ca:/cvs:baseCode</developerConnection>
-		<tag>baseCode-1_0_16</tag>
-	</scm>
 	<issueManagement>
-		<system>Bugzilla</system>
+		<system>GitHub</system>
 		<url>
-			http://www.chibi.ubc.ca/faculty/pavlidis/bugs/buglist.cgi?product=baseCode&amp;bug_status=__open__
-		</url>
+            https://github.com/PavlidisLab/baseCode/issues
+        </url>
 	</issueManagement>
 	<ciManagement>
-		<system>continuum</system>
-		<url>http://chibi.ubc.ca/faculty/pavlidis/bamboo/</url>
-		<notifiers>
-			<notifier>
-				<type>mail</type>
-				<sendOnError>true</sendOnError>
-				<sendOnFailure>true</sendOnFailure>
-				<sendOnSuccess>true</sendOnSuccess>
-				<sendOnWarning>true</sendOnWarning>
-				<configuration>
-					<address>paul@chibi.ubc.ca</address>
-				</configuration>
-			</notifier>
-		</notifiers>
+		<system>Jenkins</system>
+		<url>https://jenkins.pavlab.msl.ubc.ca</url>
 	</ciManagement>
 	<licenses>
 		<license>
@@ -53,7 +36,7 @@
 		<developer>
 			<name>Paul Pavlidis</name>
 			<id>pavlidis</id>
-			<email>paul@chibi.ubc.ca</email>
+			<email>paul@msl.ubc.ca</email>
 			<organization>University of British Columbia</organization>
 		</developer>
 	</developers>
