@@ -1,5 +1,5 @@
 /*
- * The Gemma project.
+ * The basecode project.
  * 
  * Copyright (c) 2006-2007 University of British Columbia
  * 
@@ -27,7 +27,7 @@ import cern.colt.list.DoubleArrayList;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class TestMeanDifferenceMetaAnalysis {
 

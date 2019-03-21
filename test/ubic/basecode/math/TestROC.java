@@ -30,7 +30,7 @@ import org.junit.Test;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class TestROC {
 

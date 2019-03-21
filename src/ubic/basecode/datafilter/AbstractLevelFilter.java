@@ -26,7 +26,7 @@ import ubic.basecode.math.Stats;
  * themselves.
  * 
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public abstract class AbstractLevelFilter<R, C> extends AbstractFilter<DoubleMatrix<R, C>, R, C, Double> {
 

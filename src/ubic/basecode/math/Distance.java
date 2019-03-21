@@ -24,7 +24,7 @@ import cern.colt.list.DoubleArrayList;
  * Alternative distance and similarity metrics for vectors.
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class Distance {
 

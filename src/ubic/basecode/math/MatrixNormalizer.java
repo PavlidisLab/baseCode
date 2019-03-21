@@ -25,7 +25,7 @@ import cern.jet.stat.Descriptive;
 
 /**
  * @author paul
- * @version $Id$
+ * 
  */
 public class MatrixNormalizer<R, C> {
 

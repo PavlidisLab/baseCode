@@ -31,7 +31,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * 
  * @author xwan
  * @see no.uib.cipr.matrix.sparse.FlexCompRowMatrix for how this is implemented under the hood.
- * @version $Id$
+ * 
  */
 public class CompressedSparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
 

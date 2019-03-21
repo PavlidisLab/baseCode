@@ -35,7 +35,7 @@ import ubic.basecode.io.reader.StringMatrixReader;
  * See the file test/data/matrix-testing.xls for the validation.
  * 
  * @author paul
- * @version $Id$
+ * 
  */
 public class TestRowAbsentFilter extends AbstractTestFilter {
 

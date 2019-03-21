@@ -25,7 +25,7 @@ import ubic.basecode.util.Configuration;
  * Uberon
  * 
  * @author paul
- * @version $Id$
+ * 
  */
 public class UberonOntologyService extends AbstractOntologyMemoryBackedService {
 

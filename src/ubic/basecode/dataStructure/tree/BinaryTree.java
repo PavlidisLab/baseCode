@@ -20,7 +20,7 @@ package ubic.basecode.dataStructure.tree;
 
 /**
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class BinaryTree<T> {
 

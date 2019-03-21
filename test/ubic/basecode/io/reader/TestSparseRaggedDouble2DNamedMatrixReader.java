@@ -35,7 +35,7 @@ import ubic.basecode.util.RegressionTesting;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class TestSparseRaggedDouble2DNamedMatrixReader {
 

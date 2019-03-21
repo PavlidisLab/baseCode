@@ -22,7 +22,7 @@ import cern.jet.stat.Probability;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class NormalProbabilityComputer implements ProbabilityComputer {
 

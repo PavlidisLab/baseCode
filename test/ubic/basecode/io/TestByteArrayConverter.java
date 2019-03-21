@@ -33,7 +33,7 @@ import org.junit.Test;
 import cern.colt.list.DoubleArrayList;
 
 /**
- * @version $Id$
+ * 
  * @author pavlidis
  */
 public class TestByteArrayConverter {

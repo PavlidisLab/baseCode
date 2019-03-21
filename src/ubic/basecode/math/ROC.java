@@ -24,7 +24,7 @@ import java.util.List;
  * Functions for calculating Receiver operator characteristics.
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class ROC {
 

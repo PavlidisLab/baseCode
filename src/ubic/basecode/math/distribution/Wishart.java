@@ -35,7 +35,7 @@ import cern.jet.random.engine.RandomEngine;
  * distributions.
  * 
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class Wishart {
 

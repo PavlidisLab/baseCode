@@ -30,7 +30,7 @@ import cern.jet.stat.Descriptive;
 
 /**
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class TestDescriptiveWithMissing {
 

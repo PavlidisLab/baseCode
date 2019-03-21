@@ -20,7 +20,7 @@ package ubic.basecode.dataStructure;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public abstract class Visitable {
 

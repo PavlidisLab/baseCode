@@ -33,7 +33,7 @@ import cern.colt.list.ObjectArrayList;
  * Calculate rank statistics for arrays.
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class Rank {
 

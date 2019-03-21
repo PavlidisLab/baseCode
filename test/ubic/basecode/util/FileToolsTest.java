@@ -48,7 +48,7 @@ import org.junit.Test;
 /**
  * @author keshav
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class FileToolsTest {
     File compressed;

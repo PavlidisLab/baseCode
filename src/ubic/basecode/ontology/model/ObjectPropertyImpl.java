@@ -1,7 +1,7 @@
 /*
- * The Gemma project
+ * The basecode project
  * 
- * Copyright (c) 2007 University of British Columbia
+ * Copyright (c) 2007-2019 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class ObjectPropertyImpl extends OntologyPropertyImpl implements ubic.basecode.ontology.model.ObjectProperty {
 
@@ -71,7 +71,8 @@ public class ObjectPropertyImpl extends OntologyPropertyImpl implements ubic.bas
 
     @Override
     public String toString() {
-        String label = resource.getLabel( null );
+        String label = resource.getLabel( "EN" );
+        if ( label == null ) label = resource.getLabel( null );
         if ( label == null ) label = resource.getLocalName();
         if ( label == null ) label = resource.getURI();
         if ( label == null ) label = resource.toString();

@@ -7,7 +7,7 @@ import java.util.Map;
  * Similar to ubic.gemma.util.CountingMap. Except instead it adds the values of the keys.
  * 
  * @author ?
- * @version $Id$
+ * 
  */
 public class DoubleAddingMap<K> extends HashMap<K, Double> {
 

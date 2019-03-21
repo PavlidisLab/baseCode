@@ -59,7 +59,7 @@ import cern.jet.stat.Descriptive;
  * inclusive.
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class RowLevelFilter<R, C> extends AbstractLevelFilter<R, C> {
 

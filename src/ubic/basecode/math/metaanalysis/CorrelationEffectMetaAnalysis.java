@@ -29,7 +29,7 @@ import cern.jet.stat.Probability;
  * correlations.
  * 
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class CorrelationEffectMetaAnalysis extends MetaAnalysis {
 

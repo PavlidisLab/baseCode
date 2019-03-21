@@ -23,7 +23,7 @@ import java.util.Set;
 
 /**
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class UndirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements Comparable<UndirectedGraphNode<K, V>> {
 

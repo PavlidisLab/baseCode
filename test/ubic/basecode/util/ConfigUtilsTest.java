@@ -29,7 +29,7 @@ import org.junit.Test;
 
 /**
  * @author Paul
- * @version $Id$
+ * 
  */
 public class ConfigUtilsTest {
 

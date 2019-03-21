@@ -9,7 +9,7 @@ import ubic.basecode.util.RegressionTesting;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class TestMathUtil {
 

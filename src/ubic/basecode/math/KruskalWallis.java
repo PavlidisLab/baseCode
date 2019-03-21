@@ -27,7 +27,7 @@ import cern.jet.stat.Probability;
  * Perform a Kruskal-Wallis test.
  * 
  * @author paul
- * @version $Id$
+ * 
  */
 public class KruskalWallis {
 

@@ -23,7 +23,7 @@ import cern.jet.stat.Descriptive;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class MathUtil {
 

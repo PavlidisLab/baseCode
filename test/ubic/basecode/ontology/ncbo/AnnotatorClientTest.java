@@ -1,5 +1,5 @@
 /*
- * The Gemma project
+ * The basecode project
  * 
  * Copyright (c) 2013 University of British Columbia
  * 

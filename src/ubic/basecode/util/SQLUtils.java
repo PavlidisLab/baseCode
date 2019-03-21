@@ -26,7 +26,7 @@ import ubic.basecode.io.ByteArrayConverter;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class SQLUtils {
 

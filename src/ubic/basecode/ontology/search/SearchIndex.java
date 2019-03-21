@@ -38,7 +38,7 @@ import com.hp.hpl.jena.util.iterator.Map1Iterator;
  * Customization to deal with MultiReader and 'open' while indexing is going on ...? Might not be needed.
  * 
  * @author  Paul
- * @version $Id$
+ * 
  */
 public class SearchIndex extends IndexLARQ {
 

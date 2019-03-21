@@ -1,7 +1,7 @@
 /*
  * The baseCode project
  * 
- * Copyright (c) 2008 University of British Columbia
+ * Copyright (c) 2008-2019 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import ubic.basecode.util.RegressionTesting;
 
 /**
  * @author Paul
- * @version $Id$
+ * 
  */
 public class MatrixWriterTest {
     double[][][] data3d = { { { 1, 2 }, { 3, 4 } }, { { 5, 6 }, { 7, 8 } } };

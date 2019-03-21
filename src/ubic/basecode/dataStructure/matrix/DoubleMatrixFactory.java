@@ -22,7 +22,7 @@ package ubic.basecode.dataStructure.matrix;
  * Use this factory to create matrices of type selected at runtime (String parameterization only)
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class DoubleMatrixFactory {
 

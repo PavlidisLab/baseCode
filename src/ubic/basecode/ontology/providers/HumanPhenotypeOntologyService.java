@@ -25,7 +25,7 @@ import ubic.basecode.util.Configuration;
  * See http://bioportal.bioontology.org/ontologies/45774?p=terms&conceptid=HP%3A0001264 for example.
  * 
  * @author paul
- * @version $Id$
+ * 
  */
 public class HumanPhenotypeOntologyService extends AbstractOntologyMemoryBackedService {
 

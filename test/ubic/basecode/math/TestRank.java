@@ -31,7 +31,7 @@ import cern.colt.list.IntArrayList;
 
 /**
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class TestRank {
 

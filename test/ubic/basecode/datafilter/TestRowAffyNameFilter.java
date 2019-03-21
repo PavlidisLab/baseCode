@@ -27,7 +27,7 @@ import ubic.basecode.dataStructure.matrix.StringMatrix;
 
 /**
  * @author Pavlidis
- * @version $Id$
+ * 
  */
 public class TestRowAffyNameFilter extends AbstractTestFilter {
 

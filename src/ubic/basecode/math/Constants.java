@@ -22,7 +22,7 @@ package ubic.basecode.math;
  * Used in some ports of statistical code.
  * 
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public abstract class Constants {
 

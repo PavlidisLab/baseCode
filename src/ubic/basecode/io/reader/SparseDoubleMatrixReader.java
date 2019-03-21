@@ -39,7 +39,7 @@ import ubic.basecode.dataStructure.matrix.SparseDoubleMatrix;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class SparseDoubleMatrixReader extends DoubleMatrixReader {
 

@@ -30,7 +30,7 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
  * A dense matrix of doubles that knows about row and column names.
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class DenseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
 

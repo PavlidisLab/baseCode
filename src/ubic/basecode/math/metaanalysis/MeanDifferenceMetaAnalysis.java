@@ -36,7 +36,7 @@ import cern.jet.stat.Probability;
  * standard deviation of the two groups. Essentially this is a t statistic.
  * 
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class MeanDifferenceMetaAnalysis extends MetaAnalysis {
 

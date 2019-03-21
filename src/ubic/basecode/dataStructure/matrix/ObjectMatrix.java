@@ -1,7 +1,7 @@
 /*
  * The baseCode project
  * 
- * Copyright (c) 2008 University of British Columbia
+ * Copyright (c) 2008-2019 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * @author Paul
- * @version $Id$
+ * 
  */
 public interface ObjectMatrix<R, C, V> extends Matrix2D<R, C, V> {
 

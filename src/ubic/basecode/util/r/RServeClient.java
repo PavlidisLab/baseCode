@@ -41,7 +41,7 @@ import ubic.basecode.util.ConfigUtils;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class RServeClient extends AbstractRClient {
 

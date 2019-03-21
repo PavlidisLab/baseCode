@@ -25,7 +25,7 @@ import java.util.List;
  * Represents a matrix with index columns and rows. The keys are generic.
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  * @see ObjectMatrix for matrix storing objects.
  */
 public abstract interface Matrix2D<R, C, V> {

@@ -23,7 +23,7 @@ package ubic.basecode.util;
  * actual use is up to the implementer). Copyright (c) 2004 University of British Columbia
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public interface StatusViewer {
 

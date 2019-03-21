@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * @author keshav
  * @author Pavlidis
  * @author Will Braynen
- * @version $Id$
+ * 
  */
 public class FileTools {
     private final static String PNG_EXTENSION = ".png";

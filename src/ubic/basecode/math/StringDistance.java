@@ -20,7 +20,7 @@ package ubic.basecode.math;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class StringDistance {
 

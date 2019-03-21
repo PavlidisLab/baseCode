@@ -29,7 +29,7 @@ import cern.colt.matrix.impl.DenseObjectMatrix2D;
  * A NamedMatrix containing String objects.
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class StringMatrix<R, C> extends AbstractMatrix<R, C, String> implements ObjectMatrix<R, C, String> {
 

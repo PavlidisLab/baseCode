@@ -32,7 +32,7 @@ import ubic.basecode.io.excel.SpreadSheetSchema;
  * A class to convert parametergrabber information/instances into excel speadsheet lines
  * 
  * @author leon
- * @version $Id$
+ * 
  */
 public class ParamSpreadSheet extends CreateSpreadSheet {
 

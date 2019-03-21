@@ -25,7 +25,7 @@ import javax.swing.JLabel;
  * Color gradient without any text
  * 
  * @author wbraynen
- * @version $Id$
+ * 
  */
 class JGradientLabel extends JLabel {
 

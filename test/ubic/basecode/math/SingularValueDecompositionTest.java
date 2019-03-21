@@ -26,7 +26,7 @@ import ubic.basecode.math.linalg.SingularValueDecomposition;
 
 /**
  * @author paul
- * @version $Id$
+ * 
  */
 public class SingularValueDecompositionTest {
 

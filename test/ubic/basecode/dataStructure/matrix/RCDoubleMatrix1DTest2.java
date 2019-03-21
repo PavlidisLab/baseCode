@@ -27,7 +27,7 @@ import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class RCDoubleMatrix1DTest2 {
 

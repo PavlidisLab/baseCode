@@ -27,7 +27,7 @@ import cern.jet.stat.Descriptive;
  * Class to perform the Kolmogorov-Smirnov test. Ported from R.
  * 
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class KSTest {
 

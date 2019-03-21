@@ -28,7 +28,7 @@ import ubic.basecode.math.linearmodels.DesignMatrix;
 
 /**
  * @author paul
- * @version $Id$
+ * 
  */
 public class DesignMatrixTest {
 

@@ -22,7 +22,7 @@ package ubic.basecode.math.distribution;
  * An interface that describes objects that can produce probabilities according to some distribution.
  * 
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public interface ProbabilityComputer {
 

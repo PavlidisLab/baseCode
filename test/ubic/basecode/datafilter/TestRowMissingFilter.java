@@ -31,7 +31,7 @@ import ubic.basecode.dataStructure.matrix.StringMatrix;
  * See the file test/data/matrix-testing.xls for the validation.
  * 
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class TestRowMissingFilter extends AbstractTestFilter {
 

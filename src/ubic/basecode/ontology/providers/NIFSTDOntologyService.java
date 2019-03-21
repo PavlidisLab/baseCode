@@ -18,7 +18,7 @@ import ubic.basecode.util.Configuration;
 
 /**
  * @author paul
- * @version $Id$
+ * 
  */
 public class NIFSTDOntologyService extends AbstractOntologyMemoryBackedService {
 

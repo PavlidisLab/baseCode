@@ -27,7 +27,7 @@ import cern.colt.matrix.impl.DenseObjectMatrix2D;
  * Matrix that can hold any type of object
  * 
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class ObjectMatrixImpl<R, C, V> extends AbstractMatrix<R, C, V> implements ObjectMatrix<R, C, V> {
 

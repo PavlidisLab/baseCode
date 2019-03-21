@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class TestStringUtil {
 

@@ -22,7 +22,7 @@ import org.junit.Test;
 
 /**
  * @author Paul
- * @version $Id$
+ * 
  */
 public class IntegerMatrixTest {
     IntegerMatrix<String, String> mat;

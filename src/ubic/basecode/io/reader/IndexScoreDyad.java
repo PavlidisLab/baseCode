@@ -20,7 +20,7 @@ package ubic.basecode.io.reader;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 final class IndexScoreDyad implements Comparable<IndexScoreDyad> {
 

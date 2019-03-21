@@ -33,7 +33,7 @@ import corejava.Format;
  * @see <a href="http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/hep/aida/IHistogram1D.html">hep.aida.IHistogram1D
  *      </a>
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class HistogramWriter {
 

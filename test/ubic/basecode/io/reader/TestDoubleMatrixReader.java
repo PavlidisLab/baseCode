@@ -36,7 +36,7 @@ import ubic.basecode.util.FileTools;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class TestDoubleMatrixReader {
 

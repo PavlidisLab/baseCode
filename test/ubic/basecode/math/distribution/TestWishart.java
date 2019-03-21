@@ -12,7 +12,7 @@ import cern.jet.random.engine.MersenneTwister;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class TestWishart {
 

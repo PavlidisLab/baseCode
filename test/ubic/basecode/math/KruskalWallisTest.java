@@ -23,7 +23,7 @@ import cern.colt.list.IntArrayList;
 
 /**
  * @author paul
- * @version $Id$
+ * 
  */
 public class KruskalWallisTest {
 

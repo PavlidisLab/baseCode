@@ -28,7 +28,7 @@ import cern.jet.stat.Probability;
  * Statistical evaluation and transformation tools for correlations.
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class CorrelationStats {
 

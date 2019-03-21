@@ -44,7 +44,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * completely different file format than what we use for dense matrices.
  * 
  * @author pavlidis
- * @version $Id$
+ * 
  * @see DoubleMatrixReader
  */
 public class SparseRaggedMatrixReader extends DoubleMatrixReader {

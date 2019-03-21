@@ -22,7 +22,7 @@ import ubic.basecode.dataStructure.Visitable;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class BinaryTreeNode<T> extends Visitable {
 

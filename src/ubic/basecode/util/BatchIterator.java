@@ -1,7 +1,7 @@
 /*
  * The baseCode project
  * 
- * Copyright (c) 2008 University of British Columbia
+ * Copyright (c) 2008-2019 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ import java.util.NoSuchElementException;
  * </code>
  * 
  * @author luke
- * @version $Id$
+ * 
  */
 public class BatchIterator<E> implements Iterable<Collection<E>>, Iterator<Collection<E>> {
 

@@ -27,7 +27,7 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class TestItemLevelFilter extends AbstractTestFilter {
 

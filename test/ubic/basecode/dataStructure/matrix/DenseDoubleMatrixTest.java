@@ -21,7 +21,7 @@ import org.junit.Test;
 
 /**
  * @author Paul
- * @version $Id$
+ * 
  */
 public class DenseDoubleMatrixTest extends AbstractDoubleMatrixTest {
 

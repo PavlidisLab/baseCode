@@ -1,7 +1,7 @@
 /*
  * The baseCode project
  * 
- * Copyright (c) 2008 University of British Columbia
+ * Copyright (c) 2008-2019 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import cern.colt.matrix.impl.DenseObjectMatrix3D;
 
 /**
  * @author ?
- * @version $Id$
+ * 
  */
 public class DenseObject3DMatrix<R, C, S> extends AbstractMatrix3D<R, C, S, Object> {
     private DenseObjectMatrix3D matrix;

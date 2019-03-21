@@ -20,7 +20,7 @@ package ubic.basecode.math.distribution;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class UniformDensityComputer implements DensityGenerator {
 

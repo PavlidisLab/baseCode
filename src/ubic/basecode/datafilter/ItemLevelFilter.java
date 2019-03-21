@@ -25,7 +25,7 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
  * Filter that removes individual values that are outside of a range. Removed values are set to NaN.
  * 
  * @author Pavlidis
- * @version $Id$
+ * 
  */
 public class ItemLevelFilter<R, C> extends AbstractLevelFilter<R, C> {
 

@@ -1,7 +1,7 @@
 /*
  * The baseCode project
  * 
- * Copyright (c) 2007 University of British Columbia
+ * Copyright (c) 2007-2019 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import cern.jet.random.Uniform;
  * Implements a simple (not very efficient) sampling algorithm for empirical distributions.
  * 
  * @author Paul
- * @version $Id$
+ * 
  */
 public class HistogramSampler {
 

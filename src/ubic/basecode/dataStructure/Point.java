@@ -20,7 +20,7 @@ package ubic.basecode.dataStructure;
 
 /**
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class Point {
 

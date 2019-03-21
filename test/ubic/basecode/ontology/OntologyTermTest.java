@@ -28,12 +28,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ubic.basecode.ontology.model.OntologyTerm;
+import ubic.basecode.ontology.providers.CellLineOntologyService;
 import ubic.basecode.ontology.providers.DiseaseOntologyService;
 import ubic.basecode.ontology.providers.NIFSTDOntologyService;
 
 /**
- * @author  Paul
- * @version $Id$
+ * @author Paul
  */
 public class OntologyTermTest {
 
@@ -44,9 +44,13 @@ public class OntologyTermTest {
         // DOID:4159
         DiseaseOntologyService s = new DiseaseOntologyService();
         InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream( "/data/doid.short.owl.gz" ) );
-        s.loadTermsInNameSpace( is , false);
+        s.loadTermsInNameSpace( is, false );
 
         OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/DOID_4159" );
+
+        // test of getting basic properties thrown in here
+        assertEquals( "skin cancer", t.getLabel() );
+
         Collection<OntologyTerm> children = t.getChildren( true );
         assertEquals( 2, children.size() );
         boolean found = false;
@@ -231,5 +235,16 @@ public class OntologyTermTest {
 
         }
         assertTrue( found );
+    }
+    
+    @Test
+    public void testRejectNonEnglish() throws Exception {
+         CellLineOntologyService s = new CellLineOntologyService();
+        InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream( "/data/clo_merged.sample.owl.xml.gz" ) );
+        s.loadTermsInNameSpace( is, false );
+
+        OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/CLO_0000292" );
+        assertEquals( "immortal larynx-derived cell line cell", t.getLabel() );
+
     }
 }

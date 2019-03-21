@@ -25,7 +25,7 @@ import cern.colt.list.DoubleArrayList;
  * Convenience functions for getting row statistics from matrices.
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  * @todo Have min() and max() throw an EmptyMatrixException -- this exception class does not yet exist and needs to be
  *       defined somewhere.
  */

@@ -22,7 +22,7 @@ import ubic.basecode.dataStructure.Visitable;
 
 /**
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public abstract class AbstractGraphNode<K, V> extends Visitable implements GraphNode<K, V> {
     protected V item;

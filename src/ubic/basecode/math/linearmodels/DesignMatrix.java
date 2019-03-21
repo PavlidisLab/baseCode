@@ -45,7 +45,7 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
  * <p>
  *
  * @author paul
- * @version $Id$
+ * 
  */
 public class DesignMatrix {
 

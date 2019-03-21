@@ -24,7 +24,7 @@ package ubic.basecode.dataStructure;
  * Based on code from: Derby - Class org.apache.derbyTesting.unitTests.util.BitUtil
  * 
  * @author paul
- * @version $Id$
+ * 
  */
 public class BitUtil {
 
