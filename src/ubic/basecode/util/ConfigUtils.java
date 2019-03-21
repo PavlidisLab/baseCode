@@ -32,7 +32,7 @@ import org.apache.commons.io.FileUtils;
  * Convenience methods for loading configurations
  * 
  * @author Paul
- * @version $Id$
+ * 
  */
 public class ConfigUtils {
 

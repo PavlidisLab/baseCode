@@ -31,7 +31,7 @@ import cern.colt.matrix.impl.DenseDoubleMatrix1D;
  * FIXME make this API more consistent.
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class MultipleTestCorrection {
 

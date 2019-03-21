@@ -28,7 +28,7 @@ import cern.colt.matrix.impl.SparseDoubleMatrix2D;
  * A sparse matrix that knows about row and column names.
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class SparseDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
 

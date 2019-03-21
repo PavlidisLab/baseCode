@@ -26,7 +26,7 @@ import ubic.basecode.util.FileTools;
 
 /**
  * @author Paul
- * @version $Id$
+ * 
  */
 public class HistogramReaderTest {
 

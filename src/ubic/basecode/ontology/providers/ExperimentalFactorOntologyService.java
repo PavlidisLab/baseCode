@@ -18,7 +18,7 @@ import ubic.basecode.util.Configuration;
 
 /**
  * @author Paul
- * @version $Id$
+ * 
  */
 public class ExperimentalFactorOntologyService extends AbstractOntologyMemoryBackedService {
 

@@ -21,7 +21,7 @@ import java.util.List;
  * Compute area under precision recall
  * 
  * @author paul
- * @version $Id$
+ * 
  */
 public class PrecisionRecall {
 

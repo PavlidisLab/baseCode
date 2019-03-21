@@ -33,7 +33,7 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 
 /**
  * @author ptan
- * @version $Id$
+ * 
  */
 public class MeanVarianceEstimatorTest {
 

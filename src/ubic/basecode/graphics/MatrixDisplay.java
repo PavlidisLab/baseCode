@@ -40,7 +40,7 @@ import ubic.basecode.graphics.text.Util;
  * A visual component for displaying a color matrix
  * 
  * @author Will Braynen
- * @version $Id$
+ * 
  */
 public class MatrixDisplay<R, C> extends JPanel {
 

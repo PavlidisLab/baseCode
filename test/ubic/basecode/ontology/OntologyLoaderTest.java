@@ -32,7 +32,7 @@ import ubic.basecode.util.Configuration;
  * Test loading a database-backed ontology
  * 
  * @author Paul
- * @version $Id$
+ * 
  */
 public class OntologyLoaderTest {
 

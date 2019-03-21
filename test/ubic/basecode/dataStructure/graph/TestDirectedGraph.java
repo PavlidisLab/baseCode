@@ -35,7 +35,7 @@ import org.junit.Test;
 
 /**
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class TestDirectedGraph {
     DirectedGraph<String, String> testGraph;

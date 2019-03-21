@@ -33,7 +33,7 @@ import javax.swing.border.EmptyBorder;
  * the color map. Used in the GeneSetDetails view.
  * 
  * @author Will Braynen
- * @version $Id$
+ * 
  */
 public class JGradientBar extends JPanel {
 

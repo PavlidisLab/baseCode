@@ -42,7 +42,7 @@ import cern.jet.stat.Descriptive;
  *      href="http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/cern/jet/stat/Descriptive.html">cern.jet.stat.Descriptive
  *      </a>
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
 

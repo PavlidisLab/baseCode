@@ -33,7 +33,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * A sparse matrix class where the rows are ragged and compressed.
  * 
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class SparseRaggedDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
 

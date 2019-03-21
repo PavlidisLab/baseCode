@@ -24,7 +24,7 @@ import ubic.basecode.io.reader.DoubleMatrixReader;
 
 /**
  * @author paul
- * @version $Id$
+ * 
  */
 public class TestMatrixNormalizer {
 

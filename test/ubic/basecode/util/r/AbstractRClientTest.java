@@ -49,7 +49,7 @@ import ubic.basecode.util.r.type.TwoWayAnovaResult;
 
 /**
  * @author Paul
- * @version $Id$
+ * 
  */
 public abstract class AbstractRClientTest {
 

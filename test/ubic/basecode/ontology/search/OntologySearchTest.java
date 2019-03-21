@@ -35,7 +35,7 @@ import ubic.basecode.ontology.model.OntologyTerm;
  * Most of these tests were moved over from Gemma.
  * 
  * @author  Paul
- * @version $Id$
+ * 
  */
 public class OntologySearchTest {
 

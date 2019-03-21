@@ -25,7 +25,7 @@ import ubic.basecode.util.Configuration;
  * Support for the Sequence Ontology
  * 
  * @author Paul
- * @version $Id$
+ * 
  */
 public class SequenceOntologyService extends AbstractOntologyMemoryBackedService {
 

@@ -33,7 +33,7 @@ import ubic.basecode.io.reader.TestDoubleMatrixReader;
 
 /**
  * @author  Paul
- * @version $Id$
+ * 
  */
 public class MatrixUtilTest {
 

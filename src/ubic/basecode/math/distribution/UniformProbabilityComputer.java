@@ -22,7 +22,7 @@ package ubic.basecode.math.distribution;
  * Generate probabilities from the uniform distribution.
  * 
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class UniformProbabilityComputer implements ProbabilityComputer {
 

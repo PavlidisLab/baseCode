@@ -61,7 +61,6 @@ import ubic.basecode.util.Configuration;
  * Reads ontologies from OWL resources
  * 
  * @author  paul
- * @version $Id$
  */
 public class OntologyLoader {
 

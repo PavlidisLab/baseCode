@@ -25,7 +25,7 @@ import ubic.basecode.util.Configuration;
  * Support for the units ontology
  * 
  * @author Paul
- * @version $Id$
+ * 
  */
 public class UnitsOntologyService extends AbstractOntologyMemoryBackedService {
 

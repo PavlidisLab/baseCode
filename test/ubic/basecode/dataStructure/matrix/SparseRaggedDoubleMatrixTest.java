@@ -1,7 +1,7 @@
 /*
  * The baseCode project
  * 
- * Copyright (c) 2008 University of British Columbia
+ * Copyright (c) 2008-2019 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import cern.colt.matrix.DoubleMatrix1D;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class SparseRaggedDoubleMatrixTest {
     InputStream is = null;

@@ -32,7 +32,7 @@ import ubic.basecode.dataStructure.matrix.StringMatrix;
 
 /**
  * @author Pavlidis
- * @version $Id$
+ * 
  */
 
 public class TestRowNameFilter extends AbstractTestFilter {

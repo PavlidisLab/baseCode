@@ -34,7 +34,7 @@ import ubic.basecode.dataStructure.matrix.Matrix2D;
  * Abstract class representing an object that can read in a {@link Matrix2D}from a file.
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public abstract class AbstractMatrixReader<M extends Matrix2D<String, String, V>, V> {
 

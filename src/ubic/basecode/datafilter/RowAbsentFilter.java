@@ -32,7 +32,7 @@ import ubic.basecode.dataStructure.matrix.StringMatrix;
  * Marginal flags are counted as "absent", but this can be changed by the user.
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class RowAbsentFilter<M extends Matrix2D<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
 

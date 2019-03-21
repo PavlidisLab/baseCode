@@ -41,7 +41,7 @@ import cern.jet.math.Functions;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class TestMatrixStats {
 

@@ -29,7 +29,7 @@ import cern.jet.stat.Probability;
  * In this class "conditional variance" means the variance for one data set. Unconditional means "between data set", or
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public abstract class MetaAnalysis {
 

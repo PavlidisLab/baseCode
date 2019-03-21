@@ -32,7 +32,7 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
  * other. This is because getQuick() and setQuick() are not very fast for this.
  * 
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class RCDoubleMatrix1D extends DoubleMatrix1D {
 

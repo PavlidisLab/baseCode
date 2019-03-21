@@ -1,7 +1,7 @@
 /*
- * The Gemma project
+ * The basecode project
  * 
- * Copyright (c) 2007 Columbia University
+ * Copyright (c) 2007-2019 Columbia University
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import com.hp.hpl.jena.ontology.Restriction;
  * Represents a restriction on instances that are subclasses of this.
  * 
  * @author Paul
- * @version $Id$
+ * 
  */
 public abstract class OntologyRestrictionImpl extends OntologyTermImpl implements OntologyRestriction {
 

@@ -23,7 +23,7 @@ import com.hp.hpl.jena.ontology.OntClass;
  * is missing the inference components)
  * 
  * @author Paul
- * @version $Id$
+ * 
  */
 public class OntologyTermSimple extends OntologyTermImpl {
 

@@ -1,7 +1,7 @@
 /*
- * The Gemma project
+ * The basecode project
  * 
- * Copyright (c) 2008 University of British Columbia
+ * Copyright (c) 2008-2019 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import java.util.Set;
  * This replaces the idiom of map.containsKey(k) ? map.put(k, map.get(k) + 1) : map.put(k, 0);
  * 
  * @author luke
- * @version $Id$
+ * 
  * @param <K>
  */
 public class CountingMap<K> implements Map<K, Integer> {

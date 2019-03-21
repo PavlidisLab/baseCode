@@ -25,7 +25,7 @@ import java.text.NumberFormat;
  * is important for some applications).
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class Link extends Point implements Comparable<Link> {
 

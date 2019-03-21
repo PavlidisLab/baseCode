@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @todo do something about cyclicity; make this a dag or a subclass...
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class DirectedGraph<K, V> extends AbstractGraph<DirectedGraphNode<K, V>, K, V> {
 

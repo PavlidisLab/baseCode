@@ -22,7 +22,7 @@ import java.awt.Color;
 
 /**
  * @author Will Braynen
- * @version $Id$
+ * 
  */
 public class ColorMap {
     public static final Color DARK_RED = new Color( 128, 0, 0 );

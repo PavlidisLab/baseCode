@@ -20,7 +20,7 @@ package ubic.basecode.dataStructure.graph;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public interface GraphNode<K, V> {
 

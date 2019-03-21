@@ -1,5 +1,5 @@
 /*
- * The Gemma project
+ * The basecode project
  * 
  * Copyright (c) 2006 University of British Columbia
  * 
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * used for testing.
  * 
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class PrettyPrinter {
 

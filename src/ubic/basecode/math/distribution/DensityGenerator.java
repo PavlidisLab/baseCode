@@ -22,7 +22,7 @@ package ubic.basecode.math.distribution;
  * An interface that describes a class that can produce values from a particular probability density.
  * 
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public interface DensityGenerator {
 

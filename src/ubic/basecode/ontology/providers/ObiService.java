@@ -23,7 +23,7 @@ import ubic.basecode.util.Configuration;
 
 /**
  * @author paul
- * @version $Id$
+ * 
  */
 public class ObiService extends AbstractOntologyMemoryBackedService {
 

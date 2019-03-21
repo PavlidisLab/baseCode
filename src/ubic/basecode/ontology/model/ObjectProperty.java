@@ -1,7 +1,7 @@
 /*
- * The Gemma project
+ * The basecode project
  * 
- * Copyright (c) 2007 University of British Columbia
+ * Copyright (c) 2007-2019 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.Collection;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public interface ObjectProperty extends OntologyProperty {
 

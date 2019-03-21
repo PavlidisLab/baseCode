@@ -22,7 +22,7 @@ package ubic.basecode.util;
  * Prints status info to stderr
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class StatusStderr implements StatusViewer {
 

@@ -33,7 +33,7 @@ import org.apache.commons.math3.random.Well19937c;
  * Fill arrays with random values
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class RandomChooser {
 

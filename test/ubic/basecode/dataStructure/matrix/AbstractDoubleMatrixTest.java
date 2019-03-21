@@ -31,7 +31,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * TODO Document Me
  * 
  * @author Paul
- * @version $Id$
+ * 
  */
 public abstract class AbstractDoubleMatrixTest {
     protected DoubleMatrixReader f = new DoubleMatrixReader();

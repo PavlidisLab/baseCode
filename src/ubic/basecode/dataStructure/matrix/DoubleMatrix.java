@@ -30,7 +30,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * Abstract base class for 2D matrices of double values with named columns and rows.
  * 
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> implements PrimitiveMatrix<R, C, Double> {
 

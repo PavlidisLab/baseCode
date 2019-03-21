@@ -25,7 +25,7 @@ import ubic.basecode.io.reader.DoubleMatrixReader;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class JRIClientTest extends AbstractRClientTest {
 

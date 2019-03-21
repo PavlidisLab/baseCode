@@ -28,7 +28,7 @@ import org.junit.Test;
  * on Catmap.
  *
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class TestWilcoxon {
     /* tests based on catmap */

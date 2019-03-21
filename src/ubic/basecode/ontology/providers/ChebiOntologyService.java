@@ -1,7 +1,7 @@
 /*
- * The Gemma project
+ * The basecode project
  * 
- * Copyright (c) 2007 University of British Columbia
+ * Copyright (c) 2007-2019 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import ubic.basecode.util.Configuration;
  * Loads the CHEBI Ontology at startup in its own thread. Controlled in build.properties by load.chebiOntology
  * 
  * @author klc
- * @version $Id$
+ * 
  */
 public class ChebiOntologyService extends AbstractOntologyMemoryBackedService {
 

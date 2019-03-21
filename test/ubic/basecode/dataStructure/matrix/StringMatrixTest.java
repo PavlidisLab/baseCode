@@ -27,7 +27,7 @@ import ubic.basecode.io.reader.StringMatrixReader;
 
 /**
  * @author Paul
- * @version $Id$
+ * 
  */
 public class StringMatrixTest {
 

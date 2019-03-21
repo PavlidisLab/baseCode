@@ -36,7 +36,7 @@ import ubic.basecode.util.FileTools;
  * Reader for {@link basecode.dataStructure.matrix.StringMatrix}
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class StringMatrixReader extends AbstractMatrixReader<StringMatrix<String, String>, String> {
 

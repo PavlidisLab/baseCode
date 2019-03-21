@@ -25,7 +25,7 @@ import ubic.basecode.dataStructure.Visitable;
 
 /**
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public abstract class AbstractGraph<R extends GraphNode<K, V>, K, V> implements Graph<R, K, V> {
 

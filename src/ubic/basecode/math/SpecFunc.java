@@ -41,7 +41,7 @@ import static java.lang.Math.*;
  *      "http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/cern/jet/math/Arithmetic.html">cern.jet.math.arithmetic
  *      </a>
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class SpecFunc {
 

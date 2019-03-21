@@ -43,7 +43,7 @@ import cern.colt.list.DoubleArrayList;
  * Reader for {@link basecode.dataStructure.matrix.DoubleMatrix}. Lines beginning with "#" or "!" will be ignored.
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String, String>, Double> {
 

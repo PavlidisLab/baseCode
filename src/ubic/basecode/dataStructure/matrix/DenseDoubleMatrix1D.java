@@ -23,7 +23,7 @@ package ubic.basecode.dataStructure.matrix;
  * faster, and toArray returns the actual elements, not a copy.
  * 
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class DenseDoubleMatrix1D extends cern.colt.matrix.impl.DenseDoubleMatrix1D {
 

@@ -31,7 +31,7 @@ import cern.colt.list.DoubleArrayList;
 
 /**
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class TestMatrixRowStats {
 

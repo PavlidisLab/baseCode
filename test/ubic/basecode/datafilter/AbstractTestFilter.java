@@ -30,7 +30,7 @@ import ubic.basecode.io.reader.StringMatrixReader;
  * Fixture for testing filtering of matrices.
  * 
  * @author Pavlidis
- * @version $Id$
+ * 
  */
 public abstract class AbstractTestFilter {
 

@@ -32,7 +32,7 @@ import cern.colt.list.DoubleArrayList;
  * Creates a color matrix from a matrix of doubles
  * 
  * @author Will Braynen
- * @version $Id$
+ * 
  */
 public class ColorMatrix<A, B> implements Cloneable {
 

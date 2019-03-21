@@ -42,7 +42,7 @@ import cern.colt.list.DoubleArrayList;
  * 
  * @author Kiran Keshav
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public final class ByteArrayConverter {
 

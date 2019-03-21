@@ -25,7 +25,7 @@ import java.net.URI;
 
 /**
  * @author paul
- * @version $Id$
+ * 
  */
 public class BrowserLauncher {
 

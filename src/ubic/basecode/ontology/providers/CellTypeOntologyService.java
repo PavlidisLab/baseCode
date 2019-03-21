@@ -25,7 +25,7 @@ import ubic.basecode.util.Configuration;
  * See http://www.obofoundry.org/cgi-bin/detail.cgi?id=cell
  * 
  * @author paul
- * @version $Id$
+ * 
  */
 public class CellTypeOntologyService extends AbstractOntologyMemoryBackedService {
 

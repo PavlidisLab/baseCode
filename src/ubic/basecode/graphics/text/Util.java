@@ -28,7 +28,7 @@ import java.awt.geom.AffineTransform;
 
 /**
  * @author Will Braynen
- * @version $Id$
+ * 
  */
 public class Util {
 

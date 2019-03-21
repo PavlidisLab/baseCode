@@ -27,7 +27,7 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
 /**
  * @author Paul
- * @version $Id$
+ * 
  */
 public class StringToStringSetMapTest {
     StringToStringSetMap map;

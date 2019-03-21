@@ -1,7 +1,7 @@
 /*
- * The Gemma project
+ * The baseCode project
  * 
- * Copyright (c) 2007 University of British Columbia
+ * Copyright (c) 2007-2019 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * @author pavlidis
- * @version $Id$
  */
 public class OntologyIndividualImpl extends AbstractOntologyResource implements OntologyIndividual {
 
@@ -68,7 +67,8 @@ public class OntologyIndividualImpl extends AbstractOntologyResource implements 
 
     @Override
     public String toString() {
-        String label = ind.getLabel( null );
+        String label = ind.getLabel( "en" ); // we specify English - some ontologies have other languages as well 
+        if ( label == null ) label = ind.getLabel( null );
         if ( label == null ) label = ind.getLocalName();
         if ( label == null ) label = ind.getURI();
         return label;

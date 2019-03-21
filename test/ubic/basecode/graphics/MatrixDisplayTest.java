@@ -39,7 +39,7 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
 /**
  * @author keshav
- * @version $Id$
+ * 
  */
 public class MatrixDisplayTest {
     double[][] array = new double[5][5];

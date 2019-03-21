@@ -33,7 +33,7 @@ import ubic.basecode.util.FileTools;
  * Reads a tab-delimited file with keys in first column, values in second.
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class MapReader {
 

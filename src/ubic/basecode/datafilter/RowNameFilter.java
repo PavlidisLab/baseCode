@@ -29,7 +29,7 @@ import ubic.basecode.dataStructure.matrix.MatrixUtil;
  * Remove or retain rows that are on a list.
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class RowNameFilter<M extends Matrix2D<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
 

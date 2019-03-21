@@ -29,7 +29,7 @@ import java.util.Map;
  * Generates a parameter map from a class using reflection, usefull for storing experimental parameters
  * 
  * @author leon
- * @version $Id$
+ * 
  */
 public class ParameterGrabber {
     /**

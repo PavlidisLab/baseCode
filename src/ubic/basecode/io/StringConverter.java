@@ -21,7 +21,7 @@ package ubic.basecode.io;
 /**
  * @author Kiran Keshav
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class StringConverter {
     private String delimiter = "\t"; // it's a regexp.

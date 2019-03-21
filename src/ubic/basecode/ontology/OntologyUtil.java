@@ -26,7 +26,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * @author paul
- * @version $Id$
+ * 
  */
 public class OntologyUtil {
 

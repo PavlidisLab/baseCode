@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class StatusDebugLogger implements StatusViewer {
 

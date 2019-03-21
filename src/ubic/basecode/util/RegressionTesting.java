@@ -45,7 +45,7 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
  * Tools to help make regression testing easier, but also useful for other purposes.
  * 
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class RegressionTesting {
 

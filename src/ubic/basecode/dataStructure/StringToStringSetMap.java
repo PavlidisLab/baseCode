@@ -1,7 +1,7 @@
 /*
- * The Gemma project
+ * The basecode project
  * 
- * Copyright (c) 2007 University of British Columbia
+ * Copyright (c) 2007-2019 University of British Columbia
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
  * Implemented to store string based many to many relationships.
  * 
  * @author leon
- * @version $Id$
+ * 
  */
 public class StringToStringSetMap extends HashMap<String, Set<String>> {
 

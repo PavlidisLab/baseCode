@@ -29,7 +29,7 @@ import ubic.basecode.dataStructure.matrix.Matrix2D;
  * Base implementation of the filter interface. Subclasses must implement the filter() method.
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public abstract class AbstractFilter<M extends Matrix2D<R, C, V>, R, C, V> implements Filter<M, R, C, V> {
 

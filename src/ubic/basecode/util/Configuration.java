@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * Configuration of ontology services and other things.
  * 
  * @author paul
- * @version $Id$
+ * 
  */
 public class Configuration {
 

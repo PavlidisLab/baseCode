@@ -30,7 +30,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * DoubleArrayList[], while DenseDouble2DMatrixNamed delegates to a DenseDoubleMatrix2D.
  * 
  * @author pavlidis
- * @version $Id$
+ * 
  */
 public class FastRowAccessDoubleMatrix<R, C> extends DoubleMatrix<R, C> {
 

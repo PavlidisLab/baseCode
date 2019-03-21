@@ -29,7 +29,7 @@ import ubic.basecode.dataStructure.matrix.MatrixUtil;
  * cases like "AFFX", "_st", "_f_at" and so forth.
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class AffymetrixProbeNameFilter<M extends Matrix2D<R, C, V>, R, C, V> extends AbstractFilter<M, R, C, V> {
 

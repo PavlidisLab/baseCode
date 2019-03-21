@@ -27,7 +27,7 @@ import org.apache.commons.lang3.StringUtils;
  * Represents one row of an ANOVA table
  * 
  * @author paul
- * @version $Id$
+ * 
  */
 public class AnovaEffect implements Serializable {
 

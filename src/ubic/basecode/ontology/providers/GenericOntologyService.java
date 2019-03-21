@@ -22,7 +22,7 @@ import com.hp.hpl.jena.ontology.OntModel;
  * A way to create ad hoc ontology services (in memory) for testing
  * 
  * @author Paul
- * @version $Id$
+ * 
  */
 public class GenericOntologyService extends AbstractOntologyService {
 

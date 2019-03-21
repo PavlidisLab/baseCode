@@ -26,7 +26,7 @@ import java.util.Set;
  * A graph node that has the concept of parents and children. Keys can be anything, but probably Strings or Integers.
  * 
  * @author Paul Pavlidis
- * @version $Id$
+ * 
  */
 public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements Comparable<DirectedGraphNode<K, V>> {
 

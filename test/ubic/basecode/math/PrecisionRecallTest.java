@@ -27,7 +27,7 @@ import org.junit.Test;
 
 /**
  * @author paul
- * @version $Id$
+ * 
  */
 public class PrecisionRecallTest {
 
