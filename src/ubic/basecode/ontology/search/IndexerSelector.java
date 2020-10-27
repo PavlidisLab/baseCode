@@ -68,6 +68,7 @@ public class IndexerSelector implements Selector {
         unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/gwas_trait" );
         unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/definition_editor" );
         unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/example_of_usage" );
+        unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/creator" ); // possibly related to issue 108
         unwantedForIndexing.add( "http://www.geneontology.org/formats/oboInOwl#Definition" );
         unwantedForIndexing.add( "http://purl.obolibrary.org/obo/IAO_0000115" ); // 'definition' - too often has extra
                                                                                  // junk.
