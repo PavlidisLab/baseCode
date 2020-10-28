@@ -80,9 +80,9 @@ public class NetUtilsTest {
             log.warn( "Could not connect to ftp.ncbi.nlm.nih.gov, skipping test" );
             return;
         }
-        long actualValue = NetUtils.ftpFileSize( f, "genomes/Pan_troglodytes/WGS_12Dec2003/WIBR.seq007.fa" );
-        long expectedValue = 131446617;
-        assertEquals( expectedValue, actualValue, 100000 ); // don't really care if they change the file size....
+        long actualValue = NetUtils.ftpFileSize( f, "genomes/all/annotation_releases/1026970/102/Nannospalax_galili_AR102_annotation_report.xml" );
+        long expectedValue = 79819;
+        assertEquals( expectedValue, actualValue, 10000 ); // don't really care if they change the file size....
     }
 
     @Test
