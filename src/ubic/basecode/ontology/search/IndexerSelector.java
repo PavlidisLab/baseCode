@@ -68,7 +68,13 @@ public class IndexerSelector implements Selector {
         unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/gwas_trait" );
         unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/definition_editor" );
         unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/example_of_usage" );
-        unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/creator" ); // possibly related to issue 108
+        unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/creator" );
+        unwantedForIndexing.add( "http://www.ebi.ac.uk/efo/definition_citation" );
+        unwantedForIndexing.add( "http://www.geneontology.org/formats/oboInOwl#created_by" );
+        unwantedForIndexing.add( "http://purl.org/dc/elements/1.1/rights" );
+        unwantedForIndexing.add( "http://purl.org/dc/terms/license" );
+        unwantedForIndexing.add( "http://www.w3.org/2000/01/rdf-schema#comment" );
+        unwantedForIndexing.add( "http://www.w3.org/2002/07/owl#versioninfo" );
         unwantedForIndexing.add( "http://www.geneontology.org/formats/oboInOwl#Definition" );
         unwantedForIndexing.add( "http://purl.obolibrary.org/obo/IAO_0000115" ); // 'definition' - too often has extra
                                                                                  // junk.
@@ -95,7 +101,7 @@ public class IndexerSelector implements Selector {
         unwantedForIndexing.add( "http://purl.obolibrary.org/obo/UBPROP_0000005" ); // external comment
         unwantedForIndexing.add( "http://purl.obolibrary.org/obo/UBPROP_0000011" ); // development notes
         unwantedForIndexing.add( "http://xmlns.com/foaf/0.1/depicted_by" ); // not sure how often this comes up as a problem, but it does for one case
-        
+
         unwantedForIndexing.add( "http://purl.obolibrary.org/obo/CLO_0037275" ); // problematic cell line annotation as in "this is not a glioblastoma"
     }
 
@@ -156,7 +162,7 @@ public class IndexerSelector implements Selector {
         if ( !retain && log.isDebugEnabled() ) {
             log.debug( "Removed: " + s );
         }
-        
+
         return retain;
     }
 }
