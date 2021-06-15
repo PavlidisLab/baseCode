@@ -196,6 +196,8 @@ public class DesignMatrix {
         // the column where the interaction "goes"
         int interactionIndex = terms.size();
 
+        String termName = StringUtils.join( interactionTerms, ":" );
+
         for ( String t1 : interactionTerms ) {
 
             if ( doneTerms.contains( t1 ) ) continue;
@@ -203,6 +205,9 @@ public class DesignMatrix {
 
             for ( int i = 0; i < cols1.size(); i++ ) {
                 double[] col1i = this.matrix.getColumn( cols1.get( i ) );
+
+                assert col1i.length > 0;
+
                 for ( String t2 : interactionTerms ) {
                     if ( t1.equals( t2 ) ) continue;
                     doneTerms.add( t2 );
@@ -216,17 +221,23 @@ public class DesignMatrix {
                         Double[] prod = new Double[col1i.length];
 
                         this.matrix = this.copyWithSpace( this.matrix, this.matrix.columns() + 1 );
-                        String termName = null;
                         String columnName = null;
                         for ( int k = 0; k < col1i.length; k++ ) {
-                            prod[k] = col1i[k] * col2i[k];
-                            if ( prod[k] != 0 && StringUtils.isBlank( termName ) ) {
+                            prod[k] = col1i[k] * col2i[k]; // compute the value for the interaction, should be either 0 or 1
+
+                            // FIXME: do we need the columnName to be distinct from the term name? Human readability maybe?
+                            if ( prod[k] != 0 && StringUtils.isBlank( columnName ) ) {
                                 String if1 = this.valuesForFactors.get( t1 ).get( k ).toString();
                                 String if2 = this.valuesForFactors.get( t2 ).get( k ).toString();
                                 columnName = t1 + if1 + ":" + t2 + if2;
-                                termName = t1 + ":" + t2;
                             }
+
                             matrix.set( k, this.matrix.columns() - 1, prod[k] );
+                        }
+
+                        if ( columnName == null ) {
+                            throw new IllegalStateException(
+                                    "Failed to form column name = " + columnName + " for interaction term " + termName );
                         }
 
                         boolean redundant = checkForRedundancy( this.matrix, this.matrix.columns() - 1 );
@@ -381,8 +392,8 @@ public class DesignMatrix {
     }
 
     /**
-     * @param vec
-     * @param inputDesign
+     * @param  vec
+     * @param  inputDesign
      * @return
      */
     private DoubleMatrix<String, String> addContinuousCovariate( List<?> vec,
@@ -416,7 +427,7 @@ public class DesignMatrix {
     }
 
     /**
-     * @param rows
+     * @param  rows
      * @return
      */
     private DoubleMatrix<String, String> addIntercept( int rows ) {
@@ -434,12 +445,13 @@ public class DesignMatrix {
      * The primary method for actually setting up the design matrix. Redundant or constant columns are dropped (except
      * the intercept, if included)
      *
-     * @param which column of the input matrix are we working on.
-     * @param factorValues of doubles or strings.
-     * @param inputDesign
-     * @param start 1 or 2. Set to 1 to get a column for each level (must not have an intercept in the model); Set to 2
-     *        to get a column for all but the last (Redundant) level (or another redundant column)
-     * @param factorName String to associate with the factor
+     * @param  which        column of the input matrix are we working on.
+     * @param  factorValues of doubles or strings.
+     * @param  inputDesign
+     * @param  start        1 or 2. Set to 1 to get a column for each level (must not have an intercept in the model);
+     *                      Set to 2
+     *                      to get a column for all but the last (Redundant) level (or another redundant column)
+     * @param  factorName   String to associate with the factor
      * @return
      */
     @SuppressWarnings("unchecked")
@@ -558,9 +570,9 @@ public class DesignMatrix {
     /**
      * Check if the column is redundant with a previous column
      *
-     * @param tmp
-     * @param column index of column to check.
-     * @return true if a column with index < column is the same as the column at the given index.
+     * @param  tmp
+     * @param  column index of column to check.
+     * @return        true if a column with index < column is the same as the column at the given index.
      */
     private boolean checkForRedundancy( DoubleMatrix<String, String> tmp, int column ) {
         for ( int p = 0; p < column; p++ ) {
@@ -583,8 +595,8 @@ public class DesignMatrix {
     /**
      * Add extra empty columns to a matrix, implemented by copying.
      *
-     * @param inputDesign
-     * @param numberofColumns how many to add.
+     * @param  inputDesign
+     * @param  numberofColumns how many to add.
      * @return
      */
     private DoubleMatrix<String, String> copyWithSpace( DoubleMatrix<String, String> inputDesign,
@@ -610,8 +622,8 @@ public class DesignMatrix {
     /**
      * Build a "standard" design matrix from a matrix of sample information.
      *
-     * @param sampleInfo
-     * @param intercept if true, an intercept term is included.
+     * @param  sampleInfo
+     * @param  intercept  if true, an intercept term is included.
      * @return
      */
     private DoubleMatrix<String, String> designMatrix( ObjectMatrix<String, String, ?> sampleInfo, boolean intercept ) {
@@ -624,8 +636,8 @@ public class DesignMatrix {
     }
 
     /**
-     * @param sampleInfo
-     * @param design
+     * @param  sampleInfo
+     * @param  design
      * @return
      */
     private DoubleMatrix<String, String> designMatrix( ObjectMatrix<String, String, ?> sampleInfo,
@@ -640,7 +652,7 @@ public class DesignMatrix {
     }
 
     /**
-     * @param vec
+     * @param  vec
      * @return
      */
     private List<String> levels( String factorName, List<String> vec ) {
@@ -648,8 +660,8 @@ public class DesignMatrix {
     }
 
     /**
-     * @param factorName
-     * @param vec
+     * @param  factorName
+     * @param  vec
      * @return
      */
     private List<String> levels( String factorName, String[] vec ) {
