@@ -485,7 +485,7 @@
 		<repository>
 			<id>central</id>
 			<name>central</name>
-			<url>http://repo1.maven.org/maven2/</url>
+			<url>https://repo1.maven.org/maven2/</url>
 			<layout>default</layout>
 			<snapshots>
 				<enabled>false</enabled>
@@ -528,14 +528,14 @@
 		<repository>
 			<id>version99</id>
 			<!-- highly available repository serving empty artifacts -->
-			<url>http://version99.qos.ch/</url>
+			<url>https://version99.qos.ch/</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
 			<id>apache.plugin.snapshots</id>
 			<name>Apache Development Repository</name>
-			<url>http://cvs.apache.org/maven-snapshot-repository</url>
+			<url>https://cvs.apache.org/maven-snapshot-repository</url>
 			<releases>
 				<enabled>false</enabled>
 			</releases>
