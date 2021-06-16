@@ -38,6 +38,10 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
 
     public abstract double[][] asArray();
 
+    /**
+     * Create a deep copy of this
+     * @return a deep copy of this
+     */
     public abstract DoubleMatrix<R, C> copy();
 
     /**
@@ -54,8 +58,8 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
 
     /**
      * @param startCol inclusive, numbered from zero
-     * @param endCol inclusive
-     * @return
+     * @param endCol inclusive, numbered from zero
+     * @return new matrix with just the requested range of columns from this
      */
     public abstract DoubleMatrix<R, C> getColRange( int startCol, int endCol );
 

@@ -17,6 +17,7 @@ package ubic.basecode.math.linearmodels;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -82,6 +83,12 @@ public class DesignMatrix {
     private final Map<String, List<Object>> valuesForFactors = new LinkedHashMap<>();
 
     /**
+     * Whether to try to remove unusable factors from the design matrix (currently applies to interactions). If false,
+     * the design matrix might need modification by the caller.
+     */
+    private boolean strict = true;
+
+    /**
      * @param factor in form of Doubles or Strings. Any other types will yield errors.
      * @param start
      */
@@ -132,6 +139,17 @@ public class DesignMatrix {
     }
 
     /**
+     * @param design
+     * @param intercept whether to include an intercept in the model
+     * @param strict    whether to remove columns from the design matrix that are unlikely to be useable. By default
+     *                  this is "true" for other constructors.
+     */
+    public DesignMatrix( ObjectMatrix<String, String, Object> design, boolean intercept, boolean strict ) {
+        this( design, intercept );
+        this.strict = strict;
+    }
+
+    /**
      * Append additional factors/covariates to this
      *
      * @param sampleInfo
@@ -170,7 +188,8 @@ public class DesignMatrix {
     }
 
     /**
-     * This will not add the interaction unless all of the terms are already part of the design.
+     * This will not add the interaction unless all of the terms are already part of the design, and interactions that
+     * obviously can't be estimated will be dropped if possible, but otherwise this is fairly brain dead.
      *
      * @param interactionTerms
      */
@@ -197,7 +216,8 @@ public class DesignMatrix {
         int interactionIndex = terms.size();
 
         String termName = StringUtils.join( interactionTerms, ":" );
-
+        Set<String> usedInteractionTerms = new HashSet<>();
+        Arrays.sort( interactionTerms );
         for ( String t1 : interactionTerms ) {
 
             if ( doneTerms.contains( t1 ) ) continue;
@@ -222,10 +242,12 @@ public class DesignMatrix {
 
                         this.matrix = this.copyWithSpace( this.matrix, this.matrix.columns() + 1 );
                         String columnName = null;
+                        int numValid = 0;
                         for ( int k = 0; k < col1i.length; k++ ) {
                             prod[k] = col1i[k] * col2i[k]; // compute the value for the interaction, should be either 0 or 1
-
-                            // FIXME: do we need the columnName to be distinct from the term name? Human readability maybe?
+                            if ( prod[k] != 0 ) numValid++;
+                            // We don't really need the columnName to be distinct from the term name, it just
+                            // makes it clearer which factor values are considered non-zero combination.
                             if ( prod[k] != 0 && StringUtils.isBlank( columnName ) ) {
                                 String if1 = this.valuesForFactors.get( t1 ).get( k ).toString();
                                 String if2 = this.valuesForFactors.get( t2 ).get( k ).toString();
@@ -235,21 +257,27 @@ public class DesignMatrix {
                             matrix.set( k, this.matrix.columns() - 1, prod[k] );
                         }
 
-                        if ( columnName == null ) {
-                            throw new IllegalStateException(
-                                    "Failed to form column name = " + columnName + " for interaction term " + termName );
+                        if ( numValid < 2 && strict ) {
+                            /*
+                             * remove the column, we won't be able to estimate it
+                             */
+                            log.info( "Interaction term " + termName + " won't be estimable, dropping" );
+                            matrix = matrix.getColRange( 0, this.matrix.columns() - 2 );
+                            continue;
                         }
 
-                        boolean redundant = checkForRedundancy( this.matrix, this.matrix.columns() - 1 );
-                        if ( redundant ) {
+                        boolean redundant = checkForRedundancy( this.matrix, this.matrix.columns() - 2 );
+                        if ( redundant && strict ) {
                             /*
                              * remove the column.
                              */
-                            log.info( "Interaction term is redundant with another column, dropping" );
-                            matrix = matrix.getColRange( 0, this.matrix.columns() - 1 );
-                            // FIXME. I think this is broken. The terms also need to be fixed?
+                            log.info( "Interaction term " + termName + " is redundant with another column, dropping" );
+                            matrix = matrix.getColRange( 0, this.matrix.columns() - 2 );
                             continue;
                         }
+
+                        usedInteractionTerms.add( t1 );
+                        usedInteractionTerms.add( t2 );
 
                         matrix.addColumnName( columnName );
                         if ( !this.terms.containsKey( termName ) ) {
@@ -262,7 +290,9 @@ public class DesignMatrix {
             }
         }
 
-        this.interactions.add( interactionTerms );
+        if ( !usedInteractionTerms.isEmpty() ) {
+            this.interactions.add( usedInteractionTerms.toArray( new String[] {} ) );
+        }
 
     }
 

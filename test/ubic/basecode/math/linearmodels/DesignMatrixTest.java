@@ -143,7 +143,7 @@ public class DesignMatrixTest {
         design.addColumnName( "Treat" );
         design.addColumnName( "Geno" );
 
-        DesignMatrix designMatrix = new DesignMatrix( design, true );
+        DesignMatrix designMatrix = new DesignMatrix( design, true, false );
         designMatrix.addInteraction( "Treat", "Geno" );
 
         String beforeRebuild = designMatrix.toString();
@@ -162,8 +162,8 @@ public class DesignMatrixTest {
         assertEquals( "TreatB", matrix.getColName( 1 ) );
         assertEquals( "GenoD", matrix.getColName( 2 ) );
         assertEquals( "GenoE", matrix.getColName( 3 ) );
-        assertEquals( "TreatB:GenoD", matrix.getColName( 4 ) );
-        assertEquals( "TreatB:GenoE", matrix.getColName( 5 ) );
+        assertEquals( "GenoD:TreatB", matrix.getColName( 4 ) );
+        assertEquals( "GenoE:TreatB", matrix.getColName( 5 ) );
 
         /*
          * Test rebuilding.
@@ -195,8 +195,8 @@ public class DesignMatrixTest {
         assertEquals( "TreatA", matrix.getColName( 1 ) );
         assertEquals( "GenoD", matrix.getColName( 2 ) );
         assertEquals( "GenoE", matrix.getColName( 3 ) );
-        assertEquals( "TreatA:GenoD", matrix.getColName( 4 ) );
-        assertEquals( "TreatA:GenoE", matrix.getColName( 5 ) );
+        assertEquals( "GenoD:TreatA", matrix.getColName( 4 ) );
+        assertEquals( "GenoE:TreatA", matrix.getColName( 5 ) );
 
     }
 
@@ -256,7 +256,7 @@ public class DesignMatrixTest {
         assertEquals( "TreatB", matrix.getColName( 1 ) );
         assertEquals( "Value", matrix.getColName( 2 ) );
         assertEquals( "GenoD", matrix.getColName( 3 ) );
-        assertEquals( "TreatB:GenoD", matrix.getColName( 4 ) );
+        assertEquals( "GenoD:TreatB", matrix.getColName( 4 ) );
 
         String beforeRebuild = designMatrix.toString();
         designMatrix.rebuild();
