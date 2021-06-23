@@ -66,6 +66,15 @@ public class DesignMatrix {
     private final Set<String[]> interactions = new LinkedHashSet<>();
 
     /**
+     * 
+     * @return a collection of String arrays. If empty, there are no interactions. Each array represents an interaction
+     *         in the model. The elements of the array are the terms included in the interaction, as Strings provided when calling addInteraction.
+     */
+    public Collection<String[]> getInteractionTerms() {
+        return interactions;
+    }
+
+    /**
      * Only applied for categorical factors.
      */
     private final Map<String, List<String>> levelsForFactors = new LinkedHashMap<>();
