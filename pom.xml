@@ -5,7 +5,7 @@
 	<name>baseCode</name>
 	<groupId>baseCode</groupId>
 	<artifactId>baseCode</artifactId>
-	<version>1.0.30</version>
+	<version>1.0.31-SNAPSHOT</version>
 	<inceptionYear>2003</inceptionYear>
 	<description>
 	<![CDATA[Data structures, math and statistics tools, and utilities that are often needed across projects.]]>
