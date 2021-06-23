@@ -40,7 +40,7 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
     protected int topoSortOrder = 0;
 
     /**
-     * @param key Object
+     * @param key   Object
      * @param value Object
      * @param graph Graph
      */
@@ -48,8 +48,8 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
         super( key, value );
         assert key != null;
         assert value != null;
-        parents = new LinkedHashSet<K>();
-        children = new LinkedHashSet<K>();
+        parents = new LinkedHashSet<>();
+        children = new LinkedHashSet<>();
         this.graph = graph;
     }
 
@@ -77,7 +77,7 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
      */
     @Override
     public DirectedGraphNode<K, V> clone() {
-        DirectedGraphNode<K, V> r = new DirectedGraphNode<K, V>( key, item, graph );
+        DirectedGraphNode<K, V> r = new DirectedGraphNode<>( key, item, graph );
         for ( Iterator<K> it = this.getParentIterator(); it.hasNext(); ) {
             K j = it.next();
             r.addParent( j );
@@ -93,8 +93,8 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
     /**
      * Uses the topological sort order.
      * 
-     * @param o Object
-     * @return int
+     * @param  o Object
+     * @return   int
      */
     @Override
     public int compareTo( DirectedGraphNode<K, V> o ) {
@@ -139,7 +139,7 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
         Set<DirectedGraphNode<K, V>> k = this.getAllChildNodes();
         k.add( this );
 
-        DirectedGraph<K, V> returnVal = new DirectedGraph<K, V>();
+        DirectedGraph<K, V> returnVal = new DirectedGraph<>();
         for ( DirectedGraphNode<K, V> m : k ) {
             returnVal.addNode( m.clone() );
         }
@@ -161,7 +161,7 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
      * @return Set containing the child nodes of this node.
      */
     public Set<DirectedGraphNode<K, V>> getChildNodes() {
-        Set<DirectedGraphNode<K, V>> f = new LinkedHashSet<DirectedGraphNode<K, V>>();
+        Set<DirectedGraphNode<K, V>> f = new LinkedHashSet<>();
         for ( Iterator<K> i = this.getChildIterator(); i.hasNext(); ) {
             K k = i.next();
             assert k != null;
@@ -194,7 +194,7 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
      * @return Set
      */
     public Set<DirectedGraphNode<K, V>> getParentNodes() {
-        Set<DirectedGraphNode<K, V>> f = new LinkedHashSet<DirectedGraphNode<K, V>>();
+        Set<DirectedGraphNode<K, V>> f = new LinkedHashSet<>();
         for ( Iterator<K> i = this.getParentIterator(); i.hasNext(); ) {
             K k = i.next();
             f.add( getGraph().get( k ) );
@@ -212,8 +212,8 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
     /**
      * Check to see if this node has a particular immediate child.
      * 
-     * @param j Object
-     * @return boolean
+     * @param  j Object
+     * @return   boolean
      */
     public boolean hasChild( Object j ) {
         return children.contains( j );
@@ -222,8 +222,8 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
     /**
      * Check to see if this node has a particular immediate parent.
      * 
-     * @param j Object
-     * @return boolean
+     * @param  j Object
+     * @return   boolean
      */
     public boolean hasParent( Object j ) {
         return parents.contains( j );
@@ -299,7 +299,7 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
 
     private Set<DirectedGraphNode<K, V>> getAllChildNodes( Set<DirectedGraphNode<K, V>> list ) {
         if ( list == null ) {
-            list = new LinkedHashSet<DirectedGraphNode<K, V>>();
+            list = new LinkedHashSet<>();
         }
 
         for ( Iterator<K> it = this.getChildIterator(); it.hasNext(); ) {
@@ -312,7 +312,7 @@ public class DirectedGraphNode<K, V> extends AbstractGraphNode<K, V> implements 
 
     private Set<DirectedGraphNode<K, V>> getAllParentNodes( Set<DirectedGraphNode<K, V>> list ) {
         if ( list == null ) {
-            list = new LinkedHashSet<DirectedGraphNode<K, V>>();
+            list = new LinkedHashSet<>();
         }
 
         for ( Iterator<K> it = this.getParentIterator(); it.hasNext(); ) {
