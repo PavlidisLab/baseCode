@@ -1,36 +1,34 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2011 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
 package ubic.basecode.math.linalg;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.netlib.lapack.LAPACK;
-import org.netlib.util.intW;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix1D;
-import ubic.basecode.dataStructure.matrix.MatrixUtil;
 import cern.colt.list.IntArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
-import cern.colt.matrix.linalg.Algebra;
 import cern.jet.math.Functions;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.Matrices;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.netlib.lapack.Dpotri;
+import org.netlib.util.intW;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix1D;
+import ubic.basecode.dataStructure.matrix.MatrixUtil;
 
 /**
  * QR with pivoting. See http://www.netlib.org/lapack/lug/node42.html and http://www.netlib.org/lapack/lug/node27.html,
@@ -496,7 +494,7 @@ public class QRDecomposition {
 
         DenseMatrix denseMatrix = new DenseMatrix( x.copy().toArray() );
         intW status = new intW( 0 );
-        LAPACK.getInstance().dpotri( "U", x.columns(), denseMatrix.getData(), x.columns(), status );
+        Dpotri.dpotri( "U", x.columns(), denseMatrix.getData(), 0, x.columns(), status );
         if ( status.val != 0 ) {
             throw new IllegalStateException( "Could not invert matrix" );
         }

@@ -22,11 +22,11 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Collection;
 
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import au.com.bytecode.opencsv.CSVReader;
 
 /**
  * @author pavlidis
@@ -148,7 +148,7 @@ public class StringUtil {
 
         try {
             return reader.readNext();
-        } catch ( IOException e ) {
+        } catch ( IOException | CsvValidationException e ) {
             throw new RuntimeException( e );
         }
     }

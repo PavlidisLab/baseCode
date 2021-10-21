@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2006 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,9 +24,9 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.configuration.io.FileHandler;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.configuration2.io.FileHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
@@ -41,12 +41,12 @@ import ubic.basecode.util.ConfigUtils;
 
 /**
  * @author pavlidis
- * 
+ *
  */
 public class RServeClient extends AbstractRClient {
 
     /**
-     * 
+     *
      */
     private static final int DEFAULT_PORT = 6311;
 
@@ -90,7 +90,7 @@ public class RServeClient extends AbstractRClient {
 
     /**
      * Gets connection on default host (localhost) and port (6311)
-     * 
+     *
      * @throws IOException
      */
     protected RServeClient() throws IOException {
@@ -111,7 +111,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#assign(java.lang.String, double[])
      */
     @Override
@@ -128,7 +128,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#assign(java.lang.String, int[])
      */
     @Override
@@ -146,12 +146,12 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.rosuda.JRclient.Rconnection#assign(java.lang.String, java.lang.String)
      */
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String)
      */
     @Override
@@ -169,7 +169,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#assign(java.lang.String, java.lang.String[])
      */
     @Override
@@ -190,7 +190,7 @@ public class RServeClient extends AbstractRClient {
     }
 
     /**
-     * 
+     *
      *
      */
     public boolean connect() {
@@ -205,7 +205,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.r.RClient#eval(java.lang.String)
      */
     @Override
@@ -262,7 +262,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#finalize()
      */
     @Override
@@ -272,7 +272,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#getLastError()
      */
     @Override
@@ -281,7 +281,7 @@ public class RServeClient extends AbstractRClient {
     }
 
     /**
-     * 
+     *
      */
     @Override
     public boolean isConnected() {
@@ -291,7 +291,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#retrieveMatrix(java.lang.String)
      */
     @Override
@@ -329,7 +329,7 @@ public class RServeClient extends AbstractRClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#voidEval(java.lang.String)
      */
     @Override
@@ -343,7 +343,7 @@ public class RServeClient extends AbstractRClient {
     }
 
     /**
-     * 
+     *
      */
     private void checkConnection() {
         if ( !this.isConnected() ) {

@@ -1,22 +1,11 @@
 package ubic.basecode.ontology.ncbo;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.ConnectException;
-import java.util.Collection;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -24,8 +13,18 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
 import ubic.basecode.util.Configuration;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.ConnectException;
+import java.util.Collection;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Use the NCBO annotator to find ontology terms matching strings.
@@ -77,7 +76,7 @@ public class AnnotatorClient {
 
         int tries = 0;
 
-        DefaultHttpClient httpclient = new DefaultHttpClient();
+        HttpClient httpclient = HttpClientBuilder.create().build();
         HttpResponse response = null;
         while ( response == null && tries < MAX_TRIES ) {
             try {
@@ -200,7 +199,7 @@ public class AnnotatorClient {
 
                 log.debug( url );
 
-                DefaultHttpClient httpclient = new DefaultHttpClient();
+                HttpClient httpclient = HttpClientBuilder.create().build();
 
                 HttpGet httpGet = new HttpGet( url );
                 HttpResponse response = httpclient.execute( httpGet );
@@ -231,7 +230,7 @@ public class AnnotatorClient {
     private static String findLabel( HttpResponse response ) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
-        try (InputStream content = response.getEntity().getContent()) {
+        try ( InputStream content = response.getEntity().getContent() ) {
             Document document = builder.parse( content );
             NodeList nodes = document.getElementsByTagName( "prefLabel" );
             if ( nodes == null ) {
