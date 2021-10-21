@@ -18,20 +18,16 @@
  */
 package ubic.basecode.io.excel;
 
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.CellType;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRichTextString;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.ss.usermodel.Cell;
 
 /**
  * Utilities for dealign with Microsoft Excel spreadsheets as implemented in commons-poi.
@@ -70,12 +66,13 @@ public class ExcelUtil {
             return null;
         }
 
-        if ( cell.getCellType() == Cell.CELL_TYPE_STRING ) return cell.getRichStringCellValue().getString();
-        if ( cell.getCellType() == Cell.CELL_TYPE_NUMERIC ) {
+        if ( cell.getCellType() == CellType.STRING ) return cell.getRichStringCellValue().getString();
+
+        if ( cell.getCellType() == CellType.NUMERIC ) {
             // WARNING not ideal for numbers.
             return Double.toString( cell.getNumericCellValue() );
         }
-        if ( cell.getCellType() == Cell.CELL_TYPE_FORMULA ) return cell.getCellFormula();
+        if ( cell.getCellType() == CellType.FORMULA ) return cell.getCellFormula();
 
         return "";
     }
@@ -167,7 +164,6 @@ public class ExcelUtil {
             r = sheet.createRow( row );
         }
         HSSFCell c = r.createCell( col );
-        c.setCellType( Cell.CELL_TYPE_FORMULA );
         c.setCellFormula( value );
     }
 
@@ -183,7 +179,7 @@ public class ExcelUtil {
             r = sheet.createRow( row );
         }
         HSSFCell c = r.createCell( col );
-        c.setCellType( Cell.CELL_TYPE_NUMERIC );
+        c.setCellType( CellType.NUMERIC );
         c.setCellValue( value );
 
     }
@@ -210,7 +206,7 @@ public class ExcelUtil {
             r = sheet.createRow( row );
         }
         HSSFCell c = r.createCell( col );
-        c.setCellType( Cell.CELL_TYPE_STRING );
+        c.setCellType( CellType.STRING );
         c.setCellValue( new HSSFRichTextString( value ) );
     }
 }

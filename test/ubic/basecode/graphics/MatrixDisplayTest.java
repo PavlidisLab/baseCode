@@ -18,10 +18,15 @@
  */
 package ubic.basecode.graphics;
 
-import static org.junit.Assert.assertFalse;
+import org.apache.poi.hssf.usermodel.EscherGraphics2d;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
+import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
-import java.awt.Color;
-import java.awt.Dimension;
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,13 +34,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.poi.hssf.usermodel.DummyGraphics2d;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
-import ubic.basecode.dataStructure.matrix.DoubleMatrix;
+import static org.junit.Assert.assertFalse;
 
 /**
  * @author keshav
@@ -118,7 +117,7 @@ public class MatrixDisplayTest {
      *
      */
     @Test
-    public void testSaveImageStandardize() {
+    public void testSaveImageStandardize() throws IOException {
 
         DoubleMatrix<String, String> matrix = new DenseDoubleMatrix<String, String>( array );
         matrix.setRowNames( rowNames );
@@ -137,7 +136,7 @@ public class MatrixDisplayTest {
             assertFalse( fail );
         }
 
-        display.paintComponent( new DummyGraphics2d() );
+        display.paintComponent( ImageIO.read( tmp ).createGraphics() );
     }
 
     /**

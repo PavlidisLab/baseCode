@@ -10,8 +10,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -63,7 +64,7 @@ public class OmimAnnotatorClient {
 
             log.info( "request url: " + url );
 
-            DefaultHttpClient httpclient = new DefaultHttpClient();
+            HttpClient httpclient = HttpClientBuilder.create().build();
             HttpGet httpGet = new HttpGet( url );
             HttpResponse response = httpclient.execute( httpGet );
 

@@ -29,8 +29,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.collections.functors.StringValueTransformer;
+import org.apache.commons.collections4.Transformer;
+import org.apache.commons.collections4.functors.StringValueTransformer;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -173,7 +173,7 @@ public abstract class AbstractRClient implements RClient {
      */
     @Override
     public String assignMatrix( DoubleMatrix<?, ?> matrix ) {
-        return assignMatrix( matrix, StringValueTransformer.getInstance() );
+        return assignMatrix( matrix, StringValueTransformer.stringValueTransformer() );
     }
 
     /*

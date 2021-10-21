@@ -21,7 +21,7 @@ package ubic.basecode.util.r;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections4.Transformer;
 import org.rosuda.REngine.REXP;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
