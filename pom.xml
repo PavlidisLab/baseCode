@@ -38,6 +38,12 @@
 			<email>paul@msl.ubc.ca</email>
 			<organization>University of British Columbia</organization>
 		</developer>
+		<developer>
+			<name>Guillaume Poirier-Morency</name>
+			<id>poirigui</id>
+			<email>poirigui@msl.ubc.ca</email>
+			<organization>University of British Columbia</organization>
+		</developer>
 	</developers>
 	<dependencies>
 		<dependency>
