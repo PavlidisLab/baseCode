@@ -21,11 +21,7 @@ package ubic.basecode.math;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -46,10 +42,10 @@ public class RandomChooserTest {
     public void testChooseRandomDeck() {
         double[] e = new double[] { 0d, 1d, 2d, 3d, 4d, 5d, 6d, 7d };
         double[] result = RandomChooser.chooserandom( e, 4 );
-        double[] expected = new double[] { 5.0, 7.0, 3.0, 0.0 };
+        double[] expected = new double[] { 4.0, 2.0, 6.0, 1.0 };
         assertEquals( expected.length, result.length );
         for ( int i = 0; i < result.length; i++ ) {
-            assertEquals( expected[i], result[i], 0.0001 );
+            assertEquals( expected[i], result[i], 0 );
         }
 
         // check uniformity; each number should appear approx 1000 times: 10000 trials * 0.01 * 10 = 1000.
@@ -68,14 +64,14 @@ public class RandomChooserTest {
     }
 
     /**
-     * Test method for {@link ubic.basecode.math.RandomChooser#chooserandom(int[], boolean[], int, int)} .
+     * Test method for {@link ubic.basecode.math.RandomChooser#chooserandom(int, int)}.
      */
     @Test
     public void testChooserandomInt() {
         int[] result = RandomChooser.chooserandom( 100, 10 );
-        int[] expected = { 26, 95, 75, 93, 72, 67, 59, 21, 22, 8 };
+        int[] expected = { 82, 38, 97, 73, 44, 16, 66, 35, 31, 43 };
         for ( int i = 0; i < result.length; i++ ) {
-            assertEquals( expected[i], result[i] );
+            assertEquals( expected[i], result[i], 0 );
         }
 
         // check uniformity; each number should appear approx 1000 times: 10000 trials * 0.01 * 10 = 1000.
@@ -94,13 +90,13 @@ public class RandomChooserTest {
     }
 
     @Test
-    public void testChooserandomInts() throws Exception {
+    public void testChooserandomInts() {
 
         int[] deck = { 0, 1, 2, 3, 4, 5, 6, 7 };
-        int[] expected = { 5, 7, 3, 0 };
+        int[] expected = { 4, 2, 6, 1 };
         int[] result = RandomChooser.chooserandom( deck, 4 );
         for ( int i = 0; i < result.length; i++ ) {
-            assertEquals( expected[i], result[i], 0.0001 );
+            assertEquals( expected[i], result[i], 0 );
         }
 
         // check uniformity; each number should appear approx 1000 times: 10000 trials * 0.01 * 10 = 1000.
@@ -119,7 +115,7 @@ public class RandomChooserTest {
     }
 
     /**
-     * Test method for {@link ubic.basecode.math.RandomChooser#chooserandomWrep(int[], int, int)} .
+     * Test method for {@link ubic.basecode.math.RandomChooser#chooserandomWrep(int, int)}} .
      */
     @Test
     public void testChooserandomWrep() {
@@ -151,10 +147,9 @@ public class RandomChooserTest {
      * Check correctness of the sampling algorithm for choosing subsets of size 2. The average value should come out
      * close to k/2.
      *
-     * @throws Exception
      */
     @Test
-    public void testRepeat() throws Exception {
+    public void testRepeat() {
         int k = 1000;
 
         double total = 0.0;
@@ -172,10 +167,9 @@ public class RandomChooserTest {
      * Check correctness of the sampling algorithm for choosing subsets of size 2. The average value should come out
      * very close to k/2.
      *
-     * @throws Exception
      */
     @Test
-    public void testRepeatSubset() throws Exception {
+    public void testRepeatSubset() {
         List<Integer> k = new ArrayList<>();
         int max = 1000;
         for ( int i = 0; i < max; i++ ) {
