@@ -180,9 +180,9 @@
 
 		<!-- Utilities -->
 		<dependency>
-			<groupId>jfree</groupId>
+			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
-			<version>1.0.13</version>
+			<version>1.5.3</version>
 		</dependency>
 		<!-- xml-apis is dependent on jena -->
 		<dependency>
