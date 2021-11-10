@@ -148,6 +148,24 @@ public class TestStats {
         assertEquals( 6, actualReturn );
     }
 
+
+    @Test
+    public final void testNumberOfDistinctValuesNonNA() {
+        int actualReturn = Stats.numberofDistinctValuesNonNA( new DoubleArrayList( new double[] { 1.0, 1.0, 3.0, 4.0, 5.0,
+                6.0, Double.NaN } ), 0.01 );
+        assertEquals( 5, actualReturn );
+
+        actualReturn = Stats.numberofDistinctValuesNonNA( data1Nomissing, 0.01 );
+        assertEquals( 5, actualReturn );
+        actualReturn = Stats.numberofDistinctValuesNonNA( new DoubleArrayList( new double[] { 1.0, 1.0, 3.0, 4.0, 4.00001,
+                5.0, 6.0 } ), 0.0001 );
+        assertEquals( 5, actualReturn );
+        actualReturn = Stats.numberofDistinctValuesNonNA( new DoubleArrayList( new double[] { 1.0, 1.0, 3.0, 4.0, 4.00001,
+                5.0, Double.NaN, 6.0 } ), 0.00001 );
+        assertEquals( 6, actualReturn );
+    }
+
+
     @Test
     public final void testQuantile() {
         double expectedReturn = 0.595221355;
