@@ -19,6 +19,7 @@
 package ubic.basecode.dataStructure;
 
 import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
  * Implements comparable, which sorts by the 'x' coordinate and then secondarily by the 'y' coordinate. (This behavior
@@ -96,7 +97,7 @@ public class Link extends Point implements Comparable<Link> {
      */
     @Override
     public String toString() {
-        return super.toString() + "\t" + NumberFormat.getInstance().format( this.weight );
+        return super.toString() + "\t" + NumberFormat.getInstance( Locale.ENGLISH ).format( this.weight );
     }
 
 }

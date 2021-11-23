@@ -22,17 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.*;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.SparseDoubleMatrix;
@@ -179,7 +169,7 @@ public class SparseDoubleMatrixReader extends DoubleMatrixReader {
 
         BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
 
-        Scanner ff = new Scanner( dis );
+        Scanner ff = new Scanner( dis ).useLocale( Locale.ENGLISH );
 
         int index = 0;
         int amount = 0;
