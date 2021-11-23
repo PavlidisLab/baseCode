@@ -18,10 +18,7 @@
  */
 package ubic.basecode.dataStructure.matrix;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
@@ -188,7 +185,7 @@ public abstract class DoubleMatrix<R, C> extends AbstractMatrix<R, C, Double> im
                 if ( Double.isNaN( value ) ) {
                     buf.append( "\t" );
                 } else {
-                    buf.append( "\t" + String.format( "%.4g", value ) );
+                    buf.append( "\t" + String.format( Locale.ENGLISH, "%.4g", value ) );
                 }
             }
             buf.append( "\n" );

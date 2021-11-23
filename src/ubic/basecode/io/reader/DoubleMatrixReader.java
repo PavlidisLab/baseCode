@@ -26,11 +26,7 @@ import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -47,7 +43,7 @@ import cern.colt.list.DoubleArrayList;
  */
 public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String, String>, Double> {
 
-    private static NumberFormat nf = NumberFormat.getInstance();
+    private static NumberFormat nf = NumberFormat.getInstance( Locale.ENGLISH );
     static {
         if ( nf instanceof DecimalFormat ) {
             // ( ( DecimalFormat ) nf ).setDecimalSeparatorAlwaysShown( true );
