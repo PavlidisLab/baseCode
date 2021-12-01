@@ -13,7 +13,7 @@
 	<url>https://github.com/pavlidisLab/basecode</url>
 	<organization>
 		<name>UBC Michael Smith Laboratories</name>
-		<url>http://www.msl.ubc.ca/</url>
+		<url>https://www.msl.ubc.ca/</url>
 	</organization>
 	<packaging>jar</packaging>
 	<issueManagement>
@@ -27,7 +27,7 @@
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -205,37 +205,6 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<directory>target</directory>
-		<outputDirectory>target/classes</outputDirectory>
-		<finalName>${project.artifactId}-${project.version}</finalName>
-		<sourceDirectory>src</sourceDirectory>
-		<testSourceDirectory>test</testSourceDirectory>
-		<testOutputDirectory>target/test-classes</testOutputDirectory>
-		<resources>
-			<resource>
-				<directory>src</directory>
-				<includes>
-					<include>**/*.properties</include>
-				</includes>
-				<filtering>false</filtering>
-			</resource>
-		</resources>
-		<testResources>
-			<testResource>
-				<directory>test</directory>
-				<includes>
-					<include>**/*.txt</include>
-					<include>**/*.xml</include>
-					<include>**/*.csv</include>
-					<include>**/*.xls</include>
-					<include>**/*.zip</include>
-					<include>**/*.gz</include>
-					<include>**/*.properties</include>
-					<include>**/*.R</include>
-				</includes>
-				<filtering>false</filtering>
-			</testResource>
-		</testResources>
 		<plugins>
 			<plugin>
 				<groupId>com.amashchenko.maven.plugin</groupId>
@@ -250,22 +219,13 @@
 						<productionBranch>master</productionBranch>
 						<developmentBranch>development</developmentBranch>
 						<releaseBranchPrefix>release-</releaseBranchPrefix>
-						<versionTagPrefix></versionTagPrefix>
+						<versionTagPrefix/>
 						<origin>origin</origin>
 						<!-- Unused for releasing -->
 						<featureBranchPrefix>feature-</featureBranchPrefix>
 						<hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
 						<supportBranchPrefix>support-</supportBranchPrefix>
 					</gitFlowConfig>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -285,6 +245,16 @@
 						<exclude>**/AbstractTest*.java</exclude>
 						<exclude>**/*$*</exclude> <!-- should not need this -->
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.3.0</version>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>src</descriptorRef>
+					</descriptorRefs>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -422,15 +392,6 @@
 			<id>pavlab</id>
 			<name>PavLab</name>
 			<url>https://maven2.pavlab.msl.ubc.ca/</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</releases>
 		</repository>
 	</repositories>
 	<pluginRepositories>
@@ -438,42 +399,9 @@
 			<id>pavlab</id>
 			<name>PavLab</name>
 			<url>https://maven2.pavlab.msl.ubc.ca/</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</releases>
 		</pluginRepository>
 	</pluginRepositories>
 	<profiles>
-		<profile>
-			<id>assemble-src</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-				<property>
-					<name>assemble-src</name>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-assembly-plugin</artifactId>
-						<configuration>
-							<descriptors>
-								<descriptor>
-									src/assembly/src-assembly.xml
-								</descriptor>
-							</descriptors>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
 		<profile>
 			<!-- For deployment where host is local (and ssh isn't available for builder, e.g. CI) -->
 			<id>local-deploy</id>
@@ -504,6 +432,8 @@
 	</profiles>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 		<lucene.version>3.6.2</lucene.version>
 	</properties>
 </project>
