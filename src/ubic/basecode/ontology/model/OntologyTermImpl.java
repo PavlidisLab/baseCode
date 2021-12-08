@@ -385,8 +385,9 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
         ExtendedIterator<OntClass> iterator = ontResource.listSubClasses( true );
         while ( iterator.hasNext() ) {
             OntClass c = iterator.next();
+            // URI can be null if the ont is a bnode (no idea what it is, but we have to handle this)
             // some reasoners will infer owl#Nothing as a subclass of everything
-            if ( c.getURI().equals( NOTHING ) ) continue;
+            if ( c.getURI() == null || c.getURI().equals( NOTHING ) ) continue;
 
             if ( USE_PROPER_PART_RESTRICTIONS && c.isRestriction() ) {
 
