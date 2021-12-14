@@ -338,13 +338,6 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh-external</artifactId>
-				<version>3.4.3</version>
-			</extension>
-		</extensions>
 	</build>
 	<reporting>
 		<plugins>
@@ -430,23 +423,6 @@
 			</plugin>
 		</plugins>
 	</reporting>
-	<distributionManagement>
-		<site>
-			<id>broca</id>
-			<name>broca</name>
-			<url>scpexe://otto.pavlab.chibi.ubc.ca:/space/gemmaData/baseCode-site</url>
-		</site>
-		<repository>
-			<id>repo</id>
-			<name>Pavlab</name>
-			<url>scpexe://otto.pavlab.chibi.ubc.ca:/space/maven2</url>
-		</repository>
-		<snapshotRepository>
-			<id>repo</id>
-			<name>Pavlab</name>
-			<url>scpexe://otto.pavlab.chibi.ubc.ca:/space/maven2</url>
-		</snapshotRepository>
-	</distributionManagement>
 	<repositories>
 		<repository>
 			<id>pavlab</id>
