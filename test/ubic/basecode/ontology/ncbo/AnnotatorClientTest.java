@@ -31,7 +31,7 @@ public class AnnotatorClientTest {
 
     @Before
     public void setUp() {
-        Assume.assumeTrue( "", System.getProperty( "ncbo.api.key" ) != null );
+        Assume.assumeTrue( "This test require -Dncbi.api.key to be set.", System.getProperty( "ncbo.api.key" ) != null );
     }
 
     @Test
