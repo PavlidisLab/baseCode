@@ -20,12 +20,19 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
  * @author Paul
  */
 public class AnnotatorClientTest {
+
+    @Before
+    public void setUp() {
+        Assume.assumeTrue( "", System.getProperty( "ncbo.api.key" ) != null );
+    }
 
     @Test
     public void test() throws Exception {
