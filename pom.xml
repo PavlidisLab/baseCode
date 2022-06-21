@@ -49,7 +49,7 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>5.1.0</version>
+			<version>5.2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>colt</groupId>
@@ -93,7 +93,7 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
-			<version>4.4.14</version>
+			<version>4.4.15</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -142,7 +142,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.32</version>
+			<version>1.7.36</version>
 		</dependency>
 
 		<!-- Jena -->
@@ -218,12 +218,13 @@
 		<dependency>
 			<groupId>xml-apis</groupId>
 			<artifactId>xml-apis</artifactId>
+			<!--suppress MavenPackageUpdate -->
 			<version>1.4.01</version>
 		</dependency>
 		<dependency>
 			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
-			<version>5.5.2</version>
+			<version>5.6</version>
 		</dependency>
 
 		<!-- Testing utilities -->
