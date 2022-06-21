@@ -18,39 +18,27 @@
  */
 package ubic.basecode.ontology.search;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.lang3.time.StopWatch;
-import org.apache.lucene.queryParser.QueryParser.Operator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.shared.JenaException;
-import com.hp.hpl.jena.sparql.ARQException;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ubic.basecode.ontology.model.*;
 
-import ubic.basecode.ontology.model.OntologyIndividual;
-import ubic.basecode.ontology.model.OntologyIndividualImpl;
-import ubic.basecode.ontology.model.OntologyResource;
-import ubic.basecode.ontology.model.OntologyTerm;
-import ubic.basecode.ontology.model.OntologyTermImpl;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * @author  pavlidis
- * 
+ * @author pavlidis
+ *
  */
 public class OntologySearch {
 
@@ -58,7 +46,7 @@ public class OntologySearch {
     // OntologyTerms don't contain them anyway
     private final static char[] INVALID_CHARS = { ':', '(', ')', '?', '^', '[', ']', '{', '}', '!', '~', '"', '\'' };
 
-    private static Logger log = LoggerFactory.getLogger( OntologySearch.class );
+    private static final Logger log = LoggerFactory.getLogger( OntologySearch.class );
 
     /**
      * Find classes that match the query string. Obsolete terms are not returned.
@@ -66,42 +54,30 @@ public class OntologySearch {
      * @param  model       that goes with the index
      * @param  index       to search
      * @param  queryString
-     * @return             Collection of OntologyTerm objects
+     * @return Collection of OntologyTerm objects
      */
-    public static Collection<OntologyTerm> matchClasses( OntModel model, SearchIndex index, String queryString ) {
+    public static Collection<OntologyTerm> matchClasses( OntModel model, SearchIndex index, String queryString ) throws OntologySearchException {
 
         Set<OntologyTerm> results = new HashSet<>();
         NodeIterator iterator = runSearch( index, queryString );
 
-        while ( iterator != null && iterator.hasNext() ) {
+        while ( iterator.hasNext() ) {
             RDFNode r = iterator.next();
             r = r.inModel( model );
-            if ( log.isDebugEnabled() ) log.debug( "Search results: " + r );
-            if ( r.isURIResource() ) {
+            log.debug( "Search results: {}.", r );
+            if ( r.isURIResource() && r.canAs( OntClass.class ) ) {
                 try {
-
-                    if ( !r.canAs( OntClass.class ) ) {
-                        if ( log.isDebugEnabled() )
-                            log.debug( "Unable to convert jena resource " + r
-                                    + " to OntClass.class, skipping. Resource: " + r.toString() );
-                        continue;
-                    }
-
                     OntClass cl = r.as( OntClass.class );
                     OntologyTermImpl impl2 = new OntologyTermImpl( cl );
                     if ( impl2.isTermObsolete() ) continue;
                     results.add( impl2 );
-                    if ( log.isDebugEnabled() ) log.debug( impl2.toString() );
-                } catch ( ARQException e ) {
-                    throw new RuntimeException( e.getCause() );
+                    log.debug( "{}", impl2 );
                 } catch ( JenaException e ) {
-                    throw new RuntimeException( e.getCause() );
-                } catch ( Exception e ) {
-                    log.error( ExceptionUtils.getStackTrace( e ), e );
+                    throw new OntologySearchJenaException( String.format( "Failed to convert Jena resource %s to %s.", r, OntClass.class ), queryString, e );
                 }
             }
-
         }
+
         return results;
     }
 
@@ -111,12 +87,12 @@ public class OntologySearch {
      * @param  model       that goes with the index
      * @param  index       to search
      * @param  queryString
-     * @return             Collection of OntologyTerm objects
+     * @return Collection of OntologyTerm objects
      */
-    public static Collection<OntologyIndividual> matchIndividuals( OntModel model, SearchIndex index, String queryString ) {
+    public static Collection<OntologyIndividual> matchIndividuals( OntModel model, SearchIndex index, String queryString ) throws OntologySearchException {
 
         Set<OntologyIndividual> results = new HashSet<>();
-        NodeIterator iterator = null;
+        NodeIterator iterator;
 
         queryString = queryString.trim();
 
@@ -127,53 +103,34 @@ public class OntologySearch {
         if ( lastWordLength > 1 ) {
             try { // Use wildcard search.
                 iterator = runSearch( index, queryString + "*" );
-            } catch ( ARQException e ) { // retry without wildcard
-                log.info( "Caught " + e + " caused by " + e.getCause() + " reason " + e.getMessage()
-                        + ". Retrying search without wildcard." );
-                iterator = runSearch( index, queryString );
+            } catch ( OntologySearchJenaException e ) { // retry without wildcard
+                log.warn( "Failed to perform search with wildcard. Retrying search without wildcard.", e );
+                try {
+                    iterator = runSearch( index, queryString );
+                } catch ( OntologySearchJenaException e1 ) {
+                    throw new RetryWithoutWildcardFailedException( "Failed to search while retrying without wildcard.", queryString, e.getCause(), e1.getCause() );
+                }
             }
         } else {
             iterator = runSearch( index, queryString );
         }
 
-        while ( iterator != null && iterator.hasNext() ) {
+        while ( iterator.hasNext() ) {
             RDFNode r = iterator.next();
             r = r.inModel( model );
-            if ( log.isDebugEnabled() ) log.debug( "Search results: " + r );
-            if ( r.isResource() ) {
+            log.debug( "Search results: {}", r );
+            if ( r.isResource() && r.canAs( Individual.class ) ) {
                 try {
-
-                    if ( !r.canAs( Individual.class ) ) {
-                        if ( log.isDebugEnabled() )
-                            log.debug( "Unable to convert jena resource " + r
-                                    + " to Individual.class, skipping. Resource: " + r.toString() );
-                        continue;
-                    }
-
                     Individual cl = r.as( Individual.class );
                     OntologyIndividual impl2 = new OntologyIndividualImpl( cl );
                     results.add( impl2 );
-                    if ( log.isDebugEnabled() ) log.debug( impl2.toString() );
-                } catch ( ARQException e ) {
-                    throw new RuntimeException( e.getCause() );
+                    log.debug( "{}", impl2 );
                 } catch ( JenaException je ) {
-
-                    log.error( "Trying again: " + je, je );
-                    try {
-                        Individual cl = r.as( Individual.class );
-                        OntologyIndividual impl2 = new OntologyIndividualImpl( cl );
-                        results.add( impl2 );
-
-                    } catch ( Exception e ) {
-                        log.error( "Second attempt failed: " + e, e );
-                    }
-
-                } catch ( Exception e ) {
-                    log.error( ExceptionUtils.getStackTrace( e ), e );
+                    throw new OntologySearchJenaException( String.format( "Failed to convert Jena resource %s to %s.", r, Individual.class ), queryString, je );
                 }
             }
-
         }
+
         return results;
 
     }
@@ -185,9 +142,9 @@ public class OntologySearch {
      * @param  model       that goes with the index
      * @param  index       to search
      * @param  queryString
-     * @return             Collection of OntologyResource objects
+     * @return Collection of OntologyResource objects
      */
-    public static Collection<OntologyResource> matchResources( OntModel model, SearchIndex index, String queryString ) {
+    public static Collection<OntologyResource> matchResources( OntModel model, SearchIndex index, String queryString ) throws OntologySearchException {
 
         Set<OntologyResource> results = new HashSet<>();
         NodeIterator iterator = null;
@@ -201,35 +158,25 @@ public class OntologySearch {
         if ( lastWordLength > 1 ) {
             try { // Use wildcard search.
                 iterator = runSearch( index, queryString + "*" );
-            } catch ( ARQException e ) { // retry without wildcard
-                log.error( "Caught " + e + " caused by " + e.getCause() + " while searching " + model + " for "
-                        + queryString + ". Retrying search without wildcard." );
-                iterator = runSearch( index, queryString );
+            } catch ( OntologySearchJenaException e ) { // retry without wildcard
+                // retry without wildcard
+                log.warn( "Failed to search in {}. Retrying search without wildcard.", model, e );
+                try {
+                    iterator = runSearch( index, queryString );
+                } catch ( OntologySearchJenaException e1 ) {
+                    throw new RetryWithoutWildcardFailedException( "Failed to search while retrying without wildcard.", queryString, e.getCause(), e1.getCause() );
+                }
             }
         } else {
-            try {
-                iterator = runSearch( index, queryString );
-            } catch ( ARQException e ) { // retry without wildcard
-                log.error( "Caught " + e + " caused by " + e.getCause() + " while searching " + model + " for "
-                        + queryString + ". Retrying search without wildcard." );
-                throw e;
-            }
+            iterator = runSearch( index, queryString );
         }
 
-        while ( iterator != null && iterator.hasNext() ) {
+        while ( iterator.hasNext() ) {
             RDFNode r = iterator.next();
             r = r.inModel( model );
-            if ( log.isDebugEnabled() ) log.debug( "Search results: " + r );
-            if ( r.isURIResource() ) {
+            log.debug( "Search results: {}.", r );
+            if ( r.isURIResource() && r.canAs( OntClass.class ) ) {
                 try {
-
-                    if ( !r.canAs( OntClass.class ) ) {
-                        if ( log.isDebugEnabled() )
-                            log.debug( "Unable to convert jena resource resource " + r
-                                    + " to OntClass.class, skipping. Resource: " + r.toString() );
-                        continue;
-                    }
-
                     OntClass cl = r.as( OntClass.class );
                     OntologyTermImpl impl2 = new OntologyTermImpl( cl );
                     if ( impl2.isTermObsolete() ) continue;
@@ -237,33 +184,21 @@ public class OntologySearch {
                     if ( log.isDebugEnabled() ) log.debug( impl2.toString() );
                 } catch ( JenaException e ) {
                     // these are completely uninformative exceptions at the moment.
-                    log.error( e.getMessage(), e );
-                    // throw new RuntimeException( e.getCause() );
-                } catch ( Exception e ) {
-                    log.error( e.getMessage(), e );
+                    throw new OntologySearchJenaException( e.getMessage(), queryString, e );
                 }
-            } else if ( r.isResource() ) {
+            } else if ( r.isResource() && r.canAs( Individual.class ) ) {
                 try {
-
-                    if ( !r.canAs( Individual.class ) ) {
-                        if ( log.isDebugEnabled() )
-                            log.debug( "Unable to convert jena resource resource " + r
-                                    + "  to Individual.class, skipping. Resource: " + r.toString() );
-                        continue;
-                    }
-
                     Individual cl = r.as( Individual.class );
                     OntologyIndividual impl2 = new OntologyIndividualImpl( cl );
                     results.add( impl2 );
                     if ( log.isDebugEnabled() ) log.debug( impl2.toString() );
                 } catch ( JenaException e ) {
                     // these are completely uninformative exceptions at the moment.
-                    log.error( e.getMessage(), e );
-                    // throw new RuntimeException( e.getCause() );
-                } catch ( Exception e ) {
-                    log.error( ExceptionUtils.getStackTrace( e ), e );
+                    throw new OntologySearchJenaException( e.getMessage(), queryString, e );
                 }
-            } else if ( log.isDebugEnabled() ) log.debug( "This search term not included in the results: " + r );
+            } else {
+                log.debug( "This search term not included in the results: {}.", r );
+            }
 
         }
         return results;
@@ -291,13 +226,7 @@ public class OntologySearch {
         return StringEscapeUtils.escapeJava( result ).trim();
     }
 
-    /**
-     * @param  model
-     * @param  index
-     * @param  queryString
-     * @return
-     */
-    private static NodeIterator runSearch( SearchIndex index, String queryString ) {
+    private static NodeIterator runSearch( SearchIndex index, String queryString ) throws OntologySearchJenaException {
         String strippedQuery = StringUtils.strip( queryString );
 
         if ( StringUtils.isBlank( strippedQuery ) ) {
@@ -311,26 +240,20 @@ public class OntologySearch {
             list.add( m.group( 1 ) );
         }
         String enhancedQuery = StringUtils.join( list, " " + Operator.AND + " " );
-        /*
-         * Note that LARQ does not allow you to change the default operator without making it non-thread-safe.
-         */
 
+        // Note: LARQ does not allow you to change the default operator without making it non-thread-safe.
+        index.getLuceneQueryParser().setDefaultOperator( Operator.AND );
+
+        StopWatch timer = StopWatch.createStarted();
         try {
-            StopWatch timer = new StopWatch();
-            timer.start();
-            index.getLuceneQueryParser().setDefaultOperator( Operator.AND );
-            NodeIterator iterator = index.searchModelByIndex( enhancedQuery );
-
+            return index.searchModelByIndex( enhancedQuery );
+        } catch ( JenaException e ) {
+            throw new OntologySearchJenaException( "Failed to search with enhanced query.", enhancedQuery, e );
+        } finally {
+            timer.stop();
             if ( timer.getTime() > 100 ) {
-                log.info( "Ontology resource search for: " + queryString + " (parsed to: " + enhancedQuery + ") : "
-                        + timer.getTime() + "ms" );
+                log.info( "Ontology resource search for: {} (parsed to: {}) took {} ms.", queryString, enhancedQuery, timer.getTime() );
             }
-            return iterator;
-        } catch ( ARQException e ) {
-            // index is closed?
-            log.error( "Error while searching: " + e.getMessage(), e );
-            return null;
         }
-
     }
 }
