@@ -50,58 +50,106 @@ public class ModeratedTstatTest {
     public void testLimma() throws Exception {
 
         DoubleMatrixReader f = new DoubleMatrixReader();
-        DoubleMatrix<String, String> testMatrix = f.read( this.getClass().getResourceAsStream(
-                "/data/limmatest.data.txt" ) );
+        DoubleMatrix<String, String> testMatrix = f.read(this.getClass().getResourceAsStream(
+                "/data/limmatest.data.txt"));
 
         StringMatrixReader of = new StringMatrixReader();
-        StringMatrix<String, String> sampleInfo = of.read( this.getClass()
-                .getResourceAsStream( "/data/limmatest.design.txt" ) );
+        StringMatrix<String, String> sampleInfo = of.read(this.getClass()
+                .getResourceAsStream("/data/limmatest.design.txt"));
 
-        DesignMatrix d = new DesignMatrix( sampleInfo, true );
+        DesignMatrix d = new DesignMatrix(sampleInfo, true);
 
-        LeastSquaresFit fit = new LeastSquaresFit( d, testMatrix );
-        Map<String, LinearModelSummary> sums = fit.summarizeByKeys( true );
-        assertEquals( 100, sums.size() );
+        LeastSquaresFit fit = new LeastSquaresFit(d, testMatrix);
+        Map<String, LinearModelSummary> sums = fit.summarizeByKeys(true);
+        assertEquals(100, sums.size());
 
-        for ( LinearModelSummary lms : sums.values() ) {
+        for (LinearModelSummary lms : sums.values()) {
             GenericAnovaResult a = lms.getAnova();
-            assertNotNull( a );
+            assertNotNull(a);
         }
 
-        LinearModelSummary s = sums.get( "Gene 1" );
-        assertNotNull( s );
-        assertEquals( 0.2264, s.getContrastCoefficients().get( 0, 0 ), 0.001 );
+        LinearModelSummary s = sums.get("Gene 1");
+        assertNotNull(s);
+        assertEquals(0.2264, s.getContrastCoefficients().get(0, 0), 0.001);
         //
         f = new DoubleMatrixReader();
 
-        DoubleMatrix<String, String> expectedEffects = f.read( this.getClass().getResourceAsStream(
-                "/data/limmatest.fit.effects.txt" ) );
-        double[] expEffects1 = expectedEffects.getRowByName( "Gene 1" );
+        DoubleMatrix<String, String> expectedEffects = f.read(this.getClass().getResourceAsStream(
+                "/data/limmatest.fit.effects.txt"));
+        double[] expEffects1 = expectedEffects.getRowByName("Gene 1");
 
-        Double[] effects = ArrayUtils.subarray( s.getEffects(), 0, 2 );
-        assertArrayEquals( ArrayUtils.subarray( expEffects1, 0, 2 ), ArrayUtils.toPrimitive( effects ), 1e-7 );
+        Double[] effects = ArrayUtils.subarray(s.getEffects(), 0, 2);
+        assertArrayEquals(ArrayUtils.subarray(expEffects1, 0, 2), ArrayUtils.toPrimitive(effects), 1e-7);
 
         Double[] stdevUnscaled = s.getStdevUnscaled(); //
-        assertEquals( 0.5773502692, stdevUnscaled[0], 1e-8 );
-        assertEquals( 0.8164965809, stdevUnscaled[1], 1e-8 );
+        assertEquals(0.5773502692, stdevUnscaled[0], 1e-8);
+        assertEquals(0.8164965809, stdevUnscaled[1], 1e-8);
 
         Double sigma = s.getSigma();
-        assertEquals( 0.3069360050, sigma, 0.0001 );
+        assertEquals(0.3069360050, sigma, 0.0001);
 
-        ModeratedTstat.ebayes( fit );
+        ModeratedTstat.ebayes(fit);
         DoubleMatrix1D squeezedVars = fit.getVarPost();
-        DoubleMatrix<String, String> expectedvars = f.read( this.getClass().getResourceAsStream(
-                "/data/limmatest.fit.squeezevar.txt" ) );
+        DoubleMatrix<String, String> expectedvars = f.read(this.getClass().getResourceAsStream(
+                "/data/limmatest.fit.squeezevar.txt"));
 
-        assertArrayEquals( expectedvars.viewColumn( 0 ).toArray(), squeezedVars.toArray(), 1e-7 );
+        assertArrayEquals(expectedvars.viewColumn(0).toArray(), squeezedVars.toArray(), 1e-7);
 
-        sums = fit.summarizeByKeys( true );
+        sums = fit.summarizeByKeys(true);
 
     }
 
+
+    @Test
+    public void testLimmaMissing() throws Exception {
+
+        DoubleMatrixReader f = new DoubleMatrixReader();
+        DoubleMatrix<String, String> testMatrix = f.read(this.getClass().getResourceAsStream(
+                "/data/limmatest.data.missing.txt"));
+
+        StringMatrixReader of = new StringMatrixReader();
+        StringMatrix<String, String> sampleInfo = of.read(this.getClass()
+                .getResourceAsStream("/data/limmatest.design.txt"));
+
+        DesignMatrix d = new DesignMatrix(sampleInfo, true);
+
+        LeastSquaresFit fit = new LeastSquaresFit(d, testMatrix);
+        Map<String, LinearModelSummary> sums = fit.summarizeByKeys(true);
+        assertEquals(100, sums.size());
+
+        for (LinearModelSummary lms : sums.values()) {
+            GenericAnovaResult a = lms.getAnova();
+            assertNotNull(a);
+        }
+
+        LinearModelSummary s = sums.get("Gene 4"); // has missing
+        assertNotNull(s);
+        assertEquals(-0.2289641839, s.getContrastCoefficients().get(0, 0), 0.001);
+        //
+        f = new DoubleMatrixReader();
+
+
+        Double[] stdevUnscaled = s.getStdevUnscaled(); //
+        assertEquals(0.70710678118654757274, stdevUnscaled[0], 1e-8);
+        assertEquals(1.00, stdevUnscaled[1], 1e-8);
+
+        Double sigma = s.getSigma();
+        assertEquals(0.054738603786, sigma, 0.0001);
+
+        ModeratedTstat.ebayes(fit);
+        DoubleMatrix1D squeezedVars = fit.getVarPost();
+        DoubleMatrix<String, String> expectedvars = f.read(this.getClass().getResourceAsStream(
+                "/data/limmatest.fit.squeezevar.missing.txt"));
+
+        assertArrayEquals(expectedvars.viewColumn(0).toArray(), squeezedVars.toArray(), 1e-7);
+
+        sums = fit.summarizeByKeys(true);
+
+    }
+    
     @Test
     public void testFdist() {
-        double[] x = new double[] { 0.30232520254346584299,
+        double[] x = new double[]{0.30232520254346584299,
                 1.2587139907883573287,
                 2.0240947459164679856,
                 1.3173359748527122548,
@@ -200,20 +248,23 @@ public class ModeratedTstatTest {
                 0.73838780576776485987,
                 1.6227135882232157638,
                 0.59470012513348813332,
-                0.91864958973763821692 };
+                0.91864958973763821692};
 
         // x was generated with x <- rf(100,df1=8,df2=16).
         // fitFDist(x, df1 = 8)
-        double[] expected = new double[] { 1.1056298866365792399, 14.544682227013733922 };
-        double[] actual = ModeratedTstat.fitFDist( new DenseDoubleMatrix1D( x ), 8 );
-        assertTrue( RegressionTesting.closeEnough( actual, expected, 1e-10 ) );
+        DenseDoubleMatrix1D dfs = new DenseDoubleMatrix1D(x.length);
+        dfs.assign(8);
+        double[] expected = new double[]{1.1056298866365792399, 14.544682227013733922};
+     //   double[] actualold = ModeratedTstat.fitFDistNoMissing(new DenseDoubleMatrix1D(x), 8);
+        double[] actual = ModeratedTstat.fitFDist(new DenseDoubleMatrix1D(x), dfs);
+        assertTrue(RegressionTesting.closeEnough(actual, expected, 1e-10));
 
     }
 
     @Test
     public void testSqueezeVar() {
 
-        double[] s2 = new double[] { 1.7837804639416141583,
+        double[] s2 = new double[]{1.7837804639416141583,
                 0.32411186620655069168,
                 0.18750362204593082338,
                 0.7340608406949435949,
@@ -232,12 +283,12 @@ public class ModeratedTstatTest {
                 1.001362671921577352,
                 1.6273398718171947497,
                 0.56578600627572539494,
-                0.48078128591210089748 };
+                0.48078128591210089748};
 
         // s2 <- rchisq(20,df=5)/5
 
         //    squeezeVar(s2, df=5)$var.post
-        double[] expected = new double[] { 1.1346316090723296277,
+        double[] expected = new double[]{1.1346316090723296277,
                 1.0235740856472144156,
                 1.0131803748422600897,
                 1.0547646708992308717,
@@ -256,11 +307,55 @@ public class ModeratedTstatTest {
                 1.0751020813423211031,
                 1.1227289725756237626,
                 1.0419616371185715931,
-                1.0354941322769402046 };
+                1.0354941322769402046};
 
-        double[] actual = ModeratedTstat.squeezeVar( new DenseDoubleMatrix1D( s2 ), 5, null ).toArray();
-        assertTrue( RegressionTesting.closeEnough( actual, expected, 1e-10 ) );
+        DenseDoubleMatrix1D dfs = new DenseDoubleMatrix1D(s2.length);
+        dfs.assign(5);
+        double[] actual = ModeratedTstat.squeezeVar(new DenseDoubleMatrix1D(s2), dfs, null).toArray();
+        assertTrue(RegressionTesting.closeEnough(actual, expected, 1e-10));
 
     }
+
+
+    @Test
+    public void testSqueezeVarWMissing() {
+
+        double[] s2 = new double[]{1.7837804639416141583,
+                0.32411186620655069168,
+                0.18750362204593082338,
+                0.7340608406949435949,
+                0.84846200919003345042,
+                0.49854708464318148176,
+                0.87067912044480400002,
+                2.1014900506235241195,
+                0.49783053618211009494,
+                Double.NaN,
+                1.0949289573268001785,
+                0.45883145861230423268,
+                2.2923386473988114354,
+                2.7849256010365417424,
+                0.73148557590083596036,
+                1.4929731181234273674,
+                1.001362671921577352,
+                1.6273398718171947497,
+                0.56578600627572539494,
+                0.48078128591210089748};
+
+        // s2 <- rchisq(20,df=5)/5
+
+        //    squeezeVar(s2, df=5)$var.post
+        double[] expected = new double[]{1.08541236147134,
+                0.997928715983356, 0.989741249854792, 1.02249856067821, 1.02935506994584,
+                1.00838330056098, 1.03068662827887, 1.10445393905446, 1.00834035501044, Double.NaN, 1.04412679768511,
+                1.00600298782876, 1.11589224156236, 1.1454149034124,
+                1.02234421499136, 1.06798314035476, 1.03851900441291, 1.07603626519677, 1.01241319199814, 1.00731852678945};
+
+        DenseDoubleMatrix1D dfs = new DenseDoubleMatrix1D(s2.length);
+        dfs.assign(5);
+        double[] actual = ModeratedTstat.squeezeVar(new DenseDoubleMatrix1D(s2), dfs, null).toArray();
+        assertTrue(RegressionTesting.closeEnough(actual, expected, 1e-10));
+
+    }
+
 
 }

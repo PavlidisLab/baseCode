@@ -408,3 +408,35 @@ d<-data.frame(x=(rowMeans(x,na.rm=T)), y=(apply(x,1,stdVar)))
 l<-lowess(x=d$x, y=d$y, f=0.5, iter=3) # lowess doesn't handle missing values
 plot(x=d$x, y=d$y, pch=21, bg='black')
 lines(x=l$x, y=l$y, col='red')
+
+
+# limma tests
+library(limma)
+options(digits=10)
+datam<-read.delim("limmatest.data.txt", row.names=1)
+designm<-read.delim("limmatest.design.txt", row.names=1)
+f<-lmFit(datam, design=model.frame(designm))
+f<-eBayes(f)
+# effects
+effects<-t(qr.qty(f$qr,t(as.matrix(datam))))
+write.table(effects, "limmatest.fit.effect.txt", sep='\t', quote=F)
+# test of using data that has missing values
+datam.missing<-as.matrix(datam)
+#randomly add some missing data
+set.seed(1)
+datam.missing[sample.int(600, 50)]<-NA
+f2<-lmFit(datam.missing, design=model.frame(designm))
+f2<-eBayes(f2)
+write.table(datam.missing, file="limmatest.data.missing.txt", sep='\t', quote=F)
+write.table(f2$s2.post, "limmatest.fit.squeezevar.missing.txt", sep='\t', quote=F)
+#qr2<-qr(f2)
+# due to missing values we can't compute effects (easily)
+#effects2<-t(qr.qty(qr(f2),t(as.matrix(datam.missing)))) # nope
+# also nope:
+#.Fortran(.F_dqrqty, as.double(qr2$qr), nrow(qr2$qr), qr2$rank, as.double(qr2$qraux), 
+#         as.matrix(datam), NCOL(as.matrix(datam)), qty = as.matrix(datam))$qty
+# effects2 <- t(qr.Q(qr(f2))) %*% as.matrix(datam.missing)
+#write.table(effects2, "limmatest.fit.effect.txt", sep='\t', quote=F)
+f2$coefficients[4,]
+
+
