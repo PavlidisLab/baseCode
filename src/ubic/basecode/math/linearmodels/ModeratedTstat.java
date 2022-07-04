@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2017 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,6 +21,9 @@ package ubic.basecode.math.linearmodels;
 
 import java.util.List;
 
+import cern.colt.function.DoubleFunction;
+import cern.colt.list.BooleanArrayList;
+import cern.colt.list.DoubleArrayList;
 import org.apache.commons.math3.special.Gamma;
 
 import cern.colt.matrix.DoubleMatrix1D;
@@ -34,120 +37,238 @@ import ubic.basecode.math.SpecFunc;
  * Smyth, G. K. (2004). Linear models and empirical Bayes methods for assessing differential expression in microarray
  * experiments. Statistical Applications in Genetics and Molecular Biology Volume 3, Issue 1, Article 3.
  * <p>
- * Important: does not handle missing values in the original data.
- * 
+ * R code snippets in comments are from squeezeVar.R in the limma source code.
+ *
  * @author paul
  */
 public class ModeratedTstat {
 
+    private final static DoubleFunction digamma = new DoubleFunction() {
+        @Override
+        public double apply(double v) {
+            return Gamma.digamma(v);
+        }
+    };
+    private final static DoubleFunction trigammainverse = new DoubleFunction() {
+        @Override
+        public double apply(double v) {
+            return SpecFunc.trigammaInverse(v);
+        }
+    };
+    private final static DoubleFunction trigamma = new DoubleFunction() {
+        @Override
+        public double apply(double v) {
+            return Gamma.trigamma(v);
+        }
+    };
+    public static final double TOOSMALL = Math.pow(10, -15);
+
     /**
-     * Does essentially the same thing as limma::ebayes. However: does not handle missing values; it assumes a single
-     * value of residual degrees of freedom.
-     * 
+     * Does essentially the same thing as limma::ebayes
+     *
      * @param fit which will be modified
      */
-    public static void ebayes( LeastSquaresFit fit ) {
-
-        if ( fit.isHasMissing() ) {
-            throw new UnsupportedOperationException( "Ebayes not supported yet for data with missing values" );
-        }
-
+    public static void ebayes(LeastSquaresFit fit) {
         List<LinearModelSummary> summaries = fit.summarize();
-        DoubleMatrix1D sigmas = new DenseDoubleMatrix1D( new double[summaries.size()] );
+        DoubleMatrix1D sigmas = new DenseDoubleMatrix1D(new double[summaries.size()]);
+        DoubleMatrix1D dofs = new DenseDoubleMatrix1D(new double[summaries.size()]);
         int i = 0;
-        Integer dof = 0;
-        // corner case can get nulls, example: GSE10778 
-        for ( LinearModelSummary lms : summaries ) {
+        // corner case can get nulls, example: GSE10778
+        for (LinearModelSummary lms : summaries) {
             assert lms.getSigma() != null;
-
-            sigmas.set( i, lms.getSigma() );
+            sigmas.set(i, lms.getSigma());
             Integer residualDof = lms.getResidualDof();
-            dof = residualDof;
+            Integer dof = residualDof;
+            dofs.set(i, dof); // collect vector of dofs instead of assuming fixed value.
             i++;
 
         }
-
-        //  need to handle a vector of dofs, really (missing values). or at least check it's constant
-        squeezeVar( sigmas.copy().assign( Functions.square ), dof, fit );
+        squeezeVar(sigmas.copy().assign(Functions.square), dofs, fit);
     }
+
+    /**
+     * defining 'ok' as non-missing and non-infinite and not very close to zero as per limma implementation
+     *
+     * @param x
+     * @return
+     */
+    private static final BooleanArrayList ok(DoubleMatrix1D x) {
+        assert x.size() > 0;
+        BooleanArrayList answer = new BooleanArrayList(x.size());
+
+        for (int i = 0; i < x.size(); i++) {
+            double a = x.getQuick(i);
+            answer.add(!(Double.isNaN(a) || Double.isInfinite(a) || a < TOOSMALL));
+        }
+        return answer;
+    }
+
+
+    private static final BooleanArrayList conjunction(BooleanArrayList a, BooleanArrayList b) {
+        assert a.size() == b.size();
+        BooleanArrayList answer = new BooleanArrayList();
+        for (int i = 0; i < a.size(); i++) {
+            answer.add(a.get(i) && b.get(i));
+        }
+        return answer;
+    }
+
+
+    private static final DoubleMatrix1D stripNonOK(DoubleMatrix1D x, BooleanArrayList ok) {
+
+        assert ok.size() == x.size();
+
+        DoubleArrayList okvals = new DoubleArrayList();
+        for (int i = 0; i < x.size(); i++) {
+            if (ok.get(i)) {
+                okvals.add(x.get(i));
+            }
+        }
+        DoubleMatrix1D answer = new DenseDoubleMatrix1D(okvals.size());
+
+        for (int i = 0; i < answer.size(); i++) {
+            answer.set(i, okvals.get(i));
+        }
+        return answer;
+    }
+
 
     /*
      * Return the scale and df2
-     * TODO deal with missing/bad values.
-     * TODO support covariate?
      */
-    protected static double[] fitFDist( DoubleMatrix1D x, double df1 ) {
+    protected static double[] fitFDist(final DoubleMatrix1D vars, final DoubleMatrix1D df1s) {
 
-        // stay away from zero valuess
-        x = x.copy().assign( Functions.max( 1e-5 ) );
+        BooleanArrayList ok = conjunction(ok(vars), ok(df1s));
+
+        DoubleMatrix1D x = stripNonOK(vars, ok);
+        DoubleMatrix1D df1 = stripNonOK(df1s, ok);
+
+        if (x.size() == 0) {
+            throw new IllegalStateException("There were no valid values of variance to perform eBayes parameter estimation");
+        }
+
+        // stay away from zero values of variance
+        x = x.assign(Functions.max(1e-5));
+
         // z <- log(x)
+        DoubleMatrix1D z = x.copy().assign(Functions.log);
+
         // e <- z-digamma(df1/2)+log(df1/2)
-        DoubleMatrix1D e = x.copy().assign( Functions.log ).assign( Functions.minus( Gamma.digamma( df1 / 2.0 ) ) )
-                .assign( Functions.plus( Math.log( df1 / 2.0 ) ) );
+        DoubleMatrix1D e1 = df1.copy().assign(Functions.div(2.0)).assign(digamma);
+        DoubleMatrix1D e2 = df1.copy().assign(Functions.div(2.0)).assign(Functions.log);
+        DoubleMatrix1D e = z.copy().assign(e1, Functions.minus).assign(e2, Functions.plus);
 
-        int nok = x.size(); // number of oks - need to implement checks
+        int n = x.size();
+
+
+        if (n < 2) {
+            throw new IllegalStateException("Too few valid variance values to do eBayes parameter estimation (require at least 2)");
+        }
+
         //  emean <- mean(e)
-        double emean = e.copy().aggregate( Functions.plus, Functions.identity ) / nok;
-        // evar <- sum((e-emean)^2)/(nok-1L)
-        double evar = e.copy().assign( Functions.minus( emean ) ).aggregate( Functions.plus, Functions.square )
-                / ( nok - 1 );
+        double emean = e.zSum() / n;
+        // evar <- sum((e-emean)^2)/(n-1)
+        double evar = e.copy().assign(Functions.minus(emean)).aggregate(Functions.plus, Functions.square)
+                / (n - 1);
 
-        evar = evar - Gamma.trigamma( df1 / 2.0 );
-
+        // evar <- evar - mean(trigamma(df1/2))
+        evar = evar - df1.copy().assign(Functions.div(2.0)).assign(trigamma).zSum() / df1.size();
         double df2;
         double s20;
-        if ( evar > 0 ) {
+        if (evar > 0.0) {
             // df2 <- 2*trigammaInverse(evar)
-            df2 = 2 * SpecFunc.trigammaInverse( evar );
+            df2 = 2 * SpecFunc.trigammaInverse(evar);
 
-            // s20 <- exp(emean+digamma(df2/2)-log(df2/2)) 
-            s20 = Math.exp( emean + Gamma.digamma( df2 / 2.0 ) - Math.log( df2 / 2.0 ) );
+            // s20 <- exp(emean+digamma(df2/2)-log(df2/2))
+            s20 = Math.exp(emean + Gamma.digamma(df2 / 2.0) - Math.log(df2 / 2.0));
 
         } else {
             df2 = Double.POSITIVE_INFINITY;
             // s20 <- mean(x)
-            s20 = x.copy().aggregate( Functions.plus, Functions.identity ) / x.size();
+            s20 = x.copy().aggregate(Functions.plus, Functions.identity) / x.size();
         }
 
-        return new double[] { s20, df2 };
+        return new double[]{s20, df2};
+    }
+
+
+    /*
+     * Return the scale and df2. Original implementation, does not handle missing values, kept here for posterity/comparison/debugging.
+     */
+    protected static double[] fitFDistNoMissing(DoubleMatrix1D x, double df1) {
+
+        // stay away from zero valuess
+        x = x.copy().assign(Functions.max(1e-5));
+        // z <- log(x)
+        // e <- z-digamma(df1/2)+log(df1/2)
+        DoubleMatrix1D e = x.copy().assign(Functions.log).assign(Functions.minus(Gamma.digamma(df1 / 2.0)))
+                .assign(Functions.plus(Math.log(df1 / 2.0)));
+
+        int nok = x.size(); // number of oks - need to implement checks
+        //  emean <- mean(e)
+        double emean = e.copy().zSum() / nok;
+        // evar <- sum((e-emean)^2)/(nok-1L)
+        double evar = e.copy().assign(Functions.minus(emean)).aggregate(Functions.plus, Functions.square)
+                / (nok - 1);
+
+        evar = evar - Gamma.trigamma(df1 / 2.0);
+
+        double df2;
+        double s20;
+        if (evar > 0) {
+            // df2 <- 2*trigammaInverse(evar)
+            df2 = 2 * SpecFunc.trigammaInverse(evar);
+
+            // s20 <- exp(emean+digamma(df2/2)-log(df2/2)) 
+            s20 = Math.exp(emean + Gamma.digamma(df2 / 2.0) - Math.log(df2 / 2.0));
+
+        } else {
+            df2 = Double.POSITIVE_INFINITY;
+            // s20 <- mean(x)
+            s20 = x.copy().zSum() / x.size();
+        }
+
+        return new double[]{s20, df2};
     }
 
     /**
      * Ignoring robust and covariate for now
-     * 
+     *
      * @param var initial values of estimated residual variance = sigma^2 = rssq/rdof; this will be moderated
-     * @param df
+     * @param df  vector of degrees of freedom
      * @param fit will be updated with new info; call fit.summarize() to get updated pvalues etc.
      * @return varPost for testing mostly
      */
-    protected static DoubleMatrix1D squeezeVar( DoubleMatrix1D var, double df, LeastSquaresFit fit ) {
+    protected static DoubleMatrix1D squeezeVar(DoubleMatrix1D var, DoubleMatrix1D df, LeastSquaresFit fit) {
 
-        double[] ffit = fitFDist( var, df );
+        double[] ffit = fitFDist(var, df);
         double dfPrior = ffit[1];
 
-        DoubleMatrix1D varPost = squeezeVar( var, df, ffit );
+        DoubleMatrix1D varPost = squeezeVar(var, df, ffit);
 
-        if ( fit != null )
-            fit.ebayesUpdate( dfPrior, ffit[0], varPost );
+        if (fit != null)
+            fit.ebayesUpdate(dfPrior, ffit[0], varPost);
 
         return varPost;
     }
 
     /**
-     * @param var
-     * @param df should be a vector of dfs but not sure if necessary.
-     * @param fit
-     * @return
+     * @param var vector of estimated residual variances
+     * @param df  vector of dfs
+     * @param fit result of fitFDist()
+     * @return vector of squeezed variances
      */
-    private static DoubleMatrix1D squeezeVar( DoubleMatrix1D var, double df, double[] fit ) {
+    private static DoubleMatrix1D squeezeVar(DoubleMatrix1D var, DoubleMatrix1D df, double[] fit) {
         double varPrior = fit[0];
         double dfPrior = fit[1];
 
-        if ( Double.isInfinite( df ) ) {
-            throw new IllegalStateException( "not implemented case of infinite dof" );
-        }
-        return var.copy().assign( Functions.mult( df ) )
-                .assign( Functions.plus( dfPrior * varPrior ) ).assign( Functions.div( df + dfPrior ) );
+
+        //   out$var.post <- (df*var + out$df.prior*out$var.prior) / df.total
+
+        DoubleMatrix1D dfTotal = df.copy().assign(Functions.plus(dfPrior));
+
+        return var.copy().assign(df, Functions.mult)
+                .assign(Functions.plus(dfPrior * varPrior)).assign(dfTotal, Functions.div);
 
     }
 

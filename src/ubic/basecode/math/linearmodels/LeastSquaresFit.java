@@ -234,7 +234,7 @@ public class LeastSquaresFit {
      * Preferred interface for weighted least squares fit between two matrices
      *
      * @param designMatrix
-     * @param data
+     * @param b the data
      * @param weights      to be used in modifying the influence of the observations in vectorB.
      */
     public LeastSquaresFit( DesignMatrix designMatrix, DoubleMatrix2D b, final DoubleMatrix2D weights ) {
@@ -338,7 +338,7 @@ public class LeastSquaresFit {
     }
 
     /**
-     * @param sample information that will be converted to a design matrix; intercept term is added.
+     * @param sampleInfo information that will be converted to a design matrix; intercept term is added.
      * @param data   Data matrix
      */
     public LeastSquaresFit( ObjectMatrix<String, String, Object> sampleInfo, DenseDoubleMatrix2D data ) {
@@ -378,7 +378,7 @@ public class LeastSquaresFit {
     /**
      * NamedMatrix allows easier handling of the results.
      *
-     * @param sample information that will be converted to a design matrix; intercept term is added.
+     * @param design information that will be converted to a design matrix; intercept term is added.
      * @param b      Data matrix
      */
     public LeastSquaresFit( ObjectMatrix<String, String, Object> design, DoubleMatrix<String, String> b ) {
@@ -396,7 +396,7 @@ public class LeastSquaresFit {
     /**
      * NamedMatrix allows easier handling of the results.
      *
-     * @param sample information that will be converted to a design matrix; intercept term is added.
+     * @param design information that will be converted to a design matrix; intercept term is added.
      * @param data   Data matrix
      */
     public LeastSquaresFit( ObjectMatrix<String, String, Object> design, DoubleMatrix<String, String> data,
@@ -756,9 +756,9 @@ public class LeastSquaresFit {
     /**
      * Provide results of limma eBayes algorithm. These will be used next time summarize is called on this.
      * 
-     * @param dfPrior
-     * @param varPrior
-     * @param varPost
+     * @param d dfPrior
+     * @param v varPrior
+     * @param vp varPost
      */
     protected void ebayesUpdate( double d, double v, DoubleMatrix1D vp ) {
         this.dfPrior = d;
