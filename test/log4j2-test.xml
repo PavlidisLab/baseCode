@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %highlight{%p} %style{%pid}{magenta} [%t] %style{%C.%M(%L)}{cyan} | %m%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="ubic.basecode" level="warn" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+    </Loggers>
+</Configuration>
