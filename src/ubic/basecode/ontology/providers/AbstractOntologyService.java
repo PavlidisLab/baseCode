@@ -42,6 +42,7 @@ import ubic.basecode.ontology.model.OntologyResource;
 import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.search.OntologyIndexer;
 import ubic.basecode.ontology.search.OntologySearch;
+import ubic.basecode.ontology.search.OntologySearchException;
 import ubic.basecode.ontology.search.SearchIndex;
 import ubic.basecode.util.Configuration;
 
@@ -192,7 +193,7 @@ public abstract class AbstractOntologyService {
      * @param  search
      * @return
      */
-    public Collection<OntologyIndividual> findIndividuals( String search ) {
+    public Collection<OntologyIndividual> findIndividuals( String search ) throws OntologySearchException {
 
         if ( !isOntologyLoaded() ) return null;
 
@@ -215,7 +216,7 @@ public abstract class AbstractOntologyService {
      * @return        results, or an empty collection if the results are empty OR the ontology is not available to be
      *                searched.
      */
-    public Collection<OntologyResource> findResources( String searchString ) {
+    public Collection<OntologyResource> findResources( String searchString ) throws OntologySearchException {
 
         if ( !isOntologyLoaded() ) {
             log.warn( "Ontology is not ready: " + this.getClass() );
@@ -237,7 +238,7 @@ public abstract class AbstractOntologyService {
      * @param  search
      * @return
      */
-    public Collection<OntologyTerm> findTerm( String search ) {
+    public Collection<OntologyTerm> findTerm( String search ) throws OntologySearchException {
 
         if ( !isOntologyLoaded() ) return new HashSet<>();
 
