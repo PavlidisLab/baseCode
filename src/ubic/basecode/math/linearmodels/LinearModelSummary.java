@@ -140,7 +140,7 @@ public class LinearModelSummary implements Serializable {
     }
 
     /**
-     * @param key optional identifier
+     * @param k optional identifier
      * @param coefficients
      * @param residuals
      * @param terms
