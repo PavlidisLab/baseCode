@@ -75,11 +75,13 @@ public class ModeratedTstat {
         int i = 0;
         // corner case can get nulls, example: GSE10778
         for (LinearModelSummary lms : summaries) {
-            assert lms.getSigma() != null;
-            sigmas.set(i, lms.getSigma());
-            Integer residualDof = lms.getResidualDof();
-            Integer dof = residualDof;
-            dofs.set(i, dof); // collect vector of dofs instead of assuming fixed value.
+            if (lms.getSigma() == null) {
+                sigmas.set(i, Double.NaN);
+                dofs.set(i, Double.NaN);
+            } else {
+                sigmas.set(i, lms.getSigma());
+                dofs.set(i,  lms.getResidualDof());  // collect vector of dofs instead of assuming fixed value.
+            }
             i++;
 
         }
@@ -134,7 +136,7 @@ public class ModeratedTstat {
 
 
     /*
-     * Return the scale and df2
+     * @return the scale and df2
      */
     protected static double[] fitFDist(final DoubleMatrix1D vars, final DoubleMatrix1D df1s) {
 
