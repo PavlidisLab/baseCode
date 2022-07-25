@@ -256,6 +256,31 @@
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory>
+		<resources>
+			<resource>
+				<directory>src</directory>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>test</directory>
+				<includes>
+					<include>**/*.txt</include>
+					<include>**/*.xml</include>
+					<include>**/*.csv</include>
+					<include>**/*.xls</include>
+					<include>**/*.zip</include>
+					<include>**/*.gz</include>
+					<include>**/*.properties</include>
+					<include>**/*.R</include>
+				</includes>
+				<filtering>false</filtering>
+			</testResource>
+		</testResources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
