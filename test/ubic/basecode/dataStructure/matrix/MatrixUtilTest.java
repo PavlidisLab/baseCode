@@ -90,7 +90,7 @@ public class MatrixUtilTest {
     @Test
     public void testRemoveMissing1() {
         DoubleMatrix1D v1 = testData.viewRow( 1 ); // first value is NaN
-        DoubleMatrix1D actual = MatrixUtil.removeMissing( v1 );
+        DoubleMatrix1D actual = MatrixUtil.removeMissingOrInfinite( v1 );
         DoubleMatrix1D expected = new DenseDoubleMatrix1D(
                 new double[] { 172.5, 242.1, -8.8, 148.8, 190.3, 155.1, 205.3, 337.8, 276, -64.2, 295.4 } );
 
@@ -104,7 +104,7 @@ public class MatrixUtilTest {
 
         DoubleMatrix1D v2 = new DenseDoubleMatrix1D( new double[] { 11, 12, 13, 14, 15 } );
 
-        DoubleMatrix1D actual = MatrixUtil.removeMissing( v1, v2 );
+        DoubleMatrix1D actual = MatrixUtil.removeMissingOrInfinite( v1, v2 );
         DoubleMatrix1D expected = new DenseDoubleMatrix1D(
                 new double[] { 11, 12, 14, 15 } );
 

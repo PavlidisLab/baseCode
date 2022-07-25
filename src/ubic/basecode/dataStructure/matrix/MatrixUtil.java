@@ -22,7 +22,9 @@ package ubic.basecode.dataStructure.matrix;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.DoubleFunction;
 
+import cern.colt.list.BooleanArrayList;
 import ubic.basecode.math.Constants;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
@@ -253,9 +255,9 @@ public class MatrixUtil {
 
     /**
      * @param  data
-     * @return      a copy of the data with missing values removed (might be empty!)
+     * @return      a copy of the data with missing or infinite values removed (might be empty!)
      */
-    public static DoubleMatrix1D removeMissing( DoubleMatrix1D data ) {
+    public static DoubleMatrix1D removeMissingOrInfinite(DoubleMatrix1D data ) {
         int sizeWithoutMissingValues = sizeWithoutMissingValues( data );
         if ( sizeWithoutMissingValues == data.size() ) return data;
         DoubleMatrix1D r = new DenseDoubleMatrix1D( sizeWithoutMissingValues );
@@ -271,6 +273,23 @@ public class MatrixUtil {
         return r;
     }
 
+
+    /**
+     * @param x
+     * @return a copy of x with missing values removed
+     */
+    public static final DoubleMatrix1D removeMissing(DoubleMatrix1D x) {
+        if (x.size() == 0) return x.copy();
+        BooleanArrayList ok = new BooleanArrayList(x.size());
+
+        for (int i = 0; i < x.size(); i++) {
+            double a = x.getQuick(i);
+            ok.add(!(Double.isNaN(a)));
+        }
+
+        return stripNonOK(x, ok);
+    }
+
     /**
      * Remove values from data corresponding to missing values in reference.
      * 
@@ -278,7 +297,7 @@ public class MatrixUtil {
      * @param  data
      * @return
      */
-    public static DoubleMatrix1D removeMissing( DoubleMatrix1D reference, DoubleMatrix1D data ) {
+    public static DoubleMatrix1D removeMissingOrInfinite(DoubleMatrix1D reference, DoubleMatrix1D data ) {
         if ( data.size() != reference.size() ) throw new IllegalArgumentException( "Reference and data must have same size" );
         int sizeWithoutMissingValues = sizeWithoutMissingValues( reference );
         if ( sizeWithoutMissingValues == reference.size() ) return data; // no missing values.
@@ -295,6 +314,151 @@ public class MatrixUtil {
         }
         return r;
     }
+
+
+
+
+    public static final DoubleMatrix1D stripNegative(DoubleMatrix1D x) {
+        if (x.size() == 0) return x.copy();
+        BooleanArrayList ok = new BooleanArrayList(x.size());
+
+        for (int i = 0; i < x.size(); i++) {
+            double a = x.getQuick(i);
+            ok.add(a >= 0.0);
+        }
+
+        return stripNonOK(x, ok);
+    }
+
+    public static final DoubleMatrix1D stripByCriterion(DoubleMatrix1D x, DoubleFunction<Boolean> criterion) {
+        DoubleArrayList okvals = new DoubleArrayList();
+        for (int i = 0; i < x.size(); i++) {
+            if (criterion.apply(x.get(i))) {
+                okvals.add(x.get(i));
+            }
+        }
+        DoubleMatrix1D answer = new cern.colt.matrix.impl.DenseDoubleMatrix1D(okvals.size());
+        for (int i = 0; i < answer.size(); i++) {
+            answer.set(i, okvals.get(i));
+        }
+        return answer;
+    }
+
+
+    /**
+     * Compute the conjuction (logical 'and') of two boolean vectors
+     *
+     * @param a
+     * @param b
+     * @return conjunction of a and b
+     */
+    public static final BooleanArrayList conjunction(BooleanArrayList a, BooleanArrayList b) {
+        assert a.size() == b.size();
+        BooleanArrayList answer = new BooleanArrayList();
+        for (int i = 0; i < a.size(); i++) {
+            answer.add(a.get(i) && b.get(i));
+        }
+        return answer;
+    }
+
+    /**
+     * @param x         vector to be operated on
+     * @param criterion a function that returns a boolean if a double matches the desired criteria
+     * @return booleans indicating which values in x match the criterion func
+     */
+    public static BooleanArrayList matchingCriteria(DoubleMatrix1D x, DoubleFunction<Boolean> criterion) {
+        BooleanArrayList ok = new BooleanArrayList(x.size());
+        for (int i = 0; i < x.size(); i++) {
+            double a = x.getQuick(i);
+            ok.add(criterion.apply(a));
+        }
+        return ok;
+    }
+
+
+    /**
+     * @param x         vector to be operated on
+     * @param criterion criterion used to test values if they should be acted on.
+     * @param action    function applied to values if they match the criterion
+     * @return copy of x in which the values meeting the criterion have been replaced with the return value of action, otherwise unchanged from the original x
+     */
+    public static DoubleMatrix1D applyToIndicesMatchingCriteria(DoubleMatrix1D
+                                                                        x, DoubleFunction<Boolean> criterion, DoubleFunction<Double> action) {
+
+        if (x.size() == 0) return x.copy();
+        DoubleMatrix1D result = new cern.colt.matrix.impl.DenseDoubleMatrix1D(x.size());
+
+        for (int i = 0; i < x.size(); i++) {
+            double a = x.getQuick(i);
+            if (criterion.apply(a)) {
+                result.set(i, action.apply(a));
+            } else {
+                result.set(i, a);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @param x  a vector of values to be filtered
+     * @param ok a list of booleans defining which values are "ok".
+     * @return A copy of x that has the non-ok values removed.
+     */
+    public static final DoubleMatrix1D stripNonOK(DoubleMatrix1D x, BooleanArrayList ok) {
+
+        assert ok.size() == x.size();
+
+        DoubleArrayList okvals = new DoubleArrayList();
+        for (int i = 0; i < x.size(); i++) {
+            if (ok.get(i)) {
+                okvals.add(x.get(i));
+            }
+        }
+        DoubleMatrix1D answer = new cern.colt.matrix.impl.DenseDoubleMatrix1D(okvals.size());
+
+        for (int i = 0; i < answer.size(); i++) {
+            answer.set(i, okvals.get(i));
+        }
+        return answer;
+    }
+
+    /**
+     * Perform the awkward operation of substituting certain values in a vector from values in another vector.
+     *
+     * @param x            vector to be operated on in place (it will be modified).
+     * @param toReplace    boolean indicators of same length of x, 'true' indicates a value to be replaced in x with a value from 'replacements'; 'false' will be unmodified in x.
+     * @param replacements the replacements, in order, to be substituted in x where toReplace(i) is true. This vector can be shorter than x.
+     */
+    public static void replaceValues(DoubleMatrix1D x, BooleanArrayList toReplace, DoubleMatrix1D replacements) {
+
+        if (toReplace.size() != x.size()) {
+            throw new IllegalArgumentException("replacements and x must be the same size");
+        }
+        if (replacements.size() > x.size()) {
+            throw new IllegalArgumentException("Replacements must not outnumber the target");
+        }
+
+        int numToReplace = 0;
+        for (int i = 0; i < toReplace.size(); i++) {
+            if (toReplace.get(i)) {
+                numToReplace++;
+            }
+        }
+
+        if (numToReplace != replacements.size()) {
+            throw new IllegalArgumentException("Number of replacements has to match the nubmer of true values in toReplace");
+        }
+
+        int j = 0;
+        for (int i = 0; i < x.size(); i++) {
+            if (toReplace.get(i)) {
+                x.set(i, replacements.get(j));
+                j++;
+            }
+        }
+
+    }
+
 
     public static DoubleMatrix1D select( DoubleMatrix1D v, Collection<Integer> selected ) {
         DoubleMatrix1D result = new DenseDoubleMatrix1D( selected.size() );
