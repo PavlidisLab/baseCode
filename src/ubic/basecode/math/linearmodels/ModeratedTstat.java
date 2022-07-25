@@ -29,6 +29,8 @@ import org.apache.commons.math3.special.Gamma;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import cern.jet.math.Functions;
+import ubic.basecode.dataStructure.matrix.MatrixUtil;
+import ubic.basecode.math.MathUtil;
 import ubic.basecode.math.SpecFunc;
 
 /**
@@ -105,45 +107,15 @@ public class ModeratedTstat {
         return answer;
     }
 
-
-    private static final BooleanArrayList conjunction(BooleanArrayList a, BooleanArrayList b) {
-        assert a.size() == b.size();
-        BooleanArrayList answer = new BooleanArrayList();
-        for (int i = 0; i < a.size(); i++) {
-            answer.add(a.get(i) && b.get(i));
-        }
-        return answer;
-    }
-
-
-    private static final DoubleMatrix1D stripNonOK(DoubleMatrix1D x, BooleanArrayList ok) {
-
-        assert ok.size() == x.size();
-
-        DoubleArrayList okvals = new DoubleArrayList();
-        for (int i = 0; i < x.size(); i++) {
-            if (ok.get(i)) {
-                okvals.add(x.get(i));
-            }
-        }
-        DoubleMatrix1D answer = new DenseDoubleMatrix1D(okvals.size());
-
-        for (int i = 0; i < answer.size(); i++) {
-            answer.set(i, okvals.get(i));
-        }
-        return answer;
-    }
-
-
     /*
      * @return the scale and df2
      */
     protected static double[] fitFDist(final DoubleMatrix1D vars, final DoubleMatrix1D df1s) {
 
-        BooleanArrayList ok = conjunction(ok(vars), ok(df1s));
+        BooleanArrayList ok = MatrixUtil.conjunction(ok(vars), ok(df1s));
 
-        DoubleMatrix1D x = stripNonOK(vars, ok);
-        DoubleMatrix1D df1 = stripNonOK(df1s, ok);
+        DoubleMatrix1D x = MatrixUtil.stripNonOK(vars, ok);
+        DoubleMatrix1D df1 = MatrixUtil.stripNonOK(df1s, ok);
 
         if (x.size() == 0) {
             throw new IllegalStateException("There were no valid values of variance to perform eBayes parameter estimation");
@@ -263,7 +235,6 @@ public class ModeratedTstat {
     private static DoubleMatrix1D squeezeVar(DoubleMatrix1D var, DoubleMatrix1D df, double[] fit) {
         double varPrior = fit[0];
         double dfPrior = fit[1];
-
 
         //   out$var.post <- (df*var + out$df.prior*out$var.prior) / df.total
 

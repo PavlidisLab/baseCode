@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cern.colt.bitvector.BitVector;
-import cern.colt.function.DoubleDoubleFunction;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
@@ -642,11 +641,11 @@ public class LeastSquaresFit {
                  * Compute Qty for the specific y, dealing with missing values.
                  */
                 DoubleMatrix1D brow = b.viewRow( i );
-                DoubleMatrix1D browWithoutMissing = MatrixUtil.removeMissing( brow );
+                DoubleMatrix1D browWithoutMissing = MatrixUtil.removeMissingOrInfinite( brow );
 
                 DoubleMatrix1D tqty;
                 if ( weights != null ) {
-                    DoubleMatrix1D w = MatrixUtil.removeMissing( brow, this.weights.viewRow( i ).copy().assign( Functions.sqrt ) );
+                    DoubleMatrix1D w = MatrixUtil.removeMissingOrInfinite( brow, this.weights.viewRow( i ).copy().assign( Functions.sqrt ) );
                     assert w.size() == browWithoutMissing.size();
                     DoubleMatrix1D bw = browWithoutMissing.copy().assign( w, Functions.mult );
                     tqty = qrd.effects( bw );
@@ -806,13 +805,13 @@ public class LeastSquaresFit {
             return new LinearModelSummary( key );
         }
 
-        DoubleMatrix1D resid = MatrixUtil.removeMissing( this.residuals.viewRow( i ) );
-        DoubleMatrix1D f = MatrixUtil.removeMissing( fitted.viewRow( i ) );
+        DoubleMatrix1D resid = MatrixUtil.removeMissingOrInfinite( this.residuals.viewRow( i ) );
+        DoubleMatrix1D f = MatrixUtil.removeMissingOrInfinite( fitted.viewRow( i ) );
 
         DoubleMatrix1D rweights = null;
         DoubleMatrix1D sqrtweights = null;
         if ( this.weights != null ) {
-            rweights = MatrixUtil.removeMissing( fitted.viewRow( i ), this.weights.viewRow( i ).copy() );
+            rweights = MatrixUtil.removeMissingOrInfinite( fitted.viewRow( i ), this.weights.viewRow( i ).copy() );
             sqrtweights = rweights.copy().assign( Functions.sqrt );
         } else {
             rweights = new DenseDoubleMatrix1D( f.size() ).assign( 1.0 );
@@ -820,7 +819,7 @@ public class LeastSquaresFit {
         }
 
         DoubleMatrix1D allCoef = coefficients.viewColumn( i ); // has NA for unestimated parameters.
-        DoubleMatrix1D estCoef = MatrixUtil.removeMissing( allCoef ); // estimated parameters.
+        DoubleMatrix1D estCoef = MatrixUtil.removeMissingOrInfinite( allCoef ); // estimated parameters.
 
         if ( estCoef.size() == 0 ) {
             log.warn( "No coefficients estimated for row " + i + this.diagnosis( qrd ) );
@@ -892,12 +891,12 @@ public class LeastSquaresFit {
         this.stdevUnscaled.put( i, sdUnscaled );
 
         DoubleMatrix1D sdScaled = MatrixUtil
-                .removeMissing( MatrixUtil.diagonal( XtXi ).assign( Functions.mult( resvar ) )
+                .removeMissingOrInfinite( MatrixUtil.diagonal( XtXi ).assign( Functions.mult( resvar ) )
                         .assign( Functions.sqrt ) ); // wasteful...
 
         // AKA Qty
 
-        DoubleMatrix1D effects = qrd.effects( MatrixUtil.removeMissing( this.b.viewRow( i ) ).assign( sqrtweights, Functions.mult ) );
+        DoubleMatrix1D effects = qrd.effects( MatrixUtil.removeMissingOrInfinite( this.b.viewRow( i ) ).assign( sqrtweights, Functions.mult ) );
 
         // sigma is the estimated sd of the parameters. In limma, fit$sigma <- sqrt(mean(fit$effects[-(1:fit$rank)]^2) 
         // in lm.series, it's same: sigma[i] <- sqrt(mean(out$effects[-(1:out$rank)]^2))
