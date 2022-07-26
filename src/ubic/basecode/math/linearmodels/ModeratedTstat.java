@@ -30,7 +30,7 @@ import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import cern.jet.math.Functions;
 import ubic.basecode.dataStructure.matrix.MatrixUtil;
-import ubic.basecode.math.MathUtil;
+import ubic.basecode.math.DescriptiveWithMissing;
 import ubic.basecode.math.SpecFunc;
 
 /**
@@ -82,7 +82,7 @@ public class ModeratedTstat {
                 dofs.set(i, Double.NaN);
             } else {
                 sigmas.set(i, lms.getSigma());
-                dofs.set(i,  lms.getResidualDof());  // collect vector of dofs instead of assuming fixed value.
+                dofs.set(i, lms.getResidualDof());  // collect vector of dofs instead of assuming fixed value.
             }
             i++;
 
@@ -108,7 +108,9 @@ public class ModeratedTstat {
     }
 
     /*
-     * @return the scale and df2
+     * @param vars variances
+     * @param df1s vector of degrees of freedom
+     * @return the scale and df2 in a double array of length 2
      */
     protected static double[] fitFDist(final DoubleMatrix1D vars, final DoubleMatrix1D df1s) {
 
@@ -122,7 +124,7 @@ public class ModeratedTstat {
         }
 
         // stay away from zero values of variance
-        x = x.assign(Functions.max(1e-5));
+        x = x.assign(Functions.max(1e-5 * DescriptiveWithMissing.median( new DoubleArrayList(vars.toArray()) )));
 
         // z <- log(x)
         DoubleMatrix1D z = x.copy().assign(Functions.log);
@@ -133,8 +135,6 @@ public class ModeratedTstat {
         DoubleMatrix1D e = z.copy().assign(e1, Functions.minus).assign(e2, Functions.plus);
 
         int n = x.size();
-
-
         if (n < 2) {
             throw new IllegalStateException("Too few valid variance values to do eBayes parameter estimation (require at least 2)");
         }
@@ -169,7 +169,7 @@ public class ModeratedTstat {
     /*
      * Return the scale and df2. Original implementation, does not handle missing values, kept here for posterity/comparison/debugging.
      */
-    protected static double[] fitFDistNoMissing(DoubleMatrix1D x, double df1) {
+    private static double[] fitFDistNoMissing(DoubleMatrix1D x, double df1) {
 
         // stay away from zero valuess
         x = x.copy().assign(Functions.max(1e-5));
@@ -218,7 +218,7 @@ public class ModeratedTstat {
         double[] ffit = fitFDist(var, df);
         double dfPrior = ffit[1];
 
-        DoubleMatrix1D varPost = squeezeVar(var, df, ffit);
+        DoubleMatrix1D varPost = squeezeVariances(var, df, ffit);
 
         if (fit != null)
             fit.ebayesUpdate(dfPrior, ffit[0], varPost);
@@ -230,9 +230,9 @@ public class ModeratedTstat {
      * @param var vector of estimated residual variances
      * @param df  vector of dfs
      * @param fit result of fitFDist()
-     * @return vector of squeezed variances
+     * @return vector of squeezed variances (varPost)
      */
-    private static DoubleMatrix1D squeezeVar(DoubleMatrix1D var, DoubleMatrix1D df, double[] fit) {
+    protected static DoubleMatrix1D squeezeVariances(DoubleMatrix1D var, DoubleMatrix1D df, double[] fit) {
         double varPrior = fit[0];
         double dfPrior = fit[1];
 
