@@ -24,10 +24,6 @@ import static cern.jet.math.Functions.sqrt;
 
 import java.util.List;
 
-import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
-import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
-import org.apache.commons.math3.exception.OutOfRangeException;
-
 import cern.colt.function.IntIntDoubleFunction;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.IntArrayList;
@@ -36,12 +32,9 @@ import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
-import cern.jet.stat.Descriptive;
-import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.math.DescriptiveWithMissing;
 import ubic.basecode.math.MatrixRowStats;
-import ubic.basecode.math.MatrixStats;
 import ubic.basecode.math.Smooth;
 import ubic.basecode.math.linalg.QRDecomposition;
 
@@ -226,6 +219,7 @@ public class MeanVarianceEstimator {
         voomXY.viewColumn(0).assign(sx);
         voomXY.viewColumn(1).assign(sy);
         DoubleMatrix2D fit = Smooth.loessFit(voomXY);
+        this.meanVariance = voomXY;
         this.loess = fit;
 
         // quarterroot fitted counts
@@ -254,7 +248,6 @@ public class MeanVarianceEstimator {
             // fitted.values <- fit$coef %*% t(fit$design)
             fittedValues = solver.mult(coeff.viewDice(), A.viewDice());
         }
-
 
         // back-compute the values we want
         // fitted.cpm <- 2^fitted.values
