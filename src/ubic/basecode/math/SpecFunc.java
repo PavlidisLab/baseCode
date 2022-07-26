@@ -19,7 +19,6 @@
 package ubic.basecode.math;
 
 import cern.colt.list.BooleanArrayList;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.commons.math3.special.Gamma;
 
 import cern.colt.function.DoubleFunction;
