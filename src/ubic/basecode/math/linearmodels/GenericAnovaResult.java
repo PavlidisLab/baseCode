@@ -165,7 +165,7 @@ public class GenericAnovaResult extends AnovaResult implements Serializable {
     }
 
     /**
-     * @param factorsName e.g. f,g
+     * @param factorNames e.g. f,g
      * @return
      */
     public Double getInteractionEffectP( String... factorNames ) {
