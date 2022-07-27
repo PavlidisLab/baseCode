@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import ubic.basecode.dataStructure.matrix.Matrix2D;
 import ubic.basecode.dataStructure.matrix.Matrix3D;
@@ -194,6 +195,23 @@ public class MatrixWriter<R, C> {
             buf.append("\n");
         }
         out.write(buf.toString());
+        out.close();
+    }
+
+
+    /**
+     * Write a bare 1D matrix (one value per line)
+     * @param coltMatrix
+     * @throws IOException
+     */
+    public void writeMatrix(DoubleMatrix1D coltMatrix) throws IOException {
+        StringBuffer buf = new StringBuffer();
+        for (int i = 0; i < coltMatrix.size(); i++) {
+                buf.append(coltMatrix.get(i));
+                buf.append("\n");
+        }
+        out.write(buf.toString());
+        out.close();
     }
 
     /**
