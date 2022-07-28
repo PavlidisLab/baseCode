@@ -35,8 +35,8 @@ public class TestSpecFunc {
         // phyper(2, 20, 100, 50);
         // [1] 0.001077697
         double expectedReturn = 0.001077697;
-        double actualReturn = SpecFunc.phyper( 2, 20, 100, 50, true );
-        assertEquals( expectedReturn, actualReturn, 1e-5 );
+        double actualReturn = SpecFunc.phyper(2, 20, 100, 50, true);
+        assertEquals(expectedReturn, actualReturn, 1e-5);
     }
 
     @Test
@@ -45,8 +45,8 @@ public class TestSpecFunc {
         double expectedReturn = 0.00757333;
         // phyper(0, 5, 15794, 24, lower.tail=F);
 
-        double actualReturn = SpecFunc.phyper( 0, 5, 15799 - 5, 24, false );
-        assertEquals( expectedReturn, actualReturn, 1e-5 );
+        double actualReturn = SpecFunc.phyper(0, 5, 15799 - 5, 24, false);
+        assertEquals(expectedReturn, actualReturn, 1e-5);
     }
 
     @Test
@@ -55,16 +55,16 @@ public class TestSpecFunc {
         // [1] 7.384185e-08
 
         double expectedReturn = 7.384185e-08;
-        double actualReturn = SpecFunc.phyper( 18, 20, 100, 50, false );
-        assertEquals( expectedReturn, actualReturn, 1e-5 );
+        double actualReturn = SpecFunc.phyper(18, 20, 100, 50, false);
+        assertEquals(expectedReturn, actualReturn, 1e-5);
     }
 
     @Test
     public final void testdBinom() {
         // dbinom(2, 100, 0.1) == 0.001623197
         double expectedReturn = 0.001623197;
-        double actualReturn = SpecFunc.dbinom( 2, 100, 0.1 );
-        assertEquals( expectedReturn, actualReturn, 1e-5 );
+        double actualReturn = SpecFunc.dbinom(2, 100, 0.1);
+        assertEquals(expectedReturn, actualReturn, 1e-5);
     }
 
     @Test
@@ -76,21 +76,37 @@ public class TestSpecFunc {
         // dhyper(2, 20, 100, 50);
         // [1] 0.0009644643
         double expectedReturn = 0.0009644643;
-        double actualReturn = SpecFunc.dhyper( 2, 20, 100, 50 );
-        assertEquals( expectedReturn, actualReturn, 1e-5 );
+        double actualReturn = SpecFunc.dhyper(2, 20, 100, 50);
+        assertEquals(expectedReturn, actualReturn, 1e-5);
     }
 
     @Test
     public void testTrigammaInverse() {
 
         cern.colt.matrix.impl.DenseDoubleMatrix1D x = new cern.colt.matrix.impl.DenseDoubleMatrix1D(
-                new double[] { 1.0, 2.0, 3.0 } );
+                new double[]{1.0, 2.0, 3.0});
 
         // options(digits = 20);limma::trigammaInverse(c(1,2,3))
-        double[] expected = new double[] { 1.42625512021507883098, 0.87666407746426022740, 0.67547810528137008923 };
+        double[] expected = new double[]{1.42625512021507883098, 0.87666407746426022740, 0.67547810528137008923};
 
-        double[] actual = SpecFunc.trigammaInverse( x ).toArray();
-        assertTrue( RegressionTesting.closeEnough( actual, expected, 1e-10 ) );
+        double[] actual = SpecFunc.trigammaInverse(x).toArray();
+        assertTrue(RegressionTesting.closeEnough(expected, actual, 1e-10));
+    }
+
+
+    /**
+     * handling of missing and out of range values
+     */
+    @Test
+    public void testTrigammaInverseB() {
+
+        cern.colt.matrix.impl.DenseDoubleMatrix1D x = new cern.colt.matrix.impl.DenseDoubleMatrix1D(
+                new double[]{1.0, 2.0, 1.0e8, Double.NaN, 1.0e-12, -10});
+
+        // options(digits = 20);limma::trigammaInverse(c(1,2,1e8, NaN, 1.0e-12, -10))
+        double[] expected = new double[]{1.4262551202150788310e+00, 8.7666407746426022740e-01 , 1.000000e-04, Double.NaN, 1.000000e+12, Double.NaN};
+        double[] actual = SpecFunc.trigammaInverse(x).toArray();
+        assertTrue(RegressionTesting.closeEnough(  expected, actual,1e-10));
     }
 
 }

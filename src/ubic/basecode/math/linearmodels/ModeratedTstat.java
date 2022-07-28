@@ -19,6 +19,10 @@
 
 package ubic.basecode.math.linearmodels;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.List;
 
 import cern.colt.function.DoubleFunction;
@@ -29,6 +33,8 @@ import org.apache.commons.math3.special.Gamma;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import cern.jet.math.Functions;
+import ubic.basecode.dataStructure.matrix.MatrixUtil;
+import ubic.basecode.math.DescriptiveWithMissing;
 import ubic.basecode.math.SpecFunc;
 
 /**
@@ -75,11 +81,13 @@ public class ModeratedTstat {
         int i = 0;
         // corner case can get nulls, example: GSE10778
         for (LinearModelSummary lms : summaries) {
-            assert lms.getSigma() != null;
-            sigmas.set(i, lms.getSigma());
-            Integer residualDof = lms.getResidualDof();
-            Integer dof = residualDof;
-            dofs.set(i, dof); // collect vector of dofs instead of assuming fixed value.
+            if (lms.getSigma() == null) {
+                sigmas.set(i, Double.NaN);
+                dofs.set(i, Double.NaN);
+            } else {
+                sigmas.set(i, lms.getSigma());
+                dofs.set(i, lms.getResidualDof());  // collect vector of dofs instead of assuming fixed value.
+            }
             i++;
 
         }
@@ -92,7 +100,17 @@ public class ModeratedTstat {
      * @param x
      * @return
      */
-    private static final BooleanArrayList ok(DoubleMatrix1D x) {
+    private static final BooleanArrayList okVars(DoubleMatrix1D x) {
+        assert x.size() > 0;
+        BooleanArrayList answer = new BooleanArrayList(x.size());
+        for (int i = 0; i < x.size(); i++) {
+            double a = x.getQuick(i);
+            answer.add(!(Double.isNaN(a) || Double.isInfinite(a) || a < -1e-15));
+        }
+        return answer;
+    }
+
+    private static final BooleanArrayList okDfs(DoubleMatrix1D x) {
         assert x.size() > 0;
         BooleanArrayList answer = new BooleanArrayList(x.size());
 
@@ -103,52 +121,24 @@ public class ModeratedTstat {
         return answer;
     }
 
-
-    private static final BooleanArrayList conjunction(BooleanArrayList a, BooleanArrayList b) {
-        assert a.size() == b.size();
-        BooleanArrayList answer = new BooleanArrayList();
-        for (int i = 0; i < a.size(); i++) {
-            answer.add(a.get(i) && b.get(i));
-        }
-        return answer;
-    }
-
-
-    private static final DoubleMatrix1D stripNonOK(DoubleMatrix1D x, BooleanArrayList ok) {
-
-        assert ok.size() == x.size();
-
-        DoubleArrayList okvals = new DoubleArrayList();
-        for (int i = 0; i < x.size(); i++) {
-            if (ok.get(i)) {
-                okvals.add(x.get(i));
-            }
-        }
-        DoubleMatrix1D answer = new DenseDoubleMatrix1D(okvals.size());
-
-        for (int i = 0; i < answer.size(); i++) {
-            answer.set(i, okvals.get(i));
-        }
-        return answer;
-    }
-
-
     /*
-     * Return the scale and df2
+     * @param vars variances
+     * @param df1s vector of degrees of freedom
+     * @return the scale (aka s2.prior or s20 in limma) and df2 (aka df.prior) in a double array of length 2
      */
     protected static double[] fitFDist(final DoubleMatrix1D vars, final DoubleMatrix1D df1s) {
 
-        BooleanArrayList ok = conjunction(ok(vars), ok(df1s));
+        BooleanArrayList ok = MatrixUtil.conjunction(okVars(vars), okDfs(df1s));
 
-        DoubleMatrix1D x = stripNonOK(vars, ok);
-        DoubleMatrix1D df1 = stripNonOK(df1s, ok);
+        DoubleMatrix1D x = MatrixUtil.stripNonOK(vars, ok);
+        DoubleMatrix1D df1 = MatrixUtil.stripNonOK(df1s, ok);
 
         if (x.size() == 0) {
             throw new IllegalStateException("There were no valid values of variance to perform eBayes parameter estimation");
         }
 
-        // stay away from zero values of variance
-        x = x.assign(Functions.max(1e-5));
+        // stay away from zero variance
+        x = x.assign(Functions.max(1e-5 * DescriptiveWithMissing.median(new DoubleArrayList(vars.toArray()))));
 
         // z <- log(x)
         DoubleMatrix1D z = x.copy().assign(Functions.log);
@@ -159,8 +149,6 @@ public class ModeratedTstat {
         DoubleMatrix1D e = z.copy().assign(e1, Functions.minus).assign(e2, Functions.plus);
 
         int n = x.size();
-
-
         if (n < 2) {
             throw new IllegalStateException("Too few valid variance values to do eBayes parameter estimation (require at least 2)");
         }
@@ -195,7 +183,8 @@ public class ModeratedTstat {
     /*
      * Return the scale and df2. Original implementation, does not handle missing values, kept here for posterity/comparison/debugging.
      */
-    protected static double[] fitFDistNoMissing(DoubleMatrix1D x, double df1) {
+    @Deprecated
+    private static double[] fitFDistNoMissing(DoubleMatrix1D x, double df1) {
 
         // stay away from zero valuess
         x = x.copy().assign(Functions.max(1e-5));
@@ -244,7 +233,7 @@ public class ModeratedTstat {
         double[] ffit = fitFDist(var, df);
         double dfPrior = ffit[1];
 
-        DoubleMatrix1D varPost = squeezeVar(var, df, ffit);
+        DoubleMatrix1D varPost = squeezeVariances(var, df, ffit);
 
         if (fit != null)
             fit.ebayesUpdate(dfPrior, ffit[0], varPost);
@@ -253,15 +242,14 @@ public class ModeratedTstat {
     }
 
     /**
-     * @param var vector of estimated residual variances
+     * @param var vector of estimated residual variances from original model fit
      * @param df  vector of dfs
-     * @param fit result of fitFDist()
-     * @return vector of squeezed variances
+     * @param fit result of fitFDist() (s2.prior and dfPrior)
+     * @return vector of squeezed variances (varPost or s2.post)
      */
-    private static DoubleMatrix1D squeezeVar(DoubleMatrix1D var, DoubleMatrix1D df, double[] fit) {
+    protected static DoubleMatrix1D squeezeVariances(DoubleMatrix1D var, DoubleMatrix1D df, double[] fit) {
         double varPrior = fit[0];
         double dfPrior = fit[1];
-
 
         //   out$var.post <- (df*var + out$df.prior*out$var.prior) / df.total
 

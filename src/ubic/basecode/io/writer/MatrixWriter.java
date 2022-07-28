@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2007-2019 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,16 +29,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import cern.colt.matrix.DoubleMatrix1D;
+import cern.colt.matrix.DoubleMatrix2D;
 import ubic.basecode.dataStructure.matrix.Matrix2D;
 import ubic.basecode.dataStructure.matrix.Matrix3D;
 import ubic.basecode.dataStructure.matrix.MatrixUtil;
 
 /**
  * Class for writing matrices to disk
- * 
+ *
  * @author Raymond Lim
  * @author paul
- * 
  */
 public class MatrixWriter<R, C> {
 
@@ -54,73 +55,73 @@ public class MatrixWriter<R, C> {
     protected Map<?, String> sliceNameMap;
     protected String topLeft;
 
-    public MatrixWriter( OutputStream out ) {
-        this( out, null, DEFAULT_SEP );
+    public MatrixWriter(OutputStream out) {
+        this(out, null, DEFAULT_SEP);
     }
 
-    public MatrixWriter( OutputStream out, Format formatter ) {
-        this( out, formatter, DEFAULT_SEP );
+    public MatrixWriter(OutputStream out, Format formatter) {
+        this(out, formatter, DEFAULT_SEP);
     }
 
-    public MatrixWriter( OutputStream out, Format formatter, String sep ) {
-        this( new BufferedWriter( new OutputStreamWriter( out ) ), formatter, sep );
+    public MatrixWriter(OutputStream out, Format formatter, String sep) {
+        this(new BufferedWriter(new OutputStreamWriter(out)), formatter, sep);
     }
 
-    public MatrixWriter( String fileName, Format formatter ) throws IOException {
-        this( fileName, formatter, DEFAULT_SEP );
+    public MatrixWriter(String fileName, Format formatter) throws IOException {
+        this(fileName, formatter, DEFAULT_SEP);
     }
 
     @SuppressWarnings("resource")
-    public MatrixWriter( String fileName, Format formatter, String sep ) throws IOException {
-        this( new BufferedWriter( new FileWriter( fileName ) ), formatter, sep );
+    public MatrixWriter(String fileName, Format formatter, String sep) throws IOException {
+        this(new BufferedWriter(new FileWriter(fileName)), formatter, sep);
     }
 
-    public MatrixWriter( Writer out ) {
-        this( out, null, DEFAULT_SEP );
+    public MatrixWriter(Writer out) {
+        this(out, null, DEFAULT_SEP);
     }
 
-    public MatrixWriter( Writer out, Format formatter ) {
-        this( out, formatter, DEFAULT_SEP );
+    public MatrixWriter(Writer out, Format formatter) {
+        this(out, formatter, DEFAULT_SEP);
     }
 
-    public MatrixWriter( Writer out, Format formatter, String sep ) {
+    public MatrixWriter(Writer out, Format formatter, String sep) {
         this.out = out;
         this.formatter = formatter;
         this.sep = sep;
         this.topLeft = DEFAULT_TOP_LEFT;
     }
 
-    public MatrixWriter( Writer out, String sep ) {
-        this( out, null, sep );
+    public MatrixWriter(Writer out, String sep) {
+        this(out, null, sep);
     }
 
     /**
      * Use to customize the labels instead of relying on the toString method of the column object
-     * 
+     *
      * @param colNameMap
      */
-    public void setColNameMap( Map<C, String> colNameMap ) {
+    public void setColNameMap(Map<C, String> colNameMap) {
         this.colNameMap = colNameMap;
     }
 
     /**
      * Use to customize the labels instead of relying on the toString method of the row object
-     * 
+     *
      * @param rowNameMap
      */
-    public void setRowNameMap( Map<R, String> rowNameMap ) {
+    public void setRowNameMap(Map<R, String> rowNameMap) {
         this.rowNameMap = rowNameMap;
     }
 
-    public void setSep( String sep ) {
+    public void setSep(String sep) {
         this.sep = sep;
     }
 
-    public void setSliceNameMap( Map<?, String> sliceNameMap ) {
+    public void setSliceNameMap(Map<?, String> sliceNameMap) {
         this.sliceNameMap = sliceNameMap;
     }
 
-    public void setTopLeft( String topLeft ) {
+    public void setTopLeft(String topLeft) {
         this.topLeft = topLeft;
     }
 
@@ -130,103 +131,137 @@ public class MatrixWriter<R, C> {
      * @param printNames Should the row and column names be included; FIXME this fails if names aren't provided
      * @throws IOException
      */
-    public <V> void writeMatrix( Matrix2D<R, C, V> matrix, boolean printNames ) throws IOException {
+    public <V> void writeMatrix(Matrix2D<R, C, V> matrix, boolean printNames) throws IOException {
         // write headers
-        StringBuffer buf = new StringBuffer( topLeft );
-        if ( printNames ) {
-            for ( Iterator<C> it = matrix.getColNames().iterator(); it.hasNext(); ) {
+        StringBuffer buf = new StringBuffer(topLeft);
+        if (printNames) {
+            for (Iterator<C> it = matrix.getColNames().iterator(); it.hasNext(); ) {
                 Object colName = it.next();
-                buf.append( sep );
-                if ( this.colNameMap.containsKey( colName ) ) {
-                    buf.append( colNameMap.get( colName ) );
+                buf.append(sep);
+                if (this.colNameMap.containsKey(colName)) {
+                    buf.append(colNameMap.get(colName));
                 } else {
-                    buf.append( colName );
+                    buf.append(colName);
                 }
             }
-            buf.append( "\n" );
-            out.write( buf.toString() );
+            buf.append("\n");
+            out.write(buf.toString());
         }
 
-        for ( Iterator<R> rowIt = matrix.getRowNames().iterator(); rowIt.hasNext(); ) {
+        for (Iterator<R> rowIt = matrix.getRowNames().iterator(); rowIt.hasNext(); ) {
             R rowName = rowIt.next();
-            int rowIndex = matrix.getRowIndexByName( rowName );
+            int rowIndex = matrix.getRowIndexByName(rowName);
             buf = new StringBuffer();
-            if ( printNames ) {
-                if ( this.rowNameMap.containsKey( rowName ) ) {
-                    buf.append( rowNameMap.get( rowName ) + sep );
+            if (printNames) {
+                if (this.rowNameMap.containsKey(rowName)) {
+                    buf.append(rowNameMap.get(rowName) + sep);
                 } else {
-                    buf.append( rowName + sep );
+                    buf.append(rowName + sep);
                 }
             }
-            for ( Iterator<C> colIt = matrix.getColNames().iterator(); colIt.hasNext(); ) {
+            for (Iterator<C> colIt = matrix.getColNames().iterator(); colIt.hasNext(); ) {
                 C colName = colIt.next();
-                int colIndex = matrix.getColIndexByName( colName );
-                Object val = MatrixUtil.getObject( matrix, rowIndex, colIndex );
+                int colIndex = matrix.getColIndexByName(colName);
+                Object val = MatrixUtil.getObject(matrix, rowIndex, colIndex);
 
-                if ( val != null ) {
+                if (val != null) {
                     String s = val.toString();
-                    if ( formatter != null ) s = formatter.format( val );
-                    buf.append( s );
+                    if (formatter != null) s = formatter.format(val);
+                    buf.append(s);
                 } else {
-                    buf.append( "" ); // just to make explicit ...
+                    buf.append(""); // just to make explicit ...
                 }
-                if ( colIt.hasNext() ) buf.append( sep );
+                if (colIt.hasNext()) buf.append(sep);
             }
-            buf.append( "\n" );
-            out.write( buf.toString() );
+            buf.append("\n");
+            out.write(buf.toString());
         }
         out.flush();
         out.close();
     }
 
     /**
+     * Write a bare matrix without row names or columns
+     * @param coltMatrix
+     * @throws IOException
+     */
+    public void writeMatrix(DoubleMatrix2D coltMatrix) throws IOException {
+        StringBuffer buf = new StringBuffer();
+        for (int i = 0; i < coltMatrix.rows(); i++) {
+            for (int j = 0; j < coltMatrix.columns(); j++) {
+                if (j > 0) buf.append("\t");
+                buf.append(coltMatrix.get(i, j));
+            }
+            buf.append("\n");
+        }
+        out.write(buf.toString());
+        out.close();
+    }
+
+
+    /**
+     * Write a bare 1D matrix (one value per line)
+     * @param coltMatrix
+     * @throws IOException
+     */
+    public void writeMatrix(DoubleMatrix1D coltMatrix) throws IOException {
+        StringBuffer buf = new StringBuffer();
+        for (int i = 0; i < coltMatrix.size(); i++) {
+                buf.append(coltMatrix.get(i));
+                buf.append("\n");
+        }
+        out.write(buf.toString());
+        out.close();
+    }
+
+    /**
      * Writes a 3d matrix, collapsing the rows and columns
-     * 
+     *
      * @param matrix
      * @param printNames
      * @throws IOException
      */
-    public <S, V> void writeMatrix( Matrix3D<R, C, S, V> matrix, boolean printNames ) throws IOException {
-        if ( printNames ) {
-            StringBuffer buf = new StringBuffer( topLeft );
-            for ( Iterator<S> it = matrix.getSliceNameIterator(); it.hasNext(); ) {
+    public <S, V> void writeMatrix(Matrix3D<R, C, S, V> matrix, boolean printNames) throws IOException {
+        if (printNames) {
+            StringBuffer buf = new StringBuffer(topLeft);
+            for (Iterator<S> it = matrix.getSliceNameIterator(); it.hasNext(); ) {
                 Object sliceObj = it.next();
                 String sliceName = sliceObj.toString();
-                if ( sliceNameMap != null && sliceNameMap.get( sliceObj ) != null ) {
-                    sliceName = sliceNameMap.get( sliceObj ).toString();
+                if (sliceNameMap != null && sliceNameMap.get(sliceObj) != null) {
+                    sliceName = sliceNameMap.get(sliceObj).toString();
                 }
-                buf.append( sep );
-                buf.append( sliceName );
+                buf.append(sep);
+                buf.append(sliceName);
             }
-            buf.append( "\n" );
-            out.write( buf.toString() );
+            buf.append("\n");
+            out.write(buf.toString());
         }
-        for ( int i = 0; i < matrix.rows(); i++ ) {
-            for ( int j = 0; j < matrix.columns(); j++ ) {
-                Object rowObj = matrix.getRowName( i );
-                Object colObj = matrix.getColName( j );
+        for (int i = 0; i < matrix.rows(); i++) {
+            for (int j = 0; j < matrix.columns(); j++) {
+                Object rowObj = matrix.getRowName(i);
+                Object colObj = matrix.getColName(j);
                 String rowName = rowObj.toString();
                 String colName = colObj.toString();
-                if ( rowNameMap != null && rowNameMap.containsKey( rowObj ) )
-                    rowName = rowNameMap.get( rowObj ).toString();
-                if ( colNameMap != null && colNameMap.containsKey( colObj ) ) {
-                    colName = colNameMap.get( colObj ).toString();
+                if (rowNameMap != null && rowNameMap.containsKey(rowObj))
+                    rowName = rowNameMap.get(rowObj).toString();
+                if (colNameMap != null && colNameMap.containsKey(colObj)) {
+                    colName = colNameMap.get(colObj).toString();
                 }
                 String name = rowName + ":" + colName;
 
                 StringBuffer buf = new StringBuffer();
-                if ( printNames ) buf.append( name + sep );
-                for ( int k = 0; k < matrix.slices(); k++ ) {
-                    Object val = matrix.getObject( k, i, j );
-                    if ( val != null ) {
+                if (printNames) buf.append(name + sep);
+                for (int k = 0; k < matrix.slices(); k++) {
+                    Object val = matrix.getObject(k, i, j);
+                    if (val != null) {
                         String s = val.toString();
-                        if ( formatter != null ) s = formatter.format( val );
-                        buf.append( s );
+                        if (formatter != null) s = formatter.format(val);
+                        buf.append(s);
                     }
-                    if ( k + 1 < matrix.slices() ) buf.append( sep );
+                    if (k + 1 < matrix.slices()) buf.append(sep);
                 }
-                buf.append( "\n" );
-                out.write( buf.toString() );
+                buf.append("\n");
+                out.write(buf.toString());
 
             }
         }
