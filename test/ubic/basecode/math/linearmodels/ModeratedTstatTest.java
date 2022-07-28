@@ -361,10 +361,13 @@ public class ModeratedTstatTest {
     @Test
     public void testSqueezeVarB() throws Exception {
         DoubleMatrixReader f = new DoubleMatrixReader();
+
+        // variances from limma
         DoubleMatrix<String, String> testMatrix = f.read(new GZIPInputStream(this.getClass().getResourceAsStream(
                 "/data/test-vars.gz")));
         DoubleMatrix1D vars = new DenseDoubleMatrix1D(testMatrix.getColumn(0));
         DoubleMatrix1D df1s = new DenseDoubleMatrix1D(vars.size());
+
         df1s.assign(a -> 6);
         double[] actual = ModeratedTstat.fitFDist(vars, df1s);
         double[] expected = new double[]{0.031699809959242764013,1.5383043501108832896};
