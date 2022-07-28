@@ -52,16 +52,16 @@ public class RegressionTesting {
     private static Logger log = LoggerFactory.getLogger( RegressionTesting.class );
 
     /**
-     * @param a expected
-     * @param b measured
-     * @param tolerance
+     * @param expected
+     * @param actual
+     * @param tolerance permitted delta between the values
      */
-    public static boolean closeEnough( double[] a, double[] b, double tolerance ) {
-        if ( a.length != b.length ) return false;
+    public static boolean closeEnough( double[] expected, double[] actual, double tolerance ) {
+        if ( expected.length != actual.length ) return false;
 
-        for ( int i = 0; i < a.length; i++ ) {
-            if ( Math.abs( a[i] - b[i] ) > tolerance ) {
-                log.error( "Expected " + a[i] + " got " + b[i] + " at " + i );
+        for ( int i = 0; i < expected.length; i++ ) {
+            if ( Math.abs( expected[i] - actual[i] ) > tolerance ) {
+                log.error( "Expected " + expected[i] + " got " + actual[i] + " at " + i );
                 return false;
             }
         }
@@ -74,16 +74,16 @@ public class RegressionTesting {
     /**
      * Test whether two DoubleArrayLists are 'close enough' to call equal.
      * 
-     * @param a
-     * @param b
+     * @param expected
+     * @param actual
      * @param tolerance
      * @return
      */
-    public static boolean closeEnough( DoubleArrayList a, DoubleArrayList b, double tolerance ) {
-        if ( a.size() != b.size() ) return false;
+    public static boolean closeEnough( DoubleArrayList expected, DoubleArrayList actual, double tolerance ) {
+        if ( expected.size() != actual.size() ) return false;
 
-        for ( int i = 0; i < a.size(); i++ ) {
-            if ( Math.abs( a.get( i ) - b.get( i ) ) > tolerance ) return false;
+        for ( int i = 0; i < expected.size(); i++ ) {
+            if ( Math.abs( expected.get( i ) - actual.get( i ) ) > tolerance ) return false;
         }
         return true;
     }
@@ -96,16 +96,16 @@ public class RegressionTesting {
      * @param tolerance
      * @return try if all the values in both matrices are within 'tolerance' of each other.
      */
-    public static boolean closeEnough( DoubleMatrix<?, ?> a, DoubleMatrix<?, ?> b, double tolerance ) {
-        if ( a.rows() != b.rows() || a.columns() != b.columns() ) {
+    public static boolean closeEnough( DoubleMatrix<?, ?> expected, DoubleMatrix<?, ?> actual, double tolerance ) {
+        if ( expected.rows() != actual.rows() || expected.columns() != actual.columns() ) {
             log.error( "Unequal rows and/or columns" );
             return false;
         }
 
-        for ( int i = 0; i < a.rows(); i++ ) {
-            for ( int j = 0; j < a.columns(); j++ ) {
-                if ( Math.abs( a.get( i, j ) - b.get( i, j ) ) > tolerance ) {
-                    log.error( "Expected: " + a.get( i, j ) + ", actual=" + b.get( i, j ) );
+        for ( int i = 0; i < expected.rows(); i++ ) {
+            for ( int j = 0; j < expected.columns(); j++ ) {
+                if ( Math.abs( expected.get( i, j ) - actual.get( i, j ) ) > tolerance ) {
+                    log.error( "Expected: " + expected.get( i, j ) + ", actual=" + actual.get( i, j ) );
                     return false;
                 }
             }
@@ -114,13 +114,13 @@ public class RegressionTesting {
     }
 
     /**
-     * @param a
-     * @param b
+     * @param expected
+     * @param actual
      * @param tolerance
      * @return
      */
-    public static boolean closeEnough( DoubleMatrix1D a, DoubleMatrix1D b, double tolerance ) {
-        return closeEnough( a.toArray(), b.toArray(), tolerance );
+    public static boolean closeEnough( DoubleMatrix1D expected, DoubleMatrix1D actual, double tolerance ) {
+        return closeEnough(expected.toArray(), actual.toArray(), tolerance );
     }
 
     public static boolean closeEnough( DoubleMatrix2D a, DoubleMatrix2D b, double tolerance ) {

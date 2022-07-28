@@ -15,6 +15,7 @@
 package ubic.basecode.dataStructure.matrix;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +47,8 @@ public class DenseDoubleMatrixTest extends AbstractDoubleMatrixTest {
         DenseDoubleMatrix<String, String> actual = new DenseDoubleMatrix<String, String>( testdata.asArray() );
         double[][] tt = testdata.asArray();
 
+        assertTrue(testdata.rows() > 0);
+        assertTrue(actual.rows() > 0);
         for ( int i = 0; i < tt.length; i++ ) {
             int len = tt[i].length;
             for ( int j = 0; j < len; j++ ) {

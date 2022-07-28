@@ -242,7 +242,7 @@ public class QRDecomposition {
 
         double[] qty = new double[y.size()];
         double[] junk = new double[y.size()];
-        ubic.basecode.math.linalg.Dqrsl.dqrsl_j( QR.toArray(), QR.rows(), QR.columns(), qraux.toArray(), MatrixUtil.removeMissing( y ).toArray(),
+        ubic.basecode.math.linalg.Dqrsl.dqrsl_j( QR.toArray(), QR.rows(), QR.columns(), qraux.toArray(), MatrixUtil.removeMissingOrInfinite( y ).toArray(),
                 junk, qty,
                 junk, junk, junk, 1000 );
         return new DenseDoubleMatrix1D( qty );

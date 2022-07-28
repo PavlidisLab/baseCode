@@ -22,6 +22,7 @@ package ubic.basecode.math.linearmodels;
 import static org.junit.Assert.*;
 
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
@@ -32,11 +33,6 @@ import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.StringMatrix;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.io.reader.StringMatrixReader;
-import ubic.basecode.math.linearmodels.DesignMatrix;
-import ubic.basecode.math.linearmodels.GenericAnovaResult;
-import ubic.basecode.math.linearmodels.LeastSquaresFit;
-import ubic.basecode.math.linearmodels.LinearModelSummary;
-import ubic.basecode.math.linearmodels.ModeratedTstat;
 import ubic.basecode.util.RegressionTesting;
 
 /**
@@ -146,7 +142,7 @@ public class ModeratedTstatTest {
         sums = fit.summarizeByKeys(true);
 
     }
-    
+
     @Test
     public void testFdist() {
         double[] x = new double[]{0.30232520254346584299,
@@ -255,7 +251,7 @@ public class ModeratedTstatTest {
         DenseDoubleMatrix1D dfs = new DenseDoubleMatrix1D(x.length);
         dfs.assign(8);
         double[] expected = new double[]{1.1056298866365792399, 14.544682227013733922};
-     //   double[] actualold = ModeratedTstat.fitFDistNoMissing(new DenseDoubleMatrix1D(x), 8);
+        //   double[] actualold = ModeratedTstat.fitFDistNoMissing(new DenseDoubleMatrix1D(x), 8);
         double[] actual = ModeratedTstat.fitFDist(new DenseDoubleMatrix1D(x), dfs);
         assertTrue(RegressionTesting.closeEnough(actual, expected, 1e-10));
 
@@ -357,5 +353,32 @@ public class ModeratedTstatTest {
 
     }
 
+    /**
+     * Test based on GSE112792; see test-squeezevar.R
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testSqueezeVarB() throws Exception {
+        DoubleMatrixReader f = new DoubleMatrixReader();
+
+        // variances from limma
+        DoubleMatrix<String, String> testMatrix = f.read(new GZIPInputStream(this.getClass().getResourceAsStream(
+                "/data/test-vars.gz")));
+        DoubleMatrix1D vars = new DenseDoubleMatrix1D(testMatrix.getColumn(0));
+        DoubleMatrix1D df1s = new DenseDoubleMatrix1D(vars.size());
+
+        df1s.assign(a -> 6);
+        double[] actual = ModeratedTstat.fitFDist(vars, df1s);
+        double[] expected = new double[]{0.031699809959242764013,1.5383043501108832896};
+        assertTrue(RegressionTesting.closeEnough(expected, actual, 1e-10));
+
+        DoubleMatrix1D squeezedActual =        ModeratedTstat.squeezeVariances(vars, df1s, actual);
+
+        DoubleMatrix<String, String> testSqueezed = f.read(new GZIPInputStream(this.getClass().getResourceAsStream(
+                "/data/test-var.post.gz")));
+
+        assertTrue(RegressionTesting.closeEnough(testSqueezed.getColumn(0), squeezedActual.toArray(), 1e-10));
+    }
 
 }
