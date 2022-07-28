@@ -52,7 +52,6 @@ public class AnovaEffect implements Serializable {
      * @param pValue
      * @param fStatistic
      * @param degreesOfFreedom
-     * @param meanSq
      * @param ssQ
      * @param isInteraction
      */
