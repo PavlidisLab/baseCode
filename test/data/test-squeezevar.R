@@ -41,13 +41,15 @@ counts<-counts[apply(counts, 1, function(x) {
   a<-length(unique(x))>5;
 }),]
 
-# fixme: sample and row order might not be right ...can work out from library sizes
+# fixme: sample and row order might not be right ...can work out from library sizes.
 vv<-voom(as.matrix(counts), model.matrix(~gt), plot=T)
-gmv<-read.delim("mv-1885318782381326010.txt", header=F, sep='\t')
-glo<-read.delim("loess-fit-943568072532947709.txt", header=F, sep='\t')
+gmv<-read.delim("/Users/pzoot/Dev/debugging/Gemma/ebayes/mv-gemma.txt", header=F, sep='\t')
+glo<-read.delim("/Users/pzoot/Dev/debugging/Gemma/ebayes/loess-fit-gemma.txt", header=F, sep='\t')
 plot(gmv, pch='.', ylim=c(0,5))
 lines(glo, col='red')
 
+###########################################
+# Test case used in basecode (MeanVarianceEstimatorTest)
 td<-read.delim("lmtest11.dat.txt", header=T, row.names=1, sep='\t')
 tdes<-read.delim("lmtest11.des.txt", header=T, row.names=1, sep='\t')
 des<-model.matrix(~tdes$targets.TreatmentDHT);

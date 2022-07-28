@@ -33,10 +33,13 @@ ourweights<-read.csv(header=T, row.names=1, 'lmtest.weights1.txt', sep='\t')
 elist$weights = as.matrix(ourweights)
 fit<-lmFit(elist$E,design=des,weights=elist$weights)
 fit<-noBayes(fit)
+topTable(fit, c(2,3), sort.by="none")
 # drilling into one example.
 anova(f1)
 anova(f1)[1,5]
 coef(fit[1,])
+topTable(fit, c(2,3), sort.by="none")
+
 fit[1,]$sigma
 fit[1,]$cov.coefficients
 fit[1,]$stdev.unscaled
@@ -51,3 +54,8 @@ summary(f1)
 summary(f1)$sigma
 
 
+fit<-eBayes(fit)
+dffit<-as.data.frame(fit)
+topTable(fit, c(2,3), sort.by="none")
+dffit[1,]
+fit$df.prior
