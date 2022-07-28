@@ -19,6 +19,10 @@
 
 package ubic.basecode.math.linearmodels;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.List;
 
 import cern.colt.function.DoubleFunction;
@@ -96,7 +100,17 @@ public class ModeratedTstat {
      * @param x
      * @return
      */
-    private static final BooleanArrayList ok(DoubleMatrix1D x) {
+    private static final BooleanArrayList okVars(DoubleMatrix1D x) {
+        assert x.size() > 0;
+        BooleanArrayList answer = new BooleanArrayList(x.size());
+        for (int i = 0; i < x.size(); i++) {
+            double a = x.getQuick(i);
+            answer.add(!(Double.isNaN(a) || Double.isInfinite(a) || a < -1e-15));
+        }
+        return answer;
+    }
+
+    private static final BooleanArrayList okDfs(DoubleMatrix1D x) {
         assert x.size() > 0;
         BooleanArrayList answer = new BooleanArrayList(x.size());
 
@@ -110,11 +124,11 @@ public class ModeratedTstat {
     /*
      * @param vars variances
      * @param df1s vector of degrees of freedom
-     * @return the scale and df2 in a double array of length 2
+     * @return the scale (aka s2.prior or s20 in limma) and df2 (aka df.prior) in a double array of length 2
      */
     protected static double[] fitFDist(final DoubleMatrix1D vars, final DoubleMatrix1D df1s) {
 
-        BooleanArrayList ok = MatrixUtil.conjunction(ok(vars), ok(df1s));
+        BooleanArrayList ok = MatrixUtil.conjunction(okVars(vars), okDfs(df1s));
 
         DoubleMatrix1D x = MatrixUtil.stripNonOK(vars, ok);
         DoubleMatrix1D df1 = MatrixUtil.stripNonOK(df1s, ok);
@@ -123,8 +137,8 @@ public class ModeratedTstat {
             throw new IllegalStateException("There were no valid values of variance to perform eBayes parameter estimation");
         }
 
-        // stay away from zero values of variance
-        x = x.assign(Functions.max(1e-5 * DescriptiveWithMissing.median( new DoubleArrayList(vars.toArray()) )));
+        // stay away from zero variance
+        x = x.assign(Functions.max(1e-5 * DescriptiveWithMissing.median(new DoubleArrayList(vars.toArray()))));
 
         // z <- log(x)
         DoubleMatrix1D z = x.copy().assign(Functions.log);
@@ -169,6 +183,7 @@ public class ModeratedTstat {
     /*
      * Return the scale and df2. Original implementation, does not handle missing values, kept here for posterity/comparison/debugging.
      */
+    @Deprecated
     private static double[] fitFDistNoMissing(DoubleMatrix1D x, double df1) {
 
         // stay away from zero valuess
@@ -227,10 +242,10 @@ public class ModeratedTstat {
     }
 
     /**
-     * @param var vector of estimated residual variances
+     * @param var vector of estimated residual variances from original model fit
      * @param df  vector of dfs
-     * @param fit result of fitFDist()
-     * @return vector of squeezed variances (varPost)
+     * @param fit result of fitFDist() (s2.prior and dfPrior)
+     * @return vector of squeezed variances (varPost or s2.post)
      */
     protected static DoubleMatrix1D squeezeVariances(DoubleMatrix1D var, DoubleMatrix1D df, double[] fit) {
         double varPrior = fit[0];
