@@ -2,6 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ubc.pavlab</groupId>
+		<artifactId>pavlab-starter-parent</artifactId>
+		<version>1.2.0</version>
+	</parent>
 	<name>baseCode</name>
 	<groupId>baseCode</groupId>
 	<artifactId>baseCode</artifactId>
@@ -142,7 +147,6 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.36</version>
 		</dependency>
 
 		<!-- Jena -->
@@ -231,26 +235,18 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.13.2</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>4.6.1</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.17.2</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>2.17.2</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -285,44 +281,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>1.4.1</version>
-				<executions>
-					<execution>
-						<id>enforce-maven</id>
-						<goals>
-							<goal>enforce</goal>
-						</goals>
-						<configuration>
-							<rules>
-								<requireMavenVersion>
-									<version>[3.0.5,)</version>
-								</requireMavenVersion>
-							</rules>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>com.amashchenko.maven.plugin</groupId>
 				<artifactId>gitflow-maven-plugin</artifactId>
-				<version>1.16.0</version>
-				<configuration>
-					<!-- Do not push to remote -->
-					<pushRemote>false</pushRemote>
-					<verbose>true</verbose>
-					<!-- Branch naming schemes -->
-					<gitFlowConfig>
-						<productionBranch>master</productionBranch>
-						<developmentBranch>development</developmentBranch>
-						<releaseBranchPrefix>release-</releaseBranchPrefix>
-						<versionTagPrefix/>
-						<origin>origin</origin>
-						<!-- Unused for releasing -->
-						<featureBranchPrefix>feature-</featureBranchPrefix>
-						<hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
-						<supportBranchPrefix>support-</supportBranchPrefix>
-					</gitFlowConfig>
-				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -371,6 +333,16 @@
 				<configuration>
 					<outputDirectory>${cobertura.outputDirectory}</outputDirectory>
 					<check/>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.3.1</version>
+				<configuration>
+					<quiet>true</quiet>
+					<source>8</source>
+					<doclint>none</doclint>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -503,9 +475,6 @@
 		</profile>
 	</profiles>
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
 		<lucene.version>3.6.2</lucene.version>
 	</properties>
 </project>
