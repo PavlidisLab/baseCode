@@ -116,6 +116,7 @@
 			<groupId>org.rosuda.REngine</groupId>
 			<artifactId>REngine</artifactId>
 			<version>2.1.0</version>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.rosuda.REngine</groupId>
@@ -129,11 +130,13 @@
 			<artifactId>JRI</artifactId>
 			<version>0.5-0</version>
 			<scope>runtime</scope>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>RoSuDA</groupId>
 			<artifactId>JRIEngine</artifactId>
 			<version>0.5-0</version>
+			<optional>true</optional>
 		</dependency>
 
 		<!-- Sparse matrix library; lapack -->
