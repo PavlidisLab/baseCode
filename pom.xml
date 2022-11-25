@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>ubc.pavlab</groupId>
 		<artifactId>pavlab-starter-parent</artifactId>
-		<version>1.2.0</version>
+		<version>1.2.2</version>
 	</parent>
 	<name>baseCode</name>
 	<groupId>baseCode</groupId>
@@ -451,6 +451,12 @@
 			<url>https://maven2.pavlab.msl.ubc.ca/</url>
 		</pluginRepository>
 	</pluginRepositories>
+	<distributionManagement>
+		<site>
+			<id>pavlab</id>
+			<url>scpexe://frink.msl.ubc.ca/space/web/maven-sites/${project.groupId}/baseCode-${project.version}</url>
+		</site>
+	</distributionManagement>
 	<profiles>
 		<profile>
 			<!-- For deployment where host is local (and ssh isn't available for builder, e.g. CI) -->
@@ -463,20 +469,9 @@
 			</activation>
 			<distributionManagement>
 				<site>
-					<id>localDeploy</id>
-					<name>localDeploy</name>
-					<url>file:///space/gemmaData/baseCode-site</url>
+					<id>pavlab</id>
+					<url>file:///space/web/maven-sites/${project.groupId}/baseCode-${project.version}</url>
 				</site>
-				<repository>
-					<id>repo</id>
-					<name>Pavlab</name>
-					<url>file:///space/maven2</url>
-				</repository>
-				<snapshotRepository>
-					<id>repo</id>
-					<name>Pavlab</name>
-					<url>file:///space/maven2</url>
-				</snapshotRepository>
 			</distributionManagement>
 		</profile>
 	</profiles>
