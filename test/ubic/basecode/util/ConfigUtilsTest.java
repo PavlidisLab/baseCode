@@ -14,10 +14,6 @@
  */
 package ubic.basecode.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 
 import org.apache.commons.configuration2.PropertiesConfiguration;
@@ -26,6 +22,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Paul
@@ -58,6 +56,7 @@ public class ConfigUtilsTest {
                 testConfigPath ) );
         assertNotNull( config );
         assertEquals( "bar", config.getConfiguration().getProperty( "foo" ) );
+        assertArrayEquals( new String[] { "1", "2", "3" }, config.getConfiguration().getStringArray( "list" ) );
     }
 
     @Test
