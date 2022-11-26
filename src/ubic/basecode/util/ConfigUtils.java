@@ -22,6 +22,8 @@ import java.net.URL;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedBuilderParametersImpl;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
+import org.apache.commons.configuration2.convert.ListDelimiterHandler;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.io.FileHandler;
 import org.apache.commons.configuration2.io.FileLocator;
@@ -35,6 +37,8 @@ import org.apache.commons.io.FileUtils;
  *
  */
 public class ConfigUtils {
+
+    private static final ListDelimiterHandler LIST_DELIMITER_HANDLER = new DefaultListDelimiterHandler( ',' );
 
     /**
      * @param file
@@ -51,7 +55,7 @@ public class ConfigUtils {
         }
         FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
                 PropertiesConfiguration.class );
-        builder.configure( new FileBasedBuilderParametersImpl().setFile( file ) );
+        builder.configure( new FileBasedBuilderParametersImpl().setFile( file ).setListDelimiterHandler( LIST_DELIMITER_HANDLER ) );
         return builder;
     }
 
@@ -96,7 +100,7 @@ public class ConfigUtils {
             throw new ConfigurationException( "Couldn't locate: " + name );
         }
 
-        PropertiesConfiguration pc = new PropertiesConfiguration();
+        PropertiesConfiguration pc = createConfiguration();
         FileHandler handler = new FileHandler( pc );
         handler.setURL( url );
         handler.load();
@@ -116,7 +120,7 @@ public class ConfigUtils {
                 throw new ConfigurationException( "Couldn't create the file: " + e.getMessage() );
             }
         }
-        PropertiesConfiguration pc = new PropertiesConfiguration();
+        PropertiesConfiguration pc = createConfiguration();
         FileHandler handler = new FileHandler( pc );
         handler.setFile( file );
         handler.load();
@@ -186,5 +190,11 @@ public class ConfigUtils {
     public static URL locate( String name ) {
         FileLocator fl = FileLocatorUtils.fileLocator().fileName( name ).create();
         return FileLocatorUtils.locate( fl );
+    }
+
+    private static PropertiesConfiguration createConfiguration() {
+        PropertiesConfiguration pc = new PropertiesConfiguration();
+        pc.setListDelimiterHandler( LIST_DELIMITER_HANDLER );
+        return pc;
     }
 }
