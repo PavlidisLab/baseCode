@@ -5,7 +5,7 @@
 	<name>baseCode</name>
 	<groupId>baseCode</groupId>
 	<artifactId>baseCode</artifactId>
-	<version>1.1.5</version>
+	<version>1.1.6</version>
 	<inceptionYear>2003</inceptionYear>
 	<description>
 		<![CDATA[Data structures, math and statistics tools, and utilities that are often needed across projects.]]>
@@ -49,7 +49,7 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>5.2.2</version>
+			<version>5.2.3</version>
 		</dependency>
 		<dependency>
 			<groupId>colt</groupId>
@@ -61,7 +61,7 @@
 		<dependency>
 			<groupId>commons-net</groupId>
 			<artifactId>commons-net</artifactId>
-			<version>3.8.0</version>
+			<version>3.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -93,12 +93,12 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
-			<version>4.4.15</version>
+			<version>4.4.16</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.5.13</version>
+			<version>4.5.14</version>
 		</dependency>
 
 		<!-- R engine -->
@@ -212,7 +212,7 @@
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
-			<version>1.5.3</version>
+			<version>1.5.4</version>
 		</dependency>
 		<!-- xml-apis is dependent on jena -->
 		<dependency>
@@ -243,13 +243,13 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.17.2</version>
+			<version>2.19.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>2.17.2</version>
+			<version>2.19.0</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
