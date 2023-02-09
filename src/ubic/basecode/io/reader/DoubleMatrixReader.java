@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2006 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,18 +37,12 @@ import cern.colt.list.DoubleArrayList;
 
 /**
  * Reader for {@link basecode.dataStructure.matrix.DoubleMatrix}. Lines beginning with "#" or "!" will be ignored.
- * 
+ *
  * @author Paul Pavlidis
- * 
+ *
  */
 public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String, String>, Double> {
 
-    private static NumberFormat nf = NumberFormat.getInstance( Locale.ENGLISH );
-    static {
-        if ( nf instanceof DecimalFormat ) {
-            // ( ( DecimalFormat ) nf ).setDecimalSeparatorAlwaysShown( true );
-        }
-    }
     private List<String> colNames;
     private int numHeadings;
 
@@ -87,6 +81,11 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
     public DoubleMatrix<String, String> read( InputStream stream, Collection<String> wantedRowNames,
             boolean createEmptyRows, int skipColumns, int maxRows ) throws IOException {
 
+        NumberFormat nf = NumberFormat.getInstance( Locale.ENGLISH );
+        if ( nf instanceof DecimalFormat ) {
+            // ( ( DecimalFormat ) nf ).setDecimalSeparatorAlwaysShown( true );
+        }
+
         BufferedReader dis = new BufferedReader( new InputStreamReader( stream ) );
 
         List<DoubleArrayList> MTemp = new Vector<DoubleArrayList>();
@@ -113,7 +112,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
                 continue;
             }
 
-            String rowName = parseRow( row, rowNames, MTemp, wantedRowNames, skipColumns );
+            String rowName = parseRow( row, rowNames, MTemp, wantedRowNames, skipColumns, nf );
 
             if ( rowName == null ) {
                 // signals a blank or skipped row.
@@ -183,7 +182,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
 
     /**
      * Read a matrix from a file, subject to filtering criteria.
-     * 
+     *
      * @param filename data file to read from (can be compressed)
      * @param wantedRowNames contains names of rows we want to get
      * @return NamedMatrix object constructed from the data file
@@ -277,7 +276,7 @@ public class DoubleMatrixReader extends AbstractMatrixReader<DoubleMatrix<String
      * @throws IOException
      */
     private String parseRow( String row, Collection<String> rowNames, List<DoubleArrayList> MTemp,
-            Collection<String> wantedRowNames, int skipColumns ) throws IOException {
+            Collection<String> wantedRowNames, int skipColumns, NumberFormat nf ) throws IOException {
 
         if ( row.startsWith( "#" ) || row.startsWith( "!" ) ) {
             return null;
