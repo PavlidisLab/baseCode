@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2006 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,18 +18,17 @@
  */
 package ubic.basecode.math;
 
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import cern.colt.list.DoubleArrayList;
 import cern.jet.math.Arithmetic;
 import cern.jet.stat.Probability;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Implements methods from supplementary file I of "Comparing functional annotation analyses with Catmap", Thomas
@@ -37,30 +36,25 @@ import cern.jet.stat.Probability;
  * <p>
  * Note that in the Catmap code, zero-based ranks are used, but these are converted to one-based before computation of
  * pvalues. Therefore this code uses one-based ranks throughout.
- * 
+ *
  * @author pavlidis
  * @version Id
  * @see ROC
  */
 public class Wilcoxon {
 
-    private static final Map<CacheKey, BigInteger> cache = new ConcurrentHashMap<CacheKey, BigInteger>();
 
     /**
      * For smaller sample sizes, we compute exactly. Below 1e5 we start to notice some loss of precision (like one part
      * in 1e5). Setting this too high really slows things down for high-throughput applications.
      */
-    private static long LIMIT_FOR_APPROXIMATION = 100000L;
+    private static final long LIMIT_FOR_APPROXIMATION = 100000L;
 
-    private static Logger log = LoggerFactory.getLogger( Wilcoxon.class );
+    private static final Logger log = LoggerFactory.getLogger( Wilcoxon.class );
 
     /**
      * Convenience method that computes a p-value using input of two double arrays. They must not contain missing values
      * or ties.
-     * 
-     * @param a
-     * @param b
-     * @return
      */
     public static double exactWilcoxonP( double[] a, double[] b ) {
         int fullLength = a.length + b.length;
@@ -80,12 +74,6 @@ public class Wilcoxon {
         return pExact( fullLength, a.length, aSum );
     }
 
-    /**
-     * @param N
-     * @param n
-     * @param R
-     * @return
-     */
     public static double exactWilcoxonP( int N, int n, int R ) {
         if ( R > LIMIT_FOR_APPROXIMATION ) {
             throw new IllegalArgumentException( "Computation of exact wilcoxon for large values of R will fail." );
@@ -95,22 +83,16 @@ public class Wilcoxon {
 
     /**
      * Only use when you know there are no ties.
-     * 
-     * @param N
-     * @param n
-     * @param R
-     * @return
      */
     public static double wilcoxonP( int N, int n, long R ) {
         return wilcoxonP( N, n, R, false );
     }
 
     /**
-     * @param N number of all Items
-     * @param n number of class Items
-     * @param R rankSum for items in the class. (one-based)
+     * @param N    number of all Items
+     * @param n    number of class Items
+     * @param R    rankSum for items in the class. (one-based)
      * @param ties set to true if you know there are ties
-     * @return
      */
     public static double wilcoxonP( int N, int n, long R, boolean ties ) {
 
@@ -120,7 +102,7 @@ public class Wilcoxon {
 
         if ( ( !ties )
                 && ( ( ( long ) N * ( long ) n <= LIMIT_FOR_APPROXIMATION && n * R <= LIMIT_FOR_APPROXIMATION && ( long ) N
-                        * ( long ) n * R <= LIMIT_FOR_APPROXIMATION ) || ( R < N && n * Math.pow( R, 2 ) <= LIMIT_FOR_APPROXIMATION ) ) ) {
+                * ( long ) n * R <= LIMIT_FOR_APPROXIMATION ) || ( R < N && n * Math.pow( R, 2 ) <= LIMIT_FOR_APPROXIMATION ) ) ) {
             if ( log.isDebugEnabled() ) log.debug( "Using exact method (" + N * n * R + ")" );
             return pExact( N, n, ( int ) R );
         }
@@ -137,9 +119,8 @@ public class Wilcoxon {
     }
 
     /**
-     * @param N total number of items (in and not in the class)
+     * @param N     total number of items (in and not in the class)
      * @param ranks of items in the class (one-based)
-     * @return
      */
     public static double wilcoxonP( int N, List<Double> ranks ) {
 
@@ -164,57 +145,34 @@ public class Wilcoxon {
         return wilcoxonP( N, ranks.size(), rankSum, ties );
     }
 
-    private static void addToCache( long N, long n, long R, BigInteger value ) {
-        cache.put( new CacheKey( N, n, R ), value );
-    }
-
-    /**
-     * @param n0
-     * @param n02
-     * @param r0
-     * @return
-     */
-    private static boolean cacheContains( long N, long n, long R ) {
-        return cache.containsKey( new CacheKey( N, n, R ) );
-    }
-
     /**
      * Direct port from catmap code. Exact computation of the number of ways n items can be drawn from a total of N
      * items with a rank sum of R or better (lower).
-     * 
-     * @param N0
-     * @param n0
+     *
      * @param R0 rank sum, 1-based (best rank is 1)
-     * @return
      */
     private static BigInteger computeA__( int N0, int n0, int R0 ) {
-        cache.clear();
-        if ( R0 < N0 ) N0 = R0;
+        Map<CacheKey, BigInteger> cache = new HashMap<>();
 
-        // if ( cacheContains( N0, n0, R0 ) ) {
-        // return getFromCache( N0, n0, R0 );
-        // }
+        if ( R0 < N0 ) N0 = R0;
 
         if ( N0 == 0 && n0 == 0 ) return BigInteger.ONE;
 
         for ( int N = 1; N <= N0; N++ ) {
-            if ( N > 2 ) removeFromCache( N - 2 );
-
             /* n has to be less than N */
             long min_n = Math.max( 0, n0 + N - N0 );
             long max_n = Math.min( n0, N );
 
-            assert min_n >= 0;
             assert max_n >= min_n;
 
             for ( long n = min_n; n <= max_n; n++ ) {
 
                 /* The rank sum is in the interval n(n+1)/2 to n(2N-n+1)/2. Other values need not be looked at. */
                 long bestPossibleRankSum = n * ( n + 1 ) / 2;
-                long worstPossibleRankSum = n * ( 2 * N - n + 1 ) / 2;
+                long worstPossibleRankSum = n * ( 2L * N - n + 1 ) / 2;
 
                 /* Ensure value looked at is valid for the original set of parameters. */
-                long min_r = Math.max( bestPossibleRankSum, R0 - ( N0 + N + 1 ) * ( N0 - N ) / 2 );
+                long min_r = Math.max( bestPossibleRankSum, R0 - ( N0 + N + 1L ) * ( N0 - N ) / 2 );
                 long max_r = Math.min( worstPossibleRankSum, R0 );
 
                 assert min_r >= 0;
@@ -227,7 +185,7 @@ public class Wilcoxon {
                         n0, R0 );
 
                 /* R greater than this, have already computed it in parts */
-                long foo = n * ( 2 * N - n - 1 ) / 2;
+                long foo = n * ( 2L * N - n - 1 ) / 2;
 
                 /* R less than this, we have already computed it in parts */
                 long bar = N + ( n - 1 ) * n / 2;
@@ -235,51 +193,32 @@ public class Wilcoxon {
                 for ( long r = min_r; r <= max_r; r++ ) {
 
                     if ( n == 0 || n == N || r == bestPossibleRankSum ) {
-                        addToCache( N, n, r, BigInteger.ONE );
+                        addToCache( cache, N, n, r, BigInteger.ONE );
 
                     } else if ( r > foo ) {
-                        addToCache( N, n, r, getFromCache( N - 1, n, foo ).add( getFromCache( N - 1, n - 1, r - N ) ) );
+                        addToCache( cache, N, n, r, getFromCache( cache, N - 1, n, foo ).add( getFromCache( cache, N - 1, n - 1, r - N ) ) );
 
                     } else if ( r < bar ) {
-                        addToCache( N, n, r, getFromCache( N - 1, n, r ) );
+                        addToCache( cache, N, n, r, getFromCache( cache, N - 1, n, r ) );
 
                     } else {
-                        addToCache( N, n, r, getFromCache( N - 1, n, r ).add( getFromCache( N - 1, n - 1, r - N ) ) );
+                        addToCache( cache, N, n, r, getFromCache( cache, N - 1, n, r ).add( getFromCache( cache, N - 1, n - 1, r - N ) ) );
                     }
                 }
             }
         }
-        return getFromCache( N0, n0, R0 );
+
+        return getFromCache( cache, N0, n0, R0 );
     }
 
     /**
-     * @param N
-     * @param n
-     * @param R
-     * @return
-     */
-    private static BigInteger getFromCache( long N, long n, long R ) {
-
-        if ( !cacheContains( N, n, R ) ) {
-            throw new IllegalStateException( "No value stored for N=" + N + ", n=" + n + ", R=" + R );
-        }
-        return cache.get( new CacheKey( N, n, R ) );
-    }
-
-    /**
-     * @param N
-     * @param n
-     * @param r rank sum, 1-based (best rank is 1).
-     * @return
+     * @param R rank sum, 1-based (best rank is 1).
      */
     private static double pExact( int N, int n, int R ) {
         return computeA__( N, n, R ).doubleValue() / Arithmetic.binomial( N, n );
     }
 
     /**
-     * @param N
-     * @param n
-     * @param R
      * @return Upper-tail probability for Wilcoxon rank-sum test.
      */
     private static double pGaussian( long N, long n, long R ) {
@@ -292,11 +231,6 @@ public class Wilcoxon {
 
     /**
      * Directly ported from catmap.
-     * 
-     * @param N
-     * @param n
-     * @param R
-     * @return
      */
     private static double pVolume( int N, int n, long R ) {
 
@@ -337,46 +271,51 @@ public class Wilcoxon {
 
     }
 
-    /**
-     * @param i
-     */
-    private static void removeFromCache( int N ) {
-        cache.remove( N );
+    private static void addToCache( Map<CacheKey, BigInteger> cache, long N, long n, long R, BigInteger value ) {
+        cache.put( new CacheKey( N, n, R ), value );
     }
 
-}
-
-class CacheKey {
-    private long n;
-    private long N;
-    private long R;
-
-    public CacheKey( long N, long n, long R ) {
-        super();
-        this.N = N;
-        this.n = n;
-        this.R = R;
+    private static boolean cacheContains( Map<CacheKey, BigInteger> cache, long N, long n, long R ) {
+        return cache.containsKey( new CacheKey( N, n, R ) );
     }
 
-    @Override
-    public boolean equals( Object obj ) {
-        CacheKey other = ( CacheKey ) obj;
+    private static BigInteger getFromCache( Map<CacheKey, BigInteger> cache, long N, long n, long R ) {
 
-        if ( N != other.N ) return false;
-        if ( n != other.n ) return false;
-        if ( R != other.R ) return false;
-
-        return true;
+        if ( !cacheContains( cache, N, n, R ) ) {
+            throw new IllegalStateException( "No value stored for N=" + N + ", n=" + n + ", R=" + R );
+        }
+        return cache.get( new CacheKey( N, n, R ) );
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        long result = 1;
-        result = prime * result + N;
-        result = prime * result + n;
-        result = prime * result + R;
-        return ( int ) result; // problem: overflows?
-    }
+    private static class CacheKey {
+        private final long n;
+        private final long N;
+        private final long R;
 
+        public CacheKey( long N, long n, long R ) {
+            this.N = N;
+            this.n = n;
+            this.R = R;
+        }
+
+        @Override
+        public boolean equals( Object obj ) {
+            if ( obj instanceof CacheKey ) {
+                CacheKey other = ( CacheKey ) obj;
+                return N == other.N && n == other.n && R == other.R;
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            long result = 1;
+            result = prime * result + N;
+            result = prime * result + n;
+            result = prime * result + R;
+            return ( int ) result; // problem: overflows?
+        }
+    }
 }
