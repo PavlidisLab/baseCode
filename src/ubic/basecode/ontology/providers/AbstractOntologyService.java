@@ -423,6 +423,13 @@ public abstract class AbstractOntologyService {
     }
 
     /**
+     * Cancel the initialization thread.
+     */
+    public void cancelInitializationThread() {
+        initializationThread.cancel();
+    }
+
+    /**
      * @param newTerms
      */
     protected void addTerms( Collection<OntologyResource> newTerms ) {
