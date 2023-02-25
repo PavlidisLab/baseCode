@@ -5,7 +5,7 @@
 	<name>baseCode</name>
 	<groupId>baseCode</groupId>
 	<artifactId>baseCode</artifactId>
-	<version>1.1.9</version>
+	<version>1.1.10</version>
 	<inceptionYear>2003</inceptionYear>
 	<description>
 		<![CDATA[Data structures, math and statistics tools, and utilities that are often needed across projects.]]>
@@ -290,6 +290,13 @@
 				<filtering>false</filtering>
 			</testResource>
 		</testResources>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh-external</artifactId>
+				<version>3.5.2</version>
+			</extension>
+		</extensions>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -343,6 +350,31 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>3.1.0</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.8.2</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.5.2</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.2.0</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.1.0</version>
+			</plugin>
+			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.22.2</version>
 				<configuration>
@@ -381,6 +413,16 @@
 					<check/>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.3.2</version>
+				<configuration>
+					<quiet>true</quiet>
+					<source>8</source>
+					<doclint>none</doclint>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<reporting>
@@ -407,7 +449,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.3.1</version>
+				<version>3.3.2</version>
 				<configuration>
 					<quiet>true</quiet>
 					<source>8</source>
@@ -429,7 +471,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
-				<version>3.1.1</version>
+				<version>3.0.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -472,17 +514,20 @@
 			<id>pavlab</id>
 			<name>PavLab</name>
 			<url>https://maven2.pavlab.msl.ubc.ca/</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</releases>
 		</repository>
 	</repositories>
+	<distributionManagement>
+		<repository>
+			<id>pavlab</id>
+			<name>PavLab</name>
+			<url>scpexe://frink.msl.ubc.ca/space/maven2</url>
+		</repository>
+		<site>
+			<id>pavlab</id>
+			<name>PavLab</name>
+			<url>scpexe://frink.msl.ubc.ca/space/web/maven-sites/${project.groupId}/${project.artifactId}-${project.version}</url>
+		</site>
+	</distributionManagement>
 	<pluginRepositories>
 		<pluginRepository>
 			<id>pavlab</id>
@@ -501,59 +546,43 @@
 	</pluginRepositories>
 	<profiles>
 		<profile>
-			<id>assemble-src</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-				<property>
-					<name>assemble-src</name>
-				</property>
-			</activation>
+			<id>release</id>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-assembly-plugin</artifactId>
-						<configuration>
-							<descriptors>
-								<descriptor>
-									src/assembly/src-assembly.xml
-								</descriptor>
-							</descriptors>
-						</configuration>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>3.2.1</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>3.3.2</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
 					</plugin>
 				</plugins>
 			</build>
 		</profile>
-		<profile>
-			<!-- For deployment where host is local (and ssh isn't available for builder, e.g. CI) -->
-			<id>local-deploy</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-				<property>
-					<name>deploy.local</name>
-				</property>
-			</activation>
-			<distributionManagement>
-				<site>
-					<id>localDeploy</id>
-					<name>localDeploy</name>
-					<url>file:///space/gemmaData/baseCode-site</url>
-				</site>
-				<repository>
-					<id>repo</id>
-					<name>Pavlab</name>
-					<url>file:///space/maven2</url>
-				</repository>
-				<snapshotRepository>
-					<id>repo</id>
-					<name>Pavlab</name>
-					<url>file:///space/maven2</url>
-				</snapshotRepository>
-			</distributionManagement>
-		</profile>
 	</profiles>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>8</maven.compiler.source>
+		<maven.compiler.target>8</maven.compiler.target>
 		<lucene.version>3.6.2</lucene.version>
 	</properties>
 </project>
