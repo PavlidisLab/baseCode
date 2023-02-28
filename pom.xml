@@ -10,7 +10,7 @@
 	<name>baseCode</name>
 	<groupId>baseCode</groupId>
 	<artifactId>baseCode</artifactId>
-	<version>1.1.9</version>
+	<version>1.1.10</version>
 	<inceptionYear>2003</inceptionYear>
 	<description>
 		<![CDATA[Data structures, math and statistics tools, and utilities that are often needed across projects.]]>
@@ -383,7 +383,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.3.1</version>
+				<version>3.3.2</version>
 				<configuration>
 					<quiet>true</quiet>
 					<source>8</source>
@@ -405,7 +405,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
-				<version>3.1.1</version>
+				<version>3.0.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
