@@ -21,6 +21,9 @@ package ubic.basecode.ontology.providers;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.rdf.arp.ARPErrorNumbers;
+import com.hp.hpl.jena.rdf.arp.ParseException;
+import com.hp.hpl.jena.shared.JenaException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -368,6 +371,10 @@ public abstract class AbstractOntologyService {
         initializationThread = new Thread( () -> {
             try {
                 this.initialize( forceLoad, forceIndexing );
+            } catch ( JenaException e ) {
+                if ( !( e.getCause() instanceof ParseException ) || ( ( ParseException ) e.getCause() ).getErrorNumber() != ARPErrorNumbers.ERR_INTERRUPTED ) {
+                    throw e;
+                }
             } catch ( Exception e ) {
                 log.error( e.getMessage(), e );
                 this.isInitialized = false;
