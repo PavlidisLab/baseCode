@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2010 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,49 +18,29 @@
  */
 package ubic.basecode.ontology;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.Collection;
-import java.util.HashSet;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.StopWatch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.ModelMaker;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-
-import ubic.basecode.ontology.model.OntologyIndividual;
-import ubic.basecode.ontology.model.OntologyIndividualImpl;
-import ubic.basecode.ontology.model.OntologyProperty;
-import ubic.basecode.ontology.model.OntologyResource;
-import ubic.basecode.ontology.model.OntologyTerm;
-import ubic.basecode.ontology.model.OntologyTermImpl;
-import ubic.basecode.ontology.model.PropertyFactory;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ubic.basecode.util.Configuration;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 /**
  * Reads ontologies from OWL resources
- * 
- * @author  paul
+ *
+ * @author paul
  */
 public class OntologyLoader {
 
@@ -70,132 +50,36 @@ public class OntologyLoader {
     private static final String TMP_CACHE_SUFFIX = ".tmp";
 
     /**
-     * @param  url
-     * @param  model
-     * @return
-     */
-    public static Collection<OntologyResource> initialize( String url, OntModel model ) {
-
-        Collection<OntologyResource> result = new HashSet<>();
-
-        ExtendedIterator<OntClass> classIt = model.listClasses();
-        int count = 0;
-        log.debug( "Reading classes for ontology: " + url );
-        while ( classIt.hasNext() ) {
-            OntClass element = classIt.next();
-            if ( element.isAnon() ) continue;
-            OntologyTerm ontologyTerm = new OntologyTermImpl( element );
-            result.add( ontologyTerm );
-            if ( ++count % 1000 == 0 ) {
-                log.debug( "Loaded " + count + " terms, last was " + ontologyTerm );
-            }
-        }
-
-        log.debug( "Loaded " + count + " terms" );
-
-        ExtendedIterator<com.hp.hpl.jena.ontology.ObjectProperty> propIt = model.listObjectProperties();
-        count = 0;
-        log.debug( "Reading object properties..." );
-        while ( propIt.hasNext() ) {
-            com.hp.hpl.jena.ontology.ObjectProperty element = propIt.next();
-            OntologyProperty ontologyTerm = PropertyFactory.asProperty( element );
-            if ( ontologyTerm == null ) continue; // couldn't be converted for some reason.
-            result.add( ontologyTerm );
-            if ( ++count % 1000 == 0 ) {
-                log.debug( "Loaded " + count + " object properties, last was " + ontologyTerm );
-            }
-        }
-
-        ExtendedIterator<com.hp.hpl.jena.ontology.DatatypeProperty> dtPropIt = model.listDatatypeProperties();
-        log.debug( "Reading datatype properties..." );
-        while ( dtPropIt.hasNext() ) {
-            com.hp.hpl.jena.ontology.DatatypeProperty element = dtPropIt.next();
-            OntologyProperty ontologyTerm = PropertyFactory.asProperty( element );
-            if ( ontologyTerm == null ) continue; // couldn't be converted for some reason.
-            result.add( ontologyTerm );
-            if ( ++count % 1000 == 0 ) {
-                log.debug( "Loaded " + count + " datatype properties, last was " + ontologyTerm );
-            }
-        }
-
-        log.debug( "Loaded " + count + " properties" );
-
-        ExtendedIterator<Individual> indiIt = model.listIndividuals();
-        count = 0;
-        log.debug( "Reading individuals..." );
-        while ( indiIt.hasNext() ) {
-            Individual element = indiIt.next();
-            if ( element.isAnon() ) continue;
-            OntologyIndividual ontologyTerm = new OntologyIndividualImpl( element );
-            result.add( ontologyTerm );
-            if ( ++count % 1000 == 0 ) {
-                log.debug( "Loaded " + count + " individuals, last was " + ontologyTerm );
-            }
-        }
-        log.debug( "Loaded " + count + " individuals" );
-        return result;
-    }
-
-    /**
      * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
-     * 
-     * @param  is
-     * @param       url, used as a key
-     * @param  spec
-     * @return
      */
-    public static OntModel loadMemoryModel( InputStream is, String url, OntModelSpec spec ) {
-        OntModel model = getMemoryModel( url, spec );
+    public static OntModel loadMemoryModel( InputStream is, String url ) {
+        OntModel model = getMemoryModel( url );
         model.read( is, null );
         return model;
     }
 
     /**
-     * Load an ontology into memory. Use this type of model when fast access is critical and memory is available. Uses
-     * OWL_MEM_TRANS_INF
-     * 
-     * @param  url
-     * @return
+     * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
+     *
+     * @see #loadMemoryModel(String, String)
      */
     public static OntModel loadMemoryModel( String url ) {
-        return loadMemoryModel( url, OntModelSpec.OWL_MEM_TRANS_INF );
+        return loadMemoryModel( url, null );
     }
 
     /**
-     * Load an ontology into memory. Use this type of model when fast access is critical and memory is available. Uses
-     * OWL_MEM_TRANS_INF
+     * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
      * If load from URL fails, attempt to load from disk cache under @cacheName.
-     * 
-     * @param  url
-     * @return
+     * <p>
+     * Uses {@link OntModelSpec#OWL_MEM_TRANS_INF}.
+     *
+     * @param url       a URL where the OWL file is stored
+     * @param cacheName unique name of this ontology, will be used to load from disk in case of failed url connection
      */
     public static OntModel loadMemoryModel( String url, String cacheName ) {
-        return loadMemoryModel( url, OntModelSpec.OWL_MEM_TRANS_INF, cacheName );
-    }
-
-    /**
-     * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
-     * 
-     * @param  url
-     * @return
-     */
-    public static OntModel loadMemoryModel( String url, OntModelSpec spec ) {
-        return loadMemoryModel( url, spec, null );
-    }
-
-    /**
-     * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
-     * If load from URL fails, attempt to load from disk cache under @cacheName.
-     * 
-     * @param  url
-     * @param  spec      e.g. OWL_MEM_TRANS_INF
-     * @param  cacheName unique name of this ontology, will be used to load from disk in case of failed url connection
-     * @return
-     */
-    public static OntModel loadMemoryModel( String url, OntModelSpec spec, String cacheName ) {
         StopWatch timer = new StopWatch();
         timer.start();
-        OntModel model = getMemoryModel( url, spec );
+        OntModel model = getMemoryModel( url );
 
         URLConnection urlc = null;
         int tries = 0;
@@ -242,7 +126,7 @@ public class OntologyLoader {
         }
 
         if ( urlc != null ) {
-            try (InputStream in = urlc.getInputStream();) {
+            try ( InputStream in = urlc.getInputStream(); ) {
                 Reader reader;
                 if ( cacheName != null ) {
                     // write tmp to disk
@@ -261,7 +145,7 @@ public class OntologyLoader {
                 }
 
                 assert reader != null;
-                try (BufferedReader buf = new BufferedReader( reader );) {
+                try ( BufferedReader buf = new BufferedReader( reader ); ) {
                     model.read( buf, url );
                 }
 
@@ -286,7 +170,7 @@ public class OntologyLoader {
                 }
 
                 if ( f.exists() && !f.isDirectory() ) {
-                    try (BufferedReader buf = new BufferedReader( new FileReader( f ) );) {
+                    try ( BufferedReader buf = new BufferedReader( new FileReader( f ) ); ) {
                         model.read( buf, url );
                         // We successfully loaded the cached ontology. Copy the loaded ontology to oldFile
                         // so that we don't recreate indices during initialization based on a false change in
@@ -360,24 +244,13 @@ public class OntologyLoader {
     }
 
     /**
-     * Get model that is entirely in memory with default OntModelSpec.OWL_MEM_RDFS_INF.
-     * 
-     * @param  url
-     * @return
-     */
-    static OntModel getMemoryModel( String url ) {
-        return getMemoryModel( url, OntModelSpec.OWL_MEM_RDFS_INF );
-    }
-
-    /**
      * Get model that is entirely in memory.
-     * 
-     * @param  url
-     * @param  specification
+     *
+     * @param url
      * @return
      */
-    static OntModel getMemoryModel( String url, OntModelSpec specification ) {
-        OntModelSpec spec = new OntModelSpec( specification );
+    private static OntModel getMemoryModel( String url ) {
+        OntModelSpec spec = new OntModelSpec( OntModelSpec.OWL_MEM_TRANS_INF );
         ModelMaker maker = ModelFactory.createMemModelMaker();
         Model base = maker.createModel( url, false );
         spec.setImportModelMaker( maker );
@@ -389,7 +262,7 @@ public class OntologyLoader {
     }
 
     /**
-     * @param  name
+     * @param name
      * @return
      */
     public static File getDiskCachePath( String name ) {
