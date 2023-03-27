@@ -134,6 +134,11 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
     @Override
     public Collection<OntologyTerm> getChildren( boolean direct ) {
+        return getChildren( direct, true );
+    }
+
+    @Override
+    public Collection<OntologyTerm> getChildren( boolean direct, boolean includePartOf ) {
         Collection<OntClass> result = new HashSet<>();
         ExtendedIterator<OntClass> iterator = ontResource.listSubClasses( direct )
                 .filterDrop( new EqualityByUriFilter( NOTHING ) );
@@ -149,18 +154,20 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
             result.add( c );
         }
 
-        Property subClassOf = model.getProfile().SUB_CLASS_OF();
-        ExtendedIterator<Restriction> restrictionsIterator = model.listRestrictions()
-                .filterKeep( new RestrictionWithPropertyAndValueFilter( propagateParentsProperties, ontResource ) );
-        while ( restrictionsIterator.hasNext() ) {
-            Restriction r = restrictionsIterator.next();
-            ResIterator ss = model.listResourcesWithProperty( subClassOf, r );
-            while ( ss.hasNext() ) {
-                Resource s = ss.next();
-                if ( s.getURI() != null ) {
-                    OntClass o = model.getOntClass( s.getURI() );
-                    if ( o != null ) {
-                        result.add( o );
+        if ( includePartOf ) {
+            Property subClassOf = model.getProfile().SUB_CLASS_OF();
+            ExtendedIterator<Restriction> restrictionsIterator = model.listRestrictions()
+                    .filterKeep( new RestrictionWithPropertyAndValueFilter( propagateParentsProperties, ontResource ) );
+            while ( restrictionsIterator.hasNext() ) {
+                Restriction r = restrictionsIterator.next();
+                ResIterator ss = model.listResourcesWithProperty( subClassOf, r );
+                while ( ss.hasNext() ) {
+                    Resource s = ss.next();
+                    if ( s.getURI() != null ) {
+                        OntClass o = model.getOntClass( s.getURI() );
+                        if ( o != null ) {
+                            result.add( o );
+                        }
                     }
                 }
             }
@@ -254,6 +261,11 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
 
     @Override
     public Collection<OntologyTerm> getParents( boolean direct ) {
+        return getParents( direct, true );
+    }
+
+    @Override
+    public Collection<OntologyTerm> getParents( boolean direct, boolean includePartOf ) {
         Collection<OntClass> result = new HashSet<>();
         ExtendedIterator<OntClass> iterator;
         Set<String> excludeProperties;
@@ -264,7 +276,7 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
             OntClass c = iterator.next();
 
             // handles part of some {parent container} or part of all {parent container}
-            if ( c.isRestriction() ) {
+            if ( includePartOf && c.isRestriction() ) {
                 Restriction r = c.asRestriction();
                 if ( propagateParentsProperties.contains( r.getOnProperty() ) ) {
                     Resource value = getRestrictionValue( c.asRestriction() );
