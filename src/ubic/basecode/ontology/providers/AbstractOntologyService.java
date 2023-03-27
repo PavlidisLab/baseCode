@@ -466,8 +466,8 @@ public abstract class AbstractOntologyService implements OntologyService {
     private OntologyTerm getTermInternal( String uri ) {
         return termCache.computeIfAbsent( uri, u -> {
             OntClass ontCls = model.getOntClass( u );
-            // bnode
-            if ( ontCls.getURI() == null ) {
+            // null or bnode
+            if ( ontCls == null || ontCls.getURI() == null ) {
                 return null;
             }
             return new OntologyTermImpl( ontCls );

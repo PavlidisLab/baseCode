@@ -5,7 +5,7 @@
 	<name>baseCode</name>
 	<groupId>baseCode</groupId>
 	<artifactId>baseCode</artifactId>
-	<version>1.1.11</version>
+	<version>1.1.12</version>
 	<inceptionYear>2003</inceptionYear>
 	<description>
 		<![CDATA[Data structures, math and statistics tools, and utilities that are often needed across projects.]]>
@@ -403,16 +403,6 @@
 				<version>3.9.1</version>
 			</plugin>
 			<plugin>
-				<!-- used when running cobertura outside of the 'site' plugin call. -->
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.7</version>
-				<configuration>
-					<outputDirectory>${cobertura.outputDirectory}</outputDirectory>
-					<check/>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.3.2</version>
@@ -488,17 +478,6 @@
 				<version>3.14.0</version>
 				<configuration>
 					<targetJdk>1.7</targetJdk>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.7</version>
-				<configuration>
-					<!-- seems we need something here when running 'mvn site' -->
-					<check>
-						<haltOnFailure>false</haltOnFailure>
-					</check>
 				</configuration>
 			</plugin>
 			<plugin>
