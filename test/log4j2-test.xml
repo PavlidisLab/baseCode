@@ -6,7 +6,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="ubic.basecode" level="warn" additivity="false">
+        <Logger name="ubic.basecode" level="info" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
     </Loggers>

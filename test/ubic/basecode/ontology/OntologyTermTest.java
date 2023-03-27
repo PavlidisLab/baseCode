@@ -1,36 +1,34 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2012 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
 package ubic.basecode.ontology;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ubic.basecode.ontology.model.OntologyTerm;
+import ubic.basecode.ontology.providers.CellLineOntologyService;
+import ubic.basecode.ontology.providers.DiseaseOntologyService;
+import ubic.basecode.ontology.providers.NIFSTDOntologyService;
+import ubic.basecode.ontology.providers.UberonOntologyService;
 
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ubic.basecode.ontology.model.OntologyTerm;
-import ubic.basecode.ontology.providers.CellLineOntologyService;
-import ubic.basecode.ontology.providers.DiseaseOntologyService;
-import ubic.basecode.ontology.providers.NIFSTDOntologyService;
+import static org.junit.Assert.*;
 
 /**
  * @author Paul
@@ -82,7 +80,7 @@ public class OntologyTermTest {
 
     /**
      * FIXME this uses NIF, which we are no longer using actively - not a big deal since this just tests mechanics
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -92,13 +90,11 @@ public class OntologyTermTest {
                 "/data/NIF-GrossAnatomy.small.owl.xml.gz" ) );
         s.loadTermsInNameSpace( is, false );
 
-        OntologyTerm t = s
-                .getTerm( "http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#birnlex_734" );
-
+        OntologyTerm t = s.getTerm( "http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#birnlex_734" );
         assertNotNull( t );
 
         Collection<OntologyTerm> c = t.getChildren( true );
-        assertEquals( 9, c.size() );
+        assertEquals( 6, c.size() );
         // Dorsal hypothalamic area [birnlex_777]
         // Lateral hypothalamic area [birnlex_4037]
         // Medial forebrain bundle [birnlex_908]
@@ -108,36 +104,15 @@ public class OntologyTermTest {
         // Anterior hypothalamic region [birnlex_1005]
         // Intermediate hypothalamic region [birnlex_1015]
         // Regional part of hypothalamus [birnlex_995]
-        boolean found = false;
-        for ( OntologyTerm o : c ) {
-            // System.err.println( o );
-            if ( o.getUri().equals(
-                    "http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#birnlex_898" ) ) {
-                found = true;
-            }
-        }
-        assertTrue( found );
+        OntologyTerm t1 = s.getTerm( "http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#birnlex_898" );
+        assertNotNull( t1 );
+        assertTrue( c.contains( t1 ) );
 
         Collection<OntologyTerm> c2 = t.getChildren( false );
-        assertEquals( 11, c2.size() );
-        found = false;
-        for ( OntologyTerm o : c2 ) {
-            System.err.println( o );
-            if ( o.getUri().equals(
-                    "http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#birnlex_4037" ) ) {
-                found = true;
-            }
-
-            // exercise other things.
-            log.info( "Annotations: " + StringUtils.join( o.getAnnotations(), "," ) );
-            log.info( "Comment: " + o.getComment() );
-            log.info( "Individuals: " + StringUtils.join( o.getIndividuals(), "," ) );
-            log.info( "Individuals: " + StringUtils.join( o.getIndividuals( true ), "," ) );
-            log.info( "Individuals: " + StringUtils.join( o.getIndividuals( false ), "," ) );
-            // Log.info( "Restrictions: "+ StringUtils.join( o.getRestrictions(), "," ) );
-            log.info( "AlternativeIDs: " + StringUtils.join( o.getAlternativeIds(), "," ) );
-        }
-        assertTrue( found );
+        assertEquals( 6, c2.size() );
+        OntologyTerm t2 = s.getTerm( "http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#birnlex_4037" );
+        assertNotNull( t2 );
+        assertTrue( c.contains( t2 ) );
     }
 
     @Test
@@ -219,32 +194,58 @@ public class OntologyTermTest {
         // Diencephalon [birnlex_1503] x
 
         Collection<OntologyTerm> parents2 = t.getParents( false );
-        assertEquals( 12, parents2.size() );
+        assertEquals( 5, parents2.size() );
 
         // does not includes 'continuant' and 'independent continuant' or parents of those terms.
-        found = false;
-        for ( OntologyTerm p : parents2 ) {
-            // System.err.println( p + " " + p.getUri() );
-
-            if ( p.getUri().equals(
-                    "http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#birnlex_1503" ) ) {
-                found = true;
-            }
-
-            assertTrue( !p.getUri().equals( "http://www.ifomis.org/bfo/1.1/snap#Continuant" ) );
-
-        }
-        assertTrue( found );
+        // assertTrue( parents2.contains( s.getTerm( "http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#birnlex_1503" ) ) );
+        assertFalse( parents2.contains( s.getResource( "http://www.ifomis.org/bfo/1.1/snap#Continuant" ) ) );
     }
-    
+
     @Test
     public void testRejectNonEnglish() throws Exception {
-         CellLineOntologyService s = new CellLineOntologyService();
+        CellLineOntologyService s = new CellLineOntologyService();
         InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream( "/data/clo_merged.sample.owl.xml.gz" ) );
         s.loadTermsInNameSpace( is, false );
 
         OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/CLO_0000292" );
         assertEquals( "immortal larynx-derived cell line cell", t.getLabel() );
 
+    }
+
+    @Test
+    public void testGetParentsHasPart() throws Exception {
+        UberonOntologyService s = new UberonOntologyService();
+        try ( InputStream is = new GZIPInputStream( getClass().getResourceAsStream( "/data/uberon.owl.gz" ) ) ) {
+            s.loadTermsInNameSpace( is, false );
+        }
+        OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/UBERON_0000955" );
+        assertNotNull( t );
+        Collection<OntologyTerm> parents = t.getParents( true );
+        assertEquals( 3, parents.size() );
+        // does not contain itself
+        assertFalse( parents.contains( t ) );
+        // via subclass
+        assertTrue( parents.contains( s.getTerm( "http://purl.obolibrary.org/obo/UBERON_0004121" ) ) );
+        assertTrue( parents.contains( s.getTerm( "http://purl.obolibrary.org/obo/UBERON_0000062" ) ) );
+        // via part of, central nervous system
+        assertTrue( parents.contains( s.getTerm( "http://purl.obolibrary.org/obo/UBERON_0001017" ) ) );
+    }
+
+    @Test
+    public void testGetChildrenHasPart() throws Exception {
+        UberonOntologyService s = new UberonOntologyService();
+        try ( InputStream is = new GZIPInputStream( getClass().getResourceAsStream( "/data/uberon.owl.gz" ) ) ) {
+            s.loadTermsInNameSpace( is, false );
+        }
+        OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/UBERON_0000955" );
+        assertNotNull( t );
+        Collection<OntologyTerm> children = t.getChildren( false );
+        assertEquals( 1496, children.size() );
+        // via subclass of, insect adult brain
+        assertTrue( children.contains( s.getTerm( "http://purl.obolibrary.org/obo/UBERON_6003624" ) ) );
+        // via part of, nucleus of brain
+        assertTrue( children.contains( s.getTerm( "http://purl.obolibrary.org/obo/UBERON_0002308" ) ) );
+        // does not contain owl:Nothing
+        assertFalse( children.contains( s.getTerm( "http://www.w3.org/2002/07/owl#Nothing" ) ) );
     }
 }

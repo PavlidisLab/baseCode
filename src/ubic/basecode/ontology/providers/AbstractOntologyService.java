@@ -19,165 +19,131 @@
 
 package ubic.basecode.ontology.providers;
 
-import java.io.IOException;
-import java.lang.Thread.State;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-
+import com.hp.hpl.jena.ontology.ObjectProperty;
+import com.hp.hpl.jena.ontology.*;
+import com.hp.hpl.jena.rdf.arp.ARPErrorNumbers;
+import com.hp.hpl.jena.rdf.arp.ParseException;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.shared.JenaException;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.hp.hpl.jena.ontology.OntModel;
-
 import ubic.basecode.ontology.OntologyLoader;
-import ubic.basecode.ontology.model.OntologyIndividual;
-import ubic.basecode.ontology.model.OntologyResource;
-import ubic.basecode.ontology.model.OntologyTerm;
+import ubic.basecode.ontology.model.*;
 import ubic.basecode.ontology.search.OntologyIndexer;
 import ubic.basecode.ontology.search.OntologySearch;
 import ubic.basecode.ontology.search.OntologySearchException;
 import ubic.basecode.ontology.search.SearchIndex;
 import ubic.basecode.util.Configuration;
 
+import java.io.InputStream;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 /**
  * @author kelsey
  */
-public abstract class AbstractOntologyService {
-
-    protected class OntologyInitializationThread extends Thread {
-
-        AtomicBoolean cancel = new AtomicBoolean( false );
-
-        private boolean forceReindexing = false;
-
-        public OntologyInitializationThread( boolean forceRefresh ) {
-            super();
-            this.forceReindexing = forceRefresh;
-        }
-
-        public void cancel() {
-            this.cancel.set( true );
-            this.interrupt();
-        }
-
-        public boolean isCancelled() {
-            return cancel.get();
-        }
-
-        public boolean isForceReindexing() {
-            return forceReindexing;
-        }
-
-        @Override
-        public void run() {
-
-            terms = new HashMap<>();
-            individuals = new HashMap<>();
-
-            if ( isCancelled() ) {
-                log.warn( "Cancelled initialization" );
-                return;
-            }
-
-            log.info( "Loading ontology: " + getOntologyName() + " from " + getOntologyUrl() + " ..." );
-            StopWatch loadTime = new StopWatch();
-            loadTime.start();
-
-            model = getModel(); // can take a while.
-            assert model != null;
-
-            try {
-
-                //Checks if the current ontology has changed since it was last loaded.
-                boolean changed = OntologyLoader.hasChanged( getOntologyName() );
-                boolean indexExists = OntologyIndexer.getSubjectIndex( getOntologyName() ) != null;
-
-                /*
-                 * Indexing is slow, don't do it if we don't have to.
-                 */
-                index( forceReindexing || changed || !indexExists );
-
-                indexReady.set( true );
-
-                if ( isCancelled() ) {
-                    log.error( "Cancelled initialization" );
-                    return;
-                }
-
-                /*
-                 * This creates a cache of URI (String) --> OntologyTerms. ?? Does Jena provide an easier way to do
-                 * this?
-                 */
-
-                loadTermsInNameSpace( getOntologyUrl(), model );
-
-                cleanup();
-
-                cacheReady.set( true );
-
-                isInitialized.set( true );
-                loadTime.stop();
-
-                log.info( "Finished loading " + getOntologyName() + " in " + String.format( "%.2f", loadTime.getTime() / 1000.0 )
-                        + "s" );
-
-            } catch ( Exception e ) {
-                log.error( e.getMessage(), e );
-                isInitialized.set( false );
-            } finally {
-                // no-op
-            }
-        }
-
-        public void setForceReindexing( boolean forceReindexing ) {
-            this.forceReindexing = forceReindexing;
-        }
-
-        private void cleanup() {
-            OntologyLoader.deleteOldCache( getOntologyName() );
-        }
-    }
+@SuppressWarnings("unused")
+public abstract class AbstractOntologyService implements OntologyService {
 
     protected static Logger log = LoggerFactory.getLogger( AbstractOntologyService.class );
 
-    protected AtomicBoolean cacheReady = new AtomicBoolean( false );
-
-    protected SearchIndex index;
-
-    protected AtomicBoolean indexReady = new AtomicBoolean( false );
-    protected Map<String, OntologyIndividual> individuals;
-
-    protected OntologyInitializationThread initializationThread;
-    protected AtomicBoolean isInitialized = new AtomicBoolean( false );
-    protected OntModel model = null;
-
-    protected AtomicBoolean modelReady = new AtomicBoolean( false );
-
-    protected Map<String, OntologyTerm> terms = null;
-
-    private Map<String, OntologyTerm> alternativeIDs = new HashMap<>();
-
     /**
-     *
+     * Lock used to prevent reads while the ontology is being initialized.
      */
-    public AbstractOntologyService() {
-        super();
+    private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
 
-        initializationThread = new OntologyInitializationThread( false );
-        initializationThread.setName( getOntologyName() + "_load_thread_" + RandomStringUtils.randomAlphanumeric( 5 ) );
-        // To prevent VM from waiting on this thread to shutdown (if shutting down).
-        initializationThread.setDaemon( true );
+    /* internal state protected by rwLock */
+    private OntModel model;
+    private Map<String, String> alternativeIDs;
+    private final Map<String, OntologyTerm> termCache = new ConcurrentHashMap<>( 1024 );
+    private SearchIndex index;
 
+    private boolean isInitialized = false;
+
+    @Override
+    public void initialize( boolean forceLoad, boolean forceIndexing ) {
+        if ( !forceLoad && isInitialized ) {
+            log.warn( getOntologyName() + " is already loaded, and force=false, not restarting" );
+            return;
+        }
+
+        boolean loadOntology = isEnabled();
+
+        // If loading ontologies is disabled in the configuration, return
+        if ( !forceLoad && !loadOntology ) {
+            log.debug( "Loading " + getOntologyName() + " is disabled (force=" + forceLoad + ", " + "Configuration load." + getOntologyName() + "=" + loadOntology + ")" );
+            return;
+        }
+
+        // Detect configuration problems.
+        if ( StringUtils.isBlank( this.getOntologyUrl() ) ) {
+            throw new IllegalStateException( "URL not defined, ontology cannot be loaded (" + this.getClass().getSimpleName() + ")" );
+        }
+
+        // This thread indexes ontology and creates local cache for uri->ontology terms mappings.
+        if ( !forceIndexing ) {
+            log.info( getOntologyName() + " index will *not* be refreshed unless the ontology " + "has changed or the index is misssing" );
+        }
+
+        log.info( "Loading ontology: " + getOntologyName() + " from " + getOntologyUrl() + " ..." );
+        StopWatch loadTime = StopWatch.createStarted();
+
+        // use temporary variables so we can minimize the critical region for replacing the service's state
+        Map<String, OntologyTerm> terms = new HashMap<>();
+        Map<String, OntologyIndividual> individuals = new HashMap<>();
+        OntModel model;
+        SearchIndex index;
+
+        if ( Thread.currentThread().isInterrupted() ) {
+            log.warn( String.format( "The current thread is interrupted, initialization of %s will be stop.", getOntologyName() ) );
+            return;
+        }
+
+        model = loadModel(); // can take a while.
+        assert model != null;
+
+        //Checks if the current ontology has changed since it was last loaded.
+        boolean changed = OntologyLoader.hasChanged( getOntologyName() );
+        boolean indexExists = OntologyIndexer.getSubjectIndex( getOntologyName() ) != null;
+        boolean forceReindexing = forceLoad && forceIndexing;
+
+        /*
+         * Indexing is slow, don't do it if we don't have to.
+         */
+        boolean force = forceReindexing || changed || !indexExists;
+
+        index = OntologyIndexer.indexOntology( getOntologyName(), model, force );
+
+        if ( Thread.currentThread().isInterrupted() ) {
+            log.warn( String.format( "The current thread is interrupted, initialization of %s will be stop.", getOntologyName() ) );
+            return;
+        }
+
+        Lock lock = rwLock.writeLock();
+        try {
+            lock.lock();
+            this.model = model;
+            this.termCache.clear();
+            this.index = index;
+            this.isInitialized = true;
+        } finally {
+            lock.unlock();
+        }
+
+        // now that the terms have been replaced, we can clear old caches
+        OntologyLoader.deleteOldCache( getOntologyName() );
+
+        loadTime.stop();
+
+        log.info( String.format( "Finished loading %s in %ss", getOntologyName(), String.format( "%.2f", loadTime.getTime() / 1000.0 ) ) );
     }
-
-    // private boolean enabled = false;
 
     /**
      * Do not do this except before re-indexing.
@@ -187,348 +153,368 @@ public abstract class AbstractOntologyService {
         index.close();
     }
 
-    /**
-     * Looks for any OntologyIndividuals that match the given search string.
-     *
-     * @param  search
-     * @return
-     */
+    @Override
     public Collection<OntologyIndividual> findIndividuals( String search ) throws OntologySearchException {
-
-        if ( !isOntologyLoaded() ) return null;
-
-        if ( index == null ) {
-            log.warn( "attempt to search " + this.getOntologyName() + " when index is null" );
-            return null;
+        Lock lock = rwLock.readLock();
+        try {
+            lock.lock();
+            if ( !isInitialized ) {
+                log.warn( String.format( "Ontology %s is not ready, no individuals will be returned.", getOntologyName() ) );
+                return Collections.emptySet();
+            }
+            if ( index == null ) {
+                log.warn( "attempt to search " + this.getOntologyName() + " when index is null" );
+                return Collections.emptySet();
+            }
+            return OntologySearch.matchIndividuals( model, index, search );
+        } finally {
+            lock.unlock();
         }
-
-        OntModel m = getModel();
-
-        Collection<OntologyIndividual> indis = OntologySearch.matchIndividuals( m, index, search );
-
-        return indis;
     }
 
-    /**
-     * Looks for any OntologyIndividuals or ontologyTerms that match the given search string
-     *
-     * @param  search
-     * @return        results, or an empty collection if the results are empty OR the ontology is not available to be
-     *                searched.
-     */
+    @Override
     public Collection<OntologyResource> findResources( String searchString ) throws OntologySearchException {
-
-        if ( !isOntologyLoaded() ) {
-            log.warn( "Ontology is not ready: " + this.getClass() );
-            return new HashSet<>();
+        Lock lock = rwLock.readLock();
+        try {
+            lock.lock();
+            if ( !isInitialized ) {
+                log.warn( String.format( "Ontology %s is not ready, no resources will be returned.", getOntologyName() ) );
+                return Collections.emptySet();
+            }
+            if ( index == null ) {
+                log.warn( "attempt to search " + this.getOntologyName() + " when index is null" );
+                return Collections.emptySet();
+            }
+            return OntologySearch.matchResources( model, index, searchString );
+        } finally {
+            lock.unlock();
         }
-
-        assert index != null : "attempt to search " + this.getOntologyName() + " when index is null";
-
-        OntModel m = getModel();
-
-        Collection<OntologyResource> results = OntologySearch.matchResources( m, index, searchString );
-
-        return results;
     }
 
-    /**
-     * Looks for any ontologyTerms that match the given search string. Obsolete terms are filtered out.
-     *
-     * @param  search
-     * @return
-     */
+    @Override
     public Collection<OntologyTerm> findTerm( String search ) throws OntologySearchException {
-
-        if ( !isOntologyLoaded() ) return new HashSet<>();
-
-        if ( log.isDebugEnabled() ) log.debug( "Searching " + this.getOntologyName() + " for '" + search + "'" );
-
-        assert index != null : "attempt to search " + this.getOntologyName() + " when index is null";
-
-        OntModel m = getModel();
-
-        Collection<OntologyTerm> matches = OntologySearch.matchClasses( m, index, search );
-
-        return matches;
+        if ( log.isDebugEnabled() ) log.debug( "Searching " + getOntologyName() + " for '" + search + "'" );
+        Lock lock = rwLock.readLock();
+        try {
+            lock.lock();
+            if ( !isInitialized ) {
+                log.warn( String.format( "Ontology %s is not ready, no terms will be returned.", getOntologyName() ) );
+                return Collections.emptySet();
+            }
+            if ( index == null ) {
+                log.warn( "attempt to search " + this.getOntologyName() + " when index is null" );
+                return Collections.emptySet();
+            }
+            return OntologySearch.matchClasses( model, index, search );
+        } finally {
+            lock.unlock();
+        }
     }
 
+    @Override
     public OntologyTerm findUsingAlternativeId( String alternativeId ) {
-
-        if ( alternativeIDs.isEmpty() ) {
-            log.info( "init search by alternativeID" );
-            initSearchByAlternativeId();
+        Lock lock = alternativeIDs != null ? rwLock.readLock() : rwLock.writeLock();
+        try {
+            lock.lock();
+            if ( !isInitialized ) {
+                log.warn( String.format( "Ontology %s is not ready, null will be returned for alternative ID match.", getOntologyName() ) );
+                return null;
+            }
+            if ( alternativeIDs == null ) {
+                log.info( "init search by alternativeID" );
+                initSearchByAlternativeId();
+            }
+            String termUri = alternativeIDs.get( alternativeId );
+            return termUri != null ? getTerm( termUri ) : null;
+        } finally {
+            lock.unlock();
         }
-
-        if ( alternativeIDs.get( alternativeId ) != null ) {
-            return alternativeIDs.get( alternativeId );
-        }
-
-        return null;
     }
 
+    @Override
     public Set<String> getAllURIs() {
-        if ( terms == null ) return null;
-        return new HashSet<>( terms.keySet() );
+        Lock lock = rwLock.readLock();
+        try {
+            lock.lock();
+            if ( !isInitialized ) {
+                log.warn( String.format( "Ontology %s is not ready, no term  URIs will be returned.", getOntologyName() ) );
+                return Collections.emptySet();
+            }
+            Set<String> allUris = new HashSet<>();
+            ExtendedIterator<OntClass> iterator = model.listClasses();
+            while ( iterator.hasNext() ) {
+                allUris.add( iterator.next().getURI() );
+            }
+            ExtendedIterator<Individual> it2 = model.listIndividuals();
+            while ( it2.hasNext() ) {
+                allUris.add( it2.next().getURI() );
+            }
+            return allUris;
+        } finally {
+            lock.unlock();
+        }
     }
 
-    /**
-     * Looks through both Terms and Individuals for a OntologyResource that has a uri matching the uri given. If no
-     * OntologyTerm is found only then will ontologyIndividuals be searched. returns null if nothing is found.
-     *
-     * @param  uri
-     * @return
-     */
+    @Override
     public OntologyResource getResource( String uri ) {
-
-        if ( ( uri == null ) || ( !isInitialized.get() ) ) return null;
-
-        OntologyResource resource = terms.get( uri );
-
-        if ( resource == null ) resource = individuals.get( uri );
-
-        return resource;
+        if ( uri == null ) return null;
+        Lock lock = rwLock.readLock();
+        try {
+            lock.lock();
+            if ( !isInitialized ) {
+                return null;
+            }
+            OntologyResource res;
+            Resource resource = model.getResource( uri );
+            if ( resource.getURI() == null ) {
+                return null;
+            }
+            if ( resource instanceof OntClass ) {
+                // use the cached term
+                res = getTermInternal( uri );
+            } else if ( resource instanceof Individual ) {
+                res = new OntologyIndividualImpl( ( Individual ) resource );
+            } else if ( resource instanceof OntProperty ) {
+                res = PropertyFactory.asProperty( ( ObjectProperty ) resource );
+            } else {
+                res = null;
+            }
+            return res;
+        } finally {
+            lock.unlock();
+        }
     }
 
-    /**
-     * Looks for a OntologyTerm that has the match in URI given
-     *
-     * @param  uri
-     * @return
-     */
+    @Override
     public OntologyTerm getTerm( String uri ) {
-
-        if ( !isInitialized.get() || terms == null ) return null;
-
         if ( uri == null ) throw new IllegalArgumentException( "URI cannot be null" );
-
-        OntologyTerm term = terms.get( uri );
-
-        return term;
+        Lock lock = rwLock.readLock();
+        try {
+            lock.lock();
+            if ( !isInitialized ) return null;
+            return getTermInternal( uri );
+        } finally {
+            lock.unlock();
+        }
     }
 
-    /**
-     * @param  uri
-     * @return
-     */
+    @Override
     public Collection<OntologyIndividual> getTermIndividuals( String uri ) {
-
-        if ( terms == null ) {
-            log.warn( "No term for URI=" + uri + " in " + this.getOntologyName()
-                    + " no terms loaded; make sure ontology is loaded and uri is valid" );
-            return new HashSet<>();
+        Lock lock = rwLock.readLock();
+        try {
+            lock.lock();
+            if ( !isInitialized ) {
+                return Collections.emptySet();
+            }
+            OntologyTerm term = getTermInternal( uri );
+            if ( term == null ) {
+                /*
+                 * Either the ontology hasn't been loaded, or the id was not valid.
+                 */
+                log.warn( "No term for URI=" + uri + " in " + this.getOntologyName() + "; make sure ontology is loaded and uri is valid" );
+                return new HashSet<>();
+            }
+            return term.getIndividuals( true );
+        } finally {
+            lock.unlock();
         }
-
-        OntologyTerm term = terms.get( uri );
-        if ( term == null ) {
-            /*
-             * Either the ontology hasn't been loaded, or the id was not valid.
-             */
-            log.warn( "No term for URI=" + uri + " in " + this.getOntologyName()
-                    + "; make sure ontology is loaded and uri is valid" );
-            return new HashSet<>();
-        }
-        return term.getIndividuals( true );
-
     }
 
-    /**
-     * Create the search index.
-     *
-     * @param force
-     */
-    public void index( boolean force ) {
-        StopWatch timer = new StopWatch();
-        timer.start();
-        OntModel m = getModel();
-        assert m != null;
-
-        index = OntologyIndexer.indexOntology( getOntologyName(), m, force );
-
-    }
-
-    /**
-     * @return
-     */
+    @Override
     public boolean isEnabled() {
-        if ( isOntologyLoaded() ) return true; // could have forced, without setting config
+        // quick path: just lookup the configuration
         String configParameter = "load." + getOntologyName();
-        return Configuration.getBoolean( configParameter );
-    }
-
-    public boolean isInitializationThreadAlive() {
-        return initializationThread.isAlive();
-    }
-
-    /**
-     * Used for determining if the Ontology has finished loading into memory. Although calls like getParents,
-     * getChildren will still work (its much faster once the ontologies have been preloaded into memory.)
-     *
-     * @returns boolean
-     */
-    public boolean isOntologyLoaded() {
-        return isInitialized.get();
-    }
-
-    /**
-     * 
-     * @param forceLoad
-     * @param forceIndexing If forceLoad is also true, indexing will be performed. If you know the index is
-     *                      up to date, there's no need to do it again. Normally indexing is only done if there is no
-     *                      index, or if the ontology has changed since last loaded.
-     */
-    public void startInitializationThread( boolean forceLoad, boolean forceIndexing ) {
-        assert initializationThread != null;
-        synchronized ( initializationThread ) {
-            if ( initializationThread.isAlive() ) {
-                log.warn( getOntologyName() + " initialization is already running, not restarting." );
-                return;
-            } else if ( initializationThread.isInterrupted() ) {
-                log.warn( getOntologyName() + " initialization was interrupted, not restarting." );
-                return;
-            } else if ( !initializationThread.getState().equals( State.NEW ) ) {
-                log.warn( getOntologyName() + " initialization was not ready to run: state="
-                        + initializationThread.getState() + ", not restarting." );
-                return;
-            }
-
-            if ( !forceLoad && this.isOntologyLoaded() ) {
-                log.warn( getOntologyName() + " is already loaded, and force=false, not restarting" );
-                return;
-            }
-
-            boolean loadOntology = isEnabled();
-
-            // If loading ontologies is disabled in the configuration, return
-            if ( !forceLoad && !loadOntology ) {
-                log.debug( "Loading " + getOntologyName() + " is disabled (force=" + forceLoad + ", "
-                        + "Configuration load." + getOntologyName() + "=" + loadOntology + ")" );
-                return;
-            }
-
-            // Detect configuration problems.
-            if ( StringUtils.isBlank( this.getOntologyUrl() ) ) {
-                throw new IllegalStateException( "URL not defined, ontology cannot be loaded ("
-                        + this.getClass().getSimpleName() + ")" );
-            }
-
-            // This thread indexes ontology and creates local cache for uri->ontology terms mappings.
-            if ( !forceIndexing ) {
-                log.info( getOntologyName() + " index will *not* be refreshed unless the ontology "
-                        + "has changed or the index is misssing" );
-            }
-            initializationThread.setForceReindexing( forceLoad && forceIndexing );
-            initializationThread.start();
+        if ( Configuration.getBoolean( configParameter ) ) {
+            return true;
         }
+        // could have forced, without setting config
+        Lock lock = rwLock.readLock();
+        try {
+            lock.lock();
+            return isInitialized;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public boolean isOntologyLoaded() {
+        // it's fine not to use the read lock here
+        return isInitialized;
+    }
+
+    private Thread initializationThread = null;
+
+    @Override
+    public synchronized void startInitializationThread( boolean forceLoad, boolean forceIndexing ) {
+        if ( initializationThread != null && initializationThread.isAlive() ) {
+            log.warn( String.format( " Initialization thread for %s is currently running, not restarting.", getOntologyName() ) );
+            return;
+        }
+        // create and start the initialization thread
+        initializationThread = new Thread( () -> {
+            try {
+                this.initialize( forceLoad, forceIndexing );
+            } catch ( JenaException e ) {
+                if ( !( e.getCause() instanceof ParseException ) || ( ( ParseException ) e.getCause() ).getErrorNumber() != ARPErrorNumbers.ERR_INTERRUPTED ) {
+                    throw e;
+                }
+            } catch ( Exception e ) {
+                log.error( e.getMessage(), e );
+                this.isInitialized = false;
+            }
+        }, getOntologyName() + "_load_thread_" + RandomStringUtils.randomAlphanumeric( 5 ) );
+        // To prevent VM from waiting on this thread to shutdown (if shutting down).
+        initializationThread.setDaemon( true );
+        initializationThread.start();
+    }
+
+    @Override
+    public boolean isInitializationThreadAlive() {
+        return initializationThread != null && initializationThread.isAlive();
+    }
+
+    @Override
+    public boolean isInitializationThreadCancelled() {
+        return initializationThread != null && initializationThread.isInterrupted();
     }
 
     /**
      * Cancel the initialization thread.
      */
+    @Override
     public void cancelInitializationThread() {
-        initializationThread.cancel();
+        if ( initializationThread == null ) {
+            throw new IllegalStateException( "The initialization thread has not started. Invoke startInitializationThread() first." );
+        }
+        initializationThread.interrupt();
+    }
+
+    @Override
+    public void waitForInitializationThread() throws InterruptedException {
+        if ( initializationThread == null ) {
+            throw new IllegalStateException( "The initialization thread has not started. Invoke startInitializationThread() first." );
+        }
+        initializationThread.join();
     }
 
     /**
-     * @param newTerms
-     */
-    protected void addTerms( Collection<OntologyResource> newTerms ) {
-
-        if ( newTerms == null || newTerms.isEmpty() ) {
-            log.warn( "No terms!" );
-            return;
-        }
-
-        if ( terms == null ) terms = new HashMap<>();
-        if ( individuals == null ) individuals = new HashMap<>();
-
-        int i = 0;
-        for ( OntologyResource term : newTerms ) {
-            if ( term.getUri() == null ) continue;
-            if ( term instanceof OntologyTerm ) terms.put( term.getUri(), ( OntologyTerm ) term );
-            if ( term instanceof OntologyIndividual ) individuals.put( term.getUri(), ( OntologyIndividual ) term );
-
-            if ( ++i % 1000 == 0 && initializationThread.isCancelled() ) {
-                log.error( "Cancelled initialization" );
-                this.isInitialized.set( false );
-                return;
-            }
-        }
-    }
-
-    protected synchronized OntModel getModel() {
-        if ( model == null ) {
-            model = loadModel();
-        }
-        return model;
-    }
-
-    /**
-     * The simple name of the ontology. Used for indexing purposes. (ie this will determine the name of the underlying
+     * The simple getOntologyName() of the ontology. Used for indexing purposes. (ie this will determine the getOntologyName() of the underlying
      * index for searching the ontology)
-     *
-     * @return
      */
     protected abstract String getOntologyName();
 
     /**
-     * Defines the location of the ontology eg: http://mged.sourceforge.net/ontologies/MGEDOntology.owl
-     *
-     * @return
+     * Defines the location of the ontology eg: <a href="http://mged.sourceforge.net/ontologies/MGEDOntology.owl">MGED</a>
      */
     protected abstract String getOntologyUrl();
 
     /**
      * Delegates the call as to load the model into memory or leave it on disk. Simply delegates to either
      * OntologyLoader.loadMemoryModel( url ); OR OntologyLoader.loadPersistentModel( url, spec );
-     *
-     * @param  url
-     * @return
-     * @throws IOException
      */
     protected abstract OntModel loadModel();
 
-    /**
-     * @param  url
-     * @param  m
-     * @throws IOException
-     */
-    protected void loadTermsInNameSpace( String url, OntModel m ) {
-        Collection<OntologyResource> t = OntologyLoader.initialize( url, m );
-        addTerms( t );
+    @Override
+    public void index( boolean force ) {
+        Lock lock = rwLock.writeLock();
+        try {
+            lock.lock();
+            if ( !isInitialized ) {
+                log.warn( String.format( "Ontology %s is not initialized, cannot index it.", getOntologyName() ) );
+                return;
+            }
+            index = OntologyIndexer.indexOntology( getOntologyName(), model, force );
+        } finally {
+            lock.unlock();
+        }
     }
 
-    /*
+    /**
+     * Initialize alternative IDs mapping.
+     * <p>
      * this add alternative id in 2 ways
-     *
+     * <p>
      * Example :
-     *
-     * http://purl.obolibrary.org/obo/HP_0000005 with alternative id : HP:0001453
-     *
-     * by default way use in file 1- HP:0001453 -----> http://purl.obolibrary.org/obo/HP_0000005
-     *
-     * trying to use the value uri 2- http://purl.obolibrary.org/obo/HP_0001453 ----->
-     * http://purl.obolibrary.org/obo/HP_0000005
+     * <p>
+     * <a href="http://purl.obolibrary.org/obo/HP_0000005">HP_0000005</a> with alternative id : HP:0001453
+     * <p>
+     * by default way use in file 1- HP:0001453 -----> <a href="http://purl.obolibrary.org/obo/HP_0000005">HP_0000005</a>
+     * <p>
+     * trying <a href=" to use the value uri 2- http://purl.obol">HP_0001453</a>ibrary.org/obo/HP_0001453 ----->
+     * <a href="http://purl.obolibrary.org/obo/HP_0000005">HP_0000005</a>
      */
     private void initSearchByAlternativeId() {
-
-        // lets find the baseUrl, to change to valueUri
-        String randomUri = terms.values().iterator().next().getUri();
-        String baseOntologyUri = randomUri.substring( 0, randomUri.lastIndexOf( "/" ) + 1 );
-
+        alternativeIDs = new HashMap<>();
         // for all Ontology terms that exist in the tree
-        for ( OntologyTerm ontologyTerm : terms.values() ) {
-
+        ExtendedIterator<OntClass> iterator = model.listClasses();
+        while ( iterator.hasNext() ) {
+            OntClass ind = iterator.next();
+            OntologyTerm ontologyTerm = new OntologyTermImpl( ind );
+            // lets find the baseUri, to change to valueUri
+            String baseOntologyUri = ontologyTerm.getUri().substring( 0, ontologyTerm.getUri().lastIndexOf( "/" ) + 1 );
             for ( String alternativeId : ontologyTerm.getAlternativeIds() ) {
                 // first way
-                alternativeIDs.put( alternativeId, ontologyTerm );
-
-                String alternativeIdModified = alternativeId.replace( ':', '_' );
-
+                alternativeIDs.put( alternativeId, ontologyTerm.getUri() );
                 // second way
-                alternativeIDs.put( baseOntologyUri + alternativeIdModified, ontologyTerm );
+                String alternativeIdModified = alternativeId.replace( ':', '_' );
+                alternativeIDs.put( baseOntologyUri + alternativeIdModified, ontologyTerm.getUri() );
             }
         }
     }
 
+    private OntologyTerm getTermInternal( String uri ) {
+        return termCache.computeIfAbsent( uri, u -> {
+            OntClass ontCls = model.getOntClass( u );
+            // bnode
+            if ( ontCls.getURI() == null ) {
+                return null;
+            }
+            return new OntologyTermImpl( ontCls );
+        } );
+    }
+
+    @Override
+    public void loadTermsInNameSpace( InputStream is, boolean forceIndex ) {
+        Lock lock = rwLock.writeLock();
+        try {
+            lock.lock();
+            this.isInitialized = false;
+
+            if ( initializationThread != null && initializationThread.isAlive() ) {
+                log.warn( this.getOntologyName() + " initialization is already running, trying to cancel ..." );
+                initializationThread.interrupt();
+                // wait for the thread to die.
+                int maxWait = 10;
+                int wait = 0;
+                while ( initializationThread.isAlive() ) {
+                    try {
+                        initializationThread.join( 5000 );
+                        log.warn( "Waiting for auto-initialization to stop so manual initialization can begin ..." );
+                    } catch ( InterruptedException e ) {
+                        Thread.currentThread().interrupt();
+                        log.warn( String.format( "Got interrupted while waiting for the initialization thread of %s to finish.", getOntologyName() ) );
+                        return;
+                    }
+                    ++wait;
+                    if ( wait >= maxWait && !initializationThread.isAlive() ) {
+                        throw new RuntimeException( String.format( "Got tired of waiting for %s's initialization thread.", getOntologyName() ) );
+                    }
+                }
+            }
+
+            this.model = OntologyLoader.loadMemoryModel( is, this.getOntologyUrl() );
+            this.termCache.clear();
+            this.index = OntologyIndexer.getSubjectIndex( getOntologyName() );
+            if ( index == null || forceIndex ) {
+                this.index = OntologyIndexer.indexOntology( getOntologyName(), model, true /* force */ );
+            }
+
+            isInitialized = true;
+        } finally {
+            lock.unlock();
+        }
+
+        log.info( this.getClass().getSimpleName() + " ready" );
+    }
 }

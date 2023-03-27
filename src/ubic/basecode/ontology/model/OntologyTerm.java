@@ -1,8 +1,8 @@
 /*
  * The basecode project
- * 
+ *
  * Copyright (c) 2007-2019 Columbia University
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,48 +22,53 @@ import java.util.Collection;
 
 /**
  * @author Paul
- * 
  */
 public interface OntologyTerm extends OntologyResource {
 
-    public Collection<String> getAlternativeIds();
+    Collection<String> getAlternativeIds();
 
-    public Collection<AnnotationProperty> getAnnotations();
+    Collection<AnnotationProperty> getAnnotations();
+
+    Collection<OntologyTerm> getChildren( boolean direct );
 
     /**
      * @param direct return only the immediate children; if false, return all of them down to the leaves.
+     * @param includePartOf include terms matched via
      * @return
      */
-    public Collection<OntologyTerm> getChildren( boolean direct );
+    Collection<OntologyTerm> getChildren( boolean direct, boolean includePartOf );
 
-    public String getComment();
+    String getComment();
 
-    public Collection<OntologyIndividual> getIndividuals();
+    Collection<OntologyIndividual> getIndividuals();
 
-    public Collection<OntologyIndividual> getIndividuals( boolean direct );
+    Collection<OntologyIndividual> getIndividuals( boolean direct );
 
-    public String getLocalName();
+    String getLocalName();
 
-    public Object getModel();
+    Object getModel();
 
     /**
      * Note that any restriction superclasses are not returned, unless they are has_proper_part
-     * 
+     *
      * @param direct
      * @return
      */
-    public Collection<OntologyTerm> getParents( boolean direct );
+    Collection<OntologyTerm> getParents( boolean direct );
 
-    public Collection<OntologyRestriction> getRestrictions();
+    Collection<OntologyTerm> getParents( boolean direct, boolean includePartOf );
 
-    public String getTerm();
+    Collection<OntologyRestriction> getRestrictions();
+
+    String getTerm();
 
     @Override
-    public String getUri();
+    String getUri();
 
-    public boolean isRoot();
+    boolean isRoot();
 
-    /** check to see if the term is obsolete, if it is it should not be used */
-    public boolean isTermObsolete();
-
+    /**
+     * check to see if the term is obsolete, if it is it should not be used
+     */
+    boolean isTermObsolete();
 }

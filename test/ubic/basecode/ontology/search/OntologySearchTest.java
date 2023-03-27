@@ -14,36 +14,31 @@
  */
 package ubic.basecode.ontology.search;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.shared.JenaException;
+import org.junit.Test;
+import ubic.basecode.ontology.OntologyLoader;
+import ubic.basecode.ontology.model.OntologyTerm;
 
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.zip.GZIPInputStream;
 
-import com.hp.hpl.jena.shared.JenaException;
-import org.junit.Test;
-
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-
-import ubic.basecode.ontology.OntologyLoader;
-import ubic.basecode.ontology.model.OntologyTerm;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 /**
  * Most of these tests were moved over from Gemma.
  *
  * @author Paul
- *
  */
 public class OntologySearchTest {
 
     @Test
     public final void testIndexing() throws Exception {
         InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream( "/data/mged.owl.gz" ) );
-        OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test", OntModelSpec.OWL_MEM_TRANS_INF );
+        OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test" );
 
         SearchIndex index = OntologyIndexer.indexOntology( "MGEDTEST", model, true );
 
@@ -68,7 +63,7 @@ public class OntologySearchTest {
     public final void testOmitBadPredicates() throws Exception {
 
         InputStream is = this.getClass().getResourceAsStream( "/data/niforgantest.owl.xml" );
-        OntModel model = OntologyLoader.loadMemoryModel( is, "NIFTEST", OntModelSpec.OWL_MEM_TRANS_INF );
+        OntModel model = OntologyLoader.loadMemoryModel( is, "NIFTEST" );
         is.close();
 
         SearchIndex index = OntologyIndexer.indexOntology( "NIFTEST", model, true );
@@ -105,7 +100,7 @@ public class OntologySearchTest {
     @Test
     public final void testOmitBadPredicates2() throws Exception {
         InputStream is = this.getClass().getResourceAsStream( "/data/eftest.owl.xml" );
-        OntModel model = OntologyLoader.loadMemoryModel( is, "EFTEST", OntModelSpec.OWL_MEM_TRANS_INF );
+        OntModel model = OntologyLoader.loadMemoryModel( is, "EFTEST" );
         is.close();
 
         SearchIndex index = OntologyIndexer.indexOntology( "EFTEST", model, true );
@@ -128,7 +123,7 @@ public class OntologySearchTest {
     @Test
     public final void testOmitDefinitions() throws Exception {
         InputStream is = this.getClass().getResourceAsStream( "/data/dotest.owl.xml" );
-        OntModel model = OntologyLoader.loadMemoryModel( is, "DO_TEST", OntModelSpec.OWL_MEM_TRANS_INF );
+        OntModel model = OntologyLoader.loadMemoryModel( is, "DO_TEST" );
         is.close();
 
         SearchIndex index = OntologyIndexer.indexOntology( "DO_TEST", model, true );
@@ -150,7 +145,7 @@ public class OntologySearchTest {
     @Test
     public final void testOmitDefinitions2() throws Exception {
         InputStream is = this.getClass().getResourceAsStream( "/data/nif.organism.test.owl.xml" );
-        OntModel model = OntologyLoader.loadMemoryModel( is, "NIFORG_TEST", OntModelSpec.OWL_MEM_TRANS_INF );
+        OntModel model = OntologyLoader.loadMemoryModel( is, "NIFORG_TEST" );
         is.close();
 
         SearchIndex index = OntologyIndexer.indexOntology( "NIFORG_TEST", model, true );
@@ -190,7 +185,7 @@ public class OntologySearchTest {
     @Test
     public final void testOmitDefinitions3() throws Exception {
         InputStream is = this.getClass().getResourceAsStream( "/data/obi.test.owl.xml" );
-        OntModel model = OntologyLoader.loadMemoryModel( is, "OBI_TEST", OntModelSpec.OWL_MEM_TRANS_INF );
+        OntModel model = OntologyLoader.loadMemoryModel( is, "OBI_TEST" );
 
         SearchIndex index = OntologyIndexer.indexOntology( "OBI_TEST", model, true );
 
@@ -213,7 +208,7 @@ public class OntologySearchTest {
     public final void testOmitDefinitions4() throws Exception {
         InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream( "/data/NIF-GrossAnatomy.owl.gz" ) );
 
-        OntModel model = OntologyLoader.loadMemoryModel( is, "NIFAN_TEST2", OntModelSpec.OWL_MEM_TRANS_INF );
+        OntModel model = OntologyLoader.loadMemoryModel( is, "NIFAN_TEST2" );
         is.close();
 
         SearchIndex index = OntologyIndexer.indexOntology( "NIFAN_TEST2", model, true );
@@ -238,7 +233,7 @@ public class OntologySearchTest {
     @Test
     public final void testPersistence() throws Exception {
         InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream( "/data/mged.owl.gz" ) );
-        OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test", OntModelSpec.OWL_MEM_TRANS_INF );
+        OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test" );
 
         SearchIndex index = OntologyIndexer.indexOntology( "MGEDTEST", model, false );
         index.close();
