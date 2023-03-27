@@ -50,7 +50,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @author kelsey
  */
 @SuppressWarnings("unused")
-public abstract class AbstractOntologyService {
+public abstract class AbstractOntologyService implements OntologyService {
 
     protected static Logger log = LoggerFactory.getLogger( AbstractOntologyService.class );
 
@@ -67,9 +67,7 @@ public abstract class AbstractOntologyService {
 
     private boolean isInitialized = false;
 
-    /**
-     * Initialize this ontology service.
-     */
+    @Override
     public void initialize( boolean forceLoad, boolean forceIndexing ) {
         if ( !forceLoad && isInitialized ) {
             log.warn( getOntologyName() + " is already loaded, and force=false, not restarting" );
@@ -155,9 +153,7 @@ public abstract class AbstractOntologyService {
         index.close();
     }
 
-    /**
-     * Looks for any OntologyIndividuals that match the given search string.
-     */
+    @Override
     public Collection<OntologyIndividual> findIndividuals( String search ) throws OntologySearchException {
         Lock lock = rwLock.readLock();
         try {
@@ -176,12 +172,7 @@ public abstract class AbstractOntologyService {
         }
     }
 
-    /**
-     * Looks for any OntologyIndividuals or ontologyTerms that match the given search string
-     *
-     * @return results, or an empty collection if the results are empty OR the ontology is not available to be
-     * searched.
-     */
+    @Override
     public Collection<OntologyResource> findResources( String searchString ) throws OntologySearchException {
         Lock lock = rwLock.readLock();
         try {
@@ -200,9 +191,7 @@ public abstract class AbstractOntologyService {
         }
     }
 
-    /**
-     * Looks for any ontologyTerms that match the given search string. Obsolete terms are filtered out.
-     */
+    @Override
     public Collection<OntologyTerm> findTerm( String search ) throws OntologySearchException {
         if ( log.isDebugEnabled() ) log.debug( "Searching " + getOntologyName() + " for '" + search + "'" );
         Lock lock = rwLock.readLock();
@@ -222,6 +211,7 @@ public abstract class AbstractOntologyService {
         }
     }
 
+    @Override
     public OntologyTerm findUsingAlternativeId( String alternativeId ) {
         Lock lock = alternativeIDs != null ? rwLock.readLock() : rwLock.writeLock();
         try {
@@ -241,6 +231,7 @@ public abstract class AbstractOntologyService {
         }
     }
 
+    @Override
     public Set<String> getAllURIs() {
         Lock lock = rwLock.readLock();
         try {
@@ -264,10 +255,7 @@ public abstract class AbstractOntologyService {
         }
     }
 
-    /**
-     * Looks through both Terms and Individuals for a OntologyResource that has a uri matching the uri given. If no
-     * OntologyTerm is found only then will ontologyIndividuals be searched. returns null if nothing is found.
-     */
+    @Override
     public OntologyResource getResource( String uri ) {
         if ( uri == null ) return null;
         Lock lock = rwLock.readLock();
@@ -297,9 +285,7 @@ public abstract class AbstractOntologyService {
         }
     }
 
-    /**
-     * Looks for a OntologyTerm that has the match in URI given
-     */
+    @Override
     public OntologyTerm getTerm( String uri ) {
         if ( uri == null ) throw new IllegalArgumentException( "URI cannot be null" );
         Lock lock = rwLock.readLock();
@@ -312,6 +298,7 @@ public abstract class AbstractOntologyService {
         }
     }
 
+    @Override
     public Collection<OntologyIndividual> getTermIndividuals( String uri ) {
         Lock lock = rwLock.readLock();
         try {
@@ -333,6 +320,7 @@ public abstract class AbstractOntologyService {
         }
     }
 
+    @Override
     public boolean isEnabled() {
         // quick path: just lookup the configuration
         String configParameter = "load." + getOntologyName();
@@ -349,10 +337,7 @@ public abstract class AbstractOntologyService {
         }
     }
 
-    /**
-     * Used for determining if the Ontology has finished loading into memory. Although calls like getParents,
-     * getChildren will still work (its much faster once the ontologies have been preloaded into memory.)
-     */
+    @Override
     public boolean isOntologyLoaded() {
         // it's fine not to use the read lock here
         return isInitialized;
@@ -360,17 +345,7 @@ public abstract class AbstractOntologyService {
 
     private Thread initializationThread = null;
 
-    /**
-     * Start the initialization thread.
-     * <p>
-     * If the initialization thread is already running, this method does nothing. If the initialization thread
-     * previously completed, the ontology will be reinitialized.
-     *
-     * @param forceLoad     Force loading of ontology, even if it is already loaded
-     * @param forceIndexing If forceLoad is also true, indexing will be performed. If you know the index is
-     *                      up to date, there's no need to do it again. Normally indexing is only done if there is no
-     *                      index, or if the ontology has changed since last loaded.
-     */
+    @Override
     public synchronized void startInitializationThread( boolean forceLoad, boolean forceIndexing ) {
         if ( initializationThread != null && initializationThread.isAlive() ) {
             log.warn( String.format( " Initialization thread for %s is currently running, not restarting.", getOntologyName() ) );
@@ -394,10 +369,12 @@ public abstract class AbstractOntologyService {
         initializationThread.start();
     }
 
+    @Override
     public boolean isInitializationThreadAlive() {
         return initializationThread != null && initializationThread.isAlive();
     }
 
+    @Override
     public boolean isInitializationThreadCancelled() {
         return initializationThread != null && initializationThread.isInterrupted();
     }
@@ -405,6 +382,7 @@ public abstract class AbstractOntologyService {
     /**
      * Cancel the initialization thread.
      */
+    @Override
     public void cancelInitializationThread() {
         if ( initializationThread == null ) {
             throw new IllegalStateException( "The initialization thread has not started. Invoke startInitializationThread() first." );
@@ -412,9 +390,7 @@ public abstract class AbstractOntologyService {
         initializationThread.interrupt();
     }
 
-    /**
-     * Wait for the initialization thread to finish.
-     */
+    @Override
     public void waitForInitializationThread() throws InterruptedException {
         if ( initializationThread == null ) {
             throw new IllegalStateException( "The initialization thread has not started. Invoke startInitializationThread() first." );
@@ -439,13 +415,7 @@ public abstract class AbstractOntologyService {
      */
     protected abstract OntModel loadModel();
 
-    /**
-     * Index the ontology for performing full-text searches.
-     *
-     * @see #findIndividuals(String)
-     * @see #findTerm(String)
-     * @see #findResources(String)
-     */
+    @Override
     public void index( boolean force ) {
         Lock lock = rwLock.writeLock();
         try {
@@ -504,13 +474,7 @@ public abstract class AbstractOntologyService {
         } );
     }
 
-    /**
-     * For testing! Overrides normal way of loading the ontology. This does not index the ontology unless 'force' is
-     * true (if there is an existing index, it will be used)
-     *
-     * @param is         input stream from which the ontology model is loaded
-     * @param forceIndex initialize the index. Otherwise it will only be initialized if it doesn't exist.
-     */
+    @Override
     public void loadTermsInNameSpace( InputStream is, boolean forceIndex ) {
         Lock lock = rwLock.writeLock();
         try {
