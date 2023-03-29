@@ -1,8 +1,8 @@
 /*
  * The basecode project
- * 
+ *
  * Copyright (c) 2007-2019 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,24 +16,27 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.ontology.model;
+package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.Restriction;
+import com.hp.hpl.jena.rdf.model.Property;
+import ubic.basecode.ontology.model.OntologyDatatypeRestriction;
+
+import java.util.Set;
 
 /**
  * @author pavlidis
- * 
  */
 public class OntologyDatatypeRestrictionImpl extends OntologyRestrictionImpl implements OntologyDatatypeRestriction {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
-    Class<?> type;
+    private final Class<?> type;
 
-    public OntologyDatatypeRestrictionImpl( Restriction resource ) {
-        super( resource );
+    public OntologyDatatypeRestrictionImpl( Restriction resource, Set<Restriction> additionalRestrcitions ) {
+        super( resource, additionalRestrcitions );
         assert restrictionOn != null;
         this.type = PropertyFactory.convertType( resource.getOnProperty().asDatatypeProperty() );
     }

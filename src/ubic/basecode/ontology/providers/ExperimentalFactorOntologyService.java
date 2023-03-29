@@ -14,6 +14,7 @@
  */
 package ubic.basecode.ontology.providers;
 
+import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
 import ubic.basecode.util.Configuration;
 
 /**

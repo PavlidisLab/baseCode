@@ -19,6 +19,7 @@
 
 package ubic.basecode.ontology.providers;
 
+import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
 import ubic.basecode.util.Configuration;
 
 /**
@@ -29,22 +30,12 @@ public class MammalianPhenotypeOntologyService extends AbstractOntologyMemoryBac
 
     private static final String ONTOLOGY_URL = "url.mammalPhenotypeOntology";
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.gemma.ontology.AbstractOntologyService#getOntologyName()
-     */
     @Override
     protected String getOntologyName() {
 
         return "mammalPhenotypeOntology";
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.gemma.ontology.AbstractOntologyService#getOntologyUrl()
-     */
     @Override
     protected String getOntologyUrl() {
         return Configuration.getString( ONTOLOGY_URL );

@@ -1,4 +1,4 @@
-package ubic.basecode.ontology.search;
+package ubic.basecode.ontology.jena.search;
 
 import com.hp.hpl.jena.shared.JenaException;
 

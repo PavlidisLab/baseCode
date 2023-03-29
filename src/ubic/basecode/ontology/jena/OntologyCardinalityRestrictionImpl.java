@@ -1,8 +1,8 @@
 /*
  * The basecode project
- * 
+ *
  * Copyright (c) 2007-2019 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,26 +16,29 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.ontology.model;
+package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.Restriction;
+import com.hp.hpl.jena.rdf.model.Property;
+import ubic.basecode.ontology.model.OntologyCardinalityRestriction;
+
+import java.util.Set;
 
 /**
  * @author pavlidis
- * 
  */
 public class OntologyCardinalityRestrictionImpl extends OntologyRestrictionImpl implements
         OntologyCardinalityRestriction {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     int cardinality = 0;
     CardinalityType cardType;
 
-    public OntologyCardinalityRestrictionImpl( Restriction resource ) {
-        super( resource );
+    public OntologyCardinalityRestrictionImpl( Restriction resource, Set<Restriction> additionalRestrictions ) {
+        super( resource, additionalRestrictions );
 
         if ( resource.isMaxCardinalityRestriction() ) {
             this.cardType = CardinalityType.MAX_CARDINALITY;

@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.ontology.search;
+package ubic.basecode.ontology.jena.search;
 
 import java.io.File;
 import java.io.IOException;

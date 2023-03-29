@@ -14,20 +14,23 @@
  */
 package ubic.basecode.ontology;
 
+import com.hp.hpl.jena.vocabulary.OWL2;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ubic.basecode.ontology.model.OntologyTerm;
-import ubic.basecode.ontology.providers.CellLineOntologyService;
-import ubic.basecode.ontology.providers.DiseaseOntologyService;
-import ubic.basecode.ontology.providers.NIFSTDOntologyService;
-import ubic.basecode.ontology.providers.UberonOntologyService;
+import ubic.basecode.ontology.providers.*;
+import ubic.basecode.ontology.search.OntologySearchException;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.zip.GZIPInputStream;
 
+import static java.util.Objects.requireNonNull;
 import static org.junit.Assert.*;
 
 /**
@@ -35,13 +38,29 @@ import static org.junit.Assert.*;
  */
 public class OntologyTermTest {
 
-    private static Logger log = LoggerFactory.getLogger( OntologyTermTest.class );
+    private static final Logger log = LoggerFactory.getLogger( OntologyTermTest.class );
+
+    private static OntologyService uberon;
+
+    @BeforeClass
+    public static void initializeUberon() throws IOException {
+        uberon = new UberonOntologyService() {
+            @Override
+            protected String getCacheName() {
+                return super.getCacheName() + "_TEST";
+            }
+        };
+        try ( InputStream is = new GZIPInputStream( requireNonNull( OntologyTermTest.class.getResourceAsStream( "/data/uberon.owl.gz" ) ) ) ) {
+            // FIXME: indexing Uberon is very slow, so we disable it so if the tests are breaking, try force-indexing
+            uberon.loadTermsInNameSpace( is, false );
+        }
+    }
 
     @Test
     public void testGetChildren() throws Exception {
         // DOID:4159
         DiseaseOntologyService s = new DiseaseOntologyService();
-        InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream( "/data/doid.short.owl.gz" ) );
+        InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/doid.short.owl.gz" ) ) );
         s.loadTermsInNameSpace( is, false );
 
         OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/DOID_4159" );
@@ -80,14 +99,12 @@ public class OntologyTermTest {
 
     /**
      * FIXME this uses NIF, which we are no longer using actively - not a big deal since this just tests mechanics
-     *
-     * @throws Exception
      */
     @Test
     public void testGetChildrenHasProperPart() throws Exception {
         NIFSTDOntologyService s = new NIFSTDOntologyService();
-        InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream(
-                "/data/NIF-GrossAnatomy.small.owl.xml.gz" ) );
+        InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream(
+                "/data/NIF-GrossAnatomy.small.owl.xml.gz" ) ) );
         s.loadTermsInNameSpace( is, false );
 
         OntologyTerm t = s.getTerm( "http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#birnlex_734" );
@@ -119,7 +136,7 @@ public class OntologyTermTest {
     public void testGetParents() throws Exception {
 
         DiseaseOntologyService s = new DiseaseOntologyService();
-        InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream( "/data/doid.short.owl.gz" ) );
+        InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/doid.short.owl.gz" ) ) );
 
         s.loadTermsInNameSpace( is, false );
 
@@ -156,11 +173,34 @@ public class OntologyTermTest {
     }
 
     @Test
+    public void testUberon() {
+        OntologyTerm t = uberon.getTerm( "http://purl.obolibrary.org/obo/BFO_0000001" );
+        assertTrue( t.isRoot() );
+        assertFalse( t.isObsolete() );
+
+        OntologyTerm t2 = uberon.getTerm( "http://purl.obolibrary.org/obo/BFO_0000002" );
+        assertFalse( t2.isRoot() );
+        assertFalse( t2.isObsolete() );
+
+        OntologyTerm t3 = uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0007234" );
+        assertTrue( t3.isObsolete() );
+    }
+
+    @Test
+    public void testGetParentsFromMultipleTerms() {
+        OntologyTerm brain = uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0000955" );
+        OntologyTerm liver = uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0002107" );
+        Collection<OntologyTerm> children = uberon.getParents( Arrays.asList( brain, liver ), false, true );
+        assertEquals( 22, children.size() );
+        assertFalse( children.contains( uberon.getTerm( OWL2.Nothing.getURI() ) ) );
+    }
+
+    @Test
     public void testGetParentsHasProperPart() throws Exception {
         NIFSTDOntologyService s = new NIFSTDOntologyService();
 
-        InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream(
-                "/data/NIF-GrossAnatomy.small.owl.xml.gz" ) );
+        InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream(
+                "/data/NIF-GrossAnatomy.small.owl.xml.gz" ) ) );
         assertNotNull( is );
         s.loadTermsInNameSpace( is, false );
 
@@ -194,17 +234,17 @@ public class OntologyTermTest {
         // Diencephalon [birnlex_1503] x
 
         Collection<OntologyTerm> parents2 = t.getParents( false );
-        assertEquals( 5, parents2.size() );
+        assertEquals( 7, parents2.size() );
 
         // does not includes 'continuant' and 'independent continuant' or parents of those terms.
-        // assertTrue( parents2.contains( s.getTerm( "http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#birnlex_1503" ) ) );
-        assertFalse( parents2.contains( s.getResource( "http://www.ifomis.org/bfo/1.1/snap#Continuant" ) ) );
+        assertFalse( parents2.contains( s.getTerm( "http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#birnlex_1503" ) ) );
+        assertFalse( parents2.contains( ( OntologyTerm ) s.getResource( "http://www.ifomis.org/bfo/1.1/snap#Continuant" ) ) );
     }
 
     @Test
     public void testRejectNonEnglish() throws Exception {
         CellLineOntologyService s = new CellLineOntologyService();
-        InputStream is = new GZIPInputStream( this.getClass().getResourceAsStream( "/data/clo_merged.sample.owl.xml.gz" ) );
+        InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/clo_merged.sample.owl.xml.gz" ) ) );
         s.loadTermsInNameSpace( is, false );
 
         OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/CLO_0000292" );
@@ -213,39 +253,53 @@ public class OntologyTermTest {
     }
 
     @Test
-    public void testGetParentsHasPart() throws Exception {
-        UberonOntologyService s = new UberonOntologyService();
-        try ( InputStream is = new GZIPInputStream( getClass().getResourceAsStream( "/data/uberon.owl.gz" ) ) ) {
-            s.loadTermsInNameSpace( is, false );
-        }
-        OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/UBERON_0000955" );
+    public void testGetParentsHasPart() {
+        OntologyTerm t = uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0000955" );
         assertNotNull( t );
         Collection<OntologyTerm> parents = t.getParents( true );
         assertEquals( 3, parents.size() );
         // does not contain itself
         assertFalse( parents.contains( t ) );
         // via subclass
-        assertTrue( parents.contains( s.getTerm( "http://purl.obolibrary.org/obo/UBERON_0004121" ) ) );
-        assertTrue( parents.contains( s.getTerm( "http://purl.obolibrary.org/obo/UBERON_0000062" ) ) );
+        assertTrue( parents.contains( uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0004121" ) ) );
+        assertTrue( parents.contains( uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0000062" ) ) );
         // via part of, central nervous system
-        assertTrue( parents.contains( s.getTerm( "http://purl.obolibrary.org/obo/UBERON_0001017" ) ) );
+        assertTrue( parents.contains( uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0001017" ) ) );
+        assertFalse( parents.contains( uberon.getTerm( OWL2.Thing.getURI() ) ) );
     }
 
     @Test
-    public void testGetChildrenHasPart() throws Exception {
-        UberonOntologyService s = new UberonOntologyService();
-        try ( InputStream is = new GZIPInputStream( getClass().getResourceAsStream( "/data/uberon.owl.gz" ) ) ) {
-            s.loadTermsInNameSpace( is, false );
-        }
-        OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/UBERON_0000955" );
+    public void testGetChildrenHasPart() {
+        OntologyTerm t = uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0000955" );
         assertNotNull( t );
         Collection<OntologyTerm> children = t.getChildren( false );
         assertEquals( 1496, children.size() );
         // via subclass of, insect adult brain
-        assertTrue( children.contains( s.getTerm( "http://purl.obolibrary.org/obo/UBERON_6003624" ) ) );
+        assertTrue( children.contains( uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_6003624" ) ) );
         // via part of, nucleus of brain
-        assertTrue( children.contains( s.getTerm( "http://purl.obolibrary.org/obo/UBERON_0002308" ) ) );
+        assertTrue( children.contains( uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0002308" ) ) );
         // does not contain owl:Nothing
-        assertFalse( children.contains( s.getTerm( "http://www.w3.org/2002/07/owl#Nothing" ) ) );
+        assertFalse( children.contains( uberon.getTerm( OWL2.Nothing.getURI() ) ) );
+    }
+
+    @Test
+    public void testGetChildrenFromMultipleTerms() {
+        OntologyTerm brain = uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0000955" );
+        OntologyTerm liver = uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0002107" );
+        Collection<OntologyTerm> children = uberon.getChildren( Arrays.asList( brain, liver ), false, true );
+        assertEquals( 1562, children.size() );
+    }
+
+    @Test
+    public void testGetChildrenFromMultipleTermsWithSearch() throws OntologySearchException {
+        Collection<OntologyTerm> terms = uberon.findTerm( "brain" );
+        Collection<OntologyTerm> matches = uberon.getChildren( terms, false, true );
+        assertEquals( 1870, matches.size() );
+    }
+
+    @Test
+    public void testFindTerm() throws OntologySearchException {
+        assertEquals( 123, uberon.findTerm( "brain" ).size() );
+        assertEquals( 128, uberon.findTerm( "brain", true ).size() );
     }
 }

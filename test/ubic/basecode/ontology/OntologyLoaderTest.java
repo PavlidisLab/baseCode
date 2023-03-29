@@ -14,18 +14,8 @@
  */
 package ubic.basecode.ontology;
 
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Test;
-
 import ubic.basecode.util.Configuration;
 
 /**

@@ -13,29 +13,77 @@ public interface OntologyService {
 
     /**
      * Initialize this ontology service.
+     *
+     * @param forceLoad     Force loading of ontology, even if it is already loaded
+     * @param forceIndexing If forceLoad is also true, indexing will be performed. If you know the index is up-to-date,
+     *                      there's no need to do it again. Normally indexing is only done if there is no index, or if
+     *                      the ontology has changed since last loaded.
      */
     void initialize( boolean forceLoad, boolean forceIndexing );
 
     /**
-     * Looks for any OntologyIndividuals that match the given search string.
+     * Looks for any individuals that match the given search string.
+     * <p>
+     * Obsolete terms are filtered out.
      */
-    Collection<OntologyIndividual> findIndividuals( String search ) throws OntologySearchException;
+    default Collection<OntologyIndividual> findIndividuals( String search ) throws OntologySearchException {
+        return findIndividuals( search, false );
+    }
 
     /**
-     * Looks for any OntologyIndividuals or ontologyTerms that match the given search string
+     * Looks for any individuals that match the given search string.
+     *
+     * @param search        search query
+     * @param keepObsoletes retain obsolete terms
+     */
+    Collection<OntologyIndividual> findIndividuals( String search, boolean keepObsoletes ) throws OntologySearchException;
+
+    /**
+     * Looks for any resources (terms or individuals) that match the given search string
+     * <p>
+     * Obsolete terms are filtered out.
      *
      * @return results, or an empty collection if the results are empty OR the ontology is not available to be
      * searched.
      */
-    Collection<OntologyResource> findResources( String searchString ) throws OntologySearchException;
+    default Collection<OntologyResource> findResources( String searchString ) throws OntologySearchException {
+        return findResources( searchString, false );
+    }
 
     /**
-     * Looks for any ontologyTerms that match the given search string. Obsolete terms are filtered out.
+     * Looks for any resources (terms or individuals) that match the given search string
+     *
+     * @param search        search query
+     * @param keepObsoletes retain obsolete terms
      */
-    Collection<OntologyTerm> findTerm( String search ) throws OntologySearchException;
+    Collection<OntologyResource> findResources( String search, boolean keepObsoletes ) throws OntologySearchException;
 
+    /**
+     * Looks for any terms that match the given search string.
+     * <p>
+     * Obsolete terms are filtered out.
+     */
+    default Collection<OntologyTerm> findTerm( String search ) throws OntologySearchException {
+        return findTerm( search, false );
+    }
+
+
+    /**
+     * Looks for any terms that match the given search string.
+     *
+     * @param search        search query
+     * @param keepObsoletes retain obsolete terms
+     */
+    Collection<OntologyTerm> findTerm( String search, boolean keepObsoletes ) throws OntologySearchException;
+
+    /**
+     * Find a term using an alternative ID.
+     */
     OntologyTerm findUsingAlternativeId( String alternativeId );
 
+    /**
+     * Obtain all the resource URIs in this ontology.
+     */
     Set<String> getAllURIs();
 
     /**
@@ -50,6 +98,19 @@ public interface OntologyService {
     OntologyTerm getTerm( String uri );
 
     Collection<OntologyIndividual> getTermIndividuals( String uri );
+
+    default Set<OntologyTerm> getParents( Collection<OntologyTerm> terms, boolean direct, boolean includeAdditionalProperties ) {
+        return getParents( terms, direct, includeAdditionalProperties, false );
+    }
+
+    Set<OntologyTerm> getParents( Collection<OntologyTerm> terms, boolean direct, boolean includeAdditionalProperties, boolean keepObsoletes );
+
+    default Set<OntologyTerm> getChildren( Collection<OntologyTerm> terms, boolean direct, boolean includeAdditionalProperties ) {
+        return getChildren( terms, direct, includeAdditionalProperties, false );
+    }
+
+    Set<OntologyTerm> getChildren( Collection<OntologyTerm> terms, boolean direct, boolean includeAdditionalProperties, boolean keepObsoletes );
+
 
     boolean isEnabled();
 

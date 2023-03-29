@@ -1,8 +1,8 @@
 /*
  * The basecode project
- * 
+ *
  * Copyright (c) 2007-2019 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,11 +22,15 @@ import java.io.Serializable;
 
 /**
  * @author pavlidis
- * 
  */
 public interface OntologyResource extends Serializable, Comparable<OntologyResource> {
 
-    public String getLabel();
+    String getLabel();
 
-    public String getUri();
+    String getUri();
+
+    /**
+     * Whether the resource is marked as obsolete.
+     */
+    boolean isObsolete();
 }

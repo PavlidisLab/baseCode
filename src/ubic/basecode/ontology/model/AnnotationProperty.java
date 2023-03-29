@@ -22,7 +22,7 @@ package ubic.basecode.ontology.model;
  * @author pavlidis
  * 
  */
-public interface AnnotationProperty {
+public interface AnnotationProperty extends OntologyResource {
 
     public String getContents();
 

@@ -1,8 +1,8 @@
 /*
  * The basecode project
- * 
+ *
  * Copyright (c) 2007-2019 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.ontology.model;
+package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
 import com.hp.hpl.jena.ontology.HasValueRestriction;
@@ -25,41 +25,49 @@ import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.Restriction;
 import com.hp.hpl.jena.ontology.SomeValuesFromRestriction;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import ubic.basecode.ontology.model.OntologyClassRestriction;
+import ubic.basecode.ontology.model.OntologyTerm;
+
+import java.util.Set;
 
 /**
  * @author pavlidis
- * 
  */
 public class OntologyClassRestrictionImpl extends OntologyRestrictionImpl implements OntologyClassRestriction {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
-    RDFNode value = null;
-    private OntologyTerm restrictedTo = null;
+    private final RDFNode value;
+    private final OntologyTerm restrictedTo;
+    private final Set<Restriction> additionalRestrictions;
 
-    public OntologyClassRestrictionImpl( Restriction term ) {
-        super( term );
+    public OntologyClassRestrictionImpl( Restriction term, Set<Restriction> additionalRestrictions ) {
+        super( term, additionalRestrictions );
+        this.additionalRestrictions = additionalRestrictions;
 
         if ( term.isAllValuesFromRestriction() ) {
             AllValuesFromRestriction a = term.asAllValuesFromRestriction();
             OntProperty onProp = a.getOnProperty();
             convertProperty( onProp );
-            restrictedTo = new OntologyTermImpl( ( OntClass ) a.getAllValuesFrom() );
+            value = null;
+            restrictedTo = new OntologyTermImpl( ( OntClass ) a.getAllValuesFrom(), additionalRestrictions );
         } else if ( term.isSomeValuesFromRestriction() ) {
             SomeValuesFromRestriction s = term.asSomeValuesFromRestriction();
             OntProperty onProp = s.getOnProperty();
             convertProperty( onProp );
-            restrictedTo = new OntologyTermImpl( ( OntClass ) s.getSomeValuesFrom() );
+            value = null;
+            restrictedTo = new OntologyTermImpl( ( OntClass ) s.getSomeValuesFrom(), additionalRestrictions );
         } else if ( term.isHasValueRestriction() ) {
             HasValueRestriction h = term.asHasValueRestriction();
             OntProperty onProp = h.getOnProperty();
             convertProperty( onProp );
             value = h.getHasValue();
-        } else if ( term.isMaxCardinalityRestriction() ) {
+            restrictedTo = null;
+        } else if ( term.isMaxCardinalityRestriction() || term.isMinCardinalityRestriction() ) {
             log.warn( "Can't handle cardinality restrictions" );
-        } else if ( term.isMinCardinalityRestriction() ) {
-            log.warn( "Can't handle cardinality restrictions" );
+            value = null;
+            restrictedTo = null;
         } else {
             throw new IllegalArgumentException( "Can't handle that type of restriction for: " + term );
         }
@@ -89,7 +97,7 @@ public class OntologyClassRestrictionImpl extends OntologyRestrictionImpl implem
     }
 
     private void convertProperty( OntProperty restrictionOnProperty ) {
-        this.restrictionOn = PropertyFactory.asProperty( restrictionOnProperty );
+        this.restrictionOn = PropertyFactory.asProperty( restrictionOnProperty, additionalRestrictions );
     }
 
 }
