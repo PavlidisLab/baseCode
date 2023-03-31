@@ -16,11 +16,15 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.ontology.model;
+package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.ontology.Restriction;
+import com.hp.hpl.jena.rdf.model.Property;
+
+import java.util.Set;
 
 /**
  * @author pavlidis
@@ -35,10 +39,10 @@ public class PropertyFactory {
      * @param source
      * @return new property or null if it could not be converted.
      */
-    public static ubic.basecode.ontology.model.OntologyProperty asProperty( OntProperty property ) {
+    public static ubic.basecode.ontology.model.OntologyProperty asProperty( OntProperty property, Set<Restriction> additionalRestrictions ) {
 
         if ( property.isObjectProperty() ) {
-            return new ObjectPropertyImpl( property.asObjectProperty() );
+            return new ObjectPropertyImpl( property.asObjectProperty(), additionalRestrictions );
         } else if ( property.isDatatypeProperty() ) {
             return new DatatypePropertyImpl( property.asDatatypeProperty() );
         } else {

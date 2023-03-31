@@ -1,8 +1,8 @@
 /*
  * The basecode project
- * 
+ *
  * Copyright (c) 2007-2019 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,36 +16,36 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.ontology.model;
+package ubic.basecode.ontology.jena;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.ontology.Restriction;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import ubic.basecode.ontology.model.OntologyTerm;
 
 /**
  * @author pavlidis
- * 
  */
 public class ObjectPropertyImpl extends OntologyPropertyImpl implements ubic.basecode.ontology.model.ObjectProperty {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
-    private com.hp.hpl.jena.ontology.ObjectProperty resource;
+    private final com.hp.hpl.jena.ontology.ObjectProperty resource;
+    private final Set<Restriction> additionalRestrictions;
 
-    public ObjectPropertyImpl( ObjectProperty resource ) {
+    public ObjectPropertyImpl( ObjectProperty resource, Set<Restriction> additionalRestrictions ) {
+        super( resource );
         this.isFunctional = resource.isFunctionalProperty();
         this.resource = resource;
-    }
-
-    @Override
-    public String getLabel() {
-        return this.toString();
+        this.additionalRestrictions = additionalRestrictions;
     }
 
     @Override
@@ -56,27 +56,11 @@ public class ObjectPropertyImpl extends OntologyPropertyImpl implements ubic.bas
             OntResource r = iterator.next();
             if ( r.isClass() ) {
                 OntClass class1 = r.asClass();
-                result.add( new OntologyTermImpl( class1 ) );
+                result.add( new OntologyTermImpl( class1, additionalRestrictions ) );
             } else {
                 log.warn( "Don't know how to deal with " + r );
             }
         }
         return result;
-    }
-
-    @Override
-    public String getUri() {
-        return resource.getURI();
-    }
-
-    @Override
-    public String toString() {
-        String label = resource.getLabel( "EN" );
-        if ( label == null ) label = resource.getLabel( null );
-        if ( label == null ) label = resource.getLocalName();
-        if ( label == null ) label = resource.getURI();
-        if ( label == null ) label = resource.toString();
-        if ( label == null ) label = "[no string version available!]";
-        return label;
     }
 }

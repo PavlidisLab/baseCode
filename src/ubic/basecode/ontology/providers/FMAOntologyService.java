@@ -19,6 +19,7 @@
 
 package ubic.basecode.ontology.providers;
 
+import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
 import ubic.basecode.util.Configuration;
 
 /**
@@ -31,11 +32,6 @@ public class FMAOntologyService extends AbstractOntologyMemoryBackedService {
 
     private static final String FMA_ONTOLOGY_URL = "url.fmaOntology";
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.gemma.ontology.AbstractOntologyService#getOntologyName()
-     */
     @Override
     protected String getOntologyName() {
         return "fmaOntology";
@@ -44,7 +40,6 @@ public class FMAOntologyService extends AbstractOntologyMemoryBackedService {
     @Override
     protected String getOntologyUrl() {
         return Configuration.getString( FMA_ONTOLOGY_URL );
-
     }
 
 }

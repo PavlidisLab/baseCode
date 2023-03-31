@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2007-2019 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,14 +16,19 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.ontology.model;
+package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.enhanced.EnhGraph;
 import com.hp.hpl.jena.enhanced.GraphPersonality;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.Restriction;
 import com.hp.hpl.jena.ontology.impl.OntClassImpl;
 import com.hp.hpl.jena.rdf.model.Resource;
+import ubic.basecode.ontology.model.OntologyIndividual;
+import ubic.basecode.ontology.model.OntologyTerm;
+
+import java.util.Set;
 
 /**
  * @author pavlidis
@@ -32,12 +37,13 @@ public class OntologyIndividualImpl extends AbstractOntologyResource implements 
 
     private static final long serialVersionUID = -6164561945940667693L;
 
-    private Individual ind;
-    private String uri;
+    private final Individual ind;
+    private final Set<Restriction> additionalRestrictions;
 
-    public OntologyIndividualImpl( Individual ind ) {
+    public OntologyIndividualImpl( Individual ind, Set<Restriction> additionalRestrictions ) {
+        super( ind );
         this.ind = ind;
-        this.uri = ind.getURI();
+        this.additionalRestrictions = additionalRestrictions;
     }
 
     @Override
@@ -52,25 +58,6 @@ public class OntologyIndividualImpl extends AbstractOntologyResource implements 
             throw new IllegalStateException( "sorry, can't handle that of instance" );
         }
 
-        return new OntologyTermImpl( cl );
-    }
-
-    @Override
-    public String getLabel() {
-        return this.toString();
-    }
-
-    @Override
-    public String getUri() {
-        return uri;
-    }
-
-    @Override
-    public String toString() {
-        String label = ind.getLabel( "en" ); // we specify English - some ontologies have other languages as well 
-        if ( label == null ) label = ind.getLabel( null );
-        if ( label == null ) label = ind.getLocalName();
-        if ( label == null ) label = ind.getURI();
-        return label;
+        return new OntologyTermImpl( cl, additionalRestrictions );
     }
 }

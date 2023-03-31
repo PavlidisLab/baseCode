@@ -1,8 +1,8 @@
 /*
  * The basecode project
- * 
+ *
  * Copyright (c) 2007-2019 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,19 +16,25 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.ontology.model;
+package ubic.basecode.ontology.jena;
+
+import com.hp.hpl.jena.ontology.OntProperty;
+import ubic.basecode.ontology.model.OntologyProperty;
 
 /**
  * @author pavlidis
- * 
  */
 public abstract class OntologyPropertyImpl extends AbstractOntologyResource implements OntologyProperty {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     protected boolean isFunctional;
+
+    protected OntologyPropertyImpl( OntProperty resource ) {
+        super( resource );
+    }
 
     @Override
     public boolean isFunctional() {

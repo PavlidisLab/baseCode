@@ -16,10 +16,14 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.ontology.model;
+package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.Restriction;
+import com.hp.hpl.jena.rdf.model.Property;
+import ubic.basecode.ontology.model.OntologyRestriction;
+
+import java.util.Set;
 
 /**
  * @author pavlidis
@@ -27,17 +31,17 @@ import com.hp.hpl.jena.ontology.Restriction;
  */
 public class RestrictionFactory {
 
-    public static OntologyRestriction asRestriction( Restriction restriction ) {
+    public static OntologyRestriction asRestriction( Restriction restriction, Set<Restriction> additionalRestrictions ) {
 
         OntProperty onProperty = restriction.getOnProperty();
 
         if ( onProperty.isDatatypeProperty() ) {
-            return new OntologyDatatypeRestrictionImpl( restriction );
+            return new OntologyDatatypeRestrictionImpl( restriction, additionalRestrictions );
         } else if ( onProperty.isObjectProperty() ) {
             if ( restriction.isCardinalityRestriction() ) {
-                return new OntologyCardinalityRestrictionImpl( restriction );
+                return new OntologyCardinalityRestrictionImpl( restriction, additionalRestrictions );
             }
-            return new OntologyClassRestrictionImpl( restriction );
+            return new OntologyClassRestrictionImpl( restriction, additionalRestrictions );
 
         } else {
             throw new UnsupportedOperationException( "Sorry, can't convert "

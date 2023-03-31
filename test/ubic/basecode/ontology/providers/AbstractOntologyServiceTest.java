@@ -28,7 +28,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import ubic.basecode.ontology.OntologyLoader;
+import ubic.basecode.ontology.jena.OntologyLoader;
 import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.util.Configuration;
 

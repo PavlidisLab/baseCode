@@ -12,10 +12,9 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package ubic.basecode.ontology.providers;
+package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.OntModel;
-import ubic.basecode.ontology.OntologyLoader;
 
 /**
  * This class has some stuff that's specific to in-memory ontologies. Unlike database backed ontologies we don't use a
@@ -29,5 +28,4 @@ public abstract class AbstractOntologyMemoryBackedService extends AbstractOntolo
     protected synchronized OntModel loadModel() {
         return OntologyLoader.loadMemoryModel( this.getOntologyUrl(), this.getOntologyName() );
     }
-
 }

@@ -17,12 +17,12 @@
  *
  */
 
-package ubic.basecode.ontology.providers;
+package ubic.basecode.ontology.jena;
 
-import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.*;
 import com.hp.hpl.jena.rdf.arp.ARPErrorNumbers;
 import com.hp.hpl.jena.rdf.arp.ParseException;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.JenaException;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -31,12 +31,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ubic.basecode.ontology.OntologyLoader;
-import ubic.basecode.ontology.model.*;
-import ubic.basecode.ontology.search.OntologyIndexer;
-import ubic.basecode.ontology.search.OntologySearch;
+import ubic.basecode.ontology.jena.search.OntologyIndexer;
+import ubic.basecode.ontology.jena.search.OntologySearch;
+import ubic.basecode.ontology.jena.search.SearchIndex;
+import ubic.basecode.ontology.jena.vocabulary.BFO;
+import ubic.basecode.ontology.jena.vocabulary.RO;
+import ubic.basecode.ontology.model.OntologyIndividual;
+import ubic.basecode.ontology.model.OntologyResource;
+import ubic.basecode.ontology.model.OntologyTerm;
+import ubic.basecode.ontology.providers.OntologyService;
 import ubic.basecode.ontology.search.OntologySearchException;
-import ubic.basecode.ontology.search.SearchIndex;
 import ubic.basecode.util.Configuration;
 
 import java.io.InputStream;
@@ -45,14 +49,30 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
+
+import static ubic.basecode.ontology.jena.JenaUtils.where;
 
 /**
+ * Base class for Jena-based ontology services.
+ *
  * @author kelsey
  */
 @SuppressWarnings("unused")
 public abstract class AbstractOntologyService implements OntologyService {
 
     protected static Logger log = LoggerFactory.getLogger( AbstractOntologyService.class );
+
+    /**
+     * Properties through which propagation is allowed for {@link #getParents(Collection, boolean, boolean)}}
+     */
+    private static final Set<Property> additionalProperties;
+
+    static {
+        additionalProperties = new HashSet<>();
+        additionalProperties.add( BFO.partOf );
+        additionalProperties.add( RO.properPartOf );
+    }
 
     /**
      * Lock used to prevent reads while the ontology is being initialized.
@@ -65,12 +85,14 @@ public abstract class AbstractOntologyService implements OntologyService {
     private final Map<String, OntologyTerm> termCache = new ConcurrentHashMap<>( 1024 );
     private SearchIndex index;
 
+    private Set<Restriction> additionalRestrictions;
+
     private boolean isInitialized = false;
 
     @Override
     public void initialize( boolean forceLoad, boolean forceIndexing ) {
         if ( !forceLoad && isInitialized ) {
-            log.warn( getOntologyName() + " is already loaded, and force=false, not restarting" );
+            log.warn( "{} is already loaded, and force=false, not restarting", this );
             return;
         }
 
@@ -78,21 +100,22 @@ public abstract class AbstractOntologyService implements OntologyService {
 
         // If loading ontologies is disabled in the configuration, return
         if ( !forceLoad && !loadOntology ) {
-            log.debug( "Loading " + getOntologyName() + " is disabled (force=" + forceLoad + ", " + "Configuration load." + getOntologyName() + "=" + loadOntology + ")" );
+            log.debug( "Loading {} is disabled (force=false, Configuration load.{}=false)",
+                    this, getOntologyName() );
             return;
         }
 
         // Detect configuration problems.
         if ( StringUtils.isBlank( this.getOntologyUrl() ) ) {
-            throw new IllegalStateException( "URL not defined, ontology cannot be loaded (" + this.getClass().getSimpleName() + ")" );
+            throw new IllegalStateException( "URL not defined for %s: ontology cannot be loaded. (" + this + ")" );
         }
 
         // This thread indexes ontology and creates local cache for uri->ontology terms mappings.
         if ( !forceIndexing ) {
-            log.info( getOntologyName() + " index will *not* be refreshed unless the ontology " + "has changed or the index is misssing" );
+            log.info( "{} index will *not* be refreshed unless the ontology has changed or the index is missing", this );
         }
 
-        log.info( "Loading ontology: " + getOntologyName() + " from " + getOntologyUrl() + " ..." );
+        log.info( "Loading ontology: {}...", this );
         StopWatch loadTime = StopWatch.createStarted();
 
         // use temporary variables so we can minimize the critical region for replacing the service's state
@@ -102,16 +125,21 @@ public abstract class AbstractOntologyService implements OntologyService {
         SearchIndex index;
 
         if ( Thread.currentThread().isInterrupted() ) {
-            log.warn( String.format( "The current thread is interrupted, initialization of %s will be stop.", getOntologyName() ) );
+            log.warn( "The current thread is interrupted, initialization of {} will be stop.", this );
             return;
         }
 
         model = loadModel(); // can take a while.
         assert model != null;
 
+        // compute additional restrictions
+        Set<Restriction> additionalRestrictions = model.listRestrictions()
+                .filterKeep( new RestrictionWithOnPropertyFilter( additionalProperties ) )
+                .toSet();
+
         //Checks if the current ontology has changed since it was last loaded.
-        boolean changed = OntologyLoader.hasChanged( getOntologyName() );
-        boolean indexExists = OntologyIndexer.getSubjectIndex( getOntologyName() ) != null;
+        boolean changed = OntologyLoader.hasChanged( getCacheName() );
+        boolean indexExists = OntologyIndexer.getSubjectIndex( getCacheName() ) != null;
         boolean forceReindexing = forceLoad && forceIndexing;
 
         /*
@@ -119,10 +147,10 @@ public abstract class AbstractOntologyService implements OntologyService {
          */
         boolean force = forceReindexing || changed || !indexExists;
 
-        index = OntologyIndexer.indexOntology( getOntologyName(), model, force );
+        index = OntologyIndexer.indexOntology( getCacheName(), model, force );
 
         if ( Thread.currentThread().isInterrupted() ) {
-            log.warn( String.format( "The current thread is interrupted, initialization of %s will be stop.", getOntologyName() ) );
+            log.warn( "The current thread is interrupted, initialization of {} will be stop.", this );
             return;
         }
 
@@ -130,6 +158,7 @@ public abstract class AbstractOntologyService implements OntologyService {
         try {
             lock.lock();
             this.model = model;
+            this.additionalRestrictions = additionalRestrictions;
             this.termCache.clear();
             this.index = index;
             this.isInitialized = true;
@@ -138,11 +167,11 @@ public abstract class AbstractOntologyService implements OntologyService {
         }
 
         // now that the terms have been replaced, we can clear old caches
-        OntologyLoader.deleteOldCache( getOntologyName() );
+        OntologyLoader.deleteOldCache( getCacheName() );
 
         loadTime.stop();
 
-        log.info( String.format( "Finished loading %s in %ss", getOntologyName(), String.format( "%.2f", loadTime.getTime() / 1000.0 ) ) );
+        log.info( "Finished loading {} in {}s", this, String.format( "%.2f", loadTime.getTime() / 1000.0 ) );
     }
 
     /**
@@ -154,58 +183,76 @@ public abstract class AbstractOntologyService implements OntologyService {
     }
 
     @Override
-    public Collection<OntologyIndividual> findIndividuals( String search ) throws OntologySearchException {
+    public Collection<OntologyIndividual> findIndividuals( String search, boolean keepObsoletes ) throws OntologySearchException {
         Lock lock = rwLock.readLock();
         try {
             lock.lock();
             if ( !isInitialized ) {
-                log.warn( String.format( "Ontology %s is not ready, no individuals will be returned.", getOntologyName() ) );
+                log.warn( "Ontology {} is not ready, no individuals will be returned.", this );
                 return Collections.emptySet();
             }
             if ( index == null ) {
-                log.warn( "attempt to search " + this.getOntologyName() + " when index is null" );
+                log.warn( "Attempt to search {} when index is null, no results will be returned.", this );
                 return Collections.emptySet();
             }
-            return OntologySearch.matchIndividuals( model, index, search );
+            return OntologySearch.matchIndividuals( model, index, search )
+                    .mapWith( i -> ( OntologyIndividual ) new OntologyIndividualImpl( i, additionalRestrictions ) )
+                    .filterKeep( where( ontologyTerm -> keepObsoletes || !ontologyTerm.isObsolete() ) )
+                    .toSet();
         } finally {
             lock.unlock();
         }
     }
 
     @Override
-    public Collection<OntologyResource> findResources( String searchString ) throws OntologySearchException {
+    public Collection<OntologyResource> findResources( String searchString, boolean keepObsoletes ) throws OntologySearchException {
         Lock lock = rwLock.readLock();
         try {
             lock.lock();
             if ( !isInitialized ) {
-                log.warn( String.format( "Ontology %s is not ready, no resources will be returned.", getOntologyName() ) );
+                log.warn( "Ontology {} is not ready, no resources will be returned.", this );
                 return Collections.emptySet();
             }
             if ( index == null ) {
-                log.warn( "attempt to search " + this.getOntologyName() + " when index is null" );
+                log.warn( "Attempt to search {} when index is null, no results will be returned.", this );
                 return Collections.emptySet();
             }
-            return OntologySearch.matchResources( model, index, searchString );
+            return OntologySearch.matchResources( model, index, searchString )
+                    .filterKeep( where( r -> r.canAs( OntClass.class ) || r.canAs( Individual.class ) ) )
+                    .mapWith( r -> {
+                        OntologyResource res;
+                        if ( r.canAs( OntClass.class ) ) {
+                            res = new OntologyTermImpl( r.as( OntClass.class ), additionalRestrictions );
+                        } else {
+                            res = new OntologyIndividualImpl( r.as( Individual.class ), additionalRestrictions );
+                        }
+                        return res;
+                    } )
+                    .filterKeep( where( ontologyTerm -> keepObsoletes || !ontologyTerm.isObsolete() ) )
+                    .toSet();
         } finally {
             lock.unlock();
         }
     }
 
     @Override
-    public Collection<OntologyTerm> findTerm( String search ) throws OntologySearchException {
-        if ( log.isDebugEnabled() ) log.debug( "Searching " + getOntologyName() + " for '" + search + "'" );
+    public Collection<OntologyTerm> findTerm( String search, boolean keepObsoletes ) throws OntologySearchException {
+        if ( log.isDebugEnabled() ) log.debug( "Searching " + this + " for '" + search + "'" );
         Lock lock = rwLock.readLock();
         try {
             lock.lock();
             if ( !isInitialized ) {
-                log.warn( String.format( "Ontology %s is not ready, no terms will be returned.", getOntologyName() ) );
+                log.warn( "Ontology {} is not ready, no terms will be returned.", this );
                 return Collections.emptySet();
             }
             if ( index == null ) {
-                log.warn( "attempt to search " + this.getOntologyName() + " when index is null" );
+                log.warn( "Attempt to search {} when index is null, no results will be returned.", this );
                 return Collections.emptySet();
             }
-            return OntologySearch.matchClasses( model, index, search );
+            return OntologySearch.matchClasses( model, index, search )
+                    .mapWith( r -> ( OntologyTerm ) new OntologyTermImpl( r, additionalRestrictions ) )
+                    .filterKeep( where( ontologyTerm -> keepObsoletes || !ontologyTerm.isObsolete() ) )
+                    .toSet();
         } finally {
             lock.unlock();
         }
@@ -217,7 +264,7 @@ public abstract class AbstractOntologyService implements OntologyService {
         try {
             lock.lock();
             if ( !isInitialized ) {
-                log.warn( String.format( "Ontology %s is not ready, null will be returned for alternative ID match.", getOntologyName() ) );
+                log.warn( "Ontology {} is not ready, null will be returned for alternative ID match.", this );
                 return null;
             }
             if ( alternativeIDs == null ) {
@@ -237,18 +284,12 @@ public abstract class AbstractOntologyService implements OntologyService {
         try {
             lock.lock();
             if ( !isInitialized ) {
-                log.warn( String.format( "Ontology %s is not ready, no term  URIs will be returned.", getOntologyName() ) );
+                log.warn( "Ontology {} is not ready, no term  URIs will be returned.", this );
                 return Collections.emptySet();
             }
             Set<String> allUris = new HashSet<>();
-            ExtendedIterator<OntClass> iterator = model.listClasses();
-            while ( iterator.hasNext() ) {
-                allUris.add( iterator.next().getURI() );
-            }
-            ExtendedIterator<Individual> it2 = model.listIndividuals();
-            while ( it2.hasNext() ) {
-                allUris.add( it2.next().getURI() );
-            }
+            allUris.addAll( model.listClasses().mapWith( OntClass::getURI ).toSet() );
+            allUris.addAll( model.listIndividuals().mapWith( Individual::getURI ).toSet() );
             return allUris;
         } finally {
             lock.unlock();
@@ -273,9 +314,9 @@ public abstract class AbstractOntologyService implements OntologyService {
                 // use the cached term
                 res = getTermInternal( uri );
             } else if ( resource instanceof Individual ) {
-                res = new OntologyIndividualImpl( ( Individual ) resource );
+                res = new OntologyIndividualImpl( ( Individual ) resource, additionalRestrictions );
             } else if ( resource instanceof OntProperty ) {
-                res = PropertyFactory.asProperty( ( ObjectProperty ) resource );
+                res = PropertyFactory.asProperty( ( ObjectProperty ) resource, additionalRestrictions );
             } else {
                 res = null;
             }
@@ -311,10 +352,46 @@ public abstract class AbstractOntologyService implements OntologyService {
                 /*
                  * Either the ontology hasn't been loaded, or the id was not valid.
                  */
-                log.warn( "No term for URI=" + uri + " in " + this.getOntologyName() + "; make sure ontology is loaded and uri is valid" );
-                return new HashSet<>();
+                log.warn( "No term for URI={} in {}; make sure ontology is loaded and uri is valid", uri, this );
+                return Collections.emptySet();
             }
             return term.getIndividuals( true );
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public Set<OntologyTerm> getParents( Collection<OntologyTerm> terms, boolean direct, boolean includeAdditionalProperties, boolean keepObsoletes ) {
+        Lock lock = rwLock.readLock();
+        try {
+            lock.lock();
+            if ( !isInitialized ) {
+                return Collections.emptySet();
+            }
+            return JenaUtils.getParents( model, getOntClassesFromTerms( terms ), direct, includeAdditionalProperties ? additionalRestrictions : null )
+                    .stream()
+                    .map( o -> new OntologyTermImpl( o, additionalRestrictions ) )
+                    .filter( o -> keepObsoletes || !o.isObsolete() )
+                    .collect( Collectors.toSet() );
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public Set<OntologyTerm> getChildren( Collection<OntologyTerm> terms, boolean direct, boolean includeAdditionalProperties, boolean keepObsoletes ) {
+        Lock lock = rwLock.readLock();
+        try {
+            lock.lock();
+            if ( !isInitialized ) {
+                return Collections.emptySet();
+            }
+            return JenaUtils.getChildren( model, getOntClassesFromTerms( terms ), direct, includeAdditionalProperties ? additionalRestrictions : null )
+                    .stream()
+                    .map( o -> new OntologyTermImpl( o, additionalRestrictions ) )
+                    .filter( o -> keepObsoletes || !o.isObsolete() )
+                    .collect( Collectors.toSet() );
         } finally {
             lock.unlock();
         }
@@ -348,7 +425,7 @@ public abstract class AbstractOntologyService implements OntologyService {
     @Override
     public synchronized void startInitializationThread( boolean forceLoad, boolean forceIndexing ) {
         if ( initializationThread != null && initializationThread.isAlive() ) {
-            log.warn( String.format( " Initialization thread for %s is currently running, not restarting.", getOntologyName() ) );
+            log.warn( " Initialization thread for {} is currently running, not restarting.", this );
             return;
         }
         // create and start the initialization thread
@@ -364,7 +441,7 @@ public abstract class AbstractOntologyService implements OntologyService {
                 this.isInitialized = false;
             }
         }, getOntologyName() + "_load_thread_" + RandomStringUtils.randomAlphanumeric( 5 ) );
-        // To prevent VM from waiting on this thread to shutdown (if shutting down).
+        // To prevent VM from waiting on this thread to shut down (if shutting down).
         initializationThread.setDaemon( true );
         initializationThread.start();
     }
@@ -415,16 +492,29 @@ public abstract class AbstractOntologyService implements OntologyService {
      */
     protected abstract OntModel loadModel();
 
+    protected String getCacheName() {
+        return getOntologyName();
+    }
+
     @Override
     public void index( boolean force ) {
-        Lock lock = rwLock.writeLock();
+        SearchIndex index;
+        Lock lock = rwLock.readLock();
         try {
             lock.lock();
             if ( !isInitialized ) {
-                log.warn( String.format( "Ontology %s is not initialized, cannot index it.", getOntologyName() ) );
+                log.warn( "Ontology {} is not initialized, cannot index it.", this );
                 return;
             }
-            index = OntologyIndexer.indexOntology( getOntologyName(), model, force );
+            index = OntologyIndexer.indexOntology( getCacheName(), model, force );
+        } finally {
+            lock.unlock();
+        }
+        // now we replace the index
+        lock = rwLock.writeLock();
+        try {
+            lock.lock();
+            this.index = index;
         } finally {
             lock.unlock();
         }
@@ -450,7 +540,7 @@ public abstract class AbstractOntologyService implements OntologyService {
         ExtendedIterator<OntClass> iterator = model.listClasses();
         while ( iterator.hasNext() ) {
             OntClass ind = iterator.next();
-            OntologyTerm ontologyTerm = new OntologyTermImpl( ind );
+            OntologyTerm ontologyTerm = new OntologyTermImpl( ind, additionalRestrictions );
             // lets find the baseUri, to change to valueUri
             String baseOntologyUri = ontologyTerm.getUri().substring( 0, ontologyTerm.getUri().lastIndexOf( "/" ) + 1 );
             for ( String alternativeId : ontologyTerm.getAlternativeIds() ) {
@@ -470,7 +560,7 @@ public abstract class AbstractOntologyService implements OntologyService {
             if ( ontCls == null || ontCls.getURI() == null ) {
                 return null;
             }
-            return new OntologyTermImpl( ontCls );
+            return new OntologyTermImpl( ontCls, additionalRestrictions );
         } );
     }
 
@@ -482,7 +572,7 @@ public abstract class AbstractOntologyService implements OntologyService {
             this.isInitialized = false;
 
             if ( initializationThread != null && initializationThread.isAlive() ) {
-                log.warn( this.getOntologyName() + " initialization is already running, trying to cancel ..." );
+                log.warn( "{} initialization is already running, trying to cancel ...", this );
                 initializationThread.interrupt();
                 // wait for the thread to die.
                 int maxWait = 10;
@@ -493,21 +583,24 @@ public abstract class AbstractOntologyService implements OntologyService {
                         log.warn( "Waiting for auto-initialization to stop so manual initialization can begin ..." );
                     } catch ( InterruptedException e ) {
                         Thread.currentThread().interrupt();
-                        log.warn( String.format( "Got interrupted while waiting for the initialization thread of %s to finish.", getOntologyName() ) );
+                        log.warn( "Got interrupted while waiting for the initialization thread of {} to finish.", this );
                         return;
                     }
                     ++wait;
                     if ( wait >= maxWait && !initializationThread.isAlive() ) {
-                        throw new RuntimeException( String.format( "Got tired of waiting for %s's initialization thread.", getOntologyName() ) );
+                        throw new RuntimeException( String.format( "Got tired of waiting for %s's initialization thread.", this ) );
                     }
                 }
             }
 
             this.model = OntologyLoader.loadMemoryModel( is, this.getOntologyUrl() );
+            this.additionalRestrictions = model.listRestrictions()
+                    .filterKeep( new RestrictionWithOnPropertyFilter( additionalProperties ) )
+                    .toSet();
             this.termCache.clear();
-            this.index = OntologyIndexer.getSubjectIndex( getOntologyName() );
+            this.index = OntologyIndexer.getSubjectIndex( getCacheName() );
             if ( index == null || forceIndex ) {
-                this.index = OntologyIndexer.indexOntology( getOntologyName(), model, true /* force */ );
+                this.index = OntologyIndexer.indexOntology( getCacheName(), model, true /* force */ );
             }
 
             isInitialized = true;
@@ -515,6 +608,20 @@ public abstract class AbstractOntologyService implements OntologyService {
             lock.unlock();
         }
 
-        log.info( this.getClass().getSimpleName() + " ready" );
+        log.info( "Ontology {} is ready!", this );
+    }
+
+    @Override
+    public String toString() {
+        return String.format( "%s [%s]", getOntologyName(), getOntologyUrl() );
+    }
+
+    private Set<OntClass> getOntClassesFromTerms( Collection<OntologyTerm> terms ) {
+        return terms.stream()
+                .map( OntologyTerm::getUri )
+                .filter( Objects::nonNull )
+                .map( model::getOntClass )
+                .filter( Objects::nonNull )
+                .collect( Collectors.toSet() );
     }
 }
