@@ -25,8 +25,14 @@ import java.io.Serializable;
  */
 public interface OntologyResource extends Serializable, Comparable<OntologyResource> {
 
+    /**
+     * A label, if known, otherwise null.
+     */
     String getLabel();
 
+    /**
+     * A URI if known, otherwise null.
+     */
     String getUri();
 
     /**

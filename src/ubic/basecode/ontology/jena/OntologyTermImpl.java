@@ -194,16 +194,8 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
      */
     @Override
     public String getTerm() {
-        String res;
-        String label = getLabel();
-        String localName = getLocalName();
-        if ( label != null ) {
-            res = label;
-        } else if ( localName != null ) {
-            res = localName;
-        } else if ( this.getUri() != null ) {
-            res = this.getUri();
-        } else {
+        String res = getLabel();
+        if ( res == null ) {
             res = ontResource.toString();
         }
         return res;

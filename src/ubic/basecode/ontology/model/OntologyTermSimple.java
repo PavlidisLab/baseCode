@@ -74,12 +74,12 @@ public class OntologyTermSimple implements OntologyTerm {
 
     @Override
     public String getLabel() {
-        return this.getTerm();
+        return term;
     }
 
     @Override
     public String getLocalName() {
-        return this.getTerm();
+        return term;
     }
 
     @Override
