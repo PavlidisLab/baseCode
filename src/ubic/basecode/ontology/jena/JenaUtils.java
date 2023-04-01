@@ -18,17 +18,16 @@ public class JenaUtils {
         if ( ontClasses.isEmpty() ) {
             return Collections.emptySet();
         }
-        Collection<OntClass> result = new HashSet<>();
         Iterator<OntClass> it = ontClasses.iterator();
         ExtendedIterator<OntClass> iterator = it.next()
                 .inModel( model )
                 .as( OntClass.class )
-                .listSuperClasses( direct )
-                .filterDrop( new PredicateFilter<>( o -> o.equals( model.getProfile().THING() ) ) );
+                .listSuperClasses( direct );
         while ( it.hasNext() ) {
-            iterator = iterator.andThen( it.next().inModel( model ).as( OntClass.class ).listSuperClasses( true ) );
+            iterator = iterator.andThen( it.next().inModel( model ).as( OntClass.class ).listSuperClasses( direct ) );
         }
 
+        Collection<OntClass> result = new HashSet<>();
         while ( iterator.hasNext() ) {
             OntClass c = iterator.next();
 
@@ -47,6 +46,10 @@ public class JenaUtils {
 
             // bnode
             if ( c.getURI() == null )
+                continue;
+
+            // owl:Thing
+            if ( c.equals( model.getProfile().THING() ) )
                 continue;
 
             result.add( c );

@@ -191,7 +191,7 @@ public class OntologyTermTest {
         OntologyTerm brain = uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0000955" );
         OntologyTerm liver = uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0002107" );
         Collection<OntologyTerm> children = uberon.getParents( Arrays.asList( brain, liver ), false, true );
-        assertEquals( 22, children.size() );
+        assertEquals( 30, children.size() );
         assertFalse( children.contains( uberon.getTerm( OWL2.Nothing.getURI() ) ) );
     }
 
