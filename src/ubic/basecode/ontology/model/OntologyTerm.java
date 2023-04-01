@@ -80,6 +80,10 @@ public interface OntologyTerm extends OntologyResource {
 
     Collection<OntologyRestriction> getRestrictions();
 
+    /**
+     * @deprecated use {@link #getLabel()} instead.
+     */
+    @Deprecated
     String getTerm();
 
     boolean isRoot();
