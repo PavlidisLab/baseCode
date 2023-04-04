@@ -45,7 +45,6 @@ import ubic.basecode.util.Configuration;
 
 import java.io.InputStream;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -82,12 +81,13 @@ public abstract class AbstractOntologyService implements OntologyService {
     /* internal state protected by rwLock */
     private OntModel model;
     private Map<String, String> alternativeIDs;
-    private final Map<String, OntologyTerm> termCache = new ConcurrentHashMap<>( 1024 );
+
     private SearchIndex index;
 
     private Set<Restriction> additionalRestrictions;
 
     private boolean isInitialized = false;
+
 
     @Override
     public void initialize( boolean forceLoad, boolean forceIndexing ) {
@@ -159,7 +159,6 @@ public abstract class AbstractOntologyService implements OntologyService {
             lock.lock();
             this.model = model;
             this.additionalRestrictions = additionalRestrictions;
-            this.termCache.clear();
             this.index = index;
             this.isInitialized = true;
         } finally {
@@ -312,7 +311,7 @@ public abstract class AbstractOntologyService implements OntologyService {
             }
             if ( resource instanceof OntClass ) {
                 // use the cached term
-                res = getTermInternal( uri );
+                res = new OntologyTermImpl( ( OntClass ) resource, additionalRestrictions );
             } else if ( resource instanceof Individual ) {
                 res = new OntologyIndividualImpl( ( Individual ) resource, additionalRestrictions );
             } else if ( resource instanceof OntProperty ) {
@@ -333,7 +332,12 @@ public abstract class AbstractOntologyService implements OntologyService {
         try {
             lock.lock();
             if ( !isInitialized ) return null;
-            return getTermInternal( uri );
+            OntClass ontCls = model.getOntClass( uri );
+            // null or bnode
+            if ( ontCls == null || ontCls.getURI() == null ) {
+                return null;
+            }
+            return new OntologyTermImpl( ontCls, additionalRestrictions );
         } finally {
             lock.unlock();
         }
@@ -347,7 +351,7 @@ public abstract class AbstractOntologyService implements OntologyService {
             if ( !isInitialized ) {
                 return Collections.emptySet();
             }
-            OntologyTerm term = getTermInternal( uri );
+            OntologyTerm term = getTerm( uri );
             if ( term == null ) {
                 /*
                  * Either the ontology hasn't been loaded, or the id was not valid.
@@ -553,17 +557,6 @@ public abstract class AbstractOntologyService implements OntologyService {
         }
     }
 
-    private OntologyTerm getTermInternal( String uri ) {
-        return termCache.computeIfAbsent( uri, u -> {
-            OntClass ontCls = model.getOntClass( u );
-            // null or bnode
-            if ( ontCls == null || ontCls.getURI() == null ) {
-                return null;
-            }
-            return new OntologyTermImpl( ontCls, additionalRestrictions );
-        } );
-    }
-
     @Override
     public void loadTermsInNameSpace( InputStream is, boolean forceIndex ) {
         Lock lock = rwLock.writeLock();
@@ -597,7 +590,6 @@ public abstract class AbstractOntologyService implements OntologyService {
             this.additionalRestrictions = model.listRestrictions()
                     .filterKeep( new RestrictionWithOnPropertyFilter( additionalProperties ) )
                     .toSet();
-            this.termCache.clear();
             this.index = OntologyIndexer.getSubjectIndex( getCacheName() );
             if ( index == null || forceIndex ) {
                 this.index = OntologyIndexer.indexOntology( getCacheName(), model, true /* force */ );
