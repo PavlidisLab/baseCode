@@ -22,6 +22,13 @@ public interface OntologyService {
     void initialize( boolean forceLoad, boolean forceIndexing );
 
     /**
+     * Initialize this ontology service from a stream.
+     * <p>
+     * Note that when this method of initialization is used, the ontology cache is not created on-disk.
+     */
+    void initialize( InputStream stream, boolean forceIndexing );
+
+    /**
      * Looks for any individuals that match the given search string.
      * <p>
      * Obsolete terms are filtered out.
@@ -97,21 +104,55 @@ public interface OntologyService {
      */
     OntologyTerm getTerm( String uri );
 
+    /**
+     * Obtain all the individuals for a given term URI.
+     */
     Collection<OntologyIndividual> getTermIndividuals( String uri );
 
+    /**
+     * Obtain all the parents of a given set of terms, excluding obsolete terms.
+     *
+     * @see #getParents(Collection, boolean, boolean, boolean)
+     */
     default Set<OntologyTerm> getParents( Collection<OntologyTerm> terms, boolean direct, boolean includeAdditionalProperties ) {
         return getParents( terms, direct, includeAdditionalProperties, false );
     }
 
+    /**
+     * Obtain all the parents of a given set of terms.
+     *
+     * @param terms                       set of terms whose parents are retrieved
+     * @param direct                      only retain direct parents
+     * @param includeAdditionalProperties also include parents matched via additional properties
+     * @param keepObsoletes               retain obsolete terms
+     * @return a set of parent terms
+     */
     Set<OntologyTerm> getParents( Collection<OntologyTerm> terms, boolean direct, boolean includeAdditionalProperties, boolean keepObsoletes );
 
+    /**
+     * Obtain all the children of a given set of terms, excluding obsolete terms.
+     *
+     * @see #getChildren(Collection, boolean, boolean, boolean)
+     */
     default Set<OntologyTerm> getChildren( Collection<OntologyTerm> terms, boolean direct, boolean includeAdditionalProperties ) {
         return getChildren( terms, direct, includeAdditionalProperties, false );
     }
 
+    /**
+     * Obtain all the children of a given set of terms.
+     *
+     * @param terms                       set of terms whose children are retrieved
+     * @param direct                      only retain direct children
+     * @param includeAdditionalProperties also include children matched via additional properties
+     * @param keepObsoletes               retain obsolete terms
+     * @return a set of child terms
+     */
     Set<OntologyTerm> getChildren( Collection<OntologyTerm> terms, boolean direct, boolean includeAdditionalProperties, boolean keepObsoletes );
 
 
+    /**
+     * Check if this ontology is enabled.
+     */
     boolean isEnabled();
 
     /**
@@ -133,10 +174,19 @@ public interface OntologyService {
      */
     void startInitializationThread( boolean forceLoad, boolean forceIndexing );
 
+    /**
+     * Check if the initialization thread is alive.
+     */
     boolean isInitializationThreadAlive();
 
+    /**
+     * Check if the initialization thread is cancelled.
+     */
     boolean isInitializationThreadCancelled();
 
+    /**
+     * Cancel a running initialization thread.
+     */
     void cancelInitializationThread();
 
     /**
@@ -147,6 +197,7 @@ public interface OntologyService {
     /**
      * Index the ontology for performing full-text searches.
      *
+     * @param force if true, perform indexing even if an index already exists
      * @see #findIndividuals(String)
      * @see #findTerm(String)
      * @see #findResources(String)
@@ -159,6 +210,9 @@ public interface OntologyService {
      *
      * @param is         input stream from which the ontology model is loaded
      * @param forceIndex initialize the index. Otherwise it will only be initialized if it doesn't exist.
+     * @deprecated use {@link #initialize(InputStream, boolean)} instead and possibly {@link #cancelInitializationThread()}
+     * prior to get any running initialization thread out of the way
      */
+    @Deprecated
     void loadTermsInNameSpace( InputStream is, boolean forceIndex );
 }

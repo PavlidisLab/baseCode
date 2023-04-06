@@ -52,7 +52,7 @@ public class OntologyTermTest {
         };
         try ( InputStream is = new GZIPInputStream( requireNonNull( OntologyTermTest.class.getResourceAsStream( "/data/uberon.owl.gz" ) ) ) ) {
             // FIXME: indexing Uberon is very slow, so we disable it so if the tests are breaking, try force-indexing
-            uberon.loadTermsInNameSpace( is, false );
+            uberon.initialize( is, false );
         }
     }
 
@@ -61,7 +61,7 @@ public class OntologyTermTest {
         // DOID:4159
         DiseaseOntologyService s = new DiseaseOntologyService();
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/doid.short.owl.gz" ) ) );
-        s.loadTermsInNameSpace( is, false );
+        s.initialize( is, false );
 
         OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/DOID_4159" );
 
@@ -105,7 +105,7 @@ public class OntologyTermTest {
         NIFSTDOntologyService s = new NIFSTDOntologyService();
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream(
                 "/data/NIF-GrossAnatomy.small.owl.xml.gz" ) ) );
-        s.loadTermsInNameSpace( is, false );
+        s.initialize( is, false );
 
         OntologyTerm t = s.getTerm( "http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#birnlex_734" );
         assertNotNull( t );
@@ -138,7 +138,7 @@ public class OntologyTermTest {
         DiseaseOntologyService s = new DiseaseOntologyService();
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/doid.short.owl.gz" ) ) );
 
-        s.loadTermsInNameSpace( is, false );
+        s.initialize( is, false );
 
         /*
          * Note that this test uses the 'new style' URIs for DO, but at this writing we actually use purl.org not
@@ -202,7 +202,7 @@ public class OntologyTermTest {
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream(
                 "/data/NIF-GrossAnatomy.small.owl.xml.gz" ) ) );
         assertNotNull( is );
-        s.loadTermsInNameSpace( is, false );
+        s.initialize( is, false );
 
         // Mammillary princeps fasciculus: part of white matter, hypothalamus, etc.
         OntologyTerm t = s
@@ -245,7 +245,7 @@ public class OntologyTermTest {
     public void testRejectNonEnglish() throws Exception {
         CellLineOntologyService s = new CellLineOntologyService();
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/clo_merged.sample.owl.xml.gz" ) ) );
-        s.loadTermsInNameSpace( is, false );
+        s.initialize( is, false );
 
         OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/CLO_0000292" );
         assertEquals( "immortal larynx-derived cell line cell", t.getLabel() );

@@ -88,9 +88,15 @@ public abstract class AbstractOntologyService implements OntologyService {
 
     private boolean isInitialized = false;
 
-
-    @Override
     public void initialize( boolean forceLoad, boolean forceIndexing ) {
+        initialize( null, forceLoad, forceIndexing );
+    }
+
+    public void initialize( InputStream stream, boolean forceIndexing ) {
+        initialize( stream, true, forceIndexing );
+    }
+
+    private void initialize( InputStream stream, boolean forceLoad, boolean forceIndexing ) {
         if ( !forceLoad && isInitialized ) {
             log.warn( "{} is already loaded, and force=false, not restarting", this );
             return;
@@ -118,19 +124,20 @@ public abstract class AbstractOntologyService implements OntologyService {
         log.info( "Loading ontology: {}...", this );
         StopWatch loadTime = StopWatch.createStarted();
 
-        // use temporary variables so we can minimize the critical region for replacing the service's state
-        Map<String, OntologyTerm> terms = new HashMap<>();
-        Map<String, OntologyIndividual> individuals = new HashMap<>();
+        // use temporary variables, so that we can minimize the critical region for replacing the service's state
         OntModel model;
         SearchIndex index;
 
-        if ( Thread.currentThread().isInterrupted() ) {
-            log.warn( "The current thread is interrupted, initialization of {} will be stop.", this );
+        // loading the model from disk or URL is lengthy
+        if ( checkIfInterrupted() )
             return;
-        }
 
-        model = loadModel(); // can take a while.
+        model = stream != null ? loadModelFromStream( stream ) : loadModel(); // can take a while.
         assert model != null;
+
+        // retrieving restrictions is lengthy
+        if ( checkIfInterrupted() )
+            return;
 
         // compute additional restrictions
         Set<Restriction> additionalRestrictions = model.listRestrictions()
@@ -147,12 +154,15 @@ public abstract class AbstractOntologyService implements OntologyService {
          */
         boolean force = forceReindexing || changed || !indexExists;
 
+        // indexing is lengthy, don't bother if we're interrupted
+        if ( checkIfInterrupted() )
+            return;
+
         index = OntologyIndexer.indexOntology( getCacheName(), model, force );
 
-        if ( Thread.currentThread().isInterrupted() ) {
-            log.warn( "The current thread is interrupted, initialization of {} will be stop.", this );
+        // if interrupted, we don't need to replace the model and clear the *old* cache
+        if ( checkIfInterrupted() )
             return;
-        }
 
         Lock lock = rwLock.writeLock();
         try {
@@ -161,16 +171,23 @@ public abstract class AbstractOntologyService implements OntologyService {
             this.additionalRestrictions = additionalRestrictions;
             this.index = index;
             this.isInitialized = true;
+            // now that the terms have been replaced, we can clear old caches
+            OntologyLoader.deleteOldCache( getCacheName() );
         } finally {
             lock.unlock();
         }
 
-        // now that the terms have been replaced, we can clear old caches
-        OntologyLoader.deleteOldCache( getCacheName() );
-
         loadTime.stop();
 
         log.info( "Finished loading {} in {}s", this, String.format( "%.2f", loadTime.getTime() / 1000.0 ) );
+    }
+
+    private boolean checkIfInterrupted() {
+        if ( Thread.interrupted() ) {
+            log.warn( "The current thread is interrupted, initialization of {} will be stop.", this );
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -496,6 +513,14 @@ public abstract class AbstractOntologyService implements OntologyService {
      */
     protected abstract OntModel loadModel();
 
+
+    /**
+     * Load a model from a given input stream.
+     */
+    protected OntModel loadModelFromStream( InputStream is ) {
+        return OntologyLoader.loadMemoryModel( is, this.getOntologyUrl() );
+    }
+
     protected String getCacheName() {
         return getOntologyName();
     }
@@ -559,48 +584,29 @@ public abstract class AbstractOntologyService implements OntologyService {
 
     @Override
     public void loadTermsInNameSpace( InputStream is, boolean forceIndex ) {
-        Lock lock = rwLock.writeLock();
-        try {
-            lock.lock();
-            this.isInitialized = false;
-
-            if ( initializationThread != null && initializationThread.isAlive() ) {
-                log.warn( "{} initialization is already running, trying to cancel ...", this );
-                initializationThread.interrupt();
-                // wait for the thread to die.
-                int maxWait = 10;
-                int wait = 0;
-                while ( initializationThread.isAlive() ) {
-                    try {
-                        initializationThread.join( 5000 );
-                        log.warn( "Waiting for auto-initialization to stop so manual initialization can begin ..." );
-                    } catch ( InterruptedException e ) {
-                        Thread.currentThread().interrupt();
-                        log.warn( "Got interrupted while waiting for the initialization thread of {} to finish.", this );
-                        return;
-                    }
-                    ++wait;
-                    if ( wait >= maxWait && !initializationThread.isAlive() ) {
-                        throw new RuntimeException( String.format( "Got tired of waiting for %s's initialization thread.", this ) );
-                    }
+        // wait for the initialization thread to finish
+        if ( initializationThread != null && initializationThread.isAlive() ) {
+            log.warn( "{} initialization is already running, trying to cancel ...", this );
+            initializationThread.interrupt();
+            // wait for the thread to die.
+            int maxWait = 10;
+            int wait = 0;
+            while ( initializationThread.isAlive() ) {
+                try {
+                    initializationThread.join( 5000 );
+                    log.warn( "Waiting for auto-initialization to stop so manual initialization can begin ..." );
+                } catch ( InterruptedException e ) {
+                    Thread.currentThread().interrupt();
+                    log.warn( "Got interrupted while waiting for the initialization thread of {} to finish.", this );
+                    return;
+                }
+                ++wait;
+                if ( wait >= maxWait && !initializationThread.isAlive() ) {
+                    throw new RuntimeException( String.format( "Got tired of waiting for %s's initialization thread.", this ) );
                 }
             }
-
-            this.model = OntologyLoader.loadMemoryModel( is, this.getOntologyUrl() );
-            this.additionalRestrictions = model.listRestrictions()
-                    .filterKeep( new RestrictionWithOnPropertyFilter( additionalProperties ) )
-                    .toSet();
-            this.index = OntologyIndexer.getSubjectIndex( getCacheName() );
-            if ( index == null || forceIndex ) {
-                this.index = OntologyIndexer.indexOntology( getCacheName(), model, true /* force */ );
-            }
-
-            isInitialized = true;
-        } finally {
-            lock.unlock();
         }
-
-        log.info( "Ontology {} is ready!", this );
+        initialize( is, forceIndex );
     }
 
     @Override
