@@ -35,6 +35,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 /**
@@ -44,7 +45,7 @@ import java.nio.file.StandardCopyOption;
  */
 public class OntologyLoader {
 
-    private static Logger log = LoggerFactory.getLogger( OntologyLoader.class );
+    private static final Logger log = LoggerFactory.getLogger( OntologyLoader.class );
     private static final int MAX_CONNECTION_TRIES = 3;
     private static final String OLD_CACHE_SUFFIX = ".old";
     private static final String TMP_CACHE_SUFFIX = ".tmp";
@@ -126,26 +127,21 @@ public class OntologyLoader {
         }
 
         if ( urlc != null ) {
-            try ( InputStream in = urlc.getInputStream(); ) {
+            try ( InputStream in = urlc.getInputStream() ) {
                 Reader reader;
                 if ( cacheName != null ) {
                     // write tmp to disk
                     File tempFile = getTmpDiskCachePath( cacheName );
-                    if ( tempFile == null ) {
-                        reader = new InputStreamReader( in );
-                    } else {
-                        tempFile.getParentFile().mkdirs();
-                        Files.copy( in, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
-                        reader = new FileReader( tempFile );
-                    }
+                    tempFile.getParentFile().mkdirs();
+                    Files.copy( in, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
+                    reader = new FileReader( tempFile );
 
                 } else {
                     // Skip the cache
                     reader = new InputStreamReader( in );
                 }
 
-                assert reader != null;
-                try ( BufferedReader buf = new BufferedReader( reader ); ) {
+                try ( BufferedReader buf = new BufferedReader( reader ) ) {
                     model.read( buf, url );
                 }
 
@@ -164,13 +160,8 @@ public class OntologyLoader {
             if ( model.isEmpty() ) {
                 // Attempt to load from disk cache
 
-                if ( f == null ) {
-                    throw new RuntimeException(
-                            "Ontology cache directory required to load from disk: ontology.cache.dir" );
-                }
-
                 if ( f.exists() && !f.isDirectory() ) {
-                    try ( BufferedReader buf = new BufferedReader( new FileReader( f ) ); ) {
+                    try ( BufferedReader buf = new BufferedReader( new FileReader( f ) ) ) {
                         model.read( buf, url );
                         // We successfully loaded the cached ontology. Copy the loaded ontology to oldFile
                         // so that we don't recreate indices during initialization based on a false change in
@@ -190,18 +181,14 @@ public class OntologyLoader {
             } else {
                 // Model was successfully loaded into memory from URL with given cacheName
                 // Save cache to disk (rename temp file)
-                log.info( "Caching ontology to disk: " + cacheName );
-                if ( f != null ) {
-                    try {
-                        // Need to compare previous to current so instead of overwriting we'll move the old file
-                        f.createNewFile();
-                        Files.move( f.toPath(), oldFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
-                        Files.move( tempFile.toPath(), f.toPath(), StandardCopyOption.REPLACE_EXISTING );
-                    } catch ( IOException e ) {
-                        log.error( e.getMessage(), e );
-                    }
-                } else {
-                    log.warn( "Ontology cache directory required to save to disk: ontology.cache.dir" );
+                log.info( "Caching ontology to disk: " + cacheName + " under " + f.getAbsolutePath() );
+                try {
+                    // Need to compare previous to current so instead of overwriting we'll move the old file
+                    f.createNewFile();
+                    Files.move( f.toPath(), oldFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
+                    Files.move( tempFile.toPath(), f.toPath(), StandardCopyOption.REPLACE_EXISTING );
+                } catch ( IOException e ) {
+                    log.error( e.getMessage(), e );
                 }
             }
 
@@ -226,8 +213,7 @@ public class OntologyLoader {
             // in the worst case scenario.
             // In this case consider using NIO for higher-performance IO using Channels and Buffers.
             // Ex. Use a 4MB Memory-Mapped IO operation.
-            if ( newFile != null && oldFile != null )
-                changed = !FileUtils.contentEquals( newFile, oldFile );
+            changed = !FileUtils.contentEquals( newFile, oldFile );
         } catch ( IOException e ) {
             log.error( e.getMessage() );
         }
@@ -236,18 +222,12 @@ public class OntologyLoader {
 
     }
 
-    public static boolean deleteOldCache( String cacheName ) {
-        File f = getOldDiskCachePath( cacheName );
-        if ( f != null )
-            return f.delete();
-        return false;
+    public static void deleteOldCache( String cacheName ) {
+        getOldDiskCachePath( cacheName ).delete();
     }
 
     /**
      * Get model that is entirely in memory.
-     *
-     * @param url
-     * @return
      */
     private static OntModel getMemoryModel( String url ) {
         OntModelSpec spec = new OntModelSpec( OntModelSpec.OWL_MEM_TRANS_INF );
@@ -262,42 +242,32 @@ public class OntologyLoader {
     }
 
     /**
-     * @param name
-     * @return
+     * Obtain the path for the ontology cache.
      */
     public static File getDiskCachePath( String name ) {
         String ontologyDir = Configuration.getString( "ontology.cache.dir" ); // e.g., /something/gemmaData/ontologyCache
-        if ( StringUtils.isBlank( ontologyDir ) || StringUtils.isBlank( name ) ) {
-            return null;
+        if ( StringUtils.isBlank( ontologyDir ) ) {
+            throw new IllegalArgumentException( "The 'ontology.cache.dir' configuration must be set to cache ontologies." );
+        }
+        if ( StringUtils.isBlank( name ) ) {
+            throw new IllegalArgumentException( "The ontology must have a suitable name for being loaded from cache." );
         }
 
         if ( !new File( ontologyDir ).exists() ) {
             new File( ontologyDir ).mkdirs();
         }
 
-        assert ontologyDir != null;
-
-        String path = ontologyDir + File.separator + "ontology" + File.separator + name;
-
-        File indexFile = new File( path );
-
-        return indexFile;
+        return Paths.get( ontologyDir, "ontology", name ).toFile();
     }
 
-    static File getOldDiskCachePath( String name ) {
+    private static File getOldDiskCachePath( String name ) {
         File indexFile = getDiskCachePath( name );
-        if ( indexFile == null ) {
-            return null;
-        }
         return new File( indexFile.getAbsolutePath() + OLD_CACHE_SUFFIX );
 
     }
 
-    static File getTmpDiskCachePath( String name ) {
+    private static File getTmpDiskCachePath( String name ) {
         File indexFile = getDiskCachePath( name );
-        if ( indexFile == null ) {
-            return null;
-        }
         return new File( indexFile.getAbsolutePath() + TMP_CACHE_SUFFIX );
 
     }

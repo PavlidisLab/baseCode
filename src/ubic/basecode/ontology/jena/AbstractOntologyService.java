@@ -102,17 +102,21 @@ public abstract class AbstractOntologyService implements OntologyService {
             return;
         }
 
+        String ontologyUrl = getOntologyUrl();
+        String ontologyName = getOntologyName();
+        String cacheName = getCacheName();
+
         boolean loadOntology = isEnabled();
 
         // If loading ontologies is disabled in the configuration, return
         if ( !forceLoad && !loadOntology ) {
             log.debug( "Loading {} is disabled (force=false, Configuration load.{}=false)",
-                    this, getOntologyName() );
+                    this, ontologyName );
             return;
         }
 
         // Detect configuration problems.
-        if ( StringUtils.isBlank( this.getOntologyUrl() ) ) {
+        if ( StringUtils.isBlank( ontologyUrl ) ) {
             throw new IllegalStateException( "URL not defined for %s: ontology cannot be loaded. (" + this + ")" );
         }
 
@@ -145,8 +149,8 @@ public abstract class AbstractOntologyService implements OntologyService {
                 .toSet();
 
         //Checks if the current ontology has changed since it was last loaded.
-        boolean changed = OntologyLoader.hasChanged( getCacheName() );
-        boolean indexExists = OntologyIndexer.getSubjectIndex( getCacheName() ) != null;
+        boolean changed = OntologyLoader.hasChanged( cacheName );
+        boolean indexExists = OntologyIndexer.getSubjectIndex( cacheName ) != null;
         boolean forceReindexing = forceLoad && forceIndexing;
 
         /*
@@ -158,7 +162,7 @@ public abstract class AbstractOntologyService implements OntologyService {
         if ( checkIfInterrupted() )
             return;
 
-        index = OntologyIndexer.indexOntology( getCacheName(), model, force );
+        index = OntologyIndexer.indexOntology( cacheName, model, force );
 
         // if interrupted, we don't need to replace the model and clear the *old* cache
         if ( checkIfInterrupted() )
@@ -172,7 +176,7 @@ public abstract class AbstractOntologyService implements OntologyService {
             this.index = index;
             this.isInitialized = true;
             // now that the terms have been replaced, we can clear old caches
-            OntologyLoader.deleteOldCache( getCacheName() );
+            OntologyLoader.deleteOldCache( cacheName );
         } finally {
             lock.unlock();
         }
