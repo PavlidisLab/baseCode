@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ubic.basecode.util.Configuration;
 
+import javax.annotation.Nullable;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -77,7 +78,7 @@ public class OntologyLoader {
      * @param url       a URL where the OWL file is stored
      * @param cacheName unique name of this ontology, will be used to load from disk in case of failed url connection
      */
-    public static OntModel loadMemoryModel( String url, String cacheName ) {
+    public static OntModel loadMemoryModel( String url, @Nullable String cacheName ) {
         StopWatch timer = new StopWatch();
         timer.start();
         OntModel model = getMemoryModel( url );

@@ -51,7 +51,7 @@ public class ObjectPropertyImpl extends OntologyPropertyImpl implements ubic.bas
     @Override
     public Collection<OntologyTerm> getRange() {
         ExtendedIterator<? extends OntResource> iterator = resource.listRange();
-        Collection<OntologyTerm> result = new HashSet<OntologyTerm>();
+        Collection<OntologyTerm> result = new HashSet<>();
         while ( iterator.hasNext() ) {
             OntResource r = iterator.next();
             if ( r.isClass() ) {

@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import ubic.basecode.ontology.search.OntologySearchException;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,7 +52,6 @@ public class OntologySearch {
      *
      * @param model       that goes with the index
      * @param index       to search
-     * @param queryString
      * @return Collection of OntologyTerm objects
      */
     public static ExtendedIterator<OntClass> matchClasses( OntModel model, SearchIndex index, String queryString ) throws OntologySearchException {
@@ -69,7 +67,6 @@ public class OntologySearch {
      *
      * @param model       that goes with the index
      * @param index       to search
-     * @param queryString
      * @return Collection of OntologyTerm objects
      */
     public static ExtendedIterator<Individual> matchIndividuals( OntModel model, SearchIndex index, String queryString ) throws OntologySearchException {
@@ -108,8 +105,6 @@ public class OntologySearch {
      *
      * @param model                  that goes with the index
      * @param index                  to search
-     * @param queryString
-     * @param additionalRestrictions
      * @return Collection of OntologyResource objects
      */
     public static ExtendedIterator<Resource> matchResources( OntModel model, SearchIndex index, String queryString ) throws OntologySearchException {

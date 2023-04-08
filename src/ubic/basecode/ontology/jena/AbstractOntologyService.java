@@ -43,6 +43,7 @@ import ubic.basecode.ontology.providers.OntologyService;
 import ubic.basecode.ontology.search.OntologySearchException;
 import ubic.basecode.util.Configuration;
 
+import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
@@ -82,6 +83,7 @@ public abstract class AbstractOntologyService implements OntologyService {
     private OntModel model;
     private Map<String, String> alternativeIDs;
 
+    @Nullable
     private SearchIndex index;
 
     private Set<Restriction> additionalRestrictions;
@@ -96,7 +98,7 @@ public abstract class AbstractOntologyService implements OntologyService {
         initialize( stream, true, forceIndexing );
     }
 
-    private void initialize( InputStream stream, boolean forceLoad, boolean forceIndexing ) {
+    private void initialize( @Nullable InputStream stream, boolean forceLoad, boolean forceIndexing ) {
         if ( !forceLoad && isInitialized ) {
             log.warn( "{} is already loaded, and force=false, not restarting", this );
             return;
@@ -149,8 +151,8 @@ public abstract class AbstractOntologyService implements OntologyService {
                 .toSet();
 
         //Checks if the current ontology has changed since it was last loaded.
-        boolean changed = OntologyLoader.hasChanged( cacheName );
-        boolean indexExists = OntologyIndexer.getSubjectIndex( cacheName ) != null;
+        boolean changed = cacheName == null || OntologyLoader.hasChanged( cacheName );
+        boolean indexExists = cacheName != null && OntologyIndexer.getSubjectIndex( cacheName ) != null;
         boolean forceReindexing = forceLoad && forceIndexing;
 
         /*
@@ -162,7 +164,11 @@ public abstract class AbstractOntologyService implements OntologyService {
         if ( checkIfInterrupted() )
             return;
 
-        index = OntologyIndexer.indexOntology( cacheName, model, force );
+        if ( cacheName != null ) {
+            index = OntologyIndexer.indexOntology( cacheName, model, force );
+        } else {
+            index = null;
+        }
 
         // if interrupted, we don't need to replace the model and clear the *old* cache
         if ( checkIfInterrupted() )
@@ -175,8 +181,10 @@ public abstract class AbstractOntologyService implements OntologyService {
             this.additionalRestrictions = additionalRestrictions;
             this.index = index;
             this.isInitialized = true;
-            // now that the terms have been replaced, we can clear old caches
-            OntologyLoader.deleteOldCache( cacheName );
+            if ( cacheName != null ) {
+                // now that the terms have been replaced, we can clear old caches
+                OntologyLoader.deleteOldCache( cacheName );
+            }
         } finally {
             lock.unlock();
         }
@@ -318,7 +326,6 @@ public abstract class AbstractOntologyService implements OntologyService {
 
     @Override
     public OntologyResource getResource( String uri ) {
-        if ( uri == null ) return null;
         Lock lock = rwLock.readLock();
         try {
             lock.lock();
@@ -348,7 +355,6 @@ public abstract class AbstractOntologyService implements OntologyService {
 
     @Override
     public OntologyTerm getTerm( String uri ) {
-        if ( uri == null ) throw new IllegalArgumentException( "URI cannot be null" );
         Lock lock = rwLock.readLock();
         try {
             lock.lock();
@@ -521,16 +527,25 @@ public abstract class AbstractOntologyService implements OntologyService {
     /**
      * Load a model from a given input stream.
      */
-    protected OntModel loadModelFromStream( InputStream is ) {
-        return OntologyLoader.loadMemoryModel( is, this.getOntologyUrl() );
-    }
+    protected abstract OntModel loadModelFromStream( InputStream stream );
 
+    /**
+     * A name for caching this ontology, or null to disable caching.
+     * <p>
+     * Note that if null is returned, the ontology will not have full-text search capabilities.
+     */
+    @Nullable
     protected String getCacheName() {
         return getOntologyName();
     }
 
     @Override
     public void index( boolean force ) {
+        String cacheName = getCacheName();
+        if ( cacheName == null ) {
+            log.warn( "This ontology does not support indexing; assign a cache name to be used." );
+            return;
+        }
         SearchIndex index;
         Lock lock = rwLock.readLock();
         try {

@@ -19,7 +19,6 @@
 package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

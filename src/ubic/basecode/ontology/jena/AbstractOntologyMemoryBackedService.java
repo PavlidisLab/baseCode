@@ -16,6 +16,9 @@ package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.OntModel;
 
+import javax.annotation.Nullable;
+import java.io.InputStream;
+
 /**
  * This class has some stuff that's specific to in-memory ontologies. Unlike database backed ontologies we don't use a
  * pool keeping only one instance of model in memory.
@@ -25,7 +28,12 @@ import com.hp.hpl.jena.ontology.OntModel;
 public abstract class AbstractOntologyMemoryBackedService extends AbstractOntologyService {
 
     @Override
-    protected synchronized OntModel loadModel() {
+    protected OntModel loadModel() {
         return OntologyLoader.loadMemoryModel( this.getOntologyUrl(), this.getOntologyName() );
+    }
+
+    @Override
+    protected OntModel loadModelFromStream( InputStream is ) {
+        return OntologyLoader.loadMemoryModel( is, this.getOntologyUrl() );
     }
 }

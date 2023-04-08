@@ -5,6 +5,7 @@ import ubic.basecode.ontology.model.OntologyResource;
 import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.search.OntologySearchException;
 
+import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Set;
@@ -86,6 +87,7 @@ public interface OntologyService {
     /**
      * Find a term using an alternative ID.
      */
+    @Nullable
     OntologyTerm findUsingAlternativeId( String alternativeId );
 
     /**
@@ -97,11 +99,13 @@ public interface OntologyService {
      * Looks through both Terms and Individuals for a OntologyResource that has a uri matching the uri given. If no
      * OntologyTerm is found only then will ontologyIndividuals be searched. returns null if nothing is found.
      */
+    @Nullable
     OntologyResource getResource( String uri );
 
     /**
      * Looks for a OntologyTerm that has the match in URI given
      */
+    @Nullable
     OntologyTerm getTerm( String uri );
 
     /**

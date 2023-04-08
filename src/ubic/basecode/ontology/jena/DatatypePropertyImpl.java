@@ -32,11 +32,8 @@ class DatatypePropertyImpl extends OntologyPropertyImpl implements DatatypePrope
 
     private final Class<?> type;
 
-    private final com.hp.hpl.jena.ontology.DatatypeProperty resource;
-
     public DatatypePropertyImpl( com.hp.hpl.jena.ontology.DatatypeProperty resource ) {
         super( resource );
-        this.resource = resource;
         this.type = PropertyFactory.convertType( resource );
     }
 

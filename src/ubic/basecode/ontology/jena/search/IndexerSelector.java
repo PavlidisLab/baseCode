@@ -21,8 +21,6 @@ package ubic.basecode.ontology.jena.search;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDFS;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ubic.basecode.ontology.jena.vocabulary.OBO;
 
 import java.util.Collection;
