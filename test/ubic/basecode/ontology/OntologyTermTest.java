@@ -272,6 +272,7 @@ public class OntologyTermTest {
     public void testGetChildrenHasPart() {
         OntologyTerm t = uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0000955" );
         assertNotNull( t );
+        assertEquals( 76, t.getChildren( true ).size() );
         Collection<OntologyTerm> children = t.getChildren( false );
         assertEquals( 1496, children.size() );
         // via subclass of, insect adult brain
