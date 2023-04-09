@@ -48,6 +48,7 @@ public class IndexerSelector implements Selector {
         wantedForIndexing.add( OBO.hasBroadSynonym );
         wantedForIndexing.add( OBO.hasNarrowSynonym );
         wantedForIndexing.add( OBO.hasRelatedSynonym );
+        wantedForIndexing.add( OBO.alternativeLabel );
     }
 
     /*

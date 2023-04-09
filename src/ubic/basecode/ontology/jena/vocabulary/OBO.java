@@ -19,6 +19,7 @@ public class OBO {
     public static final Property hasBroadSynonym = property( "hasBroadSynonm" );
     public static final Property hasNarrowSynonym = property( "hasNarrowSynonym" );
     public static final Property hasRelatedSynonym = property( "hasRelatedSynonym" );
+    public static final Property alternativeLabel = ResourceFactory.createProperty( "http://purl.obolibrary.org/obo/IAO_0000118" );
     public static final Resource ObsoleteClass = ResourceFactory.createResource( "http://www.geneontology.org/formats/oboInOwl#ObsoleteClass" );
     public static final Property ObsoleteProperty = ResourceFactory.createProperty( "http://www.geneontology.org/formats/oboInOwl#ObsoleteProperty" );
 }
