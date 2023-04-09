@@ -36,7 +36,7 @@ import static org.junit.Assert.*;
 /**
  * @author Paul
  */
-public class OntologyTermTest {
+public class OntologyTermTest extends AbstractOntologyTest {
 
     private static final Logger log = LoggerFactory.getLogger( OntologyTermTest.class );
 
@@ -64,6 +64,7 @@ public class OntologyTermTest {
         s.initialize( is, false );
 
         OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/DOID_4159" );
+        assertNotNull( t );
 
         // test of getting basic properties thrown in here
         assertEquals( "skin cancer", t.getLabel() );
@@ -146,6 +147,7 @@ public class OntologyTermTest {
          */
 
         OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/DOID_10040" );
+        assertNotNull( t );
         Collection<OntologyTerm> parents = t.getParents( true );
         assertEquals( 1, parents.size() );
         OntologyTerm p = parents.iterator().next();
@@ -175,14 +177,17 @@ public class OntologyTermTest {
     @Test
     public void testUberon() {
         OntologyTerm t = uberon.getTerm( "http://purl.obolibrary.org/obo/BFO_0000001" );
+        assertNotNull( t );
         assertTrue( t.isRoot() );
         assertFalse( t.isObsolete() );
 
         OntologyTerm t2 = uberon.getTerm( "http://purl.obolibrary.org/obo/BFO_0000002" );
+        assertNotNull( t2 );
         assertFalse( t2.isRoot() );
         assertFalse( t2.isObsolete() );
 
         OntologyTerm t3 = uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0007234" );
+        assertNotNull( t3 );
         assertTrue( t3.isObsolete() );
     }
 
@@ -248,6 +253,7 @@ public class OntologyTermTest {
         s.initialize( is, false );
 
         OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/CLO_0000292" );
+        assertNotNull( t );
         assertEquals( "immortal larynx-derived cell line cell", t.getLabel() );
 
     }

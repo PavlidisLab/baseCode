@@ -19,12 +19,10 @@
 
 package ubic.basecode.ontology.providers;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import ubic.basecode.ontology.AbstractOntologyTest;
 import ubic.basecode.ontology.jena.OntologyLoader;
 import ubic.basecode.ontology.model.OntologyTerm;
-import ubic.basecode.util.Configuration;
 
 import java.io.File;
 import java.net.URL;
@@ -36,21 +34,9 @@ import static org.junit.Assume.assumeTrue;
 /**
  * @author mjacobson
  */
-public class AbstractOntologyServiceTest {
+public class AbstractOntologyServiceTest extends AbstractOntologyTest {
 
-    private static String prevDir = null;
     private static final String dataResource = "/data/nif.organism.test.owl.xml";
-
-    @BeforeClass
-    public static void setup() throws Exception {
-        prevDir = Configuration.getString( "ontology.cache.dir" );
-        Configuration.setString( "ontology.cache.dir", System.getProperty( "java.io.tmpdir" ) );
-    }
-
-    @AfterClass
-    public static void tearDown() throws Exception {
-        Configuration.setString( "ontology.cache.dir", prevDir );
-    }
 
     @Test
     public void testCacheOntologyToDisk() throws Exception {
@@ -89,11 +75,10 @@ public class AbstractOntologyServiceTest {
     public void testGenericOntologyServiceMem() throws Exception {
         URL resource = this.getClass().getResource( dataResource );
         assertNotNull( resource );
-        GenericOntologyService s = createService( "foo", resource.toString(), false );
+        GenericOntologyService s = createService( "foo", resource.toString(), true );
 
         Collection<OntologyTerm> r = s.findTerm( "Mouse" );
         assertFalse( r.isEmpty() );
-
     }
 
     @Test
