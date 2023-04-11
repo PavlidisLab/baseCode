@@ -25,6 +25,7 @@ import ubic.basecode.ontology.model.OntologyIndividual;
 import ubic.basecode.ontology.model.OntologyRestriction;
 import ubic.basecode.ontology.model.OntologyTerm;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,8 +50,14 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
      */
     private final transient Set<Restriction> additionalRestrictions;
 
-    public OntologyTermImpl( OntClass resource, Set<Restriction> additionalRestrictions ) {
+    public OntologyTermImpl( OntClass resource, @Nullable Set<Restriction> additionalRestrictions ) {
         super( resource );
+        this.ontResource = resource;
+        this.additionalRestrictions = additionalRestrictions;
+    }
+
+    public OntologyTermImpl( OntClass resource, Set<Restriction> additionalRestrictions, double score ) {
+        super( resource, score );
         this.ontResource = resource;
         this.additionalRestrictions = additionalRestrictions;
     }

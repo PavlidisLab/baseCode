@@ -308,5 +308,8 @@ public class OntologyTermTest extends AbstractOntologyTest {
     public void testFindTerm() throws OntologySearchException {
         assertEquals( 123, uberon.findTerm( "brain" ).size() );
         assertEquals( 128, uberon.findTerm( "brain", true ).size() );
+        OntologyTerm firstResult = uberon.findTerm( "brain" ).iterator().next();
+        assertNotNull( firstResult.getScore() );
+        assertEquals( 2.8577, firstResult.getScore(), 0.0001 );
     }
 }

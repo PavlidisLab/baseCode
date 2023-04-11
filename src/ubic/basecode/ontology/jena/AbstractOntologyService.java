@@ -224,7 +224,7 @@ public abstract class AbstractOntologyService implements OntologyService {
                 return Collections.emptySet();
             }
             return OntologySearch.matchIndividuals( model, index, search )
-                    .mapWith( i -> ( OntologyIndividual ) new OntologyIndividualImpl( i, additionalRestrictions ) )
+                    .mapWith( i -> ( OntologyIndividual ) new OntologyIndividualImpl( i.result, additionalRestrictions, i.score ) )
                     .filterKeep( where( ontologyTerm -> keepObsoletes || !ontologyTerm.isObsolete() ) )
                     .toSet();
         } finally {
@@ -246,13 +246,13 @@ public abstract class AbstractOntologyService implements OntologyService {
                 return Collections.emptySet();
             }
             return OntologySearch.matchResources( model, index, searchString )
-                    .filterKeep( where( r -> r.canAs( OntClass.class ) || r.canAs( Individual.class ) ) )
+                    .filterKeep( where( r -> r.result.canAs( OntClass.class ) || r.result.canAs( Individual.class ) ) )
                     .mapWith( r -> {
                         OntologyResource res;
-                        if ( r.canAs( OntClass.class ) ) {
-                            res = new OntologyTermImpl( r.as( OntClass.class ), additionalRestrictions );
+                        if ( r.result.canAs( OntClass.class ) ) {
+                            res = new OntologyTermImpl( r.result.as( OntClass.class ), additionalRestrictions, r.score );
                         } else {
-                            res = new OntologyIndividualImpl( r.as( Individual.class ), additionalRestrictions );
+                            res = new OntologyIndividualImpl( r.result.as( Individual.class ), additionalRestrictions, r.score );
                         }
                         return res;
                     } )
@@ -278,7 +278,7 @@ public abstract class AbstractOntologyService implements OntologyService {
                 return Collections.emptySet();
             }
             return OntologySearch.matchClasses( model, index, search )
-                    .mapWith( r -> ( OntologyTerm ) new OntologyTermImpl( r, additionalRestrictions ) )
+                    .mapWith( r -> ( OntologyTerm ) new OntologyTermImpl( r.result, additionalRestrictions, r.score ) )
                     .filterKeep( where( ontologyTerm -> keepObsoletes || !ontologyTerm.isObsolete() ) )
                     .toSet();
         } finally {
