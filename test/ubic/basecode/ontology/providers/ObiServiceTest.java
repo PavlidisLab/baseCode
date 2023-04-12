@@ -14,25 +14,21 @@
  */
 package ubic.basecode.ontology.providers;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.Collection;
-
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import ubic.basecode.ontology.AbstractOntologyTest;
 import ubic.basecode.ontology.model.OntologyIndividual;
 import ubic.basecode.ontology.model.OntologyResource;
 import ubic.basecode.ontology.model.OntologyTerm;
+import ubic.basecode.util.Configuration;
+
+import java.util.Collection;
+
+import static org.junit.Assert.*;
 
 /**
  * @author paul
  */
-public class ObiServiceTest {
-
-    private static Logger log = LoggerFactory.getLogger( ObiServiceTest.class );
+public class ObiServiceTest extends AbstractOntologyTest {
 
     @Test
     public void testLoadAndSearch() throws Exception {
@@ -42,12 +38,20 @@ public class ObiServiceTest {
         assertTrue( m.isOntologyLoaded() );
 
         Collection<OntologyTerm> hits = m.findTerm( "batch" );
-        assertTrue( !hits.isEmpty() );
+        assertFalse( hits.isEmpty() );
 
         Collection<OntologyIndividual> ihits = m.findIndividuals( "batch" );
-        assertTrue( !ihits.isEmpty() );
+        assertFalse( ihits.isEmpty() );
 
         Collection<OntologyResource> rhits = m.findResources( "batch" );
-        assertTrue( !rhits.isEmpty() );
+        assertFalse( rhits.isEmpty() );
+    }
+
+    @Test
+    public void testWithoutCache() {
+        Configuration.setString( "ontology.cache.dir", "" );
+        assertThrows( IllegalArgumentException.class, () -> {
+            new ObiService().initialize( true, true );
+        } );
     }
 }

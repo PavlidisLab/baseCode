@@ -9,12 +9,15 @@ import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.util.iterator.UniqueExtendedIterator;
 import org.apache.commons.lang3.time.StopWatch;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 
+import static com.hp.hpl.jena.reasoner.ReasonerRegistry.makeDirect;
+
 public class JenaUtils {
 
-    public static Collection<OntClass> getParents( OntModel model, Collection<OntClass> ontClasses, boolean direct, Set<Restriction> additionalRestrictions ) {
+    public static Collection<OntClass> getParents( OntModel model, Collection<OntClass> ontClasses, boolean direct, @Nullable Set<Restriction> additionalRestrictions ) {
         if ( ontClasses.isEmpty() ) {
             return Collections.emptySet();
         }
@@ -58,7 +61,7 @@ public class JenaUtils {
         return result;
     }
 
-    public static Collection<OntClass> getChildren( OntModel model, Collection<OntClass> terms, boolean direct, Set<Restriction> additionalRestrictions ) {
+    public static Collection<OntClass> getChildren( OntModel model, Collection<OntClass> terms, boolean direct, @Nullable Set<Restriction> additionalRestrictions ) {
         if ( terms.isEmpty() ) {
             return Collections.emptySet();
         }
@@ -79,6 +82,9 @@ public class JenaUtils {
             timer.reset();
             timer.start();
             Property subClassOf = model.getProfile().SUB_CLASS_OF();
+            if ( direct ) {
+                subClassOf = ResourceFactory.createProperty( makeDirect( subClassOf.getURI() ) );
+            }
             Set<Restriction> restrictions = UniqueExtendedIterator.create( additionalRestrictions.iterator() )
                     .filterKeep( new RestrictionWithValuesFromFilter( terms ) )
                     .toSet();

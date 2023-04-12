@@ -36,7 +36,7 @@ import static org.junit.Assert.*;
 /**
  * @author Paul
  */
-public class OntologyTermTest {
+public class OntologyTermTest extends AbstractOntologyTest {
 
     private static final Logger log = LoggerFactory.getLogger( OntologyTermTest.class );
 
@@ -52,7 +52,7 @@ public class OntologyTermTest {
         };
         try ( InputStream is = new GZIPInputStream( requireNonNull( OntologyTermTest.class.getResourceAsStream( "/data/uberon.owl.gz" ) ) ) ) {
             // FIXME: indexing Uberon is very slow, so we disable it so if the tests are breaking, try force-indexing
-            uberon.loadTermsInNameSpace( is, false );
+            uberon.initialize( is, false );
         }
     }
 
@@ -61,9 +61,10 @@ public class OntologyTermTest {
         // DOID:4159
         DiseaseOntologyService s = new DiseaseOntologyService();
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/doid.short.owl.gz" ) ) );
-        s.loadTermsInNameSpace( is, false );
+        s.initialize( is, false );
 
         OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/DOID_4159" );
+        assertNotNull( t );
 
         // test of getting basic properties thrown in here
         assertEquals( "skin cancer", t.getLabel() );
@@ -105,7 +106,7 @@ public class OntologyTermTest {
         NIFSTDOntologyService s = new NIFSTDOntologyService();
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream(
                 "/data/NIF-GrossAnatomy.small.owl.xml.gz" ) ) );
-        s.loadTermsInNameSpace( is, false );
+        s.initialize( is, false );
 
         OntologyTerm t = s.getTerm( "http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#birnlex_734" );
         assertNotNull( t );
@@ -138,7 +139,7 @@ public class OntologyTermTest {
         DiseaseOntologyService s = new DiseaseOntologyService();
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/doid.short.owl.gz" ) ) );
 
-        s.loadTermsInNameSpace( is, false );
+        s.initialize( is, false );
 
         /*
          * Note that this test uses the 'new style' URIs for DO, but at this writing we actually use purl.org not
@@ -146,6 +147,7 @@ public class OntologyTermTest {
          */
 
         OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/DOID_10040" );
+        assertNotNull( t );
         Collection<OntologyTerm> parents = t.getParents( true );
         assertEquals( 1, parents.size() );
         OntologyTerm p = parents.iterator().next();
@@ -175,14 +177,17 @@ public class OntologyTermTest {
     @Test
     public void testUberon() {
         OntologyTerm t = uberon.getTerm( "http://purl.obolibrary.org/obo/BFO_0000001" );
+        assertNotNull( t );
         assertTrue( t.isRoot() );
         assertFalse( t.isObsolete() );
 
         OntologyTerm t2 = uberon.getTerm( "http://purl.obolibrary.org/obo/BFO_0000002" );
+        assertNotNull( t2 );
         assertFalse( t2.isRoot() );
         assertFalse( t2.isObsolete() );
 
         OntologyTerm t3 = uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0007234" );
+        assertNotNull( t3 );
         assertTrue( t3.isObsolete() );
     }
 
@@ -202,7 +207,7 @@ public class OntologyTermTest {
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream(
                 "/data/NIF-GrossAnatomy.small.owl.xml.gz" ) ) );
         assertNotNull( is );
-        s.loadTermsInNameSpace( is, false );
+        s.initialize( is, false );
 
         // Mammillary princeps fasciculus: part of white matter, hypothalamus, etc.
         OntologyTerm t = s
@@ -245,9 +250,10 @@ public class OntologyTermTest {
     public void testRejectNonEnglish() throws Exception {
         CellLineOntologyService s = new CellLineOntologyService();
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/clo_merged.sample.owl.xml.gz" ) ) );
-        s.loadTermsInNameSpace( is, false );
+        s.initialize( is, false );
 
         OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/CLO_0000292" );
+        assertNotNull( t );
         assertEquals( "immortal larynx-derived cell line cell", t.getLabel() );
 
     }
@@ -272,6 +278,7 @@ public class OntologyTermTest {
     public void testGetChildrenHasPart() {
         OntologyTerm t = uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0000955" );
         assertNotNull( t );
+        assertEquals( 76, t.getChildren( true ).size() );
         Collection<OntologyTerm> children = t.getChildren( false );
         assertEquals( 1496, children.size() );
         // via subclass of, insect adult brain
@@ -301,5 +308,8 @@ public class OntologyTermTest {
     public void testFindTerm() throws OntologySearchException {
         assertEquals( 123, uberon.findTerm( "brain" ).size() );
         assertEquals( 128, uberon.findTerm( "brain", true ).size() );
+        OntologyTerm firstResult = uberon.findTerm( "brain" ).iterator().next();
+        assertNotNull( firstResult.getScore() );
+        assertEquals( 2.8577, firstResult.getScore(), 0.0001 );
     }
 }

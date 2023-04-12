@@ -18,6 +18,7 @@
  */
 package ubic.basecode.ontology.model;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 
 /**
@@ -39,4 +40,10 @@ public interface OntologyResource extends Serializable, Comparable<OntologyResou
      * Whether the resource is marked as obsolete.
      */
     boolean isObsolete();
+
+    /**
+     * If this is result from a free-text search, a corresponding score, otherwise null.
+     */
+    @Nullable
+    Double getScore();
 }

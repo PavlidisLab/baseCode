@@ -19,14 +19,16 @@
 package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ubic.basecode.ontology.model.OntologyResource;
 
+import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.Objects;
+
+import static java.util.Comparator.*;
 
 /**
  * @author pavlidis
@@ -37,10 +39,22 @@ public abstract class AbstractOntologyResource implements OntologyResource {
 
     private static final long serialVersionUID = 1L;
 
+    private static final Comparator<OntologyResource> comparator = Comparator
+            .comparing( OntologyResource::getScore, nullsLast( reverseOrder() ) )
+            .thenComparing( OntologyResource::getUri, nullsLast( naturalOrder() ) );
+
     private transient final OntResource res;
+    @Nullable
+    private final Double score;
 
     protected AbstractOntologyResource( OntResource resource ) {
         this.res = resource;
+        this.score = null;
+    }
+
+    public AbstractOntologyResource( OntResource resource, double score ) {
+        this.res = resource;
+        this.score = score;
     }
 
     @Override
@@ -68,8 +82,14 @@ public abstract class AbstractOntologyResource implements OntologyResource {
     }
 
     @Override
+    @Nullable
+    public Double getScore() {
+        return score;
+    }
+
+    @Override
     public int compareTo( OntologyResource other ) {
-        return Objects.compare( getUri(), other.getUri(), Comparator.nullsLast( Comparator.naturalOrder() ) );
+        return Objects.compare( this, other, comparator );
     }
 
     @Override

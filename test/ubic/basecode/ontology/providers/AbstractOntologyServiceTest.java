@@ -19,90 +19,66 @@
 
 package ubic.basecode.ontology.providers;
 
+import org.junit.Test;
+import ubic.basecode.ontology.AbstractOntologyTest;
+import ubic.basecode.ontology.jena.OntologyLoader;
+import ubic.basecode.ontology.model.OntologyTerm;
+
 import java.io.File;
 import java.net.URL;
 import java.util.Collection;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import ubic.basecode.ontology.jena.OntologyLoader;
-import ubic.basecode.ontology.model.OntologyTerm;
-import ubic.basecode.util.Configuration;
-
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * @author mjacobson
  */
-public class AbstractOntologyServiceTest {
+public class AbstractOntologyServiceTest extends AbstractOntologyTest {
 
-    private static String prevDir = null;
-    private static String dataResource = "/data/nif.organism.test.owl.xml";
-
-    @BeforeClass
-    public static void setup() throws Exception {
-        prevDir = Configuration.getString( "ontology.cache.dir" );
-        Configuration.setString( "ontology.cache.dir", System.getProperty( "java.io.tmpdir" ) );
-    }
-
-    @AfterClass
-    public static void tearDown() throws Exception {
-        Configuration.setString( "ontology.cache.dir", prevDir );
-    }
+    private static final String dataResource = "/data/nif.organism.test.owl.xml";
 
     @Test
-    @Ignore("This test was always broken, but the failure was obscured in a thread.")
     public void testCacheOntologyToDisk() throws Exception {
         String name = "fooTEST1234";
 
         File f = OntologyLoader.getDiskCachePath( name );
+        assertNotNull( f );
         if ( f.exists() ) {
-            f.delete();
+            assumeTrue( String.format( "Failed to delete existing ontology cache file %s.", f.getAbsolutePath() ), f.delete() );
         }
 
-        assertTrue( !f.exists() );
+        assertFalse( f.exists() );
 
         URL resource = this.getClass().getResource( dataResource );
+        assertNotNull( resource );
         GenericOntologyService s = createService( name, resource.toString(), true );
 
         Collection<OntologyTerm> r = s.findTerm( "Mouse" );
-        assertTrue( !r.isEmpty() );
+        assertFalse( r.isEmpty() );
 
         // Check if cache was created
         assertTrue( f.exists() );
-        assertTrue( f.length() != 0 );
+        assertNotEquals( 0, f.length() );
 
         // Recreate OntologyService using this cache file
         s = createService( name, "/data/NONEXISTENT_RESOURCE", true );
 
         r = s.findTerm( "Mouse" );
-        assertTrue( !r.isEmpty() );
+        assertFalse( r.isEmpty() );
 
         // Recreate OntologyService with bad URL and no cache
-        s = createService( "NO_CACHE_WITH_THIS_NAME", "/data/NONEXISTENT_RESOURCE", true );
-
-        r = s.findTerm( "Mouse" );
-        assertTrue( r.isEmpty() );
-
+        assertThrows( RuntimeException.class, () -> createService( "NO_CACHE_WITH_THIS_NAME", "/data/NONEXISTENT_RESOURCE", true ) );
     }
 
     @Test
     public void testGenericOntologyServiceMem() throws Exception {
         URL resource = this.getClass().getResource( dataResource );
-
-        GenericOntologyService s = createService( "foo", resource.toString(), false );
+        assertNotNull( resource );
+        GenericOntologyService s = createService( "foo", resource.toString(), true );
 
         Collection<OntologyTerm> r = s.findTerm( "Mouse" );
-        assertTrue( !r.isEmpty() );
-
-    }
-
-    @Test
-    public void testReindexOnInitialize() throws Exception {
-
+        assertFalse( r.isEmpty() );
     }
 
     @Test
@@ -118,7 +94,7 @@ public class AbstractOntologyServiceTest {
         assertFalse( s.isInitializationThreadAlive() );
     }
 
-    private GenericOntologyService createService( String name, String resourceURL, boolean cache ) throws Exception {
+    private GenericOntologyService createService( String name, String resourceURL, boolean cache ) {
         GenericOntologyService s = new GenericOntologyService( name, resourceURL, cache );
         s.initialize( true, false );
         return s;

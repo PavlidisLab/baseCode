@@ -18,14 +18,14 @@
  */
 package ubic.basecode.ontology.jena;
 
-import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.impl.PropertyImpl;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import ubic.basecode.ontology.jena.vocabulary.OBO;
 import ubic.basecode.ontology.model.AnnotationProperty;
+
+import javax.annotation.Nullable;
 
 /**
  * Note that this is a concrete instance of the annotation.
@@ -43,7 +43,7 @@ public class AnnotationPropertyImpl extends AbstractOntologyResource implements 
      * @param source ontology this relates to.
      * @param object of the statement
      */
-    public AnnotationPropertyImpl( com.hp.hpl.jena.ontology.AnnotationProperty prop, RDFNode object ) {
+    public AnnotationPropertyImpl( com.hp.hpl.jena.ontology.AnnotationProperty prop, @Nullable RDFNode object ) {
         super( prop );
         this.property = prop;
 
@@ -65,7 +65,7 @@ public class AnnotationPropertyImpl extends AbstractOntologyResource implements 
     }
 
     @Override
-    public boolean equals( Object obj ) {
+    public boolean equals( @Nullable Object obj ) {
         if ( this == obj ) return true;
         if ( obj == null ) return false;
         if ( getClass() != obj.getClass() ) return false;

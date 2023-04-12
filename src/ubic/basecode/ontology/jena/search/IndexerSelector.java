@@ -21,8 +21,6 @@ package ubic.basecode.ontology.jena.search;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDFS;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ubic.basecode.ontology.jena.vocabulary.OBO;
 
 import java.util.Collection;
@@ -50,6 +48,7 @@ public class IndexerSelector implements Selector {
         wantedForIndexing.add( OBO.hasBroadSynonym );
         wantedForIndexing.add( OBO.hasNarrowSynonym );
         wantedForIndexing.add( OBO.hasRelatedSynonym );
+        wantedForIndexing.add( OBO.alternativeLabel );
     }
 
     /*

@@ -14,6 +14,7 @@
  */
 package ubic.basecode.ontology.model;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Objects;
@@ -24,6 +25,7 @@ import java.util.Objects;
  *
  * @author Paul
  */
+
 public class OntologyTermSimple implements OntologyTerm {
 
     /**
@@ -120,6 +122,12 @@ public class OntologyTermSimple implements OntologyTerm {
     @Override
     public boolean isObsolete() {
         return obsolete;
+    }
+
+    @Nullable
+    @Override
+    public Double getScore() {
+        return null;
     }
 
     @Override

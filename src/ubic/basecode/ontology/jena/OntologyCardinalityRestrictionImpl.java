@@ -19,7 +19,6 @@
 package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.Restriction;
-import com.hp.hpl.jena.rdf.model.Property;
 import ubic.basecode.ontology.model.OntologyCardinalityRestriction;
 
 import java.util.Set;
