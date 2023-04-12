@@ -21,6 +21,7 @@ package ubic.basecode.ontology.jena;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.shared.JenaException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -205,8 +206,8 @@ public class OntologyLoader {
                 if ( urlc != null ) {
                     try ( InputStream in = urlc.getInputStream() ) {
                         return model.read( in, URL );
-                    } catch ( IOException e ) {
-                        log.error( String.format( "Failed to load from %s.", URL ), e );
+                    } catch ( JenaException | IOException e ) {
+                        log.error( String.format( "Failed to resolve import %s for %s: %s.", URL, url, e.getMessage() ) );
                     }
                 }
                 return loadIfAbsent.readModel( model, URL );
