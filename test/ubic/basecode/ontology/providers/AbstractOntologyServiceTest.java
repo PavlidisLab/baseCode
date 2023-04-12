@@ -95,7 +95,7 @@ public class AbstractOntologyServiceTest extends AbstractOntologyTest {
     }
 
     private GenericOntologyService createService( String name, String resourceURL, boolean cache ) {
-        GenericOntologyService s = new GenericOntologyService( name, resourceURL, cache );
+        GenericOntologyService s = new GenericOntologyService( name, resourceURL, cache, false );
         s.initialize( true, false );
         return s;
     }

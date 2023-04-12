@@ -32,15 +32,21 @@ public class GenericOntologyService extends AbstractOntologyMemoryBackedService 
     private final String url;
     private final String name;
     private final boolean cache;
+    private final boolean processImports;
 
     public GenericOntologyService( String name, String url ) {
         this( name, url, false );
     }
 
     public GenericOntologyService( String name, String url, boolean cache ) {
+        this( name, url, cache, true );
+    }
+
+    public GenericOntologyService( String name, String url, boolean cache, boolean processImports ) {
         this.name = name;
         this.url = url;
         this.cache = cache;
+        this.processImports = processImports;
     }
 
     @Override
@@ -56,5 +62,10 @@ public class GenericOntologyService extends AbstractOntologyMemoryBackedService 
     @Override
     protected String getCacheName() {
         return this.cache ? this.name : null;
+    }
+
+    @Override
+    protected boolean getProcessImport() {
+        return processImports;
     }
 }

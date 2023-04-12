@@ -21,6 +21,7 @@ package ubic.basecode.ontology.jena;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.shared.CannotCreateException;
 import com.hp.hpl.jena.shared.JenaException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -50,11 +51,15 @@ public class OntologyLoader {
     private static final String OLD_CACHE_SUFFIX = ".old";
     private static final String TMP_CACHE_SUFFIX = ".tmp";
 
+    public static OntModel loadMemoryModel( InputStream is, String url ) {
+        return loadMemoryModel( is, url, true );
+    }
+
     /**
      * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
      */
-    public static OntModel loadMemoryModel( InputStream is, String url ) {
-        OntModel model = getMemoryModel( url );
+    public static OntModel loadMemoryModel( InputStream is, String url, boolean processImports ) {
+        OntModel model = getMemoryModel( url, processImports );
         model.read( is, null );
         return model;
     }
@@ -62,10 +67,14 @@ public class OntologyLoader {
     /**
      * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
      *
-     * @see #loadMemoryModel(String, String)
+     * @see #loadMemoryModel(String, String, boolean)
      */
     public static OntModel loadMemoryModel( String url ) {
-        return loadMemoryModel( url, null );
+        return loadMemoryModel( url, null, true );
+    }
+
+    public static OntModel loadMemoryModel( String url, @Nullable String cacheName ) {
+        return loadMemoryModel( url, cacheName, true );
     }
 
     /**
@@ -77,10 +86,10 @@ public class OntologyLoader {
      * @param url       a URL where the OWL file is stored
      * @param cacheName unique name of this ontology, will be used to load from disk in case of failed url connection
      */
-    public static OntModel loadMemoryModel( String url, @Nullable String cacheName ) {
+    public static OntModel loadMemoryModel( String url, @Nullable String cacheName, boolean processImports ) {
         StopWatch timer = new StopWatch();
         timer.start();
-        OntModel model = getMemoryModel( url );
+        OntModel model = getMemoryModel( url, processImports );
 
         URLConnection urlc = openConnection( url );
 
@@ -187,12 +196,12 @@ public class OntologyLoader {
     /**
      * Get model that is entirely in memory.
      */
-    private static OntModel getMemoryModel( String url ) {
+    private static OntModel getMemoryModel( String url, boolean processImports ) {
         OntModelSpec spec = new OntModelSpec( OntModelSpec.OWL_MEM_TRANS_INF );
         ModelMaker maker = ModelFactory.createMemModelMaker();
         Model base = maker.createModel( url, false );
         spec.setImportModelMaker( maker );
-        spec.getDocumentManager().setProcessImports( true );
+        spec.getDocumentManager().setProcessImports( processImports );
         spec.setImportModelGetter( new ModelGetter() {
             @Override
             public Model getModel( String URL ) {
@@ -207,7 +216,7 @@ public class OntologyLoader {
                     try ( InputStream in = urlc.getInputStream() ) {
                         return model.read( in, URL );
                     } catch ( JenaException | IOException e ) {
-                        log.error( String.format( "Failed to resolve import %s for %s: %s.", URL, url, e.getMessage() ) );
+                        throw new CannotCreateException( String.format( "Failed to resolve import %s for %s.", URL, url ), e );
                     }
                 }
                 return loadIfAbsent.readModel( model, URL );

@@ -27,13 +27,17 @@ import java.io.InputStream;
  */
 public abstract class AbstractOntologyMemoryBackedService extends AbstractOntologyService {
 
+    protected boolean getProcessImport() {
+        return true;
+    }
+
     @Override
     protected OntModel loadModel() {
-        return OntologyLoader.loadMemoryModel( this.getOntologyUrl(), this.getOntologyName() );
+        return OntologyLoader.loadMemoryModel( this.getOntologyUrl(), this.getOntologyName(), this.getProcessImport() );
     }
 
     @Override
     protected OntModel loadModelFromStream( InputStream is ) {
-        return OntologyLoader.loadMemoryModel( is, this.getOntologyUrl() );
+        return OntologyLoader.loadMemoryModel( is, this.getOntologyUrl(), this.getProcessImport() );
     }
 }

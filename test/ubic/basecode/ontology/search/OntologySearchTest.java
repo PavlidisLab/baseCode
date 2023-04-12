@@ -59,7 +59,7 @@ public class OntologySearchTest extends AbstractOntologyTest {
     @Test
     public final void testIndexing() throws Exception {
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/mged.owl.gz" ) ) );
-        OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test" );
+        OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test", false );
 
         SearchIndex index = OntologyIndexer.indexOntology( "MGEDTEST", model, true );
 
@@ -168,7 +168,7 @@ public class OntologySearchTest extends AbstractOntologyTest {
         OntModel model;
         try ( InputStream is = this.getClass().getResourceAsStream( "/data/nif.organism.test.owl.xml" ) ) {
             assertNotNull( is );
-            model = OntologyLoader.loadMemoryModel( is, "NIFORG_TEST" );
+            model = OntologyLoader.loadMemoryModel( is, "NIFORG_TEST", false );
         }
 
         SearchIndex index = OntologyIndexer.indexOntology( "NIFORG_TEST", model, true );
@@ -228,7 +228,7 @@ public class OntologySearchTest extends AbstractOntologyTest {
     public final void testOmitDefinitions4() throws Exception {
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/NIF-GrossAnatomy.owl.gz" ) ) );
 
-        OntModel model = OntologyLoader.loadMemoryModel( is, "NIFAN_TEST2" );
+        OntModel model = OntologyLoader.loadMemoryModel( is, "NIFAN_TEST2", false );
         is.close();
 
         SearchIndex index = OntologyIndexer.indexOntology( "NIFAN_TEST2", model, true );
@@ -268,7 +268,7 @@ public class OntologySearchTest extends AbstractOntologyTest {
     @Test
     public final void testPersistence() throws Exception {
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/mged.owl.gz" ) ) );
-        OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test" );
+        OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test", false );
 
         SearchIndex index = OntologyIndexer.indexOntology( "MGEDTEST", model, false );
         index.close();
