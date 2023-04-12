@@ -20,9 +20,7 @@ package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.ModelMaker;
+import com.hp.hpl.jena.rdf.model.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -83,49 +81,7 @@ public class OntologyLoader {
         timer.start();
         OntModel model = getMemoryModel( url );
 
-        URLConnection urlc = null;
-        int tries = 0;
-        while ( tries < MAX_CONNECTION_TRIES ) {
-            try {
-                urlc = new URL( url ).openConnection();
-                // help ensure mis-configured web servers aren't causing trouble.
-                urlc.setRequestProperty( "Accept", "application/rdf+xml" );
-
-                try {
-                    HttpURLConnection c = ( HttpURLConnection ) urlc;
-                    c.setInstanceFollowRedirects( true );
-                } catch ( ClassCastException e ) {
-                    // not via http, using a FileURLConnection.
-                }
-
-                if ( tries > 0 ) {
-                    log.info( "Retrying connecting to " + url + " [" + tries + "/" + MAX_CONNECTION_TRIES
-                            + " of max tries" );
-                } else {
-                    log.info( "Connecting to " + url );
-                }
-
-                urlc.connect(); // Will error here on bad URL
-
-                if ( urlc instanceof HttpURLConnection ) {
-                    String newUrl = urlc.getHeaderField( "Location" );
-
-                    if ( StringUtils.isNotBlank( newUrl ) ) {
-                        log.info( "Redirect to " + newUrl );
-                        urlc = new URL( newUrl ).openConnection();
-                        // help ensure mis-configured web servers aren't causing trouble.
-                        urlc.setRequestProperty( "Accept", "application/rdf+xml" );
-                        urlc.connect();
-                    }
-                }
-
-                break;
-            } catch ( IOException e ) {
-                // try to recover.
-                log.error( e + " retrying?" );
-                tries++;
-            }
-        }
+        URLConnection urlc = openConnection( url );
 
         if ( urlc != null ) {
             try ( InputStream in = urlc.getInputStream() ) {
@@ -235,11 +191,78 @@ public class OntologyLoader {
         ModelMaker maker = ModelFactory.createMemModelMaker();
         Model base = maker.createModel( url, false );
         spec.setImportModelMaker( maker );
-        spec.getDocumentManager().setProcessImports( false );
+        spec.getDocumentManager().setProcessImports( true );
+        spec.setImportModelGetter( new ModelGetter() {
+            @Override
+            public Model getModel( String URL ) {
+                return null;
+            }
 
+            @Override
+            public Model getModel( String URL, ModelReader loadIfAbsent ) {
+                Model model = maker.createModel( URL );
+                URLConnection urlc = openConnection( URL );
+                if ( urlc != null ) {
+                    try ( InputStream in = urlc.getInputStream() ) {
+                        return model.read( in, URL );
+                    } catch ( IOException e ) {
+                        log.error( String.format( "Failed to load from %s.", URL ), e );
+                    }
+                }
+                return loadIfAbsent.readModel( model, URL );
+            }
+        } );
         OntModel model = ModelFactory.createOntologyModel( spec, base );
         model.setStrictMode( false ); // fix for owl2 files
         return model;
+    }
+
+    public static URLConnection openConnection( String url ) {
+        URLConnection urlc = null;
+        int tries = 0;
+        while ( tries < MAX_CONNECTION_TRIES ) {
+            try {
+                urlc = new URL( url ).openConnection();
+                // help ensure mis-configured web servers aren't causing trouble.
+                urlc.setRequestProperty( "Accept", "application/rdf+xml" );
+
+                try {
+                    HttpURLConnection c = ( HttpURLConnection ) urlc;
+                    c.setInstanceFollowRedirects( true );
+                } catch ( ClassCastException e ) {
+                    // not via http, using a FileURLConnection.
+                }
+
+                if ( tries > 0 ) {
+                    log.info( "Retrying connecting to " + url + " [" + tries + "/" + MAX_CONNECTION_TRIES
+                            + " of max tries" );
+                } else {
+                    log.info( "Connecting to " + url );
+                }
+
+                urlc.connect(); // Will error here on bad URL
+
+                if ( urlc instanceof HttpURLConnection ) {
+                    String newUrl = urlc.getHeaderField( "Location" );
+
+                    if ( StringUtils.isNotBlank( newUrl ) ) {
+                        log.info( "Redirect to " + newUrl );
+                        urlc = new URL( newUrl ).openConnection();
+                        // help ensure mis-configured web servers aren't causing trouble.
+                        urlc.setRequestProperty( "Accept", "application/rdf+xml" );
+                        urlc.connect();
+                    }
+                }
+
+                break;
+            } catch ( IOException e ) {
+                // try to recover.
+                log.error( e + " retrying?" );
+                tries++;
+            }
+        }
+
+        return urlc;
     }
 
     /**

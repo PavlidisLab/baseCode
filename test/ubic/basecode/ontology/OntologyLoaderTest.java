@@ -65,4 +65,9 @@ public class OntologyLoaderTest extends AbstractOntologyTest {
         }
         assertTrue( OntologyLoader.hasChanged( name ) );
     }
+
+    @Test
+    public void testLoadModelWithImports() {
+        OntologyLoader.loadMemoryModel( "http://purl.obolibrary.org/obo/doid.owl" );
+    }
 }
