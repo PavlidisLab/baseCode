@@ -16,9 +16,8 @@ import java.util.zip.GZIPInputStream;
 
 import static java.util.Objects.requireNonNull;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertTrue;
 
-public class UberonServiceTest extends AbstractOntologyTest {
+public class UberonOntologyServiceTest extends AbstractOntologyTest {
 
     private static OntologyService uberon;
 
