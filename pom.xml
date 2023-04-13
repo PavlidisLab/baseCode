@@ -438,37 +438,6 @@
 			<url>https://maven2.pavlab.msl.ubc.ca/</url>
 		</repository>
 	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>pavlab</id>
-			<name>PavLab</name>
-			<url>https://maven2.pavlab.msl.ubc.ca/</url>
-		</pluginRepository>
-	</pluginRepositories>
-	<distributionManagement>
-		<site>
-			<id>pavlab</id>
-			<url>scpexe://frink.msl.ubc.ca/space/web/maven-sites/${project.groupId}/baseCode-${project.version}</url>
-		</site>
-	</distributionManagement>
-	<profiles>
-		<profile>
-			<!-- For deployment where host is local (and ssh isn't available for builder, e.g. CI) -->
-			<id>local-deploy</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-				<property>
-					<name>deploy.local</name>
-				</property>
-			</activation>
-			<distributionManagement>
-				<site>
-					<id>pavlab</id>
-					<url>file:///space/web/maven-sites/${project.groupId}/baseCode-${project.version}</url>
-				</site>
-			</distributionManagement>
-		</profile>
-	</profiles>
 	<properties>
 		<lucene.version>3.6.2</lucene.version>
 	</properties>
