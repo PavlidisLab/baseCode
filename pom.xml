@@ -275,6 +275,7 @@
 			<resource>
 				<directory>src</directory>
 				<includes>
+					<include>**/*.owl.gz</include>
 					<include>**/*.properties</include>
 				</includes>
 				<filtering>false</filtering>

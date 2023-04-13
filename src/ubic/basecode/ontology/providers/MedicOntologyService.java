@@ -24,6 +24,7 @@ import ubic.basecode.ontology.jena.OntologyLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.zip.GZIPInputStream;
 
 /**
  * MEDIC ONTOLOGY USED BY PHENOCARTA, its represents MESH terms as a tree so with can use the parent structure that a
@@ -39,7 +40,7 @@ public class MedicOntologyService extends AbstractOntologyService {
     /**
      * FIXME this shouldn't be hard-coded like this, we should load it like any other ontology service.
      */
-    private static final String MEDIC_ONTOLOGY_FILE = "/data/loader/ontology/medic.owl";
+    private static final String MEDIC_ONTOLOGY_FILE = "/data/loader/ontology/medic.owl.gz";
 
     @Override
     protected String getOntologyName() {
@@ -48,7 +49,7 @@ public class MedicOntologyService extends AbstractOntologyService {
 
     @Override
     protected String getOntologyUrl() {
-        return MEDIC_ONTOLOGY_FILE;
+        return "classpath:" + MEDIC_ONTOLOGY_FILE;
     }
 
     @Override
@@ -57,7 +58,7 @@ public class MedicOntologyService extends AbstractOntologyService {
             if ( is == null ) {
                 throw new RuntimeException( String.format( "The MEDIC ontology was not found in classpath at %s.", MEDIC_ONTOLOGY_FILE ) );
             }
-            return loadModelFromStream( is );
+            return loadModelFromStream( new GZIPInputStream( is ) );
         } catch ( IOException e ) {
             throw new RuntimeException( e );
         }
