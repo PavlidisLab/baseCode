@@ -18,6 +18,7 @@
  */
 package ubic.basecode.ontology.jena;
 
+import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.*;
@@ -200,6 +201,8 @@ public class OntologyLoader {
         ModelMaker maker = ModelFactory.createMemModelMaker();
         Model base = maker.createModel( url, false );
         spec.setImportModelMaker( maker );
+        // the spec is a shallow copy, so we need to copy the document manager as well to modify it
+        spec.setDocumentManager( new OntDocumentManager() );
         spec.getDocumentManager().setProcessImports( processImports );
         spec.setImportModelGetter( new ModelGetter() {
             @Override
