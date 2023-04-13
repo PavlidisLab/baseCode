@@ -19,6 +19,7 @@
 
 package ubic.basecode.ontology.providers;
 
+import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
 import ubic.basecode.util.Configuration;
 
 /**
@@ -29,21 +30,11 @@ public class ObiService extends AbstractOntologyMemoryBackedService {
 
     private static final String ONTOLOGY_URL = "url.obiOntology";
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.ontology.providers.AbstractOntologyService#getOntologyName()
-     */
     @Override
     protected String getOntologyName() {
         return "obiOntology";
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.ontology.providers.AbstractOntologyService#getOntologyUrl()
-     */
     @Override
     protected String getOntologyUrl() {
         return Configuration.getString( ONTOLOGY_URL );

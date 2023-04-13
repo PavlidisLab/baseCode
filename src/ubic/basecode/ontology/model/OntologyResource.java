@@ -1,8 +1,8 @@
 /*
  * The basecode project
- * 
+ *
  * Copyright (c) 2007-2019 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,15 +18,32 @@
  */
 package ubic.basecode.ontology.model;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 
 /**
  * @author pavlidis
- * 
  */
 public interface OntologyResource extends Serializable, Comparable<OntologyResource> {
 
-    public String getLabel();
+    /**
+     * A label, if known, otherwise null.
+     */
+    String getLabel();
 
-    public String getUri();
+    /**
+     * A URI if known, otherwise null.
+     */
+    String getUri();
+
+    /**
+     * Whether the resource is marked as obsolete.
+     */
+    boolean isObsolete();
+
+    /**
+     * If this is result from a free-text search, a corresponding score, otherwise null.
+     */
+    @Nullable
+    Double getScore();
 }

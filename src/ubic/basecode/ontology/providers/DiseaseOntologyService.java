@@ -18,6 +18,7 @@
  */
 package ubic.basecode.ontology.providers;
 
+import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
 import ubic.basecode.util.Configuration;
 
 /**
@@ -29,11 +30,6 @@ public class DiseaseOntologyService extends AbstractOntologyMemoryBackedService 
 
     private static final String DISEASE_ONTOLOGY_URL = "url.diseaseOntology";
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.gemma.ontology.AbstractOntologyService#getOntologyName()
-     */
     @Override
     protected String getOntologyName() {
         return "diseaseOntology";

@@ -6,8 +6,8 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="ubic.basecode" level="warn" additivity="false">
+        <Root level="info">
             <AppenderRef ref="Console"/>
-        </Logger>
+        </Root>
     </Loggers>
 </Configuration>

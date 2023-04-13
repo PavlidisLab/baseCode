@@ -1,8 +1,8 @@
 /*
  * The basecode project
- * 
+ *
  * Copyright (c) 2007-2019 Columbia University
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,48 +22,77 @@ import java.util.Collection;
 
 /**
  * @author Paul
- * 
  */
 public interface OntologyTerm extends OntologyResource {
 
-    public Collection<String> getAlternativeIds();
+    Collection<String> getAlternativeIds();
 
-    public Collection<AnnotationProperty> getAnnotations();
+    Collection<AnnotationProperty> getAnnotations();
 
     /**
-     * @param direct return only the immediate children; if false, return all of them down to the leaves.
-     * @return
+     * Obtain the children of this term via subclasses and additional properties.
+     *
+     * @see #getChildren(boolean, boolean)
      */
-    public Collection<OntologyTerm> getChildren( boolean direct );
+    default Collection<OntologyTerm> getChildren( boolean direct ) {
+        return getChildren( direct, true, false );
+    }
 
-    public String getComment();
+    default Collection<OntologyTerm> getChildren( boolean direct, boolean includeAdditionalProperties ) {
+        return getChildren( direct, includeAdditionalProperties, false );
+    }
 
-    public Collection<OntologyIndividual> getIndividuals();
+    /**
+     * Obtain the children of this term via subclass relationships and possibly some additional properties.
+     *
+     * @param direct                      return only the immediate children; if false, return all of them down to the leaves.
+     * @param includeAdditionalProperties include terms matched via additional properties
+     */
+    Collection<OntologyTerm> getChildren( boolean direct, boolean includeAdditionalProperties, boolean keepObsoletes );
 
-    public Collection<OntologyIndividual> getIndividuals( boolean direct );
+    String getComment();
 
-    public String getLocalName();
+    default Collection<OntologyIndividual> getIndividuals() {
+        return getIndividuals( true );
+    }
 
-    public Object getModel();
+    Collection<OntologyIndividual> getIndividuals( boolean direct );
+
+    String getLocalName();
+
+    Object getModel();
 
     /**
      * Note that any restriction superclasses are not returned, unless they are has_proper_part
-     * 
+     *
      * @param direct
      * @return
      */
-    public Collection<OntologyTerm> getParents( boolean direct );
+    default Collection<OntologyTerm> getParents( boolean direct ) {
+        return getParents( direct, true, false );
+    }
 
-    public Collection<OntologyRestriction> getRestrictions();
+    default Collection<OntologyTerm> getParents( boolean direct, boolean includeAdditionalProperties ) {
+        return getParents( direct, includeAdditionalProperties, false );
+    }
 
-    public String getTerm();
+    Collection<OntologyTerm> getParents( boolean direct, boolean includeAdditionalProperties, boolean keepObsoletes );
 
-    @Override
-    public String getUri();
+    Collection<OntologyRestriction> getRestrictions();
 
-    public boolean isRoot();
+    /**
+     * @deprecated use {@link #getLabel()} instead.
+     */
+    @Deprecated
+    String getTerm();
 
-    /** check to see if the term is obsolete, if it is it should not be used */
-    public boolean isTermObsolete();
+    boolean isRoot();
 
+    /**
+     * check to see if the term is obsolete, if it is it should not be used
+     *
+     * @deprecated use {@link #isObsolete()} instead
+     */
+    @Deprecated
+    boolean isTermObsolete();
 }

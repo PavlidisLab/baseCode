@@ -19,6 +19,7 @@
 
 package ubic.basecode.ontology.providers;
 
+import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
 import ubic.basecode.util.Configuration;
 
 /**
@@ -31,21 +32,11 @@ public class HumanPhenotypeOntologyService extends AbstractOntologyMemoryBackedS
 
     private static final String ONTOLOGY_URL = "url.humanPhenotypeOntology";
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.ontology.providers.AbstractOntologyService#getOntologyName()
-     */
     @Override
     protected String getOntologyName() {
         return "humanPhenotypeOntology";
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ubic.basecode.ontology.providers.AbstractOntologyService#getOntologyUrl()
-     */
     @Override
     protected String getOntologyUrl() {
         return Configuration.getString( ONTOLOGY_URL );
