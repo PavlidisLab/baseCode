@@ -16,7 +16,6 @@ package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.OntModel;
 
-import javax.annotation.Nullable;
 import java.io.InputStream;
 
 /**
@@ -33,7 +32,7 @@ public abstract class AbstractOntologyMemoryBackedService extends AbstractOntolo
 
     @Override
     protected OntModel loadModel() {
-        return OntologyLoader.loadMemoryModel( this.getOntologyUrl(), this.getOntologyName(), this.getProcessImport() );
+        return OntologyLoader.loadMemoryModel( this.getOntologyUrl(), this.getCacheName(), this.getProcessImport() );
     }
 
     @Override

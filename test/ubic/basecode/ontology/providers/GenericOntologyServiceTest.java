@@ -23,6 +23,7 @@ import org.junit.Test;
 import ubic.basecode.ontology.AbstractOntologyTest;
 import ubic.basecode.ontology.jena.OntologyLoader;
 import ubic.basecode.ontology.model.OntologyTerm;
+import ubic.basecode.util.Configuration;
 
 import java.io.File;
 import java.net.URL;
@@ -34,48 +35,17 @@ import static org.junit.Assume.assumeTrue;
 /**
  * @author mjacobson
  */
-public class AbstractOntologyServiceTest extends AbstractOntologyTest {
+public class GenericOntologyServiceTest extends AbstractOntologyTest {
 
     private static final String dataResource = "/data/nif.organism.test.owl.xml";
-
-    @Test
-    public void testCacheOntologyToDisk() throws Exception {
-        String name = "fooTEST1234";
-
-        File f = OntologyLoader.getDiskCachePath( name );
-        assertNotNull( f );
-        if ( f.exists() ) {
-            assumeTrue( String.format( "Failed to delete existing ontology cache file %s.", f.getAbsolutePath() ), f.delete() );
-        }
-
-        assertFalse( f.exists() );
-
-        URL resource = this.getClass().getResource( dataResource );
-        assertNotNull( resource );
-        GenericOntologyService s = createService( name, resource.toString(), true );
-
-        Collection<OntologyTerm> r = s.findTerm( "Mouse" );
-        assertFalse( r.isEmpty() );
-
-        // Check if cache was created
-        assertTrue( f.exists() );
-        assertNotEquals( 0, f.length() );
-
-        // Recreate OntologyService using this cache file
-        s = createService( name, "/data/NONEXISTENT_RESOURCE", true );
-
-        r = s.findTerm( "Mouse" );
-        assertFalse( r.isEmpty() );
-
-        // Recreate OntologyService with bad URL and no cache
-        assertThrows( RuntimeException.class, () -> createService( "NO_CACHE_WITH_THIS_NAME", "/data/NONEXISTENT_RESOURCE", true ) );
-    }
 
     @Test
     public void testGenericOntologyServiceMem() throws Exception {
         URL resource = this.getClass().getResource( dataResource );
         assertNotNull( resource );
-        GenericOntologyService s = createService( "foo", resource.toString(), true );
+        GenericOntologyService s1 = new GenericOntologyService( "foo", resource.toString(), true, false );
+        s1.initialize( true, false );
+        GenericOntologyService s = s1;
 
         Collection<OntologyTerm> r = s.findTerm( "Mouse" );
         assertFalse( r.isEmpty() );
@@ -85,7 +55,7 @@ public class AbstractOntologyServiceTest extends AbstractOntologyTest {
     public void testInitializeInBackgroundThread() throws InterruptedException {
         URL resource = this.getClass().getResource( dataResource );
         assertNotNull( resource );
-        GenericOntologyService s = new GenericOntologyService( "foo", resource.toString(), false );
+        GenericOntologyService s = new GenericOntologyService( "foo", resource.toString() );
         s.startInitializationThread( true, false );
         assertTrue( s.isInitializationThreadAlive() );
         s.cancelInitializationThread();
@@ -94,9 +64,28 @@ public class AbstractOntologyServiceTest extends AbstractOntologyTest {
         assertFalse( s.isInitializationThreadAlive() );
     }
 
-    private GenericOntologyService createService( String name, String resourceURL, boolean cache ) {
-        GenericOntologyService s = new GenericOntologyService( name, resourceURL, cache, false );
-        s.initialize( true, false );
-        return s;
+    @Test
+    public void testWithoutOntologyCacheDir() {
+        String prevCacheDir = Configuration.getString( "ontology.cache.dir" );
+        String prevIndexDir = Configuration.getString( "ontology.index.dir" );
+        try {
+            Configuration.setString( "ontology.cache.dir", "" );
+            Configuration.setString( "ontology.index.dir", "" );
+            URL resource = this.getClass().getResource( dataResource );
+            assertNotNull( resource );
+            new GenericOntologyService( "foo", resource.toString(), false, false )
+                    .initialize( true, false );
+            new GenericOntologyService( "foo", resource.toString(), true, false )
+                    .initialize( true, true );
+            // cannot force index without a cache directory
+            IllegalArgumentException e = assertThrows( IllegalArgumentException.class, () -> {
+                new GenericOntologyService( "foo", resource.toString(), false, false )
+                        .initialize( true, true );
+            } );
+            assertTrue( e.getMessage().matches( "No cache directory is set for foo \\[file:.+], cannot force indexing." ) );
+        } finally {
+            Configuration.setString( "ontology.cache.dir", prevCacheDir );
+            Configuration.setString( "ontology.index.dir", prevIndexDir );
+        }
     }
 }

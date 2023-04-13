@@ -259,7 +259,6 @@ public class OntologySearchTest extends AbstractOntologyTest {
         OntClass brain = uberon.getOntClass( "http://purl.obolibrary.org/obo/UBERON_0000955" );
         assertNotNull( brain );
         List<OntologySearch.SearchResult<OntClass>> searchResults = OntologySearch.matchClasses( uberon, uberonIndex, "brain" ).toList();
-        System.out.println( searchResults );
         assertEquals( 446, searchResults.size() );
         assertEquals( 3.334063, searchResults.get( 0 ).score, 0.000001 );
         assertEquals( 128, new HashSet<>( searchResults ).size() );

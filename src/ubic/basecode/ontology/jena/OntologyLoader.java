@@ -91,52 +91,52 @@ public class OntologyLoader {
         timer.start();
         OntModel model = getMemoryModel( url, processImports );
 
-        URLConnection urlc = openConnection( url );
-
-        if ( urlc != null ) {
+        boolean attemptToLoadFromDisk = false;
+        URLConnection urlc = null;
+        try {
+            urlc = openConnection( url );
             try ( InputStream in = urlc.getInputStream() ) {
                 Reader reader;
                 if ( cacheName != null ) {
                     // write tmp to disk
                     File tempFile = getTmpDiskCachePath( cacheName );
-                    tempFile.getParentFile().mkdirs();
+                    FileUtils.createParentDirectories( tempFile );
                     Files.copy( in, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
                     reader = new FileReader( tempFile );
-
                 } else {
                     // Skip the cache
                     reader = new InputStreamReader( in );
                 }
-
                 try ( BufferedReader buf = new BufferedReader( reader ) ) {
                     model.read( buf, url );
                 }
-
-                log.info( "Load model: " + timer.getTime() + "ms" );
-            } catch ( IOException e ) {
-                log.error( e.getMessage(), e );
+                log.info( "Loading ontology model for " + url + " took " + timer.getTime() + "ms" );
+            }
+        } catch ( IOException e ) {
+            log.error( "Failed to load ontology model for " + url + ", will attempt to load from disk.", e );
+            attemptToLoadFromDisk = true;
+        } finally {
+            if ( urlc instanceof HttpURLConnection ) {
+                ( ( HttpURLConnection ) urlc ).disconnect();
             }
         }
 
         if ( cacheName != null ) {
-
             File f = getDiskCachePath( cacheName );
             File tempFile = getTmpDiskCachePath( cacheName );
             File oldFile = getOldDiskCachePath( cacheName );
-
-            if ( model.isEmpty() ) {
+            if ( attemptToLoadFromDisk ) {
                 // Attempt to load from disk cache
-
-                if ( f.exists() && !f.isDirectory() ) {
+                if ( f.isFile() ) {
                     try ( BufferedReader buf = new BufferedReader( new FileReader( f ) ) ) {
                         model.read( buf, url );
                         // We successfully loaded the cached ontology. Copy the loaded ontology to oldFile
                         // so that we don't recreate indices during initialization based on a false change in
                         // the ontology.
+                        FileUtils.createParentDirectories( oldFile );
                         Files.copy( f.toPath(), oldFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
                         log.info( "Load model from disk: " + timer.getTime() + "ms" );
                     } catch ( IOException e ) {
-                        log.error( e.getMessage(), e );
                         throw new RuntimeException(
                                 "Ontology failed load from URL (" + url + ") and disk cache: " + cacheName );
                     }
@@ -144,53 +144,52 @@ public class OntologyLoader {
                     throw new RuntimeException(
                             "Ontology failed load from URL (" + url + ") and disk cache does not exist: " + cacheName );
                 }
-
-            } else {
+            } else if ( tempFile.exists() ) {
                 // Model was successfully loaded into memory from URL with given cacheName
                 // Save cache to disk (rename temp file)
                 log.info( "Caching ontology to disk: " + cacheName + " under " + f.getAbsolutePath() );
                 try {
                     // Need to compare previous to current so instead of overwriting we'll move the old file
-                    f.createNewFile();
-                    Files.move( f.toPath(), oldFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
+                    if ( f.exists() ) {
+                        FileUtils.createParentDirectories( oldFile );
+                        Files.move( f.toPath(), oldFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
+                    } else {
+                        FileUtils.createParentDirectories( f );
+                    }
                     Files.move( tempFile.toPath(), f.toPath(), StandardCopyOption.REPLACE_EXISTING );
                 } catch ( IOException e ) {
-                    log.error( e.getMessage(), e );
+                    log.error( "Failed to cache ontology " + url + " to disk.", e );
                 }
             }
-
         }
-
-        assert !model.isEmpty();
 
         return model;
     }
 
     public static boolean hasChanged( String cacheName ) {
-        boolean changed = false; // default
+        // default
         if ( StringUtils.isBlank( cacheName ) ) {
-            return changed;
+            return false;
         }
-
-        File newFile = getDiskCachePath( cacheName );
-        File oldFile = getOldDiskCachePath( cacheName );
-
         try {
+            File newFile = getDiskCachePath( cacheName );
+            File oldFile = getOldDiskCachePath( cacheName );
             // This might be slow considering it calls IOUtils.contentsEquals which compares byte-by-byte
             // in the worst case scenario.
             // In this case consider using NIO for higher-performance IO using Channels and Buffers.
             // Ex. Use a 4MB Memory-Mapped IO operation.
-            changed = !FileUtils.contentEquals( newFile, oldFile );
+            return !FileUtils.contentEquals( newFile, oldFile );
         } catch ( IOException e ) {
-            log.error( e.getMessage() );
+            log.error( "Failed to compare current and previous cached ontologies, will report as not changed.", e );
+            return false;
         }
-
-        return changed;
-
     }
 
-    public static void deleteOldCache( String cacheName ) {
-        getOldDiskCachePath( cacheName ).delete();
+    public static void deleteOldCache( String cacheName ) throws IOException {
+        File dir = getOldDiskCachePath( cacheName );
+        if ( dir.exists() ) {
+            FileUtils.delete( dir );
+        }
     }
 
     /**
@@ -211,15 +210,19 @@ public class OntologyLoader {
             @Override
             public Model getModel( String URL, ModelReader loadIfAbsent ) {
                 Model model = maker.createModel( URL );
-                URLConnection urlc = openConnection( URL );
-                if ( urlc != null ) {
+                URLConnection urlc = null;
+                try {
+                    urlc = openConnection( URL );
                     try ( InputStream in = urlc.getInputStream() ) {
                         return model.read( in, URL );
-                    } catch ( JenaException | IOException e ) {
-                        throw new CannotCreateException( String.format( "Failed to resolve import %s for %s.", URL, url ), e );
+                    }
+                } catch ( JenaException | IOException e ) {
+                    throw new CannotCreateException( String.format( "Failed to resolve import %s for %s.", URL, url ), e );
+                } finally {
+                    if ( urlc instanceof HttpURLConnection ) {
+                        ( ( HttpURLConnection ) urlc ).disconnect();
                     }
                 }
-                return loadIfAbsent.readModel( model, URL );
             }
         } );
         OntModel model = ModelFactory.createOntologyModel( spec, base );
@@ -227,51 +230,34 @@ public class OntologyLoader {
         return model;
     }
 
-    public static URLConnection openConnection( String url ) {
-        URLConnection urlc = null;
-        int tries = 0;
-        while ( tries < MAX_CONNECTION_TRIES ) {
-            try {
-                urlc = new URL( url ).openConnection();
-                // help ensure mis-configured web servers aren't causing trouble.
-                urlc.setRequestProperty( "Accept", "application/rdf+xml" );
+    public static URLConnection openConnection( String url ) throws IOException {
+        URLConnection urlc = openConnectionInternal( url );
 
-                try {
-                    HttpURLConnection c = ( HttpURLConnection ) urlc;
-                    c.setInstanceFollowRedirects( true );
-                } catch ( ClassCastException e ) {
-                    // not via http, using a FileURLConnection.
+        // this happens if there is a change of protocol (http:// -> https://)
+        if ( urlc instanceof HttpURLConnection ) {
+            int code = ( ( HttpURLConnection ) urlc ).getResponseCode();
+            String newUrl = urlc.getHeaderField( "Location" );
+            if ( code >= 300 && code < 400 ) {
+                if ( StringUtils.isBlank( newUrl ) ) {
+                    throw new RuntimeException( String.format( "Redirect response for %s is lacking a 'Location' header.", url ) );
                 }
-
-                if ( tries > 0 ) {
-                    log.info( "Retrying connecting to " + url + " [" + tries + "/" + MAX_CONNECTION_TRIES
-                            + " of max tries" );
-                } else {
-                    log.info( "Connecting to " + url );
-                }
-
-                urlc.connect(); // Will error here on bad URL
-
-                if ( urlc instanceof HttpURLConnection ) {
-                    String newUrl = urlc.getHeaderField( "Location" );
-
-                    if ( StringUtils.isNotBlank( newUrl ) ) {
-                        log.info( "Redirect to " + newUrl );
-                        urlc = new URL( newUrl ).openConnection();
-                        // help ensure mis-configured web servers aren't causing trouble.
-                        urlc.setRequestProperty( "Accept", "application/rdf+xml" );
-                        urlc.connect();
-                    }
-                }
-
-                break;
-            } catch ( IOException e ) {
-                // try to recover.
-                log.error( e + " retrying?" );
-                tries++;
+                log.info( "Redirect to " + newUrl + " from " + url );
+                urlc = openConnectionInternal( newUrl );
             }
         }
 
+        return urlc;
+    }
+
+    private static URLConnection openConnectionInternal( String url ) throws IOException {
+        URLConnection urlc = new URL( url ).openConnection();
+        // help ensure mis-configured web servers aren't causing trouble.
+        urlc.setRequestProperty( "Accept", "application/rdf+xml" );
+        if ( urlc instanceof HttpURLConnection ) {
+            ( ( HttpURLConnection ) urlc ).setInstanceFollowRedirects( true );
+        }
+        log.info( "Connecting to " + url );
+        urlc.connect(); // Will error here on bad URL
         return urlc;
     }
 
@@ -279,31 +265,23 @@ public class OntologyLoader {
      * Obtain the path for the ontology cache.
      */
     public static File getDiskCachePath( String name ) {
-        String ontologyDir = Configuration.getString( "ontology.cache.dir" ); // e.g., /something/gemmaData/ontologyCache
-        if ( StringUtils.isBlank( ontologyDir ) ) {
-            throw new IllegalArgumentException( "The 'ontology.cache.dir' configuration must be set to cache ontologies." );
-        }
         if ( StringUtils.isBlank( name ) ) {
             throw new IllegalArgumentException( "The ontology must have a suitable name for being loaded from cache." );
         }
-
-        if ( !new File( ontologyDir ).exists() ) {
-            new File( ontologyDir ).mkdirs();
+        String ontologyDir = Configuration.getString( "ontology.cache.dir" ); // e.g., /something/gemmaData/ontologyCache
+        if ( StringUtils.isBlank( ontologyDir ) ) {
+            return Paths.get( System.getProperty( "java.io.tmpdir" ), "ontologyCache", "ontology", name ).toFile();
         }
-
         return Paths.get( ontologyDir, "ontology", name ).toFile();
     }
 
-    private static File getOldDiskCachePath( String name ) {
+    static File getOldDiskCachePath( String name ) {
         File indexFile = getDiskCachePath( name );
         return new File( indexFile.getAbsolutePath() + OLD_CACHE_SUFFIX );
-
     }
 
-    private static File getTmpDiskCachePath( String name ) {
+    static File getTmpDiskCachePath( String name ) {
         File indexFile = getDiskCachePath( name );
         return new File( indexFile.getAbsolutePath() + TMP_CACHE_SUFFIX );
-
     }
-
 }

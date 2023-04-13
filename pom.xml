@@ -393,6 +393,8 @@
 						<include>**/*Test.java</include>
 					</includes>
 					<excludes>
+						<!-- these tests should be run manually since they require external data -->
+						<exclude>**/providers/*Test.java</exclude>
 						<exclude>**/AllTests.java</exclude>
 						<exclude>**/gui/Test*.java</exclude>
 						<exclude>**/AbstractTest*.java</exclude>
