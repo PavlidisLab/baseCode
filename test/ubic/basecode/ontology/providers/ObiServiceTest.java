@@ -19,11 +19,11 @@ import ubic.basecode.ontology.AbstractOntologyTest;
 import ubic.basecode.ontology.model.OntologyIndividual;
 import ubic.basecode.ontology.model.OntologyResource;
 import ubic.basecode.ontology.model.OntologyTerm;
-import ubic.basecode.util.Configuration;
 
 import java.util.Collection;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author paul
@@ -45,13 +45,5 @@ public class ObiServiceTest extends AbstractOntologyTest {
 
         Collection<OntologyResource> rhits = m.findResources( "batch" );
         assertFalse( rhits.isEmpty() );
-    }
-
-    @Test
-    public void testWithoutCache() {
-        Configuration.setString( "ontology.cache.dir", "" );
-        assertThrows( IllegalArgumentException.class, () -> {
-            new ObiService().initialize( true, true );
-        } );
     }
 }

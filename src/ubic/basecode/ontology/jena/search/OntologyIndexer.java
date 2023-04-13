@@ -1,8 +1,8 @@
 /*
  * The basecode project
- * 
+ *
  * Copyright (c) 2007-2019 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,9 +18,8 @@
  */
 package ubic.basecode.ontology.jena.search;
 
-import java.io.File;
-import java.io.IOException;
-
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.jena.larq.IndexBuilderSubject;
@@ -36,24 +35,23 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-
 import ubic.basecode.util.Configuration;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+
 /**
- * @author  pavlidis
- * 
+ * @author pavlidis
  */
 public class OntologyIndexer {
 
     private static Logger log = LoggerFactory.getLogger( OntologyIndexer.class );
 
     /**
-     * @param  name
-     * @return      indexlarq with default analyzer (English), or null if no index is available. DOES not create the
-     *              index if it doesn't exist.
+     * @param name
+     * @return indexlarq with default analyzer (English), or null if no index is available. DOES not create the
+     * index if it doesn't exist.
      */
     @SuppressWarnings("resource")
     public static SearchIndex getSubjectIndex( String name ) {
@@ -62,8 +60,8 @@ public class OntologyIndexer {
     }
 
     /**
-     * @param  name
-     * @param  model
+     * @param name
+     * @param model
      * @return
      */
     public static SearchIndex indexOntology( String name, OntModel model ) {
@@ -73,11 +71,11 @@ public class OntologyIndexer {
     /**
      * Loads or creates an index from an existing OntModel. Any existing index will loaded unless force=true. It will be
      * created if there isn't one already, or if force=true.
-     * 
-     * @param  name
-     * @param  model
-     * @param  force
-     * @return       index
+     *
+     * @param name
+     * @param model
+     * @param force
+     * @return index
      */
     public static SearchIndex indexOntology( String name, OntModel model, boolean force ) {
 
@@ -96,29 +94,26 @@ public class OntologyIndexer {
     }
 
     /**
-     * @param  name
+     * @param name
      * @return
      */
     private static File getIndexPath( String name ) {
+        if ( StringUtils.isBlank( name ) ) {
+            throw new IllegalArgumentException( "The ontology must have a suitable name for being indexed." );
+        }
         String ontologyDir = Configuration.getString( "ontology.index.dir" ); // e.g., /something/gemmaData/compass
         if ( StringUtils.isBlank( ontologyDir ) ) {
-            ontologyDir = System.getProperty( "java.io.tmpdir" );
+            return Paths.get( System.getProperty( "java.io.tmpdir" ), "searchIndices", "ontology", name ).toFile();
         }
-
-        assert ontologyDir != null;
-
-        String path = ontologyDir + File.separator + "ontology" + File.separator + name;
-
-        File indexdir = new File( path );
-        return indexdir;
+        return Paths.get( ontologyDir, "ontology", name ).toFile();
     }
 
     /**
      * Find the search index (will not create it)
-     * 
-     * @param  name
-     * @param  analyzer
-     * @return          Index, or null if there is no index.
+     *
+     * @param name
+     * @param analyzer
+     * @return Index, or null if there is no index.
      */
     @SuppressWarnings("resource")
     private static SearchIndex getSubjectIndex( String name, Analyzer analyzer ) {
@@ -150,12 +145,12 @@ public class OntologyIndexer {
 
     /**
      * Create an on-disk index from an existing OntModel. Any existing index will be deleted/overwritten.
-     * 
-     * @see             {@link http://jena.apache.org/documentation/larq/}
-     * @param  datafile or uri
-     * @param  name     used to refer to this index later
-     * @param  model
+     *
+     * @param datafile or uri
+     * @param name     used to refer to this index later
+     * @param model
      * @return
+     * @see {@link http://jena.apache.org/documentation/larq/}
      */
     @SuppressWarnings("resource")
     private static synchronized SearchIndex index( String name, OntModel model ) {

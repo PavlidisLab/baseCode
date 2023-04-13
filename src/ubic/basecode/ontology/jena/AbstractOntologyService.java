@@ -44,6 +44,7 @@ import ubic.basecode.ontology.search.OntologySearchException;
 import ubic.basecode.util.Configuration;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
@@ -108,6 +109,15 @@ public abstract class AbstractOntologyService implements OntologyService {
         String ontologyName = getOntologyName();
         String cacheName = getCacheName();
 
+        // Detect configuration problems.
+        if ( StringUtils.isBlank( ontologyUrl ) ) {
+            throw new IllegalStateException( "URL not defined for %s: ontology cannot be loaded. (" + this + ")" );
+        }
+
+        if ( cacheName == null && forceIndexing ) {
+            throw new IllegalArgumentException( String.format( "No cache directory is set for %s, cannot force indexing.", this ) );
+        }
+
         boolean loadOntology = isEnabled();
 
         // If loading ontologies is disabled in the configuration, return
@@ -115,16 +125,6 @@ public abstract class AbstractOntologyService implements OntologyService {
             log.debug( "Loading {} is disabled (force=false, Configuration load.{}=false)",
                     this, ontologyName );
             return;
-        }
-
-        // Detect configuration problems.
-        if ( StringUtils.isBlank( ontologyUrl ) ) {
-            throw new IllegalStateException( "URL not defined for %s: ontology cannot be loaded. (" + this + ")" );
-        }
-
-        // This thread indexes ontology and creates local cache for uri->ontology terms mappings.
-        if ( !forceIndexing ) {
-            log.info( "{} index will *not* be refreshed unless the ontology has changed or the index is missing", this );
         }
 
         log.info( "Loading ontology: {}...", this );
@@ -150,22 +150,18 @@ public abstract class AbstractOntologyService implements OntologyService {
                 .filterKeep( new RestrictionWithOnPropertyFilter( additionalProperties ) )
                 .toSet();
 
-        //Checks if the current ontology has changed since it was last loaded.
-        boolean changed = cacheName == null || OntologyLoader.hasChanged( cacheName );
-        boolean indexExists = cacheName != null && OntologyIndexer.getSubjectIndex( cacheName ) != null;
-        boolean forceReindexing = forceLoad && forceIndexing;
-
-        /*
-         * Indexing is slow, don't do it if we don't have to.
-         */
-        boolean force = forceReindexing || changed || !indexExists;
-
         // indexing is lengthy, don't bother if we're interrupted
         if ( checkIfInterrupted() )
             return;
 
         if ( cacheName != null ) {
-            index = OntologyIndexer.indexOntology( cacheName, model, force );
+            //Checks if the current ontology has changed since it was last loaded.
+            boolean changed = OntologyLoader.hasChanged( cacheName );
+            boolean indexExists = OntologyIndexer.getSubjectIndex( cacheName ) != null;
+            boolean forceReindexing = forceLoad && forceIndexing;
+            // indexing is slow, don't do it if we don't have to.
+            index = OntologyIndexer.indexOntology( cacheName, model,
+                    forceReindexing || changed || !indexExists );
         } else {
             index = null;
         }
@@ -183,7 +179,11 @@ public abstract class AbstractOntologyService implements OntologyService {
             this.isInitialized = true;
             if ( cacheName != null ) {
                 // now that the terms have been replaced, we can clear old caches
-                OntologyLoader.deleteOldCache( cacheName );
+                try {
+                    OntologyLoader.deleteOldCache( cacheName );
+                } catch ( IOException e ) {
+                    log.error( String.format( String.format( "Failed to delete old cache directory for %s.", this ), e ) );
+                }
             }
         } finally {
             lock.unlock();

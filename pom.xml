@@ -5,7 +5,7 @@
 	<name>baseCode</name>
 	<groupId>baseCode</groupId>
 	<artifactId>baseCode</artifactId>
-	<version>1.1.15</version>
+	<version>1.1.16</version>
 	<inceptionYear>2003</inceptionYear>
 	<description>
 		<![CDATA[Data structures, math and statistics tools, and utilities that are often needed across projects.]]>
@@ -275,6 +275,7 @@
 			<resource>
 				<directory>src</directory>
 				<includes>
+					<include>**/*.owl.gz</include>
 					<include>**/*.properties</include>
 				</includes>
 				<filtering>false</filtering>
@@ -384,7 +385,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.22.2</version>
 				<configuration>
-					<argLine>-enableassertions -Xmx1024m -Djava.awt.headless=true</argLine>
+					<argLine>-enableassertions -Djava.awt.headless=true</argLine>
 					<reportsDirectory>target/surefire-reports</reportsDirectory>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
 					<includes>
@@ -392,6 +393,8 @@
 						<include>**/*Test.java</include>
 					</includes>
 					<excludes>
+						<!-- these tests should be run manually since they require external data -->
+						<exclude>**/providers/*Test.java</exclude>
 						<exclude>**/AllTests.java</exclude>
 						<exclude>**/gui/Test*.java</exclude>
 						<exclude>**/AbstractTest*.java</exclude>

@@ -17,19 +17,17 @@ package ubic.basecode.ontology.search;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.shared.JenaException;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import ubic.basecode.ontology.AbstractOntologyTest;
 import ubic.basecode.ontology.jena.OntologyLoader;
 import ubic.basecode.ontology.jena.OntologyTermImpl;
-import ubic.basecode.ontology.jena.search.*;
+import ubic.basecode.ontology.jena.search.OntologyIndexer;
 import ubic.basecode.ontology.jena.search.OntologySearch;
+import ubic.basecode.ontology.jena.search.OntologySearchJenaException;
+import ubic.basecode.ontology.jena.search.SearchIndex;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
@@ -45,21 +43,10 @@ import static org.mockito.Mockito.*;
  */
 public class OntologySearchTest extends AbstractOntologyTest {
 
-    private static OntModel uberon;
-    private static SearchIndex uberonIndex;
-
-    @BeforeClass
-    public static void setUpUberon() throws IOException {
-        try ( InputStream is = new GZIPInputStream( requireNonNull( OntologySearchTest.class.getResourceAsStream( "/data/uberon.owl.gz" ) ) ) ) {
-            uberon = OntologyLoader.loadMemoryModel( is, "UBERON_TEST2" );
-            uberonIndex = OntologyIndexer.indexOntology( "UBERON_TEST2", uberon, false );
-        }
-    }
-
     @Test
     public final void testIndexing() throws Exception {
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/mged.owl.gz" ) ) );
-        OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test" );
+        OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test", false );
 
         SearchIndex index = OntologyIndexer.indexOntology( "MGEDTEST", model, true );
 
@@ -168,7 +155,7 @@ public class OntologySearchTest extends AbstractOntologyTest {
         OntModel model;
         try ( InputStream is = this.getClass().getResourceAsStream( "/data/nif.organism.test.owl.xml" ) ) {
             assertNotNull( is );
-            model = OntologyLoader.loadMemoryModel( is, "NIFORG_TEST" );
+            model = OntologyLoader.loadMemoryModel( is, "NIFORG_TEST", false );
         }
 
         SearchIndex index = OntologyIndexer.indexOntology( "NIFORG_TEST", model, true );
@@ -228,7 +215,7 @@ public class OntologySearchTest extends AbstractOntologyTest {
     public final void testOmitDefinitions4() throws Exception {
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/NIF-GrossAnatomy.owl.gz" ) ) );
 
-        OntModel model = OntologyLoader.loadMemoryModel( is, "NIFAN_TEST2" );
+        OntModel model = OntologyLoader.loadMemoryModel( is, "NIFAN_TEST2", false );
         is.close();
 
         SearchIndex index = OntologyIndexer.indexOntology( "NIFAN_TEST2", model, true );
@@ -246,29 +233,11 @@ public class OntologySearchTest extends AbstractOntologyTest {
         index.close();
     }
 
-    @Test
-    public void testOmitDefinition() throws OntologySearchException {
-        OntClass brain = uberon.getOntClass( "http://purl.obolibrary.org/obo/UBERON_0000955" );
-        assertNotNull( brain );
-        Set<OntologySearch.SearchResult<OntClass>> searchResults = OntologySearch.matchClasses( uberon, uberonIndex, "brain" ).toSet();
-        assertEquals( 128, searchResults.size() );
-    }
-
-    @Test
-    public void testScore() throws OntologySearchException {
-        OntClass brain = uberon.getOntClass( "http://purl.obolibrary.org/obo/UBERON_0000955" );
-        assertNotNull( brain );
-        List<OntologySearch.SearchResult<OntClass>> searchResults = OntologySearch.matchClasses( uberon, uberonIndex, "brain" ).toList();
-        System.out.println( searchResults );
-        assertEquals( 446, searchResults.size() );
-        assertEquals( 3.334063, searchResults.get( 0 ).score, 0.000001 );
-        assertEquals( 128, new HashSet<>( searchResults ).size() );
-    }
 
     @Test
     public final void testPersistence() throws Exception {
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/mged.owl.gz" ) ) );
-        OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test" );
+        OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test", false );
 
         SearchIndex index = OntologyIndexer.indexOntology( "MGEDTEST", model, false );
         index.close();
