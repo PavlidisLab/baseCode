@@ -36,6 +36,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.channels.ClosedByInterruptException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -48,18 +49,17 @@ import java.nio.file.StandardCopyOption;
 public class OntologyLoader {
 
     private static final Logger log = LoggerFactory.getLogger( OntologyLoader.class );
-    private static final int MAX_CONNECTION_TRIES = 3;
     private static final String OLD_CACHE_SUFFIX = ".old";
     private static final String TMP_CACHE_SUFFIX = ".tmp";
 
-    public static OntModel loadMemoryModel( InputStream is, String url ) {
+    public static OntModel loadMemoryModel( InputStream is, String url ) throws JenaException {
         return loadMemoryModel( is, url, true );
     }
 
     /**
      * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
      */
-    public static OntModel loadMemoryModel( InputStream is, String url, boolean processImports ) {
+    public static OntModel loadMemoryModel( InputStream is, String url, boolean processImports ) throws JenaException {
         OntModel model = getMemoryModel( url, processImports );
         model.read( is, null );
         return model;
@@ -70,11 +70,11 @@ public class OntologyLoader {
      *
      * @see #loadMemoryModel(String, String, boolean)
      */
-    public static OntModel loadMemoryModel( String url ) {
+    public static OntModel loadMemoryModel( String url ) throws IOException {
         return loadMemoryModel( url, null, true );
     }
 
-    public static OntModel loadMemoryModel( String url, @Nullable String cacheName ) {
+    public static OntModel loadMemoryModel( String url, @Nullable String cacheName ) throws JenaException, IOException {
         return loadMemoryModel( url, cacheName, true );
     }
 
@@ -87,7 +87,7 @@ public class OntologyLoader {
      * @param url       a URL where the OWL file is stored
      * @param cacheName unique name of this ontology, will be used to load from disk in case of failed url connection
      */
-    public static OntModel loadMemoryModel( String url, @Nullable String cacheName, boolean processImports ) {
+    public static OntModel loadMemoryModel( String url, @Nullable String cacheName, boolean processImports ) throws JenaException, IOException {
         StopWatch timer = new StopWatch();
         timer.start();
         OntModel model = getMemoryModel( url, processImports );
@@ -113,6 +113,8 @@ public class OntologyLoader {
                 }
                 log.info( "Loading ontology model for " + url + " took " + timer.getTime() + "ms" );
             }
+        } catch ( ClosedByInterruptException e ) {
+            throw e;
         } catch ( IOException e ) {
             log.error( "Failed to load ontology model for " + url + ", will attempt to load from disk.", e );
             attemptToLoadFromDisk = true;
@@ -137,9 +139,6 @@ public class OntologyLoader {
                         FileUtils.createParentDirectories( oldFile );
                         Files.copy( f.toPath(), oldFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
                         log.info( "Load model from disk: " + timer.getTime() + "ms" );
-                    } catch ( IOException e ) {
-                        throw new RuntimeException(
-                                "Ontology failed load from URL (" + url + ") and disk cache: " + cacheName );
                     }
                 } else {
                     throw new RuntimeException(
