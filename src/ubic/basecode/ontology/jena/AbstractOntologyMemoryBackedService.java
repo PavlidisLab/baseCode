@@ -16,6 +16,7 @@ package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.OntModel;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -31,7 +32,7 @@ public abstract class AbstractOntologyMemoryBackedService extends AbstractOntolo
     }
 
     @Override
-    protected OntModel loadModel() {
+    protected OntModel loadModel() throws IOException {
         return OntologyLoader.loadMemoryModel( this.getOntologyUrl(), this.getCacheName(), this.getProcessImport() );
     }
 

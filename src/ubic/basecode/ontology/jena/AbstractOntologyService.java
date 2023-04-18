@@ -46,10 +46,13 @@ import ubic.basecode.util.Configuration;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
+import java.nio.channels.ClosedByInterruptException;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static ubic.basecode.ontology.jena.JenaUtils.where;
@@ -138,8 +141,15 @@ public abstract class AbstractOntologyService implements OntologyService {
         if ( checkIfInterrupted() )
             return;
 
-        model = stream != null ? loadModelFromStream( stream ) : loadModel(); // can take a while.
-        assert model != null;
+        try {
+            model = stream != null ? loadModelFromStream( stream ) : loadModel(); // can take a while.
+        } catch ( Exception e ) {
+            if ( isCausedByInterrupt( e ) ) {
+                return;
+            } else {
+                throw new RuntimeException( String.format( "Failed to load ontology model for %s.", this ), e );
+            }
+        }
 
         // retrieving restrictions is lengthy
         if ( checkIfInterrupted() )
@@ -160,8 +170,16 @@ public abstract class AbstractOntologyService implements OntologyService {
             boolean indexExists = OntologyIndexer.getSubjectIndex( cacheName ) != null;
             boolean forceReindexing = forceLoad && forceIndexing;
             // indexing is slow, don't do it if we don't have to.
-            index = OntologyIndexer.indexOntology( cacheName, model,
-                    forceReindexing || changed || !indexExists );
+            try {
+                index = OntologyIndexer.indexOntology( cacheName, model,
+                        forceReindexing || changed || !indexExists );
+            } catch ( Exception e ) {
+                if ( isCausedByInterrupt( e ) ) {
+                    return;
+                } else {
+                    throw new RuntimeException( String.format( "Failed to generate index for %s.", this ), e );
+                }
+            }
         } else {
             index = null;
         }
@@ -202,6 +220,21 @@ public abstract class AbstractOntologyService implements OntologyService {
         return false;
     }
 
+    private static boolean isCausedByInterrupt( Exception e ) {
+        return hasCauseMatching( e, cause -> ( ( cause instanceof ParseException ) && ( ( ParseException ) cause ).getErrorNumber() == ARPErrorNumbers.ERR_INTERRUPTED ) ) ||
+                hasCause( e, InterruptedException.class ) ||
+                hasCause( e, InterruptedIOException.class ) ||
+                hasCause( e, ClosedByInterruptException.class );
+    }
+
+    private static boolean hasCause( Throwable t, Class<? extends Throwable> clazz ) {
+        return hasCauseMatching( t, clazz::isInstance );
+    }
+
+    private static boolean hasCauseMatching( Throwable t, Predicate<Throwable> predicate ) {
+        return predicate.test( t ) || ( t.getCause() != null && hasCauseMatching( t.getCause(), predicate ) );
+    }
+
     /**
      * Do not do this except before re-indexing.
      */
@@ -211,7 +244,8 @@ public abstract class AbstractOntologyService implements OntologyService {
     }
 
     @Override
-    public Collection<OntologyIndividual> findIndividuals( String search, boolean keepObsoletes ) throws OntologySearchException {
+    public Collection<OntologyIndividual> findIndividuals( String search, boolean keepObsoletes ) throws
+            OntologySearchException {
         Lock lock = rwLock.readLock();
         try {
             lock.lock();
@@ -233,7 +267,8 @@ public abstract class AbstractOntologyService implements OntologyService {
     }
 
     @Override
-    public Collection<OntologyResource> findResources( String searchString, boolean keepObsoletes ) throws OntologySearchException {
+    public Collection<OntologyResource> findResources( String searchString, boolean keepObsoletes ) throws
+            OntologySearchException {
         Lock lock = rwLock.readLock();
         try {
             lock.lock();
@@ -393,7 +428,8 @@ public abstract class AbstractOntologyService implements OntologyService {
     }
 
     @Override
-    public Set<OntologyTerm> getParents( Collection<OntologyTerm> terms, boolean direct, boolean includeAdditionalProperties, boolean keepObsoletes ) {
+    public Set<OntologyTerm> getParents( Collection<OntologyTerm> terms, boolean direct,
+                                         boolean includeAdditionalProperties, boolean keepObsoletes ) {
         Lock lock = rwLock.readLock();
         try {
             lock.lock();
@@ -411,7 +447,8 @@ public abstract class AbstractOntologyService implements OntologyService {
     }
 
     @Override
-    public Set<OntologyTerm> getChildren( Collection<OntologyTerm> terms, boolean direct, boolean includeAdditionalProperties, boolean keepObsoletes ) {
+    public Set<OntologyTerm> getChildren( Collection<OntologyTerm> terms, boolean direct,
+                                          boolean includeAdditionalProperties, boolean keepObsoletes ) {
         Lock lock = rwLock.readLock();
         try {
             lock.lock();
@@ -463,13 +500,8 @@ public abstract class AbstractOntologyService implements OntologyService {
         initializationThread = new Thread( () -> {
             try {
                 this.initialize( forceLoad, forceIndexing );
-            } catch ( JenaException e ) {
-                if ( !( e.getCause() instanceof ParseException ) || ( ( ParseException ) e.getCause() ).getErrorNumber() != ARPErrorNumbers.ERR_INTERRUPTED ) {
-                    throw e;
-                }
             } catch ( Exception e ) {
-                log.error( e.getMessage(), e );
-                this.isInitialized = false;
+                log.error( "Initialization for %s failed.", e );
             }
         }, getOntologyName() + "_load_thread_" + RandomStringUtils.randomAlphanumeric( 5 ) );
         // To prevent VM from waiting on this thread to shut down (if shutting down).
@@ -521,13 +553,13 @@ public abstract class AbstractOntologyService implements OntologyService {
      * Delegates the call as to load the model into memory or leave it on disk. Simply delegates to either
      * OntologyLoader.loadMemoryModel( url ); OR OntologyLoader.loadPersistentModel( url, spec );
      */
-    protected abstract OntModel loadModel();
+    protected abstract OntModel loadModel() throws JenaException, IOException;
 
 
     /**
      * Load a model from a given input stream.
      */
-    protected abstract OntModel loadModelFromStream( InputStream stream );
+    protected abstract OntModel loadModelFromStream( InputStream stream ) throws JenaException, IOException;
 
     /**
      * A name for caching this ontology, or null to disable caching.
@@ -555,6 +587,9 @@ public abstract class AbstractOntologyService implements OntologyService {
                 return;
             }
             index = OntologyIndexer.indexOntology( getCacheName(), model, force );
+        } catch ( IOException e ) {
+            log.error( "Failed to generate index for {}.", this, e );
+            return;
         } finally {
             lock.unlock();
         }

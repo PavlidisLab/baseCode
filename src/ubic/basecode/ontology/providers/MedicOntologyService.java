@@ -65,7 +65,7 @@ public class MedicOntologyService extends AbstractOntologyService {
     }
 
     @Override
-    protected OntModel loadModelFromStream( InputStream stream ) {
+    protected OntModel loadModelFromStream( InputStream stream ) throws IOException {
         return OntologyLoader.loadMemoryModel( stream, "classpath:" + MEDIC_ONTOLOGY_FILE );
     }
 }
