@@ -162,6 +162,8 @@ public class OntologyTermTest extends AbstractOntologyTest {
     public void testGetParentsHasProperPart() throws Exception {
         NIFSTDOntologyService s = new NIFSTDOntologyService();
 
+        assertFalse( s.getProcessImports() );
+
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream(
                 "/data/NIF-GrossAnatomy.small.owl.xml.gz" ) ) );
         assertNotNull( is );

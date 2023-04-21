@@ -78,6 +78,11 @@ public abstract class AbstractOntologyService implements OntologyService {
         additionalProperties.add( RO.properPartOf );
     }
 
+    /* settings (applicable for next initialization) */
+    private InferenceMode nextInferenceMode = InferenceMode.TRANSITIVE;
+    private boolean nextProcessImports = true;
+    private boolean nextSearchEnabled = true;
+
     /**
      * Lock used to prevent reads while the ontology is being initialized.
      */
@@ -86,13 +91,64 @@ public abstract class AbstractOntologyService implements OntologyService {
     /* internal state protected by rwLock */
     private OntModel model;
     private Map<String, String> alternativeIDs;
-
     @Nullable
     private SearchIndex index;
-
     private Set<Restriction> additionalRestrictions;
-
     private boolean isInitialized = false;
+    @Nullable
+    private InferenceMode inferenceMode = null;
+    @Nullable
+    private Boolean processImports = null;
+    @Nullable
+    private Boolean searchEnabled = null;
+
+    @Override
+    public InferenceMode getInferenceMode() {
+        Lock lock = rwLock.readLock();
+        try {
+            lock.lock();
+            return this.inferenceMode != null ? this.inferenceMode : nextInferenceMode;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public void setInferenceMode( InferenceMode inferenceMode ) {
+        this.nextInferenceMode = inferenceMode;
+    }
+
+    @Override
+    public boolean getProcessImports() {
+        Lock lock = rwLock.readLock();
+        try {
+            lock.lock();
+            return processImports != null ? processImports : nextProcessImports;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public void setProcessImports( boolean processImports ) {
+        this.nextProcessImports = processImports;
+    }
+
+    @Override
+    public boolean isSearchEnabled() {
+        Lock lock = rwLock.readLock();
+        try {
+            lock.lock();
+            return searchEnabled != null ? searchEnabled : nextSearchEnabled;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public void setSearchEnabled( boolean searchEnabled ) {
+        this.nextSearchEnabled = searchEnabled;
+    }
 
     public void initialize( boolean forceLoad, boolean forceIndexing ) {
         initialize( null, forceLoad, forceIndexing );
@@ -111,6 +167,9 @@ public abstract class AbstractOntologyService implements OntologyService {
         String ontologyUrl = getOntologyUrl();
         String ontologyName = getOntologyName();
         String cacheName = getCacheName();
+        InferenceMode inferenceMode = nextInferenceMode;
+        boolean processImports = nextProcessImports;
+        boolean searchEnabled = nextSearchEnabled;
 
         // Detect configuration problems.
         if ( StringUtils.isBlank( ontologyUrl ) ) {
@@ -142,7 +201,7 @@ public abstract class AbstractOntologyService implements OntologyService {
             return;
 
         try {
-            model = stream != null ? loadModelFromStream( stream ) : loadModel(); // can take a while.
+            model = stream != null ? loadModelFromStream( stream, processImports, inferenceMode ) : loadModel( processImports, inferenceMode ); // can take a while.
         } catch ( Exception e ) {
             if ( isCausedByInterrupt( e ) ) {
                 return;
@@ -164,7 +223,7 @@ public abstract class AbstractOntologyService implements OntologyService {
         if ( checkIfInterrupted() )
             return;
 
-        if ( cacheName != null ) {
+        if ( searchEnabled && cacheName != null ) {
             //Checks if the current ontology has changed since it was last loaded.
             boolean changed = OntologyLoader.hasChanged( cacheName );
             boolean indexExists = OntologyIndexer.getSubjectIndex( cacheName ) != null;
@@ -195,6 +254,9 @@ public abstract class AbstractOntologyService implements OntologyService {
             this.additionalRestrictions = additionalRestrictions;
             this.index = index;
             this.isInitialized = true;
+            this.inferenceMode = inferenceMode;
+            this.processImports = processImports;
+            this.searchEnabled = searchEnabled;
             if ( cacheName != null ) {
                 // now that the terms have been replaced, we can clear old caches
                 try {
@@ -553,13 +615,13 @@ public abstract class AbstractOntologyService implements OntologyService {
      * Delegates the call as to load the model into memory or leave it on disk. Simply delegates to either
      * OntologyLoader.loadMemoryModel( url ); OR OntologyLoader.loadPersistentModel( url, spec );
      */
-    protected abstract OntModel loadModel() throws JenaException, IOException;
+    protected abstract OntModel loadModel( boolean processImports, InferenceMode inferenceMode ) throws JenaException, IOException;
 
 
     /**
      * Load a model from a given input stream.
      */
-    protected abstract OntModel loadModelFromStream( InputStream stream ) throws JenaException, IOException;
+    protected abstract OntModel loadModelFromStream( InputStream stream, boolean processImports, InferenceMode inferenceMode ) throws JenaException, IOException;
 
     /**
      * A name for caching this ontology, or null to disable caching.
@@ -576,6 +638,10 @@ public abstract class AbstractOntologyService implements OntologyService {
         String cacheName = getCacheName();
         if ( cacheName == null ) {
             log.warn( "This ontology does not support indexing; assign a cache name to be used." );
+            return;
+        }
+        if ( !nextSearchEnabled ) {
+            log.warn( "Search is not enabled for this ontology." );
             return;
         }
         SearchIndex index;
@@ -598,6 +664,7 @@ public abstract class AbstractOntologyService implements OntologyService {
         try {
             lock.lock();
             this.index = index;
+            this.searchEnabled = true;
         } finally {
             lock.unlock();
         }

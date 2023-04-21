@@ -14,13 +14,7 @@
  */
 package ubic.basecode.ontology.providers;
 
-import com.hp.hpl.jena.ontology.OntModel;
 import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
-import ubic.basecode.ontology.jena.OntologyLoader;
-
-import ubic.basecode.ontology.jena.AbstractOntologyService;
-
-import java.io.InputStream;
 
 /**
  * A way to create ad hoc ontology services (in memory) for testing
@@ -32,7 +26,6 @@ public class GenericOntologyService extends AbstractOntologyMemoryBackedService 
     private final String url;
     private final String name;
     private final boolean cache;
-    private final boolean processImports;
 
     public GenericOntologyService( String name, String url ) {
         this( name, url, false );
@@ -46,7 +39,7 @@ public class GenericOntologyService extends AbstractOntologyMemoryBackedService 
         this.name = name;
         this.url = url;
         this.cache = cache;
-        this.processImports = processImports;
+        setProcessImports( processImports );
     }
 
     @Override
@@ -62,10 +55,5 @@ public class GenericOntologyService extends AbstractOntologyMemoryBackedService 
     @Override
     protected String getCacheName() {
         return this.cache ? this.name : null;
-    }
-
-    @Override
-    protected boolean getProcessImport() {
-        return processImports;
     }
 }

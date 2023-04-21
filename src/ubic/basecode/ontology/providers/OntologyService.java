@@ -12,6 +12,31 @@ import java.util.Set;
 
 public interface OntologyService {
 
+    boolean getProcessImports();
+
+    void setProcessImports( boolean processImports );
+
+    enum InferenceMode {
+        NONE,
+        TRANSITIVE
+    }
+
+    /**
+     * Obtain the inference mode used for this ontology.
+     */
+    InferenceMode getInferenceMode();
+
+    /**
+     * Set the inference mode used for this ontology.
+     * <p>
+     * Changes are applicable only if the service is re-initialized.
+     */
+    void setInferenceMode( InferenceMode inferenceMode );
+
+    boolean isSearchEnabled();
+
+    void setSearchEnabled( boolean searchEnabled );
+
     /**
      * Initialize this ontology service.
      *
