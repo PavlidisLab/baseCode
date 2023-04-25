@@ -253,7 +253,7 @@ public class OntologyLoader {
                 if ( StringUtils.isBlank( newUrl ) ) {
                     throw new RuntimeException( String.format( "Redirect response for %s is lacking a 'Location' header.", url ) );
                 }
-                log.info( "Redirect to " + newUrl + " from " + url );
+                log.debug( "Redirect to " + newUrl + " from " + url );
                 urlc = openConnectionInternal( newUrl );
             }
         }
@@ -268,7 +268,7 @@ public class OntologyLoader {
         if ( urlc instanceof HttpURLConnection ) {
             ( ( HttpURLConnection ) urlc ).setInstanceFollowRedirects( true );
         }
-        log.info( "Connecting to " + url );
+        log.debug( "Connecting to " + url );
         urlc.connect(); // Will error here on bad URL
         return urlc;
     }
