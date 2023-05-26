@@ -737,9 +737,13 @@ public abstract class AbstractOntologyService implements OntologyService {
 
     private Set<OntClass> getOntClassesFromTerms( Collection<OntologyTerm> terms ) {
         return terms.stream()
-                .map( OntologyTerm::getUri )
-                .filter( Objects::nonNull )
-                .map( model::getOntClass )
+                .map( o -> {
+                    if ( o instanceof OntologyTermImpl ) {
+                        return ( ( OntologyTermImpl ) o ).getOntClass();
+                    } else {
+                        return o.getUri() != null ? model.getOntClass( o.getUri() ) : null;
+                    }
+                } )
                 .filter( Objects::nonNull )
                 .collect( Collectors.toSet() );
     }
