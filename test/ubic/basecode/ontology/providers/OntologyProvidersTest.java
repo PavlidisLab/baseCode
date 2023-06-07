@@ -3,6 +3,7 @@ package ubic.basecode.ontology.providers;
 import org.junit.Test;
 import ubic.basecode.ontology.AbstractOntologyTest;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -34,11 +35,14 @@ public class OntologyProvidersTest extends AbstractOntologyTest {
     @Test
     public void testInitializeAllProviders() throws InterruptedException {
         for ( OntologyService provider : providers ) {
+            provider.setInferenceMode( OntologyService.InferenceMode.NONE );
+            provider.setSearchEnabled( false );
             provider.startInitializationThread( true, false );
         }
         for ( OntologyService provider : providers ) {
             provider.waitForInitializationThread();
             assertTrue( provider.isOntologyLoaded() );
+            assertFalse( provider.isSearchEnabled() );
         }
     }
 }

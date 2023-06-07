@@ -15,7 +15,10 @@
 package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
+import ubic.basecode.util.Configuration;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -26,17 +29,29 @@ import java.io.InputStream;
  */
 public abstract class AbstractOntologyMemoryBackedService extends AbstractOntologyService {
 
-    protected boolean getProcessImport() {
-        return true;
+    @Override
+    protected String getOntologyUrl() {
+        return Configuration.getString( "url." + getOntologyName() );
     }
 
     @Override
-    protected OntModel loadModel() {
-        return OntologyLoader.loadMemoryModel( this.getOntologyUrl(), this.getCacheName(), this.getProcessImport() );
+    protected OntModel loadModel( boolean processImports, InferenceMode inferenceMode ) throws IOException {
+        return OntologyLoader.loadMemoryModel( this.getOntologyUrl(), this.getCacheName(), processImports, this.getSpec( inferenceMode ) );
     }
 
     @Override
-    protected OntModel loadModelFromStream( InputStream is ) {
-        return OntologyLoader.loadMemoryModel( is, this.getOntologyUrl(), this.getProcessImport() );
+    protected OntModel loadModelFromStream( InputStream is, boolean processImports, InferenceMode inferenceMode ) {
+        return OntologyLoader.loadMemoryModel( is, this.getOntologyUrl(), processImports, this.getSpec( inferenceMode ) );
+    }
+
+    private OntModelSpec getSpec( InferenceMode inferenceMode ) {
+        switch ( inferenceMode ) {
+            case TRANSITIVE:
+                return OntModelSpec.OWL_MEM_TRANS_INF;
+            case NONE:
+                return OntModelSpec.OWL_MEM;
+            default:
+                throw new UnsupportedOperationException( String.format( "Unsupported inference level %s.", inferenceMode ) );
+        }
     }
 }

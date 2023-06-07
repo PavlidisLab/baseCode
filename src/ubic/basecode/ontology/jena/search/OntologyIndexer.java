@@ -20,6 +20,7 @@ package ubic.basecode.ontology.jena.search;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.shared.JenaException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.jena.larq.IndexBuilderSubject;
@@ -46,38 +47,26 @@ import java.nio.file.Paths;
  */
 public class OntologyIndexer {
 
-    private static Logger log = LoggerFactory.getLogger( OntologyIndexer.class );
+    private static final Logger log = LoggerFactory.getLogger( OntologyIndexer.class );
 
     /**
-     * @param name
      * @return indexlarq with default analyzer (English), or null if no index is available. DOES not create the
      * index if it doesn't exist.
      */
-    @SuppressWarnings("resource")
     public static SearchIndex getSubjectIndex( String name ) {
         Analyzer analyzer = new EnglishAnalyzer( Version.LUCENE_36 );
         return getSubjectIndex( name, analyzer );
     }
 
-    /**
-     * @param name
-     * @param model
-     * @return
-     */
-    public static SearchIndex indexOntology( String name, OntModel model ) {
+    public static SearchIndex indexOntology( String name, OntModel model ) throws IOException {
         return indexOntology( name, model, false );
     }
 
     /**
      * Loads or creates an index from an existing OntModel. Any existing index will loaded unless force=true. It will be
      * created if there isn't one already, or if force=true.
-     *
-     * @param name
-     * @param model
-     * @param force
-     * @return index
      */
-    public static SearchIndex indexOntology( String name, OntModel model, boolean force ) {
+    public static SearchIndex indexOntology( String name, OntModel model, boolean force ) throws JenaException, IOException {
 
         if ( force ) {
             return index( name, model );
@@ -93,10 +82,6 @@ public class OntologyIndexer {
         return index;
     }
 
-    /**
-     * @param name
-     * @return
-     */
     private static File getIndexPath( String name ) {
         if ( StringUtils.isBlank( name ) ) {
             throw new IllegalArgumentException( "The ontology must have a suitable name for being indexed." );
@@ -111,11 +96,8 @@ public class OntologyIndexer {
     /**
      * Find the search index (will not create it)
      *
-     * @param name
-     * @param analyzer
      * @return Index, or null if there is no index.
      */
-    @SuppressWarnings("resource")
     private static SearchIndex getSubjectIndex( String name, Analyzer analyzer ) {
         log.debug( "Loading index: " + name );
         File indexdir = getIndexPath( name );
@@ -145,62 +127,50 @@ public class OntologyIndexer {
 
     /**
      * Create an on-disk index from an existing OntModel. Any existing index will be deleted/overwritten.
-     *
-     * @param datafile or uri
-     * @param name     used to refer to this index later
-     * @param model
-     * @return
-     * @see {@link http://jena.apache.org/documentation/larq/}
      */
-    @SuppressWarnings("resource")
-    private static synchronized SearchIndex index( String name, OntModel model ) {
+    private static SearchIndex index( String name, OntModel model ) throws JenaException, IOException {
 
         File indexdir = getIndexPath( name );
 
-        try {
-            StopWatch timer = new StopWatch();
-            timer.start();
-            FSDirectory dir = FSDirectory.open( indexdir );
-            log.info( "Indexing " + name + " to: " + indexdir );
+        StopWatch timer = new StopWatch();
+        timer.start();
+        FSDirectory dir = FSDirectory.open( indexdir );
+        log.info( "Indexing " + name + " to: " + indexdir );
 
-            /*
-             * adjust the analyzer ...
-             */
-            Analyzer analyzer = new EnglishAnalyzer( Version.LUCENE_36 );
-            IndexWriterConfig config = new IndexWriterConfig( Version.LUCENE_36, analyzer );
-            IndexWriter indexWriter = new IndexWriter( dir, config );
-            indexWriter.deleteAll(); // start with clean slate.
-            assert 0 == indexWriter.numDocs();
+        /*
+         * adjust the analyzer ...
+         */
+        Analyzer analyzer = new EnglishAnalyzer( Version.LUCENE_36 );
+        IndexWriterConfig config = new IndexWriterConfig( Version.LUCENE_36, analyzer );
+        IndexWriter indexWriter = new IndexWriter( dir, config );
+        indexWriter.deleteAll(); // start with clean slate.
+        assert 0 == indexWriter.numDocs();
 
-            IndexBuilderSubject larqSubjectBuilder = new IndexBuilderSubject( indexWriter );
-            StmtIterator listStatements = model.listStatements( new IndexerSelector() );
-            larqSubjectBuilder.indexStatements( listStatements );
-            indexWriter.commit();
-            log.info( indexWriter.numDocs() + " Statements indexed..." );
-            indexWriter.close();
+        IndexBuilderSubject larqSubjectBuilder = new IndexBuilderSubject( indexWriter );
+        StmtIterator listStatements = model.listStatements( new IndexerSelector() );
+        larqSubjectBuilder.indexStatements( listStatements );
+        indexWriter.commit();
+        log.info( indexWriter.numDocs() + " Statements indexed..." );
+        indexWriter.close();
 
-            Directory dirstd = indexStd( name, model );
+        Directory dirstd = indexStd( name, model );
 
-            MultiReader r = new MultiReader( IndexReader.open( dir ), IndexReader.open( dirstd ) );
+        MultiReader r = new MultiReader( IndexReader.open( dir ), IndexReader.open( dirstd ) );
 
-            // workaround to get the EnglishAnalyzer.
-            SearchIndex index = new SearchIndex( r, new EnglishAnalyzer( Version.LUCENE_36 ) );
-            // larqSubjectBuilder.getIndex(); // always returns a StandardAnalyazer
-            assert index.getLuceneQueryParser().getAnalyzer() instanceof EnglishAnalyzer;
+        // workaround to get the EnglishAnalyzer.
+        SearchIndex index = new SearchIndex( r, new EnglishAnalyzer( Version.LUCENE_36 ) );
+        // larqSubjectBuilder.getIndex(); // always returns a StandardAnalyazer
+        assert index.getLuceneQueryParser().getAnalyzer() instanceof EnglishAnalyzer;
 
-            log.info( "Done indexing of " + name + " in " + String.format( "%.2f", timer.getTime() / 1000.0 ) + "s" );
+        log.info( "Done indexing of " + name + " in " + String.format( "%.2f", timer.getTime() / 1000.0 ) + "s" );
 
-            return index;
-        } catch ( IOException e ) {
-            throw new RuntimeException( "Indexing failure for " + name, e );
-        }
+        return index;
     }
 
     /**
      * We need to also analyze using the Standard analyzer, which doesn't do stemming and allows wildcard.
      */
-    @SuppressWarnings("resource")
-    private static Directory indexStd( String name, OntModel model ) throws IOException {
+    private static Directory indexStd( String name, OntModel model ) throws JenaException, IOException {
 
         File file = getIndexPath( name + ".std" );
 
@@ -219,21 +189,4 @@ public class OntologyIndexer {
         indexWriter.close();
         return dir;
     }
-    /*
-     * Allow adding custom stopwords for particular ontologies like "disease" for DO.
-     */
-    // private static Set<?> getStopWords( String name ) {
-    // /*
-    // * Look for a file like 'name.stopwordsfile'
-    // */
-    // Set<String> stopWords = new HashSet<String>();
-    // String path = Configuration.getString( name + ".stopwordsfile" );
-    // if ( StringUtils.isNotBlank( path ) ) {
-    //
-    // } else {
-    //
-    // }
-    //
-    // return stopWords;
-    // }
 }

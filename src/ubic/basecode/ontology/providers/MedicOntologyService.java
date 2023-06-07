@@ -53,19 +53,19 @@ public class MedicOntologyService extends AbstractOntologyService {
     }
 
     @Override
-    protected OntModel loadModel() {
+    protected OntModel loadModel( boolean processImports, InferenceMode inferenceMode ) {
         try ( InputStream is = this.getClass().getResourceAsStream( MEDIC_ONTOLOGY_FILE ) ) {
             if ( is == null ) {
                 throw new RuntimeException( String.format( "The MEDIC ontology was not found in classpath at %s.", MEDIC_ONTOLOGY_FILE ) );
             }
-            return loadModelFromStream( new GZIPInputStream( is ) );
+            return loadModelFromStream( new GZIPInputStream( is ), processImports, inferenceMode );
         } catch ( IOException e ) {
             throw new RuntimeException( e );
         }
     }
 
     @Override
-    protected OntModel loadModelFromStream( InputStream stream ) {
+    protected OntModel loadModelFromStream( InputStream stream, boolean processImports, InferenceMode inferenceMode ) throws IOException {
         return OntologyLoader.loadMemoryModel( stream, "classpath:" + MEDIC_ONTOLOGY_FILE );
     }
 }
