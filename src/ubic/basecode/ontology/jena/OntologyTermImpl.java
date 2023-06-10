@@ -26,7 +26,10 @@ import ubic.basecode.ontology.model.OntologyRestriction;
 import ubic.basecode.ontology.model.OntologyTerm;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ubic.basecode.ontology.jena.JenaUtils.where;
@@ -231,5 +234,9 @@ public class OntologyTermImpl extends AbstractOntologyResource implements Ontolo
     @Override
     public boolean isTermObsolete() {
         return isObsolete();
+    }
+
+    public OntClass getOntClass() {
+        return ontResource;
     }
 }

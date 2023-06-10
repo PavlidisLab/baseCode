@@ -28,6 +28,10 @@ public class NIFSTDOntologyService extends AbstractOntologyMemoryBackedService {
 
     private static final String NIFSTD_ONTOLOGY_FILE = "/data/loader/ontology/nif-gemma.owl.gz";
 
+    public NIFSTDOntologyService() {
+        setProcessImports( false );
+    }
+
     @Override
     protected String getOntologyName() {
         return "nifstdOntology";
@@ -39,17 +43,12 @@ public class NIFSTDOntologyService extends AbstractOntologyMemoryBackedService {
     }
 
     @Override
-    protected boolean getProcessImport() {
-        return false;
-    }
-
-    @Override
-    protected OntModel loadModel() {
+    protected OntModel loadModel( boolean processImports, InferenceMode inferenceMode ) {
         try ( InputStream stream = getClass().getResourceAsStream( NIFSTD_ONTOLOGY_FILE ) ) {
             if ( stream == null ) {
                 throw new RuntimeException( String.format( "The NIF ontology was not found in classpath at %s.", NIFSTD_ONTOLOGY_FILE ) );
             }
-            return loadModelFromStream( new GZIPInputStream( stream ) );
+            return loadModelFromStream( new GZIPInputStream( stream ), processImports, inferenceMode );
         } catch ( IOException e ) {
             throw new RuntimeException( e );
         }

@@ -33,6 +33,7 @@ public class ObiServiceTest extends AbstractOntologyTest {
     @Test
     public void testLoadAndSearch() throws Exception {
         ObiService m = new ObiService();
+        m.setInferenceMode( OntologyService.InferenceMode.NONE );
         m.initialize( true, false );
 
         assertTrue( m.isOntologyLoaded() );

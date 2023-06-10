@@ -2,6 +2,7 @@ package ubic.basecode.ontology.providers;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ubic.basecode.ontology.jena.OntologyLoader;
@@ -29,7 +30,7 @@ public class UberonOntologySearchTest {
     @BeforeClass
     public static void setUpUberon() throws IOException {
         try ( InputStream is = new GZIPInputStream( requireNonNull( OntologySearchTest.class.getResourceAsStream( "/data/uberon.owl.gz" ) ) ) ) {
-            uberon = OntologyLoader.loadMemoryModel( is, "UBERON_TEST2" );
+            uberon = OntologyLoader.loadMemoryModel( is, "UBERON_TEST2", true, OntModelSpec.OWL_MEM );
             uberonIndex = OntologyIndexer.indexOntology( "UBERON_TEST2", uberon, false );
         }
     }

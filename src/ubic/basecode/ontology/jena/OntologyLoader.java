@@ -60,7 +60,11 @@ public class OntologyLoader {
      * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
      */
     public static OntModel loadMemoryModel( InputStream is, String url, boolean processImports ) throws JenaException {
-        OntModel model = getMemoryModel( url, processImports );
+        return loadMemoryModel( is, url, processImports, OntModelSpec.OWL_MEM_TRANS_INF );
+    }
+
+    public static OntModel loadMemoryModel( InputStream is, String url, boolean processImports, OntModelSpec spec ) throws JenaException {
+        OntModel model = getMemoryModel( url, processImports, spec );
         model.read( is, null );
         return model;
     }
@@ -78,19 +82,24 @@ public class OntologyLoader {
         return loadMemoryModel( url, cacheName, true );
     }
 
+    public static OntModel loadMemoryModel( String url, @Nullable String cacheName, boolean processImports ) throws JenaException, IOException {
+        return loadMemoryModel( url, cacheName, processImports, OntModelSpec.OWL_MEM_TRANS_INF );
+    }
+
     /**
      * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
      * If load from URL fails, attempt to load from disk cache under @cacheName.
      * <p>
      * Uses {@link OntModelSpec#OWL_MEM_TRANS_INF}.
      *
-     * @param url       a URL where the OWL file is stored
-     * @param cacheName unique name of this ontology, will be used to load from disk in case of failed url connection
+     * @param url            a URL where the OWL file is stored
+     * @param cacheName      unique name of this ontology, will be used to load from disk in case of failed url connection
+     * @param processImports process imports
+     * @param spec           spec to use as a basis
      */
-    public static OntModel loadMemoryModel( String url, @Nullable String cacheName, boolean processImports ) throws JenaException, IOException {
-        StopWatch timer = new StopWatch();
-        timer.start();
-        OntModel model = getMemoryModel( url, processImports );
+    public static OntModel loadMemoryModel( String url, @Nullable String cacheName, boolean processImports, OntModelSpec spec ) throws JenaException, IOException {
+        StopWatch timer = StopWatch.createStarted();
+        OntModel model = getMemoryModel( url, processImports, spec );
 
         boolean attemptToLoadFromDisk = false;
         URLConnection urlc = null;
@@ -111,7 +120,6 @@ public class OntologyLoader {
                 try ( BufferedReader buf = new BufferedReader( reader ) ) {
                     model.read( buf, url );
                 }
-                log.info( "Loading ontology model for " + url + " took " + timer.getTime() + "ms" );
             }
         } catch ( ClosedByInterruptException e ) {
             throw e;
@@ -163,6 +171,8 @@ public class OntologyLoader {
             }
         }
 
+        log.info( "Loading ontology model for " + url + " took " + timer.getTime() + "ms" );
+
         return model;
     }
 
@@ -195,8 +205,8 @@ public class OntologyLoader {
     /**
      * Get model that is entirely in memory.
      */
-    private static OntModel getMemoryModel( String url, boolean processImports ) {
-        OntModelSpec spec = new OntModelSpec( OntModelSpec.OWL_MEM_TRANS_INF );
+    private static OntModel getMemoryModel( String url, boolean processImports, OntModelSpec spec ) {
+        spec = new OntModelSpec( spec );
         ModelMaker maker = ModelFactory.createMemModelMaker();
         Model base = maker.createModel( url, false );
         spec.setImportModelMaker( maker );
@@ -243,7 +253,7 @@ public class OntologyLoader {
                 if ( StringUtils.isBlank( newUrl ) ) {
                     throw new RuntimeException( String.format( "Redirect response for %s is lacking a 'Location' header.", url ) );
                 }
-                log.info( "Redirect to " + newUrl + " from " + url );
+                log.debug( "Redirect to " + newUrl + " from " + url );
                 urlc = openConnectionInternal( newUrl );
             }
         }
@@ -258,7 +268,7 @@ public class OntologyLoader {
         if ( urlc instanceof HttpURLConnection ) {
             ( ( HttpURLConnection ) urlc ).setInstanceFollowRedirects( true );
         }
-        log.info( "Connecting to " + url );
+        log.debug( "Connecting to " + url );
         urlc.connect(); // Will error here on bad URL
         return urlc;
     }
