@@ -12,22 +12,25 @@ import org.apache.commons.lang3.time.StopWatch;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static com.hp.hpl.jena.reasoner.ReasonerRegistry.makeDirect;
 
 public class JenaUtils {
 
     public static Collection<OntClass> getParents( OntModel model, Collection<OntClass> ontClasses, boolean direct, @Nullable Set<Restriction> additionalRestrictions ) {
+        ontClasses = ontClasses.stream()
+                .map( t -> t.inModel( model ) )
+                .filter( t -> t.canAs( OntClass.class ) )
+                .map( t -> t.as( OntClass.class ) )
+                .collect( Collectors.toList() );
         if ( ontClasses.isEmpty() ) {
             return Collections.emptySet();
         }
         Iterator<OntClass> it = ontClasses.iterator();
-        ExtendedIterator<OntClass> iterator = it.next()
-                .inModel( model )
-                .as( OntClass.class )
-                .listSuperClasses( direct );
+        ExtendedIterator<OntClass> iterator = it.next().listSuperClasses( direct );
         while ( it.hasNext() ) {
-            iterator = iterator.andThen( it.next().inModel( model ).as( OntClass.class ).listSuperClasses( direct ) );
+            iterator = iterator.andThen( it.next().listSuperClasses( direct ) );
         }
 
         Collection<OntClass> result = new HashSet<>();
@@ -62,17 +65,19 @@ public class JenaUtils {
     }
 
     public static Collection<OntClass> getChildren( OntModel model, Collection<OntClass> terms, boolean direct, @Nullable Set<Restriction> additionalRestrictions ) {
+        terms = terms.stream()
+                .map( t -> t.inModel( model ) )
+                .filter( t -> t.canAs( OntClass.class ) )
+                .map( t -> t.as( OntClass.class ) )
+                .collect( Collectors.toList() );
         if ( terms.isEmpty() ) {
             return Collections.emptySet();
         }
         StopWatch timer = StopWatch.createStarted();
         Iterator<OntClass> it = terms.iterator();
-        ExtendedIterator<OntClass> iterator = it.next()
-                .inModel( model )
-                .as( OntClass.class )
-                .listSubClasses( direct );
+        ExtendedIterator<OntClass> iterator = it.next().listSubClasses( direct );
         while ( it.hasNext() ) {
-            iterator = iterator.andThen( it.next().inModel( model ).as( OntClass.class ).listSubClasses( direct ) );
+            iterator = iterator.andThen( it.next().listSubClasses( direct ) );
         }
         Set<OntClass> result = iterator
                 .filterDrop( new BnodeFilter<>() )
