@@ -29,10 +29,6 @@ import java.util.Set;
  */
 class OntologyDatatypeRestrictionImpl extends OntologyRestrictionImpl implements OntologyDatatypeRestriction {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
     private final Class<?> type;
 
     public OntologyDatatypeRestrictionImpl( Restriction resource, Set<Restriction> additionalRestrcitions ) {

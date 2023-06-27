@@ -35,8 +35,6 @@ import java.util.Set;
  */
 class OntologyIndividualImpl extends AbstractOntologyResource implements OntologyIndividual {
 
-    private static final long serialVersionUID = -6164561945940667693L;
-
     private final Individual ind;
     private final Set<Restriction> additionalRestrictions;
 

@@ -34,10 +34,6 @@ import java.util.Set;
  * @author pavlidis
  */
 class OntologyClassRestrictionImpl extends OntologyRestrictionImpl implements OntologyClassRestriction {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
     private final RDFNode value;
     private final OntologyTerm restrictedTo;
     private final Set<Restriction> additionalRestrictions;

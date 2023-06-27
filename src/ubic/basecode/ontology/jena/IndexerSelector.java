@@ -21,7 +21,6 @@ package ubic.basecode.ontology.jena;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDFS;
-import ubic.basecode.ontology.jena.vocabulary.OBO;
 
 import java.util.Collection;
 import java.util.HashSet;

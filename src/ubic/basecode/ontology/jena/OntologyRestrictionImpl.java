@@ -32,10 +32,6 @@ import java.util.Set;
  */
 abstract class OntologyRestrictionImpl extends OntologyTermImpl implements OntologyRestriction {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
     protected OntologyProperty restrictionOn;
 
     public OntologyRestrictionImpl( Restriction resource, Set<Restriction> additionalRestrictions ) {

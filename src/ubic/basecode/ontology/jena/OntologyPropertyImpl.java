@@ -26,19 +26,15 @@ import ubic.basecode.ontology.model.OntologyProperty;
  */
 abstract class OntologyPropertyImpl extends AbstractOntologyResource implements OntologyProperty {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-    protected boolean isFunctional;
+    private final OntProperty resource;
 
     protected OntologyPropertyImpl( OntProperty resource ) {
         super( resource );
+        this.resource = resource;
     }
 
     @Override
     public boolean isFunctional() {
-        return isFunctional;
+        return resource.isFunctionalProperty();
     }
-
 }

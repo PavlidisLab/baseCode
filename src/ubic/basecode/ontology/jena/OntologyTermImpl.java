@@ -19,7 +19,6 @@ import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.ontology.Restriction;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-import ubic.basecode.ontology.jena.vocabulary.OBO;
 import ubic.basecode.ontology.model.AnnotationProperty;
 import ubic.basecode.ontology.model.OntologyIndividual;
 import ubic.basecode.ontology.model.OntologyRestriction;
@@ -46,12 +45,12 @@ class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm 
     /**
      * Ontology class underlying this term.
      */
-    private final transient OntClass ontResource;
+    private final OntClass ontResource;
 
     /**
      * Extra sets of properties to use when navigating parents and children of a term.
      */
-    private final transient Set<Restriction> additionalRestrictions;
+    private final Set<Restriction> additionalRestrictions;
 
     public OntologyTermImpl( OntClass resource, @Nullable Set<Restriction> additionalRestrictions ) {
         super( resource );
