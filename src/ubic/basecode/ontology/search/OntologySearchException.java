@@ -1,9 +1,9 @@
 package ubic.basecode.ontology.search;
 
-import ubic.basecode.ontology.jena.search.OntologySearch;
+import ubic.basecode.ontology.providers.OntologyService;
 
 /**
- * Base class for exceptions raised by {@link OntologySearch}.
+ * Base class for exceptions raised by {@link OntologyService#findTerm(String)} and others.
  * @author poirigui
  */
 public class OntologySearchException extends Exception {

@@ -1,4 +1,4 @@
-package ubic.basecode.ontology.jena.search;
+package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.shared.JenaException;
 
@@ -6,7 +6,7 @@ import com.hp.hpl.jena.shared.JenaException;
  * Exception raised when retrying a search without a wildcard still fails.
  * @author poirigui
  */
-public class RetryWithoutWildcardFailedException extends OntologySearchJenaException {
+class RetryWithoutWildcardFailedException extends OntologySearchJenaException {
 
     private final JenaException firstAttemptCause;
 

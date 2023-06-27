@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  *
  * @author pavlidis
  */
-public class AnnotationPropertyImpl extends AbstractOntologyResource implements AnnotationProperty {
+class AnnotationPropertyImpl extends AbstractOntologyResource implements AnnotationProperty {
 
     private final String contents;
 

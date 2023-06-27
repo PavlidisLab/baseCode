@@ -32,7 +32,7 @@ import ubic.basecode.ontology.model.OntologyTerm;
 /**
  * @author pavlidis
  */
-public class ObjectPropertyImpl extends OntologyPropertyImpl implements ubic.basecode.ontology.model.ObjectProperty {
+class ObjectPropertyImpl extends OntologyPropertyImpl implements ubic.basecode.ontology.model.ObjectProperty {
 
     /**
      *

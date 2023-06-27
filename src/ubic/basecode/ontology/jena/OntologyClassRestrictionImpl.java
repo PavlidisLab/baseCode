@@ -33,7 +33,7 @@ import java.util.Set;
 /**
  * @author pavlidis
  */
-public class OntologyClassRestrictionImpl extends OntologyRestrictionImpl implements OntologyClassRestriction {
+class OntologyClassRestrictionImpl extends OntologyRestrictionImpl implements OntologyClassRestriction {
     /**
      *
      */

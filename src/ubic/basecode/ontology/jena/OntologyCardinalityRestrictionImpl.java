@@ -26,7 +26,7 @@ import java.util.Set;
 /**
  * @author pavlidis
  */
-public class OntologyCardinalityRestrictionImpl extends OntologyRestrictionImpl implements
+class OntologyCardinalityRestrictionImpl extends OntologyRestrictionImpl implements
         OntologyCardinalityRestriction {
 
     /**

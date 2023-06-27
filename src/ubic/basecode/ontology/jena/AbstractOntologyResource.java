@@ -33,7 +33,7 @@ import static java.util.Comparator.*;
 /**
  * @author pavlidis
  */
-public abstract class AbstractOntologyResource implements OntologyResource {
+abstract class AbstractOntologyResource implements OntologyResource {
 
     protected static Logger log = LoggerFactory.getLogger( AbstractOntologyResource.class );
 

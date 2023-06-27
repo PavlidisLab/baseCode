@@ -39,7 +39,7 @@ import static ubic.basecode.ontology.jena.JenaUtils.where;
  *
  * @author Paul
  */
-public class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm {
+class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm {
 
     private static final String HAS_ALTERNATE_ID = "http://www.geneontology.org/formats/oboInOwl#hasAlternativeId";
 

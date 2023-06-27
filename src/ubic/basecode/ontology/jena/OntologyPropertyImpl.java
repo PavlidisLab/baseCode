@@ -24,7 +24,7 @@ import ubic.basecode.ontology.model.OntologyProperty;
 /**
  * @author pavlidis
  */
-public abstract class OntologyPropertyImpl extends AbstractOntologyResource implements OntologyProperty {
+abstract class OntologyPropertyImpl extends AbstractOntologyResource implements OntologyProperty {
 
     /**
      *

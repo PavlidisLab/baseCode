@@ -14,8 +14,8 @@
  */
 package ubic.basecode.ontology.providers;
 
-import com.hp.hpl.jena.ontology.OntModel;
 import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
+import ubic.basecode.ontology.model.OntologyModel;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +43,7 @@ public class NIFSTDOntologyService extends AbstractOntologyMemoryBackedService {
     }
 
     @Override
-    protected OntModel loadModel( boolean processImports, InferenceMode inferenceMode ) {
+    protected OntologyModel loadModel( boolean processImports, InferenceMode inferenceMode ) {
         try ( InputStream stream = getClass().getResourceAsStream( NIFSTD_ONTOLOGY_FILE ) ) {
             if ( stream == null ) {
                 throw new RuntimeException( String.format( "The NIF ontology was not found in classpath at %s.", NIFSTD_ONTOLOGY_FILE ) );

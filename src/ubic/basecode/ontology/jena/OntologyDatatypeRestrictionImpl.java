@@ -27,7 +27,7 @@ import java.util.Set;
 /**
  * @author pavlidis
  */
-public class OntologyDatatypeRestrictionImpl extends OntologyRestrictionImpl implements OntologyDatatypeRestriction {
+class OntologyDatatypeRestrictionImpl extends OntologyRestrictionImpl implements OntologyDatatypeRestriction {
 
     /**
      *

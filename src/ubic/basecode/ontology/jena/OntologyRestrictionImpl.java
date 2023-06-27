@@ -30,7 +30,7 @@ import java.util.Set;
  *
  * @author Paul
  */
-public abstract class OntologyRestrictionImpl extends OntologyTermImpl implements OntologyRestriction {
+abstract class OntologyRestrictionImpl extends OntologyTermImpl implements OntologyRestriction {
 
     /**
      *
