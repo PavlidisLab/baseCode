@@ -30,7 +30,7 @@ import java.util.Set;
  * @author pavlidis
  * 
  */
-public class PropertyFactory {
+class PropertyFactory {
 
     /**
      * Convert a Jena property.

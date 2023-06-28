@@ -33,11 +33,7 @@ import java.util.Set;
 /**
  * @author pavlidis
  */
-public class OntologyClassRestrictionImpl extends OntologyRestrictionImpl implements OntologyClassRestriction {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+class OntologyClassRestrictionImpl extends OntologyRestrictionImpl implements OntologyClassRestriction {
     private final RDFNode value;
     private final OntologyTerm restrictedTo;
     private final Set<Restriction> additionalRestrictions;

@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.ontology.jena.search;
+package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
@@ -45,7 +45,7 @@ import java.nio.file.Paths;
 /**
  * @author pavlidis
  */
-public class OntologyIndexer {
+class OntologyIndexer {
 
     private static final Logger log = LoggerFactory.getLogger( OntologyIndexer.class );
 

@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import static com.hp.hpl.jena.reasoner.ReasonerRegistry.makeDirect;
 
-public class JenaUtils {
+class JenaUtils {
 
     public static Collection<OntClass> getParents( OntModel model, Collection<OntClass> ontClasses, boolean direct, @Nullable Set<Restriction> additionalRestrictions ) {
         ontClasses = ontClasses.stream()

@@ -1,4 +1,4 @@
-package ubic.basecode.ontology.jena.search;
+package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.shared.JenaException;
 import ubic.basecode.ontology.search.OntologySearchException;
@@ -6,7 +6,7 @@ import ubic.basecode.ontology.search.OntologySearchException;
 /**
  * Base class for Jena-related ontology search exceptions.
  */
-public class OntologySearchJenaException extends OntologySearchException {
+class OntologySearchJenaException extends OntologySearchException {
 
     private final JenaException cause;
 

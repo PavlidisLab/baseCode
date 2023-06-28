@@ -29,7 +29,7 @@ import java.util.Set;
  * @author pavlidis
  * 
  */
-public class RestrictionFactory {
+class RestrictionFactory {
 
     public static OntologyRestriction asRestriction( Restriction restriction, Set<Restriction> additionalRestrictions ) {
 

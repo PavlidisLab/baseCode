@@ -12,7 +12,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package ubic.basecode.ontology.jena.search;
+package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.util.iterator.Map1;
 import com.hp.hpl.jena.util.iterator.Map1Iterator;
@@ -37,7 +37,7 @@ import java.util.Iterator;
  *
  * @author Paul
  */
-public class SearchIndex extends IndexLARQ {
+class SearchIndex extends IndexLARQ {
 
     public SearchIndex( IndexReader r ) {
         super( r );

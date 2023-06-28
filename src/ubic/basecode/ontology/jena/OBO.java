@@ -1,10 +1,10 @@
-package ubic.basecode.ontology.jena.vocabulary;
+package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
-public class OBO {
+class OBO {
 
     private static final String NS = "http://www.geneontology.org/formats/oboInOwl" + "#";
 

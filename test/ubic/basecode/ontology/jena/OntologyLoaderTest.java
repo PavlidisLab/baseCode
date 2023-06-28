@@ -17,7 +17,6 @@ package ubic.basecode.ontology.jena;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import ubic.basecode.ontology.AbstractOntologyTest;
-import ubic.basecode.ontology.jena.OntologyLoader;
 import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.providers.GenericOntologyService;
 
@@ -25,7 +24,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 
