@@ -131,6 +131,11 @@ public class OntologyTermSimple implements OntologyTerm {
     }
 
     @Override
+    public <T> T unwrap( Class<T> clazz ) throws ClassCastException {
+        return clazz.cast( this );
+    }
+
+    @Override
     public int compareTo( OntologyResource other ) {
         return Objects.compare( getUri(), other.getUri(), Comparator.nullsLast( Comparator.naturalOrder() ) );
     }

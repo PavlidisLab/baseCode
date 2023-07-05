@@ -46,4 +46,10 @@ public interface OntologyResource extends Comparable<OntologyResource> {
      */
     @Nullable
     Double getScore();
+
+    /**
+     * Unwrap the underlying implementation of the ontology resource.
+     * @throws ClassCastException if the implementation type does not match the given class
+     */
+    <T> T unwrap( Class<T> clazz ) throws ClassCastException;
 }

@@ -11,7 +11,8 @@ class OntologyModelImpl implements OntologyModel {
         this.ontModel = ontModel;
     }
 
-    public OntModel getOntModel() {
-        return ontModel;
+    @Override
+    public <T> T unwrap( Class<T> clazz ) {
+        return clazz.cast( ontModel );
     }
 }

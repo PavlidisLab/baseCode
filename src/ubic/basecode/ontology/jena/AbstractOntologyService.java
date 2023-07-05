@@ -197,11 +197,7 @@ public abstract class AbstractOntologyService implements OntologyService {
 
         try {
             OntologyModel m = stream != null ? loadModelFromStream( stream, processImports, inferenceMode ) : loadModel( processImports, inferenceMode ); // can take a while.
-            if ( m instanceof OntologyModelImpl ) {
-                model = ( ( OntologyModelImpl ) m ).getOntModel();
-            } else {
-                throw new RuntimeException( "Only Jena-based ontology models are supported." );
-            }
+            model = m.unwrap( OntModel.class );
         } catch ( Exception e ) {
             if ( isCausedByInterrupt( e ) ) {
                 return;

@@ -86,6 +86,11 @@ abstract class AbstractOntologyResource implements OntologyResource {
     }
 
     @Override
+    public <T> T unwrap( Class<T> clazz ) throws ClassCastException {
+        return clazz.cast( res );
+    }
+
+    @Override
     public int compareTo( OntologyResource other ) {
         return Objects.compare( this, other, comparator );
     }
