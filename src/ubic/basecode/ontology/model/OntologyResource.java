@@ -19,7 +19,6 @@
 package ubic.basecode.ontology.model;
 
 import javax.annotation.Nullable;
-import java.io.Serializable;
 
 /**
  * @author pavlidis

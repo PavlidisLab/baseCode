@@ -15,6 +15,7 @@
 package ubic.basecode.ontology.model;
 
 import javax.annotation.Nullable;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Objects;
@@ -25,8 +26,8 @@ import java.util.Objects;
  *
  * @author Paul
  */
-
-public class OntologyTermSimple implements OntologyTerm {
+@SuppressWarnings("unused")
+public class OntologyTermSimple implements OntologyTerm, Serializable {
 
     /**
      *
