@@ -26,15 +26,11 @@ import java.util.Set;
 /**
  * @author pavlidis
  */
-public class OntologyCardinalityRestrictionImpl extends OntologyRestrictionImpl implements
+class OntologyCardinalityRestrictionImpl extends OntologyRestrictionImpl implements
         OntologyCardinalityRestriction {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-    int cardinality = 0;
-    CardinalityType cardType;
+    private final int cardinality;
+    private final CardinalityType cardType;
 
     public OntologyCardinalityRestrictionImpl( Restriction resource, Set<Restriction> additionalRestrictions ) {
         super( resource, additionalRestrictions );

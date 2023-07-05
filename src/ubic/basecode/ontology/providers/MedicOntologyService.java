@@ -18,9 +18,8 @@
  */
 package ubic.basecode.ontology.providers;
 
-import com.hp.hpl.jena.ontology.OntModel;
-import ubic.basecode.ontology.jena.AbstractOntologyService;
-import ubic.basecode.ontology.jena.OntologyLoader;
+import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
+import ubic.basecode.ontology.model.OntologyModel;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +34,7 @@ import java.util.zip.GZIPInputStream;
  *
  * @author Nicolas
  */
-public class MedicOntologyService extends AbstractOntologyService {
+public class MedicOntologyService extends AbstractOntologyMemoryBackedService {
 
     /**
      * FIXME this shouldn't be hard-coded like this, we should load it like any other ontology service.
@@ -53,7 +52,7 @@ public class MedicOntologyService extends AbstractOntologyService {
     }
 
     @Override
-    protected OntModel loadModel( boolean processImports, InferenceMode inferenceMode ) {
+    protected OntologyModel loadModel( boolean processImports, InferenceMode inferenceMode ) {
         try ( InputStream is = this.getClass().getResourceAsStream( MEDIC_ONTOLOGY_FILE ) ) {
             if ( is == null ) {
                 throw new RuntimeException( String.format( "The MEDIC ontology was not found in classpath at %s.", MEDIC_ONTOLOGY_FILE ) );
@@ -62,10 +61,5 @@ public class MedicOntologyService extends AbstractOntologyService {
         } catch ( IOException e ) {
             throw new RuntimeException( e );
         }
-    }
-
-    @Override
-    protected OntModel loadModelFromStream( InputStream stream, boolean processImports, InferenceMode inferenceMode ) throws IOException {
-        return OntologyLoader.loadMemoryModel( stream, "classpath:" + MEDIC_ONTOLOGY_FILE );
     }
 }

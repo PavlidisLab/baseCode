@@ -32,18 +32,13 @@ import ubic.basecode.ontology.model.OntologyTerm;
 /**
  * @author pavlidis
  */
-public class ObjectPropertyImpl extends OntologyPropertyImpl implements ubic.basecode.ontology.model.ObjectProperty {
+class ObjectPropertyImpl extends OntologyPropertyImpl implements ubic.basecode.ontology.model.ObjectProperty {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
     private final com.hp.hpl.jena.ontology.ObjectProperty resource;
     private final Set<Restriction> additionalRestrictions;
 
     public ObjectPropertyImpl( ObjectProperty resource, Set<Restriction> additionalRestrictions ) {
         super( resource );
-        this.isFunctional = resource.isFunctionalProperty();
         this.resource = resource;
         this.additionalRestrictions = additionalRestrictions;
     }

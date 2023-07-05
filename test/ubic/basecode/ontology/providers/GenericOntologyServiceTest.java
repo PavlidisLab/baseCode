@@ -21,16 +21,13 @@ package ubic.basecode.ontology.providers;
 
 import org.junit.Test;
 import ubic.basecode.ontology.AbstractOntologyTest;
-import ubic.basecode.ontology.jena.OntologyLoader;
 import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.util.Configuration;
 
-import java.io.File;
 import java.net.URL;
 import java.util.Collection;
 
 import static org.junit.Assert.*;
-import static org.junit.Assume.assumeTrue;
 
 /**
  * @author mjacobson

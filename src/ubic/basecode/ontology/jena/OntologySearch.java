@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.ontology.jena.search;
+package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -46,7 +46,7 @@ import static ubic.basecode.ontology.jena.JenaUtils.where;
 /**
  * @author pavlidis
  */
-public class OntologySearch {
+class OntologySearch {
 
     private static final Logger log = LoggerFactory.getLogger( OntologySearch.class );
 

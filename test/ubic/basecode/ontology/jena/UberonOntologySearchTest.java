@@ -1,16 +1,11 @@
-package ubic.basecode.ontology.providers;
+package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ubic.basecode.ontology.jena.OntologyLoader;
-import ubic.basecode.ontology.jena.search.OntologyIndexer;
-import ubic.basecode.ontology.jena.search.OntologySearch;
-import ubic.basecode.ontology.jena.search.SearchIndex;
 import ubic.basecode.ontology.search.OntologySearchException;
-import ubic.basecode.ontology.search.OntologySearchTest;
 
 import java.io.IOException;
 import java.io.InputStream;

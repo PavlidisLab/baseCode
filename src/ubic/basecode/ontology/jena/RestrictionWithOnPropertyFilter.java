@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * Filter that retain only the restrictions on any of the given properties.
  */
-public class RestrictionWithOnPropertyFilter extends Filter<Restriction> {
+class RestrictionWithOnPropertyFilter extends Filter<Restriction> {
     private final Set<Property> properties;
 
     public RestrictionWithOnPropertyFilter( Set<Property> properties ) {

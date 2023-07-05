@@ -14,8 +14,8 @@
  */
 package ubic.basecode.ontology.jena;
 
-import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
+import ubic.basecode.ontology.model.OntologyModel;
 import ubic.basecode.util.Configuration;
 
 import java.io.IOException;
@@ -35,13 +35,13 @@ public abstract class AbstractOntologyMemoryBackedService extends AbstractOntolo
     }
 
     @Override
-    protected OntModel loadModel( boolean processImports, InferenceMode inferenceMode ) throws IOException {
-        return OntologyLoader.loadMemoryModel( this.getOntologyUrl(), this.getCacheName(), processImports, this.getSpec( inferenceMode ) );
+    protected OntologyModel loadModel( boolean processImports, InferenceMode inferenceMode ) throws IOException {
+        return new OntologyModelImpl( OntologyLoader.loadMemoryModel( this.getOntologyUrl(), this.getCacheName(), processImports, this.getSpec( inferenceMode ) ) );
     }
 
     @Override
-    protected OntModel loadModelFromStream( InputStream is, boolean processImports, InferenceMode inferenceMode ) {
-        return OntologyLoader.loadMemoryModel( is, this.getOntologyUrl(), processImports, this.getSpec( inferenceMode ) );
+    protected OntologyModel loadModelFromStream( InputStream is, boolean processImports, InferenceMode inferenceMode ) throws IOException {
+        return new OntologyModelImpl( OntologyLoader.loadMemoryModel( is, this.getOntologyUrl(), processImports, this.getSpec( inferenceMode ) ) );
     }
 
     private OntModelSpec getSpec( InferenceMode inferenceMode ) {

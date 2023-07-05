@@ -46,7 +46,7 @@ import java.nio.file.StandardCopyOption;
  *
  * @author paul
  */
-public class OntologyLoader {
+class OntologyLoader {
 
     private static final Logger log = LoggerFactory.getLogger( OntologyLoader.class );
     private static final String OLD_CACHE_SUFFIX = ".old";

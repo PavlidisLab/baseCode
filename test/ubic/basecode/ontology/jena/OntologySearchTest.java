@@ -12,19 +12,14 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package ubic.basecode.ontology.search;
+package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.shared.JenaException;
+import com.hp.hpl.jena.vocabulary.OWL2;
 import org.junit.Test;
 import ubic.basecode.ontology.AbstractOntologyTest;
-import ubic.basecode.ontology.jena.OntologyLoader;
-import ubic.basecode.ontology.jena.OntologyTermImpl;
-import ubic.basecode.ontology.jena.search.OntologyIndexer;
-import ubic.basecode.ontology.jena.search.OntologySearch;
-import ubic.basecode.ontology.jena.search.OntologySearchJenaException;
-import ubic.basecode.ontology.jena.search.SearchIndex;
 
 import java.io.InputStream;
 import java.util.Collection;
@@ -183,7 +178,7 @@ public class OntologySearchTest extends AbstractOntologyTest {
         searchResults = OntologySearch.matchClasses( model, index, "birnlex_2" )
                 .toSet();
         assertEquals( 1, searchResults.size() );
-        assertTrue( new OntologyTermImpl( searchResults.iterator().next().result, null ).isObsolete() );
+        assertTrue( searchResults.iterator().next().result.hasLiteral( OWL2.deprecated, true ) );
 
         index.close();
     }

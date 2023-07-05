@@ -24,7 +24,7 @@ import java.io.Serializable;
 /**
  * @author pavlidis
  */
-public interface OntologyResource extends Serializable, Comparable<OntologyResource> {
+public interface OntologyResource extends Comparable<OntologyResource> {
 
     /**
      * A label, if known, otherwise null.

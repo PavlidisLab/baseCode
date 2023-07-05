@@ -24,19 +24,14 @@ import com.hp.hpl.jena.rdf.arp.ARPErrorNumbers;
 import com.hp.hpl.jena.rdf.arp.ParseException;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.shared.JenaException;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ubic.basecode.ontology.jena.search.OntologyIndexer;
-import ubic.basecode.ontology.jena.search.OntologySearch;
-import ubic.basecode.ontology.jena.search.SearchIndex;
-import ubic.basecode.ontology.jena.vocabulary.BFO;
-import ubic.basecode.ontology.jena.vocabulary.RO;
 import ubic.basecode.ontology.model.OntologyIndividual;
+import ubic.basecode.ontology.model.OntologyModel;
 import ubic.basecode.ontology.model.OntologyResource;
 import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.providers.OntologyService;
@@ -201,7 +196,12 @@ public abstract class AbstractOntologyService implements OntologyService {
             return;
 
         try {
-            model = stream != null ? loadModelFromStream( stream, processImports, inferenceMode ) : loadModel( processImports, inferenceMode ); // can take a while.
+            OntologyModel m = stream != null ? loadModelFromStream( stream, processImports, inferenceMode ) : loadModel( processImports, inferenceMode ); // can take a while.
+            if ( m instanceof OntologyModelImpl ) {
+                model = ( ( OntologyModelImpl ) m ).getOntModel();
+            } else {
+                throw new RuntimeException( "Only Jena-based ontology models are supported." );
+            }
         } catch ( Exception e ) {
             if ( isCausedByInterrupt( e ) ) {
                 return;
@@ -491,7 +491,7 @@ public abstract class AbstractOntologyService implements OntologyService {
 
     @Override
     public Set<OntologyTerm> getParents( Collection<OntologyTerm> terms, boolean direct,
-                                         boolean includeAdditionalProperties, boolean keepObsoletes ) {
+            boolean includeAdditionalProperties, boolean keepObsoletes ) {
         Lock lock = rwLock.readLock();
         try {
             lock.lock();
@@ -510,7 +510,7 @@ public abstract class AbstractOntologyService implements OntologyService {
 
     @Override
     public Set<OntologyTerm> getChildren( Collection<OntologyTerm> terms, boolean direct,
-                                          boolean includeAdditionalProperties, boolean keepObsoletes ) {
+            boolean includeAdditionalProperties, boolean keepObsoletes ) {
         Lock lock = rwLock.readLock();
         try {
             lock.lock();
@@ -615,13 +615,13 @@ public abstract class AbstractOntologyService implements OntologyService {
      * Delegates the call as to load the model into memory or leave it on disk. Simply delegates to either
      * OntologyLoader.loadMemoryModel( url ); OR OntologyLoader.loadPersistentModel( url, spec );
      */
-    protected abstract OntModel loadModel( boolean processImports, InferenceMode inferenceMode ) throws JenaException, IOException;
+    protected abstract OntologyModel loadModel( boolean processImports, InferenceMode inferenceMode ) throws IOException;
 
 
     /**
      * Load a model from a given input stream.
      */
-    protected abstract OntModel loadModelFromStream( InputStream stream, boolean processImports, InferenceMode inferenceMode ) throws JenaException, IOException;
+    protected abstract OntologyModel loadModelFromStream( InputStream stream, boolean processImports, InferenceMode inferenceMode ) throws IOException;
 
     /**
      * A name for caching this ontology, or null to disable caching.
@@ -631,6 +631,17 @@ public abstract class AbstractOntologyService implements OntologyService {
     @Nullable
     protected String getCacheName() {
         return getOntologyName();
+    }
+
+    private OntModelSpec getSpec( InferenceMode inferenceMode ) {
+        switch ( inferenceMode ) {
+            case TRANSITIVE:
+                return OntModelSpec.OWL_MEM_TRANS_INF;
+            case NONE:
+                return OntModelSpec.OWL_MEM;
+            default:
+                throw new UnsupportedOperationException( String.format( "Unsupported inference level %s.", inferenceMode ) );
+        }
     }
 
     @Override

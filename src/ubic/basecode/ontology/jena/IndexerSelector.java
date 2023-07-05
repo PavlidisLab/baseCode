@@ -16,12 +16,11 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.ontology.jena.search;
+package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDFS;
-import ubic.basecode.ontology.jena.vocabulary.OBO;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -32,7 +31,7 @@ import java.util.HashSet;
  *
  * @author paul
  */
-public class IndexerSelector implements Selector {
+class IndexerSelector implements Selector {
 
     private static final Collection<Property> wantedForIndexing;
 

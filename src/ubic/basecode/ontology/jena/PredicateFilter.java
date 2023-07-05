@@ -9,7 +9,7 @@ import java.util.function.Predicate;
  *
  * @param <T>
  */
-public class PredicateFilter<T> extends Filter<T> {
+class PredicateFilter<T> extends Filter<T> {
     private final Predicate<T> predicate;
 
     public PredicateFilter( Predicate<T> predicate ) {

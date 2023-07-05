@@ -9,7 +9,7 @@ import java.util.Collection;
 /**
  * Match {@link Restriction} with values from any of the given resources.
  */
-public class RestrictionWithValuesFromFilter extends Filter<Restriction> {
+class RestrictionWithValuesFromFilter extends Filter<Restriction> {
 
     private final Collection<? extends Resource> resource;
 

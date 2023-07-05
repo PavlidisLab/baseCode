@@ -33,9 +33,7 @@ import java.util.Set;
 /**
  * @author pavlidis
  */
-public class OntologyIndividualImpl extends AbstractOntologyResource implements OntologyIndividual {
-
-    private static final long serialVersionUID = -6164561945940667693L;
+class OntologyIndividualImpl extends AbstractOntologyResource implements OntologyIndividual {
 
     private final Individual ind;
     private final Set<Restriction> additionalRestrictions;
@@ -56,7 +54,7 @@ public class OntologyIndividualImpl extends AbstractOntologyResource implements 
     public OntologyTerm getInstanceOf() {
         Resource type = ind.getRDFType();
 
-        OntClass cl = null;
+        OntClass cl;
         EnhGraph g = new EnhGraph( type.getModel().getGraph(), new GraphPersonality() );
         if ( OntClassImpl.factory.canWrap( type.asNode(), g ) ) {
             cl = new OntClassImpl( type.asNode(), g );

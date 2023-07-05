@@ -33,17 +33,15 @@ import static java.util.Comparator.*;
 /**
  * @author pavlidis
  */
-public abstract class AbstractOntologyResource implements OntologyResource {
+abstract class AbstractOntologyResource implements OntologyResource {
 
     protected static Logger log = LoggerFactory.getLogger( AbstractOntologyResource.class );
-
-    private static final long serialVersionUID = 1L;
 
     private static final Comparator<OntologyResource> comparator = Comparator
             .comparing( OntologyResource::getScore, nullsLast( reverseOrder() ) )
             .thenComparing( OntologyResource::getUri, nullsLast( naturalOrder() ) );
 
-    private transient final OntResource res;
+    private final OntResource res;
     @Nullable
     private final Double score;
 

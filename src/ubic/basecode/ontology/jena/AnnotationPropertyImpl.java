@@ -22,7 +22,6 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDFS;
-import ubic.basecode.ontology.jena.vocabulary.OBO;
 import ubic.basecode.ontology.model.AnnotationProperty;
 
 import javax.annotation.Nullable;
@@ -32,7 +31,7 @@ import javax.annotation.Nullable;
  *
  * @author pavlidis
  */
-public class AnnotationPropertyImpl extends AbstractOntologyResource implements AnnotationProperty {
+class AnnotationPropertyImpl extends AbstractOntologyResource implements AnnotationProperty {
 
     private final String contents;
 

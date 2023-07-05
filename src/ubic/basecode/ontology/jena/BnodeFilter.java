@@ -8,7 +8,7 @@ import com.hp.hpl.jena.util.iterator.Filter;
  *
  * @param <T>
  */
-public class BnodeFilter<T extends Resource> extends Filter<T> {
+class BnodeFilter<T extends Resource> extends Filter<T> {
 
     @Override
     public boolean accept( T o ) {
