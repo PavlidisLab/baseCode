@@ -16,9 +16,50 @@ public interface OntologyService {
 
     void setProcessImports( boolean processImports );
 
+    enum LanguageLevel {
+        /**
+         * The full OWL language.
+         */
+        FULL,
+        /**
+         * OWL-DL
+         */
+        DL,
+        /**
+         * OWL/Lite
+         */
+        LITE
+    }
+
+    LanguageLevel getLanguageLevel();
+
+    void setLanguageLevel( LanguageLevel languageLevel );
+
     enum InferenceMode {
+        /**
+         * No inference is supported, only the axioms defined in the ontology are considered.
+         */
         NONE,
-        TRANSITIVE
+        /**
+         * Only basic inference is supported for {@code subClassOf} and {@code subPropertyOf}.
+         * <p>
+         * This is the fastest inference mode.
+         */
+        TRANSITIVE,
+        /**
+         * Very limited inference.
+         */
+        MICRO,
+        /**
+         * Limited inference.
+         */
+        MINI,
+        /**
+         * Complete inference.
+         * <p>
+         * This is the slowest inference mode.
+         */
+        FULL
     }
 
     /**
