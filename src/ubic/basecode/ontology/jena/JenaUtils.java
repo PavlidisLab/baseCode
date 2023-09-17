@@ -8,6 +8,8 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.util.iterator.UniqueExtendedIterator;
 import org.apache.commons.lang3.time.StopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -18,7 +20,25 @@ import static com.hp.hpl.jena.reasoner.ReasonerRegistry.makeDirect;
 
 class JenaUtils {
 
+    protected static Logger log = LoggerFactory.getLogger( JenaUtils.class );
+
     public static Collection<OntClass> getParents( OntModel model, Collection<OntClass> ontClasses, boolean direct, @Nullable Set<Restriction> additionalRestrictions ) {
+        Collection<OntClass> parents = getParentsInternal( model, ontClasses, direct, additionalRestrictions );
+        if ( shouldRevisit( parents, direct, model, additionalRestrictions ) ) {
+            // if there are some missing direct parents, revisit the hierarchy
+            Set<OntClass> parentsToRevisit = new HashSet<>( parents );
+            while ( !parentsToRevisit.isEmpty() ) {
+                log.debug( "Revisiting the direct parents of {} terms...", parentsToRevisit.size() );
+                parentsToRevisit = new HashSet<>( getParentsInternal( model, parentsToRevisit, true, additionalRestrictions ) );
+                parentsToRevisit.removeAll( parents );
+                log.debug( "Found {} missed parents.", parentsToRevisit.size() );
+                parents.addAll( parentsToRevisit );
+            }
+        }
+        return parents;
+    }
+
+    private static Collection<OntClass> getParentsInternal( OntModel model, Collection<OntClass> ontClasses, boolean direct, @Nullable Set<Restriction> additionalRestrictions ) {
         ontClasses = ontClasses.stream()
                 .map( t -> t.inModel( model ) )
                 .filter( t -> t.canAs( OntClass.class ) )
@@ -65,6 +85,22 @@ class JenaUtils {
     }
 
     public static Collection<OntClass> getChildren( OntModel model, Collection<OntClass> terms, boolean direct, @Nullable Set<Restriction> additionalRestrictions ) {
+        Collection<OntClass> children = getChildrenInternal( model, terms, direct, additionalRestrictions );
+        if ( shouldRevisit( children, direct, model, additionalRestrictions ) ) {
+            // if there are some missing direct children, revisit the hierarchy
+            Set<OntClass> childrenToRevisit = new HashSet<>( children );
+            while ( !childrenToRevisit.isEmpty() ) {
+                log.debug( "Revisiting the direct parents of {} terms...", childrenToRevisit.size() );
+                childrenToRevisit = new HashSet<>( JenaUtils.getChildrenInternal( model, childrenToRevisit, true, additionalRestrictions ) );
+                childrenToRevisit.removeAll( children );
+                log.debug( "Found {} missed children.", childrenToRevisit.size() );
+                children.addAll( childrenToRevisit );
+            }
+        }
+        return children;
+    }
+
+    public static Collection<OntClass> getChildrenInternal( OntModel model, Collection<OntClass> terms, boolean direct, @Nullable Set<Restriction> additionalRestrictions ) {
         terms = terms.stream()
                 .map( t -> t.inModel( model ) )
                 .filter( t -> t.canAs( OntClass.class ) )
@@ -101,6 +137,42 @@ class JenaUtils {
             }
         }
         return result;
+    }
+
+    /**
+     * Check if a set of terms should be revisited to find missing parents or children.
+     * <p>
+     * To be considered, the model must have a reasoner that lacks one of {@code rdfs:subClassOf}, {@code owl:subValuesFrom}
+     * or {@code owl:allValuesFrom} inference capabilities. If a model has no reasoner, revisiting is not desirable and
+     * thus this will return false.
+     * <p>
+     * If direct is false or terms is empty, it's not worth revisiting.
+     */
+    private static boolean shouldRevisit( Collection<OntClass> terms, boolean direct, OntModel model, @Nullable Set<Restriction> additionalRestrictions ) {
+        return !direct
+                && !terms.isEmpty()
+                && additionalRestrictions != null
+                && model.getReasoner() != null
+                && ( !supportsSubClassInference( model ) || !supportsAdditionalRestrictionsInference( model ) );
+    }
+
+    /**
+     * Check if an ontology model supports inference of {@code rdfs:subClassOf}.
+     */
+    public static boolean supportsSubClassInference( OntModel model ) {
+        return model.getReasoner() != null
+                && model.getReasoner().supportsProperty( model.getProfile().SUB_CLASS_OF() );
+    }
+
+    /**
+     * Checks if an ontology model supports inference of with additional restrictions.
+     * <p>
+     * This covers {@code owl:subValuesFrom} and {@code owl:allValuesFrom} restrictions.
+     */
+    public static boolean supportsAdditionalRestrictionsInference( OntModel model ) {
+        return model.getReasoner() != null
+                && model.getReasoner().supportsProperty( model.getProfile().SOME_VALUES_FROM() )
+                && model.getReasoner().supportsProperty( model.getProfile().ALL_VALUES_FROM() );
     }
 
     public static Resource getRestrictionValue( Restriction r ) {

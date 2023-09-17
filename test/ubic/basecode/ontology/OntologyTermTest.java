@@ -14,19 +14,16 @@
  */
 package ubic.basecode.ontology;
 
-import com.hp.hpl.jena.vocabulary.OWL2;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ubic.basecode.ontology.model.OntologyTerm;
-import ubic.basecode.ontology.providers.*;
-import ubic.basecode.ontology.search.OntologySearchException;
+import ubic.basecode.ontology.providers.CellLineOntologyService;
+import ubic.basecode.ontology.providers.DiseaseOntologyService;
+import ubic.basecode.ontology.providers.NIFSTDOntologyService;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.zip.GZIPInputStream;
 
@@ -111,7 +108,7 @@ public class OntologyTermTest extends AbstractOntologyTest {
         assertTrue( c.contains( t1 ) );
 
         Collection<OntologyTerm> c2 = t.getChildren( false );
-        assertEquals( 6, c2.size() );
+        assertEquals( 7, c2.size() );
         OntologyTerm t2 = s.getTerm( "http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#birnlex_4037" );
         assertNotNull( t2 );
         assertTrue( c.contains( t2 ) );
@@ -199,10 +196,10 @@ public class OntologyTermTest extends AbstractOntologyTest {
         // Diencephalon [birnlex_1503] x
 
         Collection<OntologyTerm> parents2 = t.getParents( false );
-        assertEquals( 7, parents2.size() );
+        assertEquals( 14, parents2.size() );
 
         // does not includes 'continuant' and 'independent continuant' or parents of those terms.
-        assertFalse( parents2.contains( s.getTerm( "http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#birnlex_1503" ) ) );
+        assertTrue( parents2.contains( s.getTerm( "http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#birnlex_1503" ) ) );
         assertFalse( parents2.contains( ( OntologyTerm ) s.getResource( "http://www.ifomis.org/bfo/1.1/snap#Continuant" ) ) );
     }
 
