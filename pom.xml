@@ -349,6 +349,100 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.3.0</version>
+				<executions>
+					<execution>
+						<id>unpack-jena-rete-engine</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.apache.jena</groupId>
+									<artifactId>jena-core</artifactId>
+									<version>2.12.1</version>
+									<classifier>sources</classifier>
+									<outputDirectory>${project.build.directory}/generated-sources/jena-core</outputDirectory>
+									<includes>com/hp/hpl/jena/reasoner/rulesys/impl/*.java,com/hp/hpl/jena/graph/NodeFactory.java</includes>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.3.0</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<!-- dependencies:unpack does not add a source root -->
+							<sources>${project.build.directory}/generated-sources/jena-core</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.5.0</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<artifactSet>
+								<includes>
+									<include>org.apache.jena:*</include>
+								</includes>
+							</artifactSet>
+							<filters>
+								<filter>
+									<artifact>org.apache.jena:*</artifact>
+									<includes>
+										<include>com/hp/hpl/jena/**/*</include>
+										<include>org/apache/jena/**/*</include>
+										<include>org/openjena/**/*</include>
+										<include>etc/**/*</include>
+										<include>vocabularies/**/*</include>
+									</includes>
+									<excludes>
+										<!-- this one we compiled ourselves -->
+										<exclude>com/hp/hpl/jena/reasoner/rulesys/impl/**/*</exclude>
+									</excludes>
+								</filter>
+							</filters>
+							<!-- relocate Jena under a private package name to prevent conflicts -->
+							<relocations>
+								<relocation>
+									<pattern>com.hp.hpl.jena</pattern>
+									<shadedPattern>ubic.basecode.ontology.jena.impl</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.apache.jena</pattern>
+									<shadedPattern>ubic.basecode.ontology.jena.impl</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.openjena</pattern>
+									<shadedPattern>ubic.basecode.ontology.jena.impl</shadedPattern>
+								</relocation>
+							</relocations>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
 				<configuration>
