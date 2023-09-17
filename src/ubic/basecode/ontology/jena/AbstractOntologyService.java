@@ -753,7 +753,8 @@ public abstract class AbstractOntologyService implements OntologyService {
 
     @Override
     public String toString() {
-        return String.format( "%s [%s]", getOntologyName(), getOntologyUrl() );
+        return String.format( "%s [url=%s] [language level=%s] [inference mode=%s] [imports=%b] [search=%b]",
+                getOntologyName(), getOntologyUrl(), getLanguageLevel(), getInferenceMode(), getProcessImports(), isSearchEnabled() );
     }
 
     private Set<OntClass> getOntClassesFromTerms( Collection<OntologyTerm> terms ) {
