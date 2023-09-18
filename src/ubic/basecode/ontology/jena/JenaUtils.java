@@ -152,6 +152,7 @@ class JenaUtils {
         return !direct
                 && !terms.isEmpty()
                 && additionalRestrictions != null
+                && !additionalRestrictions.isEmpty()
                 && model.getReasoner() != null
                 && ( !supportsSubClassInference( model ) || !supportsAdditionalRestrictionsInference( model ) );
     }
