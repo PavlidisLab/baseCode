@@ -168,11 +168,7 @@ public abstract class AbstractOntologyService implements OntologyService {
         this.nextSearchEnabled = searchEnabled;
     }
 
-    /**
-     * The set of properties relation to use when inferring parents and children.
-     * <p>
-     * The default is to use {@link BFO#partOf} and {@link RO#properPartOf}.
-     */
+    @Override
     public Set<String> getAdditionalPropertyUris() {
         Lock lock = rwLock.readLock();
         try {
@@ -183,6 +179,7 @@ public abstract class AbstractOntologyService implements OntologyService {
         }
     }
 
+    @Override
     public void setAdditionalPropertyUris( Set<String> additionalPropertyUris ) {
         this.nextAdditionalPropertyUris = additionalPropertyUris;
     }
