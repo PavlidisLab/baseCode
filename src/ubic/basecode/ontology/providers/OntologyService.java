@@ -12,17 +12,80 @@ import java.util.Set;
 
 public interface OntologyService {
 
+    /**
+     * Check if this ontology will process imports.
+     * <p>
+     * If disabled, ontologies imported by this ontology will not be loaded.
+     */
     boolean getProcessImports();
 
+    /**
+     * Allow of forbid this ontology to process imports.
+     * <p>
+     * Changes are applicable only if the service is re-initialized.
+     */
     void setProcessImports( boolean processImports );
 
+    enum LanguageLevel {
+        /**
+         * The full OWL language.
+         */
+        FULL,
+        /**
+         * OWL-DL
+         */
+        DL,
+        /**
+         * OWL/Lite
+         */
+        LITE
+    }
+
+    /**
+     * Obtain the OWL language level supported by this ontology.
+     * <p>
+     * The default is to use {@link LanguageLevel#FULL}.
+     */
+    LanguageLevel getLanguageLevel();
+
+    /**
+     * Set the OWL language level supported by this ontology.
+     * <p>
+     * Changes are applicable only if the service is re-initialized.
+     */
+    void setLanguageLevel( LanguageLevel languageLevel );
+
     enum InferenceMode {
+        /**
+         * No inference is supported, only the axioms defined in the ontology are considered.
+         */
         NONE,
-        TRANSITIVE
+        /**
+         * Only basic inference is supported for {@code rdfs:subClassOf} and {@code rdfs:subPropertyOf}.
+         * <p>
+         * This is the fastest inference mode.
+         */
+        TRANSITIVE,
+        /**
+         * Very limited inference.
+         */
+        MICRO,
+        /**
+         * Limited inference.
+         */
+        MINI,
+        /**
+         * Complete inference.
+         * <p>
+         * This is the slowest inference mode.
+         */
+        FULL
     }
 
     /**
      * Obtain the inference mode used for this ontology.
+     * <p>
+     * The default is {@link InferenceMode#TRANSITIVE}.
      */
     InferenceMode getInferenceMode();
 
@@ -33,9 +96,42 @@ public interface OntologyService {
      */
     void setInferenceMode( InferenceMode inferenceMode );
 
+    /**
+     * Check if this ontology has full-text search enabled.
+     * <p>
+     * This is necessary for finding term using full-text queries. If enabled, an index will be generated in during
+     * initialization by {@link #initialize(boolean, boolean)}.
+     * <p>
+     * Search is enabled by default.
+     * @see #findTerm(String, boolean)
+     * @see #findIndividuals(String, boolean)
+     * @see #findResources(String, boolean)
+     */
     boolean isSearchEnabled();
 
+    /**
+     * Enable or disable search for this ontology.
+     * <p>
+     * Changes are only applicable if the service is re-initialized.
+     */
     void setSearchEnabled( boolean searchEnabled );
+
+    /**
+     * Obtain the URIs used as additional properties when inferring parents and children.
+     * <p>
+     * The default is to use <a href="http://purl.obolibrary.org/obo/BFO_0000050">part of</a>, <a href="http://www.obofoundry.org/ro/ro.owl#proper_part_of">proper part of</a>
+     * and all of their sub-properties if inference is enabled.
+     * @see #getParents(Collection, boolean, boolean, boolean)
+     * @see #getChildren(Collection, boolean, boolean, boolean)
+     */
+    Set<String> getAdditionalPropertyUris();
+
+    /**
+     * Set the URIs to be used as additional properties when inferring parents and children.
+     * <p>
+     * Changes are applicable only if the service is re-initialized.
+     */
+    void setAdditionalPropertyUris( Set<String> additionalPropertyUris );
 
     /**
      * Initialize this ontology service.

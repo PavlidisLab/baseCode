@@ -24,6 +24,7 @@ import com.hp.hpl.jena.rdf.arp.ARPErrorNumbers;
 import com.hp.hpl.jena.rdf.arp.ParseException;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -65,18 +66,20 @@ public abstract class AbstractOntologyService implements OntologyService {
     /**
      * Properties through which propagation is allowed for {@link #getParents(Collection, boolean, boolean)}}
      */
-    private static final Set<Property> additionalProperties;
+    private static final Set<String> DEFAULT_ADDITIONAL_PROPERTIES;
 
     static {
-        additionalProperties = new HashSet<>();
-        additionalProperties.add( BFO.partOf );
-        additionalProperties.add( RO.properPartOf );
+        DEFAULT_ADDITIONAL_PROPERTIES = new HashSet<>();
+        DEFAULT_ADDITIONAL_PROPERTIES.add( BFO.partOf.getURI() );
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.properPartOf.getURI() );
     }
 
     /* settings (applicable for next initialization) */
+    private LanguageLevel nextLanguageLevel = LanguageLevel.FULL;
     private InferenceMode nextInferenceMode = InferenceMode.TRANSITIVE;
     private boolean nextProcessImports = true;
     private boolean nextSearchEnabled = true;
+    private Set<String> nextAdditionalPropertyUris = DEFAULT_ADDITIONAL_PROPERTIES;
 
     /**
      * Lock used to prevent reads while the ontology is being initialized.
@@ -91,11 +94,31 @@ public abstract class AbstractOntologyService implements OntologyService {
     private Set<Restriction> additionalRestrictions;
     private boolean isInitialized = false;
     @Nullable
+    private LanguageLevel languageLevel = null;
+    @Nullable
     private InferenceMode inferenceMode = null;
     @Nullable
     private Boolean processImports = null;
     @Nullable
     private Boolean searchEnabled = null;
+    @Nullable
+    private Set<String> additionalPropertyUris = null;
+
+    @Override
+    public LanguageLevel getLanguageLevel() {
+        Lock lock = rwLock.readLock();
+        try {
+            lock.lock();
+            return this.languageLevel != null ? this.languageLevel : nextLanguageLevel;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public void setLanguageLevel( LanguageLevel languageLevel ) {
+        this.nextLanguageLevel = languageLevel;
+    }
 
     @Override
     public InferenceMode getInferenceMode() {
@@ -145,6 +168,22 @@ public abstract class AbstractOntologyService implements OntologyService {
         this.nextSearchEnabled = searchEnabled;
     }
 
+    @Override
+    public Set<String> getAdditionalPropertyUris() {
+        Lock lock = rwLock.readLock();
+        try {
+            lock.lock();
+            return additionalPropertyUris != null ? additionalPropertyUris : nextAdditionalPropertyUris;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public void setAdditionalPropertyUris( Set<String> additionalPropertyUris ) {
+        this.nextAdditionalPropertyUris = additionalPropertyUris;
+    }
+
     public void initialize( boolean forceLoad, boolean forceIndexing ) {
         initialize( null, forceLoad, forceIndexing );
     }
@@ -159,9 +198,13 @@ public abstract class AbstractOntologyService implements OntologyService {
             return;
         }
 
+        // making a copy of all we need
         String ontologyUrl = getOntologyUrl();
         String ontologyName = getOntologyName();
         String cacheName = getCacheName();
+        Set<Property> additionalProperties = nextAdditionalPropertyUris.stream()
+                .map( ResourceFactory::createProperty ).collect( Collectors.toSet() );
+        LanguageLevel languageLevel = nextLanguageLevel;
         InferenceMode inferenceMode = nextInferenceMode;
         boolean processImports = nextProcessImports;
         boolean searchEnabled = nextSearchEnabled;
@@ -196,7 +239,7 @@ public abstract class AbstractOntologyService implements OntologyService {
             return;
 
         try {
-            OntologyModel m = stream != null ? loadModelFromStream( stream, processImports, inferenceMode ) : loadModel( processImports, inferenceMode ); // can take a while.
+            OntologyModel m = stream != null ? loadModelFromStream( stream, processImports, languageLevel, inferenceMode ) : loadModel( processImports, languageLevel, inferenceMode ); // can take a while.
             if ( m instanceof OntologyModelImpl ) {
                 model = ( ( OntologyModelImpl ) m ).getOntModel();
             } else {
@@ -254,9 +297,11 @@ public abstract class AbstractOntologyService implements OntologyService {
             this.additionalRestrictions = additionalRestrictions;
             this.index = index;
             this.isInitialized = true;
+            this.languageLevel = languageLevel;
             this.inferenceMode = inferenceMode;
             this.processImports = processImports;
             this.searchEnabled = searchEnabled;
+            this.additionalPropertyUris = additionalProperties.stream().map( Property::getURI ).collect( Collectors.toSet() );
             if ( cacheName != null ) {
                 // now that the terms have been replaced, we can clear old caches
                 try {
@@ -615,13 +660,13 @@ public abstract class AbstractOntologyService implements OntologyService {
      * Delegates the call as to load the model into memory or leave it on disk. Simply delegates to either
      * OntologyLoader.loadMemoryModel( url ); OR OntologyLoader.loadPersistentModel( url, spec );
      */
-    protected abstract OntologyModel loadModel( boolean processImports, InferenceMode inferenceMode ) throws IOException;
+    protected abstract OntologyModel loadModel( boolean processImports, LanguageLevel languageLevel, InferenceMode inferenceMode ) throws IOException;
 
 
     /**
      * Load a model from a given input stream.
      */
-    protected abstract OntologyModel loadModelFromStream( InputStream stream, boolean processImports, InferenceMode inferenceMode ) throws IOException;
+    protected abstract OntologyModel loadModelFromStream( InputStream stream, boolean processImports, LanguageLevel languageLevel, InferenceMode inferenceMode ) throws IOException;
 
     /**
      * A name for caching this ontology, or null to disable caching.
@@ -631,17 +676,6 @@ public abstract class AbstractOntologyService implements OntologyService {
     @Nullable
     protected String getCacheName() {
         return getOntologyName();
-    }
-
-    private OntModelSpec getSpec( InferenceMode inferenceMode ) {
-        switch ( inferenceMode ) {
-            case TRANSITIVE:
-                return OntModelSpec.OWL_MEM_TRANS_INF;
-            case NONE:
-                return OntModelSpec.OWL_MEM;
-            default:
-                throw new UnsupportedOperationException( String.format( "Unsupported inference level %s.", inferenceMode ) );
-        }
     }
 
     @Override
@@ -743,7 +777,8 @@ public abstract class AbstractOntologyService implements OntologyService {
 
     @Override
     public String toString() {
-        return String.format( "%s [%s]", getOntologyName(), getOntologyUrl() );
+        return String.format( "%s [url=%s] [language level=%s] [inference mode=%s] [imports=%b] [search=%b]",
+                getOntologyName(), getOntologyUrl(), getLanguageLevel(), getInferenceMode(), getProcessImports(), isSearchEnabled() );
     }
 
     private Set<OntClass> getOntClassesFromTerms( Collection<OntologyTerm> terms ) {

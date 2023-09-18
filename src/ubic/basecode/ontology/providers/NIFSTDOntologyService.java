@@ -43,12 +43,12 @@ public class NIFSTDOntologyService extends AbstractOntologyMemoryBackedService {
     }
 
     @Override
-    protected OntologyModel loadModel( boolean processImports, InferenceMode inferenceMode ) {
+    protected OntologyModel loadModel( boolean processImports, LanguageLevel languageLevel, InferenceMode inferenceMode ) {
         try ( InputStream stream = getClass().getResourceAsStream( NIFSTD_ONTOLOGY_FILE ) ) {
             if ( stream == null ) {
                 throw new RuntimeException( String.format( "The NIF ontology was not found in classpath at %s.", NIFSTD_ONTOLOGY_FILE ) );
             }
-            return loadModelFromStream( new GZIPInputStream( stream ), processImports, inferenceMode );
+            return loadModelFromStream( new GZIPInputStream( stream ), processImports, languageLevel, inferenceMode );
         } catch ( IOException e ) {
             throw new RuntimeException( e );
         }
