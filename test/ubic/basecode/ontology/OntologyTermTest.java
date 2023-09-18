@@ -44,6 +44,9 @@ public class OntologyTermTest extends AbstractOntologyTest {
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/doid.short.owl.gz" ) ) );
         s.initialize( is, false );
 
+        assertTrue( s.getAdditionalPropertyUris().contains( "http://purl.obolibrary.org/obo/BFO_0000050" ) );
+        assertTrue( s.getAdditionalPropertyUris().contains( "http://www.obofoundry.org/ro/ro.owl#proper_part_of" ) );
+
         OntologyTerm t = s.getTerm( "http://purl.obolibrary.org/obo/DOID_4159" );
         assertNotNull( t );
 

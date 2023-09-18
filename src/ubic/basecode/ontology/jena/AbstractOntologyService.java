@@ -24,6 +24,7 @@ import com.hp.hpl.jena.rdf.arp.ARPErrorNumbers;
 import com.hp.hpl.jena.rdf.arp.ParseException;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -65,12 +66,12 @@ public abstract class AbstractOntologyService implements OntologyService {
     /**
      * Properties through which propagation is allowed for {@link #getParents(Collection, boolean, boolean)}}
      */
-    private static final Set<Property> additionalProperties;
+    private static final Set<String> DEFAULT_ADDITIONAL_PROPERTIES;
 
     static {
-        additionalProperties = new HashSet<>();
-        additionalProperties.add( BFO.partOf );
-        additionalProperties.add( RO.properPartOf );
+        DEFAULT_ADDITIONAL_PROPERTIES = new HashSet<>();
+        DEFAULT_ADDITIONAL_PROPERTIES.add( BFO.partOf.getURI() );
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.properPartOf.getURI() );
     }
 
     /* settings (applicable for next initialization) */
@@ -78,6 +79,7 @@ public abstract class AbstractOntologyService implements OntologyService {
     private InferenceMode nextInferenceMode = InferenceMode.TRANSITIVE;
     private boolean nextProcessImports = true;
     private boolean nextSearchEnabled = true;
+    private Set<String> nextAdditionalPropertyUris = DEFAULT_ADDITIONAL_PROPERTIES;
 
     /**
      * Lock used to prevent reads while the ontology is being initialized.
@@ -99,6 +101,8 @@ public abstract class AbstractOntologyService implements OntologyService {
     private Boolean processImports = null;
     @Nullable
     private Boolean searchEnabled = null;
+    @Nullable
+    private Set<String> additionalPropertyUris = null;
 
     @Override
     public LanguageLevel getLanguageLevel() {
@@ -164,6 +168,25 @@ public abstract class AbstractOntologyService implements OntologyService {
         this.nextSearchEnabled = searchEnabled;
     }
 
+    /**
+     * The set of properties relation to use when inferring parents and children.
+     * <p>
+     * The default is to use {@link BFO#partOf} and {@link RO#properPartOf}.
+     */
+    public Set<String> getAdditionalPropertyUris() {
+        Lock lock = rwLock.readLock();
+        try {
+            lock.lock();
+            return additionalPropertyUris != null ? additionalPropertyUris : nextAdditionalPropertyUris;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void setAdditionalPropertyUris( Set<String> additionalPropertyUris ) {
+        this.nextAdditionalPropertyUris = additionalPropertyUris;
+    }
+
     public void initialize( boolean forceLoad, boolean forceIndexing ) {
         initialize( null, forceLoad, forceIndexing );
     }
@@ -178,9 +201,12 @@ public abstract class AbstractOntologyService implements OntologyService {
             return;
         }
 
+        // making a copy of all we need
         String ontologyUrl = getOntologyUrl();
         String ontologyName = getOntologyName();
         String cacheName = getCacheName();
+        Set<Property> additionalProperties = nextAdditionalPropertyUris.stream()
+                .map( ResourceFactory::createProperty ).collect( Collectors.toSet() );
         LanguageLevel languageLevel = nextLanguageLevel;
         InferenceMode inferenceMode = nextInferenceMode;
         boolean processImports = nextProcessImports;
@@ -278,6 +304,7 @@ public abstract class AbstractOntologyService implements OntologyService {
             this.inferenceMode = inferenceMode;
             this.processImports = processImports;
             this.searchEnabled = searchEnabled;
+            this.additionalPropertyUris = additionalProperties.stream().map( Property::getURI ).collect( Collectors.toSet() );
             if ( cacheName != null ) {
                 // now that the terms have been replaced, we can clear old caches
                 try {
