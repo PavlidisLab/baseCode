@@ -245,6 +245,13 @@
 		</dependency>
 
 		<!-- Testing utilities -->
+		<!-- FIXME: remove this dependency altogether, but it's used indirectly in ConfigUtilsTest -->
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>1.9.4</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
