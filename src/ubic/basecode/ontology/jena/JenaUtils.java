@@ -1,5 +1,6 @@
 package ubic.basecode.ontology.jena;
 
+import com.hp.hpl.jena.ontology.ConversionException;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Restriction;
@@ -42,7 +43,15 @@ class JenaUtils {
         ontClasses = ontClasses.stream()
                 .map( t -> t.inModel( model ) )
                 .filter( t -> t.canAs( OntClass.class ) )
-                .map( t -> t.as( OntClass.class ) )
+                .map( t -> {
+                    try {
+                        return t.as( OntClass.class );
+                    } catch ( ConversionException e ) {
+                        log.error( "Conversion failed for " + t, e );
+                        return null;
+                    }
+                } )
+                .filter( Objects::nonNull )
                 .collect( Collectors.toList() );
         if ( ontClasses.isEmpty() ) {
             return Collections.emptySet();
@@ -104,7 +113,15 @@ class JenaUtils {
         terms = terms.stream()
                 .map( t -> t.inModel( model ) )
                 .filter( t -> t.canAs( OntClass.class ) )
-                .map( t -> t.as( OntClass.class ) )
+                .map( t -> {
+                    try {
+                        return t.as( OntClass.class );
+                    } catch ( ConversionException e ) {
+                        log.error( "Conversion failed for " + t, e );
+                        return null;
+                    }
+                } )
+                .filter( Objects::nonNull )
                 .collect( Collectors.toList() );
         if ( terms.isEmpty() ) {
             return Collections.emptySet();
