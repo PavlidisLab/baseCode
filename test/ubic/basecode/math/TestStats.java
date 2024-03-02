@@ -146,6 +146,14 @@ public class TestStats {
         actualReturn = Stats.numberofDistinctValues( new DoubleArrayList( new double[] { 1.0, 1.0, 3.0, 4.0, 4.00001,
                 5.0, 6.0 } ), 0.00001 );
         assertEquals( 6, actualReturn );
+
+        double[] rowAsList = new double[]{8.6154, 8.0668, 8.3417, 6.4633, 9.2136, 8.5676, 7.2155, 7.1609, 8.4329, 8.7668, 8.2165, 7.237, 9.3366,
+                6.8416, 8.2402, 7.4053, 6.8839, 7.5707, 6.9576, -2.0648, -2.0648, 0.0407, -2.0648, -2.0648, -2.0648, -2.0648, -2.0648, -2.0648,
+                -2.0648, -2.0648, -2.0648, -2.0648, -2.0648, -2.0648, -2.0648, -2.0648, -2.0648, -2.0648};
+        Double r = Stats.fractionDistinctValuesNonNA(new DoubleArrayList(rowAsList), 0.001);
+
+        assertEquals(0.552, r, 0.01);
+
     }
 
 

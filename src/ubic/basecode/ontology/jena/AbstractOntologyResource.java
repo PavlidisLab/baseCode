@@ -65,12 +65,6 @@ abstract class AbstractOntologyResource implements OntologyResource {
         if ( label == null ) {
             label = res.getLabel( null );
         }
-        if ( label == null ) {
-            label = res.getLocalName();
-        }
-        if ( label == null ) {
-            label = res.getURI();
-        }
         return label;
     }
 
@@ -113,6 +107,12 @@ abstract class AbstractOntologyResource implements OntologyResource {
     @Override
     public String toString() {
         String s = getLabel();
+        if ( s == null ) {
+            s = res.getLocalName();
+        }
+        if ( s == null ) {
+            s = res.getURI();
+        }
         if ( s == null ) {
             s = res.toString();
         }

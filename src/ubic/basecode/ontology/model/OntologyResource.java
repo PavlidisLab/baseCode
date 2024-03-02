@@ -28,11 +28,13 @@ public interface OntologyResource extends Comparable<OntologyResource> {
     /**
      * A label, if known, otherwise null.
      */
+    @Nullable
     String getLabel();
 
     /**
      * A URI if known, otherwise null.
      */
+    @Nullable
     String getUri();
 
     /**
