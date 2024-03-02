@@ -569,9 +569,17 @@ public class DesignMatrix {
                 String contrastingValue = "";
                 assert tmp != null;
                 for ( int j = 0; j < tmp.rows(); j++ ) {
-                    boolean isBaseline = !factorValues.get( j ).equals( level );
+                    Object fv = factorValues.get(j);
+
+                    if (fv == null) {
+                        // This happens if a factorvalue is not assigned somehwere, as in a DEExclude situation.
+                        // In Gemma we can reach this during batch correction.
+                        throw new IllegalArgumentException("Null value for factor " + factorName + " at row " + j);
+                    }
+
+                    boolean isBaseline = !fv.equals( level );
                     if ( !isBaseline ) {
-                        contrastingValue = ( String ) factorValues.get( j );
+                        contrastingValue = ( String ) fv;
                     }
                     tmp.set( j, currentColumn, isBaseline ? 0.0 : 1.0 );
                 }
