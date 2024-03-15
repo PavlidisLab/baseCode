@@ -346,6 +346,8 @@
 					<!-- Do not push to remote -->
 					<pushRemote>false</pushRemote>
 					<verbose>true</verbose>
+					<useSnapshotInHotfix>true</useSnapshotInHotfix>
+					<useSnapshotInRelease>true</useSnapshotInRelease>
 					<!-- Branch naming schemes -->
 					<gitFlowConfig>
 						<productionBranch>master</productionBranch>
