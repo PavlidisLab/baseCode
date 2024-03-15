@@ -28,6 +28,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import ubic.basecode.ontology.model.OntologyIndividual;
 import ubic.basecode.ontology.model.OntologyTerm;
 
+import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
@@ -38,13 +39,13 @@ class OntologyIndividualImpl extends AbstractOntologyResource implements Ontolog
     private final Individual ind;
     private final Set<Restriction> additionalRestrictions;
 
-    public OntologyIndividualImpl( Individual ind, Set<Restriction> additionalRestrictions ) {
+    public OntologyIndividualImpl( Individual ind, @Nullable Set<Restriction> additionalRestrictions ) {
         super( ind );
         this.ind = ind;
         this.additionalRestrictions = additionalRestrictions;
     }
 
-    public OntologyIndividualImpl( Individual ind, Set<Restriction> additionalRestrictions, double score ) {
+    public OntologyIndividualImpl( Individual ind, @Nullable Set<Restriction> additionalRestrictions, double score ) {
         super( ind, score );
         this.ind = ind;
         this.additionalRestrictions = additionalRestrictions;

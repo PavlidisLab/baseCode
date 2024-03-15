@@ -91,6 +91,7 @@ public abstract class AbstractOntologyService implements OntologyService {
     private Map<String, String> alternativeIDs;
     @Nullable
     private SearchIndex index;
+    @Nullable
     private Set<Restriction> additionalRestrictions;
     private boolean isInitialized = false;
     @Nullable
@@ -740,8 +741,10 @@ public abstract class AbstractOntologyService implements OntologyService {
         // for all Ontology terms that exist in the tree
         ExtendedIterator<OntClass> iterator = model.listClasses();
         while ( iterator.hasNext() ) {
-            OntClass ind = iterator.next();
-            OntologyTerm ontologyTerm = new OntologyTermImpl( ind, additionalRestrictions );
+            OntologyTerm ontologyTerm = new OntologyTermImpl( iterator.next(), additionalRestrictions );
+            if ( ontologyTerm.getUri() == null ) {
+                continue;
+            }
             // lets find the baseUri, to change to valueUri
             String baseOntologyUri = ontologyTerm.getUri().substring( 0, ontologyTerm.getUri().lastIndexOf( "/" ) + 1 );
             for ( String alternativeId : ontologyTerm.getAlternativeIds() ) {

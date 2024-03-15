@@ -59,7 +59,7 @@ class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm 
         this.additionalRestrictions = additionalRestrictions;
     }
 
-    public OntologyTermImpl( OntClass resource, Set<Restriction> additionalRestrictions, double score ) {
+    public OntologyTermImpl( OntClass resource, @Nullable Set<Restriction> additionalRestrictions, double score ) {
         super( resource, score );
         this.ontResource = resource;
         this.additionalRestrictions = additionalRestrictions;

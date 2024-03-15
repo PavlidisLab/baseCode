@@ -18,16 +18,12 @@
  */
 package ubic.basecode.ontology.jena;
 
-import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
-import com.hp.hpl.jena.ontology.HasValueRestriction;
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.ontology.Restriction;
-import com.hp.hpl.jena.ontology.SomeValuesFromRestriction;
+import com.hp.hpl.jena.ontology.*;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import ubic.basecode.ontology.model.OntologyClassRestriction;
 import ubic.basecode.ontology.model.OntologyTerm;
 
+import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
@@ -38,7 +34,7 @@ class OntologyClassRestrictionImpl extends OntologyRestrictionImpl implements On
     private final OntologyTerm restrictedTo;
     private final Set<Restriction> additionalRestrictions;
 
-    public OntologyClassRestrictionImpl( Restriction term, Set<Restriction> additionalRestrictions ) {
+    public OntologyClassRestrictionImpl( Restriction term, @Nullable Set<Restriction> additionalRestrictions ) {
         super( term, additionalRestrictions );
         this.additionalRestrictions = additionalRestrictions;
 
