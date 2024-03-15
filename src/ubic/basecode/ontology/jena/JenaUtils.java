@@ -149,7 +149,15 @@ class JenaUtils {
             for ( Restriction r : restrictions ) {
                 result.addAll( model.listResourcesWithProperty( subClassOf, r )
                         .filterDrop( new BnodeFilter<>() )
-                        .mapWith( r2 -> r2.as( OntClass.class ) )
+                        .mapWith( r2 -> {
+                            try {
+                                return r2.as( OntClass.class );
+                            } catch ( ConversionException e ) {
+                                log.error( "Conversion failed for " + r2, e );
+                                return null;
+                            }
+                        } )
+                        .filterKeep( where( Objects::nonNull ) )
                         .toSet() );
             }
         }

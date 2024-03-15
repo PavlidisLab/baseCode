@@ -14,6 +14,7 @@
  */
 package ubic.basecode.ontology.jena;
 
+import com.hp.hpl.jena.ontology.ConversionException;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.ontology.Restriction;
@@ -86,11 +87,17 @@ class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm 
         // this is a little slow because we have to go through all statements for the term.
         while ( iterator.hasNext() ) {
             Statement state = iterator.next();
-            OntResource res = state.getPredicate().as( OntResource.class );
-            if ( res.isAnnotationProperty() ) {
-                com.hp.hpl.jena.ontology.AnnotationProperty p = res.asAnnotationProperty();
-                RDFNode n = state.getObject();
-                annots.add( new AnnotationPropertyImpl( p, n ) );
+            if ( state.getPredicate().canAs( OntResource.class ) ) {
+                try {
+                    OntResource res = state.getPredicate().as( OntResource.class );
+                    if ( res.isAnnotationProperty() ) {
+                        com.hp.hpl.jena.ontology.AnnotationProperty p = res.asAnnotationProperty();
+                        RDFNode n = state.getObject();
+                        annots.add( new AnnotationPropertyImpl( p, n ) );
+                    }
+                } catch ( ConversionException e ) {
+                    log.error( "Conversion failed for " + state.getPredicate(), e );
+                }
             }
         }
         return annots;

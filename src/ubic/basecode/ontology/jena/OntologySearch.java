@@ -18,6 +18,7 @@
  */
 package ubic.basecode.ontology.jena;
 
+import com.hp.hpl.jena.ontology.ConversionException;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -60,7 +61,8 @@ class OntologySearch {
     public static ExtendedIterator<SearchResult<OntClass>> matchClasses( OntModel model, SearchIndex index, String queryString ) throws OntologySearchException {
         return runSearch( model, index, queryString )
                 .filterKeep( where( r -> r.result.isURIResource() && r.result.canAs( OntClass.class ) ) )
-                .mapWith( r -> r.as( OntClass.class ) );
+                .mapWith( r -> r.as( OntClass.class ) )
+                .filterKeep( where( Objects::nonNull ) );
     }
 
     /**
@@ -73,7 +75,8 @@ class OntologySearch {
     public static ExtendedIterator<SearchResult<Individual>> matchIndividuals( OntModel model, SearchIndex index, String queryString ) throws OntologySearchException {
         return runSearchWithWildcard( model, index, queryString )
                 .filterKeep( where( r -> r.result.isURIResource() && r.result.canAs( Individual.class ) ) )
-                .mapWith( r -> r.as( Individual.class ) );
+                .mapWith( r -> r.as( Individual.class ) )
+                .filterKeep( where( Objects::nonNull ) );
     }
 
     /**
@@ -87,7 +90,8 @@ class OntologySearch {
     public static ExtendedIterator<SearchResult<Resource>> matchResources( OntModel model, SearchIndex index, String queryString ) throws OntologySearchException {
         return runSearchWithWildcard( model, index, queryString )
                 .filterKeep( where( o -> o.result.isURIResource() && o.result.isResource() ) )
-                .mapWith( r -> r.as( Resource.class ) );
+                .mapWith( r -> r.as( Resource.class ) )
+                .filterKeep( where( Objects::nonNull ) );
     }
 
     private static ExtendedIterator<SearchResult<RDFNode>> runSearchWithWildcard( Model model, SearchIndex index, String queryString ) throws OntologySearchException {
@@ -180,7 +184,12 @@ class OntologySearch {
         }
 
         private <U extends Resource> SearchResult<U> as( Class<U> clazz ) {
-            return new SearchResult<>( docId, result.as( clazz ), score );
+            try {
+                return new SearchResult<>( docId, result.as( clazz ), score );
+            } catch ( ConversionException e ) {
+                log.error( "Conversion failed for " + result, e );
+                return null;
+            }
         }
     }
 }

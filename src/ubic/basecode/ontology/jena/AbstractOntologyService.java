@@ -390,14 +390,20 @@ public abstract class AbstractOntologyService implements OntologyService {
             return OntologySearch.matchResources( model, index, searchString )
                     .filterKeep( where( r -> r.result.canAs( OntClass.class ) || r.result.canAs( Individual.class ) ) )
                     .mapWith( r -> {
-                        OntologyResource res;
-                        if ( r.result.canAs( OntClass.class ) ) {
-                            res = new OntologyTermImpl( r.result.as( OntClass.class ), additionalRestrictions, r.score );
-                        } else {
-                            res = new OntologyIndividualImpl( r.result.as( Individual.class ), additionalRestrictions, r.score );
+                        try {
+                            if ( r.result.canAs( OntClass.class ) ) {
+                                return new OntologyTermImpl( r.result.as( OntClass.class ), additionalRestrictions, r.score );
+                            } else if ( r.result.canAs( Individual.class ) ) {
+                                return new OntologyIndividualImpl( r.result.as( Individual.class ), additionalRestrictions, r.score );
+                            } else {
+                                return ( OntologyResource ) null;
+                            }
+                        } catch ( ConversionException e ) {
+                            log.error( "Conversion failed for " + r, e );
+                            return null;
                         }
-                        return res;
                     } )
+                    .filterKeep( where( Objects::nonNull ) )
                     .filterKeep( where( ontologyTerm -> keepObsoletes || !ontologyTerm.isObsolete() ) )
                     .toSet();
         } finally {
