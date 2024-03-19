@@ -484,7 +484,7 @@ public class DesignMatrix {
      * The primary method for actually setting up the design matrix. Redundant or constant columns are dropped (except
      * the intercept, if included)
      *
-     * @param  which        column of the input matrix are we working on.
+     * @param  columnNum        column of the input matrix are we working on.
      * @param  factorValues of doubles or strings.
      * @param  inputDesign
      * @param  start        1 or 2. Set to 1 to get a column for each level (must not have an intercept in the model);
