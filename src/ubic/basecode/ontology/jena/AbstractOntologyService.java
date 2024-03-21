@@ -400,7 +400,7 @@ public abstract class AbstractOntologyService implements OntologyService {
                                 return ( OntologyResource ) null;
                             }
                         } catch ( ConversionException e ) {
-                            log.error( "Conversion failed for " + r, e );
+                            log.warn( "Conversion failed for " + r, e );
                             return null;
                         }
                     } )

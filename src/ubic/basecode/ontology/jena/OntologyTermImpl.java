@@ -96,7 +96,7 @@ class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm 
                         annots.add( new AnnotationPropertyImpl( p, n ) );
                     }
                 } catch ( ConversionException e ) {
-                    log.error( "Conversion failed for " + state.getPredicate(), e );
+                    log.warn( "Conversion failed for " + state.getPredicate(), e );
                 }
             }
         }

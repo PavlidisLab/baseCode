@@ -47,7 +47,7 @@ class JenaUtils {
                     try {
                         return t.as( OntClass.class );
                     } catch ( ConversionException e ) {
-                        log.error( "Conversion failed for " + t, e );
+                        log.warn( "Conversion failed for " + t, e );
                         return null;
                     }
                 } )
@@ -117,7 +117,7 @@ class JenaUtils {
                     try {
                         return t.as( OntClass.class );
                     } catch ( ConversionException e ) {
-                        log.error( "Conversion failed for " + t, e );
+                        log.warn( "Conversion failed for " + t, e );
                         return null;
                     }
                 } )
@@ -153,7 +153,7 @@ class JenaUtils {
                             try {
                                 return r2.as( OntClass.class );
                             } catch ( ConversionException e ) {
-                                log.error( "Conversion failed for " + r2, e );
+                                log.warn( "Conversion failed for " + r2, e );
                                 return null;
                             }
                         } )
