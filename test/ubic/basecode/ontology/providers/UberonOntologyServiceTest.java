@@ -32,6 +32,9 @@ public class UberonOntologyServiceTest extends AbstractOntologyTest {
 
     @Test
     public void testUberon() {
+        assertEquals( "Uber-anatomy ontology", uberon.getName() );
+        assertNotNull( uberon.getDescription() );
+
         OntologyTerm t = uberon.getTerm( "http://purl.obolibrary.org/obo/BFO_0000001" );
         assertNotNull( t );
         assertTrue( t.isRoot() );
