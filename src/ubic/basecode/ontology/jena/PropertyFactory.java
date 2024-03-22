@@ -23,7 +23,6 @@ import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.ontology.Restriction;
 
-import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
@@ -34,11 +33,9 @@ class PropertyFactory {
     /**
      * Convert a Jena property.
      *
-     * @param property
-     * @param source
      * @return new property or null if it could not be converted.
      */
-    public static ubic.basecode.ontology.model.OntologyProperty asProperty( OntProperty property, @Nullable Set<Restriction> additionalRestrictions ) {
+    public static ubic.basecode.ontology.model.OntologyProperty asProperty( OntProperty property, Set<Restriction> additionalRestrictions ) {
 
         if ( property.isObjectProperty() ) {
             return new ObjectPropertyImpl( property.asObjectProperty(), additionalRestrictions );

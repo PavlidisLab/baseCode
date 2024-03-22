@@ -21,7 +21,6 @@ package ubic.basecode.ontology.jena;
 import com.hp.hpl.jena.ontology.Restriction;
 import ubic.basecode.ontology.model.OntologyCardinalityRestriction;
 
-import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
@@ -33,7 +32,7 @@ class OntologyCardinalityRestrictionImpl extends OntologyRestrictionImpl impleme
     private final int cardinality;
     private final CardinalityType cardType;
 
-    public OntologyCardinalityRestrictionImpl( Restriction resource, @Nullable Set<Restriction> additionalRestrictions ) {
+    public OntologyCardinalityRestrictionImpl( Restriction resource, Set<Restriction> additionalRestrictions ) {
         super( resource, additionalRestrictions );
 
         if ( resource.isMaxCardinalityRestriction() ) {

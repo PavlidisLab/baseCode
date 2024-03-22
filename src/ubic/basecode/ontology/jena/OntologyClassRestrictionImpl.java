@@ -23,7 +23,6 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import ubic.basecode.ontology.model.OntologyClassRestriction;
 import ubic.basecode.ontology.model.OntologyTerm;
 
-import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
@@ -34,7 +33,7 @@ class OntologyClassRestrictionImpl extends OntologyRestrictionImpl implements On
     private final OntologyTerm restrictedTo;
     private final Set<Restriction> additionalRestrictions;
 
-    public OntologyClassRestrictionImpl( Restriction term, @Nullable Set<Restriction> additionalRestrictions ) {
+    public OntologyClassRestrictionImpl( Restriction term, Set<Restriction> additionalRestrictions ) {
         super( term, additionalRestrictions );
         this.additionalRestrictions = additionalRestrictions;
 
@@ -82,7 +81,7 @@ class OntologyClassRestrictionImpl extends OntologyRestrictionImpl implements On
         if ( restrictedTo != null ) {
             return "Class restriction: " + this.getRestrictionOn() + " class=" + this.getRestrictedTo();
         } else if ( value != null ) {
-            return "Class restriction: " + this.getRestrictionOn() + " = " + this.value.toString() + "[value]";
+            return "Class restriction: " + this.getRestrictionOn() + " = " + this.value + "[value]";
         } else {
             throw new IllegalStateException( "Value or restriction class must be non-null" );
         }

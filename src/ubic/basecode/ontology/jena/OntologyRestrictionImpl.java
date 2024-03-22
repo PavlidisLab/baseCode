@@ -22,7 +22,6 @@ import com.hp.hpl.jena.ontology.Restriction;
 import ubic.basecode.ontology.model.OntologyProperty;
 import ubic.basecode.ontology.model.OntologyRestriction;
 
-import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
@@ -34,7 +33,7 @@ abstract class OntologyRestrictionImpl extends OntologyTermImpl implements Ontol
 
     protected OntologyProperty restrictionOn;
 
-    public OntologyRestrictionImpl( Restriction resource, @Nullable Set<Restriction> additionalRestrictions ) {
+    public OntologyRestrictionImpl( Restriction resource, Set<Restriction> additionalRestrictions ) {
         super( resource, additionalRestrictions );
         this.restrictionOn = PropertyFactory.asProperty( resource.getOnProperty(), additionalRestrictions );
     }

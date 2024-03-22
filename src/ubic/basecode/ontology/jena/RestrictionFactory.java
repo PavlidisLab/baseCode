@@ -22,7 +22,6 @@ import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.Restriction;
 import ubic.basecode.ontology.model.OntologyRestriction;
 
-import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
@@ -30,7 +29,7 @@ import java.util.Set;
  */
 class RestrictionFactory {
 
-    public static OntologyRestriction asRestriction( Restriction restriction, @Nullable Set<Restriction> additionalRestrictions ) {
+    public static OntologyRestriction asRestriction( Restriction restriction, Set<Restriction> additionalRestrictions ) {
 
         OntProperty onProperty = restriction.getOnProperty();
 

@@ -25,7 +25,6 @@ import com.hp.hpl.jena.ontology.Restriction;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import ubic.basecode.ontology.model.OntologyTerm;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,10 +35,9 @@ import java.util.Set;
 class ObjectPropertyImpl extends OntologyPropertyImpl implements ubic.basecode.ontology.model.ObjectProperty {
 
     private final com.hp.hpl.jena.ontology.ObjectProperty resource;
-    @Nullable
     private final Set<Restriction> additionalRestrictions;
 
-    public ObjectPropertyImpl( ObjectProperty resource, @Nullable Set<Restriction> additionalRestrictions ) {
+    public ObjectPropertyImpl( ObjectProperty resource, Set<Restriction> additionalRestrictions ) {
         super( resource );
         this.resource = resource;
         this.additionalRestrictions = additionalRestrictions;

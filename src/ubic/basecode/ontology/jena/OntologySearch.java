@@ -187,7 +187,7 @@ class OntologySearch {
             try {
                 return new SearchResult<>( docId, result.as( clazz ), score );
             } catch ( ConversionException e ) {
-                log.warn( "Conversion failed for " + result, e );
+                log.warn( "Conversion of " + result + " to " + clazz.getName() + " failed.", e );
                 return null;
             }
         }

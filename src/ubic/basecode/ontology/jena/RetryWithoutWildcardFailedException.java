@@ -18,6 +18,7 @@ class RetryWithoutWildcardFailedException extends OntologySearchJenaException {
     /**
      * Obtain the cause or error for the first attempt.
      */
+    @SuppressWarnings("unused")
     public JenaException getFirstAttemptCause() {
         return firstAttemptCause;
     }

@@ -113,7 +113,7 @@ class IndexerSelector implements Selector {
             try {
                 retain = wantedForIndexing.contains( s.getObject().as( Property.class ) );
             } catch ( ConversionException e ) {
-                log.warn( "Conversion failed for " + s.getObject(), e );
+                log.warn( "Conversion of " + s.getObject() + " to " + Property.class.getName() + " failed.", e );
             }
         }
 

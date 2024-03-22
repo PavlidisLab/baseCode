@@ -729,17 +729,15 @@ public abstract class AbstractOntologyService implements OntologyService {
         private final OntModel model;
         @Nullable
         private SearchIndex index;
-        @Nullable
         private final Set<Restriction> additionalRestrictions;
         private final LanguageLevel languageLevel;
         private final InferenceMode inferenceMode;
         private final boolean processImports;
-        @Nullable
         private final Set<String> additionalPropertyUris;
         @Nullable
         private Map<String, String> alternativeIDs;
 
-        State( OntModel model, @Nullable SearchIndex index, @Nullable Set<Restriction> additionalRestrictions, @Nullable LanguageLevel languageLevel, InferenceMode inferenceMode, boolean processImports, @Nullable Set<String> additionalPropertyUris ) {
+        private State( OntModel model, @Nullable SearchIndex index, Set<Restriction> additionalRestrictions, @Nullable LanguageLevel languageLevel, InferenceMode inferenceMode, boolean processImports, Set<String> additionalPropertyUris ) {
             this.model = model;
             this.index = index;
             this.additionalRestrictions = additionalRestrictions;

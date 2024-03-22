@@ -18,6 +18,7 @@
  */
 package ubic.basecode.ontology.model;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
@@ -25,9 +26,26 @@ import java.util.Collection;
  */
 public interface OntologyTerm extends OntologyResource {
 
+    /**
+     * Obtain alternative IDs for this term.
+     */
     Collection<String> getAlternativeIds();
 
+    /**
+     * Obtain all annotations for this term.
+     */
     Collection<AnnotationProperty> getAnnotations();
+
+    /**
+     * Obtain all the annotations for a given property URI.
+     */
+    Collection<AnnotationProperty> getAnnotations( String propertyUri );
+
+    /**
+     * Obtain an annotation by property URI.
+     */
+    @Nullable
+    AnnotationProperty getAnnotation( String propertyUri );
 
     /**
      * Obtain the children of this term via subclasses and additional properties.
@@ -50,17 +68,11 @@ public interface OntologyTerm extends OntologyResource {
      */
     Collection<OntologyTerm> getChildren( boolean direct, boolean includeAdditionalProperties, boolean keepObsoletes );
 
-    String getComment();
-
     default Collection<OntologyIndividual> getIndividuals() {
         return getIndividuals( true );
     }
 
     Collection<OntologyIndividual> getIndividuals( boolean direct );
-
-    String getLocalName();
-
-    Object getModel();
 
     /**
      * Note that any restriction superclasses are not returned, unless they are has_proper_part

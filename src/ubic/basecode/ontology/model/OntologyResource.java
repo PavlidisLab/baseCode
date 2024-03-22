@@ -26,16 +26,27 @@ import javax.annotation.Nullable;
 public interface OntologyResource extends Comparable<OntologyResource> {
 
     /**
+     * A URI if known, otherwise null.
+     */
+    @Nullable
+    String getUri();
+
+    /**
+     * A local name for this resource.
+     */
+    String getLocalName();
+
+    /**
      * A label, if known, otherwise null.
      */
     @Nullable
     String getLabel();
 
     /**
-     * A URI if known, otherwise null.
+     * A comment for the resource, if available, otherwise null.
      */
     @Nullable
-    String getUri();
+    String getComment();
 
     /**
      * Whether the resource is marked as obsolete.
