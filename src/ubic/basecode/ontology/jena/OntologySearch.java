@@ -30,16 +30,12 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.util.iterator.Map1Iterator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ubic.basecode.ontology.search.OntologySearchException;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Optional;
 
 import static com.hp.hpl.jena.sparql.util.ModelUtils.convertGraphNodeToRDFNode;
 import static ubic.basecode.ontology.jena.JenaUtils.where;
@@ -73,7 +69,7 @@ class OntologySearch {
      * @return Collection of OntologyTerm objects
      */
     public static ExtendedIterator<SearchResult<Individual>> matchIndividuals( OntModel model, SearchIndex index, String queryString ) throws OntologySearchException {
-        return runSearchWithWildcard( model, index, queryString )
+        return runSearch( model, index, queryString )
                 .filterKeep( where( r -> r.result.isURIResource() && r.result.canAs( Individual.class ) ) )
                 .mapWith( r -> r.as( Individual.class ) )
                 .filterKeep( where( Objects::nonNull ) );
@@ -88,68 +84,25 @@ class OntologySearch {
      * @return Collection of OntologyResource objects
      */
     public static ExtendedIterator<SearchResult<Resource>> matchResources( OntModel model, SearchIndex index, String queryString ) throws OntologySearchException {
-        return runSearchWithWildcard( model, index, queryString )
+        return runSearch( model, index, queryString )
                 .filterKeep( where( o -> o.result.isURIResource() && o.result.isResource() ) )
                 .mapWith( r -> r.as( Resource.class ) )
                 .filterKeep( where( Objects::nonNull ) );
     }
 
-    private static ExtendedIterator<SearchResult<RDFNode>> runSearchWithWildcard( Model model, SearchIndex index, String queryString ) throws OntologySearchException {
-        ExtendedIterator<SearchResult<RDFNode>> iterator;
-
-        queryString = queryString.trim();
-
-        // Add wildcard only if the last word is longer than one character. This is to prevent lucene from
-        // blowing up. See bug#1145
-        String[] words = queryString.split( "\\s+" );
-        int lastWordLength = words[words.length - 1].length();
-        if ( lastWordLength > 1 ) {
-            try { // Use wildcard search.
-                iterator = runSearch( model, index, queryString + "*" );
-            } catch ( OntologySearchJenaException e ) { // retry without wildcard
-                // retry without wildcard
-                log.warn( "Failed to search in {}. Retrying search without wildcard.", model, e );
-                try {
-                    iterator = runSearch( model, index, queryString );
-                } catch ( OntologySearchJenaException e1 ) {
-                    throw new RetryWithoutWildcardFailedException( "Failed to search while retrying without wildcard.", queryString, e.getCause(), e1.getCause() );
-                }
-            }
-        } else {
-            iterator = runSearch( model, index, queryString );
-        }
-
-        return iterator;
-    }
-
     private static ExtendedIterator<SearchResult<RDFNode>> runSearch( Model model, SearchIndex index, String queryString ) throws OntologySearchJenaException {
-        String strippedQuery = StringUtils.strip( queryString );
-
-        if ( StringUtils.isBlank( strippedQuery ) ) {
+        if ( StringUtils.isBlank( queryString ) ) {
             throw new IllegalArgumentException( "Query cannot be blank" );
         }
-
-        String query = queryString.replaceAll( " AND ", " " );
-        List<String> list = new ArrayList<>();
-        Matcher m = Pattern.compile( "([^\"]\\S*|\".+?\")\\s*" ).matcher( query );
-        while ( m.find() ) {
-            list.add( m.group( 1 ) );
-        }
-        String enhancedQuery = StringUtils.join( list, " " + Operator.AND + " " );
-
-        // Note: LARQ does not allow you to change the default operator without making it non-thread-safe.
-        index.getLuceneQueryParser().setDefaultOperator( Operator.AND );
-
         StopWatch timer = StopWatch.createStarted();
         try {
-            return new Map1Iterator<>( o -> new SearchResult<>( o.getLuceneDocId(), convertGraphNodeToRDFNode( o.getNode(), model ), o.getScore() ),
-                    index.search( enhancedQuery ) );
+            return new Map1Iterator<>( o -> new SearchResult<>( o.getLuceneDocId(), convertGraphNodeToRDFNode( o.getNode(), model ), o.getScore() ), index.search( queryString ) );
         } catch ( JenaException e ) {
-            throw new OntologySearchJenaException( "Failed to search with enhanced query.", enhancedQuery, e );
+            throw new OntologySearchJenaException( "Failed to search with query.", queryString, e );
         } finally {
             timer.stop();
             if ( timer.getTime() > 100 ) {
-                log.warn( "Ontology resource search for: {} (parsed to: {}) took {} ms.", queryString, enhancedQuery, timer.getTime() );
+                log.warn( "Ontology resource search for: {} took {} ms.", queryString, timer.getTime() );
             }
         }
     }

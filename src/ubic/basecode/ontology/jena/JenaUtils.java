@@ -221,7 +221,7 @@ class JenaUtils {
         return new PredicateFilter<>( predicate );
     }
 
-    public static <T extends RDFNode> Optional<T> as( Resource resource, Class<T> clazz ) {
+    public static <T extends RDFNode> Optional<T> as( RDFNode resource, Class<T> clazz ) {
         if ( !resource.canAs( clazz ) ) {
             return Optional.empty();
         }
