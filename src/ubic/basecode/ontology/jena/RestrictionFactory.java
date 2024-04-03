@@ -1,8 +1,8 @@
 /*
  * The basecode project
- * 
+ *
  * Copyright (c) 2007-2019 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,14 +20,12 @@ package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.Restriction;
-import com.hp.hpl.jena.rdf.model.Property;
 import ubic.basecode.ontology.model.OntologyRestriction;
 
 import java.util.Set;
 
 /**
  * @author pavlidis
- * 
  */
 class RestrictionFactory {
 

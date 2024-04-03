@@ -14,7 +14,6 @@
  */
 package ubic.basecode.ontology.jena;
 
-import com.hp.hpl.jena.util.iterator.Map1;
 import com.hp.hpl.jena.util.iterator.Map1Iterator;
 import org.apache.jena.larq.ARQLuceneException;
 import org.apache.jena.larq.HitLARQ;
@@ -25,7 +24,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 
 import java.io.IOException;
@@ -39,15 +37,10 @@ import java.util.Iterator;
  */
 class SearchIndex extends IndexLARQ {
 
-    public SearchIndex( IndexReader r ) {
-        super( r );
-    }
-
     public SearchIndex( MultiReader r, Analyzer a ) {
         super( r, a );
     }
 
-    @SuppressWarnings("resource")
     @Override
     public Iterator<HitLARQ> search( String queryString ) {
         try {
@@ -56,16 +49,7 @@ class SearchIndex extends IndexLARQ {
 
             TopDocs topDocs = s.search( query, null, LARQ.NUM_RESULTS );
 
-            Map1<ScoreDoc, HitLARQ> converter = new Map1<ScoreDoc, HitLARQ>() {
-                @Override
-                public HitLARQ map1( ScoreDoc object ) {
-                    return new HitLARQ( s, object );
-                }
-            };
-            Iterator<ScoreDoc> iterScoreDoc = Arrays.asList( topDocs.scoreDocs ).iterator();
-            Iterator<HitLARQ> iter = new Map1Iterator<>( converter, iterScoreDoc );
-
-            return iter;
+            return new Map1Iterator<>( object -> new HitLARQ( s, object ), Arrays.asList( topDocs.scoreDocs ).iterator() );
         } catch ( Exception e ) {
             throw new ARQLuceneException( "Error during search for '" + queryString + ";", e );
         }

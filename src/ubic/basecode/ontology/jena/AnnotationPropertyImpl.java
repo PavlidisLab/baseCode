@@ -33,34 +33,18 @@ import javax.annotation.Nullable;
  */
 class AnnotationPropertyImpl extends AbstractOntologyResource implements AnnotationProperty {
 
-    private final String contents;
-
     private final com.hp.hpl.jena.ontology.AnnotationProperty property;
+    @Nullable
+    private final RDFNode object;
 
     /**
      * @param prop   property for the statement
-     * @param source ontology this relates to.
      * @param object of the statement
      */
     public AnnotationPropertyImpl( com.hp.hpl.jena.ontology.AnnotationProperty prop, @Nullable RDFNode object ) {
         super( prop );
         this.property = prop;
-
-        if ( object == null ) {
-            this.contents = null;
-        } else if ( object.isResource() ) {
-            // need a level of indirection...
-            Resource r = ( Resource ) object;
-            Statement s = r.getProperty( RDFS.label );
-            if ( s != null ) {
-                this.contents = s.getObject().toString();
-            } else {
-                this.contents = null;
-            }
-        } else {
-            this.contents = JenaUtils.asString( object );
-        }
-
+        this.object = object;
     }
 
     @Override
@@ -69,23 +53,12 @@ class AnnotationPropertyImpl extends AbstractOntologyResource implements Annotat
         if ( obj == null ) return false;
         if ( getClass() != obj.getClass() ) return false;
         final AnnotationPropertyImpl other = ( AnnotationPropertyImpl ) obj;
-        if ( contents == null ) {
-            if ( other.contents != null ) return false;
-        } else if ( !contents.equals( other.contents ) ) return false;
+        if ( object == null ) {
+            if ( other.object != null ) return false;
+        } else if ( !object.equals( other.object ) ) return false;
         if ( property == null ) {
-            if ( other.property != null ) return false;
-        } else if ( !property.equals( other.property ) ) return false;
-        return true;
-    }
-
-    @Override
-    public String getUri() {
-        return property.getURI();
-    }
-
-    @Override
-    public String getContents() {
-        return contents;
+            return other.property == null;
+        } else return property.equals( other.property );
     }
 
     @Override
@@ -100,6 +73,24 @@ class AnnotationPropertyImpl extends AbstractOntologyResource implements Annotat
     }
 
     @Override
+    public String getContents() {
+        if ( this.object == null ) {
+            return null;
+        } else if ( object.isResource() ) {
+            // need a level of indirection...
+            Resource r = ( Resource ) object;
+            Statement s = r.getProperty( RDFS.label );
+            if ( s != null ) {
+                return s.getObject().toString();
+            } else {
+                return null;
+            }
+        } else {
+            return JenaUtils.asString( object );
+        }
+    }
+
+    @Override
     public boolean isObsolete() {
         return super.isObsolete() || property.hasSuperProperty( OBO.ObsoleteProperty, false );
     }
@@ -108,14 +99,14 @@ class AnnotationPropertyImpl extends AbstractOntologyResource implements Annotat
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
-        result = PRIME * result + ( ( contents == null ) ? 0 : contents.hashCode() );
+        result = PRIME * result + ( ( object == null ) ? 0 : object.hashCode() );
         result = PRIME * result + ( ( property == null ) ? 0 : property.hashCode() );
         return result;
     }
 
     @Override
     public String toString() {
-        return property.getLocalName() + " " + contents;
+        return property.getLocalName() + " " + object;
     }
 
 }

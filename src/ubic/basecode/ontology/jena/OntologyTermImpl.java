@@ -17,7 +17,10 @@ package ubic.basecode.ontology.jena;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.ontology.Restriction;
-import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import ubic.basecode.ontology.model.AnnotationProperty;
 import ubic.basecode.ontology.model.OntologyIndividual;
@@ -52,7 +55,7 @@ class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm 
      */
     private final Set<Restriction> additionalRestrictions;
 
-    public OntologyTermImpl( OntClass resource, @Nullable Set<Restriction> additionalRestrictions ) {
+    public OntologyTermImpl( OntClass resource, Set<Restriction> additionalRestrictions ) {
         super( resource );
         this.ontResource = resource;
         this.additionalRestrictions = additionalRestrictions;
@@ -66,17 +69,7 @@ class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm 
 
     @Override
     public Collection<String> getAlternativeIds() {
-        Collection<String> results = new HashSet<>();
-
-        Property alternate = ResourceFactory.createProperty( HAS_ALTERNATE_ID );
-        StmtIterator it = this.ontResource.listProperties( alternate );
-        while ( it.hasNext() ) {
-            Statement statement = it.next();
-            results.add( statement.asTriple().getMatchObject().getLiteralLexicalForm() );
-        }
-
-        return results;
-
+        return getAnnotations( HAS_ALTERNATE_ID ).stream().map( AnnotationProperty::getContents ).collect( Collectors.toSet() );
     }
 
     @Override
@@ -86,14 +79,37 @@ class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm 
         // this is a little slow because we have to go through all statements for the term.
         while ( iterator.hasNext() ) {
             Statement state = iterator.next();
-            OntResource res = state.getPredicate().as( OntResource.class );
-            if ( res.isAnnotationProperty() ) {
-                com.hp.hpl.jena.ontology.AnnotationProperty p = res.asAnnotationProperty();
-                RDFNode n = state.getObject();
-                annots.add( new AnnotationPropertyImpl( p, n ) );
-            }
+            JenaUtils.as( state.getPredicate(), com.hp.hpl.jena.ontology.AnnotationProperty.class )
+                    .map( r -> new AnnotationPropertyImpl( r, state.getObject() ) )
+                    .ifPresent( annots::add );
         }
         return annots;
+    }
+
+    @Override
+    public Collection<AnnotationProperty> getAnnotations( String propertyUri ) {
+        Collection<AnnotationProperty> annots = new HashSet<>();
+        Property alternate = ResourceFactory.createProperty( propertyUri );
+        StmtIterator it = this.ontResource.listProperties( alternate );
+        while ( it.hasNext() ) {
+            Statement state = it.next();
+            JenaUtils.as( state.getPredicate(), com.hp.hpl.jena.ontology.AnnotationProperty.class )
+                    .map( r -> new AnnotationPropertyImpl( r, state.getObject() ) )
+                    .ifPresent( annots::add );
+        }
+        return annots;
+    }
+
+    @Nullable
+    @Override
+    public AnnotationProperty getAnnotation( String propertyUri ) {
+        Statement state = ontResource.getProperty( ResourceFactory.createProperty( propertyUri ) );
+        if ( state != null ) {
+            return JenaUtils.as( state.getPredicate(), com.hp.hpl.jena.ontology.AnnotationProperty.class )
+                    .map( r -> new AnnotationPropertyImpl( r, state.getObject() ) )
+                    .orElse( null );
+        }
+        return null;
     }
 
     @Override
@@ -122,16 +138,6 @@ class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm 
                 .filterKeep( where( OntResource::isIndividual ) )
                 .mapWith( r -> ( OntologyIndividual ) new OntologyIndividualImpl( r.asIndividual(), additionalRestrictions ) )
                 .toSet();
-    }
-
-    @Override
-    public String getLocalName() {
-        return ontResource.getLocalName();
-    }
-
-    @Override
-    public Object getModel() {
-        return ontResource.getModel();
     }
 
     @Override

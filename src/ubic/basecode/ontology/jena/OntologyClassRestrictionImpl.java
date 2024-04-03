@@ -18,12 +18,7 @@
  */
 package ubic.basecode.ontology.jena;
 
-import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
-import com.hp.hpl.jena.ontology.HasValueRestriction;
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.ontology.Restriction;
-import com.hp.hpl.jena.ontology.SomeValuesFromRestriction;
+import com.hp.hpl.jena.ontology.*;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import ubic.basecode.ontology.model.OntologyClassRestriction;
 import ubic.basecode.ontology.model.OntologyTerm;
@@ -86,7 +81,7 @@ class OntologyClassRestrictionImpl extends OntologyRestrictionImpl implements On
         if ( restrictedTo != null ) {
             return "Class restriction: " + this.getRestrictionOn() + " class=" + this.getRestrictedTo();
         } else if ( value != null ) {
-            return "Class restriction: " + this.getRestrictionOn() + " = " + this.value.toString() + "[value]";
+            return "Class restriction: " + this.getRestrictionOn() + " = " + this.value + "[value]";
         } else {
             throw new IllegalStateException( "Value or restriction class must be non-null" );
         }

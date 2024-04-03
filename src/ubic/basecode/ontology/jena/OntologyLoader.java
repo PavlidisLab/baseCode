@@ -71,23 +71,6 @@ class OntologyLoader {
 
     /**
      * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
-     *
-     * @see #loadMemoryModel(String, String, boolean)
-     */
-    public static OntModel loadMemoryModel( String url ) throws IOException {
-        return loadMemoryModel( url, null, true );
-    }
-
-    public static OntModel loadMemoryModel( String url, @Nullable String cacheName ) throws JenaException, IOException {
-        return loadMemoryModel( url, cacheName, true );
-    }
-
-    public static OntModel loadMemoryModel( String url, @Nullable String cacheName, boolean processImports ) throws JenaException, IOException {
-        return loadMemoryModel( url, cacheName, processImports, OntModelSpec.OWL_MEM_TRANS_INF );
-    }
-
-    /**
-     * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
      * If load from URL fails, attempt to load from disk cache under @cacheName.
      * <p>
      * Uses {@link OntModelSpec#OWL_MEM_TRANS_INF}.
