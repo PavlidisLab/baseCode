@@ -58,10 +58,6 @@ class OntologyIndexer {
         return getSubjectIndex( name, analyzer );
     }
 
-    public static SearchIndex indexOntology( String name, OntModel model ) throws IOException {
-        return indexOntology( name, model, false );
-    }
-
     /**
      * Loads or creates an index from an existing OntModel. Any existing index will loaded unless force=true. It will be
      * created if there isn't one already, or if force=true.

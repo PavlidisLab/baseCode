@@ -61,6 +61,17 @@ public class OntologyTermSimple implements OntologyTerm, Serializable {
     }
 
     @Override
+    public Collection<AnnotationProperty> getAnnotations( String propertyUri ) {
+        throw new UnsupportedOperationException( "Use a OntologyTermImpl" );
+    }
+
+    @Nullable
+    @Override
+    public AnnotationProperty getAnnotation( String propertyUri ) {
+        throw new UnsupportedOperationException( "Use a OntologyTermImpl" );
+    }
+
+    @Override
     public Collection<OntologyTerm> getChildren( boolean direct, boolean includeAdditionalProperties, boolean keepObsoletes ) {
         throw new UnsupportedOperationException( "Use a OntologyTermImpl" );
     }
@@ -83,11 +94,6 @@ public class OntologyTermSimple implements OntologyTerm, Serializable {
     @Override
     public String getLocalName() {
         return term;
-    }
-
-    @Override
-    public Object getModel() {
-        throw new UnsupportedOperationException( "Use a OntologyTermImpl" );
     }
 
     @Override

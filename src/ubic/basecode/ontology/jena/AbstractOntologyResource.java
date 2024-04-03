@@ -35,7 +35,7 @@ import static java.util.Comparator.*;
  */
 abstract class AbstractOntologyResource implements OntologyResource {
 
-    protected static Logger log = LoggerFactory.getLogger( AbstractOntologyResource.class );
+    protected static final Logger log = LoggerFactory.getLogger( AbstractOntologyResource.class );
 
     private static final Comparator<OntologyResource> comparator = Comparator
             .comparing( OntologyResource::getScore, nullsLast( reverseOrder() ) )
@@ -60,8 +60,24 @@ abstract class AbstractOntologyResource implements OntologyResource {
         return res.getURI();
     }
 
+    @Override
+    public String getLocalName() {
+        return res.getLocalName();
+    }
+
+    @Override
     public String getLabel() {
         String label = res.getLabel( "EN" );
+        if ( label == null ) {
+            label = res.getLabel( null );
+        }
+        return label;
+    }
+
+    @Nullable
+    @Override
+    public String getComment() {
+        String label = res.getComment( "EN" );
         if ( label == null ) {
             label = res.getLabel( null );
         }
@@ -99,9 +115,8 @@ abstract class AbstractOntologyResource implements OntologyResource {
             if ( other.getLabel() != null ) return false;
         } else if ( !getLabel().equals( other.getLabel() ) ) return false;
         if ( getUri() == null ) {
-            if ( other.getUri() != null ) return false;
-        } else if ( !getUri().equals( other.getUri() ) ) return false;
-        return true;
+            return other.getUri() == null;
+        } else return getUri().equals( other.getUri() );
     }
 
     @Override

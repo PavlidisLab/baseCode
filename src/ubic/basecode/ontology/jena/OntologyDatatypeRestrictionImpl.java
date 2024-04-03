@@ -19,7 +19,6 @@
 package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.Restriction;
-import com.hp.hpl.jena.rdf.model.Property;
 import ubic.basecode.ontology.model.OntologyDatatypeRestriction;
 
 import java.util.Set;
@@ -31,8 +30,8 @@ class OntologyDatatypeRestrictionImpl extends OntologyRestrictionImpl implements
 
     private final Class<?> type;
 
-    public OntologyDatatypeRestrictionImpl( Restriction resource, Set<Restriction> additionalRestrcitions ) {
-        super( resource, additionalRestrcitions );
+    public OntologyDatatypeRestrictionImpl( Restriction resource, Set<Restriction> additionalRestrictions ) {
+        super( resource, additionalRestrictions );
         assert restrictionOn != null;
         this.type = PropertyFactory.convertType( resource.getOnProperty().asDatatypeProperty() );
     }

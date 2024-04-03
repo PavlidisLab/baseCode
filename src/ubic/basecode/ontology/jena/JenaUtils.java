@@ -21,7 +21,7 @@ import static com.hp.hpl.jena.reasoner.ReasonerRegistry.makeDirect;
 
 class JenaUtils {
 
-    protected static Logger log = LoggerFactory.getLogger( JenaUtils.class );
+    protected static final Logger log = LoggerFactory.getLogger( JenaUtils.class );
 
     public static Collection<OntClass> getParents( OntModel model, Collection<OntClass> ontClasses, boolean direct, @Nullable Set<Restriction> additionalRestrictions ) {
         Collection<OntClass> parents = getParentsInternal( model, ontClasses, direct, additionalRestrictions );
@@ -43,15 +43,9 @@ class JenaUtils {
         ontClasses = ontClasses.stream()
                 .map( t -> t.inModel( model ) )
                 .filter( t -> t.canAs( OntClass.class ) )
-                .map( t -> {
-                    try {
-                        return t.as( OntClass.class );
-                    } catch ( ConversionException e ) {
-                        log.error( "Conversion failed for " + t, e );
-                        return null;
-                    }
-                } )
-                .filter( Objects::nonNull )
+                .map( t -> as( t, OntClass.class ) )
+                .filter( Optional::isPresent )
+                .map( Optional::get )
                 .collect( Collectors.toList() );
         if ( ontClasses.isEmpty() ) {
             return Collections.emptySet();
@@ -113,15 +107,9 @@ class JenaUtils {
         terms = terms.stream()
                 .map( t -> t.inModel( model ) )
                 .filter( t -> t.canAs( OntClass.class ) )
-                .map( t -> {
-                    try {
-                        return t.as( OntClass.class );
-                    } catch ( ConversionException e ) {
-                        log.error( "Conversion failed for " + t, e );
-                        return null;
-                    }
-                } )
-                .filter( Objects::nonNull )
+                .map( t -> as( t, OntClass.class ) )
+                .filter( Optional::isPresent )
+                .map( Optional::get )
                 .collect( Collectors.toList() );
         if ( terms.isEmpty() ) {
             return Collections.emptySet();
@@ -149,7 +137,9 @@ class JenaUtils {
             for ( Restriction r : restrictions ) {
                 result.addAll( model.listResourcesWithProperty( subClassOf, r )
                         .filterDrop( new BnodeFilter<>() )
-                        .mapWith( r2 -> r2.as( OntClass.class ) )
+                        .mapWith( r2 -> as( r2, OntClass.class ) )
+                        .filterKeep( where( Optional::isPresent ) )
+                        .mapWith( Optional::get )
                         .toSet() );
             }
         }
@@ -229,5 +219,17 @@ class JenaUtils {
 
     public static <T> Filter<T> where( Predicate<T> predicate ) {
         return new PredicateFilter<>( predicate );
+    }
+
+    public static <T extends RDFNode> Optional<T> as( RDFNode resource, Class<T> clazz ) {
+        if ( !resource.canAs( clazz ) ) {
+            return Optional.empty();
+        }
+        try {
+            return Optional.of( resource.as( clazz ) );
+        } catch ( ConversionException e ) {
+            log.warn( "Conversion of " + resource + " to " + clazz.getName() + " failed." );
+            return Optional.empty();
+        }
     }
 }

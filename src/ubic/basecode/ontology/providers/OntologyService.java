@@ -13,6 +13,18 @@ import java.util.Set;
 public interface OntologyService {
 
     /**
+     * Obtain the name of this ontology if available.
+     */
+    @Nullable
+    String getName();
+
+    /**
+     * Obtain a description of this ontology if available.
+     */
+    @Nullable
+    String getDescription();
+
+    /**
      * Check if this ontology will process imports.
      * <p>
      * If disabled, ontologies imported by this ontology will not be loaded.
@@ -103,6 +115,7 @@ public interface OntologyService {
      * initialization by {@link #initialize(boolean, boolean)}.
      * <p>
      * Search is enabled by default.
+     *
      * @see #findTerm(String, boolean)
      * @see #findIndividuals(String, boolean)
      * @see #findResources(String, boolean)
@@ -121,6 +134,7 @@ public interface OntologyService {
      * <p>
      * The default is to use <a href="http://purl.obolibrary.org/obo/BFO_0000050">part of</a>, <a href="http://www.obofoundry.org/ro/ro.owl#proper_part_of">proper part of</a>
      * and all of their sub-properties if inference is enabled.
+     *
      * @see #getParents(Collection, boolean, boolean, boolean)
      * @see #getChildren(Collection, boolean, boolean, boolean)
      */

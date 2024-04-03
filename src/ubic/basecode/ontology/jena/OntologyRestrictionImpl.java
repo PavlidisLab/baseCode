@@ -19,7 +19,6 @@
 package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.Restriction;
-import com.hp.hpl.jena.rdf.model.Property;
 import ubic.basecode.ontology.model.OntologyProperty;
 import ubic.basecode.ontology.model.OntologyRestriction;
 

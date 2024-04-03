@@ -368,6 +368,15 @@ public class TestDescriptiveWithMissing {
     }
 
     @Test
+    public void testStandardizeNoVariance() {
+        DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 0.0, Double.NaN,
+                0.0, 0.0, 0.0, 0.0, Double.NaN } );
+        DoubleArrayList   constantData = new DoubleArrayList( new double[] { 1.3, Double.NaN, 1.3, 1.3, 1.3, 1.3, Double.NaN } );
+        DescriptiveWithMissing.standardize( constantData );
+        assertEquals( true, RegressionTesting.closeEnough( constantData, expectedReturn, 1e-20 ) );
+    }
+
+    @Test
     public void testSum() {
         double expectedReturn = Descriptive.sum( data1Nomissing );
         double actualReturn = DescriptiveWithMissing.sum( data1missing );

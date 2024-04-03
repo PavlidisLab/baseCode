@@ -52,14 +52,12 @@ public class MedicOntologyService extends AbstractOntologyMemoryBackedService {
     }
 
     @Override
-    protected OntologyModel loadModel( boolean processImports, LanguageLevel languageLevel, InferenceMode inferenceMode ) {
+    protected OntologyModel loadModel( boolean processImports, LanguageLevel languageLevel, InferenceMode inferenceMode ) throws IOException {
         try ( InputStream is = this.getClass().getResourceAsStream( MEDIC_ONTOLOGY_FILE ) ) {
             if ( is == null ) {
                 throw new RuntimeException( String.format( "The MEDIC ontology was not found in classpath at %s.", MEDIC_ONTOLOGY_FILE ) );
             }
             return loadModelFromStream( new GZIPInputStream( is ), processImports, languageLevel, inferenceMode );
-        } catch ( IOException e ) {
-            throw new RuntimeException( e );
         }
     }
 }

@@ -22,10 +22,12 @@ package ubic.basecode.ontology.jena;
 import com.hp.hpl.jena.ontology.*;
 import com.hp.hpl.jena.rdf.arp.ARPErrorNumbers;
 import com.hp.hpl.jena.rdf.arp.ParseException;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.DC_11;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -74,114 +76,88 @@ public abstract class AbstractOntologyService implements OntologyService {
         DEFAULT_ADDITIONAL_PROPERTIES.add( RO.properPartOf.getURI() );
     }
 
-    /* settings (applicable for next initialization) */
-    private LanguageLevel nextLanguageLevel = LanguageLevel.FULL;
-    private InferenceMode nextInferenceMode = InferenceMode.TRANSITIVE;
-    private boolean nextProcessImports = true;
-    private boolean nextSearchEnabled = true;
-    private Set<String> nextAdditionalPropertyUris = DEFAULT_ADDITIONAL_PROPERTIES;
-
     /**
      * Lock used to prevent reads while the ontology is being initialized.
      */
     private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
 
-    /* internal state protected by rwLock */
-    private OntModel model;
-    private Map<String, String> alternativeIDs;
+    /**
+     * Internal state protected by {@link #rwLock}.
+     */
     @Nullable
-    private SearchIndex index;
-    private Set<Restriction> additionalRestrictions;
-    private boolean isInitialized = false;
-    @Nullable
-    private LanguageLevel languageLevel = null;
-    @Nullable
-    private InferenceMode inferenceMode = null;
-    @Nullable
-    private Boolean processImports = null;
-    @Nullable
-    private Boolean searchEnabled = null;
-    @Nullable
-    private Set<String> additionalPropertyUris = null;
+    private State state = null;
+
+    /* settings (applicable for next initialization) */
+    private LanguageLevel languageLevel = LanguageLevel.FULL;
+    private InferenceMode inferenceMode = InferenceMode.TRANSITIVE;
+    private boolean processImports = true;
+    private boolean searchEnabled = true;
+    private Set<String> additionalPropertyUris = DEFAULT_ADDITIONAL_PROPERTIES;
+
+    @Override
+    public String getName() {
+        return getState().map( state -> {
+            NodeIterator it = state.model.listObjectsOfProperty( DC_11.title );
+            return it.hasNext() ? it.next().asLiteral().getString() : null;
+        } ).orElse( null );
+    }
+
+    @Override
+    public String getDescription() {
+        return getState().map( state -> {
+            NodeIterator it = state.model.listObjectsOfProperty( DC_11.description );
+            return it.hasNext() ? it.next().asLiteral().getString() : null;
+        } ).orElse( null );
+    }
 
     @Override
     public LanguageLevel getLanguageLevel() {
-        Lock lock = rwLock.readLock();
-        try {
-            lock.lock();
-            return this.languageLevel != null ? this.languageLevel : nextLanguageLevel;
-        } finally {
-            lock.unlock();
-        }
+        return getState().map( state -> state.languageLevel ).orElse( languageLevel );
     }
 
     @Override
     public void setLanguageLevel( LanguageLevel languageLevel ) {
-        this.nextLanguageLevel = languageLevel;
+        this.languageLevel = languageLevel;
     }
 
     @Override
     public InferenceMode getInferenceMode() {
-        Lock lock = rwLock.readLock();
-        try {
-            lock.lock();
-            return this.inferenceMode != null ? this.inferenceMode : nextInferenceMode;
-        } finally {
-            lock.unlock();
-        }
+        return getState().map( state -> state.inferenceMode ).orElse( inferenceMode );
     }
 
     @Override
     public void setInferenceMode( InferenceMode inferenceMode ) {
-        this.nextInferenceMode = inferenceMode;
+        this.inferenceMode = inferenceMode;
     }
 
     @Override
     public boolean getProcessImports() {
-        Lock lock = rwLock.readLock();
-        try {
-            lock.lock();
-            return processImports != null ? processImports : nextProcessImports;
-        } finally {
-            lock.unlock();
-        }
+        return getState().map( state -> state.processImports ).orElse( processImports );
     }
 
     @Override
     public void setProcessImports( boolean processImports ) {
-        this.nextProcessImports = processImports;
+        this.processImports = processImports;
     }
 
     @Override
     public boolean isSearchEnabled() {
-        Lock lock = rwLock.readLock();
-        try {
-            lock.lock();
-            return searchEnabled != null ? searchEnabled : nextSearchEnabled;
-        } finally {
-            lock.unlock();
-        }
+        return getState().map( state -> state.index != null ).orElse( searchEnabled );
     }
 
     @Override
     public void setSearchEnabled( boolean searchEnabled ) {
-        this.nextSearchEnabled = searchEnabled;
+        this.searchEnabled = searchEnabled;
     }
 
     @Override
     public Set<String> getAdditionalPropertyUris() {
-        Lock lock = rwLock.readLock();
-        try {
-            lock.lock();
-            return additionalPropertyUris != null ? additionalPropertyUris : nextAdditionalPropertyUris;
-        } finally {
-            lock.unlock();
-        }
+        return getState().map( state -> state.additionalPropertyUris ).orElse( additionalPropertyUris );
     }
 
     @Override
     public void setAdditionalPropertyUris( Set<String> additionalPropertyUris ) {
-        this.nextAdditionalPropertyUris = additionalPropertyUris;
+        this.additionalPropertyUris = additionalPropertyUris;
     }
 
     public void initialize( boolean forceLoad, boolean forceIndexing ) {
@@ -193,7 +169,7 @@ public abstract class AbstractOntologyService implements OntologyService {
     }
 
     private void initialize( @Nullable InputStream stream, boolean forceLoad, boolean forceIndexing ) {
-        if ( !forceLoad && isInitialized ) {
+        if ( !forceLoad && state != null ) {
             log.warn( "{} is already loaded, and force=false, not restarting", this );
             return;
         }
@@ -202,12 +178,12 @@ public abstract class AbstractOntologyService implements OntologyService {
         String ontologyUrl = getOntologyUrl();
         String ontologyName = getOntologyName();
         String cacheName = getCacheName();
-        Set<Property> additionalProperties = nextAdditionalPropertyUris.stream()
+        Set<Property> additionalProperties = this.additionalPropertyUris.stream()
                 .map( ResourceFactory::createProperty ).collect( Collectors.toSet() );
-        LanguageLevel languageLevel = nextLanguageLevel;
-        InferenceMode inferenceMode = nextInferenceMode;
-        boolean processImports = nextProcessImports;
-        boolean searchEnabled = nextSearchEnabled;
+        LanguageLevel languageLevel = this.languageLevel;
+        InferenceMode inferenceMode = this.inferenceMode;
+        boolean processImports = this.processImports;
+        boolean searchEnabled = this.searchEnabled;
 
         // Detect configuration problems.
         if ( StringUtils.isBlank( ontologyUrl ) ) {
@@ -289,15 +265,7 @@ public abstract class AbstractOntologyService implements OntologyService {
         Lock lock = rwLock.writeLock();
         try {
             lock.lock();
-            this.model = model;
-            this.additionalRestrictions = additionalRestrictions;
-            this.index = index;
-            this.isInitialized = true;
-            this.languageLevel = languageLevel;
-            this.inferenceMode = inferenceMode;
-            this.processImports = processImports;
-            this.searchEnabled = searchEnabled;
-            this.additionalPropertyUris = additionalProperties.stream().map( Property::getURI ).collect( Collectors.toSet() );
+            this.state = new State( model, index, additionalRestrictions, languageLevel, inferenceMode, processImports, additionalProperties.stream().map( Property::getURI ).collect( Collectors.toSet() ) );
             if ( cacheName != null ) {
                 // now that the terms have been replaced, we can clear old caches
                 try {
@@ -338,30 +306,22 @@ public abstract class AbstractOntologyService implements OntologyService {
         return predicate.test( t ) || ( t.getCause() != null && hasCauseMatching( t.getCause(), predicate ) );
     }
 
-    /**
-     * Do not do this except before re-indexing.
-     */
-    public void closeIndex() {
-        if ( index == null ) return;
-        index.close();
-    }
-
     @Override
     public Collection<OntologyIndividual> findIndividuals( String search, boolean keepObsoletes ) throws
             OntologySearchException {
         Lock lock = rwLock.readLock();
         try {
             lock.lock();
-            if ( !isInitialized ) {
+            if ( state == null ) {
                 log.warn( "Ontology {} is not ready, no individuals will be returned.", this );
                 return Collections.emptySet();
             }
-            if ( index == null ) {
+            if ( state.index == null ) {
                 log.warn( "Attempt to search {} when index is null, no results will be returned.", this );
                 return Collections.emptySet();
             }
-            return OntologySearch.matchIndividuals( model, index, search )
-                    .mapWith( i -> ( OntologyIndividual ) new OntologyIndividualImpl( i.result, additionalRestrictions, i.score ) )
+            return OntologySearch.matchIndividuals( state.model, state.index, search )
+                    .mapWith( i -> ( OntologyIndividual ) new OntologyIndividualImpl( i.result, state.additionalRestrictions, i.score ) )
                     .filterKeep( where( ontologyTerm -> keepObsoletes || !ontologyTerm.isObsolete() ) )
                     .toSet();
         } finally {
@@ -375,25 +335,31 @@ public abstract class AbstractOntologyService implements OntologyService {
         Lock lock = rwLock.readLock();
         try {
             lock.lock();
-            if ( !isInitialized ) {
+            if ( state == null ) {
                 log.warn( "Ontology {} is not ready, no resources will be returned.", this );
                 return Collections.emptySet();
             }
-            if ( index == null ) {
+            if ( state.index == null ) {
                 log.warn( "Attempt to search {} when index is null, no results will be returned.", this );
                 return Collections.emptySet();
             }
-            return OntologySearch.matchResources( model, index, searchString )
+            return OntologySearch.matchResources( state.model, state.index, searchString )
                     .filterKeep( where( r -> r.result.canAs( OntClass.class ) || r.result.canAs( Individual.class ) ) )
                     .mapWith( r -> {
-                        OntologyResource res;
-                        if ( r.result.canAs( OntClass.class ) ) {
-                            res = new OntologyTermImpl( r.result.as( OntClass.class ), additionalRestrictions, r.score );
-                        } else {
-                            res = new OntologyIndividualImpl( r.result.as( Individual.class ), additionalRestrictions, r.score );
+                        try {
+                            if ( r.result.canAs( OntClass.class ) ) {
+                                return new OntologyTermImpl( r.result.as( OntClass.class ), state.additionalRestrictions, r.score );
+                            } else if ( r.result.canAs( Individual.class ) ) {
+                                return new OntologyIndividualImpl( r.result.as( Individual.class ), state.additionalRestrictions, r.score );
+                            } else {
+                                return ( OntologyResource ) null;
+                            }
+                        } catch ( ConversionException e ) {
+                            log.warn( "Conversion failed for " + r, e );
+                            return null;
                         }
-                        return res;
                     } )
+                    .filterKeep( where( Objects::nonNull ) )
                     .filterKeep( where( ontologyTerm -> keepObsoletes || !ontologyTerm.isObsolete() ) )
                     .toSet();
         } finally {
@@ -407,16 +373,16 @@ public abstract class AbstractOntologyService implements OntologyService {
         Lock lock = rwLock.readLock();
         try {
             lock.lock();
-            if ( !isInitialized ) {
+            if ( state == null ) {
                 log.warn( "Ontology {} is not ready, no terms will be returned.", this );
                 return Collections.emptySet();
             }
-            if ( index == null ) {
+            if ( state.index == null ) {
                 log.warn( "Attempt to search {} when index is null, no results will be returned.", this );
                 return Collections.emptySet();
             }
-            return OntologySearch.matchClasses( model, index, search )
-                    .mapWith( r -> ( OntologyTerm ) new OntologyTermImpl( r.result, additionalRestrictions, r.score ) )
+            return OntologySearch.matchClasses( state.model, state.index, search )
+                    .mapWith( r -> ( OntologyTerm ) new OntologyTermImpl( r.result, state.additionalRestrictions, r.score ) )
                     .filterKeep( where( ontologyTerm -> keepObsoletes || !ontologyTerm.isObsolete() ) )
                     .toSet();
         } finally {
@@ -426,18 +392,18 @@ public abstract class AbstractOntologyService implements OntologyService {
 
     @Override
     public OntologyTerm findUsingAlternativeId( String alternativeId ) {
-        Lock lock = alternativeIDs != null ? rwLock.readLock() : rwLock.writeLock();
+        Lock lock = state != null && state.alternativeIDs != null ? rwLock.readLock() : rwLock.writeLock();
         try {
             lock.lock();
-            if ( !isInitialized ) {
+            if ( state == null ) {
                 log.warn( "Ontology {} is not ready, null will be returned for alternative ID match.", this );
                 return null;
             }
-            if ( alternativeIDs == null ) {
+            if ( state.alternativeIDs == null ) {
                 log.info( "init search by alternativeID" );
-                initSearchByAlternativeId();
+                initSearchByAlternativeId( state );
             }
-            String termUri = alternativeIDs.get( alternativeId );
+            String termUri = state.alternativeIDs.get( alternativeId );
             return termUri != null ? getTerm( termUri ) : null;
         } finally {
             lock.unlock();
@@ -446,126 +412,86 @@ public abstract class AbstractOntologyService implements OntologyService {
 
     @Override
     public Set<String> getAllURIs() {
-        Lock lock = rwLock.readLock();
-        try {
-            lock.lock();
-            if ( !isInitialized ) {
-                log.warn( "Ontology {} is not ready, no term  URIs will be returned.", this );
-                return Collections.emptySet();
-            }
+        return getState().map( state -> {
             Set<String> allUris = new HashSet<>();
-            allUris.addAll( model.listClasses().mapWith( OntClass::getURI ).toSet() );
-            allUris.addAll( model.listIndividuals().mapWith( Individual::getURI ).toSet() );
+            allUris.addAll( state.model.listClasses().mapWith( OntClass::getURI ).toSet() );
+            allUris.addAll( state.model.listIndividuals().mapWith( Individual::getURI ).toSet() );
             return allUris;
-        } finally {
-            lock.unlock();
-        }
+        } ).orElseGet( () -> {
+            log.warn( "Ontology {} is not ready, no term  URIs will be returned.", this );
+            return Collections.emptySet();
+        } );
     }
 
     @Override
     public OntologyResource getResource( String uri ) {
-        Lock lock = rwLock.readLock();
-        try {
-            lock.lock();
-            if ( !isInitialized ) {
-                return null;
-            }
+        return getState().map( state -> {
             OntologyResource res;
-            Resource resource = model.getResource( uri );
+            Resource resource = state.model.getResource( uri );
             if ( resource.getURI() == null ) {
                 return null;
             }
             if ( resource instanceof OntClass ) {
                 // use the cached term
-                res = new OntologyTermImpl( ( OntClass ) resource, additionalRestrictions );
+                res = new OntologyTermImpl( ( OntClass ) resource, state.additionalRestrictions );
             } else if ( resource instanceof Individual ) {
-                res = new OntologyIndividualImpl( ( Individual ) resource, additionalRestrictions );
+                res = new OntologyIndividualImpl( ( Individual ) resource, state.additionalRestrictions );
             } else if ( resource instanceof OntProperty ) {
-                res = PropertyFactory.asProperty( ( ObjectProperty ) resource, additionalRestrictions );
+                res = PropertyFactory.asProperty( ( ObjectProperty ) resource, state.additionalRestrictions );
             } else {
                 res = null;
             }
             return res;
-        } finally {
-            lock.unlock();
-        }
+        } ).orElse( null );
     }
 
     @Override
     public OntologyTerm getTerm( String uri ) {
-        Lock lock = rwLock.readLock();
-        try {
-            lock.lock();
-            if ( !isInitialized ) return null;
-            OntClass ontCls = model.getOntClass( uri );
+        return getState().map( state -> {
+            OntClass ontCls = state.model.getOntClass( uri );
             // null or bnode
             if ( ontCls == null || ontCls.getURI() == null ) {
                 return null;
             }
-            return new OntologyTermImpl( ontCls, additionalRestrictions );
-        } finally {
-            lock.unlock();
-        }
+            return new OntologyTermImpl( ontCls, state.additionalRestrictions );
+        } ).orElse( null );
     }
 
     @Override
     public Collection<OntologyIndividual> getTermIndividuals( String uri ) {
-        Lock lock = rwLock.readLock();
-        try {
-            lock.lock();
-            if ( !isInitialized ) {
-                return Collections.emptySet();
-            }
-            OntologyTerm term = getTerm( uri );
-            if ( term == null ) {
-                /*
-                 * Either the ontology hasn't been loaded, or the id was not valid.
-                 */
-                log.warn( "No term for URI={} in {}; make sure ontology is loaded and uri is valid", uri, this );
-                return Collections.emptySet();
-            }
-            return term.getIndividuals( true );
-        } finally {
-            lock.unlock();
+        OntologyTerm term = getTerm( uri );
+        if ( term == null ) {
+            /*
+             * Either the ontology hasn't been loaded, or the id was not valid.
+             */
+            log.warn( "No term for URI={} in {}; make sure ontology is loaded and uri is valid", uri, this );
+            return Collections.emptySet();
         }
+        return term.getIndividuals( true );
     }
 
     @Override
     public Set<OntologyTerm> getParents( Collection<OntologyTerm> terms, boolean direct,
             boolean includeAdditionalProperties, boolean keepObsoletes ) {
-        Lock lock = rwLock.readLock();
-        try {
-            lock.lock();
-            if ( !isInitialized ) {
-                return Collections.emptySet();
-            }
-            return JenaUtils.getParents( model, getOntClassesFromTerms( terms ), direct, includeAdditionalProperties ? additionalRestrictions : null )
-                    .stream()
-                    .map( o -> new OntologyTermImpl( o, additionalRestrictions ) )
-                    .filter( o -> keepObsoletes || !o.isObsolete() )
-                    .collect( Collectors.toSet() );
-        } finally {
-            lock.unlock();
-        }
+        return getState().map( state ->
+                        JenaUtils.getParents( state.model, getOntClassesFromTerms( state.model, terms ), direct, includeAdditionalProperties ? state.additionalRestrictions : null )
+                                .stream()
+                                .map( o -> ( OntologyTerm ) new OntologyTermImpl( o, state.additionalRestrictions ) )
+                                .filter( o -> keepObsoletes || !o.isObsolete() )
+                                .collect( Collectors.toSet() ) )
+                .orElse( Collections.emptySet() );
     }
 
     @Override
     public Set<OntologyTerm> getChildren( Collection<OntologyTerm> terms, boolean direct,
             boolean includeAdditionalProperties, boolean keepObsoletes ) {
-        Lock lock = rwLock.readLock();
-        try {
-            lock.lock();
-            if ( !isInitialized ) {
-                return Collections.emptySet();
-            }
-            return JenaUtils.getChildren( model, getOntClassesFromTerms( terms ), direct, includeAdditionalProperties ? additionalRestrictions : null )
-                    .stream()
-                    .map( o -> new OntologyTermImpl( o, additionalRestrictions ) )
-                    .filter( o -> keepObsoletes || !o.isObsolete() )
-                    .collect( Collectors.toSet() );
-        } finally {
-            lock.unlock();
-        }
+        return getState().map( state ->
+                JenaUtils.getChildren( state.model, getOntClassesFromTerms( state.model, terms ), direct, includeAdditionalProperties ? state.additionalRestrictions : null )
+                        .stream()
+                        .map( o -> ( OntologyTerm ) new OntologyTermImpl( o, state.additionalRestrictions ) )
+                        .filter( o -> keepObsoletes || !o.isObsolete() )
+                        .collect( Collectors.toSet() )
+        ).orElse( Collections.emptySet() );
     }
 
     @Override
@@ -576,19 +502,13 @@ public abstract class AbstractOntologyService implements OntologyService {
             return true;
         }
         // could have forced, without setting config
-        Lock lock = rwLock.readLock();
-        try {
-            lock.lock();
-            return isInitialized;
-        } finally {
-            lock.unlock();
-        }
+        return getState().isPresent();
     }
 
     @Override
     public boolean isOntologyLoaded() {
         // it's fine not to use the read lock here
-        return isInitialized;
+        return state != null;
     }
 
     private Thread initializationThread = null;
@@ -681,7 +601,7 @@ public abstract class AbstractOntologyService implements OntologyService {
             log.warn( "This ontology does not support indexing; assign a cache name to be used." );
             return;
         }
-        if ( !nextSearchEnabled ) {
+        if ( !searchEnabled ) {
             log.warn( "Search is not enabled for this ontology." );
             return;
         }
@@ -689,11 +609,11 @@ public abstract class AbstractOntologyService implements OntologyService {
         Lock lock = rwLock.readLock();
         try {
             lock.lock();
-            if ( !isInitialized ) {
+            if ( state == null ) {
                 log.warn( "Ontology {} is not initialized, cannot index it.", this );
                 return;
             }
-            index = OntologyIndexer.indexOntology( getCacheName(), model, force );
+            index = OntologyIndexer.indexOntology( getCacheName(), state.model, force );
         } catch ( IOException e ) {
             log.error( "Failed to generate index for {}.", this, e );
             return;
@@ -704,8 +624,7 @@ public abstract class AbstractOntologyService implements OntologyService {
         lock = rwLock.writeLock();
         try {
             lock.lock();
-            this.index = index;
-            this.searchEnabled = true;
+            this.state.index = index;
         } finally {
             lock.unlock();
         }
@@ -725,21 +644,23 @@ public abstract class AbstractOntologyService implements OntologyService {
      * trying <a href=" to use the value uri 2- http://purl.obol">HP_0001453</a>ibrary.org/obo/HP_0001453 ----->
      * <a href="http://purl.obolibrary.org/obo/HP_0000005">HP_0000005</a>
      */
-    private void initSearchByAlternativeId() {
-        alternativeIDs = new HashMap<>();
+    private void initSearchByAlternativeId( State state ) {
+        state.alternativeIDs = new HashMap<>();
         // for all Ontology terms that exist in the tree
-        ExtendedIterator<OntClass> iterator = model.listClasses();
+        ExtendedIterator<OntClass> iterator = state.model.listClasses();
         while ( iterator.hasNext() ) {
-            OntClass ind = iterator.next();
-            OntologyTerm ontologyTerm = new OntologyTermImpl( ind, additionalRestrictions );
-            // lets find the baseUri, to change to valueUri
+            OntologyTerm ontologyTerm = new OntologyTermImpl( iterator.next(), state.additionalRestrictions );
+            if ( ontologyTerm.getUri() == null ) {
+                continue;
+            }
+            // let's find the baseUri, to change to valueUri
             String baseOntologyUri = ontologyTerm.getUri().substring( 0, ontologyTerm.getUri().lastIndexOf( "/" ) + 1 );
             for ( String alternativeId : ontologyTerm.getAlternativeIds() ) {
                 // first way
-                alternativeIDs.put( alternativeId, ontologyTerm.getUri() );
+                state.alternativeIDs.put( alternativeId, ontologyTerm.getUri() );
                 // second way
                 String alternativeIdModified = alternativeId.replace( ':', '_' );
-                alternativeIDs.put( baseOntologyUri + alternativeIdModified, ontologyTerm.getUri() );
+                state.alternativeIDs.put( baseOntologyUri + alternativeIdModified, ontologyTerm.getUri() );
             }
         }
     }
@@ -777,7 +698,17 @@ public abstract class AbstractOntologyService implements OntologyService {
                 getOntologyName(), getOntologyUrl(), getLanguageLevel(), getInferenceMode(), getProcessImports(), isSearchEnabled() );
     }
 
-    private Set<OntClass> getOntClassesFromTerms( Collection<OntologyTerm> terms ) {
+    private Optional<State> getState() {
+        Lock lock = this.rwLock.readLock();
+        try {
+            lock.lock();
+            return Optional.ofNullable( state );
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private Set<OntClass> getOntClassesFromTerms( OntModel model, Collection<OntologyTerm> terms ) {
         return terms.stream()
                 .map( o -> {
                     if ( o instanceof OntologyTermImpl ) {
@@ -788,5 +719,28 @@ public abstract class AbstractOntologyService implements OntologyService {
                 } )
                 .filter( Objects::nonNull )
                 .collect( Collectors.toSet() );
+    }
+
+    private static class State {
+        private final OntModel model;
+        @Nullable
+        private SearchIndex index;
+        private final Set<Restriction> additionalRestrictions;
+        private final LanguageLevel languageLevel;
+        private final InferenceMode inferenceMode;
+        private final boolean processImports;
+        private final Set<String> additionalPropertyUris;
+        @Nullable
+        private Map<String, String> alternativeIDs;
+
+        private State( OntModel model, @Nullable SearchIndex index, Set<Restriction> additionalRestrictions, @Nullable LanguageLevel languageLevel, InferenceMode inferenceMode, boolean processImports, Set<String> additionalPropertyUris ) {
+            this.model = model;
+            this.index = index;
+            this.additionalRestrictions = additionalRestrictions;
+            this.languageLevel = languageLevel;
+            this.inferenceMode = inferenceMode;
+            this.processImports = processImports;
+            this.additionalPropertyUris = additionalPropertyUris;
+        }
     }
 }

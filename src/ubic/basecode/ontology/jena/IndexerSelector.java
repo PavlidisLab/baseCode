@@ -18,9 +18,12 @@
  */
 package ubic.basecode.ontology.jena;
 
+import com.hp.hpl.jena.ontology.ConversionException;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -32,6 +35,8 @@ import java.util.HashSet;
  * @author paul
  */
 class IndexerSelector implements Selector {
+
+    private static final Logger log = LoggerFactory.getLogger( IndexerSelector.class );
 
     private static final Collection<Property> wantedForIndexing;
 
@@ -104,8 +109,12 @@ class IndexerSelector implements Selector {
         boolean retain = wantedForIndexing.contains( s.getPredicate() );
 
         // bit of a special case ...
-        if ( s.getPredicate().equals( OWL2.annotatedProperty ) ) {
-            retain = wantedForIndexing.contains( s.getObject().as( Property.class ) );
+        if ( s.getPredicate().equals( OWL2.annotatedProperty ) && s.getObject().canAs( Property.class ) ) {
+            try {
+                retain = wantedForIndexing.contains( s.getObject().as( Property.class ) );
+            } catch ( ConversionException e ) {
+                log.warn( "Conversion of " + s.getObject() + " to " + Property.class.getName() + " failed.", e );
+            }
         }
 
         return retain;
