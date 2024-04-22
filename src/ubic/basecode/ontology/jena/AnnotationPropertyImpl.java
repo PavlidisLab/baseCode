@@ -25,6 +25,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 import ubic.basecode.ontology.model.AnnotationProperty;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * Note that this is a concrete instance of the annotation.
@@ -45,20 +46,6 @@ class AnnotationPropertyImpl extends AbstractOntologyResource implements Annotat
         super( prop );
         this.property = prop;
         this.object = object;
-    }
-
-    @Override
-    public boolean equals( @Nullable Object obj ) {
-        if ( this == obj ) return true;
-        if ( obj == null ) return false;
-        if ( getClass() != obj.getClass() ) return false;
-        final AnnotationPropertyImpl other = ( AnnotationPropertyImpl ) obj;
-        if ( object == null ) {
-            if ( other.object != null ) return false;
-        } else if ( !object.equals( other.object ) ) return false;
-        if ( property == null ) {
-            return other.property == null;
-        } else return property.equals( other.property );
     }
 
     @Override
@@ -96,12 +83,24 @@ class AnnotationPropertyImpl extends AbstractOntologyResource implements Annotat
     }
 
     @Override
+    public boolean equals( @Nullable Object obj ) {
+        if ( this == obj ) return true;
+        if ( obj == null ) return false;
+        if ( obj instanceof AnnotationPropertyImpl ) {
+            final AnnotationPropertyImpl other = ( AnnotationPropertyImpl ) obj;
+            return super.equals( other )
+                    && Objects.equals( object, other.object );
+        } else if ( obj instanceof AnnotationProperty ) {
+            final AnnotationProperty other = ( AnnotationProperty ) obj;
+            return super.equals( other )
+                    && Objects.equals( getContents(), other.getContents() );
+        }
+        return false;
+    }
+
+    @Override
     public int hashCode() {
-        final int PRIME = 31;
-        int result = 1;
-        result = PRIME * result + ( ( object == null ) ? 0 : object.hashCode() );
-        result = PRIME * result + ( ( property == null ) ? 0 : property.hashCode() );
-        return result;
+        return Objects.hash( super.hashCode(), object );
     }
 
     @Override

@@ -45,6 +45,9 @@ abstract class AbstractOntologyResource implements OntologyResource {
     @Nullable
     private final Double score;
 
+    private String _label;
+    private boolean _isLabelNull = false;
+
     protected AbstractOntologyResource( OntResource resource ) {
         this.res = resource;
         this.score = null;
@@ -67,10 +70,15 @@ abstract class AbstractOntologyResource implements OntologyResource {
 
     @Override
     public String getLabel() {
+        if ( _label != null || _isLabelNull ) {
+            return _label;
+        }
         String label = res.getLabel( "EN" );
         if ( label == null ) {
             label = res.getLabel( null );
         }
+        _label = label;
+        _isLabelNull = label == null;
         return label;
     }
 
@@ -104,19 +112,20 @@ abstract class AbstractOntologyResource implements OntologyResource {
     public boolean equals( Object obj ) {
         if ( this == obj ) return true;
         if ( obj == null ) return false;
-        if ( getClass() != obj.getClass() ) return false;
+        if ( !( obj instanceof OntologyResource ) ) {
+            return false;
+        }
         final OntologyResource other = ( OntologyResource ) obj;
-        if ( getLabel() == null ) {
-            if ( other.getLabel() != null ) return false;
-        } else if ( !getLabel().equals( other.getLabel() ) ) return false;
-        if ( getUri() == null ) {
-            return other.getUri() == null;
-        } else return getUri().equals( other.getUri() );
+        if ( getUri() == null && other.getUri() == null ) {
+            return Objects.equals( getLabel(), other.getLabel() );
+        } else {
+            return Objects.equals( getUri(), other.getUri() );
+        }
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash( getLabel(), getUri() );
+        return Objects.hash( getUri() );
     }
 
     @Override
