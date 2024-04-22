@@ -46,7 +46,7 @@ class JenaUtils {
                 .map( t -> as( t, OntClass.class ) )
                 .filter( Optional::isPresent )
                 .map( Optional::get )
-                .collect( Collectors.toList() );
+                .collect( Collectors.toSet() );
         if ( ontClasses.isEmpty() ) {
             return Collections.emptySet();
         }
@@ -104,18 +104,18 @@ class JenaUtils {
     }
 
     public static Collection<OntClass> getChildrenInternal( OntModel model, Collection<OntClass> terms, boolean direct, @Nullable Set<Restriction> additionalRestrictions ) {
-        terms = terms.stream()
+        Set<OntClass> termsSet = terms.stream()
                 .map( t -> t.inModel( model ) )
                 .filter( t -> t.canAs( OntClass.class ) )
                 .map( t -> as( t, OntClass.class ) )
                 .filter( Optional::isPresent )
                 .map( Optional::get )
-                .collect( Collectors.toList() );
-        if ( terms.isEmpty() ) {
+                .collect( Collectors.toSet() );
+        if ( termsSet.isEmpty() ) {
             return Collections.emptySet();
         }
         StopWatch timer = StopWatch.createStarted();
-        Iterator<OntClass> it = terms.iterator();
+        Iterator<OntClass> it = termsSet.iterator();
         ExtendedIterator<OntClass> iterator = it.next().listSubClasses( direct );
         while ( it.hasNext() ) {
             iterator = iterator.andThen( it.next().listSubClasses( direct ) );
@@ -132,7 +132,7 @@ class JenaUtils {
                 subClassOf = ResourceFactory.createProperty( makeDirect( subClassOf.getURI() ) );
             }
             Set<Restriction> restrictions = UniqueExtendedIterator.create( additionalRestrictions.iterator() )
-                    .filterKeep( new RestrictionWithValuesFromFilter( terms ) )
+                    .filterKeep( new RestrictionWithValuesFromFilter( termsSet ) )
                     .toSet();
             for ( Restriction r : restrictions ) {
                 result.addAll( model.listResourcesWithProperty( subClassOf, r )
