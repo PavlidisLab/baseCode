@@ -43,7 +43,6 @@ class IndexerSelector implements Selector {
     static {
         wantedForIndexing = new HashSet<>();
         wantedForIndexing.add( RDFS.label );
-        wantedForIndexing.add( RDFS.comment );
 
         wantedForIndexing.add( OBO.id );
         wantedForIndexing.add( OBO.hasDbXref );
