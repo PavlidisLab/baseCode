@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 /**
  * @author pavlidis
  */
-public interface OntologyResource extends Comparable<OntologyResource> {
+public interface OntologyResource {
 
     /**
      * A URI if known, otherwise null.
@@ -52,10 +52,4 @@ public interface OntologyResource extends Comparable<OntologyResource> {
      * Whether the resource is marked as obsolete.
      */
     boolean isObsolete();
-
-    /**
-     * If this is result from a free-text search, a corresponding score, otherwise null.
-     */
-    @Nullable
-    Double getScore();
 }

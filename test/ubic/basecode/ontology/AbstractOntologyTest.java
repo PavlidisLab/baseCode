@@ -17,12 +17,9 @@ import java.nio.file.Path;
 public class AbstractOntologyTest {
 
     protected static Path tempDir;
-    private static String prevCacheDir, prevIndexDir;
 
     @BeforeClass
     public static void setUpOntologyCacheDir() throws IOException {
-        prevCacheDir = Configuration.getString( "ontology.cache.dir" );
-        prevIndexDir = Configuration.getString( "ontology.index.dir" );
         tempDir = Files.createTempDirectory( "baseCode" );
         Configuration.setString( "ontology.cache.dir", tempDir.resolve( "ontologyCache" ).toAbsolutePath().toString() );
         Configuration.setString( "ontology.index.dir", tempDir.resolve( "searchIndices" ).toAbsolutePath().toString() );
@@ -33,8 +30,8 @@ public class AbstractOntologyTest {
         try {
             PathUtils.deleteDirectory( tempDir );
         } finally {
-            Configuration.setString( "ontology.cache.dir", prevCacheDir );
-            Configuration.setString( "ontology.index.dir", prevIndexDir );
+            Configuration.reset( "ontology.cache.dir" );
+            Configuration.reset( "ontology.index.dir" );
         }
     }
 }

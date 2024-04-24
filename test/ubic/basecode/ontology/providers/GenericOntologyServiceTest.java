@@ -22,6 +22,7 @@ package ubic.basecode.ontology.providers;
 import org.junit.Test;
 import ubic.basecode.ontology.AbstractOntologyTest;
 import ubic.basecode.ontology.model.OntologyTerm;
+import ubic.basecode.ontology.search.OntologySearchResult;
 import ubic.basecode.util.Configuration;
 
 import java.net.URL;
@@ -44,7 +45,7 @@ public class GenericOntologyServiceTest extends AbstractOntologyTest {
         s1.initialize( true, false );
         GenericOntologyService s = s1;
 
-        Collection<OntologyTerm> r = s.findTerm( "Mouse" );
+        Collection<OntologySearchResult<OntologyTerm>> r = s.findTerm( "Mouse" );
         assertFalse( r.isEmpty() );
     }
 

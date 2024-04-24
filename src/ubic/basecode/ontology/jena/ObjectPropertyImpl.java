@@ -53,7 +53,7 @@ class ObjectPropertyImpl extends OntologyPropertyImpl implements ubic.basecode.o
                 OntClass class1 = r.asClass();
                 result.add( new OntologyTermImpl( class1, additionalRestrictions ) );
             } else {
-                log.warn( "Don't know how to deal with " + r );
+                log.warn( "Don't know how to deal with {}", r );
             }
         }
         return result;

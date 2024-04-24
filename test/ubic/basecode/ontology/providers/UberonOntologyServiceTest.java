@@ -7,11 +7,13 @@ import ubic.basecode.ontology.AbstractOntologyTest;
 import ubic.basecode.ontology.OntologyTermTest;
 import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.search.OntologySearchException;
+import ubic.basecode.ontology.search.OntologySearchResult;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import static java.util.Objects.requireNonNull;
@@ -100,8 +102,8 @@ public class UberonOntologyServiceTest extends AbstractOntologyTest {
 
     @Test
     public void testGetChildrenFromMultipleTermsWithSearch() throws OntologySearchException {
-        Collection<OntologyTerm> terms = uberon.findTerm( "brain" );
-        Collection<OntologyTerm> matches = uberon.getChildren( terms, false, true );
+        Collection<OntologySearchResult<OntologyTerm>> terms = uberon.findTerm( "brain" );
+        Collection<OntologyTerm> matches = uberon.getChildren( terms.stream().map( OntologySearchResult::getResult ).collect( Collectors.toSet() ), false, true );
         assertEquals( 1870, matches.size() );
     }
 
@@ -109,8 +111,8 @@ public class UberonOntologyServiceTest extends AbstractOntologyTest {
     public void testFindTerm() throws OntologySearchException {
         assertEquals( 123, uberon.findTerm( "brain" ).size() );
         assertEquals( 128, uberon.findTerm( "brain", true ).size() );
-        OntologyTerm firstResult = uberon.findTerm( "brain" ).iterator().next();
-        assertNotNull( firstResult.getScore() );
+        OntologySearchResult<OntologyTerm> firstResult = uberon.findTerm( "brain" ).iterator().next();
+        assertNotNull( firstResult );
         assertEquals( 2.8577, firstResult.getScore(), 0.0001 );
     }
 }

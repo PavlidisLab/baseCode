@@ -4,6 +4,7 @@ import ubic.basecode.ontology.model.OntologyIndividual;
 import ubic.basecode.ontology.model.OntologyResource;
 import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.search.OntologySearchException;
+import ubic.basecode.ontology.search.OntologySearchResult;
 
 import javax.annotation.Nullable;
 import java.io.InputStream;
@@ -130,6 +131,19 @@ public interface OntologyService {
     void setSearchEnabled( boolean searchEnabled );
 
     /**
+     * Obtain the words that should be excluded from stemming.
+     * <p>
+     * By default, all words are subject to stemming. The exact implementation of stemming depends on the actual search
+     * implementation.
+     */
+    Set<String> getExcludedWordsFromStemming();
+
+    /**
+     * Set words that should be excluded from stemming when searching.
+     */
+    void setExcludedWordsFromStemming( Set<String> excludedWordsFromStemming );
+
+    /**
      * Obtain the URIs used as additional properties when inferring parents and children.
      * <p>
      * The default is to use <a href="http://purl.obolibrary.org/obo/BFO_0000050">part of</a>, <a href="http://www.obofoundry.org/ro/ro.owl#proper_part_of">proper part of</a>
@@ -169,7 +183,7 @@ public interface OntologyService {
      * <p>
      * Obsolete terms are filtered out.
      */
-    default Collection<OntologyIndividual> findIndividuals( String search ) throws OntologySearchException {
+    default Collection<OntologySearchResult<OntologyIndividual>> findIndividuals( String search ) throws OntologySearchException {
         return findIndividuals( search, false );
     }
 
@@ -179,7 +193,7 @@ public interface OntologyService {
      * @param search        search query
      * @param keepObsoletes retain obsolete terms
      */
-    Collection<OntologyIndividual> findIndividuals( String search, boolean keepObsoletes ) throws OntologySearchException;
+    Set<OntologySearchResult<OntologyIndividual>> findIndividuals( String search, boolean keepObsoletes ) throws OntologySearchException;
 
     /**
      * Looks for any resources (terms or individuals) that match the given search string
@@ -189,7 +203,7 @@ public interface OntologyService {
      * @return results, or an empty collection if the results are empty OR the ontology is not available to be
      * searched.
      */
-    default Collection<OntologyResource> findResources( String searchString ) throws OntologySearchException {
+    default Collection<OntologySearchResult<OntologyResource>> findResources( String searchString ) throws OntologySearchException {
         return findResources( searchString, false );
     }
 
@@ -199,14 +213,14 @@ public interface OntologyService {
      * @param search        search query
      * @param keepObsoletes retain obsolete terms
      */
-    Collection<OntologyResource> findResources( String search, boolean keepObsoletes ) throws OntologySearchException;
+    Collection<OntologySearchResult<OntologyResource>> findResources( String search, boolean keepObsoletes ) throws OntologySearchException;
 
     /**
      * Looks for any terms that match the given search string.
      * <p>
      * Obsolete terms are filtered out.
      */
-    default Collection<OntologyTerm> findTerm( String search ) throws OntologySearchException {
+    default Collection<OntologySearchResult<OntologyTerm>> findTerm( String search ) throws OntologySearchException {
         return findTerm( search, false );
     }
 
@@ -217,7 +231,7 @@ public interface OntologyService {
      * @param search        search query
      * @param keepObsoletes retain obsolete terms
      */
-    Collection<OntologyTerm> findTerm( String search, boolean keepObsoletes ) throws OntologySearchException;
+    Collection<OntologySearchResult<OntologyTerm>> findTerm( String search, boolean keepObsoletes ) throws OntologySearchException;
 
     /**
      * Find a term using an alternative ID.

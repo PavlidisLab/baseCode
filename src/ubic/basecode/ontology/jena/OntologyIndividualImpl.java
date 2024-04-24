@@ -44,12 +44,6 @@ class OntologyIndividualImpl extends AbstractOntologyResource implements Ontolog
         this.additionalRestrictions = additionalRestrictions;
     }
 
-    public OntologyIndividualImpl( Individual ind, Set<Restriction> additionalRestrictions, double score ) {
-        super( ind, score );
-        this.ind = ind;
-        this.additionalRestrictions = additionalRestrictions;
-    }
-
     @Override
     public OntologyTerm getInstanceOf() {
         Resource type = ind.getRDFType();

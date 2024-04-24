@@ -25,10 +25,7 @@ import org.slf4j.LoggerFactory;
 import ubic.basecode.ontology.model.OntologyResource;
 
 import javax.annotation.Nullable;
-import java.util.Comparator;
 import java.util.Objects;
-
-import static java.util.Comparator.*;
 
 /**
  * @author pavlidis
@@ -37,25 +34,13 @@ abstract class AbstractOntologyResource implements OntologyResource {
 
     protected static final Logger log = LoggerFactory.getLogger( AbstractOntologyResource.class );
 
-    private static final Comparator<OntologyResource> comparator = Comparator
-            .comparing( OntologyResource::getScore, nullsLast( reverseOrder() ) )
-            .thenComparing( OntologyResource::getUri, nullsLast( naturalOrder() ) );
-
     private final OntResource res;
-    @Nullable
-    private final Double score;
 
     private String _label;
     private boolean _isLabelNull = false;
 
     protected AbstractOntologyResource( OntResource resource ) {
         this.res = resource;
-        this.score = null;
-    }
-
-    public AbstractOntologyResource( OntResource resource, double score ) {
-        this.res = resource;
-        this.score = score;
     }
 
     @Override
@@ -95,17 +80,6 @@ abstract class AbstractOntologyResource implements OntologyResource {
     @Override
     public boolean isObsolete() {
         return res.hasLiteral( OWL2.deprecated, true );
-    }
-
-    @Override
-    @Nullable
-    public Double getScore() {
-        return score;
-    }
-
-    @Override
-    public int compareTo( OntologyResource other ) {
-        return Objects.compare( this, other, comparator );
     }
 
     @Override

@@ -19,6 +19,7 @@ import ubic.basecode.ontology.AbstractOntologyTest;
 import ubic.basecode.ontology.model.OntologyIndividual;
 import ubic.basecode.ontology.model.OntologyResource;
 import ubic.basecode.ontology.model.OntologyTerm;
+import ubic.basecode.ontology.search.OntologySearchResult;
 
 import java.util.Collection;
 
@@ -38,13 +39,13 @@ public class ObiServiceTest extends AbstractOntologyTest {
 
         assertTrue( m.isOntologyLoaded() );
 
-        Collection<OntologyTerm> hits = m.findTerm( "batch" );
+        Collection<OntologySearchResult<OntologyTerm>> hits = m.findTerm( "batch" );
         assertFalse( hits.isEmpty() );
 
-        Collection<OntologyIndividual> ihits = m.findIndividuals( "batch" );
+        Collection<OntologySearchResult<OntologyIndividual>> ihits = m.findIndividuals( "batch" );
         assertFalse( ihits.isEmpty() );
 
-        Collection<OntologyResource> rhits = m.findResources( "batch" );
+        Collection<OntologySearchResult<OntologyResource>> rhits = m.findResources( "batch" );
         assertFalse( rhits.isEmpty() );
     }
 }

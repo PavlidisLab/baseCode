@@ -19,6 +19,7 @@ import org.junit.Test;
 import ubic.basecode.ontology.AbstractOntologyTest;
 import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.providers.GenericOntologyService;
+import ubic.basecode.ontology.search.OntologySearchResult;
 
 import java.io.File;
 import java.io.InputStream;
@@ -62,7 +63,7 @@ public class OntologyLoaderTest extends AbstractOntologyTest {
         assertFalse( OntologyLoader.getTmpDiskCachePath( name ).exists() );
         assertFalse( OntologyLoader.getOldDiskCachePath( name ).exists() );
 
-        Collection<OntologyTerm> r = s.findTerm( "Mouse" );
+        Collection<OntologySearchResult<OntologyTerm>> r = s.findTerm( "Mouse" );
         assertFalse( r.isEmpty() );
 
         // Recreate OntologyService using this cache file

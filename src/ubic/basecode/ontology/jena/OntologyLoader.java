@@ -107,7 +107,7 @@ class OntologyLoader {
         } catch ( ClosedByInterruptException e ) {
             throw e;
         } catch ( IOException e ) {
-            log.error( "Failed to load ontology model for " + url + ", will attempt to load from disk.", e );
+            log.error( "Failed to load ontology model for {}, will attempt to load from disk.", url, e );
             attemptToLoadFromDisk = true;
         } finally {
             if ( urlc instanceof HttpURLConnection ) {
@@ -129,7 +129,7 @@ class OntologyLoader {
                         // the ontology.
                         FileUtils.createParentDirectories( oldFile );
                         Files.copy( f.toPath(), oldFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
-                        log.info( "Load model from disk: " + timer.getTime() + "ms" );
+                        log.info( "Load model from disk took {} ms", timer.getTime() );
                     }
                 } else {
                     throw new RuntimeException(
@@ -138,7 +138,7 @@ class OntologyLoader {
             } else if ( tempFile.exists() ) {
                 // Model was successfully loaded into memory from URL with given cacheName
                 // Save cache to disk (rename temp file)
-                log.info( "Caching ontology to disk: " + cacheName + " under " + f.getAbsolutePath() );
+                log.info( "Caching ontology to disk: {} under {}", cacheName, f.getAbsolutePath() );
                 try {
                     // Need to compare previous to current so instead of overwriting we'll move the old file
                     if ( f.exists() ) {
@@ -149,12 +149,12 @@ class OntologyLoader {
                     }
                     Files.move( tempFile.toPath(), f.toPath(), StandardCopyOption.REPLACE_EXISTING );
                 } catch ( IOException e ) {
-                    log.error( "Failed to cache ontology " + url + " to disk.", e );
+                    log.error( "Failed to cache ontology {} to disk.", url, e );
                 }
             }
         }
 
-        log.info( "Loading ontology model for " + url + " took " + timer.getTime() + "ms" );
+        log.info( "Loading ontology model for {} took {} ms", url, timer.getTime() );
 
         return model;
     }
@@ -236,7 +236,7 @@ class OntologyLoader {
                 if ( StringUtils.isBlank( newUrl ) ) {
                     throw new RuntimeException( String.format( "Redirect response for %s is lacking a 'Location' header.", url ) );
                 }
-                log.debug( "Redirect to " + newUrl + " from " + url );
+                log.debug( "Redirect to {} from {}", newUrl, url );
                 urlc = openConnectionInternal( newUrl );
             }
         }
@@ -251,7 +251,7 @@ class OntologyLoader {
         if ( urlc instanceof HttpURLConnection ) {
             ( ( HttpURLConnection ) urlc ).setInstanceFollowRedirects( true );
         }
-        log.debug( "Connecting to " + url );
+        log.debug( "Connecting to {}", url );
         urlc.connect(); // Will error here on bad URL
         return urlc;
     }

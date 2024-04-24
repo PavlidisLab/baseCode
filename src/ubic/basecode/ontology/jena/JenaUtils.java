@@ -228,7 +228,7 @@ class JenaUtils {
         try {
             return Optional.of( resource.as( clazz ) );
         } catch ( ConversionException e ) {
-            log.warn( "Conversion of " + resource + " to " + clazz.getName() + " failed." );
+            log.warn( "Conversion of {} to {} failed.", resource, clazz.getName() );
             return Optional.empty();
         }
     }
