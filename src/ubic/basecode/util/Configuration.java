@@ -18,112 +18,95 @@
  */
 package ubic.basecode.util;
 
-import java.util.Iterator;
-
-import org.apache.commons.configuration2.CompositeConfiguration;
-import org.apache.commons.configuration2.PropertiesConfiguration;
-import org.apache.commons.configuration2.SystemConfiguration;
-import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.commons.configuration2.io.FileHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 /**
  * Configuration of ontology services and other things.
+ * <p>
+ * Configurations are retrieved from three locations: properties set at runtime with {@link #setString(String, String)},
+ * system properties and a default properties file named {@code basecode.properties} at the root of the classpath in
+ * that order.
+ * <p>
+ * Properties set via system properties must be prefixed with {@code basecode.} to be considered.
+ * <p>
+ * Properties set at runtime can be reset with {@link #reset()} and {@link #reset(String)}.
  *
  * @author paul
- *
  */
 public class Configuration {
 
-    private static CompositeConfiguration config;
+    private static final Logger log = LoggerFactory.getLogger( Configuration.class );
 
-    /**
-     * Name of the resource containing defaults
-     */
-    private static final String DEFAULT_CONFIGURATION = "ontology.properties";
-
-    private static Logger log = LoggerFactory.getLogger( Configuration.class );
-
-    /**
-     * The name of the file users can use to customize.
-     */
-    private static final String USER_CONFIGURATION = "basecode.properties";
+    private static final String SYSTEM_PROPERTY_PREFIX = "basecode.";
+    private static final Properties defaultProps = new Properties();
+    private static final Properties props = new Properties();
 
     static {
-
-        config = new CompositeConfiguration();
-        config.addConfiguration( new SystemConfiguration() );
-
-        /*
-         * the order matters - first come, first serve. Items added later do not overwrite items defined earlier. Thus
-         * the user configuration has to be listed first.
-         */
-
-        try {
-            // purely for backwards compatibility, if the user hasn't set up ontology.properties.
-            PropertiesConfiguration pc = new PropertiesConfiguration();
-            FileHandler handler = new FileHandler( pc );
-            handler.setFileName( "Gemma.properties" );
-            handler.load();
-            config.addConfiguration( pc );
-        } catch ( ConfigurationException e ) {
-        }
-
-        try {
-            PropertiesConfiguration pc = new PropertiesConfiguration();
-            FileHandler handler = new FileHandler( pc );
-            handler.setFileName( USER_CONFIGURATION );
-            handler.load();
-            config.addConfiguration( pc );
-        } catch ( ConfigurationException e ) {
-        }
-
-        try {
-            PropertiesConfiguration pc = new PropertiesConfiguration();
-            FileHandler handler = new FileHandler( pc );
-            handler.setFileName( DEFAULT_CONFIGURATION );
-            handler.load();
-            config.addConfiguration( pc );
-        } catch ( ConfigurationException e ) {
-            log.error( DEFAULT_CONFIGURATION + " is missing, ontology loading may fail" );
-        }
-
-        // step through the result and do a final round of variable substitution
-        for ( Iterator<String> it = config.getKeys(); it.hasNext(); ) {
-            String key = it.next();
-            String property = config.getString( key );
-            if ( property != null && property.startsWith( "${" ) && property.endsWith( "}" ) ) {
-                String keyToSubstitute = property.substring( 2, property.length() - 1 );
-                String valueToSubstitute = config.getString( keyToSubstitute );
-                log.debug( key + "=" + property + " -> " + valueToSubstitute );
-                config.setProperty( key, valueToSubstitute );
+        try ( InputStream is = Configuration.class.getResourceAsStream( "/basecode.properties" ) ) {
+            if ( is != null ) {
+                defaultProps.load( is );
+            } else {
+                log.warn( "No basecode.properties was found in the classpath, only system and manually set properties will be considered." );
             }
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
         }
-
     }
 
     /**
-     * @param key
-     * @return
+     * Obtain a configuration value by key.
      */
-    public static boolean getBoolean( String key ) {
-        return config.getBoolean( key, false );
-    }
-
-    /**
-     * @param key
-     * @return
-     */
+    @Nullable
     public static String getString( String key ) {
-        return config.getString( key );
+        String val = props.getProperty( key );
+        if ( val == null ) {
+            val = System.getProperty( SYSTEM_PROPERTY_PREFIX + key );
+        }
+        if ( val == null ) {
+            val = defaultProps.getProperty( key );
+        }
+        return val;
     }
 
     /**
-     * @param key
-     * @return
+     * Obtain a boolean configuration value by key.
+     *
+     * @see Boolean#parseBoolean(String)
      */
-    public static void setString( String key, Object value ) {
-        config.setProperty( key, value );
+    @Nullable
+    public static Boolean getBoolean( String key ) {
+        String val = getString( key );
+        if ( val != null ) {
+            return Boolean.parseBoolean( val );
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Set a configuration by key.
+     */
+    public static void setString( String key, String value ) {
+        props.setProperty( key, value );
+    }
+
+    /**
+     * Reset all configurations set at runtime.
+     */
+    public static void reset() {
+        props.clear();
+    }
+
+    /**
+     * Reset a specific configuration by key.
+     */
+    public static void reset( String key ) {
+        props.remove( key );
     }
 }

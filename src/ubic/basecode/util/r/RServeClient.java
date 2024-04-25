@@ -18,15 +18,6 @@
  */
 package ubic.basecode.util.r;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.commons.configuration2.PropertiesConfiguration;
-import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.commons.configuration2.io.FileHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
@@ -34,10 +25,14 @@ import org.rosuda.REngine.REngineException;
 import org.rosuda.REngine.RList;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
-
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
-import ubic.basecode.util.ConfigUtils;
+import ubic.basecode.util.Configuration;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author pavlidis
@@ -56,24 +51,8 @@ public class RServeClient extends AbstractRClient {
 
     private final static String os = System.getProperty( "os.name" ).toLowerCase();
 
-    /**
-     * @return
-     * @throws ConfigurationException
-     */
-    protected static String findRserveCommand() throws ConfigurationException {
-        URL userSpecificConfigFileLocation = ConfigUtils.locate( "local.properties" );
-
-        PropertiesConfiguration userConfig = null;
-        if ( userSpecificConfigFileLocation != null ) {
-            userConfig = new PropertiesConfiguration();
-            FileHandler handler = new FileHandler( userConfig );
-            handler.setFileName( "local.properties" );
-            handler.load();
-        }
-        String rserveExecutable = null;
-        if ( userConfig != null ) {
-            rserveExecutable = userConfig.getString( "rserve.start.command" );
-        }
+    protected static String findRserveCommand() {
+        String rserveExecutable = Configuration.getString( "rserve.start.command" );
         if ( StringUtils.isBlank( rserveExecutable ) ) {
             log.info( "Rserve command not configured? Trying fallbacks" );
             if ( os.startsWith( "windows" ) ) { // lower cased
