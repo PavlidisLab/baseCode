@@ -63,7 +63,7 @@ public class OntologyLoaderTest extends AbstractOntologyTest {
         assertFalse( OntologyLoader.getTmpDiskCachePath( name ).exists() );
         assertFalse( OntologyLoader.getOldDiskCachePath( name ).exists() );
 
-        Collection<OntologySearchResult<OntologyTerm>> r = s.findTerm( "Mouse" );
+        Collection<OntologySearchResult<OntologyTerm>> r = s.findTerm( "Mouse", 500 );
         assertFalse( r.isEmpty() );
 
         // Recreate OntologyService using this cache file
@@ -74,7 +74,7 @@ public class OntologyLoaderTest extends AbstractOntologyTest {
         assertFalse( OntologyLoader.getTmpDiskCachePath( name ).exists() );
         assertFalse( OntologyLoader.getOldDiskCachePath( name ).exists() );
 
-        r = s.findTerm( "Mouse" );
+        r = s.findTerm( "Mouse", 500 );
         assertFalse( r.isEmpty() );
 
         // Recreate OntologyService with bad URL and no cache

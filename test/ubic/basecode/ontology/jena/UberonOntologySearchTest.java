@@ -38,7 +38,7 @@ public class UberonOntologySearchTest {
     public void testOmitDefinition() throws OntologySearchException {
         OntClass brain = uberon.getOntClass( "http://purl.obolibrary.org/obo/UBERON_0000955" );
         assertNotNull( brain );
-        Set<SearchIndex.JenaSearchResult> searchResults = uberonIndex.searchClasses( uberon, "brain" ).toSet();
+        Set<SearchIndex.JenaSearchResult> searchResults = uberonIndex.searchClasses( uberon, "brain", 500 ).toSet();
         assertEquals( 128, searchResults.size() );
     }
 
@@ -46,7 +46,7 @@ public class UberonOntologySearchTest {
     public void testScore() throws OntologySearchException {
         OntClass brain = uberon.getOntClass( "http://purl.obolibrary.org/obo/UBERON_0000955" );
         assertNotNull( brain );
-        List<SearchIndex.JenaSearchResult> searchResults = uberonIndex.searchClasses( uberon, "brain" ).toList();
+        List<SearchIndex.JenaSearchResult> searchResults = uberonIndex.searchClasses( uberon, "brain", 500 ).toList();
         assertEquals( 128, searchResults.size() );
         assertEquals( 3.85, searchResults.get( 0 ).score, 0.01 );
     }

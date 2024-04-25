@@ -39,13 +39,13 @@ public class ObiServiceTest extends AbstractOntologyTest {
 
         assertTrue( m.isOntologyLoaded() );
 
-        Collection<OntologySearchResult<OntologyTerm>> hits = m.findTerm( "batch" );
+        Collection<OntologySearchResult<OntologyTerm>> hits = m.findTerm( "batch", 500 );
         assertFalse( hits.isEmpty() );
 
-        Collection<OntologySearchResult<OntologyIndividual>> ihits = m.findIndividuals( "batch" );
+        Collection<OntologySearchResult<OntologyIndividual>> ihits = m.findIndividuals( "batch", 500 );
         assertFalse( ihits.isEmpty() );
 
-        Collection<OntologySearchResult<OntologyResource>> rhits = m.findResources( "batch" );
+        Collection<OntologySearchResult<OntologyResource>> rhits = m.findResources( "batch", 500 );
         assertFalse( rhits.isEmpty() );
     }
 }

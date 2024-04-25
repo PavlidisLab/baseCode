@@ -303,7 +303,7 @@ public abstract class AbstractOntologyService implements OntologyService {
     }
 
     @Override
-    public Set<OntologySearchResult<OntologyIndividual>> findIndividuals( String search, boolean keepObsoletes ) throws
+    public Set<OntologySearchResult<OntologyIndividual>> findIndividuals( String search, int maxResults, boolean keepObsoletes ) throws
             OntologySearchException {
         State state = this.state;
         if ( state == null ) {
@@ -314,14 +314,14 @@ public abstract class AbstractOntologyService implements OntologyService {
             log.warn( "Attempt to search {} when index is null, no results will be returned.", this );
             return Collections.emptySet();
         }
-        return state.index.searchIndividuals( state.model, search )
+        return state.index.searchIndividuals( state.model, search, maxResults )
                 .mapWith( i -> new OntologySearchResult<>( ( OntologyIndividual ) new OntologyIndividualImpl( i.result.as( Individual.class ), state.additionalRestrictions ), i.score ) )
                 .filterKeep( where( ontologyTerm -> keepObsoletes || !ontologyTerm.getResult().isObsolete() ) )
                 .toSet();
     }
 
     @Override
-    public Collection<OntologySearchResult<OntologyResource>> findResources( String searchString, boolean keepObsoletes ) throws
+    public Collection<OntologySearchResult<OntologyResource>> findResources( String searchString, int maxResults, boolean keepObsoletes ) throws
             OntologySearchException {
         State state = this.state;
         if ( state == null ) {
@@ -332,7 +332,7 @@ public abstract class AbstractOntologyService implements OntologyService {
             log.warn( "Attempt to search {} when index is null, no results will be returned.", this );
             return Collections.emptySet();
         }
-        return state.index.searchResources( state.model, searchString )
+        return state.index.search( state.model, searchString, maxResults )
                 .filterKeep( where( r -> r.result.canAs( OntClass.class ) || r.result.canAs( Individual.class ) ) )
                 .mapWith( r -> {
                     try {
@@ -354,7 +354,7 @@ public abstract class AbstractOntologyService implements OntologyService {
     }
 
     @Override
-    public Collection<OntologySearchResult<OntologyTerm>> findTerm( String search, boolean keepObsoletes ) throws OntologySearchException {
+    public Collection<OntologySearchResult<OntologyTerm>> findTerm( String search, int maxResults, boolean keepObsoletes ) throws OntologySearchException {
         State state = this.state;
         if ( state == null ) {
             log.warn( "Ontology {} is not ready, no terms will be returned.", this );
@@ -364,7 +364,7 @@ public abstract class AbstractOntologyService implements OntologyService {
             log.warn( "Attempt to search {} when index is null, no results will be returned.", this );
             return Collections.emptySet();
         }
-        return state.index.searchClasses( state.model, search )
+        return state.index.searchClasses( state.model, search, maxResults )
                 .mapWith( r -> new OntologySearchResult<>( ( OntologyTerm ) new OntologyTermImpl( r.result.as( OntClass.class ), state.additionalRestrictions ), r.score ) )
                 .filterKeep( where( ontologyTerm -> keepObsoletes || !ontologyTerm.getResult().isObsolete() ) )
                 .toSet();

@@ -45,7 +45,7 @@ public class GenericOntologyServiceTest extends AbstractOntologyTest {
         s1.initialize( true, false );
         GenericOntologyService s = s1;
 
-        Collection<OntologySearchResult<OntologyTerm>> r = s.findTerm( "Mouse" );
+        Collection<OntologySearchResult<OntologyTerm>> r = s.findTerm( "Mouse", 500 );
         assertFalse( r.isEmpty() );
     }
 

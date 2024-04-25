@@ -18,9 +18,12 @@
  */
 package ubic.basecode.ontology.jena;
 
-import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.shared.JenaException;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.util.iterator.WrappedIterator;
@@ -32,15 +35,14 @@ import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.NumericField;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
@@ -71,7 +73,9 @@ class OntologyIndexer {
      */
     private static final String
             ID_FIELD = "_ID",
-            LOCAL_NAME_FIELD = "_LOCAL_NAME";
+            LOCAL_NAME_FIELD = "_LOCAL_NAME",
+            IS_CLASS_FIELD = "_IS_CLASS",
+            IS_INDIVIDUAL_FIELD = "_IS_INDIVIDUAL";
 
     public static class IndexableProperty {
         private final Property property;
@@ -203,6 +207,16 @@ class OntologyIndexer {
                 Document doc = new Document();
                 doc.add( new Field( ID_FIELD, id, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
                 doc.add( new Field( LOCAL_NAME_FIELD, subject.getLocalName(), Field.Store.NO, Field.Index.NOT_ANALYZED ) );
+                boolean isClass, isIndividual;
+                if ( subject.canAs( OntResource.class ) ) {
+                    isClass = subject.as( OntResource.class ).isClass();
+                    isIndividual = subject.as( OntResource.class ).isIndividual();
+                } else {
+                    isClass = false;
+                    isIndividual = false;
+                }
+                doc.add( new NumericField( IS_CLASS_FIELD ).setIntValue( isClass ? 1 : 0 ) );
+                doc.add( new NumericField( IS_INDIVIDUAL_FIELD ).setIntValue( isIndividual ? 1 : 0 ) );
                 for ( IndexableProperty prop : indexableProperties ) {
                     StmtIterator listStatements = subject.listProperties( prop.property );
                     while ( listStatements.hasNext() ) {
@@ -242,26 +256,44 @@ class OntologyIndexer {
         }
 
         @Override
-        public ExtendedIterator<JenaSearchResult> search( OntModel model, String queryString ) throws OntologySearchException {
+        public ExtendedIterator<JenaSearchResult> search( OntModel model, String queryString, int maxResults ) throws OntologySearchException {
+            return search( model, queryString, null, maxResults );
+        }
+
+        @Override
+        public ExtendedIterator<JenaSearchResult> searchClasses( OntModel model, String queryString, int maxResults ) throws OntologySearchException {
+            return search( model, queryString, NumericRangeFilter.newIntRange( IS_CLASS_FIELD, 1, 1, true, true ), maxResults );
+        }
+
+        @Override
+        public ExtendedIterator<JenaSearchResult> searchIndividuals( OntModel model, String queryString, int maxResults ) throws OntologySearchException {
+            return search( model, queryString, NumericRangeFilter.newIntRange( IS_INDIVIDUAL_FIELD, 1, 1, true, true ), maxResults );
+        }
+
+        private ExtendedIterator<JenaSearchResult> search( OntModel model, String queryString, @Nullable Filter filter, int maxResults ) throws OntologySearchException {
             if ( StringUtils.isBlank( queryString ) ) {
                 throw new IllegalArgumentException( "Query cannot be blank" );
             }
             StopWatch timer = StopWatch.createStarted();
             try {
                 Query query = new MultiFieldQueryParser( Version.LUCENE_36, searchableFields, analyzer ).parse( queryString );
-                TopDocs hits = new IndexSearcher( index ).search( query, 500 );
                 // in general, results are found in both regular and std index, so we divide by 2 the initial capacity
+                // we also have to double the number of hits to account for duplicates
+                TopDocs hits = new IndexSearcher( index ).search( query, filter, maxResults * 3 );
                 Set<String> seenIds = new HashSet<>( hits.totalHits / 2 );
                 List<JenaSearchResult> resources = new ArrayList<>( hits.totalHits / 2 );
-                for ( int i = 0; i < hits.totalHits; i++ ) {
+                for ( int i = 0; i < hits.scoreDocs.length; i++ ) {
                     Document doc = index.document( hits.scoreDocs[i].doc );
                     String id = doc.get( ID_FIELD );
                     if ( seenIds.contains( id ) ) {
                         continue;
                     }
-                    RDFNode node = model.getRDFNode( NodeFactory.createURI( id ) );
-                    resources.add( new JenaSearchResult( node, hits.scoreDocs[i].score ) );
+                    Resource res = model.getResource( id );
+                    resources.add( new JenaSearchResult( res, hits.scoreDocs[i].score ) );
                     seenIds.add( id );
+                    if ( seenIds.size() >= maxResults ) {
+                        break;
+                    }
                 }
                 return WrappedIterator.create( resources.iterator() );
             } catch ( ParseException e ) {

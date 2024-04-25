@@ -102,16 +102,16 @@ public class UberonOntologyServiceTest extends AbstractOntologyTest {
 
     @Test
     public void testGetChildrenFromMultipleTermsWithSearch() throws OntologySearchException {
-        Collection<OntologySearchResult<OntologyTerm>> terms = uberon.findTerm( "brain" );
+        Collection<OntologySearchResult<OntologyTerm>> terms = uberon.findTerm( "brain", 500 );
         Collection<OntologyTerm> matches = uberon.getChildren( terms.stream().map( OntologySearchResult::getResult ).collect( Collectors.toSet() ), false, true );
         assertEquals( 1870, matches.size() );
     }
 
     @Test
     public void testFindTerm() throws OntologySearchException {
-        assertEquals( 123, uberon.findTerm( "brain" ).size() );
-        assertEquals( 128, uberon.findTerm( "brain", true ).size() );
-        OntologySearchResult<OntologyTerm> firstResult = uberon.findTerm( "brain" ).iterator().next();
+        assertEquals( 123, uberon.findTerm( "brain", 500 ).size() );
+        assertEquals( 128, uberon.findTerm( "brain", 500, true ).size() );
+        OntologySearchResult<OntologyTerm> firstResult = uberon.findTerm( "brain", 500 ).iterator().next();
         assertNotNull( firstResult );
         assertEquals( 2.8577, firstResult.getScore(), 0.0001 );
     }

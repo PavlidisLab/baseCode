@@ -183,8 +183,8 @@ public interface OntologyService {
      * <p>
      * Obsolete terms are filtered out.
      */
-    default Collection<OntologySearchResult<OntologyIndividual>> findIndividuals( String search ) throws OntologySearchException {
-        return findIndividuals( search, false );
+    default Collection<OntologySearchResult<OntologyIndividual>> findIndividuals( String search, int maxResults ) throws OntologySearchException {
+        return findIndividuals( search, maxResults, false );
     }
 
     /**
@@ -193,7 +193,7 @@ public interface OntologyService {
      * @param search        search query
      * @param keepObsoletes retain obsolete terms
      */
-    Set<OntologySearchResult<OntologyIndividual>> findIndividuals( String search, boolean keepObsoletes ) throws OntologySearchException;
+    Set<OntologySearchResult<OntologyIndividual>> findIndividuals( String search, int maxResults, boolean keepObsoletes ) throws OntologySearchException;
 
     /**
      * Looks for any resources (terms or individuals) that match the given search string
@@ -203,8 +203,8 @@ public interface OntologyService {
      * @return results, or an empty collection if the results are empty OR the ontology is not available to be
      * searched.
      */
-    default Collection<OntologySearchResult<OntologyResource>> findResources( String searchString ) throws OntologySearchException {
-        return findResources( searchString, false );
+    default Collection<OntologySearchResult<OntologyResource>> findResources( String searchString, int maxResults ) throws OntologySearchException {
+        return findResources( searchString, maxResults, false );
     }
 
     /**
@@ -213,15 +213,15 @@ public interface OntologyService {
      * @param search        search query
      * @param keepObsoletes retain obsolete terms
      */
-    Collection<OntologySearchResult<OntologyResource>> findResources( String search, boolean keepObsoletes ) throws OntologySearchException;
+    Collection<OntologySearchResult<OntologyResource>> findResources( String search, int maxResults, boolean keepObsoletes ) throws OntologySearchException;
 
     /**
      * Looks for any terms that match the given search string.
      * <p>
      * Obsolete terms are filtered out.
      */
-    default Collection<OntologySearchResult<OntologyTerm>> findTerm( String search ) throws OntologySearchException {
-        return findTerm( search, false );
+    default Collection<OntologySearchResult<OntologyTerm>> findTerm( String search, int maxResults ) throws OntologySearchException {
+        return findTerm( search, maxResults, false );
     }
 
 
@@ -231,7 +231,7 @@ public interface OntologyService {
      * @param search        search query
      * @param keepObsoletes retain obsolete terms
      */
-    Collection<OntologySearchResult<OntologyTerm>> findTerm( String search, boolean keepObsoletes ) throws OntologySearchException;
+    Collection<OntologySearchResult<OntologyTerm>> findTerm( String search, int maxResults, boolean keepObsoletes ) throws OntologySearchException;
 
     /**
      * Find a term using an alternative ID.

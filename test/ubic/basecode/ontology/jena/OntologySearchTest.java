@@ -48,13 +48,13 @@ public class OntologySearchTest extends AbstractOntologyTest {
         indexableProperties.add( new OntologyIndexer.IndexableProperty( RDFS.comment, true ) );
         SearchIndex index = OntologyIndexer.indexOntology( "MGEDTEST", model, indexableProperties, Collections.emptySet(), true );
 
-        Collection<SearchIndex.JenaSearchResult> name = index.searchClasses( model, "Bedding" ).toSet();
+        Collection<SearchIndex.JenaSearchResult> name = index.searchClasses( model, "Bedding", 500 ).toSet();
 
         assertEquals( 1, name.size() );
         index.close();
 
         index = OntologyIndexer.indexOntology( "MGEDTEST", model, indexableProperties, Collections.emptySet(), true );
-        name = index.searchClasses( model, "Bedding" ).toSet();
+        name = index.searchClasses( model, "Bedding", 500 ).toSet();
 
         assertEquals( 1, name.size() );
         index.close();
@@ -67,7 +67,7 @@ public class OntologySearchTest extends AbstractOntologyTest {
         HashSet<OntologyIndexer.IndexableProperty> indexableProperties = new HashSet<>( OntologyIndexer.DEFAULT_INDEXABLE_PROPERTIES );
         indexableProperties.add( new OntologyIndexer.IndexableProperty( RDFS.comment, true ) );
         SearchIndex index = OntologyIndexer.indexOntology( "MGEDTEST", model, indexableProperties, Collections.emptySet(), true );
-        Set<SearchIndex.JenaSearchResult> results = index.searchClasses( model, "bed" ).toSet();
+        Set<SearchIndex.JenaSearchResult> results = index.searchClasses( model, "bed", 500 ).toSet();
         Assertions.assertThat( results ).extracting( sr -> sr.result.as( OntClass.class ).getURI() )
                 .containsExactly( "http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Bedding" );
         index.close();
@@ -89,20 +89,20 @@ public class OntologySearchTest extends AbstractOntologyTest {
         indexableProperties.add( new OntologyIndexer.IndexableProperty( RDFS.comment, true ) );
         SearchIndex index = OntologyIndexer.indexOntology( "NIFTEST", model, indexableProperties, Collections.emptySet(), true );
 
-        Collection<SearchIndex.JenaSearchResult> name = index.searchClasses( model, "Organ" ).toSet();
+        Collection<SearchIndex.JenaSearchResult> name = index.searchClasses( model, "Organ", 500 ).toSet();
         // for ( OntClass ontologyTerm : name ) {
         // log.debug( ontologyTerm.toString() );
         // }
         // should get : Organ, Human Tissue and Organ Resource for Research, United Network for Organ Sharing
         assertEquals( 3, name.size() );
 
-        name = index.searchClasses( model, "Anatomical entity" ).toSet();
+        name = index.searchClasses( model, "Anatomical entity", 500 ).toSet();
         // for ( OntClass ontologyTerm : name ) {
         // log.debug( ontologyTerm.toString() );
         // }
         assertEquals( 1, name.size() );
 
-        name = index.searchClasses( model, "liver" ).toSet(); // this is an "example" that we want to avoid
+        name = index.searchClasses( model, "liver", 500 ).toSet(); // this is an "example" that we want to avoid
         // leading to "Organ".
 
         // for ( OntClass ontologyTerm : name ) {
@@ -127,12 +127,12 @@ public class OntologySearchTest extends AbstractOntologyTest {
         SearchIndex index = OntologyIndexer.indexOntology( "EFTEST", model, Collections.emptySet(), true );
 
         // positive control
-        Collection<SearchIndex.JenaSearchResult> searchResults = index.searchClasses( model, "monocyte" ).toSet();
+        Collection<SearchIndex.JenaSearchResult> searchResults = index.searchClasses( model, "monocyte", 500 ).toSet();
         assertFalse( "Should have found something for 'monocyte'", searchResults.isEmpty() );
         assertEquals( 1, searchResults.size() );
 
         // this is a "definition" that we want to avoid leading to "Monocyte".
-        searchResults = index.searchClasses( model, "liver" ).toSet();
+        searchResults = index.searchClasses( model, "liver", 500 ).toSet();
         for ( SearchIndex.JenaSearchResult ontologyTerm : searchResults ) {
             fail( "Should not have found " + ontologyTerm.toString() );
         }
@@ -151,11 +151,11 @@ public class OntologySearchTest extends AbstractOntologyTest {
         SearchIndex index = OntologyIndexer.indexOntology( "DO_TEST", model, Collections.emptySet(), true );
 
         // positive control
-        Set<SearchIndex.JenaSearchResult> searchResults = index.searchClasses( model, "acute leukemia" ).toSet();
+        Set<SearchIndex.JenaSearchResult> searchResults = index.searchClasses( model, "acute leukemia", 500 ).toSet();
         assertFalse( "Should have found something for 'acute leukemia'", searchResults.isEmpty() );
 
         // this is a "definition" that we want to avoid leading to "acute leukemia".
-        searchResults = index.searchClasses( model, "liver" ).toSet();
+        searchResults = index.searchClasses( model, "liver", 500 ).toSet();
         for ( SearchIndex.JenaSearchResult ontologyTerm : searchResults ) {
             fail( "Should not have found " + ontologyTerm.toString() );
         }
@@ -176,26 +176,26 @@ public class OntologySearchTest extends AbstractOntologyTest {
         SearchIndex index = OntologyIndexer.indexOntology( "NIFORG_TEST", model, indexableProperties, Collections.emptySet(), true );
 
         // positive control
-        Collection<SearchIndex.JenaSearchResult> searchResults = index.searchClasses( model, "Mammal" ).toSet();
+        Collection<SearchIndex.JenaSearchResult> searchResults = index.searchClasses( model, "Mammal", 500 ).toSet();
         assertFalse( "Should have found something for 'Mammal'", searchResults.isEmpty() );
 
         // this is a "definition" that we want to avoid leading to "acute leukemia".
-        searchResults = index.searchClasses( model, "skin" ).toSet();
+        searchResults = index.searchClasses( model, "skin", 500 ).toSet();
         for ( SearchIndex.JenaSearchResult ontologyTerm : searchResults ) {
             fail( "Should not have found " + ontologyTerm.toString() + " for 'skin'" );
         }
 
-        searchResults = index.searchClasses( model, "approximate" ).toSet();
+        searchResults = index.searchClasses( model, "approximate", 500 ).toSet();
         for ( SearchIndex.JenaSearchResult ontologyTerm : searchResults ) {
             fail( "Should not have found " + ontologyTerm.toString() + " for 'approximate'" );
         }
 
-        searchResults = index.searchClasses( model, "Bug" ).toSet();
+        searchResults = index.searchClasses( model, "Bug", 500 ).toSet();
         for ( SearchIndex.JenaSearchResult ontologyTerm : searchResults ) {
             fail( "Should not have found " + ontologyTerm.toString() + " for 'Bug'" );
         }
 
-        searchResults = index.searchClasses( model, "birnlex_2" )
+        searchResults = index.searchClasses( model, "birnlex_2", 500 )
                 .toSet();
         Assertions.assertThat( searchResults ).hasSize( 1 ).extracting( sr -> sr.result )
                 .satisfiesOnlyOnce( r -> {
@@ -215,11 +215,11 @@ public class OntologySearchTest extends AbstractOntologyTest {
         SearchIndex index = OntologyIndexer.indexOntology( "OBI_TEST", model, Collections.emptySet(), true );
 
         // positive control
-        Set<SearchIndex.JenaSearchResult> searchResults = index.searchClasses( model, "irradiation" ).toSet();
+        Set<SearchIndex.JenaSearchResult> searchResults = index.searchClasses( model, "irradiation", 500 ).toSet();
         assertFalse( "Should have found something for 'irradiation'", searchResults.isEmpty() );
 
         // this is a "definition" that we want to avoid leading to "acute leukemia".
-        searchResults = index.searchClasses( model, "skin" ).toSet();
+        searchResults = index.searchClasses( model, "skin", 500 ).toSet();
         for ( SearchIndex.JenaSearchResult ontologyTerm : searchResults ) {
             fail( "Should not have found " + ontologyTerm.toString() + " for 'skin'" );
         }
@@ -237,11 +237,11 @@ public class OntologySearchTest extends AbstractOntologyTest {
         SearchIndex index = OntologyIndexer.indexOntology( "NIFAN_TEST2", model, Collections.emptySet(), true );
 
         // positive control
-        Collection<SearchIndex.JenaSearchResult> searchResults = index.searchClasses( model, "eye" ).toSet();
+        Collection<SearchIndex.JenaSearchResult> searchResults = index.searchClasses( model, "eye", 500 ).toSet();
         assertFalse( "Should have found something for 'eye'", searchResults.isEmpty() );
 
         // this is a "definition" that we want to avoid leading to "brain"
-        searchResults = index.searchClasses( model, "muscle" ).toSet();
+        searchResults = index.searchClasses( model, "muscle", 500 ).toSet();
         for ( SearchIndex.JenaSearchResult ontologyTerm : searchResults ) {
             fail( "Should not have found " + ontologyTerm.toString() + " for 'muscle'" );
         }
@@ -266,18 +266,18 @@ public class OntologySearchTest extends AbstractOntologyTest {
 
         assertNotNull( index );
 
-        Collection<SearchIndex.JenaSearchResult> name = index.searchClasses( model, "bedding" ).toSet();
+        Collection<SearchIndex.JenaSearchResult> name = index.searchClasses( model, "bedding", 500 ).toSet();
         assertEquals( 1, name.size() );
 
         // test wildcard. Works with stemmed term, wild card doesn't do anything
-        name = index.searchClasses( model, "bed*" ).toSet();
+        name = index.searchClasses( model, "bed*", 500 ).toSet();
         assertEquals( 2, name.size() );
 
         // stemmed term.
-        name = index.searchClasses( model, "bed" ).toSet();
+        name = index.searchClasses( model, "bed", 500 ).toSet();
         assertEquals( 1, name.size() );
 
-        name = index.searchClasses( model, "beddin*" ).toSet();
+        name = index.searchClasses( model, "beddin*", 500 ).toSet();
         assertEquals( 2, name.size() );
         index.close();
     }

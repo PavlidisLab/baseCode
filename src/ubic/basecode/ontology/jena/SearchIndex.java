@@ -1,22 +1,16 @@
 package ubic.basecode.ontology.jena;
 
-import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import ubic.basecode.ontology.search.OntologySearchException;
-
-import java.util.Objects;
-
-import static ubic.basecode.ontology.jena.JenaUtils.where;
 
 interface SearchIndex extends AutoCloseable {
 
     /**
      * Find RDF nodes matching the given query string.
      */
-    ExtendedIterator<JenaSearchResult> search( OntModel model, String queryString ) throws OntologySearchException;
+    ExtendedIterator<JenaSearchResult> search( OntModel model, String queryString, int maxResults ) throws OntologySearchException;
 
     /**
      * Find classes that match the query string.
@@ -24,11 +18,7 @@ interface SearchIndex extends AutoCloseable {
      * @param model that goes with the index
      * @return Collection of OntologyTerm objects
      */
-    default ExtendedIterator<JenaSearchResult> searchClasses( OntModel model, String queryString ) throws OntologySearchException {
-        return search( model, queryString )
-                .filterKeep( where( r -> r.result.isURIResource() && r.result.canAs( OntClass.class ) ) )
-                .filterKeep( where( Objects::nonNull ) );
-    }
+    ExtendedIterator<JenaSearchResult> searchClasses( OntModel model, String queryString, int maxResults ) throws OntologySearchException;
 
     /**
      * Find individuals that match the query string
@@ -36,31 +26,14 @@ interface SearchIndex extends AutoCloseable {
      * @param model that goes with the index
      * @return Collection of OntologyTerm objects
      */
-    default ExtendedIterator<JenaSearchResult> searchIndividuals( OntModel model, String queryString ) throws OntologySearchException {
-        return search( model, queryString )
-                .filterKeep( where( r -> r.result.isURIResource() && r.result.canAs( Individual.class ) ) )
-                .filterKeep( where( Objects::nonNull ) );
-    }
-
-    /**
-     * Find OntologyIndividuals and OntologyTerms that match the query string. Search with a wildcard is attempted
-     * whenever possible.
-     *
-     * @param model that goes with the index
-     * @return Collection of OntologyResource objects
-     */
-    default ExtendedIterator<JenaSearchResult> searchResources( OntModel model, String queryString ) throws OntologySearchException {
-        return search( model, queryString )
-                .filterKeep( where( o -> o.result.isURIResource() && o.result.isResource() ) )
-                .filterKeep( where( Objects::nonNull ) );
-    }
+    ExtendedIterator<JenaSearchResult> searchIndividuals( OntModel model, String queryString, int maxResults ) throws OntologySearchException;
 
     class JenaSearchResult {
 
-        public final RDFNode result;
+        public final Resource result;
         public final double score;
 
-        JenaSearchResult( RDFNode result, double score ) {
+        JenaSearchResult( Resource result, double score ) {
             this.result = result;
             this.score = score;
         }
