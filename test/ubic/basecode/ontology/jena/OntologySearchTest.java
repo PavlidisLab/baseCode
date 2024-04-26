@@ -67,9 +67,22 @@ public class OntologySearchTest extends AbstractOntologyTest {
         HashSet<OntologyIndexer.IndexableProperty> indexableProperties = new HashSet<>( OntologyIndexer.DEFAULT_INDEXABLE_PROPERTIES );
         indexableProperties.add( new OntologyIndexer.IndexableProperty( RDFS.comment, true ) );
         SearchIndex index = OntologyIndexer.indexOntology( "MGEDTEST", model, indexableProperties, Collections.emptySet(), true );
+
+        // bedding is stemmed to bed
         Set<SearchIndex.JenaSearchResult> results = index.searchClasses( model, "bed", 500 ).toSet();
         Assertions.assertThat( results ).extracting( sr -> sr.result.as( OntClass.class ).getURI() )
                 .containsExactly( "http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Bedding" );
+
+        // plural query
+        results = index.searchClasses( model, "beddings", 500 ).toSet();
+        Assertions.assertThat( results ).extracting( sr -> sr.result.as( OntClass.class ).getURI() )
+                .containsExactly( "http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Bedding" );
+
+        // plural query
+        results = index.searchClasses( model, "beds", 500 ).toSet();
+        Assertions.assertThat( results ).extracting( sr -> sr.result.as( OntClass.class ).getURI() )
+                .containsExactly( "http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Bedding" );
+
         index.close();
     }
 

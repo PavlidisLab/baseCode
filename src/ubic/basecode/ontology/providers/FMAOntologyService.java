@@ -1,8 +1,8 @@
 /*
  * The Gemma21 project
- * 
+ *
  * Copyright (c) 2007-2019 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,27 +19,16 @@
 
 package ubic.basecode.ontology.providers;
 
-import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
-import ubic.basecode.util.Configuration;
-
 /**
- * Holds a copy of the FMA Ontology on disk. This gets loaded on startup.
- * 
+ * <a href="https://obofoundry.org/ontology/fma.html">Foundational Model of Anatomy Ontology (subset)</a>
+ *
  * @author klc
- * 
+ * @deprecated this ontology is inactive, use <a href="https://obofoundry.org/ontology/uberon.html">UBERON</a> instead
  */
-public class FMAOntologyService extends AbstractOntologyMemoryBackedService {
+@Deprecated
+public class FMAOntologyService extends AbstractBaseCodeOntologyService {
 
-    private static final String FMA_ONTOLOGY_URL = "url.fmaOntology";
-
-    @Override
-    protected String getOntologyName() {
-        return "fmaOntology";
+    public FMAOntologyService() {
+        super( "Foundational Model of Anatomy Ontology (subset)", "fmaOntology" );
     }
-
-    @Override
-    protected String getOntologyUrl() {
-        return Configuration.getString( FMA_ONTOLOGY_URL );
-    }
-
 }

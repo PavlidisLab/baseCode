@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2010 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,25 +19,14 @@
 
 package ubic.basecode.ontology.providers;
 
-import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
-import ubic.basecode.util.Configuration;
-
 /**
+ * <a href="https://obofoundry.org/ontology/emapa.html">Mouse Developmental Anatomy Ontology</a>
+ *
  * @author paul
- * 
  */
-public class MouseDevelopmentOntologyService extends AbstractOntologyMemoryBackedService {
+public class MouseDevelopmentOntologyService extends AbstractBaseCodeOntologyService {
 
-    private static final String ONTOLOGY_URL = "url.mouseDevelOntology";
-
-    @Override
-    protected String getOntologyName() {
-        return "mouseDevelOntology";
+    public MouseDevelopmentOntologyService() {
+        super( "Mouse Development Anatomy Ontology", "mouseDevelOntology" );
     }
-
-    @Override
-    protected String getOntologyUrl() {
-        return Configuration.getString( ONTOLOGY_URL );
-    }
-
 }

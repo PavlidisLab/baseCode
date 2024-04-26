@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2013 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,27 +19,14 @@
 
 package ubic.basecode.ontology.providers;
 
-import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
-import ubic.basecode.util.Configuration;
-
 /**
- * Support for the Sequence Ontology
- * 
+ * <a href="https://obofoundry.org/ontology/so.html">Sequence types and features ontology</a>
+ *
  * @author Paul
- * 
  */
-public class SequenceOntologyService extends AbstractOntologyMemoryBackedService {
+public class SequenceOntologyService extends AbstractBaseCodeOntologyService {
 
-    private static final String SO_ONTOLOGY_URL = "url.seqOntology";
-
-    @Override
-    protected String getOntologyName() {
-        return "seqOntology";
+    public SequenceOntologyService() {
+        super( "Sequence types and features ontology", "seqOntology" );
     }
-
-    @Override
-    protected String getOntologyUrl() {
-        return Configuration.getString( SO_ONTOLOGY_URL );
-    }
-
 }

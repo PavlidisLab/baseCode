@@ -52,18 +52,18 @@ class OntologyLoader {
     private static final String OLD_CACHE_SUFFIX = ".old";
     private static final String TMP_CACHE_SUFFIX = ".tmp";
 
-    public static OntModel loadMemoryModel( InputStream is, String url ) throws JenaException {
+    public static OntModel loadMemoryModel( InputStream is, String url ) throws JenaException, IOException {
         return loadMemoryModel( is, url, true );
     }
 
     /**
      * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
      */
-    public static OntModel loadMemoryModel( InputStream is, String url, boolean processImports ) throws JenaException {
+    public static OntModel loadMemoryModel( InputStream is, String url, boolean processImports ) throws JenaException, IOException {
         return loadMemoryModel( is, url, processImports, OntModelSpec.OWL_MEM_TRANS_INF );
     }
 
-    public static OntModel loadMemoryModel( InputStream is, String url, boolean processImports, OntModelSpec spec ) throws JenaException {
+    public static OntModel loadMemoryModel( InputStream is, String url, boolean processImports, OntModelSpec spec ) throws JenaException, IOException {
         OntModel model = getMemoryModel( url, processImports, spec );
         model.read( is, null );
         return model;

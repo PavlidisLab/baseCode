@@ -20,12 +20,14 @@
 package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.*;
-import com.hp.hpl.jena.rdf.model.NodeIterator;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.rdfxml.xmlinput.ARPErrorNumbers;
 import com.hp.hpl.jena.rdfxml.xmlinput.ParseException;
+import com.hp.hpl.jena.reasoner.ReasonerFactory;
+import com.hp.hpl.jena.reasoner.rulesys.OWLFBRuleReasonerFactory;
+import com.hp.hpl.jena.reasoner.rulesys.OWLMicroReasonerFactory;
+import com.hp.hpl.jena.reasoner.rulesys.OWLMiniReasonerFactory;
+import com.hp.hpl.jena.reasoner.transitiveReasoner.TransitiveReasonerFactory;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.DC_11;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -40,7 +42,6 @@ import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.providers.OntologyService;
 import ubic.basecode.ontology.search.OntologySearchException;
 import ubic.basecode.ontology.search.OntologySearchResult;
-import ubic.basecode.util.Configuration;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -472,13 +473,8 @@ public abstract class AbstractOntologyService implements OntologyService {
 
     @Override
     public boolean isEnabled() {
-        // quick path: just lookup the configuration
-        String configParameter = "load." + getOntologyName();
-        if ( Boolean.TRUE.equals( Configuration.getBoolean( configParameter ) ) ) {
-            return true;
-        }
         // could have forced, without setting config
-        return getState().isPresent();
+        return isOntologyEnabled() || isOntologyLoaded() || isInitializationThreadAlive();
     }
 
     @Override
@@ -549,16 +545,9 @@ public abstract class AbstractOntologyService implements OntologyService {
     protected abstract String getOntologyUrl();
 
     /**
-     * Delegates the call as to load the model into memory or leave it on disk. Simply delegates to either
-     * OntologyLoader.loadMemoryModel( url ); OR OntologyLoader.loadPersistentModel( url, spec );
+     * Indicate if this ontology is enabled.
      */
-    protected abstract OntologyModel loadModel( boolean processImports, LanguageLevel languageLevel, InferenceMode inferenceMode ) throws IOException;
-
-
-    /**
-     * Load a model from a given input stream.
-     */
-    protected abstract OntologyModel loadModelFromStream( InputStream stream, boolean processImports, LanguageLevel languageLevel, InferenceMode inferenceMode ) throws IOException;
+    protected abstract boolean isOntologyEnabled();
 
     /**
      * A name for caching this ontology, or null to disable caching.
@@ -566,8 +555,59 @@ public abstract class AbstractOntologyService implements OntologyService {
      * Note that if null is returned, the ontology will not have full-text search capabilities.
      */
     @Nullable
-    protected String getCacheName() {
-        return getOntologyName();
+    protected abstract String getCacheName();
+
+    /**
+     * Delegates the call as to load the model into memory or leave it on disk. Simply delegates to either
+     * OntologyLoader.loadMemoryModel( url ); OR OntologyLoader.loadPersistentModel( url, spec );
+     */
+    protected OntologyModel loadModel( boolean processImports, LanguageLevel languageLevel, InferenceMode inferenceMode ) throws IOException {
+        return new OntologyModelImpl( OntologyLoader.loadMemoryModel( this.getOntologyUrl(), this.getCacheName(), processImports, this.getSpec( languageLevel, inferenceMode ) ) );
+    }
+
+    /**
+     * Load a model from a given input stream.
+     */
+    protected OntologyModel loadModelFromStream( InputStream is, boolean processImports, LanguageLevel languageLevel, InferenceMode inferenceMode ) throws IOException {
+        return new OntologyModelImpl( OntologyLoader.loadMemoryModel( is, this.getOntologyUrl(), processImports, this.getSpec( languageLevel, inferenceMode ) ) );
+    }
+
+    private OntModelSpec getSpec( LanguageLevel languageLevel, InferenceMode inferenceMode ) {
+        String profile;
+        switch ( languageLevel ) {
+            case FULL:
+                profile = ProfileRegistry.OWL_LANG;
+                break;
+            case DL:
+                profile = ProfileRegistry.OWL_DL_LANG;
+                break;
+            case LITE:
+                profile = ProfileRegistry.OWL_LITE_LANG;
+                break;
+            default:
+                throw new UnsupportedOperationException( String.format( "Unsupported OWL language level %s.", languageLevel ) );
+        }
+        ReasonerFactory reasonerFactory;
+        switch ( inferenceMode ) {
+            case FULL:
+                reasonerFactory = OWLFBRuleReasonerFactory.theInstance();
+                break;
+            case MINI:
+                reasonerFactory = OWLMiniReasonerFactory.theInstance();
+                break;
+            case MICRO:
+                reasonerFactory = OWLMicroReasonerFactory.theInstance();
+                break;
+            case TRANSITIVE:
+                reasonerFactory = TransitiveReasonerFactory.theInstance();
+                break;
+            case NONE:
+                reasonerFactory = null;
+                break;
+            default:
+                throw new UnsupportedOperationException( String.format( "Unsupported inference level %s.", inferenceMode ) );
+        }
+        return new OntModelSpec( ModelFactory.createMemModelMaker(), null, reasonerFactory, profile );
     }
 
     @Override

@@ -1,8 +1,8 @@
 /*
  * The Gemma21 project
- * 
+ *
  * Copyright (c) 2007-2019 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,26 +18,16 @@
  */
 package ubic.basecode.ontology.providers;
 
-import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
-import ubic.basecode.util.Configuration;
-
 /**
  * Holds a copy of the Disease Ontology.
- * 
+ *
  * @author klc
+ * @deprecated use <a href="https://obofoundry.org/ontology/mondo.html">MONDO</a> instead
  */
-public class DiseaseOntologyService extends AbstractOntologyMemoryBackedService {
+@Deprecated
+public class DiseaseOntologyService extends AbstractBaseCodeOntologyService {
 
-    private static final String DISEASE_ONTOLOGY_URL = "url.diseaseOntology";
-
-    @Override
-    protected String getOntologyName() {
-        return "diseaseOntology";
+    public DiseaseOntologyService() {
+        super( "Disease Ontology", "diseaseOntology" );
     }
-
-    @Override
-    protected String getOntologyUrl() {
-        return Configuration.getString( DISEASE_ONTOLOGY_URL );
-    }
-
 }

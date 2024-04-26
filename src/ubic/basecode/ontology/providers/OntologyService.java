@@ -117,9 +117,9 @@ public interface OntologyService {
      * <p>
      * Search is enabled by default.
      *
-     * @see #findTerm(String, boolean)
-     * @see #findIndividuals(String, boolean)
-     * @see #findResources(String, boolean)
+     * @see #findTerm(String, int, boolean)
+     * @see #findIndividuals(String, int, boolean)
+     * @see #findResources(String, int, boolean)
      */
     boolean isSearchEnabled();
 
@@ -301,7 +301,6 @@ public interface OntologyService {
      * @return a set of child terms
      */
     Set<OntologyTerm> getChildren( Collection<OntologyTerm> terms, boolean direct, boolean includeAdditionalProperties, boolean keepObsoletes );
-
 
     /**
      * Check if this ontology is enabled.

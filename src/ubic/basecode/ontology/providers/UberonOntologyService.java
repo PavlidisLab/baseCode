@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2015 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,27 +19,14 @@
 
 package ubic.basecode.ontology.providers;
 
-import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
-import ubic.basecode.util.Configuration;
-
 /**
- * Uberon
- * 
+ * <a href="https://obofoundry.org/ontology/uberon.html">Uberon multi-species anatomy ontology</a>
+ *
  * @author paul
- * 
  */
-public class UberonOntologyService extends AbstractOntologyMemoryBackedService {
+public class UberonOntologyService extends AbstractBaseCodeOntologyService {
 
-    private static final String ONTOLOGY_URL = "url.uberonOntology";
-
-    @Override
-    protected String getOntologyName() {
-        return "uberonOntology";
+    public UberonOntologyService() {
+        super( "Uberon multi-species anatomy ontology", "uberonOntology" );
     }
-
-    @Override
-    protected String getOntologyUrl() {
-        return Configuration.getString( ONTOLOGY_URL );
-    }
-
 }
