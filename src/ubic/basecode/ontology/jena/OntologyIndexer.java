@@ -18,12 +18,10 @@
  */
 package ubic.basecode.ontology.jena;
 
+import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.shared.JenaException;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.util.iterator.WrappedIterator;
@@ -35,6 +33,7 @@ import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.document.NumericField;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -221,8 +220,46 @@ class OntologyIndexer {
                     while ( listStatements.hasNext() ) {
                         Statement s = listStatements.next();
                         String field = s.getPredicate().getURI();
-                        String value = JenaUtils.asString( s.getObject() );
-                        doc.add( new Field( field, value, Field.Store.NO, indexablePropertiesByField.get( field ).isAnalyzed() ? Field.Index.ANALYZED : Field.Index.NOT_ANALYZED ) );
+                        Fieldable f;
+                        if ( s.getObject().isLiteral() ) {
+                            Literal l = s.getObject().asLiteral();
+                            if ( l.getValue() instanceof String ) {
+                                f = new Field( field, l.getString(), Field.Store.NO, indexablePropertiesByField.get( field ).isAnalyzed() ? Field.Index.ANALYZED : Field.Index.NOT_ANALYZED );
+                            } else if ( l.getValue() instanceof Number ) {
+                                NumericField nf = new NumericField( field );
+                                if ( l.getValue() instanceof Integer ) {
+                                    nf.setIntValue( s.getInt() );
+                                } else if ( l.getValue() instanceof Long ) {
+                                    nf.setLongValue( s.getLong() );
+                                } else if ( l.getValue() instanceof Float ) {
+                                    nf.setFloatValue( s.getFloat() );
+                                } else if ( l.getValue() instanceof Double ) {
+                                    nf.setDoubleValue( s.getDouble() );
+                                } else {
+                                    log.warn( "Skipping numeric literal of unsupported type: {}", l );
+                                    continue;
+                                }
+                                f = nf;
+                            } else if ( l.getValue() instanceof XSDDateTime ) {
+                                f = new NumericField( field )
+                                        .setLongValue( ( ( XSDDateTime ) l.getValue() ).asCalendar().getTime().getTime() );
+                            } else if ( l.getValue() instanceof Boolean ) {
+                                f = new NumericField( field ).setIntValue( Boolean.TRUE.equals( l.getValue() ) ? 1 : 0 );
+                            } else {
+                                log.warn( "Skipping literal of unsupported type: {}", l );
+                                continue;
+                            }
+                        } else if ( s.getObject().isURIResource() ) {
+                            // index the URI
+                            f = new Field( field, s.getObject().asResource().getURI(), Field.Store.NO, Field.Index.NOT_ANALYZED );
+                        } else {
+                            // could be a blank node
+                            continue;
+                        }
+                        if ( isIndividual ) {
+                            System.out.println( doc );
+                        }
+                        doc.add( f );
                     }
                 }
                 indexWriter.addDocument( doc );
@@ -278,7 +315,7 @@ class OntologyIndexer {
                 Query query = new MultiFieldQueryParser( Version.LUCENE_36, searchableFields, analyzer ).parse( queryString );
                 // in general, results are found in both regular and std index, so we divide by 2 the initial capacity
                 // we also have to double the number of hits to account for duplicates
-                TopDocs hits = new IndexSearcher( index ).search( query, filter, maxResults * 3 );
+                TopDocs hits = new IndexSearcher( index ).search( query, filter, maxResults * 2 );
                 Set<String> seenIds = new HashSet<>( hits.totalHits / 2 );
                 List<JenaSearchResult> resources = new ArrayList<>( hits.totalHits / 2 );
                 for ( int i = 0; i < hits.scoreDocs.length; i++ ) {

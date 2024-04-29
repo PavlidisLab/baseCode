@@ -244,7 +244,6 @@ class JenaUtils {
                     while ( it.hasNext() ) {
                         OntProperty sp = it.next();
                         allProps.add( sp );
-                        log.info( "Inferred {} from {}", sp, property );
                     }
                 }
             }
