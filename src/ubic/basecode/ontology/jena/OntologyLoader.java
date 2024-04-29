@@ -129,7 +129,7 @@ class OntologyLoader {
                         // the ontology.
                         FileUtils.createParentDirectories( oldFile );
                         Files.copy( f.toPath(), oldFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
-                        log.info( "Load model from disk took {} ms", timer.getTime() );
+                        log.debug( "Load model from disk took {} ms", timer.getTime() );
                     }
                 } else {
                     throw new RuntimeException(
@@ -138,7 +138,7 @@ class OntologyLoader {
             } else if ( tempFile.exists() ) {
                 // Model was successfully loaded into memory from URL with given cacheName
                 // Save cache to disk (rename temp file)
-                log.info( "Caching ontology to disk: {} under {}", cacheName, f.getAbsolutePath() );
+                log.debug( "Caching ontology to disk: {} under {}", cacheName, f.getAbsolutePath() );
                 try {
                     // Need to compare previous to current so instead of overwriting we'll move the old file
                     if ( f.exists() ) {
@@ -154,7 +154,7 @@ class OntologyLoader {
             }
         }
 
-        log.info( "Loading ontology model for {} took {} ms", url, timer.getTime() );
+        log.debug( "Loading ontology model for {} took {} ms", url, timer.getTime() );
 
         return model;
     }

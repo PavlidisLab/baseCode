@@ -163,7 +163,7 @@ class OntologyIndexer {
             log.warn( "Index not found, or there was an error, re-indexing {}...", name );
             return index( name, model, indexableProperties, excludedFromStemming );
         }
-        log.info( "A valid index for {} already exists, using", name );
+        log.debug( "A valid index for {} already exists, using", name );
         return index;
     }
 
@@ -191,7 +191,7 @@ class OntologyIndexer {
     private static Directory index( String name, OntModel model, Analyzer analyzer, Path indexDir, Collection<IndexableProperty> indexableProperties ) throws IOException {
         StopWatch timer = StopWatch.createStarted();
         FSDirectory dir = FSDirectory.open( indexDir.toFile() );
-        log.info( "Indexing {} to: {}...", name, indexDir );
+        log.debug( "Indexing {} to: {}...", name, indexDir );
         IndexWriterConfig config = new IndexWriterConfig( Version.LUCENE_36, analyzer );
         try ( IndexWriter indexWriter = new IndexWriter( dir, config ) ) {
             indexWriter.deleteAll(); // start with clean slate.
@@ -228,7 +228,7 @@ class OntologyIndexer {
                 indexWriter.addDocument( doc );
             }
             indexWriter.commit();
-            log.info( "Done indexing {} subjects of {} in {} s.", indexWriter.numDocs(), name, String.format( "%.2f", timer.getTime() / 1000.0 ) );
+            log.debug( "Done indexing {} subjects of {} in {} s.", indexWriter.numDocs(), name, String.format( "%.2f", timer.getTime() / 1000.0 ) );
         }
         return dir;
     }
