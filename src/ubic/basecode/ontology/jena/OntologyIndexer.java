@@ -69,7 +69,7 @@ class OntologyIndexer {
     private static final Logger log = LoggerFactory.getLogger( OntologyIndexer.class );
 
     /**
-     * THose are build-in fields that are always indexed.
+     * Those are build-in fields that are always indexed.
      */
     private static final String
             ID_FIELD = "_ID",
@@ -107,7 +107,7 @@ class OntologyIndexer {
         DEFAULT_INDEXABLE_PROPERTIES.add( new IndexableProperty( OBO.hasBroadSynonym, true ) );
         DEFAULT_INDEXABLE_PROPERTIES.add( new IndexableProperty( OBO.hasNarrowSynonym, true ) );
         DEFAULT_INDEXABLE_PROPERTIES.add( new IndexableProperty( OBO.hasRelatedSynonym, true ) );
-        DEFAULT_INDEXABLE_PROPERTIES.add( new IndexableProperty( OBO.alternativeLabel, true ) );
+        DEFAULT_INDEXABLE_PROPERTIES.add( new IndexableProperty( IAO.alternativeLabel, true ) );
     }
 
     /**
@@ -125,7 +125,7 @@ class OntologyIndexer {
      */
     @Nullable
     public static SearchIndex getSubjectIndex( String name, Collection<IndexableProperty> indexableProperties, Set<String> excludedFromStemming ) {
-        log.debug( "Loading index: {}", name );
+        log.debug( "Loading index for {}...", name );
         try {
             // we do not put this in the try-with-open because we want these to *stay* open
             FSDirectory directory = FSDirectory.open( getIndexPath( name ).toFile() );
@@ -136,10 +136,9 @@ class OntologyIndexer {
             if ( !IndexReader.indexExists( directoryStd ) ) {
                 return null;
             }
-            log.info( "Loading index at {} and {}", directory, directoryStd );
             return openIndex( directory, directoryStd, indexableProperties, excludedFromStemming );
         } catch ( IOException e ) {
-            log.warn( "Index for {} could not be read: {}", name, e.getMessage(), e );
+            log.warn( "Index for {} could not be opened.", name, e );
             return null;
         }
     }

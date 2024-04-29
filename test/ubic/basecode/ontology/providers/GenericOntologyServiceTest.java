@@ -19,6 +19,7 @@
 
 package ubic.basecode.ontology.providers;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import ubic.basecode.ontology.AbstractOntologyTest;
 import ubic.basecode.ontology.model.OntologyTerm;
@@ -80,10 +81,10 @@ public class GenericOntologyServiceTest extends AbstractOntologyTest {
                 new GenericOntologyService( "foo", resource.toString(), false, false )
                         .initialize( true, true );
             } );
-            assertTrue( e.getMessage().matches( "No cache directory is set for foo \\[file:.+], cannot force indexing." ) );
+            Assertions.assertThat( e )
+                    .hasMessageMatching( "No cache directory is set for foo.+, cannot force indexing\\." );
         } finally {
-            Configuration.setString( "ontology.cache.dir", prevCacheDir );
-            Configuration.setString( "ontology.index.dir", prevIndexDir );
+            Configuration.reset();
         }
     }
 }

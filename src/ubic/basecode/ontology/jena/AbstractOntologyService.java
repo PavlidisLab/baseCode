@@ -20,7 +20,10 @@
 package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.*;
-import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdfxml.xmlinput.ARPErrorNumbers;
 import com.hp.hpl.jena.rdfxml.xmlinput.ParseException;
 import com.hp.hpl.jena.reasoner.ReasonerFactory;
@@ -67,12 +70,31 @@ public abstract class AbstractOntologyService implements OntologyService {
     /**
      * Properties through which propagation is allowed for {@link #getParents(Collection, boolean, boolean)}}
      */
-    private static final Set<String> DEFAULT_ADDITIONAL_PROPERTIES;
+    private static final Set<Property> DEFAULT_ADDITIONAL_PROPERTIES;
 
     static {
         DEFAULT_ADDITIONAL_PROPERTIES = new HashSet<>();
-        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.partOf.getURI() );
-        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.properPartOf.getURI() );
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.partOf );
+        // all those are sub-properties of partOf, but some ontologies might not have them
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.activeIngredientIn );
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.boundingLayerOf );
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.branchingPartOf );
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.determinedBy );
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.ends );
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.isSubsequenceOf );
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.isEndSequenceOf );
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.isStartSequenceOf );
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.lumenOf );
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.luminalSpaceOf );
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.mainStemOf );
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.memberOf );
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.occurrentPartOf );
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.skeletonOf );
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.starts );
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.subclusterOf );
+        // used by some older ontologies
+        //noinspection deprecation
+        DEFAULT_ADDITIONAL_PROPERTIES.add( RO.properPartOf );
     }
 
     /**
@@ -87,7 +109,7 @@ public abstract class AbstractOntologyService implements OntologyService {
     private boolean processImports = true;
     private boolean searchEnabled = true;
     private Set<String> excludedWordsFromStemming = Collections.emptySet();
-    private Set<String> additionalPropertyUris = DEFAULT_ADDITIONAL_PROPERTIES;
+    private Set<String> additionalPropertyUris = DEFAULT_ADDITIONAL_PROPERTIES.stream().map( Property::getURI ).collect( Collectors.toSet() );
 
     @Override
     public String getName() {
@@ -183,8 +205,6 @@ public abstract class AbstractOntologyService implements OntologyService {
         String ontologyUrl = getOntologyUrl();
         String ontologyName = getOntologyName();
         String cacheName = getCacheName();
-        Set<Property> additionalProperties = this.additionalPropertyUris.stream()
-                .map( ResourceFactory::createProperty ).collect( Collectors.toSet() );
         LanguageLevel languageLevel = this.languageLevel;
         InferenceMode inferenceMode = this.inferenceMode;
         boolean processImports = this.processImports;
@@ -242,9 +262,9 @@ public abstract class AbstractOntologyService implements OntologyService {
             return;
 
         // compute additional restrictions
-        Set<Restriction> additionalRestrictions = model.listRestrictions()
-                .filterKeep( new RestrictionWithOnPropertyFilter( additionalProperties ) )
-                .toSet();
+        Set<Property> additionalProperties = additionalPropertyUris.stream().map( model::getProperty ).collect( Collectors.toSet() );
+        Set<Restriction> additionalRestrictions = JenaUtils.listRestrictionsOnProperties( model, additionalProperties, true ).toSet();
+
 
         // indexing is lengthy, don't bother if we're interrupted
         if ( Thread.currentThread().isInterrupted() )

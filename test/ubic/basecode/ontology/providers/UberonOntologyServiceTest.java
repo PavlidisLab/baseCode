@@ -57,7 +57,7 @@ public class UberonOntologyServiceTest extends AbstractOntologyTest {
         OntologyTerm brain = uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0000955" );
         OntologyTerm liver = uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0002107" );
         Collection<OntologyTerm> children = uberon.getParents( Arrays.asList( brain, liver ), false, true );
-        assertEquals( 30, children.size() );
+        assertEquals( 41, children.size() );
         assertFalse( children.contains( uberon.getTerm( OWL2.Nothing.getURI() ) ) );
     }
 
@@ -66,7 +66,7 @@ public class UberonOntologyServiceTest extends AbstractOntologyTest {
         OntologyTerm t = uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0000955" );
         assertNotNull( t );
         Collection<OntologyTerm> parents = t.getParents( true );
-        assertEquals( 3, parents.size() );
+        assertEquals( 4, parents.size() );
         // does not contain itself
         assertFalse( parents.contains( t ) );
         // via subclass
@@ -81,9 +81,9 @@ public class UberonOntologyServiceTest extends AbstractOntologyTest {
     public void testGetChildrenHasPart() {
         OntologyTerm t = uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0000955" );
         assertNotNull( t );
-        assertEquals( 76, t.getChildren( true ).size() );
+        assertEquals( 81, t.getChildren( true ).size() );
         Collection<OntologyTerm> children = t.getChildren( false );
-        assertEquals( 1496, children.size() );
+        assertEquals( 1995, children.size() );
         // via subclass of, insect adult brain
         assertTrue( children.contains( uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_6003624" ) ) );
         // via part of, nucleus of brain
@@ -97,22 +97,22 @@ public class UberonOntologyServiceTest extends AbstractOntologyTest {
         OntologyTerm brain = uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0000955" );
         OntologyTerm liver = uberon.getTerm( "http://purl.obolibrary.org/obo/UBERON_0002107" );
         Collection<OntologyTerm> children = uberon.getChildren( Arrays.asList( brain, liver ), false, true );
-        assertEquals( 1562, children.size() );
+        assertEquals( 2077, children.size() );
     }
 
     @Test
     public void testGetChildrenFromMultipleTermsWithSearch() throws OntologySearchException {
         Collection<OntologySearchResult<OntologyTerm>> terms = uberon.findTerm( "brain", 500 );
         Collection<OntologyTerm> matches = uberon.getChildren( terms.stream().map( OntologySearchResult::getResult ).collect( Collectors.toSet() ), false, true );
-        assertEquals( 1870, matches.size() );
+        assertEquals( 2684, matches.size() );
     }
 
     @Test
     public void testFindTerm() throws OntologySearchException {
-        assertEquals( 123, uberon.findTerm( "brain", 500 ).size() );
-        assertEquals( 128, uberon.findTerm( "brain", 500, true ).size() );
+        assertEquals( 98, uberon.findTerm( "brain", 500 ).size() );
+        assertEquals( 103, uberon.findTerm( "brain", 500, true ).size() );
         OntologySearchResult<OntologyTerm> firstResult = uberon.findTerm( "brain", 500 ).iterator().next();
         assertNotNull( firstResult );
-        assertEquals( 2.8577, firstResult.getScore(), 0.0001 );
+        assertEquals( 1.5367, firstResult.getScore(), 0.0001 );
     }
 }

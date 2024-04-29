@@ -1,9 +1,6 @@
 package ubic.basecode.ontology.jena;
 
-import com.hp.hpl.jena.ontology.ConversionException;
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.Restriction;
+import com.hp.hpl.jena.ontology.*;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.util.iterator.Filter;
@@ -193,7 +190,6 @@ class JenaUtils {
         }
     }
 
-
     /**
      * Use to pretty-print a RDFNode
      */
@@ -231,5 +227,29 @@ class JenaUtils {
             log.warn( "Conversion of {} to {} failed.", resource, clazz.getName() );
             return Optional.empty();
         }
+    }
+
+    /**
+     * List all restrictions in the given model on any of the given properties.
+     */
+    public static ExtendedIterator<Restriction> listRestrictionsOnProperties( OntModel model, Set<? extends Property> props, boolean includeSubProperties ) {
+        if ( includeSubProperties ) {
+            Set<Property> allProps = new HashSet<>( props );
+            for ( Property p : props ) {
+                Property property = p.inModel( model );
+                // include sub-properties for inference
+                if ( property.canAs( OntProperty.class ) ) {
+                    OntProperty op = property.as( OntProperty.class );
+                    ExtendedIterator<? extends OntProperty> it = op.listSubProperties( false );
+                    while ( it.hasNext() ) {
+                        OntProperty sp = it.next();
+                        allProps.add( sp );
+                        log.info( "Inferred {} from {}", sp, property );
+                    }
+                }
+            }
+            props = allProps;
+        }
+        return model.listRestrictions().filterKeep( new RestrictionWithOnPropertyFilter( props ) );
     }
 }
