@@ -18,6 +18,7 @@
  */
 package ubic.basecode.ontology.jena;
 
+import com.hp.hpl.jena.datatypes.DatatypeFormatException;
 import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
@@ -223,28 +224,35 @@ class OntologyIndexer {
                         Fieldable f;
                         if ( s.getObject().isLiteral() ) {
                             Literal l = s.getObject().asLiteral();
-                            if ( l.getValue() instanceof String ) {
-                                f = new Field( field, l.getString(), Field.Store.NO, indexablePropertiesByField.get( field ).isAnalyzed() ? Field.Index.ANALYZED : Field.Index.NOT_ANALYZED );
-                            } else if ( l.getValue() instanceof Number ) {
+                            Object v;
+                            try {
+                                v = l.getValue();
+                            } catch ( DatatypeFormatException e ) {
+                                log.warn( "Invalid datatype for literal: {}", l, e );
+                                continue;
+                            }
+                            if ( v instanceof String ) {
+                                f = new Field( field, ( String ) v, Field.Store.NO, indexablePropertiesByField.get( field ).isAnalyzed() ? Field.Index.ANALYZED : Field.Index.NOT_ANALYZED );
+                            } else if ( v instanceof Number ) {
                                 NumericField nf = new NumericField( field );
-                                if ( l.getValue() instanceof Integer ) {
-                                    nf.setIntValue( s.getInt() );
-                                } else if ( l.getValue() instanceof Long ) {
-                                    nf.setLongValue( s.getLong() );
-                                } else if ( l.getValue() instanceof Float ) {
-                                    nf.setFloatValue( s.getFloat() );
-                                } else if ( l.getValue() instanceof Double ) {
-                                    nf.setDoubleValue( s.getDouble() );
+                                if ( v instanceof Integer ) {
+                                    nf.setIntValue( ( Integer ) v );
+                                } else if ( v instanceof Long ) {
+                                    nf.setLongValue( ( Long ) v );
+                                } else if ( v instanceof Float ) {
+                                    nf.setFloatValue( ( Float ) v );
+                                } else if ( v instanceof Double ) {
+                                    nf.setDoubleValue( ( Double ) v );
                                 } else {
                                     log.warn( "Skipping numeric literal of unsupported type: {}", l );
                                     continue;
                                 }
                                 f = nf;
-                            } else if ( l.getValue() instanceof XSDDateTime ) {
+                            } else if ( v instanceof XSDDateTime ) {
                                 f = new NumericField( field )
-                                        .setLongValue( ( ( XSDDateTime ) l.getValue() ).asCalendar().getTime().getTime() );
-                            } else if ( l.getValue() instanceof Boolean ) {
-                                f = new NumericField( field ).setIntValue( Boolean.TRUE.equals( l.getValue() ) ? 1 : 0 );
+                                        .setLongValue( ( ( XSDDateTime ) v ).asCalendar().getTime().getTime() );
+                            } else if ( v instanceof Boolean ) {
+                                f = new NumericField( field ).setIntValue( Boolean.TRUE.equals( v ) ? 1 : 0 );
                             } else {
                                 log.warn( "Skipping literal of unsupported type: {}", l );
                                 continue;
