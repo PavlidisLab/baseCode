@@ -39,9 +39,6 @@ abstract class AbstractOntologyResource implements OntologyResource {
     private String _label;
     private boolean _isLabelNull = false;
 
-    private String _label;
-    private boolean _isLabelNull = false;
-
     protected AbstractOntologyResource( OntResource resource ) {
         this.res = resource;
     }
