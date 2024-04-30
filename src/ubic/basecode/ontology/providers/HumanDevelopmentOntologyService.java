@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2010 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,25 +19,16 @@
 
 package ubic.basecode.ontology.providers;
 
-import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
-import ubic.basecode.util.Configuration;
-
 /**
+ * <a href="https://www.ebi.ac.uk/ols4/ontologies/ehdaa2">Human developmental anatomy, abstract</a>
+ *
  * @author paul
- * 
+ * @deprecated this ontology was last updated in unmaintained since 2013
  */
-public class HumanDevelopmentOntologyService extends AbstractOntologyMemoryBackedService {
+@Deprecated
+public class HumanDevelopmentOntologyService extends AbstractBaseCodeOntologyService {
 
-    private static final String ONTOLOGY_URL = "url.humanDevelOntology";
-
-    @Override
-    protected String getOntologyName() {
-        return "humanDevelOntology";
+    public HumanDevelopmentOntologyService() {
+        super( "Human Development Ontology", "humanDevelOntology" );
     }
-
-    @Override
-    protected String getOntologyUrl() {
-        return Configuration.getString( ONTOLOGY_URL );
-    }
-
 }

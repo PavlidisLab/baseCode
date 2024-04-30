@@ -25,10 +25,7 @@ import org.slf4j.LoggerFactory;
 import ubic.basecode.ontology.model.OntologyResource;
 
 import javax.annotation.Nullable;
-import java.util.Comparator;
 import java.util.Objects;
-
-import static java.util.Comparator.*;
 
 /**
  * @author pavlidis
@@ -37,22 +34,13 @@ abstract class AbstractOntologyResource implements OntologyResource {
 
     protected static final Logger log = LoggerFactory.getLogger( AbstractOntologyResource.class );
 
-    private static final Comparator<OntologyResource> comparator = Comparator
-            .comparing( OntologyResource::getScore, nullsLast( reverseOrder() ) )
-            .thenComparing( OntologyResource::getUri, nullsLast( naturalOrder() ) );
-
     private final OntResource res;
-    @Nullable
-    private final Double score;
+
+    private String _label;
+    private boolean _isLabelNull = false;
 
     protected AbstractOntologyResource( OntResource resource ) {
         this.res = resource;
-        this.score = null;
-    }
-
-    public AbstractOntologyResource( OntResource resource, double score ) {
-        this.res = resource;
-        this.score = score;
     }
 
     @Override
@@ -67,10 +55,15 @@ abstract class AbstractOntologyResource implements OntologyResource {
 
     @Override
     public String getLabel() {
+        if ( _label != null || _isLabelNull ) {
+            return _label;
+        }
         String label = res.getLabel( "EN" );
         if ( label == null ) {
             label = res.getLabel( null );
         }
+        _label = label;
+        _isLabelNull = label == null;
         return label;
     }
 
@@ -90,38 +83,27 @@ abstract class AbstractOntologyResource implements OntologyResource {
     }
 
     @Override
-    @Nullable
-    public Double getScore() {
-        return score;
-    }
-
-    @Override
     public <T> T unwrap( Class<T> clazz ) throws ClassCastException {
         return clazz.cast( res );
     }
 
-    @Override
-    public int compareTo( OntologyResource other ) {
-        return Objects.compare( this, other, comparator );
-    }
-
-    @Override
     public boolean equals( Object obj ) {
         if ( this == obj ) return true;
         if ( obj == null ) return false;
-        if ( getClass() != obj.getClass() ) return false;
+        if ( !( obj instanceof OntologyResource ) ) {
+            return false;
+        }
         final OntologyResource other = ( OntologyResource ) obj;
-        if ( getLabel() == null ) {
-            if ( other.getLabel() != null ) return false;
-        } else if ( !getLabel().equals( other.getLabel() ) ) return false;
-        if ( getUri() == null ) {
-            return other.getUri() == null;
-        } else return getUri().equals( other.getUri() );
+        if ( getUri() == null && other.getUri() == null ) {
+            return Objects.equals( getLabel(), other.getLabel() );
+        } else {
+            return Objects.equals( getUri(), other.getUri() );
+        }
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash( getLabel(), getUri() );
+        return Objects.hash( getUri() );
     }
 
     @Override

@@ -4,6 +4,7 @@ import ubic.basecode.ontology.model.OntologyIndividual;
 import ubic.basecode.ontology.model.OntologyResource;
 import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.search.OntologySearchException;
+import ubic.basecode.ontology.search.OntologySearchResult;
 
 import javax.annotation.Nullable;
 import java.io.InputStream;
@@ -116,9 +117,9 @@ public interface OntologyService {
      * <p>
      * Search is enabled by default.
      *
-     * @see #findTerm(String, boolean)
-     * @see #findIndividuals(String, boolean)
-     * @see #findResources(String, boolean)
+     * @see #findTerm(String, int, boolean)
+     * @see #findIndividuals(String, int, boolean)
+     * @see #findResources(String, int, boolean)
      */
     boolean isSearchEnabled();
 
@@ -128,6 +129,19 @@ public interface OntologyService {
      * Changes are only applicable if the service is re-initialized.
      */
     void setSearchEnabled( boolean searchEnabled );
+
+    /**
+     * Obtain the words that should be excluded from stemming.
+     * <p>
+     * By default, all words are subject to stemming. The exact implementation of stemming depends on the actual search
+     * implementation.
+     */
+    Set<String> getExcludedWordsFromStemming();
+
+    /**
+     * Set words that should be excluded from stemming when searching.
+     */
+    void setExcludedWordsFromStemming( Set<String> excludedWordsFromStemming );
 
     /**
      * Obtain the URIs used as additional properties when inferring parents and children.
@@ -169,8 +183,8 @@ public interface OntologyService {
      * <p>
      * Obsolete terms are filtered out.
      */
-    default Collection<OntologyIndividual> findIndividuals( String search ) throws OntologySearchException {
-        return findIndividuals( search, false );
+    default Collection<OntologySearchResult<OntologyIndividual>> findIndividuals( String search, int maxResults ) throws OntologySearchException {
+        return findIndividuals( search, maxResults, false );
     }
 
     /**
@@ -179,7 +193,7 @@ public interface OntologyService {
      * @param search        search query
      * @param keepObsoletes retain obsolete terms
      */
-    Collection<OntologyIndividual> findIndividuals( String search, boolean keepObsoletes ) throws OntologySearchException;
+    Set<OntologySearchResult<OntologyIndividual>> findIndividuals( String search, int maxResults, boolean keepObsoletes ) throws OntologySearchException;
 
     /**
      * Looks for any resources (terms or individuals) that match the given search string
@@ -189,8 +203,8 @@ public interface OntologyService {
      * @return results, or an empty collection if the results are empty OR the ontology is not available to be
      * searched.
      */
-    default Collection<OntologyResource> findResources( String searchString ) throws OntologySearchException {
-        return findResources( searchString, false );
+    default Collection<OntologySearchResult<OntologyResource>> findResources( String searchString, int maxResults ) throws OntologySearchException {
+        return findResources( searchString, maxResults, false );
     }
 
     /**
@@ -199,15 +213,15 @@ public interface OntologyService {
      * @param search        search query
      * @param keepObsoletes retain obsolete terms
      */
-    Collection<OntologyResource> findResources( String search, boolean keepObsoletes ) throws OntologySearchException;
+    Collection<OntologySearchResult<OntologyResource>> findResources( String search, int maxResults, boolean keepObsoletes ) throws OntologySearchException;
 
     /**
      * Looks for any terms that match the given search string.
      * <p>
      * Obsolete terms are filtered out.
      */
-    default Collection<OntologyTerm> findTerm( String search ) throws OntologySearchException {
-        return findTerm( search, false );
+    default Collection<OntologySearchResult<OntologyTerm>> findTerm( String search, int maxResults ) throws OntologySearchException {
+        return findTerm( search, maxResults, false );
     }
 
 
@@ -217,7 +231,7 @@ public interface OntologyService {
      * @param search        search query
      * @param keepObsoletes retain obsolete terms
      */
-    Collection<OntologyTerm> findTerm( String search, boolean keepObsoletes ) throws OntologySearchException;
+    Collection<OntologySearchResult<OntologyTerm>> findTerm( String search, int maxResults, boolean keepObsoletes ) throws OntologySearchException;
 
     /**
      * Find a term using an alternative ID.
@@ -287,7 +301,6 @@ public interface OntologyService {
      * @return a set of child terms
      */
     Set<OntologyTerm> getChildren( Collection<OntologyTerm> terms, boolean direct, boolean includeAdditionalProperties, boolean keepObsoletes );
-
 
     /**
      * Check if this ontology is enabled.

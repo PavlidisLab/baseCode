@@ -14,7 +14,6 @@
  */
 package ubic.basecode.ontology.providers;
 
-import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
 import ubic.basecode.ontology.model.OntologyModel;
 
 import java.io.IOException;
@@ -24,17 +23,14 @@ import java.util.zip.GZIPInputStream;
 /**
  * @author paul
  */
-public class NIFSTDOntologyService extends AbstractOntologyMemoryBackedService {
+@Deprecated
+public class NIFSTDOntologyService extends AbstractBaseCodeOntologyService {
 
     private static final String NIFSTD_ONTOLOGY_FILE = "/data/loader/ontology/nif-gemma.owl.gz";
 
     public NIFSTDOntologyService() {
+        super( "NISFTD", "nisftdOntology" );
         setProcessImports( false );
-    }
-
-    @Override
-    protected String getOntologyName() {
-        return "nifstdOntology";
     }
 
     @Override

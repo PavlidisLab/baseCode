@@ -1,8 +1,8 @@
 /*
  * The basecode project
- * 
+ *
  * Copyright (c) 2007-2019 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,27 +19,14 @@
 
 package ubic.basecode.ontology.providers;
 
-import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
-import ubic.basecode.util.Configuration;
-
 /**
+ * <a href="https://obofoundry.org/ontology/mp.html">Mammalian Phenotype Ontology</a>
+ *
  * @author klc
- * 
  */
-public class MammalianPhenotypeOntologyService extends AbstractOntologyMemoryBackedService {
+public class MammalianPhenotypeOntologyService extends AbstractBaseCodeOntologyService {
 
-    private static final String ONTOLOGY_URL = "url.mammalPhenotypeOntology";
-
-    @Override
-    protected String getOntologyName() {
-
-        return "mammalPhenotypeOntology";
+    public MammalianPhenotypeOntologyService() {
+        super( "Mammalian Phenotype Ontology", "mammalPhenotypeOntology" );
     }
-
-    @Override
-    protected String getOntologyUrl() {
-        return Configuration.getString( ONTOLOGY_URL );
-
-    }
-
 }

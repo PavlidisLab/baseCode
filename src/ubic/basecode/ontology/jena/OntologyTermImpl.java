@@ -61,12 +61,6 @@ class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm 
         this.additionalRestrictions = additionalRestrictions;
     }
 
-    public OntologyTermImpl( OntClass resource, Set<Restriction> additionalRestrictions, double score ) {
-        super( resource, score );
-        this.ontResource = resource;
-        this.additionalRestrictions = additionalRestrictions;
-    }
-
     @Override
     public Collection<String> getAlternativeIds() {
         return getAnnotations( HAS_ALTERNATE_ID ).stream().map( AnnotationProperty::getContents ).collect( Collectors.toSet() );

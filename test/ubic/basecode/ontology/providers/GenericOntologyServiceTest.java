@@ -19,9 +19,11 @@
 
 package ubic.basecode.ontology.providers;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import ubic.basecode.ontology.AbstractOntologyTest;
 import ubic.basecode.ontology.model.OntologyTerm;
+import ubic.basecode.ontology.search.OntologySearchResult;
 import ubic.basecode.util.Configuration;
 
 import java.net.URL;
@@ -44,7 +46,7 @@ public class GenericOntologyServiceTest extends AbstractOntologyTest {
         s1.initialize( true, false );
         GenericOntologyService s = s1;
 
-        Collection<OntologyTerm> r = s.findTerm( "Mouse" );
+        Collection<OntologySearchResult<OntologyTerm>> r = s.findTerm( "Mouse", 500 );
         assertFalse( r.isEmpty() );
     }
 
@@ -79,10 +81,10 @@ public class GenericOntologyServiceTest extends AbstractOntologyTest {
                 new GenericOntologyService( "foo", resource.toString(), false, false )
                         .initialize( true, true );
             } );
-            assertTrue( e.getMessage().matches( "No cache directory is set for foo \\[file:.+], cannot force indexing." ) );
+            Assertions.assertThat( e )
+                    .hasMessageMatching( "No cache directory is set for foo.+, cannot force indexing\\." );
         } finally {
-            Configuration.setString( "ontology.cache.dir", prevCacheDir );
-            Configuration.setString( "ontology.index.dir", prevIndexDir );
+            Configuration.reset();
         }
     }
 }

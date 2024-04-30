@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2010 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,26 +19,14 @@
 
 package ubic.basecode.ontology.providers;
 
-import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
-import ubic.basecode.util.Configuration;
-
 /**
- * See http://www.obofoundry.org/cgi-bin/detail.cgi?id=cell
- * 
+ * <a href="https://obofoundry.org/ontology/cl.html">Cell Ontology</a>
+ *
  * @author paul
- * 
  */
-public class CellTypeOntologyService extends AbstractOntologyMemoryBackedService {
+public class CellTypeOntologyService extends AbstractBaseCodeOntologyService {
 
-    private static final String ONTOLOGY_URL = "url.cellTypeOntology";
-
-    @Override
-    protected String getOntologyName() {
-        return "cellTypeOntology";
-    }
-
-    @Override
-    protected String getOntologyUrl() {
-        return Configuration.getString( ONTOLOGY_URL );
+    public CellTypeOntologyService() {
+        super( "Cell Ontology", "cellTypeOntology" );
     }
 }

@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 /**
  * @author pavlidis
  */
-public interface OntologyResource extends Comparable<OntologyResource> {
+public interface OntologyResource {
 
     /**
      * A URI if known, otherwise null.
@@ -54,13 +54,8 @@ public interface OntologyResource extends Comparable<OntologyResource> {
     boolean isObsolete();
 
     /**
-     * If this is result from a free-text search, a corresponding score, otherwise null.
-     */
-    @Nullable
-    Double getScore();
-
-    /**
      * Unwrap the underlying implementation of the ontology resource.
+     *
      * @throws ClassCastException if the implementation type does not match the given class
      */
     <T> T unwrap( Class<T> clazz ) throws ClassCastException;

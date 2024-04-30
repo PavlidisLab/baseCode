@@ -1,9 +1,6 @@
 package ubic.basecode.ontology.jena;
 
-import com.hp.hpl.jena.ontology.ConversionException;
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.Restriction;
+import com.hp.hpl.jena.ontology.*;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.util.iterator.Filter;
@@ -46,7 +43,7 @@ class JenaUtils {
                 .map( t -> as( t, OntClass.class ) )
                 .filter( Optional::isPresent )
                 .map( Optional::get )
-                .collect( Collectors.toList() );
+                .collect( Collectors.toSet() );
         if ( ontClasses.isEmpty() ) {
             return Collections.emptySet();
         }
@@ -104,18 +101,18 @@ class JenaUtils {
     }
 
     public static Collection<OntClass> getChildrenInternal( OntModel model, Collection<OntClass> terms, boolean direct, @Nullable Set<Restriction> additionalRestrictions ) {
-        terms = terms.stream()
+        Set<OntClass> termsSet = terms.stream()
                 .map( t -> t.inModel( model ) )
                 .filter( t -> t.canAs( OntClass.class ) )
                 .map( t -> as( t, OntClass.class ) )
                 .filter( Optional::isPresent )
                 .map( Optional::get )
-                .collect( Collectors.toList() );
-        if ( terms.isEmpty() ) {
+                .collect( Collectors.toSet() );
+        if ( termsSet.isEmpty() ) {
             return Collections.emptySet();
         }
         StopWatch timer = StopWatch.createStarted();
-        Iterator<OntClass> it = terms.iterator();
+        Iterator<OntClass> it = termsSet.iterator();
         ExtendedIterator<OntClass> iterator = it.next().listSubClasses( direct );
         while ( it.hasNext() ) {
             iterator = iterator.andThen( it.next().listSubClasses( direct ) );
@@ -132,7 +129,7 @@ class JenaUtils {
                 subClassOf = ResourceFactory.createProperty( makeDirect( subClassOf.getURI() ) );
             }
             Set<Restriction> restrictions = UniqueExtendedIterator.create( additionalRestrictions.iterator() )
-                    .filterKeep( new RestrictionWithValuesFromFilter( terms ) )
+                    .filterKeep( new RestrictionWithValuesFromFilter( termsSet ) )
                     .toSet();
             for ( Restriction r : restrictions ) {
                 result.addAll( model.listResourcesWithProperty( subClassOf, r )
@@ -193,7 +190,6 @@ class JenaUtils {
         }
     }
 
-
     /**
      * Use to pretty-print a RDFNode
      */
@@ -228,8 +224,31 @@ class JenaUtils {
         try {
             return Optional.of( resource.as( clazz ) );
         } catch ( ConversionException e ) {
-            log.warn( "Conversion of " + resource + " to " + clazz.getName() + " failed." );
+            log.warn( "Conversion of {} to {} failed.", resource, clazz.getName() );
             return Optional.empty();
         }
+    }
+
+    /**
+     * List all restrictions in the given model on any of the given properties.
+     */
+    public static ExtendedIterator<Restriction> listRestrictionsOnProperties( OntModel model, Set<? extends Property> props, boolean includeSubProperties ) {
+        if ( includeSubProperties ) {
+            Set<Property> allProps = new HashSet<>( props );
+            for ( Property p : props ) {
+                Property property = p.inModel( model );
+                // include sub-properties for inference
+                if ( property.canAs( OntProperty.class ) ) {
+                    OntProperty op = property.as( OntProperty.class );
+                    ExtendedIterator<? extends OntProperty> it = op.listSubProperties( false );
+                    while ( it.hasNext() ) {
+                        OntProperty sp = it.next();
+                        allProps.add( sp );
+                    }
+                }
+            }
+            props = allProps;
+        }
+        return model.listRestrictions().filterKeep( new RestrictionWithOnPropertyFilter( props ) );
     }
 }
