@@ -16,14 +16,10 @@ package ubic.basecode.ontology.providers;
 
 import org.junit.Test;
 import ubic.basecode.ontology.AbstractOntologyTest;
-import ubic.basecode.ontology.model.OntologyIndividual;
 import ubic.basecode.ontology.model.OntologyResource;
-import ubic.basecode.ontology.model.OntologyTerm;
+import ubic.basecode.ontology.search.OntologySearchResult;
 
-import java.util.Collection;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author paul
@@ -35,16 +31,21 @@ public class ObiServiceTest extends AbstractOntologyTest {
         ObiService m = new ObiService();
         m.setInferenceMode( OntologyService.InferenceMode.NONE );
         m.initialize( true, false );
+        assertThat( m.isOntologyLoaded() ).isTrue();
 
-        assertTrue( m.isOntologyLoaded() );
+        assertThat( m.findTerm( "batch", 500 ) )
+                .extracting( OntologySearchResult::getResult )
+                .extracting( OntologyResource::getUri )
+                .contains( "http://purl.obolibrary.org/obo/IAO_0000132" );
 
-        Collection<OntologyTerm> hits = m.findTerm( "batch" );
-        assertFalse( hits.isEmpty() );
+        assertThat( m.findIndividuals( "failed exploratory term", 500 ) )
+                .extracting( OntologySearchResult::getResult )
+                .extracting( OntologyResource::getUri )
+                .contains( "http://purl.obolibrary.org/obo/IAO_0000103" );
 
-        Collection<OntologyIndividual> ihits = m.findIndividuals( "batch" );
-        assertFalse( ihits.isEmpty() );
-
-        Collection<OntologyResource> rhits = m.findResources( "batch" );
-        assertFalse( rhits.isEmpty() );
+        assertThat( m.findResources( "batch", 500 ) )
+                .extracting( OntologySearchResult::getResult )
+                .extracting( OntologyResource::getUri )
+                .contains( "http://purl.obolibrary.org/obo/IAO_0000132" );
     }
 }

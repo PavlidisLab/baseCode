@@ -622,7 +622,7 @@ public abstract class AbstractRClient implements RClient {
     public boolean loadLibrary( String libraryName ) {
         try {
 
-            String userLibPath = Configuration.getString( "basecode.rlibpath" );
+            String userLibPath = Configuration.getString( "rlibpath" );
             if ( StringUtils.isNotBlank( userLibPath ) ) {
                 voidEval( ".libPaths(" + userLibPath + ")" );
             }

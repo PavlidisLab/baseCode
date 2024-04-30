@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2011 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,27 +19,14 @@
 
 package ubic.basecode.ontology.providers;
 
-import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
-import ubic.basecode.util.Configuration;
-
 /**
- * See http://bioportal.bioontology.org/ontologies/45774?p=terms&conceptid=HP%3A0001264 for example.
- * 
+ * <a href="https://obofoundry.org/ontology/hp.html">Human Phenotype Ontology</a>
+ *
  * @author paul
- * 
  */
-public class HumanPhenotypeOntologyService extends AbstractOntologyMemoryBackedService {
+public class HumanPhenotypeOntologyService extends AbstractBaseCodeOntologyService {
 
-    private static final String ONTOLOGY_URL = "url.humanPhenotypeOntology";
-
-    @Override
-    protected String getOntologyName() {
-        return "humanPhenotypeOntology";
+    public HumanPhenotypeOntologyService() {
+        super( "Human Phenotype Ontology", "humanPhenotypeOntology" );
     }
-
-    @Override
-    protected String getOntologyUrl() {
-        return Configuration.getString( ONTOLOGY_URL );
-    }
-
 }

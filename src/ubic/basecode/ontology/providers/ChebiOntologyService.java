@@ -1,8 +1,8 @@
 /*
  * The basecode project
- * 
+ *
  * Copyright (c) 2007-2019 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,27 +19,14 @@
 
 package ubic.basecode.ontology.providers;
 
-import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
-import ubic.basecode.util.Configuration;
-
 /**
- * Loads the CHEBI Ontology at startup in its own thread. Controlled in build.properties by load.chebiOntology
- * 
+ * <a href="https://obofoundry.org/ontology/chebi.html">Chemical Entities of Biological Interest</a>
+ *
  * @author klc
- * 
  */
-public class ChebiOntologyService extends AbstractOntologyMemoryBackedService {
+public class ChebiOntologyService extends AbstractBaseCodeOntologyService {
 
-    private static final String CHEBI_ONTOLOGY_URL = "url.chebiOntology";
-
-    @Override
-    protected String getOntologyName() {
-        return "chebiOntology";
+    public ChebiOntologyService() {
+        super( "CHEBI", "chebiOntology" );
     }
-
-    @Override
-    protected String getOntologyUrl() {
-        return Configuration.getString( CHEBI_ONTOLOGY_URL );
-    }
-
 }

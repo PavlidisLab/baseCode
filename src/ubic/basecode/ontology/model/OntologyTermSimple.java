@@ -17,7 +17,6 @@ package ubic.basecode.ontology.model;
 import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Objects;
 
 /**
@@ -129,17 +128,6 @@ public class OntologyTermSimple implements OntologyTerm, Serializable {
     @Override
     public boolean isObsolete() {
         return obsolete;
-    }
-
-    @Nullable
-    @Override
-    public Double getScore() {
-        return null;
-    }
-
-    @Override
-    public int compareTo( OntologyResource other ) {
-        return Objects.compare( getUri(), other.getUri(), Comparator.nullsLast( Comparator.naturalOrder() ) );
     }
 
     @Override

@@ -18,7 +18,6 @@
  */
 package ubic.basecode.ontology.providers;
 
-import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
 import ubic.basecode.ontology.model.OntologyModel;
 
 import java.io.IOException;
@@ -29,21 +28,21 @@ import java.util.zip.GZIPInputStream;
  * MEDIC ONTOLOGY USED BY PHENOCARTA, its represents MESH terms as a tree so with can use the parent structure that a
  * normal mesh term doesnt have
  * <p>
- * MEDIC comes from the CTD folks. See http://ctd.mdibl.org/voc.go?type=disease. Unfortunately I do not know where our
+ * MEDIC comes from the CTD folks. See <a href="http://ctd.mdibl.org/voc.go?type=disease">...</a>. Unfortunately I do not know where our
  * medic.owl file came from (PP)
  *
  * @author Nicolas
  */
-public class MedicOntologyService extends AbstractOntologyMemoryBackedService {
+@Deprecated
+public class MedicOntologyService extends AbstractBaseCodeOntologyService {
 
     /**
      * FIXME this shouldn't be hard-coded like this, we should load it like any other ontology service.
      */
     private static final String MEDIC_ONTOLOGY_FILE = "/data/loader/ontology/medic.owl.gz";
 
-    @Override
-    protected String getOntologyName() {
-        return "medicOntology";
+    public MedicOntologyService() {
+        super( "Medic Ontology", "medicOntology" );
     }
 
     @Override

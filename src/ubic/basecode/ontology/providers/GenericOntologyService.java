@@ -14,31 +14,47 @@
  */
 package ubic.basecode.ontology.providers;
 
-import ubic.basecode.ontology.jena.AbstractOntologyMemoryBackedService;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.annotation.Nullable;
 
 /**
- * A way to create ad hoc ontology services (in memory) for testing
+ * A way to create ad-hoc in-memory ontology services.
  *
  * @author Paul
  */
-public class GenericOntologyService extends AbstractOntologyMemoryBackedService {
+public class GenericOntologyService extends AbstractOntologyService {
 
     private final String url;
     private final String name;
-    private final boolean cache;
+    @Nullable
+    private final String cacheName;
 
-    public GenericOntologyService( String name, String url ) {
-        this( name, url, false );
-    }
-
-    public GenericOntologyService( String name, String url, boolean cache ) {
-        this( name, url, cache, true );
-    }
-
-    public GenericOntologyService( String name, String url, boolean cache, boolean processImports ) {
+    public GenericOntologyService( String name, String url, @Nullable String cacheName ) {
         this.name = name;
         this.url = url;
-        this.cache = cache;
+        this.cacheName = cacheName;
+    }
+
+    public GenericOntologyService( String name, String url ) {
+        this( name, url, null );
+    }
+
+    /**
+     * @deprecated use {@link #GenericOntologyService(String, String, String)} with an explicit cache name instead
+     */
+    @Deprecated
+    public GenericOntologyService( String name, String url, boolean cache ) {
+        this( name, url, cache ? StringUtils.deleteWhitespace( name ) : null );
+    }
+
+    /**
+     * @deprecated use {@link #GenericOntologyService(String, String, String)} with an explicit cache name instead and
+     * {@link #setProcessImports(boolean)}
+     */
+    @Deprecated
+    public GenericOntologyService( String name, String url, boolean cache, boolean processImports ) {
+        this( name, url, cache );
         setProcessImports( processImports );
     }
 
@@ -53,7 +69,13 @@ public class GenericOntologyService extends AbstractOntologyMemoryBackedService 
     }
 
     @Override
+    protected boolean isOntologyEnabled() {
+        return true;
+    }
+
+    @Override
+    @Nullable
     protected String getCacheName() {
-        return this.cache ? this.name : null;
+        return cacheName;
     }
 }

@@ -3,12 +3,14 @@ package ubic.basecode.ontology.jena;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.vocabulary.RDFS;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ubic.basecode.ontology.search.OntologySearchException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,7 +28,9 @@ public class UberonOntologySearchTest {
     public static void setUpUberon() throws IOException {
         try ( InputStream is = new GZIPInputStream( requireNonNull( OntologySearchTest.class.getResourceAsStream( "/data/uberon.owl.gz" ) ) ) ) {
             uberon = OntologyLoader.loadMemoryModel( is, "UBERON_TEST2", true, OntModelSpec.OWL_MEM );
-            uberonIndex = OntologyIndexer.indexOntology( "UBERON_TEST2", uberon, false );
+            HashSet<OntologyIndexer.IndexableProperty> indexableProperties = new HashSet<>( OntologyIndexer.DEFAULT_INDEXABLE_PROPERTIES );
+            indexableProperties.add( new OntologyIndexer.IndexableProperty( RDFS.comment, true ) );
+            uberonIndex = OntologyIndexer.indexOntology( "UBERON_TEST2", uberon, indexableProperties, Collections.emptySet(), true );
         }
     }
 
@@ -34,7 +38,7 @@ public class UberonOntologySearchTest {
     public void testOmitDefinition() throws OntologySearchException {
         OntClass brain = uberon.getOntClass( "http://purl.obolibrary.org/obo/UBERON_0000955" );
         assertNotNull( brain );
-        Set<OntologySearch.SearchResult<OntClass>> searchResults = OntologySearch.matchClasses( uberon, uberonIndex, "brain" ).toSet();
+        Set<SearchIndex.JenaSearchResult> searchResults = uberonIndex.searchClasses( uberon, "brain", 500 ).toSet();
         assertEquals( 128, searchResults.size() );
     }
 
@@ -42,9 +46,8 @@ public class UberonOntologySearchTest {
     public void testScore() throws OntologySearchException {
         OntClass brain = uberon.getOntClass( "http://purl.obolibrary.org/obo/UBERON_0000955" );
         assertNotNull( brain );
-        List<OntologySearch.SearchResult<OntClass>> searchResults = OntologySearch.matchClasses( uberon, uberonIndex, "brain" ).toList();
-        assertEquals( 446, searchResults.size() );
-        assertEquals( 3.33, searchResults.get( 0 ).score, 0.01 );
-        assertEquals( 128, new HashSet<>( searchResults ).size() );
+        List<SearchIndex.JenaSearchResult> searchResults = uberonIndex.searchClasses( uberon, "brain", 500 ).toList();
+        assertEquals( 128, searchResults.size() );
+        assertEquals( 3.85, searchResults.get( 0 ).score, 0.01 );
     }
 }
