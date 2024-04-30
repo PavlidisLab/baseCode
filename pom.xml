@@ -10,10 +10,10 @@
 	<description>
 		<![CDATA[Data structures, math and statistics tools, and utilities that are often needed across projects.]]>
 	</description>
-	<url>https://github.com/pavlidisLab/basecode</url>
+	<url>https://github.com/PavlidisLab/baseCode</url>
 	<organization>
-		<name>UBC Michael Smith Laboratories</name>
-		<url>http://www.msl.ubc.ca/</url>
+		<name>Pavlidis Lab</name>
+		<url>https://pavlab.msl.ubc.ca/</url>
 	</organization>
 	<packaging>jar</packaging>
 	<issueManagement>
@@ -27,7 +27,7 @@
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
