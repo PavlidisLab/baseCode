@@ -55,7 +55,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static ubic.basecode.ontology.jena.JenaUtils.where;
+import static ubic.basecode.ontology.jena.JenaUtils.as;
 
 /**
  * Base class for Jena-based ontology services.
@@ -324,7 +324,7 @@ public abstract class AbstractOntologyService implements OntologyService {
     }
 
     @Override
-    public Set<OntologySearchResult<OntologyIndividual>> findIndividuals( String search, int maxResults, boolean keepObsoletes ) throws
+    public Collection<OntologySearchResult<OntologyIndividual>> findIndividuals( String search, int maxResults, boolean keepObsoletes ) throws
             OntologySearchException {
         State state = this.state;
         if ( state == null ) {
@@ -335,10 +335,13 @@ public abstract class AbstractOntologyService implements OntologyService {
             log.warn( "Attempt to search {} when index is null, no results will be returned.", this );
             return Collections.emptySet();
         }
-        return state.index.searchIndividuals( state.model, search, maxResults )
-                .mapWith( i -> new OntologySearchResult<>( ( OntologyIndividual ) new OntologyIndividualImpl( i.result.as( Individual.class ), state.additionalRestrictions ), i.score ) )
-                .filterKeep( where( ontologyTerm -> keepObsoletes || !ontologyTerm.getResult().isObsolete() ) )
-                .toSet();
+        return state.index.searchIndividuals( state.model, search, maxResults ).stream()
+                .map( i -> as( i.result, Individual.class ).map( r -> new OntologySearchResult<>( ( OntologyIndividual ) new OntologyIndividualImpl( r, state.additionalRestrictions ), i.score ) ) )
+                .filter( Optional::isPresent )
+                .map( Optional::get )
+                .filter( ontologyTerm -> keepObsoletes || !ontologyTerm.getResult().isObsolete() )
+                .sorted( Comparator.comparing( OntologySearchResult::getScore, Comparator.reverseOrder() ) )
+                .collect( Collectors.toCollection( LinkedHashSet::new ) );
     }
 
     @Override
@@ -353,25 +356,24 @@ public abstract class AbstractOntologyService implements OntologyService {
             log.warn( "Attempt to search {} when index is null, no results will be returned.", this );
             return Collections.emptySet();
         }
-        return state.index.search( state.model, searchString, maxResults )
-                .filterKeep( where( r -> r.result.canAs( OntClass.class ) || r.result.canAs( Individual.class ) ) )
-                .mapWith( r -> {
-                    try {
-                        if ( r.result.canAs( OntClass.class ) ) {
-                            return new OntologySearchResult<>( ( OntologyResource ) new OntologyTermImpl( r.result.as( OntClass.class ), state.additionalRestrictions ), r.score );
-                        } else if ( r.result.canAs( Individual.class ) ) {
-                            return new OntologySearchResult<>( ( OntologyResource ) new OntologyIndividualImpl( r.result.as( Individual.class ), state.additionalRestrictions ), r.score );
-                        } else {
-                            return null;
-                        }
-                    } catch ( ConversionException e ) {
-                        log.warn( "Conversion failed for {}", r, e );
-                        return null;
+        return state.index.search( state.model, searchString, maxResults ).stream()
+                .filter( ( r -> r.result.canAs( OntClass.class ) || r.result.canAs( Individual.class ) ) )
+                .map( r -> {
+                    if ( r.result.canAs( OntClass.class ) ) {
+                        return as( r.result, OntClass.class )
+                                .map( r2 -> new OntologySearchResult<>( ( OntologyResource ) new OntologyTermImpl( r2, state.additionalRestrictions ), r.score ) );
+                    } else if ( r.result.canAs( Individual.class ) ) {
+                        return as( r.result, Individual.class )
+                                .map( r2 -> new OntologySearchResult<>( ( OntologyResource ) new OntologyIndividualImpl( r2, state.additionalRestrictions ), r.score ) );
+                    } else {
+                        return Optional.<OntologySearchResult<OntologyResource>>empty();
                     }
                 } )
-                .filterKeep( where( Objects::nonNull ) )
-                .filterKeep( where( ontologyTerm -> keepObsoletes || !ontologyTerm.getResult().isObsolete() ) )
-                .toSet();
+                .filter( Optional::isPresent )
+                .map( Optional::get )
+                .filter( ontologyTerm -> keepObsoletes || !ontologyTerm.getResult().isObsolete() )
+                .sorted( Comparator.comparing( OntologySearchResult::getScore, Comparator.reverseOrder() ) )
+                .collect( Collectors.toCollection( LinkedHashSet::new ) );
     }
 
     @Override
@@ -385,13 +387,13 @@ public abstract class AbstractOntologyService implements OntologyService {
             log.warn( "Attempt to search {} when index is null, no results will be returned.", this );
             return Collections.emptySet();
         }
-        return state.index.searchClasses( state.model, search, maxResults )
-                .mapWith( r -> JenaUtils.as( r.result, OntClass.class )
-                        .map( s -> new OntologySearchResult<>( ( OntologyTerm ) new OntologyTermImpl( s, state.additionalRestrictions ), r.score ) ) )
-                .filterKeep( where( Optional::isPresent ) )
-                .mapWith( Optional::get )
-                .filterKeep( where( ontologyTerm -> keepObsoletes || !ontologyTerm.getResult().isObsolete() ) )
-                .toSet();
+        return state.index.searchClasses( state.model, search, maxResults ).stream()
+                .map( r -> as( r.result, OntClass.class ).map( s -> new OntologySearchResult<>( ( OntologyTerm ) new OntologyTermImpl( s, state.additionalRestrictions ), r.score ) ) )
+                .filter( Optional::isPresent )
+                .map( Optional::get )
+                .filter( ontologyTerm -> keepObsoletes || !ontologyTerm.getResult().isObsolete() )
+                .sorted( Comparator.comparing( OntologySearchResult::getScore, Comparator.reverseOrder() ) )
+                .collect( Collectors.toCollection( LinkedHashSet::new ) );
     }
 
     @Override

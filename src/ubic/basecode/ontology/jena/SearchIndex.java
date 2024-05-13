@@ -5,12 +5,15 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import ubic.basecode.ontology.search.OntologySearchException;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 interface SearchIndex extends AutoCloseable {
 
     /**
      * Find RDF nodes matching the given query string.
      */
-    ExtendedIterator<JenaSearchResult> search( OntModel model, String queryString, int maxResults ) throws OntologySearchException;
+    List<JenaSearchResult> search( OntModel model, String queryString, int maxResults ) throws OntologySearchException;
 
     /**
      * Find classes that match the query string.
@@ -18,7 +21,7 @@ interface SearchIndex extends AutoCloseable {
      * @param model that goes with the index
      * @return Collection of OntologyTerm objects
      */
-    ExtendedIterator<JenaSearchResult> searchClasses( OntModel model, String queryString, int maxResults ) throws OntologySearchException;
+    List<JenaSearchResult> searchClasses( OntModel model, String queryString, int maxResults ) throws OntologySearchException;
 
     /**
      * Find individuals that match the query string
@@ -26,7 +29,7 @@ interface SearchIndex extends AutoCloseable {
      * @param model that goes with the index
      * @return Collection of OntologyTerm objects
      */
-    ExtendedIterator<JenaSearchResult> searchIndividuals( OntModel model, String queryString, int maxResults ) throws OntologySearchException;
+    List<JenaSearchResult> searchIndividuals( OntModel model, String queryString, int maxResults ) throws OntologySearchException;
 
     class JenaSearchResult {
 

@@ -193,7 +193,7 @@ public interface OntologyService {
      * @param search        search query
      * @param keepObsoletes retain obsolete terms
      */
-    Set<OntologySearchResult<OntologyIndividual>> findIndividuals( String search, int maxResults, boolean keepObsoletes ) throws OntologySearchException;
+    Collection<OntologySearchResult<OntologyIndividual>> findIndividuals( String search, int maxResults, boolean keepObsoletes ) throws OntologySearchException;
 
     /**
      * Looks for any resources (terms or individuals) that match the given search string

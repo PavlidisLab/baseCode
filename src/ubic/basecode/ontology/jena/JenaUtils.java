@@ -1,9 +1,11 @@
 package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.*;
-import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.util.iterator.UniqueExtendedIterator;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -11,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.hp.hpl.jena.reasoner.ReasonerRegistry.makeDirect;
@@ -19,6 +20,21 @@ import static com.hp.hpl.jena.reasoner.ReasonerRegistry.makeDirect;
 class JenaUtils {
 
     protected static final Logger log = LoggerFactory.getLogger( JenaUtils.class );
+
+    /**
+     * Safely convert a {@link RDFNode} to a target class.
+     */
+    public static <T extends RDFNode> Optional<T> as( RDFNode resource, Class<T> clazz ) {
+        if ( !resource.canAs( clazz ) ) {
+            return Optional.empty();
+        }
+        try {
+            return Optional.of( resource.as( clazz ) );
+        } catch ( ConversionException e ) {
+            log.warn( "Conversion of {} to {} failed.", resource, clazz.getName() );
+            return Optional.empty();
+        }
+    }
 
     public static Collection<OntClass> getParents( OntModel model, Collection<OntClass> ontClasses, boolean direct, @Nullable Set<Restriction> additionalRestrictions ) {
         Collection<OntClass> parents = getParentsInternal( model, ontClasses, direct, additionalRestrictions );
@@ -135,7 +151,7 @@ class JenaUtils {
                 result.addAll( model.listResourcesWithProperty( subClassOf, r )
                         .filterDrop( new BnodeFilter<>() )
                         .mapWith( r2 -> as( r2, OntClass.class ) )
-                        .filterKeep( where( Optional::isPresent ) )
+                        .filterKeep( new PredicateFilter<Optional<OntClass>>( Optional::isPresent ) )
                         .mapWith( Optional::get )
                         .toSet() );
             }
@@ -191,45 +207,6 @@ class JenaUtils {
     }
 
     /**
-     * Use to pretty-print a RDFNode
-     */
-    public static String asString( RDFNode object ) {
-        return ( String ) object.visitWith( new RDFVisitor() {
-
-            @Override
-            public Object visitBlank( Resource r, AnonId id ) {
-                return r.getLocalName();
-            }
-
-            @Override
-            public Object visitLiteral( Literal l ) {
-                return l.toString().replaceAll( "\\^\\^.+", "" );
-            }
-
-            @Override
-            public Object visitURI( Resource r, String uri ) {
-                return r.getLocalName();
-            }
-        } );
-    }
-
-    public static <T> Filter<T> where( Predicate<T> predicate ) {
-        return new PredicateFilter<>( predicate );
-    }
-
-    public static <T extends RDFNode> Optional<T> as( RDFNode resource, Class<T> clazz ) {
-        if ( !resource.canAs( clazz ) ) {
-            return Optional.empty();
-        }
-        try {
-            return Optional.of( resource.as( clazz ) );
-        } catch ( ConversionException e ) {
-            log.warn( "Conversion of {} to {} failed.", resource, clazz.getName() );
-            return Optional.empty();
-        }
-    }
-
-    /**
      * List all restrictions in the given model on any of the given properties.
      */
     public static ExtendedIterator<Restriction> listRestrictionsOnProperties( OntModel model, Set<? extends Property> props, boolean includeSubProperties ) {
@@ -238,14 +215,13 @@ class JenaUtils {
             for ( Property p : props ) {
                 Property property = p.inModel( model );
                 // include sub-properties for inference
-                if ( property.canAs( OntProperty.class ) ) {
-                    OntProperty op = property.as( OntProperty.class );
+                as( property, OntProperty.class ).ifPresent( op -> {
                     ExtendedIterator<? extends OntProperty> it = op.listSubProperties( false );
                     while ( it.hasNext() ) {
                         OntProperty sp = it.next();
                         allProps.add( sp );
                     }
-                }
+                } );
             }
             props = allProps;
         }
