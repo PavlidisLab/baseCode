@@ -386,7 +386,10 @@ public abstract class AbstractOntologyService implements OntologyService {
             return Collections.emptySet();
         }
         return state.index.searchClasses( state.model, search, maxResults )
-                .mapWith( r -> new OntologySearchResult<>( ( OntologyTerm ) new OntologyTermImpl( r.result.as( OntClass.class ), state.additionalRestrictions ), r.score ) )
+                .mapWith( r -> JenaUtils.as( r.result, OntClass.class )
+                        .map( s -> new OntologySearchResult<>( ( OntologyTerm ) new OntologyTermImpl( s, state.additionalRestrictions ), r.score ) ) )
+                .filterKeep( where( Optional::isPresent ) )
+                .mapWith( Optional::get )
                 .filterKeep( where( ontologyTerm -> keepObsoletes || !ontologyTerm.getResult().isObsolete() ) )
                 .toSet();
     }
