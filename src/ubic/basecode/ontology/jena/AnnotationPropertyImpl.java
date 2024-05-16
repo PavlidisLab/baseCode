@@ -18,9 +18,7 @@
  */
 package ubic.basecode.ontology.jena;
 
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import ubic.basecode.ontology.model.AnnotationProperty;
 
@@ -73,7 +71,23 @@ class AnnotationPropertyImpl extends AbstractOntologyResource implements Annotat
                 return null;
             }
         } else {
-            return JenaUtils.asString( object );
+            return ( String ) object.visitWith( new RDFVisitor() {
+
+                @Override
+                public Object visitBlank( Resource r, AnonId id ) {
+                    return r.getLocalName();
+                }
+
+                @Override
+                public Object visitLiteral( Literal l ) {
+                    return l.toString().replaceAll( "\\^\\^.+", "" );
+                }
+
+                @Override
+                public Object visitURI( Resource r, String uri ) {
+                    return r.getLocalName();
+                }
+            } );
         }
     }
 

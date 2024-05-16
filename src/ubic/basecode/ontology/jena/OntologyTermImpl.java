@@ -34,8 +34,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ubic.basecode.ontology.jena.JenaUtils.where;
-
 /**
  * Represents a class in an ontology
  *
@@ -129,7 +127,7 @@ class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm 
     @Override
     public Collection<OntologyIndividual> getIndividuals( boolean direct ) {
         return this.ontResource.listInstances( direct )
-                .filterKeep( where( OntResource::isIndividual ) )
+                .filterKeep( new PredicateFilter<>( OntResource::isIndividual ) )
                 .mapWith( r -> ( OntologyIndividual ) new OntologyIndividualImpl( r.asIndividual(), additionalRestrictions ) )
                 .toSet();
     }

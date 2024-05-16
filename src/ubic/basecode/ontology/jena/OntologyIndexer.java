@@ -25,7 +25,6 @@ import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.shared.JenaException;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-import com.hp.hpl.jena.util.iterator.WrappedIterator;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -58,6 +57,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static ubic.basecode.ontology.jena.JenaUtils.as;
 
 /**
  * A Lucene-based ontology indexer.
@@ -206,14 +207,8 @@ class OntologyIndexer {
                 Document doc = new Document();
                 doc.add( new Field( ID_FIELD, id, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
                 doc.add( new Field( LOCAL_NAME_FIELD, subject.getLocalName(), Field.Store.NO, Field.Index.NOT_ANALYZED ) );
-                boolean isClass, isIndividual;
-                if ( subject.canAs( OntResource.class ) ) {
-                    isClass = subject.as( OntResource.class ).isClass();
-                    isIndividual = subject.as( OntResource.class ).isIndividual();
-                } else {
-                    isClass = false;
-                    isIndividual = false;
-                }
+                boolean isClass = as( subject, OntResource.class ).map( OntResource::isClass ).orElse( false );
+                boolean isIndividual = as( subject, OntResource.class ).map( OntResource::isIndividual ).orElse( false );
                 doc.add( new NumericField( IS_CLASS_FIELD ).setIntValue( isClass ? 1 : 0 ) );
                 doc.add( new NumericField( IS_INDIVIDUAL_FIELD ).setIntValue( isIndividual ? 1 : 0 ) );
                 for ( IndexableProperty prop : indexableProperties ) {
@@ -300,21 +295,21 @@ class OntologyIndexer {
         }
 
         @Override
-        public ExtendedIterator<JenaSearchResult> search( OntModel model, String queryString, int maxResults ) throws OntologySearchException {
+        public List<JenaSearchResult> search( OntModel model, String queryString, int maxResults ) throws OntologySearchException {
             return search( model, queryString, null, maxResults );
         }
 
         @Override
-        public ExtendedIterator<JenaSearchResult> searchClasses( OntModel model, String queryString, int maxResults ) throws OntologySearchException {
+        public List<JenaSearchResult> searchClasses( OntModel model, String queryString, int maxResults ) throws OntologySearchException {
             return search( model, queryString, NumericRangeFilter.newIntRange( IS_CLASS_FIELD, 1, 1, true, true ), maxResults );
         }
 
         @Override
-        public ExtendedIterator<JenaSearchResult> searchIndividuals( OntModel model, String queryString, int maxResults ) throws OntologySearchException {
+        public List<JenaSearchResult> searchIndividuals( OntModel model, String queryString, int maxResults ) throws OntologySearchException {
             return search( model, queryString, NumericRangeFilter.newIntRange( IS_INDIVIDUAL_FIELD, 1, 1, true, true ), maxResults );
         }
 
-        private ExtendedIterator<JenaSearchResult> search( OntModel model, String queryString, @Nullable Filter filter, int maxResults ) throws OntologySearchException {
+        private List<JenaSearchResult> search( OntModel model, String queryString, @Nullable Filter filter, int maxResults ) throws OntologySearchException {
             if ( StringUtils.isBlank( queryString ) ) {
                 throw new IllegalArgumentException( "Query cannot be blank" );
             }
@@ -339,7 +334,7 @@ class OntologyIndexer {
                         break;
                     }
                 }
-                return WrappedIterator.create( resources.iterator() );
+                return resources;
             } catch ( ParseException e ) {
                 throw new OntologySearchException( "Failed to parse search query.", queryString, e );
             } catch ( IOException e ) {
