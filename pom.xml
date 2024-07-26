@@ -584,9 +584,6 @@
 							<dependencyExcludes>
 								<dependencyExclude>org.apache.commons:commons-configuration2:*</dependencyExclude>
 							</dependencyExcludes>
-							<pluginDependencyExcludes>
-								<pluginDependencyExclude>org.antlr:antlr4-maven-plugin:*</pluginDependencyExclude>
-							</pluginDependencyExcludes>
 						</configuration>
 					</plugin>
 				</plugins>
