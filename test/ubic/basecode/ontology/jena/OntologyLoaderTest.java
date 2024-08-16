@@ -14,6 +14,8 @@
  */
 package ubic.basecode.ontology.jena;
 
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import ubic.basecode.ontology.AbstractOntologyTest;
@@ -22,6 +24,7 @@ import ubic.basecode.ontology.providers.GenericOntologyService;
 import ubic.basecode.ontology.search.OntologySearchResult;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
@@ -54,7 +57,8 @@ public class OntologyLoaderTest extends AbstractOntologyTest {
 
         URL resource = this.getClass().getResource( dataResource );
         assertNotNull( resource );
-        GenericOntologyService s = new GenericOntologyService( name, resource.toString(), true, false );
+        GenericOntologyService s = new GenericOntologyService( name, resource.toString(), name );
+        s.setProcessImports( false );
         s.initialize( true, false );
 
         // Check if cache was created
@@ -67,7 +71,8 @@ public class OntologyLoaderTest extends AbstractOntologyTest {
         assertFalse( r.isEmpty() );
 
         // Recreate OntologyService using this cache file
-        s = new GenericOntologyService( name, "/data/NONEXISTENT_RESOURCE", true, false );
+        s = new GenericOntologyService( name, "/data/NONEXISTENT_RESOURCE", name );
+        s.setProcessImports( false );
         s.initialize( true, false );
 
         assertTrue( f.exists() );
@@ -79,7 +84,8 @@ public class OntologyLoaderTest extends AbstractOntologyTest {
 
         // Recreate OntologyService with bad URL and no cache
         assertThrows( RuntimeException.class, () -> {
-            GenericOntologyService s1 = new GenericOntologyService( "NO_CACHE_WITH_THIS_NAME", "/data/NONEXISTENT_RESOURCE", true, false );
+            GenericOntologyService s1 = new GenericOntologyService( "NO_CACHE_WITH_THIS_NAME", "/data/NONEXISTENT_RESOURCE", "NO_CACHE_WITH_THIS_NAME" );
+            s1.setProcessImports( false );
             s1.initialize( true, false );
         } );
     }
@@ -98,11 +104,11 @@ public class OntologyLoaderTest extends AbstractOntologyTest {
 
         URL resource = this.getClass().getResource( "/data/nif.organism.test.owl.xml" );
         assertNotNull( resource );
-        try ( InputStream in = resource.openStream(); ) {
+        try ( InputStream in = resource.openStream() ) {
             Files.copy( in, f.toPath(), StandardCopyOption.REPLACE_EXISTING );
         }
 
-        try ( InputStream in = resource.openStream(); ) {
+        try ( InputStream in = resource.openStream() ) {
             Files.copy( in, oldFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
         }
 
@@ -111,7 +117,7 @@ public class OntologyLoaderTest extends AbstractOntologyTest {
         // Now if the dataResource has changed
         resource = this.getClass().getResource( "/data/nif.organism.test.owl-off-by-one.xml" );
         assertNotNull( resource );
-        try ( InputStream in = resource.openStream(); ) {
+        try ( InputStream in = resource.openStream() ) {
             Files.copy( in, f.toPath(), StandardCopyOption.REPLACE_EXISTING );
         }
         assertTrue( OntologyLoader.hasChanged( name ) );

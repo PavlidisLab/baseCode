@@ -2,8 +2,6 @@ package ubic.basecode.ontology.providers;
 
 import ubic.basecode.util.Configuration;
 
-import javax.annotation.Nullable;
-
 /**
  * Base class for all ontologies built-in to the baseCode project.
  * <p>
@@ -40,7 +38,6 @@ public abstract class AbstractBaseCodeOntologyService extends AbstractOntologySe
         return Boolean.TRUE.equals( Configuration.getBoolean( "load." + cacheName ) );
     }
 
-    @Nullable
     @Override
     public String getCacheName() {
         return cacheName;

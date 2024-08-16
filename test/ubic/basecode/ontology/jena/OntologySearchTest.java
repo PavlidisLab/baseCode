@@ -16,6 +16,7 @@ package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import org.assertj.core.api.Assertions;
@@ -43,7 +44,7 @@ public class OntologySearchTest extends AbstractOntologyTest {
     @Test
     public final void testIndexing() throws Exception {
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/mged.owl.gz" ) ) );
-        OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test", false );
+        OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test", false, OntModelSpec.OWL_MEM_TRANS_INF );
 
         HashSet<OntologyIndexer.IndexableProperty> indexableProperties = new HashSet<>( OntologyIndexer.DEFAULT_INDEXABLE_PROPERTIES );
         indexableProperties.add( new OntologyIndexer.IndexableProperty( RDFS.comment, true ) );
@@ -64,7 +65,7 @@ public class OntologySearchTest extends AbstractOntologyTest {
     @Test
     public void testStemming() throws Exception {
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/mged.owl.gz" ) ) );
-        OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test", false );
+        OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test", false, OntModelSpec.OWL_MEM_TRANS_INF );
         HashSet<OntologyIndexer.IndexableProperty> indexableProperties = new HashSet<>( OntologyIndexer.DEFAULT_INDEXABLE_PROPERTIES );
         indexableProperties.add( new OntologyIndexer.IndexableProperty( RDFS.comment, true ) );
         SearchIndex index = OntologyIndexer.indexOntology( "MGEDTEST", model, indexableProperties, Collections.emptySet(), true );
@@ -96,7 +97,7 @@ public class OntologySearchTest extends AbstractOntologyTest {
         OntModel model;
         try ( InputStream is = this.getClass().getResourceAsStream( "/data/niforgantest.owl.xml" ) ) {
             assertNotNull( is );
-            model = OntologyLoader.loadMemoryModel( is, "NIFTEST" );
+            model = OntologyLoader.loadMemoryModel( is, "NIFTEST", true, OntModelSpec.OWL_MEM_TRANS_INF );
         }
 
         HashSet<OntologyIndexer.IndexableProperty> indexableProperties = new HashSet<>( OntologyIndexer.DEFAULT_INDEXABLE_PROPERTIES );
@@ -135,7 +136,7 @@ public class OntologySearchTest extends AbstractOntologyTest {
         OntModel model;
         try ( InputStream is = this.getClass().getResourceAsStream( "/data/eftest.owl.xml" ) ) {
             assertNotNull( is );
-            model = OntologyLoader.loadMemoryModel( is, "EFTEST" );
+            model = OntologyLoader.loadMemoryModel( is, "EFTEST", true, OntModelSpec.OWL_MEM_TRANS_INF );
         }
 
         SearchIndex index = OntologyIndexer.indexOntology( "EFTEST", model, Collections.emptySet(), true );
@@ -159,7 +160,7 @@ public class OntologySearchTest extends AbstractOntologyTest {
         OntModel model;
         try ( InputStream is = this.getClass().getResourceAsStream( "/data/dotest.owl.xml" ) ) {
             assertNotNull( is );
-            model = OntologyLoader.loadMemoryModel( is, "DO_TEST" );
+            model = OntologyLoader.loadMemoryModel( is, "DO_TEST", true, OntModelSpec.OWL_MEM_TRANS_INF );
         }
 
         SearchIndex index = OntologyIndexer.indexOntology( "DO_TEST", model, Collections.emptySet(), true );
@@ -182,7 +183,7 @@ public class OntologySearchTest extends AbstractOntologyTest {
         OntModel model;
         try ( InputStream is = this.getClass().getResourceAsStream( "/data/nif.organism.test.owl.xml" ) ) {
             assertNotNull( is );
-            model = OntologyLoader.loadMemoryModel( is, "NIFORG_TEST", false );
+            model = OntologyLoader.loadMemoryModel( is, "NIFORG_TEST", false, OntModelSpec.OWL_MEM_TRANS_INF );
         }
 
         HashSet<OntologyIndexer.IndexableProperty> indexableProperties = new HashSet<>( OntologyIndexer.DEFAULT_INDEXABLE_PROPERTIES );
@@ -223,7 +224,7 @@ public class OntologySearchTest extends AbstractOntologyTest {
         OntModel model;
         try ( InputStream is = this.getClass().getResourceAsStream( "/data/obi.test.owl.xml" ) ) {
             assertNotNull( is );
-            model = OntologyLoader.loadMemoryModel( is, "OBI_TEST" );
+            model = OntologyLoader.loadMemoryModel( is, "OBI_TEST", true, OntModelSpec.OWL_MEM_TRANS_INF );
         }
 
         SearchIndex index = OntologyIndexer.indexOntology( "OBI_TEST", model, Collections.emptySet(), true );
@@ -245,7 +246,7 @@ public class OntologySearchTest extends AbstractOntologyTest {
     public final void testOmitDefinitions4() throws Exception {
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/NIF-GrossAnatomy.owl.gz" ) ) );
 
-        OntModel model = OntologyLoader.loadMemoryModel( is, "NIFAN_TEST2", false );
+        OntModel model = OntologyLoader.loadMemoryModel( is, "NIFAN_TEST2", false, OntModelSpec.OWL_MEM_TRANS_INF );
         is.close();
 
         SearchIndex index = OntologyIndexer.indexOntology( "NIFAN_TEST2", model, Collections.emptySet(), true );
@@ -267,7 +268,7 @@ public class OntologySearchTest extends AbstractOntologyTest {
     @Test
     public final void testPersistence() throws Exception {
         InputStream is = new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream( "/data/mged.owl.gz" ) ) );
-        OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test", false );
+        OntModel model = OntologyLoader.loadMemoryModel( is, "owl-test", false, OntModelSpec.OWL_MEM_TRANS_INF );
 
         HashSet<OntologyIndexer.IndexableProperty> indexableProperties = new HashSet<>( OntologyIndexer.DEFAULT_INDEXABLE_PROPERTIES );
         indexableProperties.add( new OntologyIndexer.IndexableProperty( RDFS.comment, true ) );

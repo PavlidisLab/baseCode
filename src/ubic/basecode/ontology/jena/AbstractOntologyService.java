@@ -101,7 +101,7 @@ public abstract class AbstractOntologyService implements OntologyService {
      * Internal state.
      */
     @Nullable
-    private volatile State state = null;
+    private State state = null;
 
     /* settings (applicable for next initialization) */
     private LanguageLevel languageLevel = LanguageLevel.FULL;
@@ -292,6 +292,14 @@ public abstract class AbstractOntologyService implements OntologyService {
         // if interrupted, we don't need to replace the model and clear the *old* cache
         if ( Thread.currentThread().isInterrupted() )
             return;
+
+        if ( this.state != null ) {
+            try {
+                this.state.close();
+            } catch ( Exception e ) {
+                log.error( "Failed to close current state.", e );
+            }
+        }
 
         this.state = new State( model, index, excludedWordsFromStemming, additionalRestrictions, languageLevel, inferenceMode, processImports, additionalProperties.stream().map( Property::getURI ).collect( Collectors.toSet() ), null );
         if ( cacheName != null ) {
@@ -593,7 +601,7 @@ public abstract class AbstractOntologyService implements OntologyService {
     /**
      * Load a model from a given input stream.
      */
-    protected OntologyModel loadModelFromStream( InputStream is, boolean processImports, LanguageLevel languageLevel, InferenceMode inferenceMode ) throws IOException {
+    protected OntologyModel loadModelFromStream( InputStream is, boolean processImports, LanguageLevel languageLevel, InferenceMode inferenceMode ) {
         return new OntologyModelImpl( OntologyLoader.loadMemoryModel( is, this.getOntologyUrl(), processImports, this.getSpec( languageLevel, inferenceMode ) ) );
     }
 
@@ -725,6 +733,13 @@ public abstract class AbstractOntologyService implements OntologyService {
     }
 
     @Override
+    public void close() throws Exception {
+        if ( state != null ) {
+            state.close();
+        }
+    }
+
+    @Override
     public String toString() {
         return String.format( "%s [url=%s] [language level=%s] [inference mode=%s] [imports=%b] [search=%b]",
                 getOntologyName(), getOntologyUrl(), getLanguageLevel(), getInferenceMode(), getProcessImports(), isSearchEnabled() );
@@ -747,7 +762,7 @@ public abstract class AbstractOntologyService implements OntologyService {
                 .collect( Collectors.toSet() );
     }
 
-    private static class State {
+    private static class State implements AutoCloseable {
         private final OntModel model;
         @Nullable
         private final SearchIndex index;
@@ -770,6 +785,17 @@ public abstract class AbstractOntologyService implements OntologyService {
             this.processImports = processImports;
             this.additionalPropertyUris = additionalPropertyUris;
             this.alternativeIDs = alternativeIDs;
+        }
+
+        @Override
+        public void close() throws Exception {
+            try {
+                model.close();
+            } finally {
+                if ( index != null ) {
+                    index.close();
+                }
+            }
         }
     }
 }

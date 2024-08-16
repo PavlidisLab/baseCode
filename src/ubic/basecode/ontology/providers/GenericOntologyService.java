@@ -14,8 +14,6 @@
  */
 package ubic.basecode.ontology.providers;
 
-import org.apache.commons.lang3.StringUtils;
-
 import javax.annotation.Nullable;
 
 /**
@@ -38,24 +36,6 @@ public class GenericOntologyService extends AbstractOntologyService {
 
     public GenericOntologyService( String name, String url ) {
         this( name, url, null );
-    }
-
-    /**
-     * @deprecated use {@link #GenericOntologyService(String, String, String)} with an explicit cache name instead
-     */
-    @Deprecated
-    public GenericOntologyService( String name, String url, boolean cache ) {
-        this( name, url, cache ? StringUtils.deleteWhitespace( name ) : null );
-    }
-
-    /**
-     * @deprecated use {@link #GenericOntologyService(String, String, String)} with an explicit cache name instead and
-     * {@link #setProcessImports(boolean)}
-     */
-    @Deprecated
-    public GenericOntologyService( String name, String url, boolean cache, boolean processImports ) {
-        this( name, url, cache );
-        setProcessImports( processImports );
     }
 
     @Override

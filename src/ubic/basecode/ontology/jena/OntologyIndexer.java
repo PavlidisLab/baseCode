@@ -259,9 +259,6 @@ class OntologyIndexer {
                             // could be a blank node
                             continue;
                         }
-                        if ( isIndividual ) {
-                            System.out.println( doc );
-                        }
                         doc.add( f );
                     }
                 }
