@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2006 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,31 +18,21 @@
  */
 package ubic.basecode.io;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.DoubleBuffer;
-import java.nio.IntBuffer;
-import java.nio.LongBuffer;
+import cern.colt.list.ByteArrayList;
+import cern.colt.list.DoubleArrayList;
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.nio.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.ArrayUtils;
-
-import cern.colt.list.ByteArrayList;
-import cern.colt.list.DoubleArrayList;
-
 /**
  * Class to convert byte arrays (e.g., Blobs) to and from other types of arrays. TODO these could be static methods.
- * 
+ *
  * @author Kiran Keshav
  * @author Paul Pavlidis
- * 
+ *
  */
 public final class ByteArrayConverter {
 
@@ -63,7 +53,7 @@ public final class ByteArrayConverter {
      * The Java virtual machine encodes boolean array components using 1 to represent true and 0 to represent false.
      * Where Java programming language boolean values are mapped by compilers to values of Java virtual machine type
      * int, the compilers must use the same encoding.
-     * 
+     *
      * @see http://java.sun.com/docs/books/vmspec/2nd-edition/html/Overview.doc.html#12237
      */
     private static final int BOOL_SIZE = 1; // erm...this seems to work.
@@ -76,31 +66,22 @@ public final class ByteArrayConverter {
      */
     public byte[] booleanArrayToBytes( boolean[] boolarray ) {
         if ( boolarray == null ) return null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream( bos );
-        try {
-            for ( boolean element : boolarray ) {
-                dos.writeBoolean( element );
-            }
-        } catch ( IOException e ) {
-            // do nothing
+        ByteBuffer buffer = ByteBuffer.allocate( boolarray.length );
+        for ( boolean b : boolarray ) {
+            buffer.put( b ? ( byte ) 1 : ( byte ) 0 );
         }
-        return bos.toByteArray();
+        return buffer.array();
     }
 
     /**
      * Convert a byte array with one-byte-per-character ASCII encoding (aka ISO-8859-1).
-     * 
+     *
      * @param barray
      * @return
      */
     public String byteArrayToAsciiString( byte[] barray ) {
         if ( barray == null ) return null;
-        try {
-            return new String( barray, "ISO-8859-1" );
-        } catch ( UnsupportedEncodingException e ) {
-            throw new RuntimeException( "Conversion error", e );
-        }
+        return new String( barray, StandardCharsets.ISO_8859_1 );
     }
 
     /**
@@ -109,31 +90,11 @@ public final class ByteArrayConverter {
      */
     public boolean[] byteArrayToBooleans( byte[] barray ) {
         if ( barray == null ) return null;
-        ByteArrayInputStream bis = new ByteArrayInputStream( barray );
-        DataInputStream dis = new DataInputStream( bis );
-        boolean[] iarray = new boolean[barray.length / BOOL_SIZE];
-        int i = 0;
-
-        try {
-            while ( dis.available() > 0 ) {
-                iarray[i] = dis.readBoolean();
-                i++;
-            }
-            return iarray;
-
-        } catch ( IOException e ) {
-            throw new RuntimeException( e );
-        } finally {
-            try {
-                dis.close();
-                bis.close();
-
-            } catch ( IOException e ) {
-                throw new RuntimeException( e );
-
-            }
+        boolean[] iarray = new boolean[barray.length];
+        for ( int i = 0; i < barray.length; i++ ) {
+            iarray[i] = barray[i] != 0;
         }
-
+        return iarray;
     }
 
     /**
@@ -142,12 +103,8 @@ public final class ByteArrayConverter {
      */
     public char[] byteArrayToChars( byte[] barray ) {
         if ( barray == null ) return null;
-
         CharBuffer buf = ByteBuffer.wrap( barray ).asCharBuffer();
-        char[] array = new char[buf.remaining()];
-        buf.get( array );
-        return array;
-
+        return buf.array();
     }
 
     /**
@@ -188,13 +145,10 @@ public final class ByteArrayConverter {
      */
     public double[] byteArrayToDoubles( byte[] barray ) {
         if ( barray == null ) return null;
-
         DoubleBuffer buf = ByteBuffer.wrap( barray ).asDoubleBuffer();
         double[] array = new double[buf.remaining()];
         buf.get( array );
-
         return array;
-
     }
 
     /**
@@ -203,13 +157,10 @@ public final class ByteArrayConverter {
      */
     public int[] byteArrayToInts( byte[] barray ) {
         if ( barray == null ) return null;
-
         IntBuffer intBuf = ByteBuffer.wrap( barray ).asIntBuffer();
         int[] array = new int[intBuf.remaining()];
         intBuf.get( array );
-
         return array;
-
     }
 
     /**
@@ -218,11 +169,9 @@ public final class ByteArrayConverter {
      */
     public long[] byteArrayToLongs( byte[] barray ) {
         if ( barray == null ) return null;
-
         LongBuffer buf = ByteBuffer.wrap( barray ).asLongBuffer();
         long[] array = new long[buf.remaining()];
         buf.get( array );
-
         return array;
     }
 
@@ -230,7 +179,7 @@ public final class ByteArrayConverter {
      * Convert a byte array into a array of Strings. It is assumed that separate strings are delimited by '\u0000'
      * (NUL). Note that this method cannot differentiate between empty strings and null strings. A string that is empty
      * will be returned as an empty string, not null.
-     * 
+     *
      * @param bytes
      * @return
      */
@@ -257,7 +206,7 @@ public final class ByteArrayConverter {
 
     /**
      * Convert a byte array to a tab-delimited string.
-     * 
+     *
      * @param bytes
      * @param type The Class of primitives the bytes are to be interpreted as. If this is String, then the bytes are
      *        directly interpreted as tab-delimited string (e.g., no extra tabs are added).
@@ -296,21 +245,11 @@ public final class ByteArrayConverter {
      */
     public byte[] charArrayToBytes( char[] carray ) {
         if ( carray == null ) return null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream( bos );
-
-        try {
-            for ( char element : carray ) {
-                dos.writeChar( element );
-            }
-            dos.close();
-            bos.close();
-
-        } catch ( IOException e ) {
-            // do nothing.
+        ByteBuffer buffer = ByteBuffer.allocate( 2 * carray.length );
+        for ( char c : carray ) {
+            buffer.putChar( c );
         }
-
-        return bos.toByteArray();
+        return buffer.array();
     }
 
     /**
@@ -318,17 +257,15 @@ public final class ByteArrayConverter {
      * @return byte[]
      */
     public byte[] doubleArrayToBytes( double[] darray ) {
-        if ( darray == null ) return null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream( bos );
-        try {
-            for ( double element : darray ) {
-                dos.writeDouble( element );
-            }
-        } catch ( IOException e ) {
-            // do nothing
+        if ( darray == null ) {
+            return null;
         }
-        return bos.toByteArray();
+        DoubleBuffer.wrap( darray );
+        ByteBuffer buffer = ByteBuffer.allocate( 8 * darray.length );
+        for ( double d : darray ) {
+            buffer.putDouble( d );
+        }
+        return buffer.array();
     }
 
     /**
@@ -344,7 +281,7 @@ public final class ByteArrayConverter {
      * @return
      */
     public byte[] doubleArrayToBytes( DoubleArrayList darray ) {
-        return doubleArrayToBytes( ( Double[] ) darray.toList().toArray( new Double[] {} ) );
+        return doubleArrayToBytes( darray.elements() );
     }
 
     /**
@@ -374,19 +311,14 @@ public final class ByteArrayConverter {
      * @return byte[]
      */
     public byte[] intArrayToBytes( int[] iarray ) {
-        if ( iarray == null ) return null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream( bos );
-        try {
-            for ( int element : iarray ) {
-                dos.writeInt( element );
-            }
-            dos.close();
-            bos.close();
-        } catch ( IOException e ) {
-            // do nothing
+        if ( iarray == null ) {
+            return null;
         }
-        return bos.toByteArray();
+        ByteBuffer buffer = ByteBuffer.allocate( 4 * iarray.length );
+        for ( int i : iarray ) {
+            buffer.putInt( i );
+        }
+        return buffer.array();
     }
 
     /**
@@ -394,49 +326,36 @@ public final class ByteArrayConverter {
      * @return byte[]
      */
     public byte[] longArrayToBytes( long[] larray ) {
-        if ( larray == null ) return null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream( bos );
-        try {
-            for ( long element : larray ) {
-                dos.writeLong( element );
-            }
-            dos.close();
-            bos.close();
-        } catch ( IOException e ) {
-            // do nothing
+        if ( larray == null ) {
+            return null;
         }
-        return bos.toByteArray();
+        ByteBuffer buffer = ByteBuffer.allocate( 8 * larray.length );
+        for ( long i : larray ) {
+            buffer.putLong( i );
+        }
+        return buffer.array();
     }
 
     /**
      * Note that this method cannot differentiate between empty strings and null strings. A string that is empty will be
      * returned as an empty string, not null, while a null string will be stored as an empty string.
-     * 
+     *
      * @param stringArray
      * @return byte[]
      */
-    public byte[] stringArrayToBytes( Object[] stringArray ) {
+    public byte[] stringArrayToBytes( String[] stringArray ) {
         if ( stringArray == null ) return null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream( bos );
-
-        try {
-            for ( Object element : stringArray ) {
-                String string = ( String ) element;
-                if ( string != null ) {
-                    dos.write( string.getBytes() );
-                }
-                dos.write( '\u0000' );
-            }
-            dos.close();
-            bos.close();
-
-        } catch ( IOException e ) {
-            // do nothing.
+        int size = 0;
+        for ( String element : stringArray ) {
+            size += element.getBytes().length;
+            size += 1;
         }
-
-        return bos.toByteArray();
+        ByteBuffer buffer = ByteBuffer.allocate( size );
+        for ( String element : stringArray ) {
+            buffer.put( element.getBytes() );
+            buffer.put( ( byte ) 0 );
+        }
+        return buffer.array();
     }
 
     /**
@@ -449,7 +368,7 @@ public final class ByteArrayConverter {
     /**
      * Convert an array of Objects into an array of bytes. If the array contains Strings, it is converted to a
      * tab-delimited string, and then converted to bytes.
-     * 
+     *
      * @param array of Objects to be converted to bytes.
      * @return
      * @throws UnsupportedOperationException if Objects are a type that can't be converted by this.
@@ -464,30 +383,30 @@ public final class ByteArrayConverter {
         if ( array[0] instanceof Boolean ) {
             boolean[] toConvert = new boolean[array.length];
             for ( int i = 0; i < array.length; i++ ) {
-                boolean object = ( ( Boolean ) array[i] ).booleanValue();
+                boolean object = ( Boolean ) array[i];
                 toConvert[i] = object;
             }
             return booleanArrayToBytes( toConvert );
         } else if ( array[0] instanceof Double ) {
             double[] toConvert = new double[array.length];
             for ( int i = 0; i < array.length; i++ ) {
-                double object = ( ( Double ) array[i] ).doubleValue();
+                double object = ( Double ) array[i];
                 toConvert[i] = object;
             }
             return doubleArrayToBytes( toConvert );
         } else if ( array[0] instanceof Character ) {
             char[] toConvert = new char[array.length];
             for ( int i = 0; i < array.length; i++ ) {
-                char object = ( ( Character ) array[i] ).charValue();
+                char object = ( Character ) array[i];
                 toConvert[i] = object;
             }
             return charArrayToBytes( toConvert );
         } else if ( array[0] instanceof String ) {
-            return stringArrayToBytes( array );
+            return stringArrayToBytes( ( String[] ) array );
         } else if ( array[0] instanceof Integer ) {
             int[] toConvert = new int[array.length];
             for ( int i = 0; i < array.length; i++ ) {
-                int object = ( ( Integer ) array[i] ).intValue();
+                int object = ( Integer ) array[i];
                 toConvert[i] = object;
             }
             return intArrayToBytes( toConvert );
