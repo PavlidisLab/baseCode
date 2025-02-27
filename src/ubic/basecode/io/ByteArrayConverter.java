@@ -254,6 +254,26 @@ public final class ByteArrayConverter {
         return buffer.array();
     }
 
+    public static byte[] floatArrayToBytes( float[] darray ) {
+        if ( darray == null ) {
+            return null;
+        }
+        FloatBuffer.wrap( darray );
+        ByteBuffer buffer = ByteBuffer.allocate( 4 * darray.length );
+        for ( float d : darray ) {
+            buffer.putFloat( d );
+        }
+        return buffer.array();
+    }
+
+    public static float[] byteArrayToFloats( byte[] barray ) {
+        if ( barray == null ) return null;
+        FloatBuffer buf = ByteBuffer.wrap( barray ).asFloatBuffer();
+        float[] array = new float[buf.remaining()];
+        buf.get( array );
+        return array;
+    }
+
     /**
      * @param darray
      * @return byte[]
