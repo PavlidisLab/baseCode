@@ -41,7 +41,7 @@ public class SQLUtils {
      */
     public static String blobToString( Blob exonStarts ) throws SQLException {
         byte[] bytes = exonStarts.getBytes( 1L, ( int ) exonStarts.length() );
-        return bac.byteArrayToAsciiString( bytes );
+        return bac.byteArrayToString( bytes );
     }
 
     public static Long asId( Object o ) {

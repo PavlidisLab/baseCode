@@ -79,9 +79,9 @@ public final class ByteArrayConverter {
      * @param barray
      * @return
      */
-    public String byteArrayToAsciiString( byte[] barray ) {
+    public String byteArrayToString( byte[] barray ) {
         if ( barray == null ) return null;
-        return new String( barray, StandardCharsets.ISO_8859_1 );
+        return new String( barray, StandardCharsets.UTF_8);
     }
 
     /**
@@ -104,7 +104,9 @@ public final class ByteArrayConverter {
     public char[] byteArrayToChars( byte[] barray ) {
         if ( barray == null ) return null;
         CharBuffer buf = ByteBuffer.wrap( barray ).asCharBuffer();
-        return buf.array();
+        char[] array = new char[buf.remaining()];
+        buf.get( array );
+        return array;
     }
 
     /**
@@ -188,7 +190,7 @@ public final class ByteArrayConverter {
         ByteArrayList buf = new ByteArrayList();
         for ( byte element : bytes ) {
             if ( element == '\u0000' ) {
-                String newString = new String( buf.elements() );
+                String newString = new String( buf.elements(), StandardCharsets.UTF_8 );
                 newString = newString.trim();
                 strings.add( newString );
                 buf = new ByteArrayList();
@@ -226,7 +228,7 @@ public final class ByteArrayConverter {
             Long[] array = ArrayUtils.toObject( byteArrayToLongs( bytes ) );
             return formatAsString( array );
         } else if ( type.equals( String.class ) ) {
-            return byteArrayToAsciiString( bytes );
+            return byteArrayToString( bytes );
         } else if ( type.equals( Boolean.class ) ) {
             Boolean[] array = ArrayUtils.toObject( byteArrayToBooleans( bytes ) );
             return formatAsString( array );
@@ -347,12 +349,12 @@ public final class ByteArrayConverter {
         if ( stringArray == null ) return null;
         int size = 0;
         for ( String element : stringArray ) {
-            size += element.getBytes().length;
+            size += element.getBytes(StandardCharsets.UTF_8).length;
             size += 1;
         }
         ByteBuffer buffer = ByteBuffer.allocate( size );
         for ( String element : stringArray ) {
-            buffer.put( element.getBytes() );
+            buffer.put( element.getBytes(StandardCharsets.UTF_8) );
             buffer.put( ( byte ) 0 );
         }
         return buffer.array();
