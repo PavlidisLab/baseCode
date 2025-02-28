@@ -21,6 +21,7 @@ package ubic.basecode.io;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Array;
 import java.nio.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -346,23 +347,32 @@ public final class ByteArrayConverter {
      * @param charset charset to use when converting strings to bytes
      * @throws UnsupportedOperationException if Objects are a type that can't be converted by this.
      */
-    public byte[] objectArrayToBytes( Object[] array, Charset charset ) {
+    public <T> byte[] objectArrayToBytes( T[] array, Charset charset ) {
         if ( array == null ) return null;
-        if ( array.length == 0 ) return new byte[0];
-        if ( array[0] instanceof Boolean ) {
+        if ( array instanceof Boolean[] ) {
             return booleanArrayToBytes( ArrayUtils.toPrimitive( ( Boolean[] ) array ) );
-        } else if ( array[0] instanceof Float ) {
+        } else if ( array instanceof Float[] ) {
             return floatArrayToBytes( ArrayUtils.toPrimitive( ( Float[] ) array ) );
-        } else if ( array[0] instanceof Double ) {
+        } else if ( array instanceof Double[] ) {
             return doubleArrayToBytes( ArrayUtils.toPrimitive( ( Double[] ) array ) );
-        } else if ( array[0] instanceof Character ) {
+        } else if ( array instanceof Character[] ) {
             return charArrayToBytes( ArrayUtils.toPrimitive( ( Character[] ) array ) );
-        } else if ( array[0] instanceof String ) {
+        } else if ( array instanceof String[] ) {
             return stringArrayToBytes( ( String[] ) array, charset );
-        } else if ( array[0] instanceof Integer ) {
+        } else if ( array instanceof Integer[] ) {
             return intArrayToBytes( ArrayUtils.toPrimitive( ( Integer[] ) array ) );
-        } else if ( array[0] instanceof Long ) {
+        } else if ( array instanceof Long[] ) {
             return longArrayToBytes( ArrayUtils.toPrimitive( ( Long[] ) array ) );
+        } else if ( array.getClass().equals( Object[].class ) ) {
+            // require a copy...
+            if ( array.length != 0 ) {
+                //noinspection unchecked
+                T[] typedArray = ( T[] ) Array.newInstance( array[0].getClass(), array.length );
+                System.arraycopy( array, 0, typedArray, 0, array.length );
+                return objectArrayToBytes( typedArray, charset );
+            } else {
+                return new byte[0];
+            }
         } else {
             throw new UnsupportedOperationException( "Can't convert " + array[0].getClass() + " to bytes" );
         }
