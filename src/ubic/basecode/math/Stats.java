@@ -23,7 +23,6 @@ import java.util.Set;
 
 import cern.colt.list.DoubleArrayList;
 import cern.jet.stat.Descriptive;
-import org.apache.commons.math3.util.DoubleArray;
 
 /**
  * Miscellaneous functions used for statistical analysis. Some are optimized or specialized versions of methods that can
