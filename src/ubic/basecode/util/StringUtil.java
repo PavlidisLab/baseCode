@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2006 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,15 +18,16 @@
  */
 package ubic.basecode.util;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Collection;
-
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvValidationException;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Collection;
 
 /**
  * @author pavlidis
@@ -36,7 +37,7 @@ public class StringUtil {
     private static final Logger log = LoggerFactory.getLogger( StringUtil.class );
 
     /**
-     * @param appendee The string to be added to
+     * @param appendee  The string to be added to
      * @param appendant The string to add to the end of the appendee
      * @param separator The string to put between the joined strings, if necessary.
      * @return appendee + separator + separator unless appendee is empty, in which case the appendant is returned.
@@ -51,7 +52,7 @@ public class StringUtil {
 
     /**
      * Given a set of strings, identify any prefix they have in common.
-     * 
+     *
      * @param strings
      * @return the common prefix, null if there isn't one.
      */
@@ -78,7 +79,7 @@ public class StringUtil {
 
     /**
      * Given a set of strings, identify any suffix they have in common.
-     * 
+     *
      * @param strings
      * @return the commons suffix, null if there isn't one.
      */
@@ -104,9 +105,9 @@ public class StringUtil {
 
     /**
      * Checks a string to find "strange" character, used by phenocarta to check evidence description
-     * 
+     *
      * @param the string to check
-     * @return return false if something strange was found 
+     * @return return false if something strange was found
      * @author Nicolas?
      */
     public static boolean containsValidCharacter( String s ) {
@@ -118,12 +119,12 @@ public class StringUtil {
                 Character cha = s.charAt( i );
 
                 if ( !( isLatinLetter( cha ) || Character.isDigit( cha ) || cha == '=' || cha == ',' || cha == '('
-                        || cha == ')' || cha == '\'' || Character.isWhitespace( cha ) || cha == '/' || cha == '?'
-                        || cha == '+' || cha == ':' || cha == '-' || cha == '<' || cha == '>' || cha == '"'
-                        || cha == '%' || cha == '.' || cha == '*' || cha == '[' || cha == ']' || cha == ';'
-                        || cha == '_' || cha == '\\' || cha == '|' || cha == '&' || cha == '^' || cha == '#'
-                        || cha == '{' || cha == '}' || cha == '!' || cha == '~' || cha == '@' || cha == '—'
-                        || cha == '×' || cha == '–' || cha == ' ' ) ) {
+                    || cha == ')' || cha == '\'' || Character.isWhitespace( cha ) || cha == '/' || cha == '?'
+                    || cha == '+' || cha == ':' || cha == '-' || cha == '<' || cha == '>' || cha == '"'
+                    || cha == '%' || cha == '.' || cha == '*' || cha == '[' || cha == ']' || cha == ';'
+                    || cha == '_' || cha == '\\' || cha == '|' || cha == '&' || cha == '^' || cha == '#'
+                    || cha == '{' || cha == '}' || cha == '!' || cha == '~' || cha == '@' || cha == '—'
+                    || cha == '×' || cha == '–' || cha == ' ' ) ) {
 
                     // new cha to be added, special Öö≤≥âμ etc... TODO and check later if found
 
@@ -137,25 +138,23 @@ public class StringUtil {
     }
 
     /**
-     * @param numFields
      * @param line
      * @return
      */
     public static String[] csvSplit( String line ) {
-
-        @SuppressWarnings("resource")
-        CSVReader reader = new CSVReader( new StringReader( line ) );
-
-        try {
-            return reader.readNext();
-        } catch ( IOException | CsvValidationException e ) {
+        try ( CSVParser parser = CSVParser.parse( new StringReader( line ), CSVFormat.DEFAULT ) ) {
+            for ( CSVRecord record : parser ) {
+                return record.values();
+            }
+            throw new IllegalArgumentException( "No CSV records found in line." );
+        } catch ( IOException e ) {
             throw new RuntimeException( e );
         }
     }
 
     /**
      * Made by Nicolas
-     * 
+     *
      * @param a line in a file cvs format
      * @return the same line but in tsv format
      */
@@ -188,7 +187,7 @@ public class StringUtil {
     /**
      * Mimics the make.names method in R (character.c) to make valid variables names; we use this for column headers in
      * some output files. This doesn't give the exact sames results as R; we avoid repeated '.'.
-     * 
+     *
      * @param s
      * @return modified string
      * @author paul
