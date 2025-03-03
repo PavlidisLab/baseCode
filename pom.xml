@@ -46,6 +46,7 @@
 		</developer>
 	</developers>
 	<dependencies>
+		<!-- Excel utilities (optional) -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
@@ -56,7 +57,9 @@
 					<artifactId>commons-codec</artifactId>
 				</exclusion>
 			</exclusions>
+			<optional>true</optional>
 		</dependency>
+
 		<dependency>
 			<groupId>colt</groupId>
 			<artifactId>colt</artifactId>
