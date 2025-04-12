@@ -54,12 +54,12 @@ class JenaUtils {
 
     private static Collection<OntClass> getParentsInternal( OntModel model, Collection<OntClass> ontClasses, boolean direct, @Nullable Set<Restriction> additionalRestrictions ) {
         ontClasses = ontClasses.stream()
-                .map( t -> t.inModel( model ) )
-                .filter( t -> t.canAs( OntClass.class ) )
-                .map( t -> as( t, OntClass.class ) )
-                .filter( Optional::isPresent )
-                .map( Optional::get )
-                .collect( Collectors.toSet() );
+            .map( t -> t.inModel( model ) )
+            .filter( t -> t.canAs( OntClass.class ) )
+            .map( t -> as( t, OntClass.class ) )
+            .filter( Optional::isPresent )
+            .map( Optional::get )
+            .collect( Collectors.toSet() );
         if ( ontClasses.isEmpty() ) {
             return Collections.emptySet();
         }
@@ -118,12 +118,12 @@ class JenaUtils {
 
     public static Collection<OntClass> getChildrenInternal( OntModel model, Collection<OntClass> terms, boolean direct, @Nullable Set<Restriction> additionalRestrictions ) {
         Set<OntClass> termsSet = terms.stream()
-                .map( t -> t.inModel( model ) )
-                .filter( t -> t.canAs( OntClass.class ) )
-                .map( t -> as( t, OntClass.class ) )
-                .filter( Optional::isPresent )
-                .map( Optional::get )
-                .collect( Collectors.toSet() );
+            .map( t -> t.inModel( model ) )
+            .filter( t -> t.canAs( OntClass.class ) )
+            .map( t -> as( t, OntClass.class ) )
+            .filter( Optional::isPresent )
+            .map( Optional::get )
+            .collect( Collectors.toSet() );
         if ( termsSet.isEmpty() ) {
             return Collections.emptySet();
         }
@@ -134,9 +134,9 @@ class JenaUtils {
             iterator = iterator.andThen( it.next().listSubClasses( direct ) );
         }
         Set<OntClass> result = iterator
-                .filterDrop( new BnodeFilter<>() )
-                .filterDrop( new PredicateFilter<>( o -> o.equals( model.getProfile().NOTHING() ) ) )
-                .toSet();
+            .filterDrop( new BnodeFilter<>() )
+            .filterDrop( new PredicateFilter<>( o -> o.equals( model.getProfile().NOTHING() ) ) )
+            .toSet();
         if ( additionalRestrictions != null && !additionalRestrictions.isEmpty() ) {
             timer.reset();
             timer.start();
@@ -145,15 +145,15 @@ class JenaUtils {
                 subClassOf = ResourceFactory.createProperty( makeDirect( subClassOf.getURI() ) );
             }
             Set<Restriction> restrictions = UniqueExtendedIterator.create( additionalRestrictions.iterator() )
-                    .filterKeep( new RestrictionWithValuesFromFilter( termsSet ) )
-                    .toSet();
+                .filterKeep( new RestrictionWithValuesFromFilter( termsSet ) )
+                .toSet();
             for ( Restriction r : restrictions ) {
                 result.addAll( model.listResourcesWithProperty( subClassOf, r )
-                        .filterDrop( new BnodeFilter<>() )
-                        .mapWith( r2 -> as( r2, OntClass.class ) )
-                        .filterKeep( new PredicateFilter<Optional<OntClass>>( Optional::isPresent ) )
-                        .mapWith( Optional::get )
-                        .toSet() );
+                    .filterDrop( new BnodeFilter<>() )
+                    .mapWith( r2 -> as( r2, OntClass.class ) )
+                    .filterKeep( new PredicateFilter<Optional<OntClass>>( Optional::isPresent ) )
+                    .mapWith( Optional::get )
+                    .toSet() );
             }
         }
         return result;
@@ -170,11 +170,11 @@ class JenaUtils {
      */
     private static boolean shouldRevisit( Collection<OntClass> terms, boolean direct, OntModel model, @Nullable Set<Restriction> additionalRestrictions ) {
         return !direct
-                && !terms.isEmpty()
-                && additionalRestrictions != null
-                && !additionalRestrictions.isEmpty()
-                && model.getReasoner() != null
-                && ( !supportsSubClassInference( model ) || !supportsAdditionalRestrictionsInference( model ) );
+            && !terms.isEmpty()
+            && additionalRestrictions != null
+            && !additionalRestrictions.isEmpty()
+            && model.getReasoner() != null
+            && ( !supportsSubClassInference( model ) || !supportsAdditionalRestrictionsInference( model ) );
     }
 
     /**
@@ -182,7 +182,7 @@ class JenaUtils {
      */
     public static boolean supportsSubClassInference( OntModel model ) {
         return model.getReasoner() != null
-                && model.getReasoner().supportsProperty( model.getProfile().SUB_CLASS_OF() );
+            && model.getReasoner().supportsProperty( model.getProfile().SUB_CLASS_OF() );
     }
 
     /**
@@ -192,8 +192,8 @@ class JenaUtils {
      */
     public static boolean supportsAdditionalRestrictionsInference( OntModel model ) {
         return model.getReasoner() != null
-                && model.getReasoner().supportsProperty( model.getProfile().SOME_VALUES_FROM() )
-                && model.getReasoner().supportsProperty( model.getProfile().ALL_VALUES_FROM() );
+            && model.getReasoner().supportsProperty( model.getProfile().SOME_VALUES_FROM() )
+            && model.getReasoner().supportsProperty( model.getProfile().ALL_VALUES_FROM() );
     }
 
     public static Resource getRestrictionValue( Restriction r ) {

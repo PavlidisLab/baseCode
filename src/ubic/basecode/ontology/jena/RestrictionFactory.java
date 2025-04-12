@@ -43,7 +43,7 @@ class RestrictionFactory {
 
         } else {
             throw new UnsupportedOperationException( "Sorry, can't convert "
-                    + restriction.getOnProperty().getClass().getName() );
+                + restriction.getOnProperty().getClass().getName() );
         }
 
     }

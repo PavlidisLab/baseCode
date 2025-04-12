@@ -73,10 +73,10 @@ class OntologyIndexer {
      * Those are build-in fields that are always indexed.
      */
     private static final String
-            ID_FIELD = "_ID",
-            LOCAL_NAME_FIELD = "_LOCAL_NAME",
-            IS_CLASS_FIELD = "_IS_CLASS",
-            IS_INDIVIDUAL_FIELD = "_IS_INDIVIDUAL";
+        ID_FIELD = "_ID",
+        LOCAL_NAME_FIELD = "_LOCAL_NAME",
+        IS_CLASS_FIELD = "_IS_CLASS",
+        IS_INDIVIDUAL_FIELD = "_IS_INDIVIDUAL";
 
     public static class IndexableProperty {
         private final Property property;
@@ -198,9 +198,9 @@ class OntologyIndexer {
             indexWriter.deleteAll(); // start with clean slate.
             assert 0 == indexWriter.numDocs();
             Map<String, IndexableProperty> indexablePropertiesByField = indexableProperties.stream()
-                    .collect( Collectors.toMap( p -> p.getProperty().getURI(), p -> p ) );
+                .collect( Collectors.toMap( p -> p.getProperty().getURI(), p -> p ) );
             ExtendedIterator<Resource> subjects = model.listSubjects()
-                    .filterDrop( new BnodeFilter<>() );
+                .filterDrop( new BnodeFilter<>() );
             while ( subjects.hasNext() ) {
                 Resource subject = subjects.next();
                 String id = subject.getURI();
@@ -245,7 +245,7 @@ class OntologyIndexer {
                                 f = nf;
                             } else if ( v instanceof XSDDateTime ) {
                                 f = new NumericField( field )
-                                        .setLongValue( ( ( XSDDateTime ) v ).asCalendar().getTime().getTime() );
+                                    .setLongValue( ( ( XSDDateTime ) v ).asCalendar().getTime().getTime() );
                             } else if ( v instanceof Boolean ) {
                                 f = new NumericField( field ).setIntValue( Boolean.TRUE.equals( v ) ? 1 : 0 );
                             } else {
@@ -272,8 +272,8 @@ class OntologyIndexer {
 
     private static SearchIndex openIndex( Directory dir, Directory dirStd, Collection<IndexableProperty> indexableProperties, Set<String> excludedFromStemming ) throws IOException {
         String[] searchableFields = Stream.concat( Stream.of( ID_FIELD, LOCAL_NAME_FIELD ), indexableProperties.stream().map( p -> p.property ).map( Resource::getURI ) )
-                .distinct()
-                .toArray( String[]::new );
+            .distinct()
+            .toArray( String[]::new );
         return new LuceneSearchIndex( searchableFields, new MultiReader( IndexReader.open( dir ), IndexReader.open( dirStd ) ), new EnglishAnalyzer( Version.LUCENE_36, EnglishAnalyzer.getDefaultStopSet(), excludedFromStemming ) );
     }
 

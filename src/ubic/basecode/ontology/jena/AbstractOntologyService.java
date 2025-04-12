@@ -1,22 +1,3 @@
-/*
- * The basecode project
- *
- * Copyright (c) 2007-2019 University of British Columbia
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
 package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.*;
@@ -57,20 +38,13 @@ import java.util.stream.Collectors;
 
 import static ubic.basecode.ontology.jena.JenaUtils.as;
 
-/**
- * Base class for Jena-based ontology services.
- *
- * @author kelsey
- */
-@SuppressWarnings("unused")
 public abstract class AbstractOntologyService implements OntologyService {
-
-    protected static Logger log = LoggerFactory.getLogger( AbstractOntologyService.class );
 
     /**
      * Properties through which propagation is allowed for {@link #getParents(Collection, boolean, boolean)}}
      */
     private static final Set<Property> DEFAULT_ADDITIONAL_PROPERTIES;
+    protected static Logger log = LoggerFactory.getLogger( AbstractOntologyService.class );
 
     static {
         DEFAULT_ADDITIONAL_PROPERTIES = new HashSet<>();
@@ -97,12 +71,16 @@ public abstract class AbstractOntologyService implements OntologyService {
         DEFAULT_ADDITIONAL_PROPERTIES.add( RO.properPartOf );
     }
 
+    private final String ontologyName;
+    private final String ontologyUrl;
+    private final boolean ontologyEnabled;
+    private final String cacheName;
+
     /**
      * Internal state.
      */
     @Nullable
     private State state = null;
-
     /* settings (applicable for next initialization) */
     private LanguageLevel languageLevel = LanguageLevel.FULL;
     private InferenceMode inferenceMode = InferenceMode.TRANSITIVE;
@@ -110,6 +88,106 @@ public abstract class AbstractOntologyService implements OntologyService {
     private boolean searchEnabled = true;
     private Set<String> excludedWordsFromStemming = Collections.emptySet();
     private Set<String> additionalPropertyUris = DEFAULT_ADDITIONAL_PROPERTIES.stream().map( Property::getURI ).collect( Collectors.toSet() );
+
+    protected AbstractOntologyService( String ontologyName, String ontologyUrl, boolean ontologyEnabled, @Nullable String cacheName ) {
+        this.ontologyName = ontologyName;
+        this.ontologyUrl = ontologyUrl;
+        this.ontologyEnabled = ontologyEnabled;
+        this.cacheName = cacheName;
+    }
+
+    protected String getOntologyName() {
+        return ontologyName;
+    }
+
+    protected String getOntologyUrl() {
+        return ontologyUrl;
+    }
+
+    protected boolean isOntologyEnabled() {
+        return ontologyEnabled;
+    }
+
+    @Nullable
+    protected String getCacheName() {
+        return cacheName;
+    }
+
+    private volatile Thread initializationThread = null;
+
+    @Override
+    public synchronized void startInitializationThread( boolean forceLoad, boolean forceIndexing ) {
+        if ( initializationThread != null && initializationThread.isAlive() ) {
+            log.warn( " Initialization thread for {} is currently running, not restarting.", this );
+            return;
+        }
+        // create and start the initialization thread
+        initializationThread = new Thread( () -> {
+            try {
+                this.initialize( forceLoad, forceIndexing );
+            } catch ( Exception e ) {
+                log.error( "Initialization for %s failed.", e );
+            }
+        }, getOntologyName() + "_load_thread_" + RandomStringUtils.randomAlphanumeric( 5 ) );
+        // To prevent VM from waiting on this thread to shut down (if shutting down).
+        initializationThread.setDaemon( true );
+        initializationThread.start();
+    }
+
+    @Override
+    public boolean isInitializationThreadAlive() {
+        return initializationThread != null && initializationThread.isAlive();
+    }
+
+    @Override
+    public boolean isInitializationThreadCancelled() {
+        return initializationThread != null && initializationThread.isInterrupted();
+    }
+
+    /**
+     * Cancel the initialization thread.
+     */
+    @Override
+    public void cancelInitializationThread() {
+        if ( initializationThread == null ) {
+            throw new IllegalStateException( "The initialization thread has not started. Invoke startInitializationThread() first." );
+        }
+        initializationThread.interrupt();
+    }
+
+    @Override
+    public void waitForInitializationThread() throws InterruptedException {
+        if ( initializationThread == null ) {
+            throw new IllegalStateException( "The initialization thread has not started. Invoke startInitializationThread() first." );
+        }
+        initializationThread.join();
+    }
+
+    @Override
+    public void loadTermsInNameSpace( InputStream is, boolean forceIndex ) {
+        // wait for the initialization thread to finish
+        if ( initializationThread != null && initializationThread.isAlive() ) {
+            log.warn( "{} initialization is already running, trying to cancel ...", this );
+            initializationThread.interrupt();
+            // wait for the thread to die.
+            int maxWait = 10;
+            int wait = 0;
+            while ( initializationThread.isAlive() ) {
+                try {
+                    initializationThread.join( 5000 );
+                } catch ( InterruptedException e ) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+                log.warn( "Waiting for auto-initialization to stop so manual initialization can begin ..." );
+                ++wait;
+                if ( wait >= maxWait && !initializationThread.isAlive() ) {
+                    throw new RuntimeException( String.format( "Got tired of waiting for %s's initialization thread.", this ) );
+                }
+            }
+        }
+        initialize( is, forceIndex );
+    }
 
     @Override
     public String getName() {
@@ -316,18 +394,18 @@ public abstract class AbstractOntologyService implements OntologyService {
         log.info( "Finished loading {} in {}s", this, String.format( "%.2f", loadTime.getTime() / 1000.0 ) );
     }
 
-    private static boolean isCausedByInterrupt( Exception e ) {
+    private boolean isCausedByInterrupt( Exception e ) {
         return hasCauseMatching( e, cause -> ( ( cause instanceof ParseException ) && ( ( ParseException ) cause ).getErrorNumber() == ARPErrorNumbers.ERR_INTERRUPTED ) ) ||
                 hasCause( e, InterruptedException.class ) ||
                 hasCause( e, InterruptedIOException.class ) ||
                 hasCause( e, ClosedByInterruptException.class );
     }
 
-    private static boolean hasCause( Throwable t, Class<? extends Throwable> clazz ) {
+    private boolean hasCause( Throwable t, Class<? extends Throwable> clazz ) {
         return hasCauseMatching( t, clazz::isInstance );
     }
 
-    private static boolean hasCauseMatching( Throwable t, Predicate<Throwable> predicate ) {
+    private boolean hasCauseMatching( Throwable t, Predicate<Throwable> predicate ) {
         return predicate.test( t ) || ( t.getCause() != null && hasCauseMatching( t.getCause(), predicate ) );
     }
 
@@ -516,96 +594,18 @@ public abstract class AbstractOntologyService implements OntologyService {
         return state != null;
     }
 
-    private volatile Thread initializationThread = null;
-
-    @Override
-    public synchronized void startInitializationThread( boolean forceLoad, boolean forceIndexing ) {
-        if ( initializationThread != null && initializationThread.isAlive() ) {
-            log.warn( " Initialization thread for {} is currently running, not restarting.", this );
-            return;
-        }
-        // create and start the initialization thread
-        initializationThread = new Thread( () -> {
-            try {
-                this.initialize( forceLoad, forceIndexing );
-            } catch ( Exception e ) {
-                log.error( "Initialization for %s failed.", e );
-            }
-        }, getOntologyName() + "_load_thread_" + RandomStringUtils.randomAlphanumeric( 5 ) );
-        // To prevent VM from waiting on this thread to shut down (if shutting down).
-        initializationThread.setDaemon( true );
-        initializationThread.start();
-    }
-
-    @Override
-    public boolean isInitializationThreadAlive() {
-        return initializationThread != null && initializationThread.isAlive();
-    }
-
-    @Override
-    public boolean isInitializationThreadCancelled() {
-        return initializationThread != null && initializationThread.isInterrupted();
-    }
-
-    /**
-     * Cancel the initialization thread.
-     */
-    @Override
-    public void cancelInitializationThread() {
-        if ( initializationThread == null ) {
-            throw new IllegalStateException( "The initialization thread has not started. Invoke startInitializationThread() first." );
-        }
-        initializationThread.interrupt();
-    }
-
-    @Override
-    public void waitForInitializationThread() throws InterruptedException {
-        if ( initializationThread == null ) {
-            throw new IllegalStateException( "The initialization thread has not started. Invoke startInitializationThread() first." );
-        }
-        initializationThread.join();
-    }
-
-    /**
-     * The simple getOntologyName() of the ontology. Used for indexing purposes. (ie this will determine the getOntologyName() of the underlying
-     * index for searching the ontology)
-     */
-    protected abstract String getOntologyName();
-
-    /**
-     * Defines the location of the ontology eg: <a href="http://mged.sourceforge.net/ontologies/MGEDOntology.owl">MGED</a>
-     */
-    protected abstract String getOntologyUrl();
-
-    /**
-     * Indicate if this ontology is enabled.
-     */
-    protected abstract boolean isOntologyEnabled();
-
-    /**
-     * A name for caching this ontology, or null to disable caching.
-     * <p>
-     * Note that if null is returned, the ontology will not have full-text search capabilities.
-     */
-    @Nullable
-    protected abstract String getCacheName();
-
     /**
      * Delegates the call as to load the model into memory or leave it on disk. Simply delegates to either
      * OntologyLoader.loadMemoryModel( url ); OR OntologyLoader.loadPersistentModel( url, spec );
      */
-    protected OntologyModel loadModel( boolean processImports, LanguageLevel languageLevel, InferenceMode inferenceMode ) throws IOException {
-        return new OntologyModelImpl( OntologyLoader.loadMemoryModel( this.getOntologyUrl(), this.getCacheName(), processImports, this.getSpec( languageLevel, inferenceMode ) ) );
-    }
+    protected abstract OntologyModel loadModel( boolean processImports, LanguageLevel languageLevel, InferenceMode inferenceMode ) throws IOException;
 
     /**
      * Load a model from a given input stream.
      */
-    protected OntologyModel loadModelFromStream( InputStream is, boolean processImports, LanguageLevel languageLevel, InferenceMode inferenceMode ) {
-        return new OntologyModelImpl( OntologyLoader.loadMemoryModel( is, this.getOntologyUrl(), processImports, this.getSpec( languageLevel, inferenceMode ) ) );
-    }
+    protected abstract OntologyModel loadModelFromStream( InputStream is, boolean processImports, LanguageLevel languageLevel, InferenceMode inferenceMode ) throws IOException;
 
-    private OntModelSpec getSpec( LanguageLevel languageLevel, InferenceMode inferenceMode ) {
+    protected OntModelSpec getSpec( LanguageLevel languageLevel, InferenceMode inferenceMode ) {
         String profile;
         switch ( languageLevel ) {
             case FULL:
@@ -704,32 +704,6 @@ public abstract class AbstractOntologyService implements OntologyService {
             }
         }
         return new State( state.model, state.index, state.excludedWordsFromStemming, state.additionalRestrictions, state.languageLevel, state.inferenceMode, state.processImports, state.additionalPropertyUris, alternativeIDs );
-    }
-
-    @Override
-    public void loadTermsInNameSpace( InputStream is, boolean forceIndex ) {
-        // wait for the initialization thread to finish
-        if ( initializationThread != null && initializationThread.isAlive() ) {
-            log.warn( "{} initialization is already running, trying to cancel ...", this );
-            initializationThread.interrupt();
-            // wait for the thread to die.
-            int maxWait = 10;
-            int wait = 0;
-            while ( initializationThread.isAlive() ) {
-                try {
-                    initializationThread.join( 5000 );
-                } catch ( InterruptedException e ) {
-                    Thread.currentThread().interrupt();
-                    return;
-                }
-                log.warn( "Waiting for auto-initialization to stop so manual initialization can begin ..." );
-                ++wait;
-                if ( wait >= maxWait && !initializationThread.isAlive() ) {
-                    throw new RuntimeException( String.format( "Got tired of waiting for %s's initialization thread.", this ) );
-                }
-            }
-        }
-        initialize( is, forceIndex );
     }
 
     @Override

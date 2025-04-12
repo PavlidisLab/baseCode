@@ -1,6 +1,9 @@
 package ubic.basecode.ontology.providers;
 
+import ubic.basecode.ontology.jena.UrlOntologyService;
 import ubic.basecode.util.Configuration;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Base class for all ontologies built-in to the baseCode project.
@@ -10,36 +13,17 @@ import ubic.basecode.util.Configuration;
  *
  * @author poirigui
  */
-public abstract class AbstractBaseCodeOntologyService extends AbstractOntologyService {
-
-    private final String name;
-    private final String cacheName;
+public abstract class AbstractBaseCodeOntologyService extends AbstractDelegatingOntologyService {
 
     /**
      * Intentionally package-private constructor.
      */
-    AbstractBaseCodeOntologyService( String name, String cacheName ) {
-        this.name = name;
-        this.cacheName = cacheName;
+    protected AbstractBaseCodeOntologyService( String name, String cacheName ) {
+        this( name, requireNonNull( Configuration.getString( "url." + cacheName ) ),
+            Boolean.TRUE.equals( Configuration.getBoolean( "load." + cacheName ) ), cacheName );
     }
 
-    @Override
-    protected String getOntologyName() {
-        return name;
-    }
-
-    @Override
-    protected String getOntologyUrl() {
-        return Configuration.getString( "url." + cacheName );
-    }
-
-    @Override
-    protected boolean isOntologyEnabled() {
-        return Boolean.TRUE.equals( Configuration.getBoolean( "load." + cacheName ) );
-    }
-
-    @Override
-    public String getCacheName() {
-        return cacheName;
+    public AbstractBaseCodeOntologyService( String name, String url, boolean isEnabled, String cacheName ) {
+        super( new UrlOntologyService( name, url, isEnabled, cacheName ) );
     }
 }
