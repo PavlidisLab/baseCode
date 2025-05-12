@@ -115,7 +115,7 @@ public class OntologySearchTest extends AbstractOntologyTest {
         // for ( OntClass ontologyTerm : name ) {
         // log.debug( ontologyTerm.toString() );
         // }
-        assertEquals( 1, name.size() );
+        assertEquals( 2, name.size() );
 
         name = index.searchClasses( model, "liver", 500 ); // this is an "example" that we want to avoid
         // leading to "Organ".
