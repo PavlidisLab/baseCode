@@ -24,10 +24,6 @@ import cern.jet.stat.Descriptive;
 /**
  * Mathematical functions for statistics that allow missing values without scotching the calculations.
  * <p>
- * Be careful because some methods from cern.jet.stat.Descriptive have not been overridden and will yield a
- * UnsupportedOperationException if used.
- * </p>
- * <p>
  * Some functions that come with DoubleArrayLists will not work in an entirely compatible way with missing values. For
  * examples, size() reports the total number of elements, including missing values. To get a count of non-missing
  * values, use this.sizeWithoutMissingValues(). The right one to use may vary.
@@ -43,20 +39,7 @@ import cern.jet.stat.Descriptive;
  * href="http://hoschek.home.cern.ch/hoschek/colt/V1.0.3/doc/cern/jet/stat/Descriptive.html">cern.jet.stat.Descriptive
  * </a>
  */
-public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
-
-    /**
-     * <b>Not supported. </b>
-     *
-     * @param data     DoubleArrayList
-     * @param lag      int
-     * @param mean     double
-     * @param variance double
-     * @return double
-     */
-    public static double autoCorrelation(DoubleArrayList data, int lag, double mean, double variance) {
-        throw new UnsupportedOperationException("autoCorrelation not supported with missing values");
-    }
+public class DescriptiveWithMissing {
 
     /**
      * Highly optimized version of the correlation computation, where as much information is precomputed as possible.
@@ -66,16 +49,15 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * Double.NaN consume half the CPU time. The precomputation of the element-by-element squared values is another
      * obvious optimization. There is also no checking for matching lengths of the arrays.
      *
-     * @param x
-     * @param y
-     * @param selfSquaredX double array containing values of x_i^2 for each x.
-     * @param selfSquaredY
-     * @param nanStatusX   boolean array containing value of Double.isNaN() for each X.
-     * @param nanStatusY
+     * @param x            double array containing values of x_i for each X.
+     * @param y            double array containing values of y_i for each Y.
+     * @param selfSquaredX double array containing values of x_i^2 for each X.
+     * @param selfSquaredY double array containing values of y_i^2 for each Y
+     * @param nanStatusX   boolean array containing value of {@link Double#isNaN(double)} for each X.
+     * @param nanStatusY   boolean array containing value of {@link Double#isNaN(double)} for each Y.
      * @return
      */
-    public static double correlation(double[] x, double[] y, double[] selfSquaredX, double[] selfSquaredY, boolean[] nanStatusX, boolean[] nanStatusY) {
-
+    public static double correlation( double[] x, double[] y, double[] selfSquaredX, double[] selfSquaredY, boolean[] nanStatusX, boolean[] nanStatusY ) {
         double syy, sxy, sxx, sx, sy, xj, yj, ay, ax;
         int numused = 0;
         syy = 0.0;
@@ -85,11 +67,16 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
         sy = 0.0;
 
         int length = x.length;
-        for (int j = 0; j < length; j++) {
+
+        if ( y.length != length || selfSquaredX.length != length || selfSquaredY.length != length || nanStatusX.length != length || nanStatusY.length != length ) {
+            throw new ArithmeticException();
+        }
+
+        for ( int j = 0; j < length; j++ ) {
             xj = x[j];
             yj = y[j];
 
-            if (nanStatusX[j] || nanStatusY[j]) {
+            if ( nanStatusX[j] || nanStatusY[j] ) {
                 continue;
             }
             sx += xj;
@@ -100,29 +87,12 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
             numused++;
         }
 
-        if (numused > 0) {
+        if ( numused > 0 ) {
             ay = sy / numused;
             ax = sx / numused;
-            return (sxy - sx * ay) / Math.sqrt((sxx - sx * ax) * (syy - sy * ay));
+            return ( sxy - sx * ay ) / Math.sqrt( ( sxx - sx * ax ) * ( syy - sy * ay ) );
         }
         return Double.NaN; // signifies that it could not be calculated.
-    }
-
-    /**
-     * Returns the correlation of two data sequences. That is
-     * <tt>covariance(data1,data2)/(standardDev1*standardDev2)</tt>. Missing values are ignored. This method is
-     * overridden to stop users from using the method in the superclass when missing values are present. The problem is
-     * that the standard deviation cannot be computed without knowning which values are not missing in both vectors to
-     * be compared. Thus the standardDev parameters are thrown away by this method.
-     *
-     * @param data1        DoubleArrayList
-     * @param standardDev1 double - not used
-     * @param data2        DoubleArrayList
-     * @param standardDev2 double - not used
-     * @return double
-     */
-    public static double correlation(DoubleArrayList data1, double standardDev1, DoubleArrayList data2, double standardDev2) {
-        return correlation(data1, data2);
     }
 
     /**
@@ -132,7 +102,7 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param y DoubleArrayList
      * @return double
      */
-    public static double correlation(DoubleArrayList x, DoubleArrayList y) {
+    public static double correlation( DoubleArrayList x, DoubleArrayList y ) {
         int j;
         double syy, sxy, sxx, sx, sy, xj, yj, ay, ax;
         int numused;
@@ -142,19 +112,19 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
         sx = 0.0;
         sy = 0.0;
         numused = 0;
-        if (x.size() != y.size()) {
-            throw new ArithmeticException("Unequal vector sizes: " + x.size() + " != " + y.size());
+        if ( x.size() != y.size() ) {
+            throw new ArithmeticException( "Unequal vector sizes: " + x.size() + " != " + y.size() );
         }
 
         double[] xel = x.elements();
         double[] yel = y.elements();
 
         int length = x.size();
-        for (j = 0; j < length; j++) {
+        for ( j = 0; j < length; j++ ) {
             xj = xel[j];
             yj = yel[j];
 
-            if (!Double.isNaN(xj) && !Double.isNaN(yj)) {
+            if ( !Double.isNaN( xj ) && !Double.isNaN( yj ) ) {
                 sx += xj;
                 sy += yj;
                 sxy += xj * yj;
@@ -164,13 +134,13 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
             }
         }
 
-        if (numused > 0) {
+        if ( numused > 0 ) {
             ay = sy / numused;
             ax = sx / numused;
-            return (sxy - sx * ay) / Math.sqrt((sxx - sx * ax) * (syy - sy * ay));
+            return ( sxy - sx * ay ) / Math.sqrt( ( sxx - sx * ax ) * ( syy - sy * ay ) );
         }
-        return Double.NaN; // signifies that it could not be calculated.
 
+        return Double.NaN; // signifies that it could not be calculated.
     }
 
     /**
@@ -181,9 +151,9 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param data2 the second vector
      * @return double
      */
-    public static double covariance(DoubleArrayList data1, DoubleArrayList data2) {
+    public static double covariance( DoubleArrayList data1, DoubleArrayList data2 ) {
         int size = data1.size();
-        if (size != data2.size() || size == 0) {
+        if ( size != data2.size() || size == 0 ) {
             throw new IllegalArgumentException();
         }
         double[] elements1 = data1.elements();
@@ -193,29 +163,29 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
 
         int i = 0;
         double sumx = 0.0, sumy = 0.0, Sxy = 0.0;
-        while (i < size) {
+        while ( i < size ) {
             sumx = elements1[i];
             sumy = elements2[i];
-            if (!Double.isNaN(elements1[i]) && !Double.isNaN(elements2[i])) {
+            if ( !Double.isNaN( elements1[i] ) && !Double.isNaN( elements2[i] ) ) {
                 break;
             }
             i++;
         }
         i++;
         int usedPairs = 1;
-        for (; i < size; ++i) {
+        for ( ; i < size; ++i ) {
             double x = elements1[i];
             double y = elements2[i];
-            if (Double.isNaN(x) || Double.isNaN(y)) {
+            if ( Double.isNaN( x ) || Double.isNaN( y ) ) {
                 continue;
             }
 
             sumx += x;
-            Sxy += (x - sumx / (usedPairs + 1)) * (y - sumy / usedPairs);
+            Sxy += ( x - sumx / ( usedPairs + 1 ) ) * ( y - sumy / usedPairs );
             sumy += y;
             usedPairs++;
         }
-        return Sxy / (usedPairs - 1);
+        return Sxy / ( usedPairs - 1 );
     }
 
     /**
@@ -225,39 +195,39 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @return double
      * @todo this will still break in some situations where there are missing values
      */
-    public static double durbinWatson(DoubleArrayList data) {
+    public static double durbinWatson( DoubleArrayList data ) {
         int size = data.size();
-        if (size < 2) {
-            throw new IllegalArgumentException("data sequence must contain at least two values.");
+        if ( size < 2 ) {
+            throw new IllegalArgumentException( "data sequence must contain at least two values." );
         }
 
         double[] elements = data.elements();
         double run = 0;
         double run_sq = 0;
         int firstNotNaN = 0;
-        while (firstNotNaN < size) {
+        while ( firstNotNaN < size ) {
             run_sq = elements[firstNotNaN] * elements[firstNotNaN];
 
-            if (!Double.isNaN(elements[firstNotNaN])) {
+            if ( !Double.isNaN( elements[firstNotNaN] ) ) {
                 break;
             }
 
             firstNotNaN++;
         }
 
-        if (firstNotNaN > 0 && size - firstNotNaN < 2) {
-            throw new IllegalArgumentException("data sequence must contain at least two non-missing values.");
+        if ( firstNotNaN > 0 && size - firstNotNaN < 2 ) {
+            throw new IllegalArgumentException( "data sequence must contain at least two non-missing values." );
 
         }
 
-        for (int i = firstNotNaN + 1; i < size; i++) {
+        for ( int i = firstNotNaN + 1; i < size; i++ ) {
             int gap = 1;
-            while (i < size && Double.isNaN(elements[i])) {
+            while ( i < size && Double.isNaN( elements[i] ) ) {
                 gap++;
                 i++;
                 continue;
             }
-            if (i >= size) continue; // missing value at end will cause this.
+            if ( i >= size ) continue; // missing value at end will cause this.
             double x = elements[i] - elements[i - gap];
             /**  */
             run += x * x;
@@ -278,75 +248,8 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param data DoubleArrayList
      * @return double
      */
-    public static double geometricMean(DoubleArrayList data) {
-        return geometricMean(sizeWithoutMissingValues(data), sumOfLogarithms(data, 0, data.size() - 1));
-    }
-
-    /**
-     * Incrementally maintains and updates minimum, maximum, sum and sum of squares of a data sequence.
-     * <p>
-     * Assume we have already recorded some data sequence elements and know their minimum, maximum, sum and sum of
-     * squares. Assume further, we are to record some more elements and to derive updated values of minimum, maximum,
-     * sum and sum of squares. This method computes those updated values without needing to know the already recorded
-     * elements. This is interesting for interactive online monitoring and/or applications that cannot keep the entire
-     * huge data sequence in memory.
-     *
-     * @param data  the additional elements to be incorporated into min, max, etc.
-     * @param from  the index of the first element within <tt>data</tt> to consider.
-     * @param to    the index of the last element within <tt>data</tt> to consider. The method incorporates elements
-     *              <tt>data[from], ..., data[to]</tt>.
-     * @param inOut the old values in the following format:
-     *              <ul>
-     *              <li><tt>inOut[0]</tt> is the old minimum. <li><tt>inOut[1]</tt> is the old maximum. <li><tt>inOut[2]</tt>
-     *              is the old sum. <li><tt>inOut[3]</tt> is the old sum of squares.
-     *              </ul>
-     *              If no data sequence elements have so far been recorded set the values as follows
-     *              <ul>
-     *              <li><tt>inOut[0] = Double.POSITIVE_INFINITY</tt> as the old minimum. <li><tt>inOut[1] =
-     *              Double.NEGATIVE_INFINITY</tt> as the old maximum. <li><tt>inOut[2] = 0.0</tt> as the old sum. <li><tt>
-     *              inOut[3] = 0.0</tt> as the old sum of squares.
-     *              </ul>
-     */
-    public static void incrementalUpdate(DoubleArrayList data, int from, int to, double[] inOut) {
-        throw new UnsupportedOperationException("incrementalUpdate not supported with missing values");
-    }
-
-    /**
-     * <b>Not supported. </b>
-     *
-     * @param data         DoubleArrayList
-     * @param from         int
-     * @param to           int
-     * @param fromSumIndex int
-     * @param toSumIndex   int
-     * @param sumOfPowers  double[]
-     */
-    public static void incrementalUpdateSumsOfPowers(DoubleArrayList data, int from, int to, int fromSumIndex, int toSumIndex, double[] sumOfPowers) {
-        throw new UnsupportedOperationException("incrementalUpdateSumsOfPowers not supported with missing values");
-    }
-
-    /**
-     * <b>Not supported. </b>
-     *
-     * @param data    DoubleArrayList
-     * @param weights DoubleArrayList
-     * @param from    int
-     * @param to      int
-     * @param inOut   double[]
-     */
-    public static void incrementalWeightedUpdate(DoubleArrayList data, DoubleArrayList weights, int from, int to, double[] inOut) {
-        throw new UnsupportedOperationException("incrementalWeightedUpdate not supported with missing values");
-    }
-
-    /**
-     * Returns the kurtosis (aka excess) of a data sequence.
-     *
-     * @param moment4           the fourth central moment, which is <tt>moment(data,4,mean)</tt>.
-     * @param standardDeviation the standardDeviation.
-     * @return double
-     */
-    public static double kurtosis(double moment4, double standardDeviation) {
-        return -3 + moment4 / (standardDeviation * standardDeviation * standardDeviation * standardDeviation);
+    public static double geometricMean( DoubleArrayList data ) {
+        return Descriptive.geometricMean( sizeWithoutMissingValues( data ), sumOfLogarithms( data, 0, data.size() - 1 ) );
     }
 
     /**
@@ -358,93 +261,48 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param standardDeviation double
      * @return double
      */
-    public static double kurtosis(DoubleArrayList data, double mean, double standardDeviation) {
-        return kurtosis(moment(data, 4, mean), standardDeviation);
+    public static double kurtosis( DoubleArrayList data, double mean, double standardDeviation ) {
+        return Descriptive.kurtosis( moment( data, 4, mean ), standardDeviation );
     }
 
     /**
-     * <b>Not supported. </b>
+     * Returns the median absolute deviation from the median.
      *
-     * @param data DoubleArrayList
-     * @param mean double
-     * @return double
+     * @param data the data, does not have to be sorted
      */
-    public static double lag1(DoubleArrayList data, double mean) {
-        throw new UnsupportedOperationException("lag1 not supported with missing values");
-    }
-
-    /**
-     * @param dat
-     * @return the median absolute deviation from the median.
-     */
-    public static double mad(DoubleArrayList dat) {
-        DoubleArrayList copy = removeMissing(dat.copy());
-
-        double median = median(copy);
-
-        DoubleArrayList devsum = new DoubleArrayList(copy.size());
-        for (int i = 0; i < copy.size(); i++) {
-            double v = copy.getQuick(i);
-            devsum.add(Math.abs(v - median));
+    public static double mad( DoubleArrayList data ) {
+        data = data.copy();
+        sortAndRemoveMissing( data );
+        double median = Descriptive.median( data );
+        DoubleArrayList devsum = new DoubleArrayList( data.size() );
+        for ( int i = 0; i < data.size(); i++ ) {
+            double v = data.getQuick( i );
+            devsum.add( Math.abs( v - median ) );
         }
-
         devsum.sort();
-        return Descriptive.median(devsum);
+        return Descriptive.median( devsum );
     }
 
-    public static double max(DoubleArrayList input) {
+    public static double max( DoubleArrayList input ) {
         int size = input.size();
-        if (size == 0) throw new IllegalArgumentException();
+        if ( size == 0 ) throw new IllegalArgumentException();
 
         double[] elements = input.elements();
         double max = Double.MIN_VALUE;
-        for (int i = 0; i < size; i++) {
-            if (Double.isNaN(elements[i])) continue;
-            if (elements[i] > max) max = elements[i];
+        for ( int i = 0; i < size; i++ ) {
+            if ( Double.isNaN( elements[i] ) ) continue;
+            if ( elements[i] > max ) max = elements[i];
         }
 
         return max;
     }
 
     /**
-     * Special mean calculation where we use the effective size as an input.
-     *
-     * @param elements      The data double array.
-     * @param effectiveSize The effective size used for the mean calculation.
-     * @return double
-     */
-    public static double mean(double[] elements, int effectiveSize) {
-
-        int length = elements.length;
-
-        if (0 == effectiveSize) {
-            return Double.NaN;
-        }
-
-        double sum = 0.0;
-        int i, count;
-        count = 0;
-        double value;
-        for (i = 0; i < length; i++) {
-            value = elements[i];
-            if (Double.isNaN(value)) {
-                continue;
-            }
-            sum += value;
-            count++;
-        }
-        if (0.0 == count) {
-            return Double.NaN;
-        }
-        return sum / effectiveSize;
-    }
-
-    /**
      * @param data Values to be analyzed.
      * @return Mean of the values in x. Missing values are ignored in the analysis.
      */
-    public static double mean(DoubleArrayList data) {
-        return sum(data) / sizeWithoutMissingValues(data);
+    public static double mean( DoubleArrayList data ) {
+        return sum( data ) / sizeWithoutMissingValues( data );
     }
 
     /**
@@ -454,11 +312,11 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param effectiveSize The effective size used for the mean calculation.
      * @return double
      */
-    public static double mean(DoubleArrayList x, int effectiveSize) {
+    public static double mean( DoubleArrayList x, int effectiveSize ) {
 
         int length = x.size();
 
-        if (0 == effectiveSize) {
+        if ( 0 == effectiveSize ) {
             return Double.NaN;
         }
 
@@ -467,15 +325,15 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
         count = 0;
         double value;
         double[] elements = x.elements();
-        for (i = 0; i < length; i++) {
+        for ( i = 0; i < length; i++ ) {
             value = elements[i];
-            if (Double.isNaN(value)) {
+            if ( Double.isNaN( value ) ) {
                 continue;
             }
             sum += value;
             count++;
         }
-        if (0.0 == count) {
+        if ( 0.0 == count ) {
             return Double.NaN;
         }
         return sum / effectiveSize;
@@ -485,30 +343,31 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
     /**
      * Calculate the mean of the values above to a particular quantile of an array.
      *
+     * @param data     Array for which we want to get the quantile.
      * @param quantile A value from 0 to 1
-     * @param array    Array for which we want to get the quantile.
      * @return double
      */
-    public static double meanAboveQuantile(double quantile, DoubleArrayList array) {
-
-        if (quantile < 0.0 || quantile > 1.0) {
-            throw new IllegalArgumentException("Quantile must be between 0 and 1");
+    public static double meanAboveQuantile( DoubleArrayList data, double quantile ) {
+        if ( quantile < 0.0 || quantile > 1.0 ) {
+            throw new IllegalArgumentException( "Quantile must be between 0 and 1" );
         }
+
+        data = data.copy();
+        sortAndRemoveMissing( data );
+        double quantileValue = Descriptive.quantile( data, quantile );
 
         double returnvalue = 0.0;
         int k = 0;
 
-        double quantileValue = DescriptiveWithMissing.quantile(array, quantile);
-
-        for (int i = 0; i < array.size(); i++) {
-            if (array.get(i) > quantileValue) {
-                returnvalue += array.get(i);
+        for ( int i = 0; i < data.size(); i++ ) {
+            if ( data.get( i ) > quantileValue ) {
+                returnvalue += data.get( i );
                 k++;
             }
         }
 
-        if (k == 0) {
-            throw new ArithmeticException("No values found above quantile");
+        if ( k == 0 ) {
+            throw new ArithmeticException( "No values found above quantile" );
         }
 
         return returnvalue / k;
@@ -520,19 +379,21 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param data the data sequence, does not have to be sorted.
      * @return double
      */
-    public static double median(DoubleArrayList data) {
-        return DescriptiveWithMissing.quantile(data, 0.5);
+    public static double median( DoubleArrayList data ) {
+        data = data.copy();
+        sortAndRemoveMissing( data );
+        return Descriptive.median( data );
     }
 
-    public static double min(DoubleArrayList input) {
+    public static double min( DoubleArrayList input ) {
         int size = input.size();
-        if (size == 0) throw new IllegalArgumentException();
+        if ( size == 0 ) throw new IllegalArgumentException();
 
         double[] elements = input.elements();
         double min = Double.MAX_VALUE;
-        for (int i = 0; i < size; i++) {
-            if (Double.isNaN(elements[i])) continue;
-            if (elements[i] < min) min = elements[i];
+        for ( int i = 0; i < size; i++ ) {
+            if ( Double.isNaN( elements[i] ) ) continue;
+            if ( elements[i] < min ) min = elements[i];
         }
 
         return min;
@@ -548,8 +409,8 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param c    double
      * @return double
      */
-    public static double moment(DoubleArrayList data, int k, double c) {
-        return sumOfPowerDeviations(data, k, c) / sizeWithoutMissingValues(data);
+    public static double moment( DoubleArrayList data, int k, double c ) {
+        return sumOfPowerDeviations( data, k, c ) / sizeWithoutMissingValues( data );
     }
 
     /**
@@ -559,13 +420,13 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param data DoubleArrayList
      * @return double
      */
-    public static double product(DoubleArrayList data) {
+    public static double product( DoubleArrayList data ) {
         int size = data.size();
         double[] elements = data.elements();
 
         double product = 1;
-        for (int i = size; --i >= 0; ) {
-            if (Double.isNaN(elements[i])) {
+        for ( int i = size; --i >= 0; ) {
+            if ( Double.isNaN( elements[i] ) ) {
                 continue;
             }
             product *= elements[i];
@@ -584,10 +445,10 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @return double
      * @todo possibly implement so a copy is not made.
      */
-    public static double quantile(DoubleArrayList data, double phi) {
-        DoubleArrayList sortedData = removeMissing(data.copy());
-        sortedData.sort();
-        return Descriptive.quantile(sortedData, phi);
+    public static double quantile( DoubleArrayList data, double phi ) {
+        data = data.copy();
+        sortAndRemoveMissing( data );
+        return Descriptive.quantile( data, phi );
     }
 
     /**
@@ -599,29 +460,29 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param element the element to search for.
      * @return the percentage <tt>phi</tt> of elements <tt>&lt;= element</tt>(<tt>0.0 &lt;= phi &lt;= 1.0)</tt>.
      */
-    public static double quantileInverse(DoubleArrayList data, double element) {
-        DoubleArrayList sortedData = removeMissing(data.copy());
-        sortedData.sort();
-        return rankInterpolated(sortedData, element) / sortedData.size();
+    public static double quantileInverse( DoubleArrayList data, double element ) {
+        data = data.copy();
+        sortAndRemoveMissing( data );
+        return rankInterpolated( data, element ) / data.size();
     }
 
     /**
      * Returns the quantiles of the specified percentages. The quantiles need not necessarily be contained in the data
      * sequence, it can be a linear interpolation.
      *
-     * @param sortedData  the data sequence; <b>must be sorted ascending </b>.
+     * @param data        the data sequence; does not have to be sorted
      * @param percentages the percentages for which quantiles are to be computed. Each percentage must be in the
      *                    interval <tt>[0.0,1.0]</tt>.
      * @return the quantiles.
      */
-    public static DoubleArrayList quantiles(DoubleArrayList sortedData, DoubleArrayList percentages) {
+    public static DoubleArrayList quantiles( DoubleArrayList data, DoubleArrayList percentages ) {
+        data = data.copy();
+        sortAndRemoveMissing( data );
         int s = percentages.size();
-        DoubleArrayList quantiles = new DoubleArrayList(s);
-
-        for (int i = 0; i < s; i++) {
-            quantiles.add(quantile(sortedData, percentages.get(i)));
+        DoubleArrayList quantiles = new DoubleArrayList( s );
+        for ( int i = 0; i < s; i++ ) {
+            quantiles.add( Descriptive.quantile( data, percentages.get( i ) ) );
         }
-
         return quantiles;
     }
 
@@ -631,32 +492,15 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * <tt>{0, 1, 2,..., sortedList.size()}</tt>. If no element is <= element, then the rank is zero. If the element
      * lies in between two contained elements, then linear interpolation is used and a non integer value is returned.
      *
-     * @param sortedList the list to be searched (must be sorted ascending).
-     * @param element    the element to search for.
+     * @param data    the list to be searched, does not have to be sorted
+     * @param element the element to search for.
      * @return the rank of the element.
      * @todo possibly implement so a copy is not made.
      */
-    public static double rankInterpolated(DoubleArrayList sortedList, double element) {
-        return Descriptive.rankInterpolated(removeMissing(sortedList), element);
-    }
-
-    /**
-     * Makes a copy of the list that doesn't have the missing values.
-     *
-     * @param data DoubleArrayList
-     * @return DoubleArrayList
-     */
-    public static DoubleArrayList removeMissing(DoubleArrayList data) {
-        DoubleArrayList r = new DoubleArrayList(sizeWithoutMissingValues(data));
-        double[] elements = data.elements();
-        int size = data.size();
-        for (int i = 0; i < size; i++) {
-            if (Double.isNaN(elements[i])) {
-                continue;
-            }
-            r.add(elements[i]);
-        }
-        return r;
+    public static double rankInterpolated( DoubleArrayList data, double element ) {
+        data = data.copy();
+        sortAndRemoveMissing( data );
+        return Descriptive.rankInterpolated( data, element );
     }
 
     /**
@@ -667,8 +511,8 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param sampleVariance double
      * @return double
      */
-    public static double sampleKurtosis(DoubleArrayList data, double mean, double sampleVariance) {
-        return sampleKurtosis(sizeWithoutMissingValues(data), moment(data, 4, mean), sampleVariance);
+    public static double sampleKurtosis( DoubleArrayList data, double mean, double sampleVariance ) {
+        return Descriptive.sampleKurtosis( sizeWithoutMissingValues( data ), moment( data, 4, mean ), sampleVariance );
     }
 
     /**
@@ -679,21 +523,8 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param sampleVariance double
      * @return double
      */
-    public static double sampleSkew(DoubleArrayList data, double mean, double sampleVariance) {
-        return sampleSkew(sizeWithoutMissingValues(data), moment(data, 3, mean), sampleVariance);
-    }
-
-    /**
-     * Returns the sample standard deviation.
-     * <p>
-     * This is included for compatibility with the superclass, but does not implement the correction used there.
-     *
-     * @param size           the number of elements of the data sequence.
-     * @param sampleVariance the <b>sample variance </b>.
-     * @see cern.jet.stat.Descriptive#sampleStandardDeviation(int, double)
-     */
-    public static double sampleStandardDeviation(int size, double sampleVariance) {
-        return Math.sqrt(sampleVariance);
+    public static double sampleSkew( DoubleArrayList data, double mean, double sampleVariance ) {
+        return Descriptive.sampleSkew( sizeWithoutMissingValues( data ), moment( data, 3, mean ), sampleVariance );
     }
 
     /**
@@ -704,38 +535,22 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param mean double
      * @return double
      */
-    public static double sampleVariance(DoubleArrayList data, double mean) {
+    public static double sampleVariance( DoubleArrayList data, double mean ) {
         double[] elements = data.elements();
-        int effsize = sizeWithoutMissingValues(data);
         int size = data.size();
         double sum = 0;
+        int effsize = 0;
         // find the sum of the squares
-        for (int i = size; --i >= 0; ) {
-            if (Double.isNaN(elements[i])) {
+        for ( int i = size; --i >= 0; ) {
+            if ( Double.isNaN( elements[i] ) ) {
                 continue;
             }
             double delta = elements[i] - mean;
             sum += delta * delta;
+            effsize++;
         }
 
-        return sum / (effsize - 1);
-    }
-
-    /**
-     * Return the size of the list, ignoring missing values.
-     *
-     * @param list DoubleArrayList
-     * @return int
-     */
-    public static int sizeWithoutMissingValues(DoubleArrayList list) {
-
-        int size = 0;
-        for (int i = 0; i < list.size(); i++) {
-            if (!Double.isNaN(list.get(i))) {
-                size++;
-            }
-        }
-        return size;
+        return sum / ( effsize - 1 );
     }
 
     /**
@@ -747,8 +562,8 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param standardDeviation double
      * @return double
      */
-    public static double skew(DoubleArrayList data, double mean, double standardDeviation) {
-        return skew(moment(data, 3, mean), standardDeviation);
+    public static double skew( DoubleArrayList data, double mean, double standardDeviation ) {
+        return Descriptive.skew( moment( data, 3, mean ), standardDeviation );
     }
 
     /**
@@ -757,10 +572,10 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      *
      * @param data DoubleArrayList
      */
-    public static void standardize(DoubleArrayList data) {
-        double mean = mean(data);
-        double stdev = Math.sqrt(sampleVariance(data, mean));
-        DescriptiveWithMissing.standardize(data, mean, stdev);
+    public static void standardize( DoubleArrayList data ) {
+        double mean = mean( data );
+        double stdev = Math.sqrt( sampleVariance( data, mean ) );
+        standardize( data, mean, stdev );
     }
 
     /**
@@ -772,24 +587,24 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param mean              mean of data
      * @param standardDeviation stdev of data. |stdev| < Constants.TINY is treated as zero.
      */
-    public static void standardize(DoubleArrayList data, double mean, double standardDeviation) {
+    public static void standardize( DoubleArrayList data, double mean, double standardDeviation ) {
+        double[] elements = data.elements();
+        int size = data.size();
 
-        if (Math.abs(0.0 - standardDeviation) < Constants.TINY) {
-            for (int i = 0; i < data.size(); i++) {
-                if (!Double.isNaN(data.get(i))) {
-                    data.set(i, 0.0);
+        if ( Math.abs( 0.0 - standardDeviation ) < Constants.TINY ) {
+            for ( int i = 0; i < size; i++ ) {
+                if ( !Double.isNaN( elements[i] ) ) {
+                    elements[i] = 0.0;
                 }
             }
             return;
         }
 
-        double[] elements = data.elements();
-
-        for (int i = 0; i < elements.length; i++) {
-            if (Double.isNaN(elements[i])) {
+        for ( int i = 0; i < size; i++ ) {
+            if ( Double.isNaN( elements[i] ) ) {
                 continue;
             }
-            elements[i] = (elements[i] - mean) / standardDeviation;
+            elements[i] = ( elements[i] - mean ) / standardDeviation;
         }
     }
 
@@ -799,8 +614,8 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param data DoubleArrayList
      * @return double
      */
-    public static double sum(DoubleArrayList data) {
-        return sumOfPowerDeviations(data, 1, 0.0);
+    public static double sum( DoubleArrayList data ) {
+        return sumOfPowerDeviations( data, 1, 0.0 );
     }
 
     /**
@@ -812,8 +627,8 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param to   the index of the last data element (inclusive).
      * @return double
      */
-    public static double sumOfInversions(DoubleArrayList data, int from, int to) {
-        return sumOfPowerDeviations(data, -1, 0.0, from, to);
+    public static double sumOfInversions( DoubleArrayList data, int from, int to ) {
+        return sumOfPowerDeviations( data, -1, 0.0, from, to );
     }
 
     /**
@@ -825,14 +640,14 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param to   the index of the last data element (inclusive).
      * @return double
      */
-    public static double sumOfLogarithms(DoubleArrayList data, int from, int to) {
+    public static double sumOfLogarithms( DoubleArrayList data, int from, int to ) {
         double[] elements = data.elements();
         double logsum = 0;
-        for (int i = from - 1; ++i <= to; ) {
-            if (Double.isNaN(elements[i])) {
+        for ( int i = from - 1; ++i <= to; ) {
+            if ( Double.isNaN( elements[i] ) ) {
                 continue;
             }
-            logsum += Math.log(elements[i]);
+            logsum += Math.log( elements[i] );
         }
         return logsum;
     }
@@ -846,8 +661,8 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param c    double
      * @return double
      */
-    public static double sumOfPowerDeviations(DoubleArrayList data, int k, double c) {
-        return sumOfPowerDeviations(data, k, c, 0, data.size() - 1);
+    public static double sumOfPowerDeviations( DoubleArrayList data, int k, double c ) {
+        return sumOfPowerDeviations( data, k, c, 0, data.size() - 1 );
     }
 
     /**
@@ -862,67 +677,67 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param to   int
      * @return double
      */
-    public static double sumOfPowerDeviations(final DoubleArrayList data, final int k, final double c, final int from, final int to) {
+    public static double sumOfPowerDeviations( final DoubleArrayList data, final int k, final double c, final int from, final int to ) {
         final double[] elements = data.elements();
         double sum = 0;
         double v;
         int i;
-        switch (k) { // optimized for speed
+        switch ( k ) { // optimized for speed
             case -2:
-                if (c == 0.0) {
-                    for (i = from - 1; ++i <= to; ) {
-                        if (Double.isNaN(elements[i])) {
+                if ( c == 0.0 ) {
+                    for ( i = from - 1; ++i <= to; ) {
+                        if ( Double.isNaN( elements[i] ) ) {
                             continue;
                         }
                         v = elements[i];
-                        sum += 1 / (v * v);
+                        sum += 1 / ( v * v );
                     }
                 } else {
-                    for (i = from - 1; ++i <= to; ) {
-                        if (Double.isNaN(elements[i])) {
+                    for ( i = from - 1; ++i <= to; ) {
+                        if ( Double.isNaN( elements[i] ) ) {
                             continue;
                         }
                         v = elements[i] - c;
-                        sum += 1 / (v * v);
+                        sum += 1 / ( v * v );
                     }
                 }
                 break;
             case -1:
-                if (c == 0.0) {
-                    for (i = from - 1; ++i <= to; ) {
-                        if (Double.isNaN(elements[i])) {
+                if ( c == 0.0 ) {
+                    for ( i = from - 1; ++i <= to; ) {
+                        if ( Double.isNaN( elements[i] ) ) {
                             continue;
                         }
                         sum += 1 / elements[i];
                     }
                 } else {
-                    for (i = from - 1; ++i <= to; ) {
-                        if (Double.isNaN(elements[i])) {
+                    for ( i = from - 1; ++i <= to; ) {
+                        if ( Double.isNaN( elements[i] ) ) {
                             continue;
                         }
-                        sum += 1 / (elements[i] - c);
+                        sum += 1 / ( elements[i] - c );
                     }
                 }
                 break;
             case 0:
-                for (i = from - 1; ++i <= to; ) {
-                    if (Double.isNaN(elements[i])) {
+                for ( i = from - 1; ++i <= to; ) {
+                    if ( Double.isNaN( elements[i] ) ) {
                         continue;
                     }
                     sum += 1;
                 }
                 break;
             case 1:
-                if (c == 0.0) {
-                    for (i = from - 1; ++i <= to; ) {
-                        if (Double.isNaN(elements[i])) {
+                if ( c == 0.0 ) {
+                    for ( i = from - 1; ++i <= to; ) {
+                        if ( Double.isNaN( elements[i] ) ) {
                             continue;
                         }
                         sum += elements[i];
                     }
                 } else {
-                    for (i = from - 1; ++i <= to; ) {
-                        if (Double.isNaN(elements[i])) {
+                    for ( i = from - 1; ++i <= to; ) {
+                        if ( Double.isNaN( elements[i] ) ) {
                             continue;
                         }
                         sum += elements[i] - c;
@@ -930,17 +745,17 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
                 }
                 break;
             case 2:
-                if (c == 0.0) {
-                    for (i = from - 1; ++i <= to; ) {
-                        if (Double.isNaN(elements[i])) {
+                if ( c == 0.0 ) {
+                    for ( i = from - 1; ++i <= to; ) {
+                        if ( Double.isNaN( elements[i] ) ) {
                             continue;
                         }
                         v = elements[i];
                         sum += v * v;
                     }
                 } else {
-                    for (i = from - 1; ++i <= to; ) {
-                        if (Double.isNaN(elements[i])) {
+                    for ( i = from - 1; ++i <= to; ) {
+                        if ( Double.isNaN( elements[i] ) ) {
                             continue;
                         }
                         v = elements[i] - c;
@@ -949,17 +764,17 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
                 }
                 break;
             case 3:
-                if (c == 0.0) {
-                    for (i = from - 1; ++i <= to; ) {
-                        if (Double.isNaN(elements[i])) {
+                if ( c == 0.0 ) {
+                    for ( i = from - 1; ++i <= to; ) {
+                        if ( Double.isNaN( elements[i] ) ) {
                             continue;
                         }
                         v = elements[i];
                         sum += v * v * v;
                     }
                 } else {
-                    for (i = from - 1; ++i <= to; ) {
-                        if (Double.isNaN(elements[i])) {
+                    for ( i = from - 1; ++i <= to; ) {
+                        if ( Double.isNaN( elements[i] ) ) {
                             continue;
                         }
                         v = elements[i] - c;
@@ -968,17 +783,17 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
                 }
                 break;
             case 4:
-                if (c == 0.0) {
-                    for (i = from - 1; ++i <= to; ) {
-                        if (Double.isNaN(elements[i])) {
+                if ( c == 0.0 ) {
+                    for ( i = from - 1; ++i <= to; ) {
+                        if ( Double.isNaN( elements[i] ) ) {
                             continue;
                         }
                         v = elements[i];
                         sum += v * v * v * v;
                     }
                 } else {
-                    for (i = from - 1; ++i <= to; ) {
-                        if (Double.isNaN(elements[i])) {
+                    for ( i = from - 1; ++i <= to; ) {
+                        if ( Double.isNaN( elements[i] ) ) {
                             continue;
                         }
                         v = elements[i] - c;
@@ -987,17 +802,17 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
                 }
                 break;
             case 5:
-                if (c == 0.0) {
-                    for (i = from - 1; ++i <= to; ) {
-                        if (Double.isNaN(elements[i])) {
+                if ( c == 0.0 ) {
+                    for ( i = from - 1; ++i <= to; ) {
+                        if ( Double.isNaN( elements[i] ) ) {
                             continue;
                         }
                         v = elements[i];
                         sum += v * v * v * v * v;
                     }
                 } else {
-                    for (i = from - 1; ++i <= to; ) {
-                        if (Double.isNaN(elements[i])) {
+                    for ( i = from - 1; ++i <= to; ) {
+                        if ( Double.isNaN( elements[i] ) ) {
                             continue;
                         }
                         v = elements[i] - c;
@@ -1006,11 +821,11 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
                 }
                 break;
             default:
-                for (i = from - 1; ++i <= to; ) {
-                    if (Double.isNaN(elements[i])) {
+                for ( i = from - 1; ++i <= to; ) {
+                    if ( Double.isNaN( elements[i] ) ) {
                         continue;
                     }
-                    sum += Math.pow(elements[i] - c, k);
+                    sum += Math.pow( elements[i] - c, k );
                 }
                 break;
         }
@@ -1025,8 +840,8 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param k    int
      * @return double
      */
-    public static double sumOfPowers(DoubleArrayList data, int k) {
-        return sumOfPowerDeviations(data, k, 0);
+    public static double sumOfPowers( DoubleArrayList data, int k ) {
+        return sumOfPowerDeviations( data, k, 0 );
     }
 
     /**
@@ -1035,8 +850,9 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param data DoubleArrayList
      * @return double
      */
-    public static double sumOfSquaredDeviations(DoubleArrayList data) {
-        return sumOfSquaredDeviations(sizeWithoutMissingValues(data), variance(sizeWithoutMissingValues(data), sum(data), sumOfSquares(data)));
+    public static double sumOfSquaredDeviations( DoubleArrayList data ) {
+        int size = sizeWithoutMissingValues( data );
+        return Descriptive.sumOfSquaredDeviations( size, Descriptive.variance( size, sum( data ), sumOfSquares( data ) ) );
     }
 
     /**
@@ -1045,21 +861,22 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param data DoubleArrayList
      * @return double
      */
-    public static double sumOfSquares(DoubleArrayList data) {
-        return sumOfPowerDeviations(data, 2, 0.0);
+    public static double sumOfSquares( DoubleArrayList data ) {
+        return sumOfPowerDeviations( data, 2, 0.0 );
     }
 
     /**
-     * Returns the trimmed mean of a sorted data sequence. Missing values are completely ignored.
+     * Returns the trimmed mean of a data sequence. Missing values are completely ignored.
      *
-     * @param sortedData the data sequence; <b>must be sorted ascending </b>.
-     * @param mean       the mean of the (full) sorted data sequence.
-     * @param left       int the number of leading elements to trim.
-     * @param right      int number of trailing elements to trim.
+     * @param data  the data sequence
+     * @param left  int the number of leading elements to trim.
+     * @param right int number of trailing elements to trim.
      * @return double
      */
-    public static double trimmedMean(DoubleArrayList sortedData, double mean, int left, int right) {
-        return Descriptive.trimmedMean(removeMissing(sortedData), mean, left, right);
+    public static double trimmedMean( DoubleArrayList data, int left, int right ) {
+        data = data.copy();
+        sortAndRemoveMissing( data );
+        return Descriptive.trimmedMean( data, Descriptive.mean( data ), left, right );
     }
 
     /**
@@ -1068,15 +885,8 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param data DoubleArrayList
      * @return double
      */
-    public static double variance(DoubleArrayList data) {
-        return variance(sizeWithoutMissingValues(data), sum(data), sumOfSquares(data));
-    }
-
-    /**
-     *
-     */
-    public static double variance(int sizeWithoutMissing, double sum, double sumOfSquares) {
-        return Descriptive.variance(sizeWithoutMissing, sum, sumOfSquares);
+    public static double variance( DoubleArrayList data ) {
+        return Descriptive.variance( sizeWithoutMissingValues( data ), sum( data ), sumOfSquares( data ) );
     }
 
     /**
@@ -1087,9 +897,9 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
      * @param weights DoubleArrayList
      * @return double
      */
-    public static double weightedMean(DoubleArrayList data, DoubleArrayList weights) {
+    public static double weightedMean( DoubleArrayList data, DoubleArrayList weights ) {
         int size = data.size();
-        if (size != weights.size() || size == 0) {
+        if ( size != weights.size() || size == 0 ) {
             throw new IllegalArgumentException();
         }
 
@@ -1097,9 +907,9 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
         double[] theWeights = weights.elements();
         double sum = 0.0;
         double weightsSum = 0.0;
-        for (int i = size; --i >= 0; ) {
+        for ( int i = size; --i >= 0; ) {
             double w = theWeights[i];
-            if (Double.isNaN(elements[i]) || Double.isNaN(w)) {
+            if ( Double.isNaN( elements[i] ) || Double.isNaN( w ) ) {
                 continue;
             }
             sum += elements[i] * w;
@@ -1110,18 +920,37 @@ public class DescriptiveWithMissing extends cern.jet.stat.Descriptive {
     }
 
     /**
-     * Returns the winsorized mean of a sorted data sequence.
-     *
-     * @param sortedData DoubleArrayList, must already be sorted ascending
-     * @param mean       the mean of the (full) sorted data sequence.
-     * @param left       the number of leading elements to trim. Refers to the number of elements to trim
-     *                   <em>excluding any missing values</em>
-     * @param right      the number of trailing elements to trim <em>excluding any missing values</em>
-     * @return double
+     * Makes a copy of the list that doesn't have the missing values and sort the values.
+     * <p>
+     * This takes advantage that {@link Double#NaN} are always sorted last, so we can simply set the size of the
+     * resulting array to the first NaN value.
      */
-    public static double winsorizedMean(DoubleArrayList sortedData, double mean, int left, int right) {
-        DoubleArrayList sdm = removeMissing(sortedData);
-        return Descriptive.winsorizedMean(sdm, mean(sdm), left, right);
+    private static void sortAndRemoveMissing( DoubleArrayList data ) {
+        data.sort();
+        double[] elements = data.elements();
+        int size = data.size();
+        for ( int i = 0; i < size; i++ ) {
+            if ( Double.isNaN( elements[i] ) ) {
+                data.setSize( i );
+                break;
+            }
+        }
+    }
+
+    /**
+     * Return the size of the list, ignoring missing values.
+     *
+     * @param list DoubleArrayList
+     * @return int
+     */
+    private static int sizeWithoutMissingValues( DoubleArrayList list ) {
+        int size = 0;
+        for ( int i = 0; i < list.size(); i++ ) {
+            if ( !Double.isNaN( list.get( i ) ) ) {
+                size++;
+            }
+        }
+        return size;
     }
 
     /* private methods */

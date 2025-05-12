@@ -16,6 +16,8 @@ package ubic.basecode.ontology.providers;
 
 import ubic.basecode.util.Configuration;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * <a href="https://www.ebi.ac.uk/efo/">Experimental Factor Ontology</a>
  *
@@ -24,11 +26,7 @@ import ubic.basecode.util.Configuration;
 public class ExperimentalFactorOntologyService extends AbstractBaseCodeOntologyService {
 
     public ExperimentalFactorOntologyService() {
-        super( "Experimental Factor Ontology", "experimentalFactorOntology" );
-    }
-
-    @Override
-    protected String getOntologyUrl() {
-        return Configuration.getString( "url.efOntology" );
+        super( "Experimental Factor Ontology", requireNonNull( Configuration.getString( "url.efOntology" ) ),
+            Boolean.TRUE.equals( Configuration.getBoolean( "load.experimentalFactorOntology" ) ), "experimentalFactorOntology" );
     }
 }

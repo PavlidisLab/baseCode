@@ -27,7 +27,7 @@ import java.util.Set;
  * @author pavlidis
  */
 class OntologyCardinalityRestrictionImpl extends OntologyRestrictionImpl implements
-        OntologyCardinalityRestriction {
+    OntologyCardinalityRestriction {
 
     private final int cardinality;
     private final CardinalityType cardType;

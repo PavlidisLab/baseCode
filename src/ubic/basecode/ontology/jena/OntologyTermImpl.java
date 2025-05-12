@@ -72,8 +72,8 @@ class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm 
         while ( iterator.hasNext() ) {
             Statement state = iterator.next();
             JenaUtils.as( state.getPredicate(), com.hp.hpl.jena.ontology.AnnotationProperty.class )
-                    .map( r -> new AnnotationPropertyImpl( r, state.getObject() ) )
-                    .ifPresent( annots::add );
+                .map( r -> new AnnotationPropertyImpl( r, state.getObject() ) )
+                .ifPresent( annots::add );
         }
         return annots;
     }
@@ -86,8 +86,8 @@ class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm 
         while ( it.hasNext() ) {
             Statement state = it.next();
             JenaUtils.as( state.getPredicate(), com.hp.hpl.jena.ontology.AnnotationProperty.class )
-                    .map( r -> new AnnotationPropertyImpl( r, state.getObject() ) )
-                    .ifPresent( annots::add );
+                .map( r -> new AnnotationPropertyImpl( r, state.getObject() ) )
+                .ifPresent( annots::add );
         }
         return annots;
     }
@@ -98,8 +98,8 @@ class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm 
         Statement state = ontResource.getProperty( ResourceFactory.createProperty( propertyUri ) );
         if ( state != null ) {
             return JenaUtils.as( state.getPredicate(), com.hp.hpl.jena.ontology.AnnotationProperty.class )
-                    .map( r -> new AnnotationPropertyImpl( r, state.getObject() ) )
-                    .orElse( null );
+                .map( r -> new AnnotationPropertyImpl( r, state.getObject() ) )
+                .orElse( null );
         }
         return null;
     }
@@ -107,10 +107,10 @@ class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm 
     @Override
     public Collection<OntologyTerm> getChildren( boolean direct, boolean includeAdditionalProperties, boolean keepObsoletes ) {
         return JenaUtils.getChildren( ontResource.getOntModel(), Collections.singleton( ontResource ), direct, includeAdditionalProperties ? additionalRestrictions : null )
-                .stream()
-                .map( o -> new OntologyTermImpl( o, additionalRestrictions ) )
-                .filter( o -> keepObsoletes || !o.isObsolete() )
-                .collect( Collectors.toSet() );
+            .stream()
+            .map( o -> new OntologyTermImpl( o, additionalRestrictions ) )
+            .filter( o -> keepObsoletes || !o.isObsolete() )
+            .collect( Collectors.toSet() );
     }
 
     /*
@@ -127,18 +127,18 @@ class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm 
     @Override
     public Collection<OntologyIndividual> getIndividuals( boolean direct ) {
         return this.ontResource.listInstances( direct )
-                .filterKeep( new PredicateFilter<>( OntResource::isIndividual ) )
-                .mapWith( r -> ( OntologyIndividual ) new OntologyIndividualImpl( r.asIndividual(), additionalRestrictions ) )
-                .toSet();
+            .filterKeep( new PredicateFilter<>( OntResource::isIndividual ) )
+            .mapWith( r -> ( OntologyIndividual ) new OntologyIndividualImpl( r.asIndividual(), additionalRestrictions ) )
+            .toSet();
     }
 
     @Override
     public Collection<OntologyTerm> getParents( boolean direct, boolean includeAdditionalProperties, boolean keepObsoletes ) {
         return JenaUtils.getParents( ontResource.getOntModel(), Collections.singleton( ontResource ), direct, includeAdditionalProperties ? additionalRestrictions : null )
-                .stream()
-                .map( o -> new OntologyTermImpl( o, additionalRestrictions ) )
-                .filter( o -> keepObsoletes || !o.isObsolete() )
-                .collect( Collectors.toSet() );
+            .stream()
+            .map( o -> new OntologyTermImpl( o, additionalRestrictions ) )
+            .filter( o -> keepObsoletes || !o.isObsolete() )
+            .collect( Collectors.toSet() );
     }
 
     /**

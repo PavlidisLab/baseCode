@@ -2,11 +2,9 @@ package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import ubic.basecode.ontology.search.OntologySearchException;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 interface SearchIndex extends AutoCloseable {
 

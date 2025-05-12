@@ -14,7 +14,7 @@
  */
 package ubic.basecode.ontology.providers;
 
-import org.apache.commons.lang3.StringUtils;
+import ubic.basecode.ontology.jena.UrlOntologyService;
 
 import javax.annotation.Nullable;
 
@@ -23,59 +23,13 @@ import javax.annotation.Nullable;
  *
  * @author Paul
  */
-public class GenericOntologyService extends AbstractOntologyService {
-
-    private final String url;
-    private final String name;
-    @Nullable
-    private final String cacheName;
+public class GenericOntologyService extends AbstractDelegatingOntologyService {
 
     public GenericOntologyService( String name, String url, @Nullable String cacheName ) {
-        this.name = name;
-        this.url = url;
-        this.cacheName = cacheName;
+        super( new UrlOntologyService( name, url, true, cacheName ) );
     }
 
     public GenericOntologyService( String name, String url ) {
         this( name, url, null );
-    }
-
-    /**
-     * @deprecated use {@link #GenericOntologyService(String, String, String)} with an explicit cache name instead
-     */
-    @Deprecated
-    public GenericOntologyService( String name, String url, boolean cache ) {
-        this( name, url, cache ? StringUtils.deleteWhitespace( name ) : null );
-    }
-
-    /**
-     * @deprecated use {@link #GenericOntologyService(String, String, String)} with an explicit cache name instead and
-     * {@link #setProcessImports(boolean)}
-     */
-    @Deprecated
-    public GenericOntologyService( String name, String url, boolean cache, boolean processImports ) {
-        this( name, url, cache );
-        setProcessImports( processImports );
-    }
-
-    @Override
-    protected String getOntologyName() {
-        return name;
-    }
-
-    @Override
-    protected String getOntologyUrl() {
-        return url;
-    }
-
-    @Override
-    protected boolean isOntologyEnabled() {
-        return true;
-    }
-
-    @Override
-    @Nullable
-    protected String getCacheName() {
-        return cacheName;
     }
 }

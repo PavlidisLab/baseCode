@@ -42,7 +42,8 @@ public class GenericOntologyServiceTest extends AbstractOntologyTest {
     public void testGenericOntologyServiceMem() throws Exception {
         URL resource = this.getClass().getResource( dataResource );
         assertNotNull( resource );
-        GenericOntologyService s1 = new GenericOntologyService( "foo", resource.toString(), true, false );
+        GenericOntologyService s1 = new GenericOntologyService( "foo", resource.toString(), "foo" );
+        s1.setProcessImports( false );
         s1.initialize( true, false );
         GenericOntologyService s = s1;
 
@@ -65,21 +66,23 @@ public class GenericOntologyServiceTest extends AbstractOntologyTest {
 
     @Test
     public void testWithoutOntologyCacheDir() {
-        String prevCacheDir = Configuration.getString( "ontology.cache.dir" );
-        String prevIndexDir = Configuration.getString( "ontology.index.dir" );
         try {
             Configuration.setString( "ontology.cache.dir", "" );
             Configuration.setString( "ontology.index.dir", "" );
             URL resource = this.getClass().getResource( dataResource );
             assertNotNull( resource );
-            new GenericOntologyService( "foo", resource.toString(), false, false )
-                    .initialize( true, false );
-            new GenericOntologyService( "foo", resource.toString(), true, false )
-                    .initialize( true, true );
+            GenericOntologyService os;
+            os = new GenericOntologyService( "foo", resource.toString(), "foo" );
+            os.setProcessImports( false );
+            os.initialize( true, false );
+            os = new GenericOntologyService( "foo", resource.toString(), "foo" );
+            os.setProcessImports( false );
+            os.initialize( true, true );
             // cannot force index without a cache directory
             IllegalArgumentException e = assertThrows( IllegalArgumentException.class, () -> {
-                new GenericOntologyService( "foo", resource.toString(), false, false )
-                        .initialize( true, true );
+                OntologyService os1 = new GenericOntologyService( "foo", resource.toString(), null );
+                os1.setProcessImports( false );
+                os1.initialize( true, true );
             } );
             Assertions.assertThat( e )
                     .hasMessageMatching( "No cache directory is set for foo.+, cannot force indexing\\." );
