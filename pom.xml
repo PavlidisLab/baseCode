@@ -279,7 +279,7 @@
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
-			<version>1.5.5</version>
+			<version>1.5.6</version>
 		</dependency>
 		<!-- xml-apis is dependent on jena -->
 		<dependency>
@@ -306,14 +306,8 @@
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
-			<version>1.10.1</version>
+			<version>1.11.0</version>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
