@@ -2,10 +2,6 @@ package ubic.basecode.ontology.ncbo;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -21,6 +17,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ConnectException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -28,7 +25,7 @@ import java.util.regex.Pattern;
 
 /**
  * Use the NCBO annotator to find ontology terms matching strings.
- * 
+ *
  */
 public class AnnotatorClient {
 
@@ -49,7 +46,7 @@ public class AnnotatorClient {
     private static String ontologies = HP_ONTOLOGY + "," + DOID_ONTOLOGY;
 
     /**
-     * 
+     *
      * @param  term
      * @return
      * @throws ParserConfigurationException
@@ -58,7 +55,7 @@ public class AnnotatorClient {
      * @throws Exception
      */
     public static Collection<AnnotatorResponse> findTerm( String term )
-            throws IOException, ParserConfigurationException, IllegalStateException, SAXException {
+        throws IOException, ParserConfigurationException, IllegalStateException, SAXException {
         if ( StringUtils.isBlank( API_KEY ) ) {
             throw new IllegalStateException( "NCBO ncbo.api.key needs to be configured" );
         }
@@ -70,18 +67,16 @@ public class AnnotatorClient {
         if ( StringUtils.isBlank( termClean ) ) return responsesFound;
 
         String url = ANNOTATOR_URL + "apikey=" + API_KEY + "&max_level=0&ontologies=" + ontologies
-                + "&format=xml&text=" + termClean;
+            + "&format=xml&text=" + termClean;
 
         if ( log.isDebugEnabled() ) log.debug( "request url: " + url );
 
         int tries = 0;
 
-        HttpClient httpclient = HttpClientBuilder.create().build();
-        HttpResponse response = null;
+        InputStream response = null;
         while ( response == null && tries < MAX_TRIES ) {
             try {
-                HttpGet httpGet = new HttpGet( url );
-                response = httpclient.execute( httpGet );
+                response = new URL( url ).openStream();
             } catch ( IOException e ) {
                 try {
                     Thread.sleep( 10000 ); // long wait...
@@ -99,7 +94,7 @@ public class AnnotatorClient {
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse( response.getEntity().getContent() );
+        Document document = builder.parse( response );
         NodeList nodes = document.getElementsByTagName( "annotation" );
 
         // for each response receive, populate the return objects
@@ -124,7 +119,7 @@ public class AnnotatorClient {
                 Integer to = new Integer( infoE.getElementsByTagName( "to" ).item( 0 ).getTextContent() );
 
                 AnnotatorResponse annotatorResponse = new AnnotatorResponse( valueUri, matchType, txtMatched, from, to,
-                        ontologyUsed, termClean );
+                    ontologyUsed, termClean );
 
                 responsesFound.add( annotatorResponse );
             }
@@ -135,7 +130,7 @@ public class AnnotatorClient {
 
     /**
      * FIXME only knows about HP and DOID
-     * 
+     *
      * @param  url
      * @return
      */
@@ -153,10 +148,10 @@ public class AnnotatorClient {
 
     /**
      * return the label associated with an conceptid. FIXME why are we doing things this way, it must be terribly slow
-     * 
+     *
      * @param  ontologyId what virtual ontology to use
      * @param  identifier the identifier, knows about: OMIM, DOID, MESH
-     * @return            the label for that term, example : ABCD syndrome
+     * @return the label for that term, example : ABCD syndrome
      */
     public static String findLabelForIdentifier( String ontologyId, String identifier ) {
 
@@ -173,43 +168,32 @@ public class AnnotatorClient {
 
         // http://data.bioontology.org/ontologies/OMIM
 
-        // http://data.bioontology.org/ontologies/OMIM/classes/http%3A%2F%2Fpurl.bioontology.org%2Fontology%2FOMIM%2F600374 
+        // http://data.bioontology.org/ontologies/OMIM/classes/http%3A%2F%2Fpurl.bioontology.org%2Fontology%2FOMIM%2F600374
+
+        String url;
+
+        // These Ontology identifiers could potentially be retrieved, using OntologyLookup
+        switch ( ontologyId ) {
+            case "OMIM":
+            case "MESH":
+                url = "http://data.bioontology.org/ontologies/" + ontologyId
+                    + "/classes/http%3A%2F%2Fpurl.bioontology.org%2Fontology%2FMESH%2F"
+                    + identifier
+                    + "/?apikey=" + API_KEY + "&format=xml";
+                break;
+            case "DOID":
+                url = "http://data.bioontology.org/ontologies/" + ontologyId + "/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2F"
+                    + identifier
+                    + "/?apikey=" + API_KEY + "&format=xml";
+                break;
+            default:
+                throw new IllegalArgumentException( "Don't know how to deal with " + ontologyId );
+        }
+
+        log.debug( url );
 
         for ( int i = 0; i < MAX_TRIES; i++ ) {
-            try {
-                String url;
-
-                // These Ontology identifiers could potentially be retrieved, using OntologyLookup
-                switch ( ontologyId ) {
-                    case "OMIM":
-                    case "MESH":
-                        url = "http://data.bioontology.org/ontologies/" + ontologyId
-                                + "/classes/http%3A%2F%2Fpurl.bioontology.org%2Fontology%2FMESH%2F"
-                                + identifier
-                                + "/?apikey=" + API_KEY + "&format=xml";
-                        break;
-                    case "DOID":
-                        url = "http://data.bioontology.org/ontologies/" + ontologyId + "/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2F"
-                                + identifier
-                                + "/?apikey=" + API_KEY + "&format=xml";
-                        break;
-                    default:
-                        throw new IllegalArgumentException( "Don't know how to deal with " + ontologyId );
-                }
-
-                log.debug( url );
-
-                HttpClient httpclient = HttpClientBuilder.create().build();
-
-                HttpGet httpGet = new HttpGet( url );
-                HttpResponse response = httpclient.execute( httpGet );
-
-                // term was not found
-                if ( response.getStatusLine().getStatusCode() == 404 ) {
-                    log.debug( "404 returned, the term: " + identifier + " was not found" );
-                    return null;
-                }
-
+            try ( InputStream response = new URL( url ).openStream() ) {
                 return findLabel( response );
             } catch ( ConnectException ce ) {
                 try {
@@ -227,10 +211,10 @@ public class AnnotatorClient {
     /**
      * using the response return the label associated with the request
      */
-    private static String findLabel( HttpResponse response ) throws Exception {
+    private static String findLabel( InputStream response ) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
-        try ( InputStream content = response.getEntity().getContent() ) {
+        try ( InputStream content = response ) {
             Document document = builder.parse( content );
             NodeList nodes = document.getElementsByTagName( "prefLabel" );
             if ( nodes == null ) {
