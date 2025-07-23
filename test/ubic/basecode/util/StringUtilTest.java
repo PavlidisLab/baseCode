@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2006 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,17 +18,16 @@
  */
 package ubic.basecode.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import org.junit.Test;
 
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author pavlidis
- * 
+ *
  */
 public class StringUtilTest {
 
@@ -78,20 +77,23 @@ public class StringUtilTest {
 
     @Test
     public void testMakeRnames() {
-        String actual = StringUtil.makeValidForR( "f33oo dd . [f] a" );
-        assertEquals( "f33oo.dd.f.a", actual );
-        
-        actual = StringUtil.makeValidForR( ".f33oo" );
-        assertEquals( ".f33oo", actual );
-        
-        actual = StringUtil.makeValidForR( "...f33oo" );
-        assertEquals( ".f33oo", actual );
-
-        actual = StringUtil.makeValidForR( "1foo dd . [f] a" );
-        assertEquals( "X1foo.dd.f.a", actual );
-       
-        actual = StringUtil.makeValidForR( ".1foo dd . [f] a" );
-        assertEquals( "X.1foo.dd.f.a", actual );
+        assertFalse( Character.isDigit( '.' ) );
+        assertEquals( "NA", StringUtil.makeValidForR( null ) );
+        assertEquals( "test", StringUtil.makeValidForR( "test" ) );
+        assertEquals( "X", StringUtil.makeValidForR( "X" ) );
+        assertEquals( "X123", StringUtil.makeValidForR( "123" ) );
+        assertEquals( "X", StringUtil.makeValidForR( "" ) );
+        assertEquals( "X..", StringUtil.makeValidForR( "  " ) );
+        assertEquals( "if.", StringUtil.makeValidForR( "if" ) );
+        assertEquals( "TRUE.", StringUtil.makeValidForR( "TRUE" ) );
+        assertEquals( "...", StringUtil.makeValidForR( "..." ) );
+        assertEquals( "..", StringUtil.makeValidForR( ". " ) );
+        assertEquals( "X.2way", StringUtil.makeValidForR( ".2way" ) );
+        assertEquals( "f33oo.dd....f..a", StringUtil.makeValidForR( "f33oo dd . [f] a" ) );
+        assertEquals( ".f33oo", StringUtil.makeValidForR( ".f33oo" ) );
+        assertEquals( "...f33oo", StringUtil.makeValidForR( "...f33oo" ) );
+        assertEquals( "X1foo.dd....f..a", StringUtil.makeValidForR( "1foo dd . [f] a" ) );
+        assertEquals( "X.1foo.dd....f..a", StringUtil.makeValidForR( ".1foo dd . [f] a" ) );
     }
 
 }

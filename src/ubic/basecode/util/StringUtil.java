@@ -184,6 +184,11 @@ public class StringUtil {
         return ( c >= 'A' && c <= 'Z' ) || ( c >= 'a' && c <= 'z' );
     }
 
+    private static final String[] R_RESERVED_WORDS = {
+        "if", "else", "repeat", "while", "function", "for", "in", "next", "break",
+        "TRUE", "FALSE", "NULL", "Inf", "NaN", "NA", "NA_integer_", "NA_real_", "NA_character_", "NA_complex_",
+    };
+
     /**
      * Mimics the make.names method in R (character.c) to make valid variables names; we use this for column headers in
      * some output files. This doesn't give the exact sames results as R; we avoid repeated '.'.
@@ -192,17 +197,21 @@ public class StringUtil {
      * @return modified string
      * @author paul
      */
-    public static String makeValidForR( String s ) {
-
-        // If string starts with a digit or "." and then a digit, prepend an X.
-        if ( s.matches( "^\\.?[0-9].+" ) ) {
-            s = "X" + s;
+    public static String makeValidForR( String colName ) {
+        if ( colName == null ) {
+            return "NA";
         }
-
-        // TODO: check for reserved words. https://stat.ethz.ch/R-manual/R-devel/library/base/html/Reserved.html
-
-        // no dashes or white space or other punctuation. '.' is okay and so is "_", now.
-        return s.replaceAll( "[\\W]+", "." );
+        if ( colName.isEmpty()
+            // starts with a non-letter or non-dot
+            || ( !Character.isAlphabetic( colName.charAt( 0 ) ) && colName.charAt( 0 ) != '.' )
+            // dot followed by a digit
+            || ( colName.charAt( 0 ) == '.' && colName.length() > 1 && Character.isDigit( colName.charAt( 1 ) ) ) ) {
+            return "X" + colName.replaceAll( "[^A-Za-z0-9._]", "." );
+        }
+        if ( StringUtils.equalsAny( colName, R_RESERVED_WORDS ) ) {
+            return colName + ".";
+        }
+        return colName.replaceAll( "[^A-Za-z0-9._]", "." );
     }
 
     /**
