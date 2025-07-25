@@ -72,13 +72,13 @@ public class StringUtilTest {
         test.add( "aaaab" );
         test.add( "aaaacb" );
         String suf = StringUtil.commonSuffix( test );
-        assertEquals( null, suf );
+        assertNull( suf );
     }
 
     @Test
     public void testMakeRnames() {
         assertFalse( Character.isDigit( '.' ) );
-        assertEquals( "NA", StringUtil.makeValidForR( null ) );
+        assertEquals( "NA", StringUtil.makeValidForR( ( String ) null ) );
         assertEquals( "test", StringUtil.makeValidForR( "test" ) );
         assertEquals( "X", StringUtil.makeValidForR( "X" ) );
         assertEquals( "X123", StringUtil.makeValidForR( "123" ) );
@@ -94,6 +94,7 @@ public class StringUtilTest {
         assertEquals( "...f33oo", StringUtil.makeValidForR( "...f33oo" ) );
         assertEquals( "X1foo.dd....f..a", StringUtil.makeValidForR( "1foo dd . [f] a" ) );
         assertEquals( "X.1foo.dd....f..a", StringUtil.makeValidForR( ".1foo dd . [f] a" ) );
+        assertArrayEquals( new String[] { "foo", "foo.1", "foo.2", "bar" }, StringUtil.makeValidForR( new String[] { "foo", "foo", "foo", "bar" } ) );
     }
 
 }

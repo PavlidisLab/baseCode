@@ -28,6 +28,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author pavlidis
@@ -190,28 +192,52 @@ public class StringUtil {
     };
 
     /**
-     * Mimics the make.names method in R (character.c) to make valid variables names; we use this for column headers in
-     * some output files. This doesn't give the exact sames results as R; we avoid repeated '.'.
+     * Mimics the {@code make.names} method in R (character.c) to make valid variables names; we use this for column
+     * headers in some output files.
+     * <p>
+     * This was modified in 1.1.26 to match the behavior of R more closely, if not exactly.
      *
-     * @param s
+     * @param s a string to be made valid for R
      * @return modified string
      * @author paul
      */
-    public static String makeValidForR( String colName ) {
-        if ( colName == null ) {
+    public static String makeValidForR( String s ) {
+        if ( s == null ) {
             return "NA";
         }
-        if ( colName.isEmpty()
+        if ( s.isEmpty()
             // starts with a non-letter or non-dot
-            || ( !Character.isAlphabetic( colName.charAt( 0 ) ) && colName.charAt( 0 ) != '.' )
+            || ( !Character.isAlphabetic( s.charAt( 0 ) ) && s.charAt( 0 ) != '.' )
             // dot followed by a digit
-            || ( colName.charAt( 0 ) == '.' && colName.length() > 1 && Character.isDigit( colName.charAt( 1 ) ) ) ) {
-            return "X" + colName.replaceAll( "[^A-Za-z0-9._]", "." );
+            || ( s.charAt( 0 ) == '.' && s.length() > 1 && Character.isDigit( s.charAt( 1 ) ) ) ) {
+            return "X" + s.replaceAll( "[^A-Za-z0-9._]", "." );
         }
-        if ( StringUtils.equalsAny( colName, R_RESERVED_WORDS ) ) {
-            return colName + ".";
+        if ( StringUtils.equalsAny( s, R_RESERVED_WORDS ) ) {
+            return s + ".";
         }
-        return colName.replaceAll( "[^A-Za-z0-9._]", "." );
+        return s.replaceAll( "[^A-Za-z0-9._]", "." );
+    }
+
+    /**
+     * Mimics the {@code make.names} method in R when using with a vector of strings and the unique argument set to TRUE.
+     * @author poirigui
+     */
+    public static String[] makeValidForR( String[] strings ) {
+        String[] result = new String[strings.length];
+        Map<String, Integer> counts = new HashMap<>();
+        for ( int i = 0; i < strings.length; i++ ) {
+            String s = strings[i];
+            String rs = StringUtil.makeValidForR( s );
+            if ( counts.containsKey( rs ) ) {
+                int count = counts.get( rs );
+                result[i] = rs + "." + count;
+                counts.put( rs, count + 1 );
+            } else {
+                result[i] = rs;
+                counts.put( rs, 1 );
+            }
+        }
+        return result;
     }
 
     /**
