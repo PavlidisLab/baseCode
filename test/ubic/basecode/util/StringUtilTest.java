@@ -76,25 +76,25 @@ public class StringUtilTest {
     }
 
     @Test
-    public void testMakeRnames() {
+    public void testMakeNames() {
         assertFalse( Character.isDigit( '.' ) );
-        assertEquals( "NA", StringUtil.makeValidForR( ( String ) null ) );
-        assertEquals( "test", StringUtil.makeValidForR( "test" ) );
-        assertEquals( "X", StringUtil.makeValidForR( "X" ) );
-        assertEquals( "X123", StringUtil.makeValidForR( "123" ) );
-        assertEquals( "X", StringUtil.makeValidForR( "" ) );
-        assertEquals( "X..", StringUtil.makeValidForR( "  " ) );
-        assertEquals( "if.", StringUtil.makeValidForR( "if" ) );
-        assertEquals( "TRUE.", StringUtil.makeValidForR( "TRUE" ) );
-        assertEquals( "...", StringUtil.makeValidForR( "..." ) );
-        assertEquals( "..", StringUtil.makeValidForR( ". " ) );
-        assertEquals( "X.2way", StringUtil.makeValidForR( ".2way" ) );
-        assertEquals( "f33oo.dd....f..a", StringUtil.makeValidForR( "f33oo dd . [f] a" ) );
-        assertEquals( ".f33oo", StringUtil.makeValidForR( ".f33oo" ) );
-        assertEquals( "...f33oo", StringUtil.makeValidForR( "...f33oo" ) );
-        assertEquals( "X1foo.dd....f..a", StringUtil.makeValidForR( "1foo dd . [f] a" ) );
-        assertEquals( "X.1foo.dd....f..a", StringUtil.makeValidForR( ".1foo dd . [f] a" ) );
-        assertArrayEquals( new String[] { "foo", "foo.1", "foo.2", "bar" }, StringUtil.makeValidForR( new String[] { "foo", "foo", "foo", "bar" } ) );
+        assertEquals( "NA", StringUtil.makeNames( null ) );
+        assertEquals( "test", StringUtil.makeNames( "test" ) );
+        assertEquals( "X", StringUtil.makeNames( "X" ) );
+        assertEquals( "X123", StringUtil.makeNames( "123" ) );
+        assertEquals( "X", StringUtil.makeNames( "" ) );
+        assertEquals( "X..", StringUtil.makeNames( "  " ) );
+        assertEquals( "if.", StringUtil.makeNames( "if" ) );
+        assertEquals( "TRUE.", StringUtil.makeNames( "TRUE" ) );
+        assertEquals( "...", StringUtil.makeNames( "..." ) );
+        assertEquals( "..", StringUtil.makeNames( ". " ) );
+        assertEquals( "X.2way", StringUtil.makeNames( ".2way" ) );
+        assertEquals( "f33oo.dd....f..a", StringUtil.makeNames( "f33oo dd . [f] a" ) );
+        assertEquals( ".f33oo", StringUtil.makeNames( ".f33oo" ) );
+        assertEquals( "...f33oo", StringUtil.makeNames( "...f33oo" ) );
+        assertEquals( "X1foo.dd....f..a", StringUtil.makeNames( "1foo dd . [f] a" ) );
+        assertEquals( "X.1foo.dd....f..a", StringUtil.makeNames( ".1foo dd . [f] a" ) );
+        assertArrayEquals( new String[] { "foo", "foo.1", "foo.2", "bar" }, StringUtil.makeNames( new String[] { "foo", "foo", "foo", "bar" }, true ) );
     }
 
     @Test
