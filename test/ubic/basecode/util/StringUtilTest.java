@@ -97,4 +97,9 @@ public class StringUtilTest {
         assertArrayEquals( new String[] { "foo", "foo.1", "foo.2", "bar" }, StringUtil.makeValidForR( new String[] { "foo", "foo", "foo", "bar" } ) );
     }
 
+    @Test
+    public void testMakeUnique() {
+        assertArrayEquals( new String[] { "foo", "foo.1" }, StringUtil.makeUnique( new String[] { "foo", "foo" } ) );
+        assertArrayEquals( new String[] { "foo", "bar", "foo.1", "foo.2" }, StringUtil.makeUnique( new String[] { "foo", "bar", "foo", "foo" } ) );
+    }
 }

@@ -241,6 +241,29 @@ public class StringUtil {
     }
 
     /**
+     * Mimics the {@code make.unique} method in R.
+     * <p>
+     * Duplicated values in the input array will be suffixed with a dot and a number, starting from 1.
+     */
+    public static String[] makeUnique( String[] strings ) {
+        Map<String, Integer> counts = new HashMap<>();
+        String[] result = new String[strings.length];
+        for ( int i = 0; i < strings.length; i++ ) {
+            String cn = strings[i];
+            if ( counts.containsKey( cn ) ) {
+                int count = counts.get( cn );
+                result[i] = cn + "." + count;
+                counts.put( cn, count + 1 );
+            } else {
+                result[i] = cn;
+                counts.put( cn, 1 );
+            }
+        }
+        return result;
+
+    }
+
+    /**
      * @param stringi
      * @param stringj
      * @return
