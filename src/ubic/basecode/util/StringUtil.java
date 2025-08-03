@@ -28,6 +28,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author pavlidis
@@ -185,24 +187,109 @@ public class StringUtil {
     }
 
     /**
-     * Mimics the make.names method in R (character.c) to make valid variables names; we use this for column headers in
-     * some output files. This doesn't give the exact sames results as R; we avoid repeated '.'.
+     * Mimics the {@code make.names} method in R (character.c) to make valid variables names; we use this for column
+     * headers in some output files.
+     * <p>
+     * This was modified in 1.1.26 to match the behavior of R more closely, if not exactly.
      *
-     * @param s
+     * @param s a string to be made valid for R
      * @return modified string
      * @author paul
+     * @deprecated use {@link #makeNames(String[], boolean)} instead
      */
     public static String makeValidForR( String s ) {
+        return makeNames( s );
+    }
 
-        // If string starts with a digit or "." and then a digit, prepend an X.
-        if ( s.matches( "^\\.?[0-9].+" ) ) {
-            s = "X" + s;
+    /**
+     * Mimics the {@code make.names} method in R when using with a vector of strings and the unique argument set to TRUE.
+     * @author poirigui
+     * @deprecated use {@link #makeNames(String[], boolean)} instead
+     */
+    @Deprecated
+    public static String[] makeValidForR( String[] strings ) {
+        return makeNames( strings, true );
+    }
+
+    /**
+     * Mimics the {@code make.names} method in R.
+     * @param strings a list of strings to be made valid for R
+     * @param unique  if true, will ensure that the names are unique by appending a number to duplicates as per
+     * {@link #makeUnique(String[])}
+     * @author poirigui
+     */
+    public static String[] makeNames( String[] strings, boolean unique ) {
+        String[] result = new String[strings.length];
+        if ( unique ) {
+            Map<String, Integer> counts = new HashMap<>();
+            for ( int i = 0; i < strings.length; i++ ) {
+                String s = strings[i];
+                String rs = makeNames( s );
+                if ( counts.containsKey( rs ) ) {
+                    int count = counts.get( rs );
+                    result[i] = rs + "." + count;
+                    counts.put( rs, count + 1 );
+                } else {
+                    result[i] = rs;
+                    counts.put( rs, 1 );
+                }
+            }
+        } else {
+            for ( int i = 0; i < strings.length; i++ ) {
+                result[i] = makeNames( strings[i] );
+            }
         }
+        return result;
+    }
 
-        // TODO: check for reserved words. https://stat.ethz.ch/R-manual/R-devel/library/base/html/Reserved.html
+    private static final String[] R_RESERVED_WORDS = {
+        "if", "else", "repeat", "while", "function", "for", "in", "next", "break",
+        "TRUE", "FALSE", "NULL", "Inf", "NaN", "NA", "NA_integer_", "NA_real_", "NA_character_", "NA_complex_",
+    };
 
-        // no dashes or white space or other punctuation. '.' is okay and so is "_", now.
-        return s.replaceAll( "[\\W]+", "." );
+    /**
+     * Mimics the {@code make.names} method in R for a single string.
+     * @author paul
+     */
+    public static String makeNames( String s ) {
+        if ( s == null ) {
+            return "NA";
+        }
+        if ( s.isEmpty()
+            // starts with a non-letter or non-dot
+            || ( !Character.isAlphabetic( s.charAt( 0 ) ) && s.charAt( 0 ) != '.' )
+            // dot followed by a digit
+            || ( s.charAt( 0 ) == '.' && s.length() > 1 && Character.isDigit( s.charAt( 1 ) ) ) ) {
+            return "X" + s.replaceAll( "[^A-Za-z0-9._]", "." );
+        }
+        if ( StringUtils.equalsAny( s, R_RESERVED_WORDS ) ) {
+            return s + ".";
+        }
+        return s.replaceAll( "[^A-Za-z0-9._]", "." );
+    }
+
+    /**
+     * Mimics the {@code make.unique} method in R.
+     * <p>
+     * Duplicated values in the input array will be suffixed with a dot and a number, starting from 1.
+     * @author poirigui
+     */
+    public static String[] makeUnique( String[] strings ) {
+        Map<String, Integer> counts = new HashMap<>();
+        String[] result = new String[strings.length];
+        for ( int i = 0; i < strings.length; i++ ) {
+            String cn = strings[i];
+            if ( counts.containsKey( cn ) ) {
+                int count = counts.get( cn );
+                result[i] = cn + "." + count;
+                counts.put( cn, count + 1 );
+            } else {
+                result[i] = cn;
+                counts.put( cn, 1 );
+            }
+        }
+        return result;
+
     }
 
     /**
