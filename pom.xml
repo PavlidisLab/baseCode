@@ -117,28 +117,38 @@
 		</dependency>
 
 		<!-- R engine -->
+		<!-- rJava -->
 		<dependency>
 			<groupId>org.rosuda.REngine</groupId>
 			<artifactId>REngine</artifactId>
-			<version>2.1.0</version>
+			<version>${rJava.version}</version>
+			<scope>system</scope>
+			<systemPath>${rJava.REngine.jarPath}</systemPath>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.rosuda.REngine</groupId>
 			<artifactId>Rserve</artifactId>
-			<version>1.8.1</version>
+			<version>${rserve.version}</version>
+			<scope>system</scope>
+			<systemPath>${rserve.jarPath}</systemPath>
 			<optional>true</optional>
 		</dependency>
-		<!-- JRI is the engine implementation -->
 		<dependency>
-			<groupId>RoSuDA</groupId>
+			<groupId>org.rosuda.REngine</groupId>
 			<artifactId>JRI</artifactId>
-			<version>0.5-0</version>
-			<scope>runtime</scope>
+			<version>${rJava.version}</version>
+			<scope>system</scope>
+			<systemPath>${rJava.JRI.jarPath}</systemPath>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>RoSuDA</groupId>
+			<groupId>org.rosuda.REngine</groupId>
 			<artifactId>JRIEngine</artifactId>
-			<version>0.5-0</version>
+			<version>${rJava.version}</version>
+			<scope>system</scope>
+			<systemPath>${rJava.JRIEngine.jarPath}</systemPath>
+			<optional>true</optional>
 		</dependency>
 
 		<!-- Sparse matrix library; lapack -->
@@ -679,5 +689,15 @@
 		<pavlab.repoDir>/space/maven2</pavlab.repoDir>
 		<pavlab.siteDir>/space/web/maven-sites</pavlab.siteDir>
 		<lucene.version>3.6.2</lucene.version>
+		<!-- rJava -->
+		<!-- You may override this in ~/.m2/settings.xml -->
+		<rJava.version>1.0-13</rJava.version>
+		<rJava.prefix>/usr/lib64/R/library/rJava</rJava.prefix>
+		<rJava.libDir>${rJava.prefix}/jri</rJava.libDir>
+		<rJava.REngine.jarPath>${rJava.prefix}/jri/REngine.jar</rJava.REngine.jarPath>
+		<rJava.JRIEngine.jarPath>${rJava.prefix}/jri/JRIEngine.jar</rJava.JRIEngine.jarPath>
+		<rJava.JRI.jarPath>${rJava.prefix}/jri/JRI.jar</rJava.JRI.jarPath>
+		<rserve.version>1.8-14</rserve.version>
+		<rserve.jarPath>/usr/lib64/R/library/Rserve/java/Rserve.jar</rserve.jarPath>
 	</properties>
 </project>
