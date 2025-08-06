@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2006 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,36 +18,36 @@
  */
 package ubic.basecode.util.r;
 
+import org.junit.Assume;
+import org.junit.BeforeClass;
+
 import java.io.IOException;
 
-import org.junit.After;
-import org.junit.Before;
-
-import ubic.basecode.io.reader.DoubleMatrixReader;
-
 /**
+ * For this test to work, you need to have Rserve running on the default port (6311).
  * @author pavlidis
- * 
  */
 public class RServeClientTest extends AbstractRClientTest {
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void checkRserve() {
         try {
-            rc = new RServeClient();
-            connected = rc.isConnected();
+            RServeClient rc = new RServeClient();
+            Assume.assumeTrue( rc.isConnected() );
         } catch ( IOException e ) {
-            connected = false;
+            Assume.assumeNoException( e );
         }
-
-        DoubleMatrixReader reader = new DoubleMatrixReader();
-        tester = reader.read( this.getClass().getResourceAsStream( "/data/testdata.txt" ) );
     }
 
-    @After
-    public void tearDown() {
-        tester = null;
-        if ( rc != null && rc.isConnected() ) rc.disconnect();
+    @Override
+    protected AbstractRClient createRClient() {
+        try {
+            RServeClient rc = new RServeClient();
+            Assume.assumeTrue( rc.isConnected() );
+            return rc;
+        } catch ( IOException e ) {
+            Assume.assumeNoException( e );
+            return null;
+        }
     }
-
 }
