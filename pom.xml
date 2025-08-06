@@ -122,32 +122,24 @@
 			<groupId>org.rosuda.REngine</groupId>
 			<artifactId>REngine</artifactId>
 			<version>${rJava.version}</version>
-			<scope>system</scope>
-			<systemPath>${rJava.REngine.jarPath}</systemPath>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.rosuda.REngine</groupId>
 			<artifactId>Rserve</artifactId>
 			<version>${rserve.version}</version>
-			<scope>system</scope>
-			<systemPath>${rserve.jarPath}</systemPath>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.rosuda.REngine</groupId>
 			<artifactId>JRI</artifactId>
 			<version>${rJava.version}</version>
-			<scope>system</scope>
-			<systemPath>${rJava.JRI.jarPath}</systemPath>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.rosuda.REngine</groupId>
 			<artifactId>JRIEngine</artifactId>
 			<version>${rJava.version}</version>
-			<scope>system</scope>
-			<systemPath>${rJava.JRIEngine.jarPath}</systemPath>
 			<optional>true</optional>
 		</dependency>
 
@@ -693,12 +685,7 @@
 		<!-- rJava -->
 		<!-- You may override this in ~/.m2/settings.xml -->
 		<rJava.version>1.0-13</rJava.version>
-		<rJava.prefix>/usr/lib64/R/library/rJava</rJava.prefix>
-		<rJava.libDir>${rJava.prefix}/jri</rJava.libDir>
-		<rJava.REngine.jarPath>${rJava.prefix}/jri/REngine.jar</rJava.REngine.jarPath>
-		<rJava.JRIEngine.jarPath>${rJava.prefix}/jri/JRIEngine.jar</rJava.JRIEngine.jarPath>
-		<rJava.JRI.jarPath>${rJava.prefix}/jri/JRI.jar</rJava.JRI.jarPath>
+		<rJava.libDir>/usr/lib64/R/library/rJava/jri</rJava.libDir>
 		<rserve.version>1.8-14</rserve.version>
-		<rserve.jarPath>/usr/lib64/R/library/Rserve/java/Rserve.jar</rserve.jarPath>
 	</properties>
 </project>
