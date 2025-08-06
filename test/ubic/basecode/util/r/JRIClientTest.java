@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2006-2010 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,48 +18,25 @@
  */
 package ubic.basecode.util.r;
 
-import org.junit.After;
-import org.junit.Before;
-
-import ubic.basecode.io.reader.DoubleMatrixReader;
+import org.junit.Assume;
+import org.junit.BeforeClass;
 
 /**
+ * For this test to work, you need to have R installed, the R_HOME environment variable set and rJava installed with
+ * the JRI library.
  * @author pavlidis
- * 
  */
 public class JRIClientTest extends AbstractRClientTest {
 
-    @Before
-    public void setUp() throws Exception {
-
-        connected = JRIClient.ready();
-
-        if ( !connected ) {
-            return;
-        }
-        try {
-            log.debug( "java.library.path=" + System.getProperty( "java.library.path" ) );
-            rc = new JRIClient();
-            if ( rc == null || !rc.isConnected() ) {
-                connected = false;
-                return;
-            }
-        } catch ( UnsatisfiedLinkError e ) {
-            log.error( e.getMessage(), e );
-            connected = false;
-            return;
-        }
-
-        DoubleMatrixReader reader = new DoubleMatrixReader();
-
-        tester = reader.read( this.getClass().getResourceAsStream( "/data/testdata.txt" ) );
-        assert rc.isConnected();
+    @BeforeClass
+    public static void checkRHome() {
+        Assume.assumeNotNull( "R_HOME environment variable is not set.", System.getenv( "R_HOME" ) );
+        Assume.assumeTrue( JRIClient.ready() );
+        log.debug( "java.library.path={}", System.getProperty( "java.library.path" ) );
     }
 
-    @After
-    public void tearDown() {
-        tester = null;
-        rc = null;
+    @Override
+    protected AbstractRClient createRClient() {
+        return new JRIClient();
     }
-
 }

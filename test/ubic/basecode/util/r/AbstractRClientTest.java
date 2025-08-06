@@ -1,40 +1,28 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2013 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
 package ubic.basecode.util.r;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.rosuda.REngine.REXP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrix;
@@ -47,26 +35,44 @@ import ubic.basecode.util.r.type.HTest;
 import ubic.basecode.util.r.type.OneWayAnovaResult;
 import ubic.basecode.util.r.type.TwoWayAnovaResult;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
+
+import static org.junit.Assert.*;
+
 /**
  * @author Paul
- * 
+ *
  */
 public abstract class AbstractRClientTest {
 
     protected static Logger log = LoggerFactory.getLogger( AbstractRClientTest.class );
-    boolean connected = true;
-    AbstractRClient rc = null;
-    double[] test1 = new double[] { -1.2241396, -0.6794486, -0.8475404, -0.4119554, -2.1980083 };
-    double[] test2 = new double[] { 0.67676154, 0.20346679, 0.09289084, 0.68850551, 0.61120011 };
-    DoubleMatrix<String, String> tester;
+
+    private AbstractRClient rc = null;
+    private final double[] test1 = new double[] { -1.2241396, -0.6794486, -0.8475404, -0.4119554, -2.1980083 };
+    private final double[] test2 = new double[] { 0.67676154, 0.20346679, 0.09289084, 0.68850551, 0.61120011 };
+    private DoubleMatrix<String, String> tester;
+
+    @Before
+    public void setUp() throws IOException {
+        rc = createRClient();
+        DoubleMatrixReader reader = new DoubleMatrixReader();
+        tester = reader.read( this.getClass().getResourceAsStream( "/data/testdata.txt" ) );
+    }
+
+    @After
+    public void tearDown() {
+        if ( rc != null && rc.isConnected() ) {
+            rc.disconnect();
+        }
+    }
+
+    protected abstract AbstractRClient createRClient();
 
     @Test
     public void testAnovaA() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test" );
-            return;
-        }
-
         /*
          * foo<-c(212.1979, 8.8645, 8.4814, 11.915); a<-factor(c( "A", "B", "B", "B" )); b<-factor(c( "D", "C", "D", "D"
          * )); anova(aov(foo ~ a+b));
@@ -85,11 +91,6 @@ public abstract class AbstractRClientTest {
 
     @Test
     public void testAnovaB() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test" );
-            return;
-        }
-
         /*
          * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074); a<-factor(c( "A", "A", "A", "A", "B",
          * "B", "B", "B" )); b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" )); anova(aov(foo ~ a+b));
@@ -108,11 +109,6 @@ public abstract class AbstractRClientTest {
 
     @Test
     public void testAnovaC() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test" );
-            return;
-        }
-
         /*
          * foo<-c( 213.7725, 211.6383, NA, 212.589, 10.3011, 10.1182, 13.486, 12.916); a<-factor(c( "A", "A", "A", "A",
          * "B", "B", "B", "B" )); b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" )); anova(aov(foo ~ a+b));
@@ -133,11 +129,6 @@ public abstract class AbstractRClientTest {
 
     @Test
     public void testAnovaD() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test" );
-            return;
-        }
-
         /*
          * foo<-c( 206.2209 , NA , 205.6038 , 203.0751 , NA , NA , 4.6569 , NA ); a<-factor(c( "A", "A", "A", "A", "B",
          * "B", "B", "B" )); b<-factor(c( "C", "C", "D", "D", "C", "C", "D", "D" )); anova(aov(foo ~ a+b));
@@ -159,11 +150,6 @@ public abstract class AbstractRClientTest {
 
     @Test
     public void testAnovaE() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test" );
-            return;
-        }
-
         /*
          * foo<-c(212.1979, 8.8645, 8.4814, 11.915); a<-factor(c( "A", "B", "B", "B" )); anova(aov(foo ~ a));
          */
@@ -181,11 +167,6 @@ public abstract class AbstractRClientTest {
      */
     @Test
     public void testAnovaF() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test" );
-            return;
-        }
-
         /*
          * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074); a<-factor(c( "A", "A", "A", "A", "B",
          * "B", "B", "B" )); anova(aov(foo ~ a));
@@ -201,10 +182,6 @@ public abstract class AbstractRClientTest {
 
     @Test
     public void testAssignAndRetrieveMatrix() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test." );
-            return;
-        }
         String mat = rc.assignMatrix( tester );
         DoubleMatrix<String, String> result = rc.retrieveMatrix( mat );
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
@@ -221,21 +198,14 @@ public abstract class AbstractRClientTest {
 
     @Test
     public void testAssignAndRetrieveMatrixB() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test" );
-            return;
-        }
         DoubleMatrix<String, String> result = rc.retrieveMatrix( rc.assignMatrix( tester ) );
         assertEquals( "gene1_at", result.getRowName( 0 ) );
         assertEquals( "sample1", result.getColName( 0 ) );
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
     }
 
+    @Test
     public void testAssignAndRetrieveMatrixC() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test." );
-            return;
-        }
         DoubleMatrix<String, String> result = rc.retrieveMatrix( rc.assignMatrix( tester.asArray() ) );
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
 
@@ -243,21 +213,13 @@ public abstract class AbstractRClientTest {
 
     @Test
     public void testAssignAndRetrieveMatrixD() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test" );
-            return;
-        }
         String m = rc.assignMatrix( tester.asArray() );
         DoubleMatrix<String, String> result = rc.retrieveMatrix( m );
         assertTrue( RegressionTesting.closeEnough( tester, result, 0.0001 ) );
     }
 
+    @Test
     public void testAssignStringList() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test." );
-            return;
-        }
-
         List<String> l = new ArrayList<String>();
         l.add( "foo" );
         l.add( "bar" );
@@ -271,10 +233,6 @@ public abstract class AbstractRClientTest {
 
     @Test
     public void testDataFrameA() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test" );
-            return;
-        }
         double[] data = new double[] { 3.2969, 3.1856, 3.1638, Double.NaN, 3.2342, 3.3533, 3.4347, 3.3074 };
         String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
 
@@ -303,21 +261,15 @@ public abstract class AbstractRClientTest {
 
     }
 
+    @Test
     public void testDoubleArrayTwoDoubleArrayEval() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test." );
-            return;
-        }
         double[] actual = rc.doubleArrayTwoDoubleArrayEval( "a-b", "a", test1, "b", test2 );
         double[] expected = new double[] { -1.9009011, -0.8829154, -0.9404312, -1.1004609, -2.8092084 };
         RegressionTesting.closeEnough( expected, actual, Constants.SMALLISH );
     }
 
+    @Test
     public void testDoubleTwoDoubleArrayEval() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test." );
-            return;
-        }
         double actual = rc.doubleTwoDoubleArrayEval( "cor(a,b)", "a", test1, "b", test2 );
         double expected = -0.29843518070456654;
         assertEquals( expected, actual, Constants.SMALLISH );
@@ -328,10 +280,6 @@ public abstract class AbstractRClientTest {
      * Test method for ' RCommand.exec(String)'
      */
     public void testExec() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test." );
-            return;
-        }
         String actualValue = rc.stringEval( "R.version.string" );
         String expectedValue = "R version";
 
@@ -344,10 +292,6 @@ public abstract class AbstractRClientTest {
      */
     @Test
     public void testExecDoubleArray() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test" );
-            return;
-        }
         double[] dd = rc.doubleArrayEval( "rep(1, 10)" );
         assertNotNull( dd );
         assertTrue( RegressionTesting.closeEnough( new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, dd, 0.001 ) );
@@ -355,10 +299,6 @@ public abstract class AbstractRClientTest {
 
     @Test
     public void testExecError() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test." );
-            return;
-        }
         try {
             rc.stringEval( "library(fooblydoobly)" );
             fail( "Should have gotten an exception" );
@@ -385,12 +325,8 @@ public abstract class AbstractRClientTest {
         }
     }
 
+    @Test
     public void testFactorAssign() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test." );
-            return;
-        }
-
         List<String> list = new ArrayList<String>();
         list.add( "a" );
         list.add( "b" );
@@ -398,6 +334,7 @@ public abstract class AbstractRClientTest {
         assertNotNull( factor );
     }
 
+    @Test
     public void testFindExecutable() throws Exception {
         String cmd = RServeClient.findRserveCommand();
         assertNotNull( cmd ); // should always come up with something.
@@ -405,40 +342,35 @@ public abstract class AbstractRClientTest {
 
     /**
      * Also exercises dataFrameEval
-     * 
+     *
      * <pre>
      * library(limma)
-     * 
+     *
      * dat&lt;-read.table(&quot;data/testdata.txt&quot;, header=T, row.names=1)
-     * 
+     *
      * f1&lt;-factor(c(&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, &quot;B&quot;, &quot;B&quot;, &quot;B&quot;, &quot;B&quot;, &quot;B&quot;));
-     * 
+     *
      * f2&lt;-factor(c(&quot;X&quot;, &quot;X&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Z&quot;, &quot;Z&quot;, &quot;X&quot;, &quot;X&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Z&quot;, &quot;Z&quot;));
-     * 
+     *
      * cov1&lt;-c( -0.230 , 1.400, -0.210, 0.570, -0.064, 0.980 ,-0.082, -0.094, 0.630, -2.000, 0.640, -0.870);
-     * 
+     *
      * mo&lt;-model.matrix(&tilde; f1 + f2 + cov1 - 1);
-     * 
+     *
      * contr&lt;-makeContrasts(A-B, levels=mo);
-     * 
+     *
      * fit&lt;-lmFit(dat, mo);
-     * 
+     *
      * fit&lt;-contrasts.fit(fit, contr);
-     * 
+     *
      * fit&lt;-eBayes(fit)
-     * 
+     *
      * res&lt;-topTable(fit)
      * </pre>
-     * 
+     *
      * @
      */
     @Test
     public void testLimmaA() throws Exception {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test" );
-            return;
-        }
-
         boolean haveLimma = rc.loadLibrary( "limma" );
         if ( !haveLimma ) {
             log.warn( "Cannot load limma, skipping test" );
@@ -476,11 +408,6 @@ public abstract class AbstractRClientTest {
      */
     @Test
     public void testLinearModelA() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test" );
-            return;
-        }
-
         /**
          * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074);
          * <p>
@@ -517,11 +444,6 @@ public abstract class AbstractRClientTest {
      */
     @Test
     public void testLinearModelB() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test" );
-            return;
-        }
-
         /**
          * dat<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074);
          * <p>
@@ -570,11 +492,6 @@ public abstract class AbstractRClientTest {
      */
     @Test
     public void testLinearModelC() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test" );
-            return;
-        }
-
         /*
          * Another way of running a linear model.
          */
@@ -624,11 +541,6 @@ public abstract class AbstractRClientTest {
      */
     @Test
     public void testLinearModelD() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test" );
-            return;
-        }
-
         /**
          * foo<-c( 3.2969, 3.1856, 4.1638, 4.59, 3.2342, 3.3533, 3.4347, 3.3074);
          * <p>
@@ -665,11 +577,6 @@ public abstract class AbstractRClientTest {
 
     @Test
     public void testListEvalA() throws Exception {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test" );
-            return;
-        }
-
         DoubleMatrixReader r = new DoubleMatrixReader();
         DoubleMatrix<String, String> read = r.read( this.getClass().getResourceAsStream( "/data/testdata.txt" ) );
         String matrixName = rc.assignMatrix( read );
@@ -686,11 +593,6 @@ public abstract class AbstractRClientTest {
 
     @Test
     public void testListEvalB() throws Exception {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test" );
-            return;
-        }
-
         DoubleMatrixReader r = new DoubleMatrixReader();
         DoubleMatrix<String, String> read = r.read( this.getClass().getResourceAsStream( "/data/testdata.txt" ) );
         String matrixName = rc.assignMatrix( read );
@@ -706,21 +608,14 @@ public abstract class AbstractRClientTest {
 
     }
 
+    @Test
     public void testLoadLibrary() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test." );
-            return;
-        }
         assertFalse( rc.loadLibrary( "foooobly" ) );
         assertTrue( rc.loadLibrary( "graphics" ) );
     }
 
+    @Test
     public void testLoadScript() throws Exception {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test." );
-            return;
-        }
-
         BufferedReader reader = new BufferedReader( new InputStreamReader( this.getClass().getResourceAsStream(
                 "/ubic/basecode/util/r/testScript.R" ) ) );
         String line = null;
@@ -752,10 +647,6 @@ public abstract class AbstractRClientTest {
     }
 
     public void testStringListEval() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test." );
-            return;
-        }
         List<String> actual = rc.stringListEval( "c('a','b')" );
         assertEquals( 2, actual.size() );
         assertEquals( "a", actual.get( 0 ) );
@@ -764,10 +655,6 @@ public abstract class AbstractRClientTest {
 
     @Test
     public void testStringListEvalB() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test" );
-            return;
-        }
         List<String> actual = rc.stringListEval( "c('a','b')" );
         assertEquals( 2, actual.size() );
         assertEquals( "a", actual.get( 0 ) );
@@ -775,10 +662,6 @@ public abstract class AbstractRClientTest {
     }
 
     public void testTTest() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test." );
-            return;
-        }
         List<String> rFactors = new ArrayList<String>();
         rFactors.add( "f" );
         rFactors.add( "f" );
@@ -811,10 +694,6 @@ public abstract class AbstractRClientTest {
     }
 
     public void testTTestFail() {
-        if ( !connected ) {
-            log.warn( "Could not connect to R, skipping test." );
-            return;
-        }
         List<String> rFactors = new ArrayList<String>();
         rFactors.add( "f" );
         rFactors.add( "f" );
