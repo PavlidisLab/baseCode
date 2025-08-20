@@ -374,13 +374,26 @@
 				<artifactId>maven-enforcer-plugin</artifactId>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.8.1</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>properties</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>com.amashchenko.maven.plugin</groupId>
 				<artifactId>gitflow-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<argLine>-enableassertions -Djava.awt.headless=true -Djava.library.path=${rJava.libDir}</argLine>
+					<argLine>${testJvmOptions}</argLine>
 					<reportsDirectory>target/surefire-reports</reportsDirectory>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
 					<includes>
@@ -524,6 +537,17 @@
 				</site>
 			</distributionManagement>
 		</profile>
+		<profile>
+			<id>java24</id>
+			<activation>
+				<jdk>(24,</jdk>
+			</activation>
+			<properties>
+				<additionalTestJvmOptions>
+					--enable-native-access=ALL-UNNAMED
+				</additionalTestJvmOptions>
+			</properties>
+		</profile>
 	</profiles>
 	<properties>
 		<lucene.version>3.6.2</lucene.version>
@@ -532,5 +556,13 @@
 		<rJava.version>1.0-13</rJava.version>
 		<rJava.libDir>/usr/lib64/R/library/rJava/jri</rJava.libDir>
 		<rserve.version>1.8-14</rserve.version>
+		<testJvmOptions>
+			-enableassertions
+			-Djava.awt.headless=true
+			-Djava.library.path=${rJava.libDir}
+			-javaagent:${org.mockito:mockito-core:jar}
+			${additionalTestJvmOptions}
+		</testJvmOptions>
+		<additionalTestJvmOptions/>
 	</properties>
 </project>
