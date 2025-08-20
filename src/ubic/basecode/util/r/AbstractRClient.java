@@ -71,7 +71,7 @@ public abstract class AbstractRClient implements RClient {
      * @return
      */
     public static String variableIdentityNumber( Object ob ) {
-        return Integer.toString( Math.abs( ob.hashCode() + 1 ) ) + RandomStringUtils.randomAlphabetic( 6 );
+        return Integer.toString( Math.abs( ob.hashCode() + 1 ) ) + RandomStringUtils.insecure().nextAlphabetic( 6 );
     }
 
     /**
@@ -471,7 +471,7 @@ public abstract class AbstractRClient implements RClient {
     @SuppressWarnings({ "unchecked" })
     public LinearModelSummary linearModel( double[] data, Map<String, List<?>> factors ) {
 
-        String datName = RandomStringUtils.randomAlphabetic( 10 );
+        String datName = RandomStringUtils.insecure().nextAlphabetic( 10 );
         assign( datName, data );
 
         for ( String factorName : factors.keySet() ) {
@@ -491,7 +491,7 @@ public abstract class AbstractRClient implements RClient {
 
         String modelDeclaration = datName + " ~ " + StringUtils.join( factors.keySet(), "+" );
 
-        String lmName = RandomStringUtils.randomAlphabetic( 10 );
+        String lmName = RandomStringUtils.insecure().nextAlphabetic( 10 );
         String command = lmName + "<-lm(" + modelDeclaration + ", na.action=na.exclude)";
         log.debug( command );
         voidEval( command );
@@ -511,14 +511,14 @@ public abstract class AbstractRClient implements RClient {
     @Override
     public LinearModelSummary linearModel( double[] data, ObjectMatrix<String, String, Object> d ) {
 
-        String datName = RandomStringUtils.randomAlphabetic( 10 );
+        String datName = RandomStringUtils.insecure().nextAlphabetic( 10 );
         assign( datName, data );
 
         String df = dataFrame( d );
 
         String varNames = StringUtils.join( d.getColNames(), "+" );
 
-        String lmName = RandomStringUtils.randomAlphabetic( 10 );
+        String lmName = RandomStringUtils.insecure().nextAlphabetic( 10 );
         String command = lmName + "<-lm(" + datName + " ~ " + varNames + ", data=" + df + ", na.action=na.exclude)";
         voidEval( command );
 
@@ -738,7 +738,7 @@ public abstract class AbstractRClient implements RClient {
     public Map<String, LinearModelSummary> rowApplyLinearModel( String dataMatrixVarName, String modelFormula,
             String[] factorNames ) {
 
-        String lmres = "lmlist." + RandomStringUtils.randomAlphanumeric( 10 );
+        String lmres = "lmlist." + RandomStringUtils.insecure().nextAlphanumeric( 10 );
 
         log.info( "Starting model fitting ..." );
 

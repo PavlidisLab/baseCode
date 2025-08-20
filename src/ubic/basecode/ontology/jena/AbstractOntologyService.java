@@ -147,7 +147,7 @@ public abstract class AbstractOntologyService implements OntologyService {
             } catch ( Exception e ) {
                 log.error( "Initialization for %s failed.", e );
             }
-        }, getOntologyName() + "_load_thread_" + RandomStringUtils.randomAlphanumeric( 5 ) );
+        }, getOntologyName() + "_load_thread_" + RandomStringUtils.insecure().nextAlphanumeric( 5 ) );
         // To prevent VM from waiting on this thread to shut down (if shutting down).
         initializationThread.setDaemon( true );
         initializationThread.start();
