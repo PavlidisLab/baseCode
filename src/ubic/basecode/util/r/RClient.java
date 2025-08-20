@@ -18,17 +18,16 @@
  */
 package ubic.basecode.util.r;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.collections4.Transformer;
 import org.rosuda.REngine.REXP;
-
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrix;
 import ubic.basecode.math.linearmodels.LinearModelSummary;
-import ubic.basecode.util.r.type.OneWayAnovaResult;
-import ubic.basecode.util.r.type.TwoWayAnovaResult;
+import ubic.basecode.math.linearmodels.OneWayAnovaResult;
+import ubic.basecode.math.linearmodels.TwoWayAnovaResult;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Abstraction of a connection to R

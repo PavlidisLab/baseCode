@@ -19,10 +19,6 @@
 
 package ubic.basecode.math.linearmodels;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.List;
 
 import cern.colt.function.DoubleFunction;
@@ -80,13 +76,13 @@ public class ModeratedTstat {
         DoubleMatrix1D dofs = new DenseDoubleMatrix1D(new double[summaries.size()]);
         int i = 0;
         // corner case can get nulls, example: GSE10778
-        for (LinearModelSummary lms : summaries) {
-            if (lms.getSigma() == null) {
+        for ( LinearModelSummary lms : summaries) {
+            if (Double.isNaN(lms.getSigma())) {
                 sigmas.set(i, Double.NaN);
                 dofs.set(i, Double.NaN);
             } else {
                 sigmas.set(i, lms.getSigma());
-                dofs.set(i, lms.getResidualDof());  // collect vector of dofs instead of assuming fixed value.
+                dofs.set(i, lms.getResidualsDof());  // collect vector of dofs instead of assuming fixed value.
             }
             i++;
 
@@ -208,7 +204,7 @@ public class ModeratedTstat {
             // df2 <- 2*trigammaInverse(evar)
             df2 = 2 * SpecFunc.trigammaInverse(evar);
 
-            // s20 <- exp(emean+digamma(df2/2)-log(df2/2)) 
+            // s20 <- exp(emean+digamma(df2/2)-log(df2/2))
             s20 = Math.exp(emean + Gamma.digamma(df2 / 2.0) - Math.log(df2 / 2.0));
 
         } else {
