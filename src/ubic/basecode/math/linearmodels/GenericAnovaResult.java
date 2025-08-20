@@ -16,226 +16,48 @@
  * limitations under the License.
  *
  */
-
 package ubic.basecode.math.linearmodels;
 
-import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
-import org.apache.commons.lang3.StringUtils;
-import org.rosuda.REngine.REXP;
-import org.rosuda.REngine.REXPMismatchException;
+public interface GenericAnovaResult extends AnovaResult {
 
-import ubic.basecode.util.r.type.AnovaEffect;
-import ubic.basecode.util.r.type.AnovaResult;
+    Collection<String> getMainEffectFactorNames();
 
-/**
- * A generic representation of an R-style ANOVA table, including interactions.
- *
- * @author paul
- */
-public class GenericAnovaResult extends AnovaResult implements Serializable {
+    double getMainEffectDof( String factorName );
+
+    double getMainEffectFStat( String factorName );
+
+    double getMainEffectPValue( String factorName );
+
+    boolean hasInteractions();
 
     /**
-     * Represents a set of factors in an interaction term.
+     * Obtain the degrees of freedom for the interaction effects, if any.
+     * @throws IllegalStateException if there is more than one interaction effect
      */
-    private static class InteractionFactor {
-
-        // used only in hashcode; not a great idea
-        private static final String SEPARATOR = "_x_x_";
-
-        // Treeset - keep them sorted to be consistent across instances.
-        private Set<String> factorNames = new TreeSet<>();
-
-        public InteractionFactor( String... factorNames ) {
-            for ( String f : factorNames ) {
-                this.factorNames.add( f );
-            }
-        }
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
-        @Override
-        public boolean equals( Object obj ) {
-
-            if ( !( obj instanceof InteractionFactor ) ) return false;
-
-            return ( ( InteractionFactor ) obj ).factorNames.size() == this.factorNames.size()
-                    && ( ( InteractionFactor ) obj ).factorNames.containsAll( this.factorNames );
-
-        }
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.lang.Object#hashCode()
-         */
-        @Override
-        public int hashCode() {
-            return StringUtils.join( factorNames, SEPARATOR ).hashCode();
-        }
-    }
-
-    private static final long serialVersionUID = 1L;
-
-    private Map<InteractionFactor, AnovaEffect> interactionEffects = new HashMap<>();
-
-    private Map<String, AnovaEffect> mainEffects = new LinkedHashMap<>();
-
-    private AnovaEffect residual;
+    double getInteractionEffectDof();
 
     /**
-     * @param effects
+     * Obtain the F statistic for the interaction effects, if any.
+     * @throws IllegalStateException if there is more than one interaction effect
      */
-    public GenericAnovaResult( Collection<AnovaEffect> effects ) {
-        for ( AnovaEffect ae : effects ) {
-            String termLabel = ae.getEffectName();
-            boolean isInteraction = ae.isInteraction();
-
-            if ( isInteraction ) { // kind of lame way to detect interaction rows.
-                interactionEffects.put( new InteractionFactor( StringUtils.split( termLabel, ":" ) ), ae );
-            } else if ( termLabel.equals( "Residual" ) ) {
-                this.residualDf = ae.getDegreesOfFreedom();
-                this.residual = ae;
-            } else {
-                mainEffects.put( termLabel, ae );
-            }
-        }
-    }
+    double getInteractionEffectFStat();
 
     /**
-     * @param rAnovaTable from R call to 'anova(...)'
+     * Obtain the p-value for the interaction effects, if any.
+     * @throws IllegalStateException if there is more than one interaction effect
      */
-    public GenericAnovaResult( REXP rAnovaTable ) {
-
-        try {
-
-            String[] names = rAnovaTable.getAttribute( "row.names" ).asStrings();
-            double[] pvs = rAnovaTable.asList().at( "Pr(>F)" ).asDoubles();
-            double[] dfs = rAnovaTable.asList().at( "Df" ).asDoubles();
-            double[] fs = rAnovaTable.asList().at( "F value" ).asDoubles();
-
-            double[] ssq = rAnovaTable.asList().at( "Sum Sq" ).asDoubles();
-
-            for ( int i = 0; i < pvs.length; i++ ) {
-                String termLabel = names[i];
-                boolean isInteraction = termLabel.contains( ":" );
-
-                AnovaEffect ae = new AnovaEffect( termLabel, pvs[i], fs[i], dfs[i], ssq[i], isInteraction );
-
-                if ( isInteraction ) { // kind of lame way to detect interaction rows.
-                    interactionEffects.put( new InteractionFactor( StringUtils.split( termLabel, ":" ) ), ae );
-                } else {
-                    mainEffects.put( termLabel, ae );
-                }
-            }
-
-        } catch ( REXPMismatchException e ) {
-            throw new RuntimeException( e );
-        }
-
-    }
-
-    public Double getInteractionEffectF() {
-        if ( interactionEffects.size() > 1 ) {
-            throw new IllegalArgumentException( "Must specify which interaction" );
-        }
-        if ( interactionEffects.isEmpty() ) {
-            return null;
-        }
-        return interactionEffects.values().iterator().next().getFStatistic();
-    }
-
-    public Double getInteractionEffectP() {
-        if ( interactionEffects.size() > 1 ) {
-            throw new IllegalArgumentException( "Must specify which interaction" );
-        }
-        if ( interactionEffects.isEmpty() ) {
-            return null;
-        }
-        return interactionEffects.values().iterator().next().getPValue();
-    }
+    double getInteractionEffectPValue();
 
     /**
-     * @param factorNames e.g. f,g
-     * @return
+     * Obtain all the combinations of factor names that have interaction effects.
      */
-    public Double getInteractionEffectP( String... factorNames ) {
-        InteractionFactor interactionFactor = new InteractionFactor( factorNames );
-        if ( interactionEffects.isEmpty() ) {
-            return null;
-        }
-        if ( !interactionEffects.containsKey( interactionFactor ) ) {
-            return Double.NaN;
-        }
-        return interactionEffects.get( interactionFactor ).getPValue();
-    }
+    Collection<String[]> getInteractionEffectFactorNames();
 
-    public Double getMainEffectDof( String factorName ) {
-        if ( mainEffects.get( factorName ) == null ) {
-            return null;
-        }
-        return mainEffects.get( factorName ).getDegreesOfFreedom();
-    }
+    double getInteractionEffectDof( String... factorNames );
 
-    public Double getMainEffectF( String factorName ) {
-        if ( mainEffects.get( factorName ) == null ) {
-            return Double.NaN;
-        }
-        return mainEffects.get( factorName ).getFStatistic();
-    }
+    double getInteractionEffectFStat( String... factorNames );
 
-    /**
-     * @return names of main effects factors like 'f', 'g'.
-     */
-    public Collection<String> getMainEffectFactorNames() {
-        return mainEffects.keySet();
-    }
-
-    public Double getMainEffectP( String factorName ) {
-        if ( mainEffects.get( factorName ) == null ) {
-            return Double.NaN;
-        }
-        return mainEffects.get( factorName ).getPValue();
-    }
-
-    public boolean hasInteractions() {
-        return !interactionEffects.isEmpty();
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder buf = new StringBuilder();
-
-        buf.append( "ANOVA table " + this.getKey() + " \n" );
-
-        buf.append( StringUtils.leftPad( "\t", 10 ) + "Df\tSSq\tMSq\tF\tP\n" );
-
-        for ( String me : this.getMainEffectFactorNames() ) {
-            if ( me.equals( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME ) ) {
-                continue;
-            }
-            AnovaEffect a = mainEffects.get( me );
-            buf.append( a + "\n" );
-        }
-
-        if ( hasInteractions() ) {
-            for ( InteractionFactor ifa : interactionEffects.keySet() ) {
-                AnovaEffect a = this.interactionEffects.get( ifa );
-                buf.append( a + "\n" );
-            }
-        }
-
-        buf.append( residual + "\n" );
-
-        return buf.toString();
-    }
+    double getInteractionEffectPValue( String... factorNames );
 }

@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
+import static java.util.Objects.requireNonNull;
 import static org.junit.Assert.*;
 
 /**
@@ -39,9 +40,6 @@ import static org.junit.Assert.*;
  */
 public class LeastSquaresFitTest {
 
-    /**
-     * @throws Exception
-     */
     @Test
     public void testLSFOneContinuousWithMissing3() throws Exception {
         DoubleMatrixReader f = new DoubleMatrixReader();
@@ -68,62 +66,60 @@ public class LeastSquaresFitTest {
 
         LinearModelSummary s = sums.get( "228980_at" ); // has missing
         assertNotNull( s );
-        assertEquals( 0.1495, s.getF(), 0.01 );
-        assertEquals( 0.7123, s.getP(), 0.001 );
+        assertEquals( 0.1495, s.getFStat(), 0.01 );
+        assertEquals( 0.7123, s.getOverallPValue(), 0.001 );
         assertEquals( 10.9180, s.getContrastCoefficients().get( 0, 0 ), 0.001 );
         assertEquals( 0.712, s.getContrastCoefficients().get( 1, 3 ), 0.001 ); // pvalue
-        assertEquals( 6, s.getResidualDof().intValue() );
+        assertEquals( 6, ( int ) s.getResidualsDof() );
         GenericAnovaResult a = s.getAnova();
-        assertEquals( 0.1495, a.getMainEffectF( "Value" ), 0.0001 );
-        assertEquals( 1, a.getMainEffectDof( "Value" ).intValue() );
-        assertEquals( 6, a.getResidualDf().intValue() );
+        assertNotNull( a );
+        assertEquals( 0.1495, a.getMainEffectFStat( "Value" ), 0.0001 );
+        assertEquals( 1, ( int ) a.getMainEffectDof( "Value" ) );
+        assertEquals( 6, ( int ) a.getResidualsDof() );
 
         FDistribution fd = new FDistribution( 1, 6 );
         double p = 1.0 - fd.cumulativeProbability( 0.1495 );
         assertEquals( 0.7123, p, 0.0001 );
-        assertEquals( 0.7123, a.getMainEffectP( "Value" ), 0.0001 );
+        assertEquals( 0.7123, a.getMainEffectPValue( "Value" ), 0.0001 );
 
         s = sums.get( "1553129_at" );
         assertNotNull( s );
-        assertEquals( 2.095, s.getF(), 0.01 );
-        assertEquals( 0.1911, s.getP(), 0.001 );
+        assertEquals( 2.095, s.getFStat(), 0.01 );
+        assertEquals( 0.1911, s.getOverallPValue(), 0.001 );
         assertEquals( 3.78719, s.getContrastCoefficients().get( 0, 0 ), 0.001 );
         assertEquals( 0.191, s.getContrastCoefficients().get( 1, 3 ), 0.001 ); // this ordering might change?
         a = s.getAnova();
         assertNotNull( a );
-        assertEquals( 0.1911, a.getMainEffectP( "Value" ), 0.0001 );
+        assertEquals( 0.1911, a.getMainEffectPValue( "Value" ), 0.0001 );
 
         s = fit.summarize( 14 );
         assertNotNull( s );
         assertEquals( "214502_at", s.getKey() );// has missing
-        assertEquals( 1.992, s.getF(), 0.01 );
-        assertEquals( 0.2172, s.getP(), 0.001 );
+        assertEquals( 1.992, s.getFStat(), 0.01 );
+        assertEquals( 0.2172, s.getOverallPValue(), 0.001 );
         assertEquals( 4.2871, s.getContrastCoefficients().get( 0, 0 ), 0.001 );
         assertEquals( 0.217, s.getContrastCoefficients().get( 1, 3 ), 0.001 );
 
         s = sums.get( "232018_at" );
         assertNotNull( s );
-        assertEquals( 1.381, s.getF(), 0.01 );
-        assertEquals( 0.2783, s.getP(), 0.001 );
+        assertEquals( 1.381, s.getFStat(), 0.01 );
+        assertEquals( 0.2783, s.getOverallPValue(), 0.001 );
         assertEquals( 6.6537, s.getContrastCoefficients().get( 0, 0 ), 0.001 );
         assertEquals( 0.278, s.getContrastCoefficients().get( 1, 3 ), 0.001 );
         a = s.getAnova();
         assertNotNull( a );
-        assertEquals( 0.2783, a.getMainEffectP( "Value" ), 0.0001 );
+        assertEquals( 0.2783, a.getMainEffectPValue( "Value" ), 0.0001 );
         s = sums.get( "228980_at" ); // has missing
         assertNotNull( s );
-        assertEquals( 0.1495, s.getF(), 0.01 );
-        assertEquals( 0.7123, s.getP(), 0.001 );
+        assertEquals( 0.1495, s.getFStat(), 0.01 );
+        assertEquals( 0.7123, s.getOverallPValue(), 0.001 );
         assertEquals( 10.9180, s.getContrastCoefficients().get( 0, 0 ), 0.001 );
         assertEquals( 0.712, s.getContrastCoefficients().get( 1, 3 ), 0.001 );
         a = s.getAnova();
         assertNotNull( a );
-        assertEquals( 0.7123, a.getMainEffectP( "Value" ), 0.0001 );
+        assertEquals( 0.7123, a.getMainEffectPValue( "Value" ), 0.0001 );
     }
 
-    /**
-     * @throws Exception
-     */
     @Test
     public void testLSFThreeLevelsOnecontinous2() throws Exception {
         DoubleMatrixReader f = new DoubleMatrixReader();
@@ -176,9 +172,6 @@ public class LeastSquaresFitTest {
         assertEquals( 19, anova.size() );
     }
 
-    /**
-     * @throws Exception
-     */
     @Test
     public void testLSFThreeLevelsOneContinuousWithMissing3() throws Exception {
         DoubleMatrixReader f = new DoubleMatrixReader();
@@ -232,9 +225,6 @@ public class LeastSquaresFitTest {
         assertEquals( 19, anova.size() );
     }
 
-    /**
-     * @throws Exception
-     */
     @Test
     public void testLSFTwoLevels() throws Exception {
         DoubleMatrixReader f = new DoubleMatrixReader();
@@ -260,27 +250,27 @@ public class LeastSquaresFitTest {
         Map<String, LinearModelSummary> sums = fit.summarizeByKeys( true );
 
         LinearModelSummary s = sums.get( "1553129_at" );
-        assertEquals( 0.182999, s.getF(), 0.0001 );
-        assertEquals( 0.6817, s.getP(), 0.001 );
+        assertEquals( 0.182999, s.getFStat(), 0.0001 );
+        assertEquals( 0.6817, s.getOverallPValue(), 0.001 );
         assertEquals( 3.84250, s.getContrastCoefficients().get( 0, 0 ), 0.001 );
         assertEquals( 0.682, s.getContrastCoefficients().get( 1, 3 ), 0.001 ); // pvalue.
 
-        Double[] effects = s.getEffects();
+        double[] effects = s.getEffects();
         assertEquals( -11.58333, effects[0], 0.0001 ); // hm.
         assertEquals( 0.04999, effects[1], 0.0001 ); //hm
 
-        Double[] stdevUnscaled = s.getStdevUnscaled(); //
+        double[] stdevUnscaled = s.getStdevUnscaled(); //
         assertEquals( 0.5, stdevUnscaled[0], 0.0001 );
         assertEquals( 0.6708203932, stdevUnscaled[1], 0.0001 );
 
-        Double sigma = s.getSigma();
+        double sigma = s.getSigma();
         assertEquals( 0.11673841331, sigma, 0.0001 );
 
         s = sums.get( "232018_at" );
         assertEquals( -18.9866667, s.getEffects()[0], 0.0001 ); // hm.
         assertEquals( 0.1714319, s.getEffects()[1], 0.0001 ); //hm
-        assertEquals( 0.07879, s.getF(), 0.01 );
-        assertEquals( 0.787, s.getP(), 0.001 );
+        assertEquals( 0.07879, s.getFStat(), 0.01 );
+        assertEquals( 0.787, s.getOverallPValue(), 0.001 );
         assertEquals( 6.2650, s.getContrastCoefficients().get( 0, 0 ), 0.001 );
         assertEquals( 0.787, s.getContrastCoefficients().get( 1, 3 ), 0.001 );
         sigma = s.getSigma();
@@ -289,8 +279,6 @@ public class LeastSquaresFitTest {
 
     /**
      * Many missing values; Two factors, two levels + interaction.
-     *
-     * @throws Exception
      */
     @Test
     public void testLSFTwoLevels2() throws Exception {
@@ -309,18 +297,17 @@ public class LeastSquaresFitTest {
         Map<String, LinearModelSummary> sums = fit.summarizeByKeys( true );
         assertEquals( 100, sums.size() );
 
-        for ( LinearModelSummary lms : sums.values() ) {
+        for ( Map.Entry<String, LinearModelSummary> e : sums.entrySet() ) {
+            String key = e.getKey();
+            LinearModelSummary lms = e.getValue();
             GenericAnovaResult a = lms.getAnova();
             assertNotNull( a );
-            Double interactionEffectP = a.getInteractionEffectP();
-            assertNotNull( interactionEffectP );
+            double interactionEffectP = a.getInteractionEffectPValue();
+            // FIXME: this is always non-null, we need assertions about the actual values
+            //        assertNotNull( interactionEffectP );
         }
-
     }
 
-    /**
-     * @throws Exception
-     */
     @Test
     public void testLSFTwoLevels3() throws Exception {
         DoubleMatrixReader f = new DoubleMatrixReader();
@@ -341,20 +328,26 @@ public class LeastSquaresFitTest {
         for ( LinearModelSummary lms : sums.values() ) {
             GenericAnovaResult a = lms.getAnova();
             assertNotNull( a );
-            Double interactionEffectP = a.getInteractionEffectP();
-            assertNotNull( interactionEffectP );
+            double interactionEffectP = a.getInteractionEffectPValue();
+            // FIXME: this is always non-null, we need assertions about the actual values
+            //        assertNotNull( interactionEffectP );
         }
 
-        assertEquals( 0.0048, sums.get( "probe_4" ).getMainEffectP( "factor1" ), 0.0001 );
-        assertEquals( 5.158e-10, sums.get( "probe_10" ).getMainEffectP( "factor1" ), 1e-12 );
-        assertEquals( 0.6888, sums.get( "probe_98" ).getMainEffectP( "factor2" ), 1e-4 );
-        assertEquals( 0.07970, sums.get( "probe_10" ).getMainEffectP( "factor2" ), 1e-4 );
+        LinearModelSummary linearModelSummary3 = sums.get( "probe_4" );
+        assertNotNull( linearModelSummary3.getAnova() );
+        assertEquals( 0.0048, linearModelSummary3.getAnova().getMainEffectPValue( "factor1" ), 0.0001 );
+        LinearModelSummary linearModelSummary2 = sums.get( "probe_10" );
+        assertNotNull( linearModelSummary2.getAnova() );
+        assertEquals( 5.158e-10, linearModelSummary2.getAnova().getMainEffectPValue( "factor1" ), 1e-12 );
+        LinearModelSummary linearModelSummary1 = sums.get( "probe_98" );
+        assertNotNull( linearModelSummary1.getAnova() );
+        assertEquals( 0.6888, linearModelSummary1.getAnova().getMainEffectPValue( "factor2" ), 1e-4 );
+        LinearModelSummary linearModelSummary = sums.get( "probe_10" );
+        assertNotNull( linearModelSummary.getAnova() );
+        assertEquals( 0.07970, linearModelSummary.getAnova().getMainEffectPValue( "factor2" ), 1e-4 );
 
     }
 
-    /**
-     * @throws Exception
-     */
     @Test
     public void testLSFTwoLevelsOneContinuous() throws Exception {
         DoubleMatrixReader f = new DoubleMatrixReader();
@@ -406,20 +399,22 @@ public class LeastSquaresFitTest {
         Map<String, LinearModelSummary> sums = fit.summarizeByKeys( true );
 
         LinearModelSummary s = sums.get( "1553129_at" );
-        assertEquals( 0.9389, s.getF(), 0.01 );
-        assertEquals( 0.4418, s.getP(), 0.001 );
+        assertEquals( 0.9389, s.getFStat(), 0.01 );
+        assertEquals( 0.4418, s.getOverallPValue(), 0.001 );
         assertEquals( 3.77868, s.getContrastCoefficients().get( 0, 0 ), 0.001 );
         assertEquals( 0.810, s.getContrastCoefficients().get( 1, 3 ), 0.001 ); // this ordering might change?
         GenericAnovaResult a = s.getAnova();
-        assertEquals( 0.2429, a.getMainEffectP( "Value" ), 0.0001 );
+        assertNotNull( a );
+        assertEquals( 0.2429, a.getMainEffectPValue( "Value" ), 0.0001 );
 
         s = sums.get( "232018_at" );
-        assertEquals( 0.7167, s.getF(), 0.01 );
-        assertEquals( 0.5259, s.getP(), 0.001 );
+        assertEquals( 0.7167, s.getFStat(), 0.01 );
+        assertEquals( 0.5259, s.getOverallPValue(), 0.001 );
         assertEquals( 6.5712, s.getContrastCoefficients().get( 0, 0 ), 0.001 );
         assertEquals( 0.664, s.getContrastCoefficients().get( 1, 3 ), 0.001 );
         a = s.getAnova();
-        assertEquals( 0.2893, a.getMainEffectP( "Value" ), 0.0001 );
+        assertNotNull( a );
+        assertEquals( 0.2893, a.getMainEffectPValue( "Value" ), 0.0001 );
 
         // 232018_at // based on rstudent() in R.
         DoubleMatrix2D studentizedResiduals = fit.getStudentizedResiduals();
@@ -450,11 +445,9 @@ public class LeastSquaresFitTest {
 
     /**
      * Weighted least squares test for 2D matrices
-     *
-     * @throws Exception
      */
     @Test
-    public void testMatrixWeightedRegress() throws Exception {
+    public void testMatrixWeightedRegress() {
         DoubleMatrix2D dat = new DenseDoubleMatrix2D( new double[][] { { 1, 2, 3, 4, 5 }, { 1, 1, 6, 3, 2 } } );
         DoubleMatrix2D des = new DenseDoubleMatrix2D( new double[][] { { 1, 1, 1, 1, 1 }, { 1, 2, 2, 3, 3 },
                 { 2, 1, 5, 3, 4 } } );
@@ -497,8 +490,6 @@ public class LeastSquaresFitTest {
 
     /**
      * Has a lot of missing values.
-     *
-     * @throws Exception
      */
     @Test
     public void testOneWayAnova() throws Exception {
@@ -521,44 +512,48 @@ public class LeastSquaresFitTest {
         for ( LinearModelSummary lms : sums.values() ) {
             GenericAnovaResult a = lms.getAnova();
             assertNotNull( a );
-            Double interactionEffectP = a.getInteractionEffectP();
-            assertNull( interactionEffectP );
+            double interactionEffectP = a.getInteractionEffectPValue();
+            assertTrue( Double.isNaN( interactionEffectP ) );
         }
 
         LinearModelSummary sum4 = sums.get( "probe_4" );
         assertNotNull( sum4.getContrastCoefficients() );
-        assertEquals( 0.6531, sum4.getP(), 0.0001 );
-        assertEquals( 0.2735, sum4.getF(), 0.0001 );
-        assertEquals( 0.2735, sum4.getAnova().getMainEffectF( "Factor1" ), 0.0001 );
-        assertEquals( 2, sum4.getAnova().getResidualDf().intValue() );
-        assertEquals( 1, sum4.getAnova().getMainEffectDof( "Factor1" ).intValue() );
-        assertEquals( 0.6531, sum4.getMainEffectP( "Factor1" ), 0.0001 );
+        assertEquals( 0.6531, sum4.getOverallPValue(), 0.0001 );
+        assertEquals( 0.2735, sum4.getFStat(), 0.0001 );
+        assertNotNull( sum4.getAnova() );
+        assertEquals( 0.2735, sum4.getAnova().getMainEffectFStat( "Factor1" ), 0.0001 );
+        assertEquals( 2, ( int ) sum4.getAnova().getResidualsDof() );
+        assertEquals( 1, ( int ) sum4.getAnova().getMainEffectDof( "Factor1" ) );
+        assertEquals( 0.6531, sum4.getAnova().getMainEffectPValue( "Factor1" ), 0.0001 );
 
         LinearModelSummary sum21 = sums.get( "probe_21" );
         assertNotNull( sum21.getContrastCoefficients() );
-        assertEquals( 0.6492, sum21.getP(), 0.0001 );
-        assertEquals( 0.4821, sum21.getF(), 0.0001 );
-        assertEquals( 0.4821, sum21.getAnova().getMainEffectF( "Factor1" ), 0.0001 );
-        assertEquals( 4, sum21.getAnova().getResidualDf().intValue() );
-        assertEquals( 2, sum21.getAnova().getMainEffectDof( "Factor1" ).intValue() );
-        assertEquals( 0.6492, sum21.getMainEffectP( "Factor1" ), 0.0001 );
+        assertEquals( 0.6492, sum21.getOverallPValue(), 0.0001 );
+        assertEquals( 0.4821, sum21.getFStat(), 0.0001 );
+        assertNotNull( sum21.getAnova() );
+        assertEquals( 0.4821, sum21.getAnova().getMainEffectFStat( "Factor1" ), 0.0001 );
+        assertEquals( 4, ( int ) sum21.getAnova().getResidualsDof() );
+        assertEquals( 2, ( int ) sum21.getAnova().getMainEffectDof( "Factor1" ) );
+        assertEquals( 0.6492, sum21.getAnova().getMainEffectPValue( "Factor1" ), 0.0001 );
 
         LinearModelSummary sum98 = sums.get( "probe_98" );
         assertNotNull( sum98.getContrastCoefficients() );
-        assertEquals( 0.1604, sum98.getP(), 0.0001 );
-        assertEquals( 2.993, sum98.getF(), 0.0001 );
-        assertEquals( 4, sum98.getAnova().getResidualDf().intValue() );
-        assertEquals( 2, sum98.getAnova().getMainEffectDof( "Factor1" ).intValue() );
-        assertEquals( 2.9931, sum98.getAnova().getMainEffectF( "Factor1" ).doubleValue(), 0.0001 );
-        assertEquals( 0.1604, sum98.getMainEffectP( "Factor1" ), 1e-4 );
+        assertEquals( 0.1604, sum98.getOverallPValue(), 0.0001 );
+        assertEquals( 2.993, sum98.getFStat(), 0.0001 );
+        assertNotNull( sum98.getAnova() );
+        assertEquals( 4, ( int ) sum98.getAnova().getResidualsDof() );
+        assertEquals( 2, ( int ) sum98.getAnova().getMainEffectDof( "Factor1" ) );
+        assertEquals( 2.9931, sum98.getAnova().getMainEffectFStat( "Factor1" ), 0.0001 );
+        assertEquals( 0.1604, sum98.getAnova().getMainEffectPValue( "Factor1" ), 1e-4 );
 
         LinearModelSummary sum10 = sums.get( "probe_10" );
         assertNotNull( sum10.getContrastCoefficients() );
-        assertEquals( 0.8014, sum10.getP(), 0.0001 );
-        assertEquals( 0.2314, sum10.getF(), 0.0001 );
-        assertEquals( 5, sum10.getAnova().getResidualDf().intValue() );
-        assertEquals( 2, sum10.getAnova().getMainEffectDof( "Factor1" ).intValue() );
-        assertEquals( 0.8014, sum10.getMainEffectP( "Factor1" ), 1e-4 );
+        assertEquals( 0.8014, sum10.getOverallPValue(), 0.0001 );
+        assertEquals( 0.2314, sum10.getFStat(), 0.0001 );
+        assertNotNull( sum10.getAnova() );
+        assertEquals( 5, ( int ) sum10.getAnova().getResidualsDof() );
+        assertEquals( 2, ( int ) sum10.getAnova().getMainEffectDof( "Factor1" ) );
+        assertEquals( 0.8014, sum10.getAnova().getMainEffectPValue( "Factor1" ), 1e-4 );
 
         /*
          * Painful case follows. Not full rank due to missing values:
@@ -568,15 +563,15 @@ public class LeastSquaresFitTest {
 
         /*
          * See lmtests.R
-         * 
+         *
          * Note that using lmFit and lm give different results because (apparently) of the difference in strategy
          * dealing
          * with missing values. In lm, the factors are subset; in lmFit, the design matrix is subset. We do the latter.
          *
          * lmFit(dat, model.matrix(~ factor3))
-         * 
+         *
          * vs
-         * 
+         *
          * lm(t(dat["probe_60",]) ~ factor3)
          */
         assertEquals( 9.00145, sum60.getContrastCoefficients().get( 0, 0 ), 0.0001 ); // same as lmFit; R lm gives 8.9913; lm.fit gives tehse values.
@@ -597,19 +592,20 @@ public class LeastSquaresFitTest {
         //        factor3    1 0.00010 0.000104   5e-04 0.9846 <- not quite
         //        Residuals  2 0.44135 0.220675   <- we get this
 
-        assertEquals( 2, sum60.getResidualDof().intValue() );
-        assertEquals( 1, sum60.getNumeratorDof().intValue() );
+        assertEquals( 2, ( int ) sum60.getResidualsDof() );
+        assertEquals( 1, ( int ) sum60.getNumeratorDof() );
 
-        assertEquals( 2, sum60.getAnova().getResidualDf().intValue() );
-        assertEquals( 1, sum60.getAnova().getMainEffectDof( "Factor1" ).intValue() );
+        assertNotNull( sum60.getAnova() );
+        assertEquals( 2, ( int ) sum60.getAnova().getResidualsDof() );
+        assertEquals( 1, ( int ) sum60.getAnova().getMainEffectDof( "Factor1" ) );
 
-        // The value lm gives is 0.004715; for limma, topTableF gives NA and no pvalue. 
+        // The value lm gives is 0.004715; for limma, topTableF gives NA and no pvalue.
         // However, for this case, this is actually the t-statistic (two groups) and the right value is 0.022 (from lm)
-        assertEquals( 0.0004715, sum60.getF(), 1e-7 ); // on 1 and 2 dof,  p-value: 0.9846
-        assertEquals( 0.9846482, sum60.getP(), 1e-5 );
+        assertEquals( 0.0004715, sum60.getFStat(), 1e-7 ); // on 1 and 2 dof,  p-value: 0.9846
+        assertEquals( 0.9846482, sum60.getOverallPValue(), 1e-5 );
 
         //
-        assertEquals( 0.9846482, sum60.getMainEffectP( "Factor1" ), 1e-5 );
+        assertEquals( 0.9846482, sum60.getAnova().getMainEffectPValue( "Factor1" ), 1e-5 );
 
         // Result for topTable(eBayes(fit), coef=2)
         //                logFC    AveExpr            t      P.Value   adj.P.Val          B
@@ -625,19 +621,19 @@ public class LeastSquaresFitTest {
         //            lm(formula = t(dat["probe_60", ]) ~ factor3)
         //
         //            Residuals:
-        //            X0b.bioassay.0b. X1a.bioassay.1a. X2a.bioassay.2a. X2b.bioassay.2b. 
-        //                     -0.1209          -0.4539           0.1209           0.4539 
+        //            X0b.bioassay.0b. X1a.bioassay.1a. X2a.bioassay.2a. X2b.bioassay.2b.
+        //                     -0.1209          -0.4539           0.1209           0.4539
         //
         //            Coefficients:
-        //                          Estimate Std. Error t value Pr(>|t|)   
+        //                          Estimate Std. Error t value Pr(>|t|)
         //            (Intercept)     8.9913     0.3322  27.068  0.00136 **
-        //            factor3w_base   0.0102     0.4698   0.022  0.98465   
+        //            factor3w_base   0.0102     0.4698   0.022  0.98465
         //            ---
         //            Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
         //
         //            Residual standard error: 0.4698 on 2 degrees of freedom
         //              (4 observations deleted due to missingness)
-        //            Multiple R-squared:  0.0002357, Adjusted R-squared:  -0.4996 
+        //            Multiple R-squared:  0.0002357, Adjusted R-squared:  -0.4996
         //            F-statistic: 0.0004715 on 1 and 2 DF,  p-value: 0.9846
 
         // results of using      lm.fit(X,y)
@@ -651,15 +647,15 @@ public class LeastSquaresFitTest {
         //        [1] 8.8704 8.5475 9.1121 9.4554
         //        > lm.fit(X,y)
         //        $coefficients
-        //          (Intercept)      factor3v factor3w_base 
-        //              9.00145      -0.01020            NA 
+        //          (Intercept)      factor3v factor3w_base
+        //              9.00145      -0.01020            NA
         //
         //        $residuals
         //        [1] -0.12085 -0.45395  0.12085  0.45395
         //
         //        $effects
-        //        (Intercept)    factor3v                         
-        //           -17.9927     -0.0102      0.0784      0.6597 
+        //        (Intercept)    factor3v
+        //           -17.9927     -0.0102      0.0784      0.6597
         //
         //        $rank
         //        [1] 2
@@ -698,9 +694,6 @@ public class LeastSquaresFitTest {
 
     }
 
-    /**
-     * @throws Exception
-     */
     @Test
     public void testSingular() throws Exception {
         DoubleMatrixReader f = new DoubleMatrixReader();
@@ -730,17 +723,15 @@ public class LeastSquaresFitTest {
 
         assertEquals( 7.3740000, s.getContrastCoefficients().get( 0, 0 ), 0.001 );
         // assertEquals( 0.1147667, s.getCoefficients().get( 1, 3 ), 0.001 );
-        assertEquals( 6, s.getResidualDof().intValue() );
-        assertEquals( 7, s.getNumeratorDof().intValue() );
-        assertEquals( 0.8634, s.getF(), 0.01 );
-        assertEquals( 0.5795, s.getP(), 0.001 );
+        assertEquals( 6, ( int ) s.getResidualsDof() );
+        assertEquals( 7, ( int ) s.getNumeratorDof() );
+        assertEquals( 0.8634, s.getFStat(), 0.01 );
+        assertEquals( 0.5795, s.getOverallPValue(), 0.001 );
 
     }
 
     /**
      * Originally causes failures during summarization step. There are two pivoted columns.
-     *
-     * @throws Exception
      */
     @Test
     public void testSingular2() throws Exception {
@@ -810,46 +801,48 @@ public class LeastSquaresFitTest {
 
         assertNotNull( s.getContrastCoefficients() );
         assertEquals( 0.000794, s.getContrastCoefficients().get( 2, 3 ), 0.001 );
-        assertEquals( 11, s.getResidualDof().intValue() );
-        assertEquals( 4, s.getNumeratorDof().intValue() );
-        assertEquals( 24.38, s.getF(), 0.01 );
-        assertEquals( 2.025e-05, s.getP(), 0.001 );
+        assertEquals( 11, ( int ) s.getResidualsDof() );
+        assertEquals( 4, ( int ) s.getNumeratorDof() );
+        assertEquals( 24.38, s.getFStat(), 0.01 );
+        assertEquals( 2.025e-05, s.getOverallPValue(), 0.001 );
         GenericAnovaResult anova = s.getAnova();
-        assertEquals( 29.0386, anova.getMainEffectF( "Treatment" ), 0.0001 );
+        assertNotNull( anova );
+        assertEquals( 29.0386, anova.getMainEffectFStat( "Treatment" ), 0.0001 );
 
         s = sums.get( "1415837_at" );
         assertNotNull( s.getContrastCoefficients() );
-        assertEquals( 11, s.getResidualDof().intValue() );
-        assertEquals( 4, s.getNumeratorDof().intValue() );
-        assertEquals( 22.72, s.getF(), 0.01 );
-        assertEquals( 2.847e-05, s.getP(), 0.001 );
+        assertEquals( 11, ( int ) s.getResidualsDof() );
+        assertEquals( 4, ( int ) s.getNumeratorDof() );
+        assertEquals( 22.72, s.getFStat(), 0.01 );
+        assertEquals( 2.847e-05, s.getOverallPValue(), 0.001 );
         anova = s.getAnova();
-        assertEquals( 6.5977, anova.getMainEffectF( "Treatment" ), 0.0001 );
+        assertNotNull( anova );
+        assertEquals( 6.5977, anova.getMainEffectFStat( "Treatment" ), 0.0001 );
 
         s = sums.get( "1416179_a_at" );
         assertNotNull( s.getContrastCoefficients() );
-        assertEquals( 11, s.getResidualDof().intValue() );
-        assertEquals( 4, s.getNumeratorDof().intValue() );
-        assertEquals( 25.14, s.getF(), 0.01 );
-        assertEquals( 1.743e-05, s.getP(), 0.001 );
+        assertEquals( 11, ( int ) s.getResidualsDof() );
+        assertEquals( 4, ( int ) s.getNumeratorDof() );
+        assertEquals( 25.14, s.getFStat(), 0.01 );
+        assertEquals( 1.743e-05, s.getOverallPValue(), 0.001 );
         anova = s.getAnova();
-        assertEquals( 38.411, anova.getMainEffectF( "Treatment" ), 0.001 );
+        assertNotNull( anova );
+        assertEquals( 38.411, anova.getMainEffectFStat( "Treatment" ), 0.001 );
 
         s = sums.get( "1456759_at" );
         assertNotNull( s.getContrastCoefficients() );
-        assertEquals( 11, s.getResidualDof().intValue() );
-        assertEquals( 4, s.getNumeratorDof().intValue() );
-        assertEquals( 7.903, s.getF(), 0.01 );
-        assertEquals( 0.002960, s.getP(), 0.001 );
+        assertEquals( 11, ( int ) s.getResidualsDof() );
+        assertEquals( 4, ( int ) s.getNumeratorDof() );
+        assertEquals( 7.903, s.getFStat(), 0.01 );
+        assertEquals( 0.002960, s.getOverallPValue(), 0.001 );
         anova = s.getAnova();
-        assertEquals( 10.3792, anova.getMainEffectF( "Treatment" ), 0.001 );
-        assertEquals( 2.6253, anova.getMainEffectF( "Genotype" ), 0.001 );
+        assertNotNull( anova );
+        assertEquals( 10.3792, anova.getMainEffectFStat( "Treatment" ), 0.001 );
+        assertEquals( 2.6253, anova.getMainEffectFStat( "Genotype" ), 0.001 );
     }
 
     /**
      * Sanity check.
-     *
-     * @throws Exception
      */
     @Test
     public void testTwoWayAnovaUnfittable() throws Exception {
@@ -870,8 +863,8 @@ public class LeastSquaresFitTest {
         for ( LinearModelSummary lms : sums.values() ) {
             GenericAnovaResult a = lms.getAnova();
             assertNotNull( a );
-            assertEquals( Double.NaN, a.getMainEffectP( "CellType" ), 0.0001 );
-            assertEquals( Double.NaN, a.getMainEffectP( "SamplingTimePoint" ), 0.0001 );
+            assertEquals( Double.NaN, a.getMainEffectPValue( "CellType" ), 0.0001 );
+            assertEquals( Double.NaN, a.getMainEffectPValue( "SamplingTimePoint" ), 0.0001 );
         }
 
         DoubleMatrix2D coefficients = fit.getCoefficients();
@@ -887,8 +880,6 @@ public class LeastSquaresFitTest {
 
     /**
      * Check for problem reported by TF -- Gemma gives slightly different result. Problem is not at this level.
-     *
-     * @throws Exception
      */
     @Test
     public void testTwoWayAnovaWithInteractions() throws Exception {
@@ -921,31 +912,31 @@ public class LeastSquaresFitTest {
 
         assertNotNull( s.getContrastCoefficients() );
         assertEquals( 0.763, s.getContrastCoefficients().get( 2, 3 ), 0.001 );
-        assertEquals( 18, s.getResidualDof().intValue() );
-        assertEquals( 3, s.getNumeratorDof().intValue() );
-        assertEquals( 0.299, s.getF(), 0.01 );
-        assertEquals( 0.8257, s.getP(), 0.001 );
+        assertEquals( 18, ( int ) s.getResidualsDof() );
+        assertEquals( 3, ( int ) s.getNumeratorDof() );
+        assertEquals( 0.299, s.getFStat(), 0.01 );
+        assertEquals( 0.8257, s.getOverallPValue(), 0.001 );
 
-        assertEquals( 0.5876, anova.getMainEffectF( "Treatment" ), 0.0001 );
-        assertEquals( 0.5925, anova.getInteractionEffectP(), 0.001 );
+        assertNotNull( anova );
+        assertEquals( 0.5876, anova.getMainEffectFStat( "Treatment" ), 0.0001 );
+        assertEquals( 0.5925, anova.getInteractionEffectPValue(), 0.001 );
 
         s = sums.get( "202851_at" );
         anova = s.getAnova();
         assertNotNull( s.getContrastCoefficients() );
         assertEquals( 0.787, s.getContrastCoefficients().get( 2, 3 ), 0.001 );
-        assertEquals( 18, s.getResidualDof().intValue() );
-        assertEquals( 3, s.getNumeratorDof().intValue() );
-        assertEquals( 0.1773, s.getF(), 0.01 );
-        assertEquals( 0.9104, s.getP(), 0.001 );
+        assertEquals( 18, ( int ) s.getResidualsDof() );
+        assertEquals( 3, ( int ) s.getNumeratorDof() );
+        assertEquals( 0.1773, s.getFStat(), 0.01 );
+        assertEquals( 0.9104, s.getOverallPValue(), 0.001 );
 
-        assertEquals( 0.3777, anova.getMainEffectF( "Treatment" ), 0.0001 );
-        assertEquals( 0.9956, anova.getInteractionEffectP(), 0.001 );
+        assertNotNull( anova );
+        assertEquals( 0.3777, anova.getMainEffectFStat( "Treatment" ), 0.0001 );
+        assertEquals( 0.9956, anova.getInteractionEffectPValue(), 0.001 );
     }
 
     /**
      * No missing values; Two-way ANOVA with interaction, PLUS a continuous covariate.
-     *
-     * @throws Exception
      */
     @Test
     public void testTwoWayTwoLevelsOneContinousInteractionC() throws Exception {
@@ -993,28 +984,29 @@ public class LeastSquaresFitTest {
         Map<String, LinearModelSummary> sums = fit.summarizeByKeys( true );
 
         LinearModelSummary s = sums.get( "1553129_at" );
-        assertEquals( 1.791, s.getF(), 0.01 );
-        assertEquals( 0.2930, s.getP(), 0.001 );
+        assertEquals( 1.791, s.getFStat(), 0.01 );
+        assertEquals( 0.2930, s.getOverallPValue(), 0.001 );
         assertEquals( 3.71542, s.getContrastCoefficients().get( 0, 0 ), 0.001 );
         assertEquals( 0.184, s.getContrastCoefficients().get( 1, 3 ), 0.001 ); // this ordering might change?
         assertEquals( 0.137, s.getContrastCoefficients().get( 4, 3 ), 0.001 ); // this ordering might change?
         GenericAnovaResult a = s.getAnova();
-        assertEquals( 0.137, a.getInteractionEffectP(), 0.001 );
+        assertNotNull( a );
+        assertEquals( 0.137, a.getInteractionEffectPValue(), 0.001 );
 
         s = sums.get( "232018_at" );
-        assertEquals( 0.7167, s.getF(), 0.01 );
-        assertEquals( 0.6235, s.getP(), 0.001 );
+        assertEquals( 0.7167, s.getFStat(), 0.01 );
+        assertEquals( 0.6235, s.getOverallPValue(), 0.001 );
         assertEquals( 6.8873, s.getContrastCoefficients().get( 0, 0 ), 0.001 );
         assertEquals( 0.587932, s.getContrastCoefficients().get( 1, 3 ), 0.001 );
         a = s.getAnova();
-        assertEquals( 0.2904, a.getInteractionEffectP(), 0.001 );
+        assertNotNull( a );
+        assertEquals( 0.2904, a.getInteractionEffectPValue(), 0.001 );
 
         for ( LinearModelSummary lms : sums.values() ) {
             GenericAnovaResult anova = lms.getAnova();
             assertNotNull( anova );
-            Double interactionEffectP = anova.getInteractionEffectP();
-            assertNotNull( interactionEffectP );
-            assertTrue( !Double.isNaN( interactionEffectP ) );
+            double interactionEffectP = anova.getInteractionEffectPValue();
+            assertFalse( Double.isNaN( interactionEffectP ) );
 
         }
 
@@ -1043,11 +1035,8 @@ public class LeastSquaresFitTest {
 
     }
 
-    /**
-     * @throws Exception
-     */
     @Test
-    public void testVectorWeightedRegress() throws Exception {
+    public void testVectorWeightedRegress() {
         // a<-c( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 )
         //  b<-c(1, 2, 2, 3, 3, 4, 4, 5, 5, 6)
         //  w<-1/a
@@ -1079,9 +1068,6 @@ public class LeastSquaresFitTest {
         }
     }
 
-    /**
-     * @throws Exception
-     */
     @Test
     public void testVectorWeightedRegressWithMissing() throws Exception {
 
@@ -1117,16 +1103,14 @@ public class LeastSquaresFitTest {
 
     /**
      * Tests limma-like functionality
-     * 
+     * <p>
      * Multiple levels per factor, unbalanced design
-     * 
-     * @throws Exception
      */
     @Test
     public void testNHBE() throws Exception {
         DoubleMatrixReader f = new DoubleMatrixReader();
-        DoubleMatrix<String, String> testMatrix = f.read( new GZIPInputStream( this.getClass().getResourceAsStream(
-                "/data/NHBE_transcriptome_data.txt.gz" ) ) );
+        DoubleMatrix<String, String> testMatrix = f.read( new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream(
+            "/data/NHBE_transcriptome_data.txt.gz" ) ) ) );
 
         StringMatrixReader of = new StringMatrixReader();
         StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
@@ -1159,14 +1143,12 @@ public class LeastSquaresFitTest {
 
     /**
      * Tests limma-like functionality. Balanced 2x2 design
-     * 
-     * @throws Exception
      */
     @Test
     public void testEstrogen() throws Exception {
         DoubleMatrixReader f = new DoubleMatrixReader();
-        DoubleMatrix<String, String> testMatrix = f.read( new GZIPInputStream( this.getClass().getResourceAsStream(
-                "/data/estrogen.data.txt.gz" ) ) );
+        DoubleMatrix<String, String> testMatrix = f.read( new GZIPInputStream( requireNonNull( this.getClass().getResourceAsStream(
+            "/data/estrogen.data.txt.gz" ) ) ) );
 
         StringMatrixReader of = new StringMatrixReader();
         StringMatrix<String, String> sampleInfo = of.read( this.getClass().getResourceAsStream(
@@ -1181,18 +1163,19 @@ public class LeastSquaresFitTest {
         //  System.err.println( fit.getCoefficients().viewColumn( 0 ) );
 
         LinearModelSummary s = sums.get( 0 );
-        assertEquals( 3.8976, s.getF(), 0.01 );
-        assertEquals( 0.11092, s.getP(), 0.001 );
+        assertEquals( 3.8976, s.getFStat(), 0.01 );
+        assertEquals( 0.11092, s.getOverallPValue(), 0.001 );
         assertEquals( 9.69220, s.getContrastCoefficients().get( 0, 0 ), 0.001 );
         assertEquals( -1.4517, s.getContrastCoefficients().get( 1, 2 ), 0.001 ); // tstat
         assertEquals( 0.220, s.getContrastCoefficients().get( 1, 3 ), 0.001 ); // pvalue
-        assertEquals( 4, s.getResidualDof().intValue() );
+        assertEquals( 4, ( int ) s.getResidualsDof() );
         GenericAnovaResult a = s.getAnova();
-        assertEquals( 0.24143, a.getMainEffectF( "time" ), 0.0001 );
-        assertEquals( 1, a.getMainEffectDof( "time" ).intValue() );
-        assertEquals( 4, a.getResidualDf().intValue() );
-        assertEquals( 2.43873, a.getInteractionEffectF(), 0.001 );
-        assertEquals( 0.19340, a.getInteractionEffectP(), 0.001 );
+        assertNotNull( a );
+        assertEquals( 0.24143, a.getMainEffectFStat( "time" ), 0.0001 );
+        assertEquals( 1, ( int ) a.getMainEffectDof( "time" ) );
+        assertEquals( 4, ( int ) a.getResidualsDof() );
+        assertEquals( 2.43873, a.getInteractionEffectFStat(), 0.001 );
+        assertEquals( 0.19340, a.getInteractionEffectPValue(), 0.001 );
 
         /////////////
         ModeratedTstat.ebayes( fit );
@@ -1202,30 +1185,31 @@ public class LeastSquaresFitTest {
         assertEquals( 0.0765, x.getSigma(), 0.0001 );
         assertEquals( 4.48, x.getPriorDof(), 0.01 ); // we get 4.479999 or something.
 
-        assertEquals( 3.8976, x.getF(), 0.01 );
-        assertEquals( 0.11092, x.getP(), 0.001 );
+        assertEquals( 3.8976, x.getFStat(), 0.01 );
+        assertEquals( 0.11092, x.getOverallPValue(), 0.001 );
         // topTable(fit3, coef=2,n=dim(fit3)[1], sort.by="none" )["100_g_at",]
         assertEquals( 9.692196, x.getContrastCoefficients().get( 0, 0 ), 0.0001 );
         assertEquals( -0.92608, x.getContrastCoefficients().get( 1, 2 ), 0.001 ); // tstat
         assertEquals( 0.38, x.getContrastCoefficients().get( 1, 3 ), 0.001 ); // pvalue
-        assertEquals( 4, x.getResidualDof().intValue() );
+        assertEquals( 4, ( int ) x.getResidualsDof() );
         // topTable(fit3, coef=4,n=dim(fit3)[1], sort.by="none" )["100_g_at",]
         assertEquals( 0.34671, x.getContrastCoefficients().get( 3, 3 ), 0.0001 ); // interaction pvalue
 
         GenericAnovaResult ax = x.getAnova();
         // classifyTestsF(fit3$t[,c(2)], df=fit3$df.residual, cor.matrix=cov2cor(fit3$cov.coefficients[2,2]), fstat.only = T)[1]
-        assertEquals( 0.098252, ax.getMainEffectF( "time" ), 0.0001 );
-        assertEquals( 1, ax.getMainEffectDof( "time" ).intValue() );
-        assertEquals( 8.48, ax.getResidualDf(), 0.001 );
+        assertNotNull( ax );
+        assertEquals( 0.098252, ax.getMainEffectFStat( "time" ), 0.0001 );
+        assertEquals( 1, ( int ) ax.getMainEffectDof( "time" ) );
+        assertEquals( 8.48, ax.getResidualsDof(), 0.001 );
 
-        assertEquals( 3.6678, ax.getMainEffectF( "dose" ), 0.0001 );
-        assertEquals( 1, ax.getMainEffectDof( "dose" ).intValue() );
-        assertEquals( 8.48, ax.getResidualDf(), 0.001 ); // 4 + 4.48
+        assertEquals( 3.6678, ax.getMainEffectFStat( "dose" ), 0.0001 );
+        assertEquals( 1, ( int ) ax.getMainEffectDof( "dose" ) );
+        assertEquals( 8.48, ax.getResidualsDof(), 0.001 ); // 4 + 4.48
 
         // sum(f4^2)/1/sqig^2
-        // pf(0.99247, 1, 8.48, lower.tail=F) 
-        assertEquals( 0.99247, ax.getInteractionEffectF(), 0.0001 );
-        assertEquals( 0.34671, ax.getInteractionEffectP(), 0.0001 );
+        // pf(0.99247, 1, 8.48, lower.tail=F)
+        assertEquals( 0.99247, ax.getInteractionEffectFStat(), 0.0001 );
+        assertEquals( 0.34671, ax.getInteractionEffectPValue(), 0.0001 );
 
     }
 }

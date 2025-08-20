@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2010 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,62 +16,50 @@
  * limitations under the License.
  *
  */
-
-package ubic.basecode.util.r.type;
-
-import java.io.Serializable;
+package ubic.basecode.math.linearmodels;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.Serializable;
+
 /**
  * Represents one row of an ANOVA table
- * 
+ *
  * @author paul
- * 
+ *
  */
 public class AnovaEffect implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Double degreesOfFreedom = null;
+    private final double dof;
+    private final String effectName;
+    private final double fStat;
+    private final boolean isInteraction;
+    private final boolean isResiduals;
+    private final double meanSq;
+    private final double pValue;
+    private final double ssQ;
 
-    private String effectName = null;
-
-    private Double fStatistic = Double.NaN;
-
-    private boolean isInteraction = false;
-
-    private Double meanSq = Double.NaN;
-
-    private Double pValue = Double.NaN;
-
-    private Double ssQ = Double.NaN;
-
-    /**
-     * @param effectName
-     * @param pValue
-     * @param fStatistic
-     * @param degreesOfFreedom
-     * @param ssQ
-     * @param isInteraction
-     */
-    public AnovaEffect( String effectName, Double pValue, Double fStatistic, Double degreesOfFreedom, Double ssQ,
-            boolean isInteraction ) {
-        super();
+    public AnovaEffect( String effectName, double pValue, double fStat, double dof, double ssQ, boolean isInteraction, boolean isResiduals ) {
+        if ( isResiduals && isInteraction ) {
+            throw new IllegalArgumentException( "An ANOVA effect cannot be both a residual and an interaction." );
+        }
         this.effectName = effectName;
         this.pValue = pValue;
-        this.fStatistic = fStatistic;
-        this.degreesOfFreedom = degreesOfFreedom;
+        this.fStat = fStat;
+        this.dof = dof;
         this.ssQ = ssQ;
-        this.meanSq = ssQ / degreesOfFreedom;
+        this.meanSq = ssQ / dof;
         this.isInteraction = isInteraction;
+        this.isResiduals = isResiduals;
     }
 
     /**
      * @return the degreesOfFreedom
      */
-    public Double getDegreesOfFreedom() {
-        return degreesOfFreedom;
+    public double getDof() {
+        return dof;
     }
 
     /**
@@ -84,28 +72,28 @@ public class AnovaEffect implements Serializable {
     /**
      * @return the fStatistic
      */
-    public Double getFStatistic() {
-        return fStatistic;
+    public double getFStat() {
+        return fStat;
     }
 
     /**
      * @return the meanSq
      */
-    public Double getMeanSq() {
+    public double getMeanSq() {
         return meanSq;
     }
 
     /**
      * @return the pValue
      */
-    public Double getPValue() {
+    public double getPValue() {
         return pValue;
     }
 
     /**
      * @return the ssQ
      */
-    public Double getSsQ() {
+    public double getSsQ() {
         return ssQ;
     }
 
@@ -116,19 +104,21 @@ public class AnovaEffect implements Serializable {
         return isInteraction;
     }
 
+    public boolean isResiduals() {
+        return isResiduals;
+    }
+
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
-        buf.append( StringUtils.rightPad( StringUtils.abbreviate( getEffectName(), 10 ), 10 ) + "\t" );
-        buf.append( String.format( "%.2f", getDegreesOfFreedom() ) + "\t" );
-        buf.append( String.format( "%.4f", getSsQ() ) + "\t" );
-        buf.append( String.format( "%.4f", getMeanSq() ) + "\t" );
-
-        if ( fStatistic != null ) {
-            buf.append( StringUtils.rightPad( String.format( "%.3f", getFStatistic() ), 6 ) + "\t" );
+        buf.append( StringUtils.rightPad( StringUtils.abbreviate( getEffectName(), 10 ), 10 ) ).append( "\t" );
+        buf.append( String.format( "%.2f", getDof() ) ).append( "\t" );
+        buf.append( String.format( "%.4f", getSsQ() ) ).append( "\t" );
+        buf.append( String.format( "%.4f", getMeanSq() ) ).append( "\t" );
+        if ( !Double.isNaN( fStat ) ) {
+            buf.append( StringUtils.rightPad( String.format( "%.3f", getFStat() ), 6 ) ).append( "\t" );
             buf.append( String.format( "%.3g", getPValue() ) );
         }
         return buf.toString();
     }
-
 }

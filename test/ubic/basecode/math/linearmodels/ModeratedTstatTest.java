@@ -74,14 +74,14 @@ public class ModeratedTstatTest {
                 "/data/limmatest.fit.effects.txt"));
         double[] expEffects1 = expectedEffects.getRowByName("Gene 1");
 
-        Double[] effects = ArrayUtils.subarray(s.getEffects(), 0, 2);
-        assertArrayEquals(ArrayUtils.subarray(expEffects1, 0, 2), ArrayUtils.toPrimitive(effects), 1e-7);
+        double[] effects = ArrayUtils.subarray(s.getEffects(), 0, 2);
+        assertArrayEquals(ArrayUtils.subarray(expEffects1, 0, 2), effects, 1e-7);
 
-        Double[] stdevUnscaled = s.getStdevUnscaled(); //
+        double[] stdevUnscaled = s.getStdevUnscaled(); //
         assertEquals(0.5773502692, stdevUnscaled[0], 1e-8);
         assertEquals(0.8164965809, stdevUnscaled[1], 1e-8);
 
-        Double sigma = s.getSigma();
+        double sigma = s.getSigma();
         assertEquals(0.3069360050, sigma, 0.0001);
 
         ModeratedTstat.ebayes(fit);
@@ -125,11 +125,11 @@ public class ModeratedTstatTest {
         f = new DoubleMatrixReader();
 
 
-        Double[] stdevUnscaled = s.getStdevUnscaled(); //
+        double[] stdevUnscaled = s.getStdevUnscaled(); //
         assertEquals(0.70710678118654757274, stdevUnscaled[0], 1e-8);
         assertEquals(1.00, stdevUnscaled[1], 1e-8);
 
-        Double sigma = s.getSigma();
+        double sigma = s.getSigma();
         assertEquals(0.054738603786, sigma, 0.0001);
 
         ModeratedTstat.ebayes(fit);
