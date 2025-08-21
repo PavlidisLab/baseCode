@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site xmlns="http://maven.apache.org/SITE/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://maven.apache.org/SITE/2.0.0 https://maven.apache.org/xsd/site-2.0.0.xsd">
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>2.1.0</version>
+    </skin>
+    <bannerRight href="https://www.ubc.ca/">
+        <image src="/images/ubc-logo-2018-crest-blue-rgb72.jpg"/>
+    </bannerRight>
+    <body>
+        <menu name="Overview" inherit="top">
+            <item name="Pavlidis Lab Website" href="https://pavlab.msl.ubc.ca/"/>
+        </menu>
+        <!-- FIXME: the parent site is not properly resolved when hosted on the dev website <menu ref="parent" inherit="top"/> -->
+        <menu ref="modules" inherit="top"/>
+        <menu ref="reports" inherit="top"/>
+    </body>
+</site>
