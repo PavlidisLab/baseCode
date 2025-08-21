@@ -524,7 +524,6 @@
 		<rJava.libDir>/usr/lib64/R/library/rJava/jri</rJava.libDir>
 		<rserve.version>1.8-14</rserve.version>
 		<testJvmOptions>
-			-enableassertions
 			-Djava.awt.headless=true
 			-Djava.library.path=${rJava.libDir}
 			-javaagent:${org.mockito:mockito-core:jar}
