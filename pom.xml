@@ -515,6 +515,8 @@
 		</profile>
 	</profiles>
 	<properties>
+		<java.version>8</java.version>
+		<java.jdk.version>11</java.jdk.version>
 		<lucene.version>3.6.2</lucene.version>
 		<!-- rJava -->
 		<!-- You may override this in ~/.m2/settings.xml -->
