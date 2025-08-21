@@ -13,7 +13,6 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
 import static java.util.Objects.requireNonNull;
@@ -27,7 +26,7 @@ public class UberonOntologySearchTest {
     @BeforeClass
     public static void setUpUberon() throws IOException {
         try ( InputStream is = new GZIPInputStream( requireNonNull( OntologySearchTest.class.getResourceAsStream( "/data/uberon.owl.gz" ) ) ) ) {
-            uberon = OntologyLoader.loadMemoryModel( is, "UBERON_TEST2", true, OntModelSpec.OWL_MEM );
+            uberon = OntologyLoader.createMemoryModel( is, "UBERON_TEST2", true, OntModelSpec.OWL_MEM );
             HashSet<OntologyIndexer.IndexableProperty> indexableProperties = new HashSet<>( OntologyIndexer.DEFAULT_INDEXABLE_PROPERTIES );
             indexableProperties.add( new OntologyIndexer.IndexableProperty( RDFS.comment, true ) );
             uberonIndex = OntologyIndexer.indexOntology( "UBERON_TEST2", uberon, indexableProperties, Collections.emptySet(), true );

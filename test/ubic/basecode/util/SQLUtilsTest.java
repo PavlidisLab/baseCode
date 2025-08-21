@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2008-2019 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,17 +18,16 @@
  */
 package ubic.basecode.util;
 
-import static org.junit.Assert.assertEquals;
-
-import java.sql.Blob;
+import org.junit.Test;
 
 import javax.sql.rowset.serial.SerialBlob;
+import java.nio.charset.StandardCharsets;
+import java.sql.Blob;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author paul
- * 
  */
 public class SQLUtilsTest {
 
@@ -37,7 +36,7 @@ public class SQLUtilsTest {
         String expectedValue = "a,b";
         byte[] charArray = expectedValue.getBytes();
         Blob blob = new SerialBlob( charArray );
-        String actualValue = SQLUtils.blobToString( blob );
+        String actualValue = SQLUtils.blobToString( blob, StandardCharsets.UTF_8 );
         assertEquals( expectedValue, actualValue );
     }
 }

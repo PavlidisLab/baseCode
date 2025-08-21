@@ -21,9 +21,11 @@ package ubic.basecode.ontology.jena;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.shared.CannotCreateException;
 import com.hp.hpl.jena.shared.JenaException;
+import com.hp.hpl.jena.tdb.TDBFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -49,59 +51,58 @@ import java.nio.file.StandardCopyOption;
 class OntologyLoader {
 
     private static final Logger log = LoggerFactory.getLogger( OntologyLoader.class );
+
     private static final String OLD_CACHE_SUFFIX = ".old";
     private static final String TMP_CACHE_SUFFIX = ".tmp";
 
-    public static OntModel loadMemoryModel( InputStream is, String url ) throws JenaException, IOException {
-        return loadMemoryModel( is, url, true );
-    }
-
     /**
-     * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
+     * Load an ontology model into memory from a stream.
+     * <p>
+     * Uses {@link OntModelSpec#OWL_MEM_TRANS_INF}.
      */
-    public static OntModel loadMemoryModel( InputStream is, String url, boolean processImports ) throws JenaException, IOException {
-        return loadMemoryModel( is, url, processImports, OntModelSpec.OWL_MEM_TRANS_INF );
-    }
-
-    public static OntModel loadMemoryModel( InputStream is, String url, boolean processImports, OntModelSpec spec ) throws JenaException, IOException {
-        OntModel model = getMemoryModel( url, processImports, spec );
-        model.read( is, null );
+    static OntModel createMemoryModel( InputStream is, String name, boolean processImports, OntModelSpec spec ) throws JenaException {
+        OntModel model = getModel( name, processImports, spec );
+        model.read( is, name );
         return model;
     }
 
     /**
-     * Load an ontology into memory. Use this type of model when fast access is critical and memory is available.
-     * If load from URL fails, attempt to load from disk cache under @cacheName.
+     * Load an ontology from a URL and store it in memory.
      * <p>
-     * Uses {@link OntModelSpec#OWL_MEM_TRANS_INF}.
+     * Use this type of model when fast access is critical and memory is available. If load from URL fails, attempt to
+     * load from disk cache under @cacheName.
      *
      * @param url            a URL where the OWL file is stored
      * @param cacheName      unique name of this ontology, will be used to load from disk in case of failed url connection
      * @param processImports process imports
      * @param spec           spec to use as a basis
      */
-    public static OntModel loadMemoryModel( String url, @Nullable String cacheName, boolean processImports, OntModelSpec spec ) throws JenaException, IOException {
+    static OntModel createMemoryModel( String url, String name, @Nullable String cacheName, boolean processImports, OntModelSpec spec ) throws JenaException, IOException {
         StopWatch timer = StopWatch.createStarted();
-        OntModel model = getMemoryModel( url, processImports, spec );
+        OntModel model = getModel( name, processImports, spec );
+        readModelFromUrl( model, url, cacheName );
+        log.debug( "Loading ontology model for {} took {} ms", url, timer.getTime() );
+        return model;
+    }
 
+    private static void readModelFromUrl( OntModel model, String url, @Nullable String cacheName ) throws IOException {
         boolean attemptToLoadFromDisk = false;
         URLConnection urlc = null;
         try {
             urlc = openConnection( url );
             try ( InputStream in = urlc.getInputStream() ) {
-                Reader reader;
                 if ( cacheName != null ) {
                     // write tmp to disk
                     File tempFile = getTmpDiskCachePath( cacheName );
                     FileUtils.createParentDirectories( tempFile );
                     Files.copy( in, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
-                    reader = new FileReader( tempFile );
+                    // read from disk
+                    try ( InputStream is = Files.newInputStream( tempFile.toPath() ) ) {
+                        model.read( is, url );
+                    }
                 } else {
-                    // Skip the cache
-                    reader = new InputStreamReader( in );
-                }
-                try ( BufferedReader buf = new BufferedReader( reader ) ) {
-                    model.read( buf, url );
+                    // skip the cache and simply read the stream into the model
+                    model.read( in, url );
                 }
             }
         } catch ( ClosedByInterruptException e ) {
@@ -122,6 +123,7 @@ class OntologyLoader {
             if ( attemptToLoadFromDisk ) {
                 // Attempt to load from disk cache
                 if ( f.isFile() ) {
+                    StopWatch timer = StopWatch.createStarted();
                     try ( BufferedReader buf = new BufferedReader( new FileReader( f ) ) ) {
                         model.read( buf, url );
                         // We successfully loaded the cached ontology. Copy the loaded ontology to oldFile
@@ -133,7 +135,7 @@ class OntologyLoader {
                     }
                 } else {
                     throw new RuntimeException(
-                            "Ontology failed load from URL (" + url + ") and disk cache does not exist: " + cacheName );
+                        "Ontology failed load from URL (" + url + ") and disk cache does not exist: " + cacheName );
                 }
             } else if ( tempFile.exists() ) {
                 // Model was successfully loaded into memory from URL with given cacheName
@@ -153,47 +155,45 @@ class OntologyLoader {
                 }
             }
         }
-
-        log.debug( "Loading ontology model for {} took {} ms", url, timer.getTime() );
-
-        return model;
-    }
-
-    public static boolean hasChanged( String cacheName ) {
-        // default
-        if ( StringUtils.isBlank( cacheName ) ) {
-            return false;
-        }
-        try {
-            File newFile = getDiskCachePath( cacheName );
-            File oldFile = getOldDiskCachePath( cacheName );
-            // This might be slow considering it calls IOUtils.contentsEquals which compares byte-by-byte
-            // in the worst case scenario.
-            // In this case consider using NIO for higher-performance IO using Channels and Buffers.
-            // Ex. Use a 4MB Memory-Mapped IO operation.
-            return !FileUtils.contentEquals( newFile, oldFile );
-        } catch ( IOException e ) {
-            log.error( "Failed to compare current and previous cached ontologies, will report as not changed.", e );
-            return false;
-        }
-    }
-
-    public static void deleteOldCache( String cacheName ) throws IOException {
-        File dir = getOldDiskCachePath( cacheName );
-        if ( dir.exists() ) {
-            FileUtils.delete( dir );
-        }
     }
 
     /**
+     * Create an ontology model for a TDB.
+     * @param dataset        TDB dataset
+     * @param name           name of the model to load, or null for the default model
+     * @param processImports whether to process imports or not, it is preferable not to if your TDB directory already
+     *                       contains all the necessary definitions.
+     * @param spec           spec to use to create the ontology model
+     */
+    public static OntModel createTdbModel( Dataset dataset, @Nullable String name, boolean processImports, OntModelSpec spec ) {
+        ModelMaker maker = ModelFactory.createMemModelMaker();
+        Model base;
+        if ( name != null ) {
+            base = dataset.getNamedModel( name );
+        } else {
+            base = dataset.getDefaultModel();
+        }
+        if ( base.isEmpty() ) {
+            throw new IllegalStateException( String.format( "The %s at %s is empty.",
+                name != null ? "named model " + name : "default model", dataset ) );
+        }
+        return getModel( maker, base, processImports, spec );
+    }
+
+    /**
+     * ModelFactory.createMemModelMaker()
      * Get model that is entirely in memory.
      */
-    private static OntModel getMemoryModel( String url, boolean processImports, OntModelSpec spec ) {
-        spec = new OntModelSpec( spec );
+    private static OntModel getModel( String name, boolean processImports, OntModelSpec spec ) {
         ModelMaker maker = ModelFactory.createMemModelMaker();
-        Model base = maker.createModel( url, false );
-        spec.setImportModelMaker( maker );
+        Model base = maker.createModel( name, false );
+        return getModel( maker, base, processImports, spec );
+    }
+
+    private static OntModel getModel( ModelMaker maker, Model base, boolean processImports, OntModelSpec spec ) {
         // the spec is a shallow copy, so we need to copy the document manager as well to modify it
+        spec = new OntModelSpec( spec );
+        spec.setImportModelMaker( maker );
         spec.setDocumentManager( new OntDocumentManager() );
         spec.getDocumentManager().setProcessImports( processImports );
         spec.setImportModelGetter( new ModelGetter() {
@@ -212,7 +212,7 @@ class OntologyLoader {
                         return model.read( in, URL );
                     }
                 } catch ( JenaException | IOException e ) {
-                    throw new CannotCreateException( String.format( "Failed to resolve import %s for %s.", URL, url ), e );
+                    throw new CannotCreateException( String.format( "Failed to resolve import for %s.", URL ), e );
                 } finally {
                     if ( urlc instanceof HttpURLConnection ) {
                         ( ( HttpURLConnection ) urlc ).disconnect();
@@ -225,7 +225,7 @@ class OntologyLoader {
         return model;
     }
 
-    public static URLConnection openConnection( String url ) throws IOException {
+    private static URLConnection openConnection( String url ) throws IOException {
         URLConnection urlc = openConnectionInternal( url );
 
         // this happens if there is a change of protocol (http:// -> https://)
@@ -256,10 +256,36 @@ class OntologyLoader {
         return urlc;
     }
 
+    static boolean hasChanged( String cacheName ) {
+        // default
+        if ( StringUtils.isBlank( cacheName ) ) {
+            return false;
+        }
+        try {
+            File newFile = getDiskCachePath( cacheName );
+            File oldFile = getOldDiskCachePath( cacheName );
+            // This might be slow considering it calls IOUtils.contentsEquals which compares byte-by-byte
+            // in the worst case scenario.
+            // In this case consider using NIO for higher-performance IO using Channels and Buffers.
+            // Ex. Use a 4MB Memory-Mapped IO operation.
+            return !FileUtils.contentEquals( newFile, oldFile );
+        } catch ( IOException e ) {
+            log.error( "Failed to compare current and previous cached ontologies, will report as not changed.", e );
+            return false;
+        }
+    }
+
+    static void deleteOldCache( String cacheName ) throws IOException {
+        File dir = getOldDiskCachePath( cacheName );
+        if ( dir.exists() ) {
+            FileUtils.delete( dir );
+        }
+    }
+
     /**
      * Obtain the path for the ontology cache.
      */
-    public static File getDiskCachePath( String name ) {
+    static File getDiskCachePath( String name ) {
         if ( StringUtils.isBlank( name ) ) {
             throw new IllegalArgumentException( "The ontology must have a suitable name for being loaded from cache." );
         }

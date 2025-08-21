@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Set;
 
-public interface OntologyService {
+public interface OntologyService extends AutoCloseable {
 
     /**
      * Obtain the name of this ontology if available.
@@ -53,6 +53,7 @@ public interface OntologyService {
          */
         LITE
     }
+
 
     /**
      * Obtain the OWL language level supported by this ontology.
@@ -350,9 +351,9 @@ public interface OntologyService {
      * Index the ontology for performing full-text searches.
      *
      * @param force if true, perform indexing even if an index already exists
-     * @see #findIndividuals(String)
-     * @see #findTerm(String)
-     * @see #findResources(String)
+     * @see #findIndividuals(String, int) (String)
+     * @see #findTerm(String, int)
+     * @see #findResources(String, int)
      */
     void index( boolean force );
 

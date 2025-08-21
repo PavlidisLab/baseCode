@@ -103,11 +103,11 @@ class AnnotationPropertyImpl extends AbstractOntologyResource implements Annotat
         if ( obj instanceof AnnotationPropertyImpl ) {
             final AnnotationPropertyImpl other = ( AnnotationPropertyImpl ) obj;
             return super.equals( other )
-                    && Objects.equals( object, other.object );
+                && Objects.equals( object, other.object );
         } else if ( obj instanceof AnnotationProperty ) {
             final AnnotationProperty other = ( AnnotationProperty ) obj;
             return super.equals( other )
-                    && Objects.equals( getContents(), other.getContents() );
+                && Objects.equals( getContents(), other.getContents() );
         }
         return false;
     }

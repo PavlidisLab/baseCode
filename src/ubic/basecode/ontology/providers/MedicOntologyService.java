@@ -18,11 +18,8 @@
  */
 package ubic.basecode.ontology.providers;
 
-import ubic.basecode.ontology.model.OntologyModel;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.zip.GZIPInputStream;
+import ubic.basecode.ontology.jena.ClasspathOntologyService;
+import ubic.basecode.util.Configuration;
 
 /**
  * MEDIC ONTOLOGY USED BY PHENOCARTA, its represents MESH terms as a tree so with can use the parent structure that a
@@ -34,7 +31,7 @@ import java.util.zip.GZIPInputStream;
  * @author Nicolas
  */
 @Deprecated
-public class MedicOntologyService extends AbstractBaseCodeOntologyService {
+public class MedicOntologyService extends AbstractDelegatingOntologyService {
 
     /**
      * FIXME this shouldn't be hard-coded like this, we should load it like any other ontology service.
@@ -42,21 +39,7 @@ public class MedicOntologyService extends AbstractBaseCodeOntologyService {
     private static final String MEDIC_ONTOLOGY_FILE = "/data/loader/ontology/medic.owl.gz";
 
     public MedicOntologyService() {
-        super( "Medic Ontology", "medicOntology" );
-    }
-
-    @Override
-    protected String getOntologyUrl() {
-        return "classpath:" + MEDIC_ONTOLOGY_FILE;
-    }
-
-    @Override
-    protected OntologyModel loadModel( boolean processImports, LanguageLevel languageLevel, InferenceMode inferenceMode ) throws IOException {
-        try ( InputStream is = this.getClass().getResourceAsStream( MEDIC_ONTOLOGY_FILE ) ) {
-            if ( is == null ) {
-                throw new RuntimeException( String.format( "The MEDIC ontology was not found in classpath at %s.", MEDIC_ONTOLOGY_FILE ) );
-            }
-            return loadModelFromStream( new GZIPInputStream( is ), processImports, languageLevel, inferenceMode );
-        }
+        super( new ClasspathOntologyService( "Medic Ontology", MEDIC_ONTOLOGY_FILE,
+            Boolean.TRUE.equals( Configuration.getBoolean( "load.medicOntology" ) ), "medicOntology" ) );
     }
 }

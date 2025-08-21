@@ -18,19 +18,17 @@
  */
 package ubic.basecode.math;
 
+import cern.colt.list.DoubleArrayList;
+import cern.jet.stat.Descriptive;
+import org.junit.Before;
+import org.junit.Test;
+import ubic.basecode.util.RegressionTesting;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import ubic.basecode.util.RegressionTesting;
-import cern.colt.list.DoubleArrayList;
-import cern.jet.stat.Descriptive;
-
 /**
  * @author Paul Pavlidis
- * 
  */
 public class TestDescriptiveWithMissing {
 
@@ -52,10 +50,10 @@ public class TestDescriptiveWithMissing {
 
         data1missing = new DoubleArrayList( new double[] { 1.0, Double.NaN, 3.0, 4.0, 5.0, 6.0, Double.NaN } );
         data2missing = new DoubleArrayList( new double[] { Double.NaN, Double.NaN, 3.0, Double.NaN, 3.5, 4.0,
-                Double.NaN } );
+            Double.NaN } );
 
         data1missingNotInOrder = new DoubleArrayList(
-                new double[] { 1.0, Double.NaN, 3.0, 4.0, 6.0, 5.0, Double.NaN } );
+            new double[] { 1.0, Double.NaN, 3.0, 4.0, 6.0, 5.0, Double.NaN } );
 
         data3shortmissing = new DoubleArrayList( new double[] { Double.NaN, Double.NaN, 3.0, Double.NaN } );
 
@@ -71,26 +69,12 @@ public class TestDescriptiveWithMissing {
 
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void testAutoCorrelation() throws Exception {
-        double expected = Descriptive.autoCorrelation(
-                data1Nomissing,
-                1,
-                Descriptive.mean( data1Nomissing ),
-                Descriptive.variance( data1Nomissing.size(), Descriptive.sum( data1Nomissing ),
-                        Descriptive.sumOfSquares( data1Nomissing ) ) );
-
-        double actual = DescriptiveWithMissing.autoCorrelation( data1missing, 1,
-                DescriptiveWithMissing.mean( data1missing ), DescriptiveWithMissing.variance( data1missing ) );
-        assertEquals( expected, actual, Double.MIN_VALUE );
-    }
-
     @Test
     public void testCorrelationA() {
         double s1 = Math.sqrt( Descriptive.sampleVariance( datacortest1Nomissing.size(),
-                Descriptive.sum( datacortest1Nomissing ), Descriptive.sumOfSquares( datacortest1Nomissing ) ) );
+            Descriptive.sum( datacortest1Nomissing ), Descriptive.sumOfSquares( datacortest1Nomissing ) ) );
         double s2 = Math.sqrt( Descriptive.sampleVariance( datacortest2Nomissing.size(),
-                Descriptive.sum( datacortest2Nomissing ), Descriptive.sumOfSquares( datacortest2Nomissing ) ) );
+            Descriptive.sum( datacortest2Nomissing ), Descriptive.sumOfSquares( datacortest2Nomissing ) ) );
 
         double expectedReturn = Descriptive.correlation( datacortest1Nomissing, s1, datacortest2Nomissing, s2 );
         double actualReturn = DescriptiveWithMissing.correlation( data1missing, data2missing );
@@ -100,14 +84,12 @@ public class TestDescriptiveWithMissing {
     @Test
     public void testCorrelationB() {
         double s1 = Math.sqrt( Descriptive.sampleVariance( datacortest1Nomissing.size(),
-                Descriptive.sum( datacortest1Nomissing ), Descriptive.sumOfSquares( datacortest1Nomissing ) ) );
+            Descriptive.sum( datacortest1Nomissing ), Descriptive.sumOfSquares( datacortest1Nomissing ) ) );
         double s2 = Math.sqrt( Descriptive.sampleVariance( datacortest2Nomissing.size(),
-                Descriptive.sum( datacortest2Nomissing ), Descriptive.sumOfSquares( datacortest2Nomissing ) ) );
+            Descriptive.sum( datacortest2Nomissing ), Descriptive.sumOfSquares( datacortest2Nomissing ) ) );
 
-        double s1m = 0;
-        double s2m = 0;
         double expectedReturn = Descriptive.correlation( datacortest1Nomissing, s1, datacortest2Nomissing, s2 );
-        double actualReturn = DescriptiveWithMissing.correlation( data1missing, s1m, data2missing, s2m );
+        double actualReturn = DescriptiveWithMissing.correlation( data1missing, data2missing );
 
         assertEquals( expectedReturn, actualReturn, 1e-15 );
     }
@@ -156,51 +138,17 @@ public class TestDescriptiveWithMissing {
 
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void testIncrementalUpdate() throws Exception {
-        double[] expected = new double[] { Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, 0.0, 0.0 };
-        double[] actual = new double[] { Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, 0.0, 0.0 };
-        Descriptive.incrementalUpdate( data1Nomissing, 0, 4, expected );
-        DescriptiveWithMissing.incrementalUpdate( data1missing, 0, 4, actual );
-
-    }
-
-    @Test(expected = UnsupportedOperationException.class)
-    public void testIncrementalUpdateSums() throws Exception {
-        double[] expected = new double[] { 0.0, 0.0, 0.0, 0.0 };
-        double[] actual = new double[] { 0.0, 0.0, 0.0, 0.0 };
-        Descriptive.incrementalUpdateSumsOfPowers( data1Nomissing, 0, 4, 1, 4, expected );
-        DescriptiveWithMissing.incrementalUpdateSumsOfPowers( data1missing, 0, 4, 1, 4, actual );
-        RegressionTesting.closeEnough( expected, actual, 0.0001 );
-    }
-
-    @Test(expected = UnsupportedOperationException.class)
-    public void testIncrementalWeightedUpdate() throws Exception {
-        double[] expected = new double[] { Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, 0.0, 0.0 };
-        double[] actual = new double[] { Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, 0.0, 0.0 };
-        Descriptive.incrementalWeightedUpdate( data1Nomissing, data1Nomissing, 0, 4, expected );
-        DescriptiveWithMissing.incrementalWeightedUpdate( data1missing, data1missing, 0, 4, actual );
-        RegressionTesting.closeEnough( expected, actual, 0.0001 );
-    }
-
     @Test
     public void testKurtosis() throws Exception {
-        DescriptiveWithMissing.kurtosis(
-                DescriptiveWithMissing.moment( data1missing, 4, DescriptiveWithMissing.mean( data1missing ) ),
-                Descriptive.standardDeviation( DescriptiveWithMissing.variance( data1missing ) ) );
+        Descriptive.kurtosis(
+            DescriptiveWithMissing.moment( data1missing, 4, DescriptiveWithMissing.mean( data1missing ) ),
+            Descriptive.standardDeviation( DescriptiveWithMissing.variance( data1missing ) ) );
     }
 
     @Test
     public void testKurtosisList() throws Exception {
         DescriptiveWithMissing.kurtosis( data1missing, DescriptiveWithMissing.mean( data1missing ),
-                Descriptive.standardDeviation( DescriptiveWithMissing.variance( data1missing ) ) );
-    }
-
-    @Test(expected = UnsupportedOperationException.class)
-    public void testLag1() throws Exception {
-        double expected = Descriptive.lag1( data1Nomissing, Descriptive.mean( data1Nomissing ) );
-        double actual = DescriptiveWithMissing.lag1( data1missing, Descriptive.mean( data1missing ) );
-        assertEquals( expected, actual, Double.MIN_VALUE );
+            Descriptive.standardDeviation( DescriptiveWithMissing.variance( data1missing ) ) );
     }
 
     @Test
@@ -226,20 +174,20 @@ public class TestDescriptiveWithMissing {
 
     @Test
     public void testMeanAboveQuantile() {
-        double actualReturn = DescriptiveWithMissing.meanAboveQuantile( 0.75, data1Nomissing );
+        double actualReturn = DescriptiveWithMissing.meanAboveQuantile( data1Nomissing, 0.75 );
         assertEquals( 6, actualReturn, Double.MIN_VALUE );
     }
 
     @Test
     public void testMeanDoubleAr() {
         double[] tar = new double[] { 0.4, 0.6, Double.NaN, 0, 6, 449.2, -39.1 };
-        assertEquals( 83.42, DescriptiveWithMissing.mean( tar, 5 ), 0.00001 );
+        assertEquals( 83.42, DescriptiveWithMissing.mean( new DoubleArrayList( tar ), 5 ), 0.00001 );
     }
 
     @Test
     public void testMeanDoubleArB() {
         double[] tar = new double[] { 0.4, 0.6, Double.NaN, 0, 6, 449.2, -39.1 };
-        assertEquals( Double.NaN, DescriptiveWithMissing.mean( tar, 0 ), 0.001 );
+        assertEquals( Double.NaN, DescriptiveWithMissing.mean( new DoubleArrayList( tar ), 0 ), 0.001 );
     }
 
     @Test
@@ -319,31 +267,25 @@ public class TestDescriptiveWithMissing {
     @Test
     public void testSampleKurtosis() {
         double expectedReturn = Descriptive.sampleKurtosis( data1Nomissing, Descriptive.mean( data1Nomissing ),
-                Descriptive.sampleVariance( data1Nomissing, Descriptive.mean( data1Nomissing ) ) );
+            Descriptive.sampleVariance( data1Nomissing, Descriptive.mean( data1Nomissing ) ) );
         double actualReturn = DescriptiveWithMissing.sampleKurtosis( data1missing,
-                DescriptiveWithMissing.mean( data1missing ),
-                DescriptiveWithMissing.sampleVariance( data1missing, DescriptiveWithMissing.mean( data1missing ) ) );
+            DescriptiveWithMissing.mean( data1missing ),
+            DescriptiveWithMissing.sampleVariance( data1missing, DescriptiveWithMissing.mean( data1missing ) ) );
         assertEquals( "Exercises sampleVariance, mean as well; return value", expectedReturn, actualReturn,
-                Double.MIN_VALUE );
+            Double.MIN_VALUE );
     }
 
     @Test
     public void testSampleSkew() throws Exception {
         DescriptiveWithMissing.sampleSkew( data1missing, DescriptiveWithMissing.mean( data1missing ),
-                DescriptiveWithMissing.sampleVariance( data1missing, DescriptiveWithMissing.mean( data1missing ) ) );
-    }
-
-    @Test
-    public void testSampleStandardDeviation() throws Exception {
-        DescriptiveWithMissing.sampleStandardDeviation( data1missing.size(),
-                DescriptiveWithMissing.sampleVariance( data1missing, DescriptiveWithMissing.mean( data1missing ) ) );
+            DescriptiveWithMissing.sampleVariance( data1missing, DescriptiveWithMissing.mean( data1missing ) ) );
     }
 
     @Test
     public void testSampleVariance() {
         double expectedReturn = Descriptive.sampleVariance( data1Nomissing, Descriptive.mean( data1Nomissing ) );
         double actualReturn = DescriptiveWithMissing.sampleVariance( data1missing,
-                DescriptiveWithMissing.mean( data1missing ) );
+            DescriptiveWithMissing.mean( data1missing ) );
         assertEquals( expectedReturn, actualReturn, Double.MIN_VALUE );
 
     }
@@ -361,7 +303,7 @@ public class TestDescriptiveWithMissing {
         // we use this because Descriptive.standardize does not do exactly the
         // same thing - there is a correction applied.
         DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { -1.4556506857481, Double.NaN,
-                -0.415900195928029, 0.103975048982007, 0.623850293892044, 1.14372553880208, Double.NaN } );
+            -0.415900195928029, 0.103975048982007, 0.623850293892044, 1.14372553880208, Double.NaN } );
 
         DescriptiveWithMissing.standardize( data1missing );
         assertEquals( true, RegressionTesting.closeEnough( data1missing, expectedReturn, 0.0001 ) );
@@ -370,8 +312,8 @@ public class TestDescriptiveWithMissing {
     @Test
     public void testStandardizeNoVariance() {
         DoubleArrayList expectedReturn = new DoubleArrayList( new double[] { 0.0, Double.NaN,
-                0.0, 0.0, 0.0, 0.0, Double.NaN } );
-        DoubleArrayList   constantData = new DoubleArrayList( new double[] { 1.3, Double.NaN, 1.3, 1.3, 1.3, 1.3, Double.NaN } );
+            0.0, 0.0, 0.0, 0.0, Double.NaN } );
+        DoubleArrayList constantData = new DoubleArrayList( new double[] { 1.3, Double.NaN, 1.3, 1.3, 1.3, 1.3, Double.NaN } );
         DescriptiveWithMissing.standardize( constantData );
         assertEquals( true, RegressionTesting.closeEnough( constantData, expectedReturn, 1e-20 ) );
     }
@@ -386,7 +328,7 @@ public class TestDescriptiveWithMissing {
     @Test
     public void testSumOfInversions() throws Exception {
         assertEquals( Descriptive.sumOfInversions( data1Nomissing, 0, 4 ),
-                DescriptiveWithMissing.sumOfInversions( data1missing, 0, 5 ), 0.001 );
+            DescriptiveWithMissing.sumOfInversions( data1missing, 0, 5 ), 0.001 );
     }
 
     @Test
@@ -405,17 +347,17 @@ public class TestDescriptiveWithMissing {
     @Test
     public void testSumOfPowers() throws Exception {
         assertEquals( Descriptive.sumOfPowers( data1Nomissing, 5 ),
-                DescriptiveWithMissing.sumOfPowers( data1missing, 5 ), 0.001 );
+            DescriptiveWithMissing.sumOfPowers( data1missing, 5 ), 0.001 );
     }
 
     @Test
     public void testSumOfSquaredDeviations() throws Exception {
         assertEquals(
-                Descriptive.sumOfSquaredDeviations(
-                        data1Nomissing.size(),
-                        Descriptive.variance( data1Nomissing.size(), Descriptive.sum( data1Nomissing ),
-                                Descriptive.sumOfSquares( data1Nomissing ) ) ),
-                DescriptiveWithMissing.sumOfSquaredDeviations( data1missing ), 0.001 );
+            Descriptive.sumOfSquaredDeviations(
+                data1Nomissing.size(),
+                Descriptive.variance( data1Nomissing.size(), Descriptive.sum( data1Nomissing ),
+                    Descriptive.sumOfSquares( data1Nomissing ) ) ),
+            DescriptiveWithMissing.sumOfSquaredDeviations( data1missing ), 0.001 );
     }
 
     @Test
@@ -430,20 +372,9 @@ public class TestDescriptiveWithMissing {
         data1Nomissing.sort();
         data1missing.sort();
         double expectedReturn = Descriptive.trimmedMean( data1Nomissing, Descriptive.mean( data1Nomissing ), 1, 1 );
-        double actualReturn = DescriptiveWithMissing.trimmedMean( data1missing,
-                DescriptiveWithMissing.mean( data1missing ), 1, 1 );
+        double actualReturn = DescriptiveWithMissing.trimmedMean( data1missing, 1, 1 );
         assertEquals( expectedReturn, actualReturn, Double.MIN_VALUE );
 
-    }
-
-    @Test
-    public void testVariance() {
-        double expectedReturn = Descriptive.variance( data1Nomissing.size(), Descriptive.sum( data1Nomissing ),
-                Descriptive.sumOfSquares( data1Nomissing ) );
-        double actualReturn = DescriptiveWithMissing.variance(
-                DescriptiveWithMissing.sizeWithoutMissingValues( data1missing ),
-                DescriptiveWithMissing.sum( data1missing ), DescriptiveWithMissing.sumOfSquares( data1missing ) );
-        assertEquals( expectedReturn, actualReturn, 0.000001 );
     }
 
     @Test
@@ -451,18 +382,5 @@ public class TestDescriptiveWithMissing {
         double expected = Descriptive.weightedMean( datacortest1Nomissing, datacortest2Nomissing );
         double actual = DescriptiveWithMissing.weightedMean( datacortest1missing, datacortest2missing );
         assertEquals( expected, actual, Double.MIN_VALUE );
-    }
-
-    public void testWinsorizedMean() throws Exception {
-        DoubleArrayList copy1 = data1missing.copy();
-        copy1.sort();
-
-        DoubleArrayList copy2 = data1Nomissing.copy();
-        copy2.sort();
-
-        double winsorizedMean = DescriptiveWithMissing.winsorizedMean( copy1,
-                DescriptiveWithMissing.mean( data1missing ), 2, 2 );
-        assertEquals( Descriptive.winsorizedMean( copy2, Descriptive.sum( data1Nomissing ), 2, 2 ), winsorizedMean,
-                0.0001 );
     }
 }
