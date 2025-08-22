@@ -1,7 +1,7 @@
 /**
  * Implementation of {@link ubic.basecode.ontology.providers.OntologyService} using Apache Jena.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 package ubic.basecode.ontology.jena;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;

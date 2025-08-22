@@ -2,6 +2,6 @@
  *
  */
 @NullMarked
-package ubic.basecode.ontology.search;
+package ubic.basecode.math.linearmodels;
 
 import org.jspecify.annotations.NullMarked;

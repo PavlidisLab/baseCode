@@ -16,7 +16,7 @@ package ubic.basecode.ontology.providers;
 
 import ubic.basecode.ontology.jena.UrlOntologyService;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A way to create ad-hoc in-memory ontology services.

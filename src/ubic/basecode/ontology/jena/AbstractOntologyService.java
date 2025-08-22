@@ -36,6 +36,7 @@ import com.hp.hpl.jena.vocabulary.DC_11;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ubic.basecode.ontology.model.OntologyIndividual;
@@ -46,7 +47,6 @@ import ubic.basecode.ontology.providers.OntologyService;
 import ubic.basecode.ontology.search.OntologySearchException;
 import ubic.basecode.ontology.search.OntologySearchResult;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
@@ -93,6 +93,7 @@ public abstract class AbstractOntologyService implements OntologyService {
     private final String ontologyName;
     private final String ontologyUrl;
     private final boolean ontologyEnabled;
+    @Nullable
     private final String cacheName;
 
     /**
@@ -132,10 +133,12 @@ public abstract class AbstractOntologyService implements OntologyService {
         return cacheName;
     }
 
+    @Nullable
     private volatile Thread initializationThread = null;
 
     @Override
     public synchronized void startInitializationThread( boolean forceLoad, boolean forceIndexing ) {
+        Thread initializationThread = this.initializationThread;
         if ( initializationThread != null && initializationThread.isAlive() ) {
             log.warn( " Initialization thread for {} is currently running, not restarting.", this );
             return;
@@ -151,15 +154,18 @@ public abstract class AbstractOntologyService implements OntologyService {
         // To prevent VM from waiting on this thread to shut down (if shutting down).
         initializationThread.setDaemon( true );
         initializationThread.start();
+        this.initializationThread = initializationThread;
     }
 
     @Override
     public boolean isInitializationThreadAlive() {
+        Thread initializationThread = this.initializationThread;
         return initializationThread != null && initializationThread.isAlive();
     }
 
     @Override
     public boolean isInitializationThreadCancelled() {
+        Thread initializationThread = this.initializationThread;
         return initializationThread != null && initializationThread.isInterrupted();
     }
 
@@ -168,6 +174,7 @@ public abstract class AbstractOntologyService implements OntologyService {
      */
     @Override
     public void cancelInitializationThread() {
+        Thread initializationThread = this.initializationThread;
         if ( initializationThread == null ) {
             throw new IllegalStateException( "The initialization thread has not started. Invoke startInitializationThread() first." );
         }
@@ -176,6 +183,7 @@ public abstract class AbstractOntologyService implements OntologyService {
 
     @Override
     public void waitForInitializationThread() throws InterruptedException {
+        Thread initializationThread = this.initializationThread;
         if ( initializationThread == null ) {
             throw new IllegalStateException( "The initialization thread has not started. Invoke startInitializationThread() first." );
         }
@@ -185,6 +193,7 @@ public abstract class AbstractOntologyService implements OntologyService {
     @Override
     public void loadTermsInNameSpace( InputStream is, boolean forceIndex ) {
         // wait for the initialization thread to finish
+        Thread initializationThread = this.initializationThread;
         if ( initializationThread != null && initializationThread.isAlive() ) {
             log.warn( "{} initialization is already running, trying to cancel ...", this );
             initializationThread.interrupt();
@@ -208,6 +217,7 @@ public abstract class AbstractOntologyService implements OntologyService {
         initialize( is, forceIndex );
     }
 
+    @Nullable
     @Override
     public String getName() {
         return getState().map( state -> {
@@ -216,6 +226,7 @@ public abstract class AbstractOntologyService implements OntologyService {
         } ).orElse( null );
     }
 
+    @Nullable
     @Override
     public String getDescription() {
         return getState().map( state -> {
@@ -497,6 +508,7 @@ public abstract class AbstractOntologyService implements OntologyService {
                 .collect( Collectors.toCollection( LinkedHashSet::new ) );
     }
 
+    @Nullable
     @Override
     public OntologyTerm findUsingAlternativeId( String alternativeId ) {
         State state = this.state;
@@ -526,6 +538,7 @@ public abstract class AbstractOntologyService implements OntologyService {
         } );
     }
 
+    @Nullable
     @Override
     public OntologyResource getResource( String uri ) {
         return getState().map( state -> {
@@ -548,6 +561,7 @@ public abstract class AbstractOntologyService implements OntologyService {
         } ).orElse( null );
     }
 
+    @Nullable
     @Override
     public OntologyTerm getTerm( String uri ) {
         return getState().map( state -> {
@@ -757,6 +771,7 @@ public abstract class AbstractOntologyService implements OntologyService {
         private final SearchIndex index;
         private final Set<String> excludedWordsFromStemming;
         private final Set<Restriction> additionalRestrictions;
+        @Nullable
         private final LanguageLevel languageLevel;
         private final InferenceMode inferenceMode;
         private final boolean processImports;

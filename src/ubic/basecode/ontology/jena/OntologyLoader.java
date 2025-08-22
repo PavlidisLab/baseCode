@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ubic.basecode.util.Configuration;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -197,6 +197,7 @@ class OntologyLoader {
         spec.setDocumentManager( new OntDocumentManager() );
         spec.getDocumentManager().setProcessImports( processImports );
         spec.setImportModelGetter( new ModelGetter() {
+            @Nullable
             @Override
             public Model getModel( String URL ) {
                 return null;

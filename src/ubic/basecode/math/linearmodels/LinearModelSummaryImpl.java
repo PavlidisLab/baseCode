@@ -20,13 +20,11 @@ package ubic.basecode.math.linearmodels;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.distribution.FDistribution;
+import org.jspecify.annotations.Nullable;
+import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents the results of a linear model analysis.
@@ -76,21 +74,21 @@ class LinearModelSummaryImpl implements LinearModelSummary {
      */
     public LinearModelSummaryImpl( String key ) {
         this.key = key;
-        this.stdevUnscaled = null;
+        this.stdevUnscaled = new double[0];
         this.adjRSquared = Double.NaN;
-        this.coefficients = null;
-        this.effects = null;
+        this.coefficients = new double[0];
+        this.effects = new double[0];
         this.sigma = Double.NaN;
         this.priorDof = Double.NaN;
         this.numeratorDof = Double.NaN;
         this.fStat = Double.NaN;
         this.shrunken = false;
         this.rSquared = Double.NaN;
-        this.residuals = null;
-        this.factorNames = null;
+        this.residuals = new double[0];
+        this.factorNames = Collections.emptyList();
         this.denominatorDof = Double.NaN;
-        this.contrastCoefficients = null;
-        this.term2CoefficientNames = null;
+        this.contrastCoefficients = new DenseDoubleMatrix<>( new double[0][0] );
+        this.term2CoefficientNames = Collections.emptyMap();
     }
 
     public LinearModelSummaryImpl( String k, double[] coefficients, double[] residuals, List<String> terms,
@@ -124,6 +122,7 @@ class LinearModelSummaryImpl implements LinearModelSummary {
         return adjRSquared;
     }
 
+    @Nullable
     @Override
     public GenericAnovaResult getAnova() {
         return this.anovaResult;
@@ -161,7 +160,9 @@ class LinearModelSummaryImpl implements LinearModelSummary {
 
     private Map<String, Double> getContrastAttribute( String factorName, String attributeName ) {
         Collection<String> terms = term2CoefficientNames.get( factorName );
-        if ( terms == null ) return null;
+        if ( terms == null ) {
+            throw new IllegalArgumentException( "Unknown factor " + factorName + "." );
+        }
         Map<String, Double> results = new HashMap<>();
         for ( String term : terms ) {
             results.put( term, contrastCoefficients.getByKeys( term, attributeName ) );
@@ -186,58 +187,53 @@ class LinearModelSummaryImpl implements LinearModelSummary {
 
     @Override
     public double getInterceptCoefficient() {
-        if ( contrastCoefficients != null ) {
-            if ( contrastCoefficients.hasRow( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME ) ) {
-                return contrastCoefficients.getByKeys( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME, "Estimate" );
-            } else if ( contrastCoefficients.rows() == 1 ) {
-                /*
-                 * This is a bit of a kludge. When we use lm.fit instead of lm, we end up with a somewhat screwy
-                 * coefficent matrix in the case of one-sample ttest, and R put in x1 (I think it starts as 1 and it
-                 * prepends the x).
-                 */
-                assert "x1".equals( contrastCoefficients.getRowName( 0 ) );
-                return contrastCoefficients.getByKeys( contrastCoefficients.getRowName( 0 ), "Estimate" );
-            }
+        if ( contrastCoefficients.hasRow( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME ) ) {
+            return contrastCoefficients.getByKeys( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME, "Estimate" );
+        } else if ( contrastCoefficients.rows() == 1 ) {
+            /*
+             * This is a bit of a kludge. When we use lm.fit instead of lm, we end up with a somewhat screwy
+             * coefficent matrix in the case of one-sample ttest, and R put in x1 (I think it starts as 1 and it
+             * prepends the x).
+             */
+            assert "x1".equals( contrastCoefficients.getRowName( 0 ) );
+            return contrastCoefficients.getByKeys( contrastCoefficients.getRowName( 0 ), "Estimate" );
+        } else {
+            throw new IllegalArgumentException( "The model does not have an intercept." );
         }
-
-        return Double.NaN;
     }
 
     @Override
     public double getInterceptPValue() {
-        if ( contrastCoefficients != null ) {
-            if ( contrastCoefficients.hasRow( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME ) ) {
-                return contrastCoefficients.getByKeys( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME, "Pr(>|t|)" );
-            } else if ( contrastCoefficients.rows() == 1 ) {
-                /*
-                 * This is a bit of a kludge. When we use lm.fit instead of lm, we end up with a somewhat screwy
-                 * coefficent matrix in the case of one-sample ttest, and R put in x1 (I think it starts as 1 and it
-                 * prepends the x).
-                 */
-                assert "x1".equals( contrastCoefficients.getRowName( 0 ) );
-                return contrastCoefficients.getByKeys( contrastCoefficients.getRowName( 0 ), "Pr(>|t|)" );
-            }
+        if ( contrastCoefficients.hasRow( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME ) ) {
+            return contrastCoefficients.getByKeys( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME, "Pr(>|t|)" );
+        } else if ( contrastCoefficients.rows() == 1 ) {
+            /*
+             * This is a bit of a kludge. When we use lm.fit instead of lm, we end up with a somewhat screwy
+             * coefficent matrix in the case of one-sample ttest, and R put in x1 (I think it starts as 1 and it
+             * prepends the x).
+             */
+            assert "x1".equals( contrastCoefficients.getRowName( 0 ) );
+            return contrastCoefficients.getByKeys( contrastCoefficients.getRowName( 0 ), "Pr(>|t|)" );
+        } else {
+            throw new IllegalArgumentException( "The model does not have an intercept." );
         }
-        return Double.NaN;
     }
 
     @Override
     public double getInterceptTStat() {
-        if ( contrastCoefficients != null ) {
-            if ( contrastCoefficients.hasRow( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME ) ) {
-                return contrastCoefficients.getByKeys( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME, "t value" );
-            } else if ( contrastCoefficients.rows() == 1 ) {
-                /*
-                 * This is a bit of a kludge. When we use lm.fit instead of lm, we end up with a somewhat screwy
-                 * coefficent matrix in the case of one-sample ttest, and R put in x1 (I think it starts as 1 and it
-                 * prepends the x).
-                 */
-                assert "x1".equals( contrastCoefficients.getRowName( 0 ) );
-                return contrastCoefficients.getByKeys( contrastCoefficients.getRowName( 0 ), "t value" );
-            }
+        if ( contrastCoefficients.hasRow( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME ) ) {
+            return contrastCoefficients.getByKeys( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME, "t value" );
+        } else if ( contrastCoefficients.rows() == 1 ) {
+            /*
+             * This is a bit of a kludge. When we use lm.fit instead of lm, we end up with a somewhat screwy
+             * coefficent matrix in the case of one-sample ttest, and R put in x1 (I think it starts as 1 and it
+             * prepends the x).
+             */
+            assert "x1".equals( contrastCoefficients.getRowName( 0 ) );
+            return contrastCoefficients.getByKeys( contrastCoefficients.getRowName( 0 ), "t value" );
+        } else {
+            throw new IllegalArgumentException( "The model does not have an intercept." );
         }
-
-        return Double.NaN;
     }
 
     public String getKey() {
@@ -320,12 +316,8 @@ class LinearModelSummaryImpl implements LinearModelSummary {
         buf.append( "F=" ).append( String.format( "%.2f", this.fStat ) ).append( " Rsquare=" ).append( String.format( "%.2f", this.rSquared ) ).append( "\n" );
 
         buf.append( "Residuals:\n" );
-        if ( residuals != null ) {
-            for ( double d : residuals ) {
-                buf.append( String.format( "%.2f ", d ) );
-            }
-        } else {
-            buf.append( "Residuals are null" );
+        for ( double d : residuals ) {
+            buf.append( String.format( "%.2f ", d ) );
         }
 
         buf.append( "\n\nCoefficients:\n" ).append( contrastCoefficients ).append( "\n" );

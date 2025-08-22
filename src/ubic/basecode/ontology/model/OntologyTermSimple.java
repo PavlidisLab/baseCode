@@ -14,7 +14,7 @@
  */
 package ubic.basecode.ontology.model;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Objects;

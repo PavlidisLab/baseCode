@@ -22,16 +22,13 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import org.jspecify.annotations.Nullable;
 import ubic.basecode.ontology.model.AnnotationProperty;
 import ubic.basecode.ontology.model.OntologyIndividual;
 import ubic.basecode.ontology.model.OntologyRestriction;
 import ubic.basecode.ontology.model.OntologyTerm;
 
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -61,7 +58,7 @@ class OntologyTermImpl extends AbstractOntologyResource implements OntologyTerm 
 
     @Override
     public Collection<String> getAlternativeIds() {
-        return getAnnotations( HAS_ALTERNATE_ID ).stream().map( AnnotationProperty::getContents ).collect( Collectors.toSet() );
+        return getAnnotations( HAS_ALTERNATE_ID ).stream().map( AnnotationProperty::getContents ).filter( Objects::nonNull ).collect( Collectors.toSet() );
     }
 
     @Override

@@ -20,13 +20,13 @@
 package ubic.basecode.util.r;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jspecify.annotations.Nullable;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
 import ubic.basecode.math.linearmodels.AnovaEffect;
 import ubic.basecode.math.linearmodels.GenericAnovaResult;
 import ubic.basecode.math.linearmodels.LinearModelSummary;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 

@@ -42,7 +42,7 @@ class OneWayAnovaResultImpl extends AbstractAnovaResult implements OneWayAnovaRe
      */
     public OneWayAnovaResultImpl( String key ) {
         super( key );
-        factorName = null;
+        factorName = "null";
         mainEffectDof = Double.NaN;
         mainEffectFStat = Double.NaN;
         mainEffectPValue = Double.NaN;

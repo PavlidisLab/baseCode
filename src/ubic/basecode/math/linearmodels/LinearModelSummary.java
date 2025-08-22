@@ -2,7 +2,7 @@ package ubic.basecode.math.linearmodels;
 
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;

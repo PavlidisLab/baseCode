@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ubic.basecode.ontology.model.OntologyResource;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.Objects;
 
 /**
@@ -36,6 +36,7 @@ abstract class AbstractOntologyResource implements OntologyResource {
 
     private final OntResource res;
 
+    @Nullable
     private String _label;
     private boolean _isLabelNull = false;
 
@@ -43,6 +44,7 @@ abstract class AbstractOntologyResource implements OntologyResource {
         this.res = resource;
     }
 
+    @Nullable
     @Override
     public String getUri() {
         return res.getURI();
@@ -53,6 +55,7 @@ abstract class AbstractOntologyResource implements OntologyResource {
         return res.getLocalName();
     }
 
+    @Nullable
     @Override
     public String getLabel() {
         if ( _label != null || _isLabelNull ) {

@@ -50,8 +50,8 @@ class TwoWayAnovaResultImpl extends AbstractAnovaResult implements TwoWayAnovaRe
      */
     public TwoWayAnovaResultImpl( String key ) {
         super( key );
-        this.factorAName = null;
-        this.factorBName = null;
+        this.factorAName = "null";
+        this.factorBName = "null";
         this.hasInteraction = false;
         this.interactionDof = Double.NaN;
         this.interactionFStat = Double.NaN;

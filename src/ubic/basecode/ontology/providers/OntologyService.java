@@ -6,7 +6,7 @@ import ubic.basecode.ontology.model.OntologyTerm;
 import ubic.basecode.ontology.search.OntologySearchException;
 import ubic.basecode.ontology.search.OntologySearchResult;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Set;

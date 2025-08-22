@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 import ubic.basecode.ontology.search.OntologySearchException;
 import ubic.basecode.util.Configuration;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;

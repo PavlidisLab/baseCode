@@ -4,7 +4,7 @@ import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import ubic.basecode.ontology.model.OntologyModel;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.io.InputStream;
 import java.nio.file.Path;
 
@@ -15,6 +15,7 @@ import java.nio.file.Path;
 public class TdbOntologyService extends AbstractOntologyService {
 
     private final Path tdbDir;
+    @Nullable
     private final String modelName;
 
     @Nullable

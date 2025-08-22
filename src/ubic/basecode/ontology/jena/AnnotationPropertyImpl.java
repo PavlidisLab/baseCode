@@ -22,7 +22,7 @@ import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import ubic.basecode.ontology.model.AnnotationProperty;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.Objects;
 
 /**
@@ -57,6 +57,7 @@ class AnnotationPropertyImpl extends AbstractOntologyResource implements Annotat
         }
     }
 
+    @Nullable
     @Override
     public String getContents() {
         if ( this.object == null ) {

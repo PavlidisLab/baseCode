@@ -11,7 +11,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -196,6 +196,7 @@ class JenaUtils {
             && model.getReasoner().supportsProperty( model.getProfile().ALL_VALUES_FROM() );
     }
 
+    @Nullable
     public static Resource getRestrictionValue( Restriction r ) {
         if ( r.isSomeValuesFromRestriction() ) {
             return r.asSomeValuesFromRestriction().getSomeValuesFrom();

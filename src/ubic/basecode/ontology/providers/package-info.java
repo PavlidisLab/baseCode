@@ -7,7 +7,7 @@
  * @author paul
  * @author poirigui
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 package ubic.basecode.ontology.providers;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
