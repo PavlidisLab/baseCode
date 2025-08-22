@@ -388,10 +388,15 @@
 					<doclint>none</doclint>
 				</configuration>
 			</plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-            </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+				<configuration>
+					<dependencyExcludes>
+						<dependencyExclude>org.rosuda.REngine:*:*</dependencyExclude>
+					</dependencyExcludes>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<reporting>
