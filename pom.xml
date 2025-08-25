@@ -677,6 +677,9 @@
 						<configuration>
 							<allowMajorUpdates>false</allowMajorUpdates>
 							<ignoredVersions>.*-a.*,.*-b.*,.*-M.*</ignoredVersions>
+							<dependencyExcludes>
+								<dependencyExclude>org.rosuda.REngine:*:*</dependencyExclude>
+							</dependencyExcludes>
 						</configuration>
 					</plugin>
 				</plugins>
