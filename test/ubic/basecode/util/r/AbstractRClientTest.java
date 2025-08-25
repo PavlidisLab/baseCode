@@ -398,7 +398,7 @@ public abstract class AbstractRClientTest {
         /*
          * The 'ID' column has our original probe ids.
          */
-        assertEquals( "gene8_at", dataFrameEval.get( 1, 0 ) );
+        assertEquals( "gene8_at", dataFrameEval.getRowName( 1 ) );
         assertEquals( 0.684, ( Double ) dataFrameEval.get( 6, 4 ), 0.001 );
 
     }
