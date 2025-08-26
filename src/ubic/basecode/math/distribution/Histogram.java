@@ -18,15 +18,13 @@
  */
 package ubic.basecode.math.distribution;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.DecimalFormat;
-
-import org.jfree.data.xy.XYSeries;
-
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.jet.stat.Descriptive;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DecimalFormat;
 
 /**
  * A simple histogram.
@@ -292,24 +290,6 @@ public class Histogram {
      */
     public double overflow() {
         return overflow;
-    }
-
-    /**
-     * Provide graph for JFreePlot; counts expressed as a fraction.
-     */
-    public XYSeries plot() {
-        XYSeries series = new XYSeries( this.name, true, true );
-
-        double step = this.min();
-
-        double binWidth = stepSize();
-
-        double[] binHeights = this.getArray();
-        for ( int i = 0; i < binHeights.length; i++ ) {
-            series.add( step, binHeights[i] / entries );
-            step += binWidth;
-        }
-        return series;
     }
 
     /**

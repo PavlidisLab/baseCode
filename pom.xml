@@ -253,11 +253,6 @@
 		</dependency>
 
 		<!-- Utilities -->
-		<dependency>
-			<groupId>org.jfree</groupId>
-			<artifactId>jfreechart</artifactId>
-			<version>1.5.6</version>
-		</dependency>
 		<!-- xml-apis is dependent on jena -->
 		<dependency>
 			<groupId>xml-apis</groupId>
