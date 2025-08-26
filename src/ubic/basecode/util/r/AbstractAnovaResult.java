@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2010 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,55 +16,42 @@
  * limitations under the License.
  *
  */
-package ubic.basecode.util.r.type;
+package ubic.basecode.util.r;
+
+import ubic.basecode.math.linearmodels.AnovaResult;
+
+import java.util.Objects;
 
 /**
  * @author paul
  */
-public abstract class AnovaResult {
+abstract class AbstractAnovaResult implements AnovaResult {
 
-    protected Double residualDf = null;
+    private final String key;
 
-    private Object key = null;
+    protected AbstractAnovaResult( String key ) {
+        this.key = key;
+    }
+
+    @Override
+    public String getKey() {
+        return key;
+    }
 
     @Override
     public boolean equals( Object obj ) {
         if ( this == obj ) return true;
         if ( obj == null ) return false;
         if ( getClass() != obj.getClass() ) return false;
-        AnovaResult other = ( AnovaResult ) obj;
+        AbstractAnovaResult other = ( AbstractAnovaResult ) obj;
         if ( key == null ) {
             if ( other.key != null ) return false;
         } else if ( !key.equals( other.key ) ) return false;
         return true;
     }
 
-    /**
-     * @return value used to track the identity of this
-     */
-    public Object getKey() {
-        return key;
-    }
-
-    /**
-     * @return the residualDf
-     */
-    public Double getResidualDf() {
-        return residualDf;
-    }
-
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ( ( key == null ) ? 0 : key.hashCode() );
-        return result;
-    }
-
-    /**
-     * @param key optional value that can be used to track the identity of this
-     */
-    public void setKey( Object key ) {
-        this.key = key;
+        return Objects.hash( key );
     }
 }

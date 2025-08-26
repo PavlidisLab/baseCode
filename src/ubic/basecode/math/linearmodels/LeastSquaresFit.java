@@ -14,30 +14,6 @@
  */
 package ubic.basecode.math.linearmodels;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.StopWatch;
-import org.apache.commons.math3.distribution.FDistribution;
-import org.apache.commons.math3.distribution.TDistribution;
-import org.apache.commons.math3.exception.NotStrictlyPositiveException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import cern.colt.bitvector.BitVector;
 import cern.colt.list.DoubleArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
@@ -47,13 +23,22 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
 import cern.jet.math.Functions;
 import cern.jet.stat.Descriptive;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
+import org.apache.commons.math3.distribution.FDistribution;
+import org.apache.commons.math3.distribution.TDistribution;
+import org.apache.commons.math3.exception.NotStrictlyPositiveException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.DoubleMatrixFactory;
 import ubic.basecode.dataStructure.matrix.MatrixUtil;
 import ubic.basecode.dataStructure.matrix.ObjectMatrix;
 import ubic.basecode.math.Constants;
 import ubic.basecode.math.linalg.QRDecomposition;
-import ubic.basecode.util.r.type.AnovaEffect;
+
+import java.util.*;
 
 /**
  * For performing "bulk" linear model fits, but also offers simple methods for simple univariate and multivariate
@@ -203,7 +188,7 @@ public class LeastSquaresFit {
 
         this.rowNames = data.getRowNames();
         this.b = new DenseDoubleMatrix2D(data.asArray());
-        boolean hasInterceptTerm = this.terms.contains(LinearModelSummary.INTERCEPT_COEFFICIENT_NAME);
+        boolean hasInterceptTerm = this.terms.contains( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME);
         this.hasIntercept = designMatrix.hasIntercept();
         assert hasInterceptTerm == this.hasIntercept : diagnosis(null);
         fit();
@@ -225,7 +210,7 @@ public class LeastSquaresFit {
         this.A = X;
         this.rowNames = data.getRowNames();
         this.b = new DenseDoubleMatrix2D(data.asArray());
-        boolean hasInterceptTerm = this.terms.contains(LinearModelSummary.INTERCEPT_COEFFICIENT_NAME);
+        boolean hasInterceptTerm = this.terms.contains( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME);
         this.hasIntercept = designMatrix.hasIntercept();
         assert hasInterceptTerm == this.hasIntercept : diagnosis(null);
         this.weights = weights;
@@ -247,7 +232,7 @@ public class LeastSquaresFit {
         this.terms = designMatrix.getTerms();
         this.A = X;
         this.b = b;
-        boolean hasInterceptTerm = this.terms.contains(LinearModelSummary.INTERCEPT_COEFFICIENT_NAME);
+        boolean hasInterceptTerm = this.terms.contains( LinearModelSummary.INTERCEPT_COEFFICIENT_NAME);
         this.hasIntercept = designMatrix.hasIntercept();
         assert hasInterceptTerm == this.hasIntercept : diagnosis(null);
 
@@ -561,7 +546,7 @@ public class LeastSquaresFit {
         timer.start();
         log.info("Summarizing");
         for (int i = 0; i < this.coefficients.columns(); i++) {
-            LinearModelSummary lms = summarize(i);
+            LinearModelSummaryImpl lms = summarize(i);
             lms.setAnova(anovas != null ? anovas.get(i) : null);
             lmsresults.add(lms);
             if (timer.getTime() > 10000 && i > 0 && i % 10000 == 0) {
@@ -779,7 +764,7 @@ public class LeastSquaresFit {
      * @param i index of the fit to summarize
      * @return
      */
-    protected LinearModelSummary summarize(int i) {
+    LinearModelSummaryImpl summarize(int i) {
 
         String key = null;
         if (this.rowNames != null) {
@@ -792,7 +777,7 @@ public class LeastSquaresFit {
 
         if (qrd == null) {
             log.debug("QR was null for item " + i);
-            return new LinearModelSummary(key);
+            return new LinearModelSummaryImpl(key);
         }
 
         int rdf;
@@ -804,7 +789,7 @@ public class LeastSquaresFit {
         assert !Double.isNaN(rdf);
 
         if (rdf == 0) {
-            return new LinearModelSummary(key);
+            return new LinearModelSummaryImpl(key);
         }
 
         DoubleMatrix1D resid = MatrixUtil.removeMissingOrInfinite(this.residuals.viewRow(i));
@@ -826,7 +811,7 @@ public class LeastSquaresFit {
         if (estCoef.size() == 0) {
             log.warn("No coefficients estimated for row " + i + this.diagnosis(qrd));
             log.info("Data for this row:\n" + this.b.viewRow(i));
-            return new LinearModelSummary(key);
+            return new LinearModelSummaryImpl(key);
         }
 
         int rank = qrd.getRank();
@@ -851,7 +836,7 @@ public class LeastSquaresFit {
         if (weights != null) {
 
             if (hasIntercept) {
-                //  m <- sum(w * f /sum(w))  
+                //  m <- sum(w * f /sum(w))
                 double m = f.copy().assign(Functions.div(rweights.zSum())).assign(rweights, Functions.mult).zSum();
 
                 mss = f.copy().assign(Functions.minus(m)).assign(Functions.square).assign(rweights, Functions.mult).zSum();
@@ -887,7 +872,7 @@ public class LeastSquaresFit {
         // the diagonal has the (unscaled) variances s; NEGATIVE VALUES can occur when not of full rank...
         DoubleMatrix1D sdUnscaled = MatrixUtil.diagonal(XtXi).assign(Functions.sqrt);
 
-        // in contrast the stdev.unscaled uses the gene-specific QR      
+        // in contrast the stdev.unscaled uses the gene-specific QR
         // //  stdev.unscaled[i,est] <- sqrt(diag(chol2inv(out$qr$qr,size=out$rank)))
 
         this.stdevUnscaled.put(i, sdUnscaled);
@@ -900,7 +885,7 @@ public class LeastSquaresFit {
 
         DoubleMatrix1D effects = qrd.effects(MatrixUtil.removeMissingOrInfinite(this.b.viewRow(i).copy()).assign(sqrtweights, Functions.mult));
 
-        // sigma is the estimated sd of the parameters. In limma, fit$sigma <- sqrt(mean(fit$effects[-(1:fit$rank)]^2) 
+        // sigma is the estimated sd of the parameters. In limma, fit$sigma <- sqrt(mean(fit$effects[-(1:fit$rank)]^2)
         // in lm.series, it's same: sigma[i] <- sqrt(mean(out$effects[-(1:out$rank)]^2))
         // first p elements are associated with the coefficients; same as residuals (QQty) / resid dof.
         //        double sigma = Math
@@ -999,18 +984,11 @@ public class LeastSquaresFit {
             adjRsquared = 0.0;
         }
 
-        // NOTE that not all the information stored in the summary is likely to be important/used, 
+        // NOTE that not all the information stored in the summary is likely to be important/used,
         // while other information is probably still needed.
-        LinearModelSummary lms = new LinearModelSummary(key, ArrayUtils.toObject(allCoef.toArray()),
-                ArrayUtils.toObject(resid
-                        .toArray()),
-                terms,
-                summaryTable, ArrayUtils.toObject(effects.toArray()),
-                ArrayUtils.toObject(sdUnscaled.toArray()), rsquared,
-                adjRsquared,
-                fstatistic,
-                numdf, dendf, null, sigma, this.hasBeenShrunken);
-        lms.setPriorDof(this.dfPrior);
+        LinearModelSummaryImpl lms = new LinearModelSummaryImpl( key, allCoef.toArray(), resid.toArray(), terms,
+            summaryTable, effects.toArray(), sdUnscaled.toArray(), rsquared, adjRsquared, fstatistic, numdf, dendf,
+            null, sigma, this.hasBeenShrunken, this.dfPrior );
 
         return lms;
     }
@@ -1482,7 +1460,7 @@ public class LeastSquaresFit {
                 String effectName = terms.get(j);
                 assert effectName != null;
                 AnovaEffect ae = new AnovaEffect(effectName, pvalues.get(i, j), fStats.get(i, j), dof.get(
-                        i, j), ssq.get(i, j), effectName.contains(":"));
+                    i, j ), ssq.get( i, j ), effectName.contains( ":" ), false );
                 efs.add(ae);
             }
 
@@ -1490,12 +1468,11 @@ public class LeastSquaresFit {
              * Add residual
              */
             int residCol = fStats.columns() - 1;
-            AnovaEffect ae = new AnovaEffect("Residual", null, null, dof.get(i, residCol) + this.dfPrior, ssq.get(i,
-                    residCol), false);
+            AnovaEffect ae = new AnovaEffect( "Residual", Double.NaN, Double.NaN, dof.get( i, residCol ) + this.dfPrior, ssq.get( i,
+                residCol ), false, true );
             efs.add(ae);
 
-            GenericAnovaResult ao = new GenericAnovaResult(efs);
-            if (this.rowNames != null) ao.setKey(this.rowNames.get(i));
+            GenericAnovaResultImpl ao = new GenericAnovaResultImpl( this.rowNames != null ? this.rowNames.get( i ) : String.valueOf( i ), efs );
             results.add(ao);
         }
         return results;

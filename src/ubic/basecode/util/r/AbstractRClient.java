@@ -1,8 +1,8 @@
 /*
  * The baseCode project
- * 
+ *
  * Copyright (c) 2008-2019 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,49 +18,33 @@
  */
 package ubic.basecode.util.r;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.collections4.functors.StringValueTransformer;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.rosuda.REngine.REXP;
-import org.rosuda.REngine.REXPDouble;
-import org.rosuda.REngine.REXPFactor;
-import org.rosuda.REngine.REXPGenericVector;
-import org.rosuda.REngine.REXPInteger;
-import org.rosuda.REngine.REXPList;
-import org.rosuda.REngine.REXPLogical;
-import org.rosuda.REngine.REXPMismatchException;
-import org.rosuda.REngine.REXPString;
-import org.rosuda.REngine.RList;
+import org.rosuda.REngine.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrix;
 import ubic.basecode.dataStructure.matrix.ObjectMatrixImpl;
 import ubic.basecode.math.linearmodels.LinearModelSummary;
+import ubic.basecode.math.linearmodels.OneWayAnovaResult;
+import ubic.basecode.math.linearmodels.TwoWayAnovaResult;
 import ubic.basecode.util.Configuration;
-import ubic.basecode.util.r.type.HTest;
-import ubic.basecode.util.r.type.OneWayAnovaResult;
-import ubic.basecode.util.r.type.TwoWayAnovaResult;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.*;
 
 /**
  * Base class for RClients
- * 
+ *
  * @author Paul
- * 
+ *
  */
 public abstract class AbstractRClient implements RClient {
 
@@ -77,7 +61,7 @@ public abstract class AbstractRClient implements RClient {
     /**
      * Copy a matrix into an array, so that rows are represented consecutively in the array. (RServe has no interface
      * for passing a 2-d array).
-     * 
+     *
      * @param matrix
      * @return
      */
@@ -99,7 +83,7 @@ public abstract class AbstractRClient implements RClient {
     /**
      * Copy a matrix into an array, so that rows are represented consecutively in the array. (RServe has no interface
      * for passing a 2-d array).
-     * 
+     *
      * @param matrix
      * @return array representation of the matrix.
      */
@@ -124,7 +108,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#assignFactor(java.util.List)
      */
     @Override
@@ -135,7 +119,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#assignFactor(java.lang.String, java.util.List)
      */
     @Override
@@ -147,7 +131,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#assignMatrix(double[][])
      */
     @Override
@@ -168,7 +152,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#assignMatrix(ubic.basecode.dataStructure.matrix.DoubleMatrixNamed)
      */
     @Override
@@ -178,7 +162,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#assignMatrix(ubic.basecode.dataStructure.matrix.DoubleMatrix,
      * org.apache.commons.collections.Transformer)
      */
@@ -203,7 +187,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#assignStringList(java.util.List)
      */
     @Override
@@ -222,7 +206,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#booleanDoubleArrayEval(java.lang.String, java.lang.String, double[])
      */
     @Override
@@ -242,7 +226,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#dataFrame(ubic.basecode.dataStructure.matrix.ObjectMatrix)
      */
     @Override
@@ -375,7 +359,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#doubleArrayDoubleArrayEval(java.lang.String, java.lang.String, double[])
      */
     @Override
@@ -391,7 +375,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#doubleArrayEval(java.lang.String)
      */
     @Override
@@ -414,7 +398,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#doubleArrayTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
      * java.lang.String, double[])
      */
@@ -432,7 +416,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#doubleTwoDoubleArrayEval(java.lang.String, java.lang.String, double[],
      * java.lang.String, double[])
      */
@@ -450,7 +434,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#intArrayEval(java.lang.String)
      */
     @Override
@@ -464,7 +448,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#linearModel(double[], java.util.List)
      */
     @Override
@@ -499,13 +483,16 @@ public abstract class AbstractRClient implements RClient {
         REXP lmsum = eval( "summary(" + lmName + ")" );
         REXP anova = eval( "anova(" + lmName + ")" );
 
-        return new LinearModelSummary( lmsum, anova, factors.keySet().toArray( new String[] {} ) );
-
+        try {
+            return new LinearModelSummaryImpl( datName, lmsum, anova, factors.keySet().toArray( new String[] {} ) );
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#linearModel(double[], ubic.basecode.dataStructure.matrix.ObjectMatrix)
      */
     @Override
@@ -525,8 +512,11 @@ public abstract class AbstractRClient implements RClient {
         REXP lmsum = eval( "summary(" + lmName + ")" );
         REXP anova = eval( "anova(" + lmName + ")" );
 
-        return new LinearModelSummary( lmsum, anova, d.getColNames().toArray( new String[] {} ) );
-
+        try {
+            return new LinearModelSummaryImpl( datName, lmsum, anova, d.getColNames().toArray( new String[] {} ) );
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     /**
@@ -615,7 +605,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#loadLibrary(java.lang.String)
      */
     @Override
@@ -649,7 +639,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#oneWayAnova(double[], java.util.List)
      */
     @Override
@@ -667,12 +657,16 @@ public abstract class AbstractRClient implements RClient {
 
         REXP eval = eval( command.toString() );
 
-        return new OneWayAnovaResult( eval );
+        try {
+            return new OneWayAnovaResultImpl( "foo", eval );
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#oneWayAnovaEval(java.lang.String)
      */
     @Override
@@ -704,11 +698,11 @@ public abstract class AbstractRClient implements RClient {
 
                 if ( !anovaTable.isList() || !anovaTable.hasAttribute( "row.names" ) ) {
                     log.debug( "No anovaresult for " + elementIdentifier );
-                    result.put( elementIdentifier, new OneWayAnovaResult() );
+                    result.put( elementIdentifier, new OneWayAnovaResultImpl( elementIdentifier ) );
                     continue;
                 }
 
-                result.put( elementIdentifier, new OneWayAnovaResult( anovaTable ) );
+                result.put( elementIdentifier, new OneWayAnovaResultImpl( elementIdentifier, anovaTable ) );
 
             }
         } catch ( REXPMismatchException e ) {
@@ -721,7 +715,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#remove(java.lang.String)
      */
     @Override
@@ -731,7 +725,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#rowApplyLinearModel(java.lang.String, java.lang.String, java.lang.String[])
      */
     @Override
@@ -794,9 +788,9 @@ public abstract class AbstractRClient implements RClient {
 
                 if ( !lmSummary.isList() || !lmSummary.getAttribute( "class" ).asString().equals( "summary.lm" ) ) {
                     log.debug( "No lm for " + elementIdentifier );
-                    result.put( elementIdentifier, new LinearModelSummary( elementIdentifier ) );
+                    result.put( elementIdentifier, new LinearModelSummaryImpl( elementIdentifier ) );
                 } else {
-                    LinearModelSummary linearModelSummary = new LinearModelSummary( lmSummary, anova, factorNames );
+                    LinearModelSummary linearModelSummary = new LinearModelSummaryImpl( elementIdentifier, lmSummary, anova, factorNames );
                     result.put( elementIdentifier, linearModelSummary );
                 }
 
@@ -810,7 +804,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#stringEval(java.lang.String)
      */
     @Override
@@ -824,7 +818,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.r.RClient#stringListEval(java.lang.String)
      */
     @Override
@@ -854,7 +848,7 @@ public abstract class AbstractRClient implements RClient {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.r.RClient#twoWayAnova(double[], java.util.List, java.util.List, boolean)
      */
     @Override
@@ -879,12 +873,16 @@ public abstract class AbstractRClient implements RClient {
 
         REXP eval = eval( command.toString() );
 
-        return new TwoWayAnovaResult( eval );
+        try {
+            return new TwoWayAnovaResultImpl( "foo", eval );
+        } catch ( REXPMismatchException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ubic.basecode.util.RClient#twoWayAnovaEval(java.lang.String, boolean)
      */
     @Override
@@ -916,11 +914,11 @@ public abstract class AbstractRClient implements RClient {
 
                 if ( !anovaTable.isList() || !anovaTable.hasAttribute( "row.names" ) ) {
                     log.debug( "No anovaresult for " + elementIdentifier );
-                    result.put( elementIdentifier, new TwoWayAnovaResult() );
+                    result.put( elementIdentifier, new TwoWayAnovaResultImpl( elementIdentifier ) );
                     continue;
                 }
 
-                result.put( elementIdentifier, new TwoWayAnovaResult( anovaTable ) );
+                result.put( elementIdentifier, new TwoWayAnovaResultImpl( elementIdentifier, anovaTable ) );
 
             }
         } catch ( REXPMismatchException e ) {
@@ -934,7 +932,7 @@ public abstract class AbstractRClient implements RClient {
     /**
      * There is a pretty annoying limitation of this. The file must contain only one statement. You can get around this
      * by using c(x<-1,x<-2). See testScript.R
-     * 
+     *
      * @param is
      */
     protected void loadScript( InputStream is ) {

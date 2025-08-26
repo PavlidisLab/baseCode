@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.rosuda.REngine.REXP;
+import org.rosuda.REngine.REXPMismatchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ubic.basecode.dataStructure.matrix.DenseDoubleMatrix;
@@ -30,16 +31,16 @@ import ubic.basecode.dataStructure.matrix.ObjectMatrixImpl;
 import ubic.basecode.io.reader.DoubleMatrixReader;
 import ubic.basecode.math.Constants;
 import ubic.basecode.math.linearmodels.LinearModelSummary;
+import ubic.basecode.math.linearmodels.OneWayAnovaResult;
+import ubic.basecode.math.linearmodels.TwoWayAnovaResult;
 import ubic.basecode.util.RegressionTesting;
-import ubic.basecode.util.r.type.HTest;
-import ubic.basecode.util.r.type.OneWayAnovaResult;
-import ubic.basecode.util.r.type.TwoWayAnovaResult;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
+import static java.util.Objects.requireNonNull;
 import static org.junit.Assert.*;
 
 /**
@@ -83,10 +84,10 @@ public abstract class AbstractRClientTest {
         String[] f2 = new String[] { "D", "C", "D", "D" };
 
         TwoWayAnovaResult r = rc.twoWayAnova( data, Arrays.asList( f1 ), Arrays.asList( f2 ), false );
-        assertEquals( 0.008816, r.getMainEffectAPval(), 0.0001 );
-        assertEquals( 0.731589, r.getMainEffectBPval(), 0.0001 );
-        assertEquals( 5214.3817, r.getMainEffectAfVal(), 0.0001 );
-        assertEquals( 0.2012, r.getMainEffectBfVal(), 0.0001 );
+        assertEquals( 0.008816, r.getMainEffectAPValue(), 0.0001 );
+        assertEquals( 0.731589, r.getMainEffectBPValue(), 0.0001 );
+        assertEquals( 5214.3817, r.getMainEffectAFStat(), 0.0001 );
+        assertEquals( 0.2012, r.getMainEffectBFStat(), 0.0001 );
     }
 
     @Test
@@ -101,10 +102,10 @@ public abstract class AbstractRClientTest {
         String[] f2 = new String[] { "C", "C", "D", "D", "C", "C", "D", "D" };
 
         TwoWayAnovaResult r = rc.twoWayAnova( data, Arrays.asList( f1 ), Arrays.asList( f2 ), false );
-        assertEquals( 0.1567, r.getMainEffectAPval(), 0.0001 );
-        assertEquals( 0.8323, r.getMainEffectBPval(), 0.0001 );
-        assertEquals( 3.0294, r.getMainEffectAfVal(), 0.0001 );
-        assertEquals( 0.0511, r.getMainEffectBfVal(), 0.0001 );
+        assertEquals( 0.1567, r.getMainEffectAPValue(), 0.0001 );
+        assertEquals( 0.8323, r.getMainEffectBPValue(), 0.0001 );
+        assertEquals( 3.0294, r.getMainEffectAFStat(), 0.0001 );
+        assertEquals( 0.0511, r.getMainEffectBFStat(), 0.0001 );
     }
 
     @Test
@@ -119,12 +120,12 @@ public abstract class AbstractRClientTest {
         String[] f2 = new String[] { "C", "C", "D", "D", "C", "C", "D", "D" };
 
         TwoWayAnovaResult r = rc.twoWayAnova( data, Arrays.asList( f1 ), Arrays.asList( f2 ), true );
-        assertEquals( 8.97e-08, r.getMainEffectAPval(), 0.0000001 );
-        assertEquals( 0.08816, r.getMainEffectBPval(), 0.0001 );
-        assertEquals( 0.11823, r.getInteractionPval(), 0.0001 );
-        assertEquals( 84546.9846, r.getMainEffectAfVal(), 0.0001 );
-        assertEquals( 6.2208, r.getMainEffectBfVal(), 0.0001 );
-        assertEquals( 4.7178, r.getInteractionfVal(), 0.0001 );
+        assertEquals( 8.97e-08, r.getMainEffectAPValue(), 0.0000001 );
+        assertEquals( 0.08816, r.getMainEffectBPValue(), 0.0001 );
+        assertEquals( 0.11823, r.getInteractionPValue(), 0.0001 );
+        assertEquals( 84546.9846, r.getMainEffectAFStat(), 0.0001 );
+        assertEquals( 6.2208, r.getMainEffectBFStat(), 0.0001 );
+        assertEquals( 4.7178, r.getInteractionFStat(), 0.0001 );
     }
 
     @Test
@@ -140,12 +141,12 @@ public abstract class AbstractRClientTest {
         String[] f2 = new String[] { "C", "C", "D", "D", "C", "C", "D", "D" };
 
         TwoWayAnovaResult r = rc.twoWayAnova( data, Arrays.asList( f1 ), Arrays.asList( f2 ), true );
-        assertEquals( 0.006562, r.getMainEffectAPval(), 0.00001 );
-        assertEquals( 0.548142, r.getMainEffectBPval(), 0.0001 );
-        assertEquals( Double.NaN, r.getInteractionPval(), 0.0001 );
-        assertEquals( 9412.4049, r.getMainEffectAfVal(), 0.0001 );
-        assertEquals( 0.7381, r.getMainEffectBfVal(), 0.0001 );
-        assertEquals( Double.NaN, r.getInteractionfVal(), 0.0001 );
+        assertEquals( 0.006562, r.getMainEffectAPValue(), 0.00001 );
+        assertEquals( 0.548142, r.getMainEffectBPValue(), 0.0001 );
+        assertEquals( Double.NaN, r.getInteractionPValue(), 0.0001 );
+        assertEquals( 9412.4049, r.getMainEffectAFStat(), 0.0001 );
+        assertEquals( 0.7381, r.getMainEffectBFStat(), 0.0001 );
+        assertEquals( Double.NaN, r.getInteractionFStat(), 0.0001 );
     }
 
     @Test
@@ -158,8 +159,8 @@ public abstract class AbstractRClientTest {
         String[] f1 = new String[] { "A", "B", "B", "B" };
 
         OneWayAnovaResult r = rc.oneWayAnova( data, Arrays.asList( f1 ) );
-        assertEquals( 0.0001152, r.getPval(), 0.0001 );
-        assertEquals( 8682.2, r.getFVal(), 0.01 );
+        assertEquals( 0.0001152, r.getMainEffectPValue(), 0.0001 );
+        assertEquals( 8682.2, r.getMainEffectFStat(), 0.01 );
     }
 
     /**
@@ -176,8 +177,8 @@ public abstract class AbstractRClientTest {
         String[] f1 = new String[] { "A", "A", "A", "A", "B", "B", "B", "B" };
 
         OneWayAnovaResult r = rc.oneWayAnova( data, Arrays.asList( f1 ) );
-        assertEquals( 0.1110, r.getPval(), 0.0001 );
-        assertEquals( 3.739, r.getFVal(), 0.001 );
+        assertEquals( 0.1110, r.getMainEffectPValue(), 0.0001 );
+        assertEquals( 3.739, r.getMainEffectFStat(), 0.001 );
     }
 
     @Test
@@ -399,7 +400,7 @@ public abstract class AbstractRClientTest {
          * The 'ID' column has our original probe ids.
          */
         assertEquals( "gene8_at", dataFrameEval.getRowName( 1 ) );
-        assertEquals( 0.684, ( Double ) dataFrameEval.get( 6, 4 ), 0.001 );
+        assertEquals( 0.684, ( double ) dataFrameEval.get( 6, 4 ), 0.001 );
 
     }
 
@@ -407,7 +408,7 @@ public abstract class AbstractRClientTest {
      * Like a two-sample t-test where the intercept is also of interest. @
      */
     @Test
-    public void testLinearModelA() {
+    public void testLinearModelA() throws REXPMismatchException {
         /**
          * foo<-c( 3.2969, 3.1856, 3.1638, NA, 3.2342, 3.3533, 3.4347, 3.3074);
          * <p>
@@ -421,21 +422,22 @@ public abstract class AbstractRClientTest {
         String facN = rc.assignFactor( "f1", Arrays.asList( f1 ) );
         REXP result = rc.eval( "summary(lm(foo ~ " + facN + ") )" );
         REXP anova = rc.eval( "anova(lm(foo ~ " + facN + ") )" );
-        LinearModelSummary lms = new LinearModelSummary( result, anova, new String[] { "f1" } );
+        LinearModelSummaryImpl lms = new LinearModelSummaryImpl( facN, result, anova, new String[] { "f1" } );
 
-        Double p = lms.getMainEffectP( facN );
-        Double t = lms.getContrastTStats( facN ).get( "f1B" );
-        Double ip = lms.getInterceptP();
-        Double it = lms.getInterceptT();
-        Integer dof = lms.getNumeratorDof();
-        Integer rdof = lms.getResidualDof();
+        assertNotNull( lms.getAnova() );
+        double p = lms.getAnova().getMainEffectPValue( facN );
+        double t = lms.getContrastTStats( facN ).get( "f1B" );
+        double ip = lms.getInterceptPValue();
+        double it = lms.getInterceptTStat();
+        double dof = lms.getNumeratorDof();
+        double rdof = lms.getResidualsDof();
 
         assertEquals( 0.11096, p, 0.0001 );
         assertEquals( 1.933653, t, 0.0001 );
         assertEquals( 1.10e-08, ip, 1e-10 );
         assertEquals( 70.319382, it, 0.0001 );
-        assertEquals( 1, ( int ) dof );
-        assertEquals( 5, ( int ) rdof );
+        assertEquals( 1.0, dof, 0.0 );
+        assertEquals( 5.0, rdof, 0.0 );
 
     }
 
@@ -465,16 +467,16 @@ public abstract class AbstractRClientTest {
 
         LinearModelSummary lms = rc.linearModel( data, factors );
 
-        Double p = lms.getMainEffectP( "foo" );
-        Double t = lms.getContrastTStats( "foo" ).get( "fooB" );
+        double p = lms.getAnova().getMainEffectPValue( "foo" );
+        double t = lms.getContrastTStats( "foo" ).get( "fooB" );
 
-        Double pp = lms.getMainEffectP( "bar" );
-        Double tt = lms.getContrastTStats( "bar" ).get( "bar" );
+        double pp = lms.getAnova().getMainEffectPValue( "bar" );
+        double tt = lms.getContrastTStats( "bar" ).get( "bar" );
 
-        Double ip = lms.getInterceptP();
-        Double it = lms.getInterceptT();
-        Integer dof = lms.getNumeratorDof();
-        Integer rdof = lms.getResidualDof();
+        double ip = lms.getInterceptPValue();
+        double it = lms.getInterceptTStat();
+        double dof = lms.getNumeratorDof();
+        double rdof = lms.getResidualsDof();
 
         assertEquals( 0.1586, p, 0.0001 );
         assertEquals( 0.64117305, t, 0.0001 );
@@ -518,14 +520,14 @@ public abstract class AbstractRClientTest {
 
         LinearModelSummary lms = rc.linearModel( data, d );
 
-        Double p = lms.getMainEffectP( "foo" );
-        Double t = lms.getContrastTStats( "foo" ).get( "fooB" );
+        double p = lms.getAnova().getMainEffectPValue( "foo" );
+        double t = lms.getContrastTStats( "foo" ).get( "fooB" );
 
-        Double pp = lms.getMainEffectP( "bar" );
-        Double tt = lms.getContrastTStats( "bar" ).get( "bar" );
+        double pp = lms.getAnova().getMainEffectPValue( "bar" );
+        double tt = lms.getContrastTStats( "bar" ).get( "bar" );
 
-        Double ip = lms.getInterceptP();
-        Double it = lms.getInterceptT();
+        double ip = lms.getInterceptPValue();
+        double it = lms.getInterceptTStat();
 
         assertEquals( 0.1586, p, 0.0001 );
         assertEquals( 0.64117305, t, 0.0001 );
@@ -559,20 +561,20 @@ public abstract class AbstractRClientTest {
 
         LinearModelSummary lms = rc.linearModel( data, factors );
 
-        Double p = lms.getMainEffectP( "foo" );
-        Double t = lms.getContrastTStats( "foo" ).get( "foox" );
+        double p = lms.getAnova().getMainEffectPValue( "foo" );
+        double t = lms.getContrastTStats( "foo" ).get( "foox" );
 
-        Double ip = lms.getInterceptP();
-        Double it = lms.getInterceptT();
+        double ip = lms.getInterceptPValue();
+        double it = lms.getInterceptTStat();
 
         assertEquals( 0.006669, p, 0.0001 );
         assertEquals( -0.462, t, 0.001 );
         assertEquals( 2.821526e-06, ip, 0.0001 );
         assertEquals( 28.464, it, 0.001 );
         assertEquals( 3, ( int ) lms.getNumeratorDof() );
-        assertEquals( 4, ( int ) lms.getResidualDof() );
-        assertEquals( 20.8, lms.getF(), 0.01 );
-        assertEquals( 0.00667, lms.getP(), 0.0001 );
+        assertEquals( 4, ( int ) lms.getResidualsDof() );
+        assertEquals( 20.8, lms.getFStat(), 0.01 );
+        assertEquals( 0.00667, lms.getOverallPValue(), 0.0001 );
     }
 
     @Test
@@ -603,7 +605,7 @@ public abstract class AbstractRClientTest {
         assertNotNull( results );
 
         for ( Object o : results ) {
-            assertNotNull( ( ( HTest ) o ).getPvalue() );
+            assertFalse( Double.isNaN( ( ( HTest ) o ).getPvalue() ) );
         }
 
     }
@@ -616,9 +618,9 @@ public abstract class AbstractRClientTest {
 
     @Test
     public void testLoadScript() throws Exception {
-        BufferedReader reader = new BufferedReader( new InputStreamReader( this.getClass().getResourceAsStream(
-                "/ubic/basecode/util/r/testScript.R" ) ) );
-        String line = null;
+        BufferedReader reader = new BufferedReader( new InputStreamReader( requireNonNull( this.getClass().getResourceAsStream(
+            "/ubic/basecode/util/r/testScript.R" ) ) ) );
+        String line;
         StringBuilder buf = new StringBuilder();
         while ( ( line = reader.readLine() ) != null ) {
             if ( line.startsWith( "#" ) || StringUtils.isBlank( line ) ) {
