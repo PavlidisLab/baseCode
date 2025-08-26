@@ -173,7 +173,6 @@
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-core</artifactId>
 			<version>2.13.0</version>
-			<optional>true</optional>
 			<exclusions>
 				<exclusion>
 					<groupId>log4j</groupId>
@@ -197,7 +196,6 @@
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-tdb</artifactId>
 			<version>1.1.2</version>
-			<optional>true</optional>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
@@ -247,13 +245,11 @@
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-core</artifactId>
 			<version>${lucene.version}</version>
-			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-analyzers</artifactId>
 			<version>${lucene.version}</version>
-			<optional>true</optional>
 		</dependency>
 
 		<!-- Utilities -->
