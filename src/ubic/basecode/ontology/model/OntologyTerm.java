@@ -95,6 +95,7 @@ public interface OntologyTerm extends OntologyResource {
     /**
      * @deprecated use {@link #getLabel()} instead.
      */
+    @Nullable
     @Deprecated
     String getTerm();
 

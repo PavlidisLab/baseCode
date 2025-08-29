@@ -12,12 +12,15 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package ubic.basecode.ontology.model;
+package ubic.basecode.ontology.simple;
+
+import ubic.basecode.ontology.model.AnnotationProperty;
+import ubic.basecode.ontology.model.OntologyIndividual;
+import ubic.basecode.ontology.model.OntologyRestriction;
+import ubic.basecode.ontology.model.OntologyTerm;
 
 import javax.annotation.Nullable;
-import java.io.Serializable;
 import java.util.Collection;
-import java.util.Objects;
 
 /**
  * A light-weight version of OntologyTerms. Only supports a subset of the functionality of OntologyTermImpl (namely, it
@@ -25,27 +28,25 @@ import java.util.Objects;
  *
  * @author Paul
  */
-@SuppressWarnings("unused")
-public class OntologyTermSimple implements OntologyTerm, Serializable {
+public class OntologyTermSimple extends AbstractOntologyResourceSimple implements OntologyTerm {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -2589717267279872909L;
-
-    private final String description;
-    private final boolean obsolete;
-    private final String term;
+    @Nullable
     private final String uri;
+    @Nullable
+    private final String label;
+    @Nullable
+    private final String comment;
+    private final boolean obsolete;
 
-    public OntologyTermSimple( String uri, String term ) {
-        this( uri, term, "", false );
+    public OntologyTermSimple( @Nullable String uri, @Nullable String label ) {
+        this( uri, label, "", false );
     }
 
-    public OntologyTermSimple( String uri, String term, String description, boolean isObsolete ) {
+    public OntologyTermSimple( @Nullable String uri, @Nullable String label, @Nullable String comment, boolean isObsolete ) {
+        super( uri, label );
         this.uri = uri;
-        this.term = term;
-        this.description = description;
+        this.label = label;
+        this.comment = comment;
         this.obsolete = isObsolete;
     }
 
@@ -75,24 +76,15 @@ public class OntologyTermSimple implements OntologyTerm, Serializable {
         throw new UnsupportedOperationException( "Use a OntologyTermImpl" );
     }
 
+    @Nullable
     @Override
     public String getComment() {
-        return this.description;
+        return this.comment;
     }
 
     @Override
     public Collection<OntologyIndividual> getIndividuals( boolean direct ) {
         throw new UnsupportedOperationException( "Use a OntologyTermImpl" );
-    }
-
-    @Override
-    public String getLabel() {
-        return term;
-    }
-
-    @Override
-    public String getLocalName() {
-        return term;
     }
 
     @Override
@@ -116,10 +108,12 @@ public class OntologyTermSimple implements OntologyTerm, Serializable {
     }
 
     @Override
+    @Nullable
     public String getTerm() {
-        return this.term;
+        return this.label;
     }
 
+    @Nullable
     @Override
     public String getUri() {
         return this.uri;
@@ -128,25 +122,5 @@ public class OntologyTermSimple implements OntologyTerm, Serializable {
     @Override
     public boolean isObsolete() {
         return obsolete;
-    }
-
-    @Override
-    public boolean equals( Object obj ) {
-        if ( this == obj ) return true;
-        if ( obj == null ) return false;
-        if ( getClass() != obj.getClass() ) return false;
-        final OntologyResource other = ( OntologyResource ) obj;
-        if ( getLabel() == null ) {
-            if ( other.getLabel() != null ) return false;
-        } else if ( !getLabel().equals( other.getLabel() ) ) return false;
-        if ( getUri() == null ) {
-            if ( other.getUri() != null ) return false;
-        } else if ( !getUri().equals( other.getUri() ) ) return false;
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash( getLabel(), getUri() );
     }
 }
