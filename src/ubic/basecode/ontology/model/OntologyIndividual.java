@@ -1,8 +1,8 @@
 /*
  * The basecode project
- * 
+ *
  * Copyright (c) 2007-2019 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,6 +18,8 @@
  */
 package ubic.basecode.ontology.model;
 
+import javax.annotation.Nullable;
+
 /**
  * @author pavlidis
  */
@@ -25,9 +27,10 @@ public interface OntologyIndividual extends OntologyResource {
 
     /**
      * Return the term that this is an instance of.
-     * 
+     *
      * @return
      */
+    @Nullable
     public OntologyTerm getInstanceOf();
 
 }
