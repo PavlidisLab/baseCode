@@ -31,21 +31,15 @@ import java.util.Collection;
 public class OntologyTermSimple extends AbstractOntologyResourceSimple implements OntologyTerm {
 
     @Nullable
-    private final String uri;
-    @Nullable
-    private final String label;
-    @Nullable
     private final String comment;
     private final boolean obsolete;
 
     public OntologyTermSimple( @Nullable String uri, @Nullable String label ) {
-        this( uri, label, "", false );
+        this( uri, null, label, null, false );
     }
 
-    public OntologyTermSimple( @Nullable String uri, @Nullable String label, @Nullable String comment, boolean isObsolete ) {
-        super( uri, label );
-        this.uri = uri;
-        this.label = label;
+    public OntologyTermSimple( @Nullable String uri, @Nullable String localName, @Nullable String label, @Nullable String comment, boolean isObsolete ) {
+        super( uri, localName, label );
         this.comment = comment;
         this.obsolete = isObsolete;
     }
@@ -110,13 +104,7 @@ public class OntologyTermSimple extends AbstractOntologyResourceSimple implement
     @Override
     @Nullable
     public String getTerm() {
-        return this.label;
-    }
-
-    @Nullable
-    @Override
-    public String getUri() {
-        return this.uri;
+        return getLabel();
     }
 
     @Override

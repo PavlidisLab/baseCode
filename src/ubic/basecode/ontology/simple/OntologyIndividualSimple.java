@@ -11,6 +11,10 @@ public class OntologyIndividualSimple extends AbstractOntologyResourceSimple imp
 
     private final OntologyTermSimple instanceOf;
 
+    public OntologyIndividualSimple( @Nullable String uri, @Nullable String label, @Nullable OntologyTermSimple instanceOf ) {
+        this( uri, null, label, instanceOf );
+    }
+
     /**
      * Create a new simple ontology individual.
      * @param uri        a URI for the term, of null for a free-text term
@@ -18,11 +22,23 @@ public class OntologyIndividualSimple extends AbstractOntologyResourceSimple imp
      * @param instanceOf the term this individual is an instance of which must be simple since this class has to be
      *                   {@link java.io.Serializable}.
      */
-    public OntologyIndividualSimple( @Nullable String uri, @Nullable String label, OntologyTermSimple instanceOf ) {
-        super( uri, label );
+    public OntologyIndividualSimple( @Nullable String uri, @Nullable String localName, @Nullable String label, @Nullable OntologyTermSimple instanceOf ) {
+        super( uri, localName, label );
         this.instanceOf = instanceOf;
     }
 
+    @Nullable
+    @Override
+    public String getComment() {
+        return null;
+    }
+
+    @Override
+    public boolean isObsolete() {
+        return false;
+    }
+
+    @Nullable
     @Override
     public OntologyTermSimple getInstanceOf() {
         return instanceOf;

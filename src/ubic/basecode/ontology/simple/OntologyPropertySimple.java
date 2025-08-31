@@ -10,13 +10,28 @@ import javax.annotation.Nullable;
  */
 public class OntologyPropertySimple extends AbstractOntologyResourceSimple implements OntologyProperty {
 
+    public OntologyPropertySimple( @Nullable String uri, @Nullable String label ) {
+        this( uri, null, label );
+    }
+
     /**
      *
      * @param uri   an URI or null if this is a free-text property
      * @param label a label for the property
      */
-    public OntologyPropertySimple( @Nullable String uri, @Nullable String label ) {
-        super( uri, label );
+    public OntologyPropertySimple( @Nullable String uri, @Nullable String localName, @Nullable String label ) {
+        super( uri, localName, label );
+    }
+
+    @Nullable
+    @Override
+    public String getComment() {
+        return null;
+    }
+
+    @Override
+    public boolean isObsolete() {
+        return false;
     }
 
     @Override

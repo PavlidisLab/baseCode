@@ -12,28 +12,12 @@ import java.util.Objects;
 public abstract class AbstractOntologyResourceSimple implements OntologyResource, Serializable {
 
     @Nullable
-    private final String uri, label;
+    private final String uri, localName, label;
 
-    protected AbstractOntologyResourceSimple( @Nullable String uri, @Nullable String label ) {
+    protected AbstractOntologyResourceSimple( @Nullable String uri, @Nullable String localName, @Nullable String label ) {
         this.uri = uri;
+        this.localName = localName;
         this.label = label;
-    }
-
-    @Override
-    public String getLocalName() {
-        return uri;
-    }
-
-    @Nullable
-    @Override
-    public String getLabel() {
-        return label;
-    }
-
-    @Nullable
-    @Override
-    public String getComment() {
-        return null;
     }
 
     @Override
@@ -43,27 +27,32 @@ public abstract class AbstractOntologyResourceSimple implements OntologyResource
     }
 
     @Override
-    public boolean isObsolete() {
-        return false;
+    @Nullable
+    public String getLocalName() {
+        return localName;
     }
 
+    @Nullable
     @Override
+    public String getLabel() {
+        return label;
+    }
+
     public boolean equals( Object obj ) {
         if ( this == obj ) return true;
-        if ( obj == null ) return false;
-        if ( getClass() != obj.getClass() ) return false;
+        if ( !( obj instanceof OntologyResource ) ) {
+            return false;
+        }
         final OntologyResource other = ( OntologyResource ) obj;
-        if ( getLabel() == null ) {
-            if ( other.getLabel() != null ) return false;
-        } else if ( !getLabel().equals( other.getLabel() ) ) return false;
-        if ( getUri() == null ) {
-            if ( other.getUri() != null ) return false;
-        } else if ( !getUri().equals( other.getUri() ) ) return false;
-        return true;
+        if ( getUri() == null && other.getUri() == null ) {
+            return Objects.equals( getLabel(), other.getLabel() );
+        } else {
+            return Objects.equals( getUri(), other.getUri() );
+        }
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash( label, uri );
+        return Objects.hash( uri, label );
     }
 }
