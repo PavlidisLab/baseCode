@@ -53,6 +53,6 @@ public abstract class AbstractOntologyResourceSimple implements OntologyResource
 
     @Override
     public int hashCode() {
-        return Objects.hash( uri, label );
+        return Objects.hash( uri );
     }
 }
