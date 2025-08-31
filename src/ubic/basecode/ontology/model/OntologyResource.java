@@ -34,6 +34,7 @@ public interface OntologyResource {
     /**
      * A local name for this resource.
      */
+    @Nullable
     String getLocalName();
 
     /**

@@ -100,27 +100,28 @@ class AnnotationPropertyImpl extends AbstractOntologyResource implements Annotat
     @Override
     public boolean equals( @Nullable Object obj ) {
         if ( this == obj ) return true;
-        if ( obj == null ) return false;
-        if ( obj instanceof AnnotationPropertyImpl ) {
-            final AnnotationPropertyImpl other = ( AnnotationPropertyImpl ) obj;
+        if ( !( obj instanceof AnnotationProperty ) ) {
+            return false;
+        }
+        final AnnotationProperty other = ( AnnotationProperty ) obj;
+        if ( other instanceof AnnotationPropertyImpl ) {
             return super.equals( other )
-                && Objects.equals( object, other.object );
-        } else if ( obj instanceof AnnotationProperty ) {
-            final AnnotationProperty other = ( AnnotationProperty ) obj;
+                && Objects.equals( property, ( ( AnnotationPropertyImpl ) other ).property )
+                && Objects.equals( object, ( ( AnnotationPropertyImpl ) other ).object );
+        } else {
             return super.equals( other )
+                && Objects.equals( getProperty(), other.getProperty() )
                 && Objects.equals( getContents(), other.getContents() );
         }
-        return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash( super.hashCode(), object );
+        return Objects.hash( super.hashCode(), property, object );
     }
 
     @Override
     public String toString() {
         return property.getLocalName() + " " + object;
     }
-
 }
