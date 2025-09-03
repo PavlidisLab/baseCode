@@ -1,8 +1,7 @@
 package ubic.basecode.ontology.simple;
 
+import org.jspecify.annotations.Nullable;
 import ubic.basecode.ontology.model.OntologyIndividual;
-
-import javax.annotation.Nullable;
 
 /**
  * @author poirigui

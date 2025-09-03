@@ -1,8 +1,7 @@
 package ubic.basecode.ontology.simple;
 
+import org.jspecify.annotations.Nullable;
 import ubic.basecode.ontology.model.OntologyProperty;
-
-import javax.annotation.Nullable;
 
 /**
  * Simple in-memory implementation of {@link OntologyProperty}.

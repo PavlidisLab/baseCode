@@ -111,9 +111,4 @@ public class OntologyTermSimple extends AbstractOntologyResourceSimple implement
     public boolean isObsolete() {
         return obsolete;
     }
-
-    @Override
-    public <T> T unwrap( Class<T> clazz ) throws ClassCastException {
-        return clazz.cast( this );
-    }
 }

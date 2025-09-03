@@ -1,8 +1,8 @@
 package ubic.basecode.ontology.simple;
 
+import org.jspecify.annotations.Nullable;
 import ubic.basecode.ontology.model.OntologyResource;
 
-import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -36,6 +36,11 @@ public abstract class AbstractOntologyResourceSimple implements OntologyResource
     @Override
     public String getLabel() {
         return label;
+    }
+
+    @Override
+    public <T> T unwrap( Class<T> clazz ) throws ClassCastException {
+        return clazz.cast( this );
     }
 
     public boolean equals( Object obj ) {
