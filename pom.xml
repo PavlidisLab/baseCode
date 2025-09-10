@@ -334,6 +334,9 @@
 				<configuration>
 					<quiet>true</quiet>
 					<doclint>none</doclint>
+					<links>
+						<link>https://dst.lbl.gov/ACSSoftware/colt/api/</link>
+					</links>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -373,6 +376,9 @@
 				<configuration>
 					<quiet>true</quiet>
 					<doclint>none</doclint>
+					<links>
+						<link>https://dst.lbl.gov/ACSSoftware/colt/api/</link>
+					</links>
 				</configuration>
 			</plugin>
 			<plugin>
