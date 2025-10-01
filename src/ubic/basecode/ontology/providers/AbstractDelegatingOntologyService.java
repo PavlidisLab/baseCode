@@ -39,6 +39,16 @@ public class AbstractDelegatingOntologyService implements OntologyService {
     }
 
     @Override
+    public void setAllowedUriPrefixes( String... uriPrefixes ) {
+        delegate.setAllowedUriPrefixes( uriPrefixes );
+    }
+
+    @Override
+    public void clearAllowedUriPrefixes() {
+        delegate.clearAllowedUriPrefixes();
+    }
+
+    @Override
     public LanguageLevel getLanguageLevel() {
         return delegate.getLanguageLevel();
     }

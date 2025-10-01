@@ -604,7 +604,7 @@
 		<site>
 			<id>pavlab</id>
 			<name>PavLab</name>
-			<url>scpexe://${pavlab.server}${pavlab.siteDir}/${project.groupId}/${project.artifactId}-${project.version}</url>
+			<url>scpexe://${pavlab.server}${pavlab.siteDir}/${project.groupId}/gsec-${project.version}</url>
 		</site>
 	</distributionManagement>
 	<pluginRepositories>
