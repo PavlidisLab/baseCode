@@ -86,7 +86,7 @@ public class FileToolsTest {
         tempoutput = File.createTempFile( "junkme", ".txt" );
 
         tempdir = FileTools.createDir( System.getProperty( "java.io.tmpdir" ) + File.separatorChar + "junk.tmpdir."
-                + RandomStringUtils.randomAlphabetic( 10 ) );
+                + RandomStringUtils.insecure().nextAlphabetic( 10 ) );
 
     }
 
@@ -140,7 +140,7 @@ public class FileToolsTest {
     @Test
     public void testCheckPathIsReadableFileNot() {
         try {
-            FileTools.checkPathIsReadableFile( plain.getPath() + RandomStringUtils.randomNumeric( 10 ) );
+            FileTools.checkPathIsReadableFile( plain.getPath() + RandomStringUtils.insecure().nextNumeric( 10 ) );
             fail( "Should have thrown an IOException" );
         } catch ( IOException e ) {
             // ok
