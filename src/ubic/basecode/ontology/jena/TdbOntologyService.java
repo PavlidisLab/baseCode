@@ -2,6 +2,7 @@ package ubic.basecode.ontology.jena;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.tdb.TDBFactory;
+import com.hp.hpl.jena.tdb.base.file.Location;
 import org.apache.commons.io.file.PathUtils;
 import ubic.basecode.ontology.model.OntologyModel;
 
@@ -48,17 +49,23 @@ public class TdbOntologyService extends AbstractOntologyService {
     protected OntologyModel loadModel( boolean processImports, LanguageLevel languageLevel, InferenceMode inferenceMode ) throws IOException {
         if ( dataset == null ) {
             if ( readOnly ) {
-                Set<Path> filesToLink;
-                try ( Stream<Path> z = Files.list( tdbDir ) ) {
-                    filesToLink = z.collect( Collectors.toSet() );
-                }
-                tempDir = Files.createTempDirectory( getOntologyName() + ".tdb" );
-                for ( Path p : filesToLink ) {
-                    Files.createSymbolicLink( tempDir.resolve( p.getFileName() ), p );
+                // lock the location and make a copy
+                Location loc = Location.create( tdbDir.toString() );
+                loc.getLock().obtain();
+                try {
+                    Set<Path> filesToLink;
+                    try ( Stream<Path> z = Files.list( tdbDir ) ) {
+                        filesToLink = z.collect( Collectors.toSet() );
+                    }
+                    tempDir = Files.createTempDirectory( getOntologyName() + ".tdb" );
+                    for ( Path p : filesToLink ) {
+                        Files.copy( p, tempDir.resolve( p.getFileName() ) );
+                    }
+                } finally {
+                    loc.getLock().release();
                 }
                 log.info( "Reading read-only TDB model from {}.", tempDir );
                 dataset = TDBFactory.createDataset( tempDir.toString() );
-
             } else {
                 dataset = TDBFactory.createDataset( tdbDir.toString() );
             }
