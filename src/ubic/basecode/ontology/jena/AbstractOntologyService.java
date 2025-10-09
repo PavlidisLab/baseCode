@@ -88,6 +88,8 @@ public abstract class AbstractOntologyService implements OntologyService {
     private boolean searchEnabled = true;
     private Set<String> excludedWordsFromStemming = Collections.emptySet();
     private Set<String> additionalPropertyUris = DEFAULT_ADDITIONAL_PROPERTIES.stream().map( Property::getURI ).collect( Collectors.toSet() );
+    @Nullable
+    private Set<String> allowedUriPrefixes = null;
 
     protected AbstractOntologyService( String ontologyName, String ontologyUrl, boolean ontologyEnabled, @Nullable String cacheName ) {
         this.ontologyName = ontologyName;
@@ -126,9 +128,9 @@ public abstract class AbstractOntologyService implements OntologyService {
             try {
                 this.initialize( forceLoad, forceIndexing );
             } catch ( Exception e ) {
-                log.error( "Initialization for %s failed.", e );
+                log.error( "Initialization of {} failed.", this, e );
             }
-        }, getOntologyName() + "_load_thread_" + RandomStringUtils.randomAlphanumeric( 5 ) );
+        }, getOntologyName() + "_load_thread_" + RandomStringUtils.insecure().nextAlphanumeric( 5 ) );
         // To prevent VM from waiting on this thread to shut down (if shutting down).
         initializationThread.setDaemon( true );
         initializationThread.start();
@@ -236,6 +238,19 @@ public abstract class AbstractOntologyService implements OntologyService {
     }
 
     @Override
+    public void setAllowedUriPrefixes( String... uriPrefixes ) {
+        if ( uriPrefixes.length == 0 ) {
+            throw new IllegalArgumentException( "At least one URI prefix must be supplied." );
+        }
+        this.allowedUriPrefixes = new HashSet<>( Arrays.asList( uriPrefixes ) );
+    }
+
+    @Override
+    public void clearAllowedUriPrefixes() {
+        this.allowedUriPrefixes = null;
+    }
+
+    @Override
     public boolean isSearchEnabled() {
         return getState().map( state -> state.index != null ).orElse( searchEnabled );
     }
@@ -288,6 +303,7 @@ public abstract class AbstractOntologyService implements OntologyService {
         boolean processImports = this.processImports;
         boolean searchEnabled = this.searchEnabled;
         Set<String> excludedWordsFromStemming = this.excludedWordsFromStemming;
+        Set<String> allowedUriPrefixes = this.allowedUriPrefixes;
 
         // Detect configuration problems.
         if ( StringUtils.isBlank( ontologyUrl ) ) {
@@ -379,13 +395,15 @@ public abstract class AbstractOntologyService implements OntologyService {
             }
         }
 
-        this.state = new State( model, index, excludedWordsFromStemming, additionalRestrictions, languageLevel, inferenceMode, processImports, additionalProperties.stream().map( Property::getURI ).collect( Collectors.toSet() ), null );
+        this.state = new State( model, index, excludedWordsFromStemming, additionalRestrictions, languageLevel,
+            inferenceMode, processImports, additionalProperties.stream().map( Property::getURI ).collect( Collectors.toSet() ),
+            allowedUriPrefixes, null );
         if ( cacheName != null ) {
             // now that the terms have been replaced, we can clear old caches
             try {
                 OntologyLoader.deleteOldCache( cacheName );
             } catch ( IOException e ) {
-                log.error( String.format( String.format( "Failed to delete old cache directory for %s.", this ), e ) );
+                log.error( "Failed to delete old cache directory for {}.", this, e );
             }
         }
 
@@ -422,6 +440,7 @@ public abstract class AbstractOntologyService implements OntologyService {
             return Collections.emptySet();
         }
         return state.index.searchIndividuals( state.model, search, maxResults ).stream()
+            .filter( i -> state.isUriAllowed( i.result.getURI() ) )
                 .map( i -> as( i.result, Individual.class ).map( r -> new OntologySearchResult<>( ( OntologyIndividual ) new OntologyIndividualImpl( r, state.additionalRestrictions ), i.score ) ) )
                 .filter( Optional::isPresent )
                 .map( Optional::get )
@@ -443,6 +462,7 @@ public abstract class AbstractOntologyService implements OntologyService {
             return Collections.emptySet();
         }
         return state.index.search( state.model, searchString, maxResults ).stream()
+            .filter( i -> state.isUriAllowed( i.result.getURI() ) )
                 .filter( ( r -> r.result.canAs( OntClass.class ) || r.result.canAs( Individual.class ) ) )
                 .map( r -> {
                     if ( r.result.canAs( OntClass.class ) ) {
@@ -474,6 +494,7 @@ public abstract class AbstractOntologyService implements OntologyService {
             return Collections.emptySet();
         }
         return state.index.searchClasses( state.model, search, maxResults ).stream()
+            .filter( i -> state.isUriAllowed( i.result.getURI() ) )
                 .map( r -> as( r.result, OntClass.class ).map( s -> new OntologySearchResult<>( ( OntologyTerm ) new OntologyTermImpl( s, state.additionalRestrictions ), r.score ) ) )
                 .filter( Optional::isPresent )
                 .map( Optional::get )
@@ -514,6 +535,9 @@ public abstract class AbstractOntologyService implements OntologyService {
     @Override
     public OntologyResource getResource( String uri ) {
         return getState().map( state -> {
+            if ( !state.isUriAllowed( uri ) ) {
+                return null;
+            }
             OntologyResource res;
             Resource resource = state.model.getResource( uri );
             if ( resource.getURI() == null ) {
@@ -536,6 +560,9 @@ public abstract class AbstractOntologyService implements OntologyService {
     @Override
     public OntologyTerm getTerm( String uri ) {
         return getState().map( state -> {
+            if ( !state.isUriAllowed( uri ) ) {
+                return null;
+            }
             OntClass ontCls = state.model.getOntClass( uri );
             // null or bnode
             if ( ontCls == null || ontCls.getURI() == null ) {
@@ -564,6 +591,7 @@ public abstract class AbstractOntologyService implements OntologyService {
         return getState().map( state ->
                         JenaUtils.getParents( state.model, getOntClassesFromTerms( state.model, terms ), direct, includeAdditionalProperties ? state.additionalRestrictions : null )
                                 .stream()
+                            .filter( o -> state.isUriAllowed( o.getURI() ) )
                                 .map( o -> ( OntologyTerm ) new OntologyTermImpl( o, state.additionalRestrictions ) )
                                 .filter( o -> keepObsoletes || !o.isObsolete() )
                                 .collect( Collectors.toSet() ) )
@@ -576,6 +604,7 @@ public abstract class AbstractOntologyService implements OntologyService {
         return getState().map( state ->
                 JenaUtils.getChildren( state.model, getOntClassesFromTerms( state.model, terms ), direct, includeAdditionalProperties ? state.additionalRestrictions : null )
                         .stream()
+                    .filter( o -> state.isUriAllowed( o.getURI() ) )
                         .map( o -> ( OntologyTerm ) new OntologyTermImpl( o, state.additionalRestrictions ) )
                         .filter( o -> keepObsoletes || !o.isObsolete() )
                         .collect( Collectors.toSet() )
@@ -667,7 +696,7 @@ public abstract class AbstractOntologyService implements OntologyService {
             return;
         }
         // now we replace the index
-        this.state = new State( state.model, index, state.excludedWordsFromStemming, state.additionalRestrictions, state.languageLevel, state.inferenceMode, state.processImports, state.additionalPropertyUris, state.alternativeIDs );
+        this.state = new State( state.model, index, state.excludedWordsFromStemming, state.additionalRestrictions, state.languageLevel, state.inferenceMode, state.processImports, state.additionalPropertyUris, state.allowedUriPrefixes, state.alternativeIDs );
     }
 
     /**
@@ -703,7 +732,7 @@ public abstract class AbstractOntologyService implements OntologyService {
                 alternativeIDs.put( baseOntologyUri + alternativeIdModified, ontologyTerm.getUri() );
             }
         }
-        return new State( state.model, state.index, state.excludedWordsFromStemming, state.additionalRestrictions, state.languageLevel, state.inferenceMode, state.processImports, state.additionalPropertyUris, alternativeIDs );
+        return new State( state.model, state.index, state.excludedWordsFromStemming, state.additionalRestrictions, state.languageLevel, state.inferenceMode, state.processImports, state.additionalPropertyUris, state.allowedUriPrefixes, alternativeIDs );
     }
 
     @Override
@@ -715,8 +744,8 @@ public abstract class AbstractOntologyService implements OntologyService {
 
     @Override
     public String toString() {
-        return String.format( "%s [url=%s] [language level=%s] [inference mode=%s] [imports=%b] [search=%b]",
-                getOntologyName(), getOntologyUrl(), getLanguageLevel(), getInferenceMode(), getProcessImports(), isSearchEnabled() );
+        return String.format( "%s [url=%s] [allowed prefixes=%s] [language level=%s] [inference mode=%s] [imports=%b] [search=%b]",
+            getOntologyName(), getOntologyUrl(), allowedUriPrefixes != null ? String.join( ",", allowedUriPrefixes ) : "*", getLanguageLevel(), getInferenceMode(), getProcessImports(), isSearchEnabled() );
     }
 
     private Optional<State> getState() {
@@ -747,9 +776,11 @@ public abstract class AbstractOntologyService implements OntologyService {
         private final boolean processImports;
         private final Set<String> additionalPropertyUris;
         @Nullable
+        private final Set<String> allowedUriPrefixes;
+        @Nullable
         private final Map<String, String> alternativeIDs;
 
-        private State( OntModel model, @Nullable SearchIndex index, Set<String> excludedWordsFromStemming, Set<Restriction> additionalRestrictions, @Nullable LanguageLevel languageLevel, InferenceMode inferenceMode, boolean processImports, Set<String> additionalPropertyUris, @Nullable Map<String, String> alternativeIDs ) {
+        private State( OntModel model, @Nullable SearchIndex index, Set<String> excludedWordsFromStemming, Set<Restriction> additionalRestrictions, @Nullable LanguageLevel languageLevel, InferenceMode inferenceMode, boolean processImports, Set<String> additionalPropertyUris, @Nullable Set<String> allowedUriPrefixes, @Nullable Map<String, String> alternativeIDs ) {
             this.model = model;
             this.index = index;
             this.excludedWordsFromStemming = excludedWordsFromStemming;
@@ -758,7 +789,18 @@ public abstract class AbstractOntologyService implements OntologyService {
             this.inferenceMode = inferenceMode;
             this.processImports = processImports;
             this.additionalPropertyUris = additionalPropertyUris;
+            this.allowedUriPrefixes = allowedUriPrefixes;
             this.alternativeIDs = alternativeIDs;
+        }
+
+        /**
+         * Check if this particular state allows a given URI from being returned by the service.
+         */
+        public boolean isUriAllowed( @Nullable String uri ) {
+            if ( allowedUriPrefixes == null ) {
+                return true;
+            }
+            return uri == null || allowedUriPrefixes.stream().anyMatch( uri::startsWith );
         }
 
         @Override

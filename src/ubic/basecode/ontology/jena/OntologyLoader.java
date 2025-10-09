@@ -25,7 +25,7 @@ import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.shared.CannotCreateException;
 import com.hp.hpl.jena.shared.JenaException;
-import com.hp.hpl.jena.tdb.TDBFactory;
+import com.hp.hpl.jena.sparql.graph.GraphReadOnly;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -83,6 +83,16 @@ class OntologyLoader {
         readModelFromUrl( model, url, cacheName );
         log.debug( "Loading ontology model for {} took {} ms", url, timer.getTime() );
         return model;
+    }
+
+    /**
+     * ModelFactory.createMemModelMaker()
+     * Get model that is entirely in memory.
+     */
+    private static OntModel getModel( String name, boolean processImports, OntModelSpec spec ) {
+        ModelMaker maker = ModelFactory.createMemModelMaker();
+        Model base = maker.createModel( name, false );
+        return getModel( maker, base, processImports, spec );
     }
 
     private static void readModelFromUrl( OntModel model, String url, @Nullable String cacheName ) throws IOException {
@@ -165,7 +175,7 @@ class OntologyLoader {
      *                       contains all the necessary definitions.
      * @param spec           spec to use to create the ontology model
      */
-    public static OntModel createTdbModel( Dataset dataset, @Nullable String name, boolean processImports, OntModelSpec spec ) {
+    public static OntModel createTdbModel( Dataset dataset, @Nullable String name, boolean processImports, OntModelSpec spec, boolean readOnly ) {
         ModelMaker maker = ModelFactory.createMemModelMaker();
         Model base;
         if ( name != null ) {
@@ -177,16 +187,9 @@ class OntologyLoader {
             throw new IllegalStateException( String.format( "The %s at %s is empty.",
                 name != null ? "named model " + name : "default model", dataset ) );
         }
-        return getModel( maker, base, processImports, spec );
-    }
-
-    /**
-     * ModelFactory.createMemModelMaker()
-     * Get model that is entirely in memory.
-     */
-    private static OntModel getModel( String name, boolean processImports, OntModelSpec spec ) {
-        ModelMaker maker = ModelFactory.createMemModelMaker();
-        Model base = maker.createModel( name, false );
+        if ( readOnly ) {
+            base = ModelFactory.createModelForGraph( new GraphReadOnly( base.getGraph() ) );
+        }
         return getModel( maker, base, processImports, spec );
     }
 
