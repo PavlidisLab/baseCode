@@ -15,10 +15,6 @@
 		<![CDATA[Data structures, math and statistics tools, and utilities that are often needed across projects.]]>
 	</description>
 	<url>https://github.com/PavlidisLab/baseCode</url>
-	<organization>
-		<name>Pavlidis Lab</name>
-		<url>https://pavlab.msl.ubc.ca/</url>
-	</organization>
 	<packaging>jar</packaging>
 	<issueManagement>
 		<system>GitHub</system>
