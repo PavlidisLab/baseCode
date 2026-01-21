@@ -20,7 +20,6 @@ public class OntologyProvidersTest extends AbstractOntologyTest {
             // new DiseaseOntologyService(),
             new ExperimentalFactorOntologyService(),
             new FMAOntologyService(),
-            new HumanDevelopmentOntologyService(),
             new HumanPhenotypeOntologyService(),
             new MammalianPhenotypeOntologyService(),
             // new MedicOntologyService(),
