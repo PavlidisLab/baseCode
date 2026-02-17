@@ -717,7 +717,7 @@
 		<pavlab.server>frink.pavlab.msl.ubc.ca</pavlab.server>
 		<pavlab.repoDir>/space/maven2</pavlab.repoDir>
 		<pavlab.siteDir>/space/web/maven-sites</pavlab.siteDir>
-		<log4j.version>2.25.2</log4j.version>
+		<log4j.version>2.25.3</log4j.version>
 		<lucene.version>3.6.2</lucene.version>
 		<!-- rJava -->
 		<!-- You may override this in ~/.m2/settings.xml -->
