@@ -39,6 +39,20 @@ public interface OntologyService extends AutoCloseable {
      */
     void setProcessImports( boolean processImports );
 
+    /**
+     * List of URI prefixes to load from the ontology.
+     * <p>
+     * Changes are applicable only if the service is re-initialized.
+     */
+    void setAllowedUriPrefixes( String... uriPrefixes );
+
+    /**
+     * Clear the list of allowed URI prefixes.
+     * <p>
+     * Changes are applicable only if the service is re-initialized.
+     */
+    void clearAllowedUriPrefixes();
+
     enum LanguageLevel {
         /**
          * The full OWL language.
