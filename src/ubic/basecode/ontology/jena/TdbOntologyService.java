@@ -28,10 +28,10 @@ public class TdbOntologyService extends AbstractOntologyService {
     @Nullable
     private Dataset dataset;
 
-    /**
-     * Temporary d
-     */
+    @Nullable
     private Path tempDir;
+
+    private boolean deleteTempDir = false;
 
     /**
      * @param readOnly open the TDB database in read-only mode, allowing multiple JVMs to share a common TDB. For this
@@ -57,7 +57,19 @@ public class TdbOntologyService extends AbstractOntologyService {
                     try ( Stream<Path> z = Files.list( tdbDir ) ) {
                         filesToLink = z.collect( Collectors.toSet() );
                     }
-                    tempDir = Files.createTempDirectory( getOntologyName() + ".tdb" );
+                    if ( tempDir == null ) {
+                        log.info( "Creating temporary directory for read-only TDB model." );
+                        tempDir = Files.createTempDirectory( getOntologyName() + ".tdb" );
+                        deleteTempDir = true;
+                    } else if ( !Files.exists( tempDir ) ) {
+                        log.info( "Creating temporary directory at {} for read-only TDB model.", tempDir );
+                        Files.createDirectories( tempDir );
+                        deleteTempDir = true;
+                    } else {
+                        log.info( "Reusing existing temporary directory at {} for read-only TDB model. Note that the directory will not be removed.", tempDir );
+                        // never delete a temporary directory that wasn't created by this service (I've learned this the hard way!)
+                        deleteTempDir = false;
+                    }
                     for ( Path p : filesToLink ) {
                         Files.copy( p, tempDir.resolve( p.getFileName() ) );
                     }
@@ -65,6 +77,7 @@ public class TdbOntologyService extends AbstractOntologyService {
                     loc.getLock().release();
                 }
                 log.info( "Reading read-only TDB model from {}.", tempDir );
+                assert tempDir != null;
                 dataset = TDBFactory.createDataset( tempDir.toString() );
             } else {
                 dataset = TDBFactory.createDataset( tdbDir.toString() );
@@ -78,6 +91,19 @@ public class TdbOntologyService extends AbstractOntologyService {
         throw new UnsupportedOperationException( "TDB cannot be loaded from an input stream." );
     }
 
+    /**
+     * Set the temporary directory used when opening the TDB in read-only mode.
+     * <p>
+     * This can only be set once, before the first model is loaded. Note that the directory will be removed when the
+     * service is closed.
+     */
+    public void setTempDir( Path tempDir ) {
+        if ( this.tempDir != null ) {
+            throw new IllegalStateException( "Temporary directory has already been set." );
+        }
+        this.tempDir = tempDir;
+    }
+
     @Override
     public void close() throws Exception {
         try {
@@ -86,7 +112,7 @@ public class TdbOntologyService extends AbstractOntologyService {
             if ( dataset != null ) {
                 TDBFactory.release( dataset );
             }
-            if ( tempDir != null ) {
+            if ( tempDir != null && deleteTempDir ) {
                 PathUtils.delete( tempDir );
             }
         }
