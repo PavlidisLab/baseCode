@@ -1,6 +1,7 @@
 /**
  * This package contains a Java wrapper for the Netlib BLAS and LAPACK libraries.
- * @deprecated use {@link dev.ludovic.netlib} instead
+ * <p>
+ * Use {@link dev.ludovic.netlib} instead.
  */
 @Deprecated
 @NullMarked
